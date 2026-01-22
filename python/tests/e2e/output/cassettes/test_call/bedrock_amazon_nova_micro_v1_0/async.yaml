@@ -1,0 +1,48 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "What is 4200 + 42?"}]}],
+      "inferenceConfig": {"maxTokens": 4096}}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '117'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9ELFos
+        YixuIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTI1MzEyWg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        Mzg1YjQ2NzktMjJkNy00ZDY4LTgxMTEtNjdmYjQwYTJlYjZk
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse
+  response:
+    body:
+      string: '{"metrics":{"latencyMs":335},"output":{"message":{"content":[{"text":"To
+        find the sum of 4200 and 42, you simply add the two numbers together:\n\n\\[
+        4200 + 42 = 4242 \\]\n\nSo, \\( 4200 + 42 = 4242 \\)."}],"role":"assistant"}},"stopReason":"end_turn","usage":{"inputTokens":12,"outputTokens":63,"serverToolUsage":{},"totalTokens":75}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '335'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Jan 2026 12:53:14 GMT
+      x-amzn-RequestId:
+      - 8cbe286a-21c5-4daf-8d76-686285c217d5
+    status:
+      code: 200
+      message: OK
+version: 1

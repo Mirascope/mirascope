@@ -1,0 +1,60 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "Please recommend the
+      most popular book by Patrick Rothfuss"}]}], "inferenceConfig": {"maxTokens":
+      4096}, "system": [{"text": "Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output."}], "toolConfig": {"tools": [{"toolSpec": {"name":
+      "__mirascope_formatted_output_tool__", "description": "Use this tool to extract
+      data in Book format for a final response.\nA book with a rating. The title should
+      be in all caps!", "inputSchema": {"json": {"properties": {"title": {"title":
+      "Title", "type": "string"}, "author": {"$ref": "#/$defs/Author"}, "rating":
+      {"description": "For testing purposes, the rating should be 7", "title": "Rating",
+      "type": "integer"}}, "required": ["title", "author", "rating"], "additionalProperties":
+      false, "$defs": {"Author": {"description": "The author of a book.", "properties":
+      {"first_name": {"title": "First Name", "type": "string"}, "last_name": {"title":
+      "Last Name", "type": "string"}}, "required": ["first_name", "last_name"], "title":
+      "Author", "type": "object"}}, "type": "object"}}}}], "toolChoice": {"tool":
+      {"name": "__mirascope_formatted_output_tool__"}}}}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '1197'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9ELFos
+        YixuIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTI1NDI4Wg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        MWVlNGNkNWMtNGM0ZC00ZGRmLTlhYzUtZTZiNzcyNTdkNjUx
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse
+  response:
+    body:
+      string: '{"metrics":{"latencyMs":355},"output":{"message":{"content":[{"toolUse":{"input":{"author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7,"title":"THE
+        NAME OF THE WIND"},"name":"mirascope_formatted_output_tool__","toolUseId":"tooluse_x7vwrufAQUGPyOlkHgrZ6g"}}],"role":"assistant"}},"stopReason":"tool_use","usage":{"inputTokens":623,"outputTokens":37,"serverToolUsage":{},"totalTokens":660}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '403'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Jan 2026 12:54:29 GMT
+      x-amzn-RequestId:
+      - 971375a1-138a-4051-8f4c-bd573634d4fd
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -33,6 +33,7 @@ from .azure import (
 from .base import BaseProvider, Provider
 from .bedrock import (
     BedrockAnthropicProvider,
+    BedrockBoto3Provider,
     BedrockModelId,
     BedrockOpenAIProvider,
     BedrockProvider,
@@ -66,6 +67,7 @@ __all__ = [
     "BaseOpenAICompletionsProvider",
     "BaseProvider",
     "BedrockAnthropicProvider",
+    "BedrockBoto3Provider",
     "BedrockModelId",
     "BedrockOpenAIProvider",
     "BedrockProvider",

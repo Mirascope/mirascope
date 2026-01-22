@@ -72,8 +72,11 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
         self.content = []
         found_format_tool = False
 
+        format_tool_token = FORMAT_TOOL_NAME.lstrip("_")
         for part in assistant_message.content:
-            if isinstance(part, ToolCall) and part.name.startswith(FORMAT_TOOL_NAME):
+            if isinstance(part, ToolCall) and (
+                part.name.lstrip("_") == format_tool_token
+            ):
                 part = Text(text=part.args)
                 found_format_tool = True
 

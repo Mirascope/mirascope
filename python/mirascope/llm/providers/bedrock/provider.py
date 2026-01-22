@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, cast
 from typing_extensions import Unpack
 
 from ...context import Context, DepsT
@@ -28,6 +28,7 @@ from ...tools import (
 from ..anthropic._utils.errors import ANTHROPIC_ERROR_MAP
 from ..base import BaseProvider
 from . import _utils as bedrock_utils
+from .boto3._utils import BEDROCK_BOTO3_ERROR_MAP
 from .model_id import BedrockModelId
 from .openai import BedrockOpenAIRoutedProvider
 
@@ -37,20 +38,29 @@ if TYPE_CHECKING:
 
     from ...models import Params
     from .anthropic import BedrockAnthropicRoutedProvider
+    from .boto3 import BedrockBoto3RoutedProvider
+    from .boto3.provider import BedrockRuntimeClient
 else:
     AnthropicBedrock = None
     OpenAI = None
+    BedrockRuntimeClient = None
 
 BEDROCK_ANTHROPIC_MODEL_PREFIXES = tuple(bedrock_utils.default_anthropic_scopes())
 BEDROCK_OPENAI_MODEL_PREFIXES = bedrock_utils.BEDROCK_OPENAI_MODEL_PREFIXES
 
-RoutingProviderId = Literal["anthropic", "openai"]
+RoutingProviderId = Literal["anthropic", "openai", "boto3"]
+
+BEDROCK_ERROR_MAP: dict[type[Exception], Any] = {
+    **ANTHROPIC_ERROR_MAP,
+    **BEDROCK_BOTO3_ERROR_MAP,
+}
 
 
 def _default_routing_scopes() -> dict[RoutingProviderId, list[str]]:
     return {
         "anthropic": list(BEDROCK_ANTHROPIC_MODEL_PREFIXES),
         "openai": list(BEDROCK_OPENAI_MODEL_PREFIXES),
+        "boto3": [],
     }
 
 
@@ -62,25 +72,26 @@ def _is_anthropic_arn(model_id: str) -> bool:
     return "foundation-model/anthropic." in model_id
 
 
-class BedrockProvider(BaseProvider["AnthropicBedrock | OpenAI | None"]):
+class BedrockProvider(
+    BaseProvider["AnthropicBedrock | OpenAI | BedrockRuntimeClient | None"]
+):
     """Unified provider for Amazon Bedrock using routing.
 
-    Auto-routing is strict. It matches only:
+    Auto-routing matches model IDs to subproviders:
     - Anthropic base model IDs (``bedrock/anthropic.<model>``)
     - Anthropic cross-region inference profile IDs
       (``bedrock/us.anthropic.<model>``, ``bedrock/eu.anthropic.<model>``, etc.)
     - Anthropic foundation model ARNs containing ``foundation-model/anthropic.``
     - OpenAI-compatible model IDs (``bedrock/openai.<model>``)
+    - All other ``bedrock/`` model IDs route to the boto3 Converse API
 
-    Other model identifiers (Converse, InvokeModel) are not auto-detected in this
-    initial implementation. If a model id does not match one of the defaults above,
-    you must add routing prefixes via ``routing_scopes``; otherwise calling this
-    provider raises ``ValueError`` with guidance on how to configure routing.
+    You can add custom routing prefixes via ``routing_scopes`` to override the
+    default routing behavior.
     """
 
     id = "bedrock"
     default_scope = "bedrock/"
-    error_map = ANTHROPIC_ERROR_MAP
+    error_map = BEDROCK_ERROR_MAP
 
     def __init__(
         self,
@@ -106,10 +117,11 @@ class BedrockProvider(BaseProvider["AnthropicBedrock | OpenAI | None"]):
             base_url: Custom base URL for Bedrock endpoint (e.g., for GovCloud).
             routing_scopes: Optional mapping of provider ids to additional
                 model-id prefixes (for example, ``"bedrock/my-custom-model"``) used
-                for routing. These prefixes extend the defaults (Anthropic prefixes),
-                and routing selects the longest matching prefix. If no prefix matches
-                a model id at call time, this provider raises ``ValueError`` with
-                guidance on how to configure routing.
+                for routing. These prefixes extend the defaults (Anthropic and OpenAI
+                prefixes), and routing selects the longest matching prefix. Model IDs
+                with the ``bedrock/`` prefix that don't match any routing scope fall
+                back to the boto3 Converse API. Model IDs without the ``bedrock/``
+                prefix raise ``ValueError``.
             anthropic_api_key: Optional API key for Anthropic subprovider authentication.
                 If provided, this takes priority over AWS credentials for Anthropic models.
             openai_api_key: Optional API key for OpenAI subprovider authentication.
@@ -117,7 +129,8 @@ class BedrockProvider(BaseProvider["AnthropicBedrock | OpenAI | None"]):
         """
         self._anthropic_provider: BedrockAnthropicRoutedProvider | None = None
         self._openai_provider: BedrockOpenAIRoutedProvider | None = None
-        self.client: Any = None
+        self._boto3_provider: BedrockBoto3RoutedProvider | None = None
+        self.client: AnthropicBedrock | OpenAI | BedrockRuntimeClient | None = None
         self._aws_region = aws_region
         self._aws_access_key = aws_access_key
         self._aws_secret_key = aws_secret_key
@@ -161,30 +174,55 @@ class BedrockProvider(BaseProvider["AnthropicBedrock | OpenAI | None"]):
             self.client = self._openai_provider.client
         return self._openai_provider
 
+    def _get_boto3_provider(self) -> BedrockBoto3RoutedProvider:
+        if self._boto3_provider is None:
+            from importlib import import_module
+
+            bedrock_boto3 = import_module("mirascope.llm.providers.bedrock.boto3")
+            BedrockBoto3RoutedProvider = cast(
+                type["BedrockBoto3RoutedProvider"],
+                bedrock_boto3.BedrockBoto3RoutedProvider,
+            )
+
+            self._boto3_provider = BedrockBoto3RoutedProvider(
+                aws_region=self._aws_region,
+                aws_access_key=self._aws_access_key,
+                aws_secret_key=self._aws_secret_key,
+                aws_session_token=self._aws_session_token,
+                aws_profile=self._aws_profile,
+                base_url=self._base_url,
+            )
+        provider = self._boto3_provider
+        self.client = provider.client
+        return provider
+
     def get_error_status(self, e: Exception) -> int | None:
         """Extract HTTP status code from provider exception."""
         return getattr(e, "status_code", None)
 
     def _choose_subprovider(
         self, model_id: BedrockModelId, messages: Sequence[Message]
-    ) -> BedrockAnthropicRoutedProvider | BedrockOpenAIRoutedProvider:
+    ) -> (
+        BedrockAnthropicRoutedProvider
+        | BedrockOpenAIRoutedProvider
+        | BedrockBoto3RoutedProvider
+    ):
         route = self._route_provider(model_id)
         if route == "anthropic":
             return self._get_anthropic_provider()
         if route == "openai":
             return self._get_openai_provider()
+        if route == "boto3":
+            return self._get_boto3_provider()
 
-        message = (
-            "BedrockProvider could not determine which SDK to use for "
-            f"model_id='{model_id}'. Auto-routing supports Anthropic model "
-            "prefixes (e.g., 'bedrock/anthropic.', 'bedrock/us.anthropic.', "
-            "Anthropic foundation model ARNs) and OpenAI-compatible model "
-            "prefixes (e.g., 'bedrock/openai.'). If you need to use a different "
-            "model, pass routing_scopes={'anthropic': ['bedrock/<prefix>']} or "
-            "routing_scopes={'openai': ['bedrock/<prefix>']} when registering "
-            "the BedrockProvider."
+        # Fall back to boto3 for all other model IDs with bedrock/ prefix
+        if model_id.startswith("bedrock/"):
+            return self._get_boto3_provider()
+
+        raise ValueError(
+            f"Unable to route model '{model_id}' to a Bedrock subprovider. "
+            f"Model ID must start with 'bedrock/' prefix."
         )
-        raise ValueError(message)
 
     def _route_provider(self, model_id: BedrockModelId) -> RoutingProviderId | None:
         # Special case: check for Anthropic ARNs

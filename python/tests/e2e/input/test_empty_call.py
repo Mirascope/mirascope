@@ -3,14 +3,14 @@
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import E2E_MODEL_IDS
+from tests.e2e.conftest import E2E_MODEL_IDS, EMPTY_STRING_MODEL_IDS
 from tests.utils import (
     Snapshot,
     snapshot_test,
 )
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", EMPTY_STRING_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_empty_string(
     model_id: llm.ModelId,
@@ -28,7 +28,7 @@ def test_call_with_empty_string(
         snap.set_response(response)
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", EMPTY_STRING_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_two_empty_string(
     model_id: llm.ModelId,

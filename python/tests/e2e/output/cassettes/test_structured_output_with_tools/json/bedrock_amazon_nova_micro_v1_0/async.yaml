@@ -1,0 +1,130 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "Please look up the
+      book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score"}]}], "inferenceConfig": {"maxTokens": 4096}, "system": [{"text": "Respond
+      only with valid JSON that matches this exact schema:\n{\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"pages\":
+      {\n      \"title\": \"Pages\",\n      \"type\": \"integer\"\n    },\n    \"publication_year\":
+      {\n      \"title\": \"Publication Year\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+      [\n    \"title\",\n    \"author\",\n    \"pages\",\n    \"publication_year\"\n  ],\n  \"title\":
+      \"BookSummary\",\n  \"type\": \"object\"\n}"}], "toolConfig": {"tools": [{"toolSpec":
+      {"name": "get_book_info", "description": "Look up book information by ISBN.",
+      "inputSchema": {"json": {"properties": {"isbn": {"title": "Isbn", "type": "string"}},
+      "required": ["isbn"], "additionalProperties": false, "type": "object"}}}}]}}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '1109'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9ELFos
+        YixuIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTI1NTEyWg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        ODVkNDJkYmMtMGM5MC00ODlkLTkxN2MtN2YzODIwMjdlZTY0
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse
+  response:
+    body:
+      string: '{"metrics":{"latencyMs":575},"output":{"message":{"content":[{"text":"<thinking>
+        To provide detailed information about the book with the given ISBN and a recommendation
+        score, I first need to use the available tool to look up the book information
+        by its ISBN. After retrieving the book information, I can format it according
+        to the specified schema and include a recommendation score.</thinking>\n\n"},{"toolUse":{"input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","toolUseId":"tooluse_lgerkHwvSq2HWD5mwA_Wog"}}],"role":"assistant"}},"stopReason":"tool_use","usage":{"inputTokens":591,"outputTokens":91,"serverToolUsage":{},"totalTokens":682}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '648'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Jan 2026 12:55:13 GMT
+      x-amzn-RequestId:
+      - 98905add-5aa4-4e14-ad0f-e15abb60b4e0
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "Please look up the
+      book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score"}]}, {"role": "assistant", "content": [{"text": "<thinking> To provide
+      detailed information about the book with the given ISBN and a recommendation
+      score, I first need to use the available tool to look up the book information
+      by its ISBN. After retrieving the book information, I can format it according
+      to the specified schema and include a recommendation score.</thinking>\n\n"},
+      {"toolUse": {"toolUseId": "tooluse_lgerkHwvSq2HWD5mwA_Wog", "name": "get_book_info",
+      "input": {"isbn": "0-7653-1178-X"}}}]}, {"role": "user", "content": [{"toolResult":
+      {"toolUseId": "tooluse_lgerkHwvSq2HWD5mwA_Wog", "content": [{"text": "Title:
+      Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
+      2006-07-25"}]}}]}], "inferenceConfig": {"maxTokens": 4096}, "system": [{"text":
+      "Respond only with valid JSON that matches this exact schema:\n{\n  \"properties\":
+      {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"pages\":
+      {\n      \"title\": \"Pages\",\n      \"type\": \"integer\"\n    },\n    \"publication_year\":
+      {\n      \"title\": \"Publication Year\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+      [\n    \"title\",\n    \"author\",\n    \"pages\",\n    \"publication_year\"\n  ],\n  \"title\":
+      \"BookSummary\",\n  \"type\": \"object\"\n}"}], "toolConfig": {"tools": [{"toolSpec":
+      {"name": "get_book_info", "description": "Look up book information by ISBN.",
+      "inputSchema": {"json": {"properties": {"isbn": {"title": "Isbn", "type": "string"}},
+      "required": ["isbn"], "additionalProperties": false, "type": "object"}}}}]}}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '1829'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9ELFos
+        YixuIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTI1NTE0Wg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        ZWIwMWU5YWQtNjE3Ny00MDQxLTg2NzgtNzIxOTZkYTE5MDg4
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse
+  response:
+    body:
+      string: '{"metrics":{"latencyMs":579},"output":{"message":{"content":[{"text":"<thinking>
+        Now that I have the book information, I will format it according to the provided
+        JSON schema. Since the tool did not provide a recommendation score, I will
+        assign a hypothetical score for demonstration purposes.</thinking> \n\n<response>\n{\n  \"title\":
+        \"Mistborn: The Final Empire\",\n  \"author\": \"Brandon Sanderson\",\n  \"pages\":
+        544,\n  \"publication_year\": 2006\n}\n</response>"}],"role":"assistant"}},"stopReason":"end_turn","usage":{"inputTokens":745,"outputTokens":95,"serverToolUsage":{},"totalTokens":840}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '604'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Jan 2026 12:55:15 GMT
+      x-amzn-RequestId:
+      - 8ec9d51f-e331-4e78-a937-ed01d0b7a87a
+    status:
+      code: 200
+      message: OK
+version: 1

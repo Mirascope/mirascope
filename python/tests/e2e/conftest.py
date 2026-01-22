@@ -52,6 +52,9 @@ if sys.platform == "darwin":
 
 STRUCTURED_OUTPUT_MODEL_IDS = [*E2E_MODEL_IDS, "anthropic/claude-sonnet-4-5"]
 
+# All E2E models support empty string content (Bedrock boto3 models excluded from shared tests)
+EMPTY_STRING_MODEL_IDS = E2E_MODEL_IDS
+
 FORMATTING_MODES: tuple[llm.FormattingMode | None] = tuple(
     set(get_args(llm.FormattingMode)).difference({"parser"})
 ) + (None,)

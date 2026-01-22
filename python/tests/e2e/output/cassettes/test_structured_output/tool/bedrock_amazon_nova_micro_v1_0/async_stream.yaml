@@ -1,0 +1,81 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "Please recommend the
+      most popular book by Patrick Rothfuss"}]}], "inferenceConfig": {"maxTokens":
+      4096}, "system": [{"text": "Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output."}], "toolConfig": {"tools": [{"toolSpec": {"name":
+      "__mirascope_formatted_output_tool__", "description": "Use this tool to extract
+      data in Book format for a final response.\nA book with a rating. The title should
+      be in all caps!", "inputSchema": {"json": {"properties": {"title": {"title":
+      "Title", "type": "string"}, "author": {"$ref": "#/$defs/Author"}, "rating":
+      {"description": "For testing purposes, the rating should be 7", "title": "Rating",
+      "type": "integer"}}, "required": ["title", "author", "rating"], "additionalProperties":
+      false, "$defs": {"Author": {"description": "The author of a book.", "properties":
+      {"first_name": {"title": "First Name", "type": "string"}, "last_name": {"title":
+      "Last Name", "type": "string"}}, "required": ["first_name", "last_name"], "title":
+      "Author", "type": "object"}}, "type": "object"}}}}], "toolChoice": {"tool":
+      {"name": "__mirascope_formatted_output_tool__"}}}}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '1197'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9ELFos
+        YixuIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTI1NDQ3Wg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        MGQwZTNjZjMtMDliZS00YzIxLTk2MjgtNzMwNzMxN2JhNmJj
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse-stream
+  response:
+    body:
+      string: !!binary |
+        AAAAtQAAAFI4YGjVCzpldmVudC10eXBlBwAMbWVzc2FnZVN0YXJ0DTpjb250ZW50LXR5cGUHABBh
+        cHBsaWNhdGlvbi9qc29uDTptZXNzYWdlLXR5cGUHAAVldmVudHsicCI6ImFiY2RlZmdoaWprbG1u
+        b3BxcnN0dXZ3eHl6QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVowMTIzIiwicm9sZSI6ImFzc2lz
+        dGFudCJ9gnZ5VAAAAPsAAABXr8l6cgs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja1N0YXJ0DTpj
+        b250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29uDTptZXNzYWdlLXR5cGUHAAVldmVudHsiY29u
+        dGVudEJsb2NrSW5kZXgiOjAsInAiOiJhYmNkZWZnaCIsInN0YXJ0Ijp7InRvb2xVc2UiOnsibmFt
+        ZSI6Im1pcmFzY29wZV9mb3JtYXR0ZWRfb3V0cHV0X3Rvb2xfXyIsInRvb2xVc2VJZCI6InRvb2x1
+        c2VfTmY0blJvdUNSYWFtWXdocGxZeWFOQSJ9fX2kRloBAAABMgAAAFeAkCN9CzpldmVudC10eXBl
+        BwARY29udGVudEJsb2NrRGVsdGENOmNvbnRlbnQtdHlwZQcAEGFwcGxpY2F0aW9uL2pzb24NOm1l
+        c3NhZ2UtdHlwZQcABWV2ZW50eyJjb250ZW50QmxvY2tJbmRleCI6MCwiZGVsdGEiOnsidG9vbFVz
+        ZSI6eyJpbnB1dCI6IntcImF1dGhvclwiOntcImZpcnN0X25hbWVcIjpcIlBhdHJpY2tcIixcImxh
+        c3RfbmFtZVwiOlwiUm90aGZ1c3NcIn0sXCJyYXRpbmdcIjo3LFwidGl0bGVcIjpcIlRIRSBOQU1F
+        IE9GIFRIRSBXSU5EXCJ9In19LCJwIjoiYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4In0zQ26rAAAA
+        hgAAAFbZjG6aCzpldmVudC10eXBlBwAQY29udGVudEJsb2NrU3RvcA06Y29udGVudC10eXBlBwAQ
+        YXBwbGljYXRpb24vanNvbg06bWVzc2FnZS10eXBlBwAFZXZlbnR7ImNvbnRlbnRCbG9ja0luZGV4
+        IjowLCJwIjoiYWIiffM4iiAAAACJAAAAUcW4bOgLOmV2ZW50LXR5cGUHAAttZXNzYWdlU3RvcA06
+        Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbg06bWVzc2FnZS10eXBlBwAFZXZlbnR7InAi
+        OiJhYmNkZWZnaCIsInN0b3BSZWFzb24iOiJ0b29sX3VzZSJ9oU2PUAAAAOkAAABO0YIWUAs6ZXZl
+        bnQtdHlwZQcACG1ldGFkYXRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29uDTptZXNz
+        YWdlLXR5cGUHAAVldmVudHsibWV0cmljcyI6eyJsYXRlbmN5TXMiOjM2OH0sInAiOiJhYmNkZWZn
+        aGlqa2xtbm9wcXIiLCJ1c2FnZSI6eyJpbnB1dFRva2VucyI6NjIzLCJvdXRwdXRUb2tlbnMiOjM3
+        LCJzZXJ2ZXJUb29sVXNhZ2UiOnt9LCJ0b3RhbFRva2VucyI6NjYwfX3ZKuPU
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/vnd.amazon.eventstream
+      Date:
+      - Mon, 26 Jan 2026 12:54:47 GMT
+      Transfer-Encoding:
+      - chunked
+      x-amzn-RequestId:
+      - a71efd4b-60e2-4feb-a2db-3692ce524a9a
+    status:
+      code: 200
+      message: OK
+version: 1

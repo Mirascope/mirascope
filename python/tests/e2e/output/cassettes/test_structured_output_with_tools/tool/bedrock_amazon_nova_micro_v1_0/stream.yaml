@@ -1,0 +1,165 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "Please look up the
+      book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score"}]}], "inferenceConfig": {"maxTokens": 4096}, "system": [{"text": "Always
+      respond to the user''s query using the __mirascope_formatted_output_tool__ tool
+      for structured output."}], "toolConfig": {"tools": [{"toolSpec": {"name": "get_book_info",
+      "description": "Look up book information by ISBN.", "inputSchema": {"json":
+      {"properties": {"isbn": {"title": "Isbn", "type": "string"}}, "required": ["isbn"],
+      "additionalProperties": false, "type": "object"}}}}, {"toolSpec": {"name": "__mirascope_formatted_output_tool__",
+      "description": "Use this tool to extract data in BookSummary format for a final
+      response.", "inputSchema": {"json": {"properties": {"title": {"title": "Title",
+      "type": "string"}, "author": {"title": "Author", "type": "string"}, "pages":
+      {"title": "Pages", "type": "integer"}, "publication_year": {"title": "Publication
+      Year", "type": "integer"}}, "required": ["title", "author", "pages", "publication_year"],
+      "additionalProperties": false, "type": "object"}}}}], "toolChoice": {"any":
+      {}}}}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '1162'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9ELFos
+        YixuIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTI1NTMwWg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        YTY1OThmZmUtYmQ2Ni00ZTY2LWE5OWItN2YzNzA0YzRhNTgz
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse-stream
+  response:
+    body:
+      string: !!binary |
+        AAAAmAAAAFIBMYNgCzpldmVudC10eXBlBwAMbWVzc2FnZVN0YXJ0DTpjb250ZW50LXR5cGUHABBh
+        cHBsaWNhdGlvbi9qc29uDTptZXNzYWdlLXR5cGUHAAVldmVudHsicCI6ImFiY2RlZmdoaWprbG1u
+        b3BxcnN0dXZ3eHl6QSIsInJvbGUiOiJhc3Npc3RhbnQifRK9PwwAAADzAAAAV5+5MbMLOmV2ZW50
+        LXR5cGUHABFjb250ZW50QmxvY2tTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNv
+        bg06bWVzc2FnZS10eXBlBwAFZXZlbnR7ImNvbnRlbnRCbG9ja0luZGV4IjowLCJwIjoiYWJjZGVm
+        Z2hpamtsbW5vcHFyc3QiLCJzdGFydCI6eyJ0b29sVXNlIjp7Im5hbWUiOiJnZXRfYm9va19pbmZv
+        IiwidG9vbFVzZUlkIjoidG9vbHVzZV9yb0hKMXA2blJ1eWVtd2NwUzBjcWd3In19faffN70AAAD/
+        AAAAV1pJ3LILOmV2ZW50LXR5cGUHABFjb250ZW50QmxvY2tEZWx0YQ06Y29udGVudC10eXBlBwAQ
+        YXBwbGljYXRpb24vanNvbg06bWVzc2FnZS10eXBlBwAFZXZlbnR7ImNvbnRlbnRCbG9ja0luZGV4
+        IjowLCJkZWx0YSI6eyJ0b29sVXNlIjp7ImlucHV0Ijoie1wiaXNiblwiOlwiMC03NjUzLTExNzgt
+        WFwifSJ9fSwicCI6ImFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6QUJDREVGR0hJSktMTU5PUFFS
+        U1RVVldYWVowMTIzNDU2NzgifZ4KOwUAAACcAAAAVvPc4bkLOmV2ZW50LXR5cGUHABBjb250ZW50
+        QmxvY2tTdG9wDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29uDTptZXNzYWdlLXR5cGUH
+        AAVldmVudHsiY29udGVudEJsb2NrSW5kZXgiOjAsInAiOiJhYmNkZWZnaGlqa2xtbm9wcXJzdHV2
+        d3gifWORzUUAAACIAAAAUfjYRVgLOmV2ZW50LXR5cGUHAAttZXNzYWdlU3RvcA06Y29udGVudC10
+        eXBlBwAQYXBwbGljYXRpb24vanNvbg06bWVzc2FnZS10eXBlBwAFZXZlbnR7InAiOiJhYmNkZWZn
+        Iiwic3RvcFJlYXNvbiI6InRvb2xfdXNlIn1td92nAAABEQAAAE5imt5pCzpldmVudC10eXBlBwAI
+        bWV0YWRhdGENOmNvbnRlbnQtdHlwZQcAEGFwcGxpY2F0aW9uL2pzb24NOm1lc3NhZ2UtdHlwZQcA
+        BWV2ZW50eyJtZXRyaWNzIjp7ImxhdGVuY3lNcyI6MzMxfSwicCI6ImFiY2RlZmdoaWprbG1ub3Bx
+        cnN0dXZ3eHl6QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVowMTIzNDUiLCJ1c2FnZSI6eyJpbnB1
+        dFRva2VucyI6NjA1LCJvdXRwdXRUb2tlbnMiOjI2LCJzZXJ2ZXJUb29sVXNhZ2UiOnt9LCJ0b3Rh
+        bFRva2VucyI6NjMxfX3bgjRA
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/vnd.amazon.eventstream
+      Date:
+      - Mon, 26 Jan 2026 12:55:31 GMT
+      Transfer-Encoding:
+      - chunked
+      x-amzn-RequestId:
+      - 8ce0f91c-69ae-40e4-84d2-8ee8fa782491
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "Please look up the
+      book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score"}]}, {"role": "assistant", "content": [{"toolUse": {"toolUseId": "tooluse_roHJ1p6nRuyemwcpS0cqgw",
+      "name": "get_book_info", "input": {"isbn": "0-7653-1178-X"}}}]}, {"role": "user",
+      "content": [{"toolResult": {"toolUseId": "tooluse_roHJ1p6nRuyemwcpS0cqgw", "content":
+      [{"text": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages:
+      544, Published: 2006-07-25"}]}}]}], "inferenceConfig": {"maxTokens": 4096},
+      "system": [{"text": "Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output."}], "toolConfig": {"tools": [{"toolSpec": {"name":
+      "get_book_info", "description": "Look up book information by ISBN.", "inputSchema":
+      {"json": {"properties": {"isbn": {"title": "Isbn", "type": "string"}}, "required":
+      ["isbn"], "additionalProperties": false, "type": "object"}}}}, {"toolSpec":
+      {"name": "__mirascope_formatted_output_tool__", "description": "Use this tool
+      to extract data in BookSummary format for a final response.", "inputSchema":
+      {"json": {"properties": {"title": {"title": "Title", "type": "string"}, "author":
+      {"title": "Author", "type": "string"}, "pages": {"title": "Pages", "type": "integer"},
+      "publication_year": {"title": "Publication Year", "type": "integer"}}, "required":
+      ["title", "author", "pages", "publication_year"], "additionalProperties": false,
+      "type": "object"}}}}], "toolChoice": {"any": {}}}}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '1539'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9ELFos
+        YixuIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTI1NTMxWg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        ZTU0Mjk1MTEtZjkxMC00ZDk1LWE2ZmItOTVmNGM1ZDhkNjNh
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse-stream
+  response:
+    body:
+      string: !!binary |
+        AAAAgAAAAFJRoV8jCzpldmVudC10eXBlBwAMbWVzc2FnZVN0YXJ0DTpjb250ZW50LXR5cGUHABBh
+        cHBsaWNhdGlvbi9qc29uDTptZXNzYWdlLXR5cGUHAAVldmVudHsicCI6ImFiYyIsInJvbGUiOiJh
+        c3Npc3RhbnQiffKe2NoAAAEVAAAAV/Nx0GkLOmV2ZW50LXR5cGUHABFjb250ZW50QmxvY2tTdGFy
+        dA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbg06bWVzc2FnZS10eXBlBwAFZXZlbnR7
+        ImNvbnRlbnRCbG9ja0luZGV4IjowLCJwIjoiYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXpBQkNE
+        RUZHSCIsInN0YXJ0Ijp7InRvb2xVc2UiOnsibmFtZSI6Im1pcmFzY29wZV9mb3JtYXR0ZWRfb3V0
+        cHV0X3Rvb2xfXyIsInRvb2xVc2VJZCI6InRvb2x1c2VfbU94cEZBTzFTRXVhTHRFUWlIR3p3dyJ9
+        fX10bjdFAAABNQAAAFcysP9tCzpldmVudC10eXBlBwARY29udGVudEJsb2NrRGVsdGENOmNvbnRl
+        bnQtdHlwZQcAEGFwcGxpY2F0aW9uL2pzb24NOm1lc3NhZ2UtdHlwZQcABWV2ZW50eyJjb250ZW50
+        QmxvY2tJbmRleCI6MCwiZGVsdGEiOnsidG9vbFVzZSI6eyJpbnB1dCI6IntcInB1YmxpY2F0aW9u
+        X3llYXJcIjoyMDA2LFwicGFnZXNcIjo1NDQsXCJhdXRob3JcIjpcIkJyYW5kb24gU2FuZGVyc29u
+        XCIsXCJ0aXRsZVwiOlwiTWlzdGJvcm46IFRoZSBGaW5hbCBFbXBpcmVcIn0ifX0sInAiOiJhYmNk
+        ZWZnaGlqa2xtbm9wcXJzdHV2d3h5ekFCIn1MNasyAAAAlQAAAFb+zIPICzpldmVudC10eXBlBwAQ
+        Y29udGVudEJsb2NrU3RvcA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbg06bWVzc2Fn
+        ZS10eXBlBwAFZXZlbnR7ImNvbnRlbnRCbG9ja0luZGV4IjowLCJwIjoiYWJjZGVmZ2hpamtsbW5v
+        cHEifY3ClW0AAACIAAAAUfjYRVgLOmV2ZW50LXR5cGUHAAttZXNzYWdlU3RvcA06Y29udGVudC10
+        eXBlBwAQYXBwbGljYXRpb24vanNvbg06bWVzc2FnZS10eXBlBwAFZXZlbnR7InAiOiJhYmNkZWZn
+        Iiwic3RvcFJlYXNvbiI6InRvb2xfdXNlIn1td92nAAABAAAAAE4/GmBbCzpldmVudC10eXBlBwAI
+        bWV0YWRhdGENOmNvbnRlbnQtdHlwZQcAEGFwcGxpY2F0aW9uL2pzb24NOm1lc3NhZ2UtdHlwZQcA
+        BWV2ZW50eyJtZXRyaWNzIjp7ImxhdGVuY3lNcyI6NDAwfSwicCI6ImFiY2RlZmdoaWprbG1ub3Bx
+        cnN0dXZ3eHl6QUJDREVGR0hJSktMTU5PIiwidXNhZ2UiOnsiaW5wdXRUb2tlbnMiOjY5OSwib3V0
+        cHV0VG9rZW5zIjo0Mywic2VydmVyVG9vbFVzYWdlIjp7fSwidG90YWxUb2tlbnMiOjc0Mn19exwy
+        rg==
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/vnd.amazon.eventstream
+      Date:
+      - Mon, 26 Jan 2026 12:55:32 GMT
+      Transfer-Encoding:
+      - chunked
+      x-amzn-RequestId:
+      - 0497ba51-5071-4cdd-8560-175e02bb5bf1
+    status:
+      code: 200
+      message: OK
+version: 1

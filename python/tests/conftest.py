@@ -21,10 +21,10 @@ def load_api_keys() -> None:
     """
     load_dotenv(override=True)
     # Set dummy keys if not present so that tests pass in CI.
+    # NOTE: AWS_BEARER_TOKEN_BEDROCK is NOT set here because botocore
+    # auto-detects AWS_BEARER_TOKEN_<SERVICE> env vars and uses them for
+    # bearer token auth. This conflicts with boto3 models which need SigV4 auth.
     os.environ.setdefault("ANTHROPIC_API_KEY", "dummy-anthropic-key")
-    os.environ.setdefault("AWS_ACCESS_KEY_ID", "dummy-aws-access-key-id")
-    os.environ.setdefault("AWS_BEARER_TOKEN_BEDROCK", "dummy-bedrock-api-key")
-    os.environ.setdefault("AWS_SECRET_ACCESS_KEY", "dummy-aws-secret-access-key")
     os.environ.setdefault("AZURE_ANTHROPIC_API_KEY", "dummy-azure-anthropic-key")
     os.environ.setdefault(
         "AZURE_AI_ANTHROPIC_ENDPOINT",
@@ -36,6 +36,10 @@ def load_api_keys() -> None:
     os.environ.setdefault("MIRASCOPE_API_KEY", "dummy-mirascope-key")
     os.environ.setdefault("OPENAI_API_KEY", "dummy-openai-key")
     os.environ.setdefault("TOGETHER_API_KEY", "dummy-together-key")
+    os.environ.setdefault("AWS_ACCESS_KEY_ID", "dummy-aws-access-key")
+    os.environ.setdefault("AWS_SECRET_ACCESS_KEY", "dummy-aws-secret-key")
+    os.environ.setdefault("AWS_REGION", "us-east-1")
+    os.environ.setdefault("AWS_DEFAULT_REGION", "us-east-1")
 
 
 @pytest.fixture(autouse=True)
