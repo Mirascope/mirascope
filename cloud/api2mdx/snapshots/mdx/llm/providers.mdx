@@ -473,7 +473,7 @@ the need for complex overloads in provider implementations.
       "symbol_name": "ProviderErrorMap",
       "doc_url": null
     },
-    "description": "Mapping from provider SDK exceptions to Mirascope error types.\n\nValues can be:\n- Error type: Simple 1:1 mapping (e.g., AnthropicRateLimitError -> RateLimitError)\n- Callable: Transform function returning error type based on exception details\n            (e.g., lambda e: NotFoundError if e.code == \"model_not_found\" else BadRequestError)\n\nThe mapping is walked via the exception's MRO, allowing both specific error handling\nand fallback to base SDK error types (e.g., AnthropicError -> APIError)."
+    "description": "Mapping from provider SDK exceptions to Mirascope error types.\n\nValues can be:\n- Error type: Simple 1:1 mapping (e.g., AnthropicRateLimitError -> RateLimitError)\n- Callable: Transform function returning error type based on exception details\n            (e.g., lambda e: NotFoundError if e.code == \"model_not_found\" else BadRequestError)\n\nThe mapping is walked via the exception's MRO, allowing both specific error handling\nand fallback to base SDK error types (e.g., AnthropicError -> ProviderError)."
   },
   {
     "name": "client",
@@ -5826,6 +5826,10 @@ Get the provider for a model_id based on the registry.
 Uses longest prefix matching to find the most specific provider for the model.
 If no explicit registration is found, checks for auto-registration defaults
 and automatically registers the provider on first use.
+
+When auto-registering, providers are tried in fallback order. For example,
+if ANTHROPIC_API_KEY is not set but MIRASCOPE_API_KEY is, the Mirascope
+Router will be used as a fallback for anthropic/ models.
 
 <ParametersTable
   parameters={[

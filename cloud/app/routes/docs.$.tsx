@@ -24,6 +24,7 @@ const EXACT_REDIRECTS: Record<string, string> = {
   // API Reference root redirects to the first submodule
   api: "api/llm/calls",
   "api/llm": "api/llm/calls",
+  "api/ops": "api/ops/configuration",
 };
 
 /**

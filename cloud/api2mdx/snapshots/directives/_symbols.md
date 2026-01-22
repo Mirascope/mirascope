@@ -136,6 +136,8 @@
 
 <SymbolRef name="EnvironmentError" path="https://docs.python.org/3/library/exceptions.html#EnvironmentError.mdx" />
 
+<SymbolRef name="Error" path="llm/exceptions.mdx" />
+
 <SymbolRef name="Exception" path="https://docs.python.org/3/library/exceptions.html#Exception.mdx" />
 
 <SymbolRef name="FORMAT_TOOL_NAME" path="llm/tools.mdx" />
@@ -153,8 +155,6 @@
 <SymbolRef name="FormattableT" path="llm/formatting.mdx" />
 
 <SymbolRef name="FormattingMode" path="llm/formatting.mdx" />
-
-<SymbolRef name="FormattingModeNotSupportedError" path="llm/exceptions.mdx" />
 
 <SymbolRef name="FromCallArgs" path="llm/formatting.mdx" />
 
@@ -200,9 +200,9 @@
 
 <SymbolRef name="MessageTemplate" path="llm/prompts.mdx" />
 
-<SymbolRef name="MirascopeLLMError" path="llm/exceptions.mdx" />
-
 <SymbolRef name="MirascopeProvider" path="llm/providers.mdx" />
+
+<SymbolRef name="MissingAPIKeyError" path="llm/exceptions.mdx" />
 
 <SymbolRef name="Model" path="llm/models.mdx" />
 
@@ -240,6 +240,8 @@
 
 <SymbolRef name="Params" path="llm/models.mdx" />
 
+<SymbolRef name="ParseError" path="llm/exceptions.mdx" />
+
 <SymbolRef name="Partial" path="llm/formatting.mdx" />
 
 <SymbolRef name="Path" path="https://docs.python.org/3/library/pathlib.html#pathlib.Path.mdx" />
@@ -257,6 +259,8 @@
 <SymbolRef name="Protocol" path="https://docs.python.org/3/library/typing.html#typing.Protocol.mdx" />
 
 <SymbolRef name="Provider" path="llm/providers.mdx" />
+
+<SymbolRef name="ProviderError" path="llm/exceptions.mdx" />
 
 <SymbolRef name="ProviderId" path="llm/providers.mdx" />
 
@@ -339,6 +343,10 @@
 <SymbolRef name="ToolCallStream" path="llm/responses.mdx" />
 
 <SymbolRef name="ToolDecorator" path="llm/tools.mdx" />
+
+<SymbolRef name="ToolError" path="llm/exceptions.mdx" />
+
+<SymbolRef name="ToolExecutionError" path="llm/exceptions.mdx" />
 
 <SymbolRef name="ToolFn" path="llm/tools.mdx" />
 

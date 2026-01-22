@@ -12,6 +12,10 @@ export const apiMeta: SectionSpec = {
       slug: "llm",
       label: "LLM",
     },
+    {
+      slug: "ops",
+      label: "Ops",
+    },
   ],
   children: [
     {
@@ -65,6 +69,70 @@ export const apiMeta: SectionSpec = {
         {
           slug: "types",
           label: "types",
+        },
+      ],
+    },
+    {
+      slug: "ops",
+      label: "Ops",
+      children: [
+        {
+          slug: "configuration",
+          label: "configuration",
+        },
+        {
+          slug: "context",
+          label: "context",
+        },
+        {
+          slug: "exceptions",
+          label: "exceptions",
+        },
+        {
+          slug: "instrumentation",
+          label: "Instrumentation",
+          children: [
+            {
+              slug: "llm",
+              label: "llm",
+            },
+          ],
+        },
+        {
+          slug: "propagation",
+          label: "propagation",
+        },
+        {
+          slug: "session",
+          label: "session",
+        },
+        {
+          slug: "spans",
+          label: "spans",
+        },
+        {
+          slug: "traced-calls",
+          label: "traced_calls",
+        },
+        {
+          slug: "traced-functions",
+          label: "traced_functions",
+        },
+        {
+          slug: "tracing",
+          label: "tracing",
+        },
+        {
+          slug: "versioned-calls",
+          label: "versioned_calls",
+        },
+        {
+          slug: "versioned-functions",
+          label: "versioned_functions",
+        },
+        {
+          slug: "versioning",
+          label: "versioning",
         },
       ],
     },

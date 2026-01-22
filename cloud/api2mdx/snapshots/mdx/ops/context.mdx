@@ -1,0 +1,139 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: context
+description: API documentation for context
+---
+
+# context
+
+## <ApiType type="Function" slug="propagated_context" symbolName="propagated_context" /> propagated_context
+
+Attach a parent context or extract context from carrier headers.
+
+This context manager is used to establish trace context continuity,
+typically on the server side when receiving requests. It either extracts
+context from incoming headers or attaches a pre-existing context.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "parent",
+    "type_info": {
+      "type_str": "Context | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Context",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Context",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Pre-existing OTEL context to attach. Mutually exclusive with extract_from."
+  },
+  {
+    "name": "extract_from",
+    "type_info": {
+      "type_str": "Mapping[str, Any] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Mapping[str, Any]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Mapping",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Mapping",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "str",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            },
+            {
+              "type_str": "Any",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "Any",
+              "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Dictionary of headers to extract context from (e.g., request.headers).\nMutually exclusive with parent."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Iterator[None]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "Iterator",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Iterator",
+      "doc_url": null
+    },
+    "parameters": [
+      {
+        "type_str": "None",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "None",
+        "doc_url": "https://docs.python.org/3/library/constants.html#None"
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+

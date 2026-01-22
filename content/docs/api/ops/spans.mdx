@@ -1,0 +1,574 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: spans
+description: API documentation for spans
+---
+
+# spans
+
+## <ApiType type="Class" slug="span" symbolName="Span" /> Span
+
+Context-managed span for explicit tracing.
+
+Creates a child span within the current trace context. Acts as a no-op
+if tracing is not configured.
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "span_id",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Get the span ID if available."
+  },
+  {
+    "name": "trace_id",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "is_noop",
+    "type_info": {
+      "type_str": "bool",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "bool",
+      "doc_url": null
+    },
+    "description": "Check if this is a no-op span."
+  },
+  {
+    "name": "span_context",
+    "type_info": {
+      "type_str": "SpanContext | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "SpanContext",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "SpanContext",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Return the span context if available."
+  }
+]}
+/>
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-spans--span-set" symbolName="set" /> set
+
+Set attributes on the current span.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "attributes",
+    "type_info": {
+      "type_str": "AttributeValue",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AttributeValue",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-spans--span-event" symbolName="event" /> event
+
+Record an event within the span.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "name",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Name of the event."
+  },
+  {
+    "name": "attributes",
+    "type_info": {
+      "type_str": "AttributeValue",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AttributeValue",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-spans--span-debug" symbolName="debug" /> debug
+
+Log a debug message within the span.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "message",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Debug message text."
+  },
+  {
+    "name": "additional_attributes",
+    "type_info": {
+      "type_str": "AttributeValue",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AttributeValue",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-spans--span-info" symbolName="info" /> info
+
+Log an info message within the span.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "message",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Info message text."
+  },
+  {
+    "name": "additional_attributes",
+    "type_info": {
+      "type_str": "AttributeValue",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AttributeValue",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-spans--span-warning" symbolName="warning" /> warning
+
+Log a warning message within the span.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "message",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Warning message text."
+  },
+  {
+    "name": "additional_attributes",
+    "type_info": {
+      "type_str": "AttributeValue",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AttributeValue",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-spans--span-error" symbolName="error" /> error
+
+Log an error message within the span.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "message",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Error message text."
+  },
+  {
+    "name": "additional_attributes",
+    "type_info": {
+      "type_str": "AttributeValue",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AttributeValue",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-spans--span-critical" symbolName="critical" /> critical
+
+Log a critical message within the span.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "message",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Critical message text."
+  },
+  {
+    "name": "additional_attributes",
+    "type_info": {
+      "type_str": "AttributeValue",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AttributeValue",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-spans--span-finish" symbolName="finish" /> finish
+
+Explicitly finish the span.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+
+## <ApiType type="Function" slug="span_fn" symbolName="span" /> span
+
+Create a new span context manager.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "name",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Name for the new span."
+  },
+  {
+    "name": "attributes",
+    "type_info": {
+      "type_str": "AttributeValue",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AttributeValue",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Span",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "Span",
+    "doc_url": "/docs/api/ops/spans#span"
+  },
+  "description": "A Span context manager that creates a child span when entered."
+}}
+/>
+
+

@@ -1,0 +1,700 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: versioning
+description: API documentation for versioning
+---
+
+# versioning
+
+## <ApiType type="Class" slug="version-decorator" symbolName="VersionDecorator" /> VersionDecorator
+
+Decorator implementation for adding versioning capabilities to functions.
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "tags",
+    "type_info": {
+      "type_str": "tuple[str, ...]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "tuple",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "tuple",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "...",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "...",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Tags to be associated with versioned function calls."
+  },
+  {
+    "name": "name",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Optional custom name for the versioned function."
+  },
+  {
+    "name": "metadata",
+    "type_info": {
+      "type_str": "dict[str, str]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "dict",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "dict",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Arbitrary key-value pairs for additional metadata."
+  }
+]}
+/>
+
+
+## <ApiType type="Function" slug="version" symbolName="version" /> version
+
+Add versioning capability to a callable function.
+
+Enables version management for functions, allowing execution of specific
+versions and version introspection. Can be composed with @trace and @remote.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "__fn",
+    "type_info": {
+      "type_str": "AsyncContextCall[P, DepsT, FormattableT] | ContextCall[P, DepsT, FormattableT] | AsyncCall[P, FormattableT] | Call[P, FormattableT] | AsyncFunction[P, R] | SyncFunction[P, R] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "AsyncContextCall[P, DepsT, FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "AsyncContextCall",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "AsyncContextCall",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": null
+            },
+            {
+              "type_str": "DepsT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "DepsT",
+              "doc_url": null
+            },
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "ContextCall[P, DepsT, FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "ContextCall",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "ContextCall",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": null
+            },
+            {
+              "type_str": "DepsT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "DepsT",
+              "doc_url": null
+            },
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "AsyncCall[P, FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "AsyncCall",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "AsyncCall",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": null
+            },
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "Call[P, FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Call",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Call",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": null
+            },
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "AsyncFunction[P, R]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "AsyncFunction",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "AsyncFunction",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": null
+            },
+            {
+              "type_str": "R",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "R",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "SyncFunction[P, R]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "SyncFunction",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "SyncFunction",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": null
+            },
+            {
+              "type_str": "R",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "R",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "The function to version (when used without parentheses)."
+  },
+  {
+    "name": "tags",
+    "type_info": {
+      "type_str": "Sequence[str] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Sequence[str]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Sequence",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Sequence",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Sequence"
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "str",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional version tags for this function."
+  },
+  {
+    "name": "name",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional custom name for display (overrides function name)."
+  },
+  {
+    "name": "metadata",
+    "type_info": {
+      "type_str": "dict[str, str] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "dict[str, str]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "dict",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "dict",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#dict"
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "str",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            },
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "str",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Arbitrary key-value pairs for additional metadata."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "VersionDecorator | VersionedAsyncContextCall[P, DepsT, FormattableT] | VersionedContextCall[P, DepsT, FormattableT] | VersionedAsyncCall[P, FormattableT] | VersionedCall[P, FormattableT] | AsyncVersionedFunction[P, R] | VersionedFunction[P, R]",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "VersionDecorator",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "VersionDecorator",
+        "doc_url": "/docs/api/ops/versioning#version-decorator"
+      },
+      {
+        "type_str": "VersionedAsyncContextCall[P, DepsT, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "VersionedAsyncContextCall",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "VersionedAsyncContextCall",
+          "doc_url": "/docs/api/ops/versioned-calls#versioned-async-context-call"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": null
+          },
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "VersionedContextCall[P, DepsT, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "VersionedContextCall",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "VersionedContextCall",
+          "doc_url": "/docs/api/ops/versioned-calls#versioned-context-call"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": null
+          },
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "VersionedAsyncCall[P, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "VersionedAsyncCall",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "VersionedAsyncCall",
+          "doc_url": "/docs/api/ops/versioned-calls#versioned-async-call"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "VersionedCall[P, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "VersionedCall",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "VersionedCall",
+          "doc_url": "/docs/api/ops/versioned-calls#versioned-call"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "AsyncVersionedFunction[P, R]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncVersionedFunction",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncVersionedFunction",
+          "doc_url": "/docs/api/ops/versioned-functions#async-versioned-function"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": null
+          },
+          {
+            "type_str": "R",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "R",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "VersionedFunction[P, R]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "VersionedFunction",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "VersionedFunction",
+          "doc_url": "/docs/api/ops/versioned-functions#versioned-function"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": null
+          },
+          {
+            "type_str": "R",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "R",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  },
+  "description": "A versioned callable or a decorator function."
+}}
+/>
+
+
