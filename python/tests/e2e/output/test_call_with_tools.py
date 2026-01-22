@@ -10,11 +10,16 @@ from tests.utils import (
 )
 
 PASSWORD_MAP = {"mellon": "Welcome to Moria!", "radiance": "Life before Death"}
+TOOL_MODEL_IDS = [
+    model_id
+    for model_id in E2E_MODEL_IDS
+    if model_id != "bedrock/openai.gpt-oss-20b-1:0"
+]
 
 # ============= SYNC TESTS =============
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", TOOL_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_tools_sync(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test synchronous tool call without context."""
@@ -53,7 +58,7 @@ def test_call_with_tools_sync(model_id: llm.ModelId, snapshot: Snapshot) -> None
         )
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", TOOL_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_tools_sync_context(
     model_id: llm.ModelId, snapshot: Snapshot
@@ -102,7 +107,7 @@ def test_call_with_tools_sync_context(
 # ============= ASYNC TESTS =============
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", TOOL_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_with_tools_async(model_id: llm.ModelId, snapshot: Snapshot) -> None:
@@ -142,7 +147,7 @@ async def test_call_with_tools_async(model_id: llm.ModelId, snapshot: Snapshot) 
         )
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", TOOL_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_with_tools_async_context(
@@ -192,7 +197,7 @@ async def test_call_with_tools_async_context(
 # ============= STREAM TESTS =============
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", TOOL_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_tools_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test streaming tool call without context."""
@@ -234,7 +239,7 @@ def test_call_with_tools_stream(model_id: llm.ModelId, snapshot: Snapshot) -> No
         )
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", TOOL_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_tools_stream_context(
     model_id: llm.ModelId, snapshot: Snapshot
@@ -284,7 +289,7 @@ def test_call_with_tools_stream_context(
 # ============= ASYNC STREAM TESTS =============
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", TOOL_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_with_tools_async_stream(
@@ -329,7 +334,7 @@ async def test_call_with_tools_async_stream(
         )
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", TOOL_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_with_tools_async_stream_context(

@@ -1,0 +1,139 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"thinking_budget":
+      6400}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '396'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.58.0 gl-python/3.13.3
+      x-goog-api-client:
+      - google-genai-sdk/1.58.0 gl-python/3.13.3
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21T23KiQBB99ysonnaLTUCyoGxVHvAuBuMFwWRra2uQEUZhQGZQJJV/3wFjotn4
+        QEmf7j7N6dMvNY7jVwB7yAMUEv4X95tFOO6lepZYjCnElAHnEAsmIKUfuaffy8V/lrLO8IqiGLdB
+        GF4Vv+EYRJDFWf8oySj8u0Yu/+NzEkh98kVxWc7CdUn6BLxevb9e9+NpEGd+QOfIx4BmaUXfzoYt
+        ffkwlHEuD8bS0e/O+qgnACSJbncePdi2t7KbjiZsQu2wJXYKrXACZ3WYi02j6AmWvjANpUclOj3e
+        JdYykY7Q2d1JQdEQH8fDvGM8u6aoNBriiLbCiQvttbvfzaiAOrT/aGvpyHeEovWQOr16ngfuVN9M
+        iXvUDvPwbioK6lIFzqi12S9yfUO6jiQgzfGC+TTJgvGh23AHqjjSdQnGidl/st3J3oD53tkW+4F6
+        eBJNpO2HeOD5cij0xSdgGIoNZdC3m1FRiNZiY7SGY7w1dV2eTPLG4FnL9M3RNGVh2HVoG+TqQhpH
+        P1sLvbNriX296Wn6/T1f+0rxPx9q82kcVupGsQfDc/r7Ovg1wogEMwhIXO6Rn1uPk/fl8wh7MGdh
+        6VO+CQkBftXXLPtyPsQwZa71uLPZuBVz2zfy/fbEWQ5XjcVnZaUJKWAuB++O4pOUuY9a8RbidpxV
+        LleUE+3FUVzh9cYbTmMKwmtIln/815d0GCsKL6/l4pCYQCBE9Fh+lNVdWhcnwAiuxjqrWLsQ+2zp
+        6xGV8iwqtU8LsGFK0ElpH0ZMyxv5VrlZh4AEFR+fQpLEmMChV+a4qlEA1121d6ou3Wwn9dG6c5yu
+        +Npr7R9al/xGLgQAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 23 Jan 2026 16:31:43 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1284
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"user","content":"What is the 100th fibonacci number?"},{"role":"assistant","content":null,"tool_calls":[{"id":"google_unknown_tool_id","type":"function","function":{"name":"compute_fib","arguments":"{\"n\":
+      100}"}}]},{"role":"tool","content":"218922995834555169026","tool_call_id":"google_unknown_tool_id"}],"model":"openai.gpt-oss-20b-1:0","tools":[{"type":"function","function":{"name":"compute_fib","description":"Compute
+      the nth Fibonacci number (1-indexed).","parameters":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"},"strict":true}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '630'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: "{\"choices\":[{\"finish_reason\":\"stop\",\"index\":0,\"logprobs\":null,\"message\":{\"content\":\"<reasoning>User
+        asked: \\\"What is the 100th fibonacci number?\\\" We gave the number. That
+        is the answer. Probably show it. And mention maybe 1-indexed. They might want
+        the answer. We'll respond.</reasoning>The 100th Fibonacci number (using the
+        usual 1\u2011indexed definition, where\u202FF\u2081\u202F=\u202F1,\u202FF\u2082\u202F=\u202F1)
+        is:\\n\\n**218\u202F922\u202F995\u202F834\u202F555\u202F169\u202F026**\\n\\n(You
+        can verify it by generating the sequence up to that index.)\",\"refusal\":null,\"role\":\"assistant\"}}],\"created\":1769185903,\"id\":\"chatcmpl-9974afcd-6db5-4ae2-800f-b2cddff067be\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion\",\"service_tier\":\"default\",\"usage\":{\"completion_tokens\":119,\"prompt_tokens\":176,\"total_tokens\":295}}"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '783'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 16:31:44 GMT
+      X-Request-ID:
+      - 596280a2-23fa-4c77-8e33-725848ec5723
+      x-amzn-RequestId:
+      - 596280a2-23fa-4c77-8e33-725848ec5723
+    status:
+      code: 200
+      message: OK
+version: 1

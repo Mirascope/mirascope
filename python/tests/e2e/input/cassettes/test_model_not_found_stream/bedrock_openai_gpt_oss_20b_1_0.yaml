@@ -1,0 +1,60 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"This should fail with NotFoundError"}],"model":"openai.nonexistent-model-12345:0","stream":true,"stream_options":{"include_usage":true}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '175'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"error":{"message":"The provided model identifier is invalid.","type":"invalid_request_error","param":null,"code":"validation_error"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '135'
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 23 Jan 2026 16:31:37 GMT
+      X-Request-ID:
+      - acd5cb23-ed24-4c0b-8f07-7cc572ab1e01
+      x-amzn-RequestId:
+      - acd5cb23-ed24-4c0b-8f07-7cc572ab1e01
+    status:
+      code: 400
+      message: Bad Request
+version: 1

@@ -15,10 +15,14 @@ HELLO_AUDIO_PATH = str(
     Path(__file__).parent.parent / "assets" / "audio" / "tagline.mp3"
 )
 
-E2E_MODEL_IDS = [*E2E_MODEL_IDS, "openai/gpt-audio"]
+_AUDIO_MODEL_IDS = [
+    model_id
+    for model_id in [*E2E_MODEL_IDS, "openai/gpt-audio"]
+    if model_id != "bedrock/openai.gpt-oss-20b-1:0"
+]
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", _AUDIO_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_audio(
     model_id: llm.ModelId,

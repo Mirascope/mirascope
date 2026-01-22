@@ -1,0 +1,66 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"List all U.S. states."}],"model":"openai.gpt-oss-20b-1:0","max_completion_tokens":50,"stream":true,"stream_options":{"include_usage":true}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '178'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AsyncOpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: "data: {\"choices\":[{\"delta\":{\"content\":\"\",\"role\":\"assistant\"},\"finish_reason\":null,\"index\":0,\"obfuscation\":\"TkmDHvD0awQHyLGlSQNdhq9hx5mLUzER4T4YZypn2JgAfy0zrYqOVeaxCgSlvuydx3hNHK01N84F0SckybJpB0ve8mBsUJdK\"}],\"created\":1769185909,\"id\":\"chatcmpl-849234cf-9bb2-4a7d-b9a9-bdc3a997a026\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[{\"delta\":{\"content\":\"<reasoning>The user wants a list of
+        all U.S. states. Provide full list: 50 states. They probably want them alphabetically.
+        Provide with numbers. That is straightforward.</reasoning>\"},\"finish_reason\":null,\"index\":0,\"obfuscation\":\"A14ocTjt5GJOZ8uQkizY8vA6eH121PDwDmfpXfNsTtfVfPc6uAWrUKmRWJSTMt84rmcfJ0o\"}],\"created\":1769185909,\"id\":\"chatcmpl-849234cf-9bb2-4a7d-b9a9-bdc3a997a026\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[{\"delta\":{\"content\":\"**The 50 United\u202F\"},\"finish_reason\":\"length\",\"index\":0,\"obfuscation\":\"OsnU0r75R4yyCfRctm7x41zCJp4e4P4aWe0IThoJKd8r7PI5QTgMZx6lSol7zQcDxcOoMydl\"}],\"created\":1769185909,\"id\":\"chatcmpl-849234cf-9bb2-4a7d-b9a9-bdc3a997a026\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[],\"created\":1769185909,\"id\":\"chatcmpl-849234cf-9bb2-4a7d-b9a9-bdc3a997a026\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\",\"usage\":{\"completion_tokens\":50,\"prompt_tokens\":76,\"prompt_tokens_details\":{\"audio_tokens\":0,\"cached_tokens\":48},\"total_tokens\":126}}\n\ndata:
+        [DONE]\n\n"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 23 Jan 2026 16:31:49 GMT
+      Transfer-Encoding:
+      - chunked
+      X-Request-ID:
+      - a2053510-2be9-445c-bf4a-7545c7602ad5
+      x-amzn-RequestId:
+      - a2053510-2be9-445c-bf4a-7545c7602ad5
+    status:
+      code: 200
+      message: OK
+version: 1

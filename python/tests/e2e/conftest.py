@@ -5,6 +5,7 @@ Includes setting up VCR for HTTP recording/playback.
 
 from __future__ import annotations
 
+import os
 import re
 import sys
 from collections.abc import Callable
@@ -42,7 +43,13 @@ E2E_MODEL_IDS: list[llm.ModelId] = [
     "openai/gpt-4o:responses",
     "azure/openai/gpt-5-mini",
     "bedrock/us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "bedrock/openai.gpt-oss-20b-1:0",
 ]
+
+
+def _is_bedrock_openai_model(model_id: llm.ModelId) -> bool:
+    return model_id.startswith("bedrock/openai.")
+
 
 # NOTE: MLX is only available on macOS (Apple Silicon)
 if sys.platform == "darwin":
@@ -52,7 +59,12 @@ if sys.platform == "darwin":
 
     E2E_MODEL_IDS.append("mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
 
-STRUCTURED_OUTPUT_MODEL_IDS = [*E2E_MODEL_IDS, "anthropic/claude-sonnet-4-5"]
+# Bedrock OpenAI models don't support structured output (response_format/json_schema)
+STRUCTURED_OUTPUT_MODEL_IDS = [
+    model_id
+    for model_id in [*E2E_MODEL_IDS, "anthropic/claude-sonnet-4-5"]
+    if not _is_bedrock_openai_model(model_id)
+]
 
 FORMATTING_MODES: tuple[llm.FormattingMode | None] = tuple(
     set(get_args(llm.FormattingMode)).difference({"parser"})
@@ -186,6 +198,18 @@ class ModelIdRequest(pytest.FixtureRequest):
 def model_id(request: ModelIdRequest) -> llm.ModelId:
     """Get model_id from test parameters."""
     return request.param
+
+
+@pytest.fixture(autouse=True)
+def register_bedrock_provider(reset_provider_registry: None) -> None:
+    """Register Bedrock provider with API keys for e2e tests."""
+    from mirascope.llm.providers.bedrock import BedrockProvider
+
+    llm.register_provider(
+        BedrockProvider(
+            openai_api_key=os.getenv("AWS_BEARER_TOKEN_BEDROCK"),
+        )
+    )
 
 
 class FormattingModeRequest(pytest.FixtureRequest):

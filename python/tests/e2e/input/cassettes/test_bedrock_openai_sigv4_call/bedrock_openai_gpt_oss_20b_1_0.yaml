@@ -1,0 +1,60 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Say hello in one word."}],"model":"openai.gpt-oss-20b-1:0"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '99'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"choices":[{"finish_reason":"stop","index":0,"logprobs":null,"message":{"content":"Hello!","refusal":null,"role":"assistant"}}],"created":1769185900,"id":"chatcmpl-sigv4-test-001","model":"openai.gpt-oss-20b-1:0","object":"chat.completion","service_tier":"default","usage":{"completion_tokens":2,"prompt_tokens":12,"total_tokens":14}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '340'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 24 Jan 2026 02:30:00 GMT
+      X-Request-ID:
+      - sigv4-test-001
+      x-amzn-RequestId:
+      - sigv4-test-001
+    status:
+      code: 200
+      message: OK
+version: 1

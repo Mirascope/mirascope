@@ -74,3 +74,12 @@ def default_anthropic_scopes() -> list[str]:
     for region_prefix in ("us.", "eu.", "apac.", "global."):
         scopes.add(f"bedrock/{region_prefix}anthropic.")
     return sorted(scopes)
+
+
+def default_openai_scopes() -> list[str]:
+    """Return default OpenAI-compatible model ID prefixes for Bedrock routing.
+
+    Returns:
+        Sorted list of prefixes that identify OpenAI-compatible models on Bedrock.
+    """
+    return ["bedrock/openai."]

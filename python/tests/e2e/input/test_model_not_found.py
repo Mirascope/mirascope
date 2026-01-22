@@ -18,16 +18,20 @@ def get_nonexistent_model_id(model_id: llm.ModelId) -> llm.ModelId:
         else:
             model_scope = parts[0]
             model_part = parts[1]
+        provider_model = model_part.split(":", 1)[0]
+        bedrock_prefix = (
+            "openai.nonexistent-model-12345"
+            if provider_model.startswith("openai.")
+            else "us.anthropic.nonexistent-model-12345-v1"
+        )
         # Check if there's a suffix after the model name (like :completions or :responses)
         if ":" in model_part:
             _, suffix = model_part.rsplit(":", 1)
-            # Bedrock needs anthropic prefix for routing to work
             if model_scope == "bedrock":
-                return f"{model_scope}/us.anthropic.nonexistent-model-12345-v1:{suffix}"
+                return f"{model_scope}/{bedrock_prefix}:{suffix}"
             return f"{model_scope}/this-model-does-not-exist-12345:{suffix}"
-        # Bedrock needs anthropic prefix for routing to work
         if model_scope == "bedrock":
-            return f"{model_scope}/us.anthropic.nonexistent-model-12345-v1:0"
+            return f"{model_scope}/{bedrock_prefix}:0"
         return f"{model_scope}/this-model-does-not-exist-12345"
     return "nonexistent-model-12345"
 
