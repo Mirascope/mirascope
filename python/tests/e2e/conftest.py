@@ -23,11 +23,19 @@ def _(value: llm.ToolExecutionError) -> str:
 
 
 SENSITIVE_HEADERS = [
-    "authorization",  # OpenAI Bearer tokens
-    "x-api-key",  # Anthropic API keys
-    "x-goog-api-key",  # Google/Gemini API keys
-    "anthropic-organization-id",  # Anthropic org identifiers
-    "cookie",  # Session cookies
+    # Common API authentication headers
+    "authorization",
+    "x-api-key",
+    "x-goog-api-key",
+    "anthropic-organization-id",
+    "cookie",
+]
+
+PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
+    ("anthropic", "claude-sonnet-4-0"),
+    ("google", "gemini-2.5-flash"),
+    ("openai:completions", "gpt-4o"),
+    ("openai:responses", "gpt-4o"),
 ]
 
 
@@ -96,9 +104,6 @@ def sanitize_request(request: Any) -> Any:  # noqa: ANN401
     This hook is called AFTER the real HTTP request is sent (with valid auth),
     but BEFORE it's written to the cassette file. We deep copy the request
     and replace sensitive headers with placeholders.
-
-    Also normalizes Azure OpenAI URLs to use a dummy endpoint so that
-    cassettes work in CI without real Azure credentials.
 
     Args:
         request: VCR request object to sanitize (Any type since VCR doesn't
