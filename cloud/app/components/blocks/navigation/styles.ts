@@ -176,7 +176,7 @@ export const MOBILE_NAV_STYLES = {
     // Positioning and layout - z-index higher than header (z-[100])
     "absolute top-full right-4 z-[110] mt-2 max-w-xs lg:hidden",
     // Appearance
-    "bg-background text-foreground rounded-lg p-6 shadow-lg",
+    "bg-background text-accent-foreground rounded-lg p-6 shadow-lg",
     // Reset text shadow from parent header
     "[text-shadow:none]",
   ),
