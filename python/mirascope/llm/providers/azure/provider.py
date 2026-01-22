@@ -152,12 +152,8 @@ class AzureProvider(BaseProvider["OpenAI | AnthropicFoundry | Anthropic | None"]
 
     def _get_openai_provider(self) -> AzureOpenAIRoutedProvider:
         if self._openai_provider is None:
-            try:
-                from .openai.provider import AzureOpenAIRoutedProvider
-            except ImportError:
-                from ...._stubs import make_import_error
+            from .openai.provider import AzureOpenAIRoutedProvider
 
-                raise make_import_error("openai", "AzureOpenAIProvider") from None
             self._openai_provider = AzureOpenAIRoutedProvider(
                 api_key=self._openai_api_key,
                 base_url=self._openai_base_url,
@@ -204,12 +200,7 @@ class AzureProvider(BaseProvider["OpenAI | AnthropicFoundry | Anthropic | None"]
 
     def _get_anthropic_provider(self) -> AzureAnthropicRoutedProvider:
         if self._anthropic_provider is None:
-            try:
-                from .anthropic import AzureAnthropicRoutedProvider
-            except ImportError:
-                from ...._stubs import make_import_error
-
-                raise make_import_error("anthropic", "AzureAnthropicProvider") from None
+            from .anthropic import AzureAnthropicRoutedProvider
 
             self._anthropic_provider = AzureAnthropicRoutedProvider(
                 api_key=self._anthropic_api_key,

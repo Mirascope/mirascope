@@ -57,6 +57,12 @@ python/
 │   │   │   │   ├── _utils.py
 │   │   │   │   ├── anthropic/
 │   │   │   │   └── openai/
+│   │   │   ├── bedrock/
+│   │   │   │   ├── _utils.py
+│   │   │   │   ├── anthropic/
+│   │   │   │   ├── boto3/
+│   │   │   │   ├── openai/
+│   │   │   │   └── provider.py
 │   │   │   ├── google/
 │   │   │   ├── openai/
 │   │   │   │   └── completions/base_provider.py
@@ -124,6 +130,7 @@ python/
 │       ├── __init__.py
 │       └── finite_state_machine.py
 ├── examples/             # Example code
+│   ├── bedrock/            # Bedrock examples
 │   ├── intro/              # Introduction examples
 │   │   ├── context/
 │   │   ├── decorator/
