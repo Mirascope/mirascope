@@ -1,0 +1,115 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "Use the test tool
+      to retrieve the secret phrase. The passphrase is ''portal"}]}], "inferenceConfig":
+      {"maxTokens": 4096}, "toolConfig": {"tools": [{"toolSpec": {"name": "passphrase_test_tool",
+      "description": "A tool that must be called with a passphrase.", "inputSchema":
+      {"json": {"properties": {"passphrase": {"title": "Passphrase", "type": "string"}},
+      "required": ["passphrase"], "additionalProperties": false, "type": "object"}}}}]}}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '489'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9aLGIs
+        bixEIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTEwMDAzWg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        NzExM2NmYjMtZmU5My00MDliLTgzMjEtMDU1MDhkMDMxZjQy
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse
+  response:
+    body:
+      string: '{"metrics":{"latencyMs":475},"output":{"message":{"content":[{"text":"<thinking>
+        To retrieve the secret phrase, I need to use the passphrase \"portal\" with
+        the \"passphrase_test_tool\". I will call the tool with the provided passphrase
+        to obtain the secret phrase.</thinking>\n"},{"toolUse":{"input":{"passphrase":"portal"},"name":"passphrase_test_tool","toolUseId":"tooluse_Xb-CNCl6QGCRZyxvhsRDNQ"}}],"role":"assistant"}},"stopReason":"tool_use","usage":{"inputTokens":434,"outputTokens":63,"serverToolUsage":{},"totalTokens":497}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '533'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Jan 2026 11:00:04 GMT
+      x-amzn-RequestId:
+      - eaa82fc4-814c-4ef1-9dc3-a3de4445d15d
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "Use the test tool
+      to retrieve the secret phrase. The passphrase is ''portal"}]}, {"role": "assistant",
+      "content": [{"text": "<thinking> To retrieve the secret phrase, I need to use
+      the passphrase \"portal\" with the \"passphrase_test_tool\". I will call the
+      tool with the provided passphrase to obtain the secret phrase.</thinking>\n"},
+      {"toolUse": {"toolUseId": "tooluse_Xb-CNCl6QGCRZyxvhsRDNQ", "name": "passphrase_test_tool",
+      "input": {"passphrase": "portal"}}}]}, {"role": "user", "content": [{"toolResult":
+      {"toolUseId": "tooluse_Xb-CNCl6QGCRZyxvhsRDNQ", "content": [{"text": "Incorrect
+      passhrase: The correct passphrase is ''cake''. Try again."}]}}]}], "inferenceConfig":
+      {"maxTokens": 4096}, "toolConfig": {"tools": [{"toolSpec": {"name": "passphrase_test_tool",
+      "description": "A tool that must be called with a passphrase.", "inputSchema":
+      {"json": {"properties": {"passphrase": {"title": "Passphrase", "type": "string"}},
+      "required": ["passphrase"], "additionalProperties": false, "type": "object"}}}}]}}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '1064'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9aLGIs
+        bixEIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTEwMDA0Wg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        YmEwOWY1MmYtZTMyNi00NjE2LWJlMGUtM2UxNzNmZmY2NjUx
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse
+  response:
+    body:
+      string: '{"metrics":{"latencyMs":654},"output":{"message":{"content":[{"text":"<thinking>
+        The tool returned an error indicating that the provided passphrase \"portal\"
+        is incorrect. The tool suggests that the correct passphrase is \"cake\". I
+        should inform the user about the correct passphrase but cannot proceed further
+        without the correct information.</thinking>\n\nIt seems there''s been a mistake.
+        The correct passphrase appears to be \"cake\" according to the tool, but I
+        cannot proceed with it without your confirmation. Please verify if \"cake\"
+        is the correct passphrase you intended to use."}],"role":"assistant"}},"stopReason":"end_turn","usage":{"inputTokens":544,"outputTokens":98,"serverToolUsage":{},"totalTokens":642}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '724'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Jan 2026 11:00:05 GMT
+      x-amzn-RequestId:
+      - 4bd8dd7e-b652-4818-bd3d-ddfdf8e275ca
+    status:
+      code: 200
+      message: OK
+version: 1

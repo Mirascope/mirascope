@@ -19,6 +19,7 @@ IMAGE_CONTENT_MODEL_IDS = [
     model_id
     for model_id in E2E_MODEL_IDS
     if model_id != "bedrock/openai.gpt-oss-20b-1:0"
+    and not model_id.startswith("bedrock/amazon.nova-micro")
 ]
 
 WIKIPEDIA_ICON_URL = "https://en.wikipedia.org/static/images/icons/wikipedia.png"

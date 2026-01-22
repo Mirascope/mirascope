@@ -1,0 +1,126 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"thinking_budget":
+      6400}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '396'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.58.0 gl-python/3.13.3
+      x-goog-api-client:
+      - google-genai-sdk/1.58.0 gl-python/3.13.3
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21TW3OiMBh991cwPO2O2wIKFnamD6gFrVhU0Gp3djoRAqTlIiSpYqf/fQPWVrvl
+        gSHnfDdOzvfa4DjeA6mPfEAg5n9zfxjCca/1u+KylMCUMOIIMXADCvIZe3heT75ZSEBTj6As7YE4
+        Pkt+51OQQIaz+smGEvgYoDX/62sQKEL8TXKVzmBJFL8Qb2fnt/N6PIkyGkbEQWEKCC3q9j2Ku/rS
+        GrbS/bPtbnWZQMVzVItESoFLfSk/7TOk757CyaYkhpF0+vd0TQWIu/JWFaWpti1R2ZtKKwH2u9Bu
+        hqlt9KmoSEjJ+83h/EYYKu6uHThW15Ids3u/vA3ynkJtZ+YbievdCNjY7tzEwaPBXQvrcns9d+W+
+        GdjJKIwctQXvVDra9JryYp8vxxG+Us2JcKvnoDMXRTt/EXZzHOx9l+bzFgoeQPdWCwRpYeR2x0Sz
+        qevSUWKhK9Cx6PQ5sVd9uRwkRBtEpaWZ46amY8NqxvI4j9y2OwELxRvoaJZTQ1s9rHbWMDQKZdGO
+        y7V/J2/3eRFrieCvXrT2IDL162u+8Z36fz+V54ssrpVOMh/Gx/CPq+EDlCIczSDAWXWnvOPakw8j
+        8Cj14Y7B4pf4McQYhHXdcVWXC2EKC+Zgnzsaj/OY837gn5eHntVw9Vg8rTLHkADmePDhLn5TMCcS
+        N3uGaS+jteMV5dD2ZEHOeOnqnScZAfE51VJ//VcX91lXFJ9uzslSMYFAjEhZ/ZR7s3RP1oE1OBvr
+        qGLjROyjvc9HVDqNd7UPF7CABUYHpUOYMC0vWpfKRRADHNX9+ALiTZZiOPSrGFuM28ADqqnagQTV
+        yeNwbWZTj2+8Nf4BVTD/rjoEAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 26 Jan 2026 11:00:11 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1129
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "What is the 100th
+      fibonacci number?"}]}, {"role": "assistant", "content": [{"toolUse": {"toolUseId":
+      "google_unknown_tool_id", "name": "compute_fib", "input": {"n": 100}}}]}, {"role":
+      "user", "content": [{"toolResult": {"toolUseId": "google_unknown_tool_id", "content":
+      [{"text": "218922995834555169026"}]}}]}], "inferenceConfig": {"maxTokens": 4096},
+      "toolConfig": {"tools": [{"toolSpec": {"name": "compute_fib", "description":
+      "Compute the nth Fibonacci number (1-indexed).", "inputSchema": {"json": {"properties":
+      {"n": {"title": "N", "type": "integer"}}, "required": ["n"], "additionalProperties":
+      false, "type": "object"}}}}]}}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '685'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9aLGIs
+        bixEIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTEwMDExWg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        YzU2MWQyMGMtOTU3YS00OGNkLThjN2MtZTE5Mzk2YzhlOTkx
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse
+  response:
+    body:
+      string: '{"metrics":{"latencyMs":446},"output":{"message":{"content":[{"text":"The
+        100th Fibonacci number is 218922995834555169026. This number is quite large
+        due to the exponential growth characteristic of the Fibonacci sequence."}],"role":"assistant"}},"stopReason":"end_turn","usage":{"inputTokens":496,"outputTokens":48,"serverToolUsage":{},"totalTokens":544}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '355'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Jan 2026 11:00:12 GMT
+      x-amzn-RequestId:
+      - e30b6531-2b15-451d-a1df-d34be2944275
+    status:
+      code: 200
+      message: OK
+version: 1

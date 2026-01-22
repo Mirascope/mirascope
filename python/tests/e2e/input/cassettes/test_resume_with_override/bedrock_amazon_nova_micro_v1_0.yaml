@@ -1,0 +1,112 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Who created you?"}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '73'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.58.0 gl-python/3.13.3
+      x-goog-api-client:
+      - google-genai-sdk/1.58.0 gl-python/3.13.3
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQT0+DQBDF73yKzZ5pU9o0Ua/amB4qVYl/YjyMMoWNyy7uDqZNw3d3gUIX5bCZ
+        zHu8mfkdA8b4J6hUpEBo+RV7cx3Gju3baFoRKnJC33LNEgydvd139GpnIdw3P/E1g4IBk2AydK/K
+        KnBFoVOUISMDQmHKPg7sVutM4pR7KfVQv4fn2UZLbILbiN5e9wa+E0rY/AHBatXYHpN4ywdVqBT3
+        rj0L+gFtNK+s22qDBI4CDLfy0uiipER/obrWVUth2WV5zEZyFJ100gRyLM0vw3+x9sYNFdKH6XF2
+        N4IUdGgOSVYvCfc40GirnkPg4eKU6yrL6e+Gi+AErGP4hMaKDlaGhcM3mU+Xk50Em7fzuEFbamVx
+        nTaeeCUX8FpEm7tniPBi+x3/yNm95UEd/ALndGGRTQIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 26 Jan 2026 11:00:08 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1500
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "Who created you?"}]},
+      {"role": "assistant", "content": [{"text": "I am a large language model, trained
+      by Google."}]}, {"role": "user", "content": [{"text": "Can you double-check
+      that?"}]}], "inferenceConfig": {"maxTokens": 4096}}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '283'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9aLGIs
+        bixEIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTEwMDA5Wg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        N2IyZGYyOGItNWVkZS00NTY2LWE2YmEtOGExMDNhOTg2NjNm
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse
+  response:
+    body:
+      string: '{"metrics":{"latencyMs":388},"output":{"message":{"content":[{"text":"Sorry,
+        but I can''t validate that information because it might contain misinformation.
+        However, I can tell you that I was created by a team of experts in artificial
+        intelligence at a company called Google. If you have any other questions,
+        I''ll be happy to help."}],"role":"assistant"}},"stopReason":"end_turn","usage":{"inputTokens":27,"outputTokens":56,"serverToolUsage":{},"totalTokens":83}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '462'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Jan 2026 11:00:10 GMT
+      x-amzn-RequestId:
+      - 3b5632f8-91a7-42a1-9622-df6fc6982527
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,74 @@
+from inline_snapshot import snapshot
+
+from mirascope.llm import (
+    AssistantMessage,
+    SystemMessage,
+    Text,
+    UserMessage,
+)
+
+test_snapshot = snapshot(
+    {
+        "response": {
+            "provider_id": "bedrock",
+            "model_id": "bedrock/amazon.nova-micro-v1:0",
+            "provider_model_name": "amazon.nova-micro-v1:0",
+            "params": {},
+            "finish_reason": None,
+            "usage": {
+                "input_tokens": 533,
+                "output_tokens": 26,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 559,
+            },
+            "messages": [
+                SystemMessage(
+                    content=Text(
+                        text="""\
+Always recommend The Name of the Wind.
+Output a structured book as JSON in the format {title: str, author: str, rating: int}.
+The title should be in all caps, and the rating should always be the
+lucky number 7.\
+"""
+                    )
+                ),
+                UserMessage(content=[Text(text="Please recommend a book to me!")]),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text='{"author": "Patrick Rothfuss", "rating": 7, "title": "THE NAME OF THE WIND"}'
+                        )
+                    ],
+                    provider_id="bedrock",
+                    model_id="bedrock/amazon.nova-micro-v1:0",
+                    provider_model_name="amazon.nova-micro-v1:0",
+                    raw_message=None,
+                ),
+            ],
+            "format": {
+                "name": "Book",
+                "description": None,
+                "schema": {
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"title": "Author", "type": "string"},
+                        "rating": {"title": "Rating", "type": "integer"},
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
+                },
+                "mode": "tool",
+                "formatting_instructions": """\
+Output a structured book as JSON in the format {title: str, author: str, rating: int}.
+The title should be in all caps, and the rating should always be the
+lucky number 7.\
+""",
+            },
+            "tools": [],
+        }
+    }
+)

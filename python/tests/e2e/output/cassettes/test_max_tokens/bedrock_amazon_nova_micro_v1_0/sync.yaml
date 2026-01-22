@@ -1,0 +1,49 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "List all U.S. states."}]}],
+      "inferenceConfig": {"maxTokens": 50}}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '118'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9ELFos
+        YixuIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTI1MzQ0Wg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        ODFkZDIxYzQtODAzMS00MDVlLTk5YmItZTM3ODE5NzJhM2M4
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse
+  response:
+    body:
+      string: '{"metrics":{"latencyMs":264},"output":{"message":{"content":[{"text":"Here
+        is a list of all 50 states in the United States:\n\n1. Alabama\n2. Alaska\n3.
+        Arizona\n4. Arkansas\n5. California\n6. Colorado\n7. Connecticut\n8. Delaware\n9.
+        Florida"}],"role":"assistant"}},"stopReason":"max_tokens","usage":{"inputTokens":8,"outputTokens":50,"serverToolUsage":{},"totalTokens":58}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '375'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Jan 2026 12:53:45 GMT
+      x-amzn-RequestId:
+      - 4e91467c-74ae-44c4-874b-db68423bb1ea
+    status:
+      code: 200
+      message: OK
+version: 1
