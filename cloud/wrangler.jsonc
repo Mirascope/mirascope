@@ -246,7 +246,10 @@
             "queue": "router-metering-production",
             "binding": "ROUTER_METERING_QUEUE",
           },
-          { "queue": "spans-ingest-production", "binding": "SPANS_INGEST_QUEUE" },
+          {
+            "queue": "spans-ingest-production",
+            "binding": "SPANS_INGEST_QUEUE",
+          },
         ],
         "consumers": [
           {

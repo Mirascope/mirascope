@@ -176,7 +176,7 @@ def test_sync_client_default_httpx_configuration() -> None:
         client = get_sync_client()
 
     try:
-        assert client.base_url == "https://v2.mirascope.com"
+        assert client.base_url == "https://mirascope.com/api/v2"
     finally:
         client.close()
 
@@ -188,7 +188,7 @@ async def test_async_client_default_httpx_configuration() -> None:
         client = get_async_client()
 
     try:
-        assert client.base_url == "https://v2.mirascope.com"
+        assert client.base_url == "https://mirascope.com/api/v2"
     finally:
         await client.aclose()
 
