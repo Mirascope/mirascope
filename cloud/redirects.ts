@@ -105,10 +105,10 @@ const underscorePaths = [
 const toHyphenatedDocsPath = (path: string): string => {
   const hyphenated = path.replace(/_/g, "-");
   if (path.startsWith("tutorials/")) {
-    return `/docs/mirascope/guides/${hyphenated.slice("tutorials/".length)}`;
+    return `/docs/v1/guides/${hyphenated.slice("tutorials/".length)}`;
   }
   if (path.startsWith("learn/")) {
-    return `/docs/mirascope/learn/${hyphenated.slice("learn/".length)}`;
+    return `/docs/v1/learn/${hyphenated.slice("learn/".length)}`;
   }
   return `/${hyphenated}`;
 };
