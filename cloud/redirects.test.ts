@@ -88,7 +88,7 @@ describe("handleRedirect", () => {
       expect(response).not.toBeNull();
       expect(response!.status).toBe(301);
       expect(response!.headers.get("Location")).toBe(
-        "https://mirascope.com/docs/mirascope/guides/agents/blog-writing-agent",
+        "https://mirascope.com/docs/v1/guides/agents/blog-writing-agent",
       );
     });
 
@@ -100,7 +100,7 @@ describe("handleRedirect", () => {
       expect(response).not.toBeNull();
       expect(response!.status).toBe(301);
       expect(response!.headers.get("Location")).toBe(
-        "https://mirascope.com/docs/mirascope/guides/agents/sql-agent",
+        "https://mirascope.com/docs/v1/guides/agents/sql-agent",
       );
     });
 
@@ -112,7 +112,7 @@ describe("handleRedirect", () => {
       expect(response).not.toBeNull();
       expect(response!.status).toBe(301);
       expect(response!.headers.get("Location")).toBe(
-        "https://mirascope.com/docs/mirascope/learn/provider-specific/anthropic",
+        "https://mirascope.com/docs/v1/learn/provider-specific/anthropic",
       );
     });
 
@@ -126,7 +126,7 @@ describe("handleRedirect", () => {
       expect(response).not.toBeNull();
       expect(response!.status).toBe(301);
       expect(response!.headers.get("Location")).toBe(
-        "https://mirascope.com/docs/mirascope/guides/prompt-engineering/chaining-based/chain-of-verification",
+        "https://mirascope.com/docs/v1/guides/prompt-engineering/chaining-based/chain-of-verification",
       );
     });
 
@@ -140,8 +140,23 @@ describe("handleRedirect", () => {
       expect(response).not.toBeNull();
       expect(response!.status).toBe(301);
       expect(response!.headers.get("Location")).toBe(
-        "https://mirascope.com/docs/mirascope/guides/prompt-engineering/text-based/chain-of-thought",
+        "https://mirascope.com/docs/v1/guides/prompt-engineering/text-based/chain-of-thought",
       );
+    });
+
+    it("redirects directly to final destination without redirect chain", () => {
+      // First redirect: underscore path to hyphenated docs path
+      const response = handleRedirect(
+        createRequest("/tutorials/agents/blog_writing_agent"),
+      );
+      expect(response).not.toBeNull();
+
+      const destination = response!.headers.get("Location")!;
+      const destinationPath = new URL(destination).pathname;
+
+      // Verify destination doesn't trigger another redirect (no chain)
+      const secondRedirect = handleRedirect(createRequest(destinationPath));
+      expect(secondRedirect).toBeNull();
     });
   });
 
