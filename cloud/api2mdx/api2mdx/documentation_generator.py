@@ -11,12 +11,17 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from api2mdx.api_discovery import ApiDocumentation, DirectivesPage
+from api2mdx.api_discovery import (
+    ApiDocumentation,
+    DirectivesPage,
+    discover_flat_export_pages,
+)
 from api2mdx.griffe_integration import (
     get_loader,
     render_directive,
 )
 from api2mdx.meta import (
+    ProductSpec,
     generate_meta_file_content,
     generate_meta_from_directives,
 )
@@ -52,6 +57,12 @@ class DocumentationGenerator:
     api_documentation: ApiDocumentation | None
     """Discovered API documentation, or None if not yet discovered."""
 
+    product_slug: str
+    """Product slug for documentation (e.g., 'llm')."""
+
+    product_label: str
+    """Product label for documentation (e.g., 'LLM')."""
+
     def __init__(
         self,
         *,
@@ -60,6 +71,8 @@ class DocumentationGenerator:
         docs_path: str,
         output_path: Path,
         api_root: str,
+        product_slug: str,
+        product_label: str,
     ) -> None:
         """Initialize the DocumentationGenerator.
 
@@ -69,6 +82,8 @@ class DocumentationGenerator:
             docs_path: Path within the package where docs are located
             output_path: Path where generated documentation should be written
             api_root: Root route for links to api docs (e.g. /docs/mirascope/api)
+            product_slug: Product slug for documentation (e.g., 'llm')
+            product_label: Product label for documentation (e.g., 'LLM')
 
         """
         self.source_path = source_path
@@ -78,6 +93,8 @@ class DocumentationGenerator:
         self.output_path = output_path
         self.module = None
         self.api_documentation = None
+        self.product_slug = product_slug
+        self.product_label = product_label
 
     def generate_all(self, directive_output_path: Path | None = None) -> None:
         """Generate all documentation files.
@@ -92,10 +109,12 @@ class DocumentationGenerator:
         # Discover API directives from module structure
         if self.module is None:
             raise RuntimeError("Module must be loaded before discovering directives")
-        self.api_documentation = ApiDocumentation.from_module(
-            self.module, self.api_root
+
+        raw_pages = discover_flat_export_pages(self.module, self.product_slug)
+        self.api_documentation = ApiDocumentation(raw_pages, self.api_root)
+        print(
+            f"Discovered {len(self.api_documentation)} API directives under {self.product_slug}/"
         )
-        print(f"Discovered {len(self.api_documentation)} API directives")
 
         # Output directive snapshots if requested
         if directive_output_path:
@@ -292,8 +311,10 @@ class DocumentationGenerator:
                 "API directives must be discovered before generating metadata"
             )
 
+        products = [ProductSpec(slug=self.product_slug, label=self.product_label)]
+
         api_section = generate_meta_from_directives(
-            self.api_documentation.pages, weight=None
+            self.api_documentation.pages, weight=None, products=products
         )
         content = generate_meta_file_content(api_section)
 

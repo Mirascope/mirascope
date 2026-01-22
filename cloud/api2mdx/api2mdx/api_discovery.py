@@ -742,3 +742,96 @@ def discover_module_pages(
         module_page.directives.append(directive)
 
     return pages
+
+
+def _collect_submodule_exports(
+    module: Module, seen_paths: set[str] | None = None
+) -> list[RawDirective]:
+    """Collect all non-Module exports from a module (not recursive into submodules).
+
+    Args:
+        module: The Module object to process
+        seen_paths: Set of already-seen object paths to avoid duplicates
+
+    Returns:
+        List of RawDirective for all non-Module exports
+
+    """
+    if seen_paths is None:
+        seen_paths = set()
+
+    directives: list[RawDirective] = []
+    export_names = _extract_all_exports(module)
+
+    if export_names is None:
+        return directives
+
+    for export_name in export_names:
+        if export_name not in module.members:
+            continue
+
+        member = _resolve_member(module, export_name)
+
+        # Skip modules - we only want the actual exports
+        if isinstance(member, Module):
+            continue
+
+        # Create directive and add if not already seen
+        directive = _create_directive_from_member(member)
+        if directive.object_path not in seen_paths:
+            seen_paths.add(directive.object_path)
+            directives.append(directive)
+
+    return directives
+
+
+def discover_flat_export_pages(
+    module: Module, product_slug: str
+) -> list[RawDirectivesPage]:
+    """Generate pages for each top-level submodule under a product directory.
+
+    Each submodule (calls, content, messages, etc.) gets one page containing
+    all of its exports. This keeps related items together on a single page.
+
+    Args:
+        module: The Module object to process
+        product_slug: The product directory name (e.g., "llm")
+
+    Returns:
+        List of RawDirectivesPage objects with one page per submodule
+
+    """
+    pages: list[RawDirectivesPage] = []
+    seen_paths: set[str] = set()
+
+    export_names = _extract_all_exports(module)
+    if export_names is None:
+        return pages
+
+    # Process each export - create pages for submodules
+    for export_name in export_names:
+        if export_name not in module.members:
+            continue
+
+        member = _resolve_member(module, export_name)
+
+        if isinstance(member, Module):
+            # Skip private modules
+            if export_name.startswith("_"):
+                continue
+
+            # Collect all exports from this submodule
+            submodule_directives = _collect_submodule_exports(member, seen_paths)
+
+            if submodule_directives:
+                # Create a page for this submodule with all its exports
+                slug = Slug.from_name(export_name)
+                page = RawDirectivesPage(
+                    directives=submodule_directives,
+                    directory=product_slug,
+                    slug=slug,
+                    name=export_name,
+                )
+                pages.append(page)
+
+    return pages

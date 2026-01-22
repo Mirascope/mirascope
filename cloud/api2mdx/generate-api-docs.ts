@@ -28,6 +28,8 @@ function generateApiDocs(): void {
   let outputPath: string | undefined;
   let packageName: string | undefined;
   let apiRoot: string | undefined;
+  let productSlug: string | undefined;
+  let productLabel: string | undefined;
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "--source-path" && i + 1 < args.length) {
@@ -42,19 +44,32 @@ function generateApiDocs(): void {
     } else if (args[i] === "--api-root" && i + 1 < args.length) {
       apiRoot = args[i + 1];
       i++;
+    } else if (args[i] === "--product-slug" && i + 1 < args.length) {
+      productSlug = args[i + 1];
+      i++;
+    } else if (args[i] === "--product-label" && i + 1 < args.length) {
+      productLabel = args[i + 1];
+      i++;
     }
   }
 
   // Validate required arguments
-  if (!sourcePath || !outputPath || !packageName || !apiRoot) {
+  if (
+    !sourcePath ||
+    !outputPath ||
+    !packageName ||
+    !apiRoot ||
+    !productSlug ||
+    !productLabel
+  ) {
     console.error("Error: Missing required arguments");
     console.error("\nUsage:");
     console.error(
-      "  bun run api2mdx/generate-api-docs.ts --source-path <path> --package <name> --output <path> --api-root <path>",
+      "  bun run api2mdx/generate-api-docs.ts --source-path <path> --package <name> --output <path> --api-root <path> --product-slug <slug> --product-label <label>",
     );
     console.error("\nExample:");
     console.error(
-      "  bun run api2mdx/generate-api-docs.ts --source-path ../python --package mirascope.llm --output content/docs/api --api-root /docs/api",
+      "  bun run api2mdx/generate-api-docs.ts --source-path ../python --package mirascope.llm --output content/docs/api --api-root /docs/api --product-slug llm --product-label LLM",
     );
     process.exit(1);
   }
@@ -64,26 +79,29 @@ function generateApiDocs(): void {
   console.log(`  Package: ${packageName}`);
   console.log(`  Output: ${outputPath}`);
   console.log(`  API Root: ${apiRoot}`);
+  console.log(`  Product: ${productSlug}/ (${productLabel})`);
 
   const api2mdxDir = resolve(import.meta.dirname, ".");
 
-  run(
-    "uv",
-    [
-      "run",
-      "-m",
-      "api2mdx.main",
-      "--source-path",
-      sourcePath,
-      "--package",
-      packageName,
-      "--output",
-      outputPath,
-      "--api-root",
-      apiRoot,
-    ],
-    api2mdxDir,
-  );
+  const uvArgs = [
+    "run",
+    "-m",
+    "api2mdx.main",
+    "--source-path",
+    sourcePath,
+    "--package",
+    packageName,
+    "--output",
+    outputPath,
+    "--api-root",
+    apiRoot,
+    "--product-slug",
+    productSlug,
+    "--product-label",
+    productLabel,
+  ];
+
+  run("uv", uvArgs, api2mdxDir);
 
   console.log("✓ API documentation generation complete");
 }

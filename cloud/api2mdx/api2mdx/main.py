@@ -5,7 +5,7 @@ This tool extracts API documentation from Python source code and generates
 MDX files for use with React-based documentation sites.
 
 Usage:
-  api2mdx --source-path ./src --package mypackage --output ./docs/api --api-root /docs/api
+  api2mdx --source-path ./src --package mypackage --output ./docs/api --api-root /docs/api --product-slug llm --product-label LLM
 """
 
 import argparse
@@ -21,6 +21,8 @@ def generate_documentation(
     docs_path: str,
     output_path: Path,
     api_root: str,
+    product_slug: str,
+    product_label: str,
     directive_output_path: Path | None = None,
 ) -> bool:
     """Generate API documentation from source code.
@@ -31,6 +33,8 @@ def generate_documentation(
         docs_path: Path within the package where docs are located
         output_path: Path where generated documentation should be written
         api_root: Root route for links to api docs (e.g. /docs/mirascope/api)
+        product_slug: Product slug for documentation (e.g., 'llm')
+        product_label: Product label for documentation (e.g., 'LLM')
         directive_output_path: Optional path to output intermediate directive files
 
     Returns:
@@ -44,6 +48,8 @@ def generate_documentation(
             docs_path=docs_path,
             output_path=output_path,
             api_root=api_root,
+            product_slug=product_slug,
+            product_label=product_label,
         )
         generator.generate_all(directive_output_path=directive_output_path)
 
@@ -100,6 +106,18 @@ def main(cmd_args: list[str] | None = None) -> int:
         type=Path,
         help="Optional path to output intermediate directive files (e.g., snapshots/directives/)",
     )
+    parser.add_argument(
+        "--product-slug",
+        type=str,
+        required=True,
+        help="Product slug for documentation (e.g., 'llm')",
+    )
+    parser.add_argument(
+        "--product-label",
+        type=str,
+        required=True,
+        help="Product label for documentation (e.g., 'LLM')",
+    )
 
     parsed_args = parser.parse_args(cmd_args)
 
@@ -114,6 +132,8 @@ def main(cmd_args: list[str] | None = None) -> int:
         docs_path=parsed_args.docs_path,
         output_path=parsed_args.output,
         api_root=parsed_args.api_root,
+        product_slug=parsed_args.product_slug,
+        product_label=parsed_args.product_label,
         directive_output_path=parsed_args.output_directives,
     )
 
