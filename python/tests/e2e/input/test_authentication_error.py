@@ -14,7 +14,7 @@ from tests.e2e.conftest import E2E_MODEL_IDS
 API_PROVIDER_MODEL_IDS = [
     model_id
     for model_id in E2E_MODEL_IDS
-    if not model_id.startswith(("mlx-community/", "azure/openai/"))
+    if not model_id.startswith(("mlx-community/", "azure/openai/", "bedrock/"))
 ]
 
 

@@ -22,10 +22,16 @@ import tomli
 
 
 def normalize_package_name(package_spec: str) -> str:
-    """Extract package name from version spec like 'package>=1.0.0'."""
+    """Extract package name from version spec like 'package>=1.0.0'.
+
+    Also strips extras such as 'anthropic[bedrock]'.
+    """
     for op in [">=", "==", "<=", ">", "<", "~="]:
         if op in package_spec:
             package_spec = package_spec.split(op)[0]
+    package_spec = package_spec.strip()
+    if "[" in package_spec and "]" in package_spec:
+        package_spec = package_spec.split("[", 1)[0]
     return package_spec.strip()
 
 

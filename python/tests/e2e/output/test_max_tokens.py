@@ -9,7 +9,7 @@ from tests.utils import (
     snapshot_test,
 )
 
-# Azure models are excluded because they require different test setup
+# Azure and Bedrock models are excluded because they require different test setup
 MAX_TOKENS_MODEL_IDS: list[llm.ModelId] = [
     model_id
     for model_id in [
@@ -17,7 +17,7 @@ MAX_TOKENS_MODEL_IDS: list[llm.ModelId] = [
         # Include reasoning model to test max_tokens → max_completion_tokens mapping
         "openai/gpt-5-mini:completions",
     ]
-    if not model_id.startswith("azure/openai/")
+    if not model_id.startswith(("azure/openai/", "bedrock/"))
 ]
 
 

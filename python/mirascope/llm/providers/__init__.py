@@ -11,6 +11,7 @@ from ..._stubs import stub_module_if_missing
 # exist on disk and must be guarded before submodule imports.
 
 stub_module_if_missing("mirascope.llm.providers.anthropic", "anthropic")
+stub_module_if_missing("mirascope.llm.providers.bedrock", "anthropic")
 stub_module_if_missing("mirascope.llm.providers.google", "google")
 stub_module_if_missing("mirascope.llm.providers.mlx", "mlx")
 stub_module_if_missing("mirascope.llm.providers.openai", "openai")

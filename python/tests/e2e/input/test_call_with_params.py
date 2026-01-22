@@ -13,6 +13,7 @@ from tests.utils import (
 )
 
 # Azure models are excluded because they require different test setup
+# Bedrock doesn't allow temperature and top_p to be specified together
 PARAMS_MODEL_IDS: list[llm.ModelId] = [
     model_id
     for model_id in [
@@ -21,7 +22,7 @@ PARAMS_MODEL_IDS: list[llm.ModelId] = [
         "openai/gpt-5-mini:completions",
         "openai/gpt-5:completions",
     ]
-    if not model_id.startswith("azure/openai/")
+    if not model_id.startswith(("azure/openai/", "bedrock/"))
 ]
 
 

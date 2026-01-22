@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import TYPE_CHECKING, Generic
-from typing_extensions import TypeVar, Unpack
+from typing import TYPE_CHECKING, Generic, TypeAlias, TypeVar
+from typing_extensions import Unpack
 
 from anthropic import Anthropic, AsyncAnthropic
 
@@ -31,15 +31,25 @@ from ...tools import (
 )
 from ..base import BaseProvider, _utils as _base_utils
 from . import _utils
-from .beta_provider import AnthropicBetaProvider
+from .beta_provider import AnthropicBetaProvider, BaseAnthropicBetaProvider
 from .model_id import AnthropicModelId, model_name
 from .model_info import MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
 
 if TYPE_CHECKING:
+    from anthropic import AnthropicBedrock, AsyncAnthropicBedrock
+
     from ...models import Params
 
-SyncClientT = TypeVar("SyncClientT", bound=Anthropic)
-AsyncClientT = TypeVar("AsyncClientT", bound=AsyncAnthropic)
+    SyncClientBound: TypeAlias = Anthropic | AnthropicBedrock
+    AsyncClientBound: TypeAlias = AsyncAnthropic | AsyncAnthropicBedrock
+else:
+    SyncClientBound = Anthropic
+    AsyncClientBound = AsyncAnthropic
+
+SyncClientT = TypeVar("SyncClientT", bound=SyncClientBound)
+AsyncClientT = TypeVar("AsyncClientT", bound=AsyncClientBound)
+BetaSyncClientT = TypeVar("BetaSyncClientT", bound=Anthropic)
+BetaAsyncClientT = TypeVar("BetaAsyncClientT", bound=AsyncAnthropic)
 
 
 def _should_use_beta(
@@ -67,13 +77,18 @@ def _should_use_beta(
 
 
 class BaseAnthropicProvider(
-    BaseProvider[SyncClientT], Generic[SyncClientT, AsyncClientT]
+    BaseProvider[SyncClientT],
+    Generic[SyncClientT, AsyncClientT, BetaSyncClientT, BetaAsyncClientT],
 ):
     """Shared Anthropic provider implementation for API-compatible clients."""
 
     client: SyncClientT
     async_client: AsyncClientT
-    _beta_provider: BaseProvider[SyncClientT]
+    _beta_provider: BaseAnthropicBetaProvider[BetaSyncClientT, BetaAsyncClientT]
+
+    def _error_provider_id(self) -> str:
+        """Provider id used for unsupported-feature errors."""
+        return self.id
 
     def _model_name(self, model_id: str) -> str:
         return model_name(model_id)
@@ -118,7 +133,7 @@ class BaseAnthropicProvider(
             format=format,
             params=params,
             model_name_override=self._model_name(model_id),
-            provider_id=self.id,
+            provider_id=self._error_provider_id(),
         )
         anthropic_response = self.client.messages.create(**kwargs)
         include_thoughts = _utils.get_include_thoughts(params)
@@ -171,7 +186,7 @@ class BaseAnthropicProvider(
             format=format,
             params=params,
             model_name_override=self._model_name(model_id),
-            provider_id=self.id,
+            provider_id=self._error_provider_id(),
         )
         anthropic_response = self.client.messages.create(**kwargs)
         include_thoughts = _utils.get_include_thoughts(params)
@@ -222,7 +237,7 @@ class BaseAnthropicProvider(
             format=format,
             params=params,
             model_name_override=self._model_name(model_id),
-            provider_id=self.id,
+            provider_id=self._error_provider_id(),
         )
         anthropic_response = await self.async_client.messages.create(**kwargs)
         include_thoughts = _utils.get_include_thoughts(params)
@@ -275,7 +290,7 @@ class BaseAnthropicProvider(
             format=format,
             params=params,
             model_name_override=self._model_name(model_id),
-            provider_id=self.id,
+            provider_id=self._error_provider_id(),
         )
         anthropic_response = await self.async_client.messages.create(**kwargs)
         include_thoughts = _utils.get_include_thoughts(params)
@@ -326,7 +341,7 @@ class BaseAnthropicProvider(
             format=format,
             params=params,
             model_name_override=self._model_name(model_id),
-            provider_id=self.id,
+            provider_id=self._error_provider_id(),
         )
         anthropic_stream = self.client.messages.stream(**kwargs)
         include_thoughts = _utils.get_include_thoughts(params)
@@ -372,7 +387,7 @@ class BaseAnthropicProvider(
             format=format,
             params=params,
             model_name_override=self._model_name(model_id),
-            provider_id=self.id,
+            provider_id=self._error_provider_id(),
         )
         anthropic_stream = self.client.messages.stream(**kwargs)
         include_thoughts = _utils.get_include_thoughts(params)
@@ -416,7 +431,7 @@ class BaseAnthropicProvider(
             format=format,
             params=params,
             model_name_override=self._model_name(model_id),
-            provider_id=self.id,
+            provider_id=self._error_provider_id(),
         )
         anthropic_stream = self.async_client.messages.stream(**kwargs)
         include_thoughts = _utils.get_include_thoughts(params)
@@ -465,7 +480,7 @@ class BaseAnthropicProvider(
             format=format,
             params=params,
             model_name_override=self._model_name(model_id),
-            provider_id=self.id,
+            provider_id=self._error_provider_id(),
         )
         anthropic_stream = self.async_client.messages.stream(**kwargs)
         include_thoughts = _utils.get_include_thoughts(params)
@@ -484,7 +499,9 @@ class BaseAnthropicProvider(
         )
 
 
-class AnthropicProvider(BaseAnthropicProvider[Anthropic, AsyncAnthropic]):
+class AnthropicProvider(
+    BaseAnthropicProvider[Anthropic, AsyncAnthropic, Anthropic, AsyncAnthropic]
+):
     """The client for the Anthropic LLM model."""
 
     id = "anthropic"

@@ -16,6 +16,10 @@ from typing import Any
 EXTRA_IMPORTS: dict[str, list[str]] = {
     "anthropic": ["anthropic"],
     "api": ["pydantic_settings"],
+    "bedrock": [
+        "anthropic",
+        "boto3",
+    ],
     "google": [
         "google.genai",
         "PIL",

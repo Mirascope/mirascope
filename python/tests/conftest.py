@@ -21,6 +21,7 @@ def load_api_keys() -> None:
     load_dotenv(override=True)
     # Set dummy keys if not present so that tests pass in CI.
     os.environ.setdefault("ANTHROPIC_API_KEY", "dummy-anthropic-key")
+    os.environ.setdefault("AWS_BEARER_TOKEN_BEDROCK", "dummy-bedrock-api-key")
     os.environ.setdefault("AZURE_ANTHROPIC_API_KEY", "dummy-azure-anthropic-key")
     os.environ.setdefault(
         "AZURE_AI_ANTHROPIC_ENDPOINT",
