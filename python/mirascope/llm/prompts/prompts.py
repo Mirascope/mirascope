@@ -1,9 +1,10 @@
 """Concrete Prompt classes for generating messages with tools and formatting."""
 
-from collections.abc import Sequence
-from dataclasses import dataclass
-from typing import Generic, overload
+from collections.abc import Callable, Sequence
+from dataclasses import dataclass, field
+from typing import Any, Generic, TypeVar, overload
 
+from ..._utils import copy_function_metadata
 from ..context import Context, DepsT
 from ..formatting import Format, FormattableT, OutputParser
 from ..messages import Message, promote_to_messages
@@ -19,12 +20,7 @@ from ..responses import (
     Response,
     StreamResponse,
 )
-from ..tools import (
-    AsyncContextToolkit,
-    AsyncToolkit,
-    ContextToolkit,
-    Toolkit,
-)
+from ..tools import AsyncContextToolkit, AsyncToolkit, ContextToolkit, Toolkit
 from ..types import P
 from .protocols import (
     AsyncContextMessageTemplate,
@@ -33,9 +29,26 @@ from .protocols import (
     MessageTemplate,
 )
 
+FunctionT = TypeVar("FunctionT", bound=Callable[..., Any])
+
+
+@dataclass(kw_only=True)
+class BasePrompt(Generic[FunctionT]):
+    """Base class for all Prompt types with shared metadata functionality."""
+
+    fn: FunctionT
+    """The underlying prompt function that generates message content."""
+
+    __name__: str = field(init=False, repr=False, default="")
+    """The name of the underlying function (preserved for decorator stacking)."""
+
+    def __post_init__(self) -> None:
+        """Preserve standard function attributes for decorator stacking."""
+        copy_function_metadata(self, self.fn)
+
 
 @dataclass
-class Prompt(Generic[P, FormattableT]):
+class Prompt(BasePrompt[MessageTemplate[P]], Generic[P, FormattableT]):
     """A prompt that can be called with a model to generate a response.
 
     Created by decorating a `MessageTemplate` with `llm.prompt`. The decorated
@@ -44,9 +57,6 @@ class Prompt(Generic[P, FormattableT]):
     A `Prompt` is essentially: `MessageTemplate` + tools + format.
     It can be invoked with a model: `prompt(model, *args, **kwargs)`.
     """
-
-    fn: MessageTemplate[P]
-    """The underlying prompt function that generates message content."""
 
     toolkit: Toolkit
     """The toolkit containing this prompt's tools."""
@@ -134,7 +144,7 @@ class Prompt(Generic[P, FormattableT]):
 
 
 @dataclass
-class AsyncPrompt(Generic[P, FormattableT]):
+class AsyncPrompt(BasePrompt[AsyncMessageTemplate[P]], Generic[P, FormattableT]):
     """An async prompt that can be called with a model to generate a response.
 
     Created by decorating an async `MessageTemplate` with `llm.prompt`. The decorated
@@ -143,9 +153,6 @@ class AsyncPrompt(Generic[P, FormattableT]):
     An `AsyncPrompt` is essentially: async `MessageTemplate` + tools + format.
     It can be invoked with a model: `await prompt(model, *args, **kwargs)`.
     """
-
-    fn: AsyncMessageTemplate[P]
-    """The underlying async prompt function that generates message content."""
 
     toolkit: AsyncToolkit
     """The toolkit containing this prompt's async tools."""
@@ -235,7 +242,9 @@ class AsyncPrompt(Generic[P, FormattableT]):
 
 
 @dataclass
-class ContextPrompt(Generic[P, DepsT, FormattableT]):
+class ContextPrompt(
+    BasePrompt[ContextMessageTemplate[P, DepsT]], Generic[P, DepsT, FormattableT]
+):
     """A context-aware prompt that can be called with a model to generate a response.
 
     Created by decorating a `ContextMessageTemplate` with `llm.prompt`. The decorated
@@ -245,9 +254,6 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
     A `ContextPrompt` is essentially: `ContextMessageTemplate` + tools + format.
     It can be invoked with a model: `prompt(model, ctx, *args, **kwargs)`.
     """
-
-    fn: ContextMessageTemplate[P, DepsT]
-    """The underlying context-aware prompt function that generates message content."""
 
     toolkit: ContextToolkit[DepsT]
     """The toolkit containing this prompt's context-aware tools."""
@@ -361,7 +367,9 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
 
 
 @dataclass
-class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
+class AsyncContextPrompt(
+    BasePrompt[AsyncContextMessageTemplate[P, DepsT]], Generic[P, DepsT, FormattableT]
+):
     """An async context-aware prompt that can be called with a model to generate a response.
 
     Created by decorating an async `ContextMessageTemplate` with `llm.prompt`. The decorated
@@ -371,9 +379,6 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
     An `AsyncContextPrompt` is essentially: async `ContextMessageTemplate` + tools + format.
     It can be invoked with a model: `await prompt(model, ctx, *args, **kwargs)`.
     """
-
-    fn: AsyncContextMessageTemplate[P, DepsT]
-    """The underlying async context-aware prompt function that generates message content."""
 
     toolkit: AsyncContextToolkit[DepsT]
     """The toolkit containing this prompt's async context-aware tools."""

@@ -2,7 +2,7 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "Use the test tool to retrieve the secret
       phrase. The passphrase is ''portal"}], "role": "user"}], "tools": [{"functionDeclarations":
-      [{"description": "A tool that must be called with a passphrase.", "name": "test_tool",
+      [{"description": "A tool that must be called with a passphrase.", "name": "passphrase_test_tool",
       "parameters": {"properties": {"passphrase": {"title": "Passphrase", "type":
       "STRING"}}, "required": ["passphrase"], "type": "OBJECT"}}]}], "generationConfig":
       {}}'
@@ -14,7 +14,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '416'
+      - '427'
       content-type:
       - application/json
       host:
@@ -30,17 +30,18 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/21TXXOiMBR991cwPHXHtgpWsDuzD9WKK4poi626s7MTIGIKJJAEK+30v2/Ej0J3
-        eWDIPTfnXE5O3muSJHsA+8gHHDL5u/RLVCTpvXjvMYI5xFwAp5IoJoDyz97D8176Fi3rDHscEdwD
-        UVTZfMQxiKGoy0KU/+GERPLl1xZAA/afrYU+Y8mGAlZQJIRyEMlf2j4q648qu8w3JAs2/BEFGPCM
-        Fjw9GnbvFuOhil/X0G7dzA2ErBZdPekKW43r4V3d9MbWLHWbYWc4scfpa9rWOW7Sjf6S9s0G96aL
-        uYrRVN8ZXUPvptoAzbuLgZMnasMPHU9rO/0HdxUlu4nV76SrgeI2xmHnZhmODWNmuMFk+bLtmD2z
-        n99oqgp2VGnFhqvfv42Q3TR2odoeLW1baatN95lo2ijvJfGzFc1VOL0H00e2SllsIiWur4ATNx52
-        +SvpD81tPluaQ+UF/Zxnt1tm3eqTCOG1N3+zVGsb13uN2Y+ye5/O/f50TaYkKlyKiQ/PZp9tldcI
-        I7Z5gIARvG97dOzp+UhlhH24E+Xml34LMgaCgtfa80oBxJCKJPrSKUCSJxJ0wb5dHzT3wxVjydl+
-        pwU5EMkF55zICSVxwh0SQtwjWZFc7ShbCnoFV7QjzokIUhVSlMt/eNm9UEVR+QaULocwCESI5/uf
-        cvoLpxRsIVAZ6+RirWT2KZrVEVvt2tHtwwE8QcrQwekAxsLLK/W6fbWOANsUejKFLCGYwaFfzLH1
-        M+DmAyNJKbOH01tr3SV3Tbn2UfsL+Xp1fQIEAAA=
+        H4sIAAAAAAAC/21T23KiQBB99ysonnbLTQTxQvbNG0TRiECMsrWVGmG4BJxRZgA1lX/fAaPB1PJA
+        MX16TjenT7/XOI53AHJDF1BI+N/cHxbhuPfyXWAYUYgoAy4hFtyBhH7lnp/3yjdL8VLk0BCjAYjj
+        m8ufOAJbyOKMipBdkAACX1l9+koxjvlf37NB4pP/sHDV+yUbTiiI+W9pHzfnj1t2ngY49QNqhj4C
+        NE1KnkHW6/dW03ETHTswH61sJ57UA0WPSEvQMq9PFk3NlGb9uby2Hjyl8dh9dsUezcRhXtcltG07
+        /qSLoTadGZN8QvOWG9h7c667vfQw7sa6JXstQxgP/KyhrTfdQ5ZnQ117sdXsOK2r4G1jbPZQePLz
+        9Ym645eQZEQcrOobBUip5fVkFD2339QgHAUrZWnrIz+a9EQVdtT6EgDJW6ZpoyughYyAuJYcf6k8
+        B3i+2IqWnNJcWShCN5rNA3tG25E82e5Hh0C1bcEwHRyFp6RlP7kLoITLwAadk7G0HG0sNnZmFkQN
+        yZE2Q60xnKvSWj8Yw5fdeG+nD7mQSrY36ZmSiiLJ6LfFTnUKXxP4+6U+n+C4VHuLXXgd2nU8vBei
+        kAQGBASjIs205vrVGnyIXHhgYeFb/gwSAvySd1bwcj5EMGHmdrmLJzmHmfIH+Xl/rlk0V7bFp8XN
+        GaSALQO4+o3fJXi7oxaOIBrgtFyGTvNctrI7N7j48IlTzAx5CzUvWIWXDFnVMK4uVWXfmEAgDumx
+        +ClrtLIqC8IK3LR1UbFWEfti8dsWW3LtU+3zAJYwIeFZaR9umZZ3zfv2nRcDEpT1+ASSHUYEjt0i
+        5xEaRwBUUdPN7p4S/fSUaPMFX/uo/QOK3m1OVAQAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -49,11 +50,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 20 Jan 2026 03:32:30 GMT
+      - Fri, 23 Jan 2026 02:59:41 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=681
+      - gfet4t7; dur=859
       Transfer-Encoding:
       - chunked
       Vary:
@@ -72,91 +73,12 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "Use the test tool to retrieve the secret
       phrase. The passphrase is ''portal"}], "role": "user"}, {"parts": [{"functionCall":
-      {"args": {"passphrase": "portal"}, "name": "test_tool"}, "thoughtSignature":
-      "CrkBAXLI2nwfeO34UFiiM3rZV71sZL-kA-JcLMQqb0k8INOLqwq57tn0rh7jqEJ_tcPXU2niP7xFBF7Bq6GiUBXGTyp2_dkTc65TERbZlpxNME8qZG1b_Lk84YkLFFQFbgNYjv8JCJEy4622axr13mFb7DzKiO0Fxk25KYOO1520bWo66KyCpmWMlU2ePDaPSsZqsmJi1m-ZaTm_RxywoEIJvyQYJI1jiHUu9vsM97NlinfcUzM2Mvm-C_Q="}],
-      "role": "model"}, {"parts": [{"functionResponse": {"name": "test_tool", "response":
-      {"output": "Incorrect passhrase: The correct passphrase is ''cake''"}}}], "role":
-      "user"}], "tools": [{"functionDeclarations": [{"description": "A tool that must
-      be called with a passphrase.", "name": "test_tool", "parameters": {"properties":
-      {"passphrase": {"title": "Passphrase", "type": "STRING"}}, "required": ["passphrase"],
-      "type": "OBJECT"}}]}], "generationConfig": {}}'
-    headers:
-      accept:
-      - '*/*'
-      accept-encoding:
-      - gzip, deflate
-      connection:
-      - keep-alive
-      content-length:
-      - '952'
-      content-type:
-      - application/json
-      host:
-      - generativelanguage.googleapis.com
-      user-agent:
-      - google-genai-sdk/1.58.0 gl-python/3.10.16
-      x-goog-api-client:
-      - google-genai-sdk/1.58.0 gl-python/3.10.16
-      x-goog-api-key:
-      - <filtered>
-    method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
-  response:
-    body:
-      string: !!binary |
-        H4sIAAAAAAAC/21T23KiQBB99yssnnbLJBAVL/tGRIMRFBQV3NpKDTJcdJjBmcFbKv++iDHR7PJA
-        Md1nzmm6+7yVymVhCbAf+4BDJvwq/84j5fJb8T7lCOYQ8zxxCeXBFFD+hT0/b1ffOSTI8JLHBHcA
-        QjeXP/IYJDCPC7kof+WEIOHuOwTQkP3naqHPWBpRwAqKJVhD4Rvo/eb8fsst8IhkYcQncYgBz2jB
-        0qH9juLo/SrePbnGyHnhYOx48w6um3q26Y+5toAtvrFWSc+xNEfdZoTzVld/3gwURRpa5rExtVqs
-        Jm1WimTzo5odRhxrsKaZS9voyWiVeVqXyR4VIySCgVtHphIcRk1PRVNoOB6vh8HQaaBmbAXuse3T
-        honFGFhTcbuab1VvHA850fe7wdJR8XQR2tWqtQjkdBaF8kaXZ8lAdGauF0jbrUiDSaMVtq0ujz0F
-        c+U4c6FbbwKA2nIza71sX+hBYlw2FYwAjA7kyBN60KYVex/XouYQpH7SUhpWD2nqSo8Pm4pJR71N
-        muyCVWrVngKiih01rNA2CeWZyf1aDyTr494wu8e2qCy2L/3nnT+X1pqzcnUMjWgyFalsN5bqztOI
-        tBmEdD/d9pL5MLZANK/I3b2oduqGbWjLSTuwd2rvMUAyAFrL2z1eT/drsn++pipQgoopJsSH6AL/
-        HLsQxDhm0RgCRvAJNrFH5ufCCTH24T4PS9/wBmQMhAWvceIthxBDmvvEL1/Wu7zM9/sH+/lw1jwV
-        V5QlZKebBuQg9xX43GIhpSRJuU3WEHdIVvjqUaqeda98eAtofOQ54QDdpprNu3+ImZrLxujaoFfe
-        zTsEUMwPp7+yu4595btc4LauSx9LV+2+mOe2Rrld+uj3eQQzSFl87nUIk7yb99UH+T5AgEWFoEAh
-        SwlmsO8Xhbz6GfDn3CCqft9yzUMDp4nlCqX30l+W08GOogQAAA==
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
-      Content-Encoding:
-      - gzip
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Tue, 20 Jan 2026 03:32:31 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Server-Timing:
-      - gfet4t7; dur=1441
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - Origin
-      - X-Origin
-      - Referer
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: '{"contents": [{"parts": [{"text": "Use the test tool to retrieve the secret
-      phrase. The passphrase is ''portal"}], "role": "user"}, {"parts": [{"functionCall":
-      {"args": {"passphrase": "portal"}, "name": "test_tool"}, "thoughtSignature":
-      "CrkBAXLI2nwfeO34UFiiM3rZV71sZL-kA-JcLMQqb0k8INOLqwq57tn0rh7jqEJ_tcPXU2niP7xFBF7Bq6GiUBXGTyp2_dkTc65TERbZlpxNME8qZG1b_Lk84YkLFFQFbgNYjv8JCJEy4622axr13mFb7DzKiO0Fxk25KYOO1520bWo66KyCpmWMlU2ePDaPSsZqsmJi1m-ZaTm_RxywoEIJvyQYJI1jiHUu9vsM97NlinfcUzM2Mvm-C_Q="}],
-      "role": "model"}, {"parts": [{"functionResponse": {"name": "test_tool", "response":
-      {"output": "Incorrect passhrase: The correct passphrase is ''cake''"}}}], "role":
-      "user"}, {"parts": [{"functionCall": {"args": {"passphrase": "cake"}, "name":
-      "test_tool"}, "thoughtSignature": "CrICAXLI2nwBYMOXJtaRXbWCn4PLuqIRtHZe8tqQjmFXQHXDvuott8ELGqKAA0NQPz6UQ8s30qjA0TtzDuyOtnHe3HPcTMF5ljubHEs5br_hl_aKY4lPAfyO7bDlUeMXbt4gfNX6l7iQfYz9dr6Pn_iaQU_vjWvDbRiNtoLxwKcXDnUZgT22QZf5pVhg5qL5VmK_XVYbf0vv_rfS68g9QEtibAntAzVYeY47aal957u8JvJry0st5PAnlaehyoztmryHU-Txi3h7Napdm8A6QFlHDjLiyq-PrOFqpmwfjpQ3BfoD_CDg-r9og5VPtd3FamkzxMPEz9_AZvJIGwdW0kHXjYLneMhSU_r5T6cDwbHo0qKgrxUvFmWNiQahW-5Ex_DC4MTMHcS9fTwDF1fl5aaH8bw1"}],
-      "role": "model"}, {"parts": [{"functionResponse": {"name": "test_tool", "response":
-      {"output": "The cake is a lie."}}}], "role": "user"}], "tools": [{"functionDeclarations":
-      [{"description": "A tool that must be called with a passphrase.", "name": "test_tool",
+      {"args": {"passphrase": "portal"}, "name": "passphrase_test_tool"}, "thoughtSignature":
+      "CvABAXLI2ny6ewEXZclJ-hFPks40KvfBsQ2KS3MBO8YT9fF_H7Ud1Atv1Dw-P3nm5cgJ7oeKLMRJwJtw4dhZqSOPdAuxI7lPT8f4R0ICgv_KYb7xvwvDPKWZGvyL-GajbRbqe0NgwYztdIWisvs1CX-bFa3uTfA8nkU5jGhiEhXFVZPEgkJA1Ge6G-Vaa3fVuu_70nQ8na1Y3cgVFUhoOQm1T8utwFQF07kMOhZMt5k8JmqExhGZZ0RScokizr4ZNdQaFiVhZa6zRVTcKI1_pSvhk_3c3bDK_DOG3YPxRDWpIqZu9w0u3ZfJAS3Gnk3RB516"}],
+      "role": "model"}, {"parts": [{"functionResponse": {"name": "passphrase_test_tool",
+      "response": {"output": "Incorrect passhrase: The correct passphrase is ''cake''.
+      Try again."}}}], "role": "user"}], "tools": [{"functionDeclarations": [{"description":
+      "A tool that must be called with a passphrase.", "name": "passphrase_test_tool",
       "parameters": {"properties": {"passphrase": {"title": "Passphrase", "type":
       "STRING"}}, "required": ["passphrase"], "type": "OBJECT"}}]}], "generationConfig":
       {}}'
@@ -168,7 +90,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1611'
+      - '1069'
       content-type:
       - application/json
       host:
@@ -184,12 +106,20 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2WQTU/DMAyG7/kVUc7rxMdAjCvsMCS0MgpCQjtYjbeGpUmVpNKmqv+dNF27DHJI
-        LPv16/hpCKUsB8UFB4eWPdJvn6G0CXdX08qhcr4wpHyyAuPO2v40UewlDg9dE8sKpDnskQpLgUqB
-        UxYJ2zHeTM72RkvsekvNUQ7ydhCwrVDCFmsEq1Une89WKRurQnE8+PQVGQYEa1Zb2OErOvCLwrgO
-        q4wuK5fpPaonXYdFr28fercIzIXg/lR22oG8bJ3NJv987bOfKmQMLGLplwQp3DHAWnxlLALh/nxr
-        QBHeDTlB6Tl9orGiB7LD0iNKbqZ3yVaCLYIlM2grrSwueaf5SHkN+c96MT8au1qm8yR9Kd9yRlry
-        C6ltbiEUAgAA
+        H4sIAAAAAAAC/2VTW3OySBR891dQvOSBLxGMqGzVPohEQUFAburW1tY4jFxluAyKpvLfF03MZ3bn
+        gRrO6eme6Tr93qEoGoLMj3xAUEX/Qf3VVijq/fa99nBGUEbaxr3UFnNQkt/Yz/X+sG8hBDXXQ7Qd
+        IioHVZWHJagQ9ZTjkoD0iYoqKsogLksEyQt1RX39PKJb0BMECXp6oX/9hz7EdRASKwoyQOoSXaUm
+        x/FkvFaVXnbiYp0pDXi8jJpF7vSQBAl7TpymWVjm6yyxK00UTwfJThksdC+uUk9EOdkgc73luhNe
+        3SSZjMBQ5QfxcrQVjKEJuoxqdc9zU+OcmTWS46ET6nAb8F55XEDZBrt1iKejoKgDdj0+WVuFV1ar
+        /oFfsIXL7CuvOhxlMGUPJrtpVO3SC8QRnJ6aC9ZM2wDS25Sk67xnncegvxNXkurWp0Q3A5c9NkTb
+        +QLsm5GW9vX8MlecbGdvbW856CJW23u1Umf7QbXRBq4TGukpzoW34KhieSlcIBm/xpoT7KQEsyyv
+        R3JSHB0d5juBmS03HqOMpzn2u+5q4Z3Pfq/wd87E5RVHCeC0H2e+OGNkrjkyhpZrSHD7UOMYL8Ex
+        D1QF8CGUoB0PpqykGny9gvmU6P1ixMdauulmRd4zt5JfygemZRtyznw0ex15obWex1yCB1jcTwNc
+        HMK4yJcwEceJaMxWO8Ub+LIfbOaKOCsMa2jLGwG64rwWeno8n7mzFPVzKfmTfhiJj+/9378nhS5x
+        epuMA/ZReod/3AH0PsqiKlwhUOHsCrNs3fgeNDrKfNS0ZbZzF7hR03UFAqQhAtrEgO9c0HmJDzmx
+        cYKyCa5vieG4/ifbQ8J+AvivPsFtKH62hNGv/xFXUisbpY/Re0hl+0qQRuR8i93b2n7ITCvw8153
+        LzoPlt1D9fOOA6Hz5dmnjS4qq+jTrwAdWgefey/88z4FVXgTpEtU5TirkOJfMfLz6gzgP6WIgVqQ
+        yriUnoBMuvPR+RfiTp2LewQAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -198,11 +128,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 20 Jan 2026 03:32:32 GMT
+      - Fri, 23 Jan 2026 02:59:43 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=459
+      - gfet4t7; dur=1419
       Transfer-Encoding:
       - chunked
       Vary:

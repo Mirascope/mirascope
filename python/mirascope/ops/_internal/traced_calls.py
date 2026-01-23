@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any, Generic, TypeVar
 from typing_extensions import TypeIs
 
+from ..._utils import copy_function_metadata
 from ...llm.calls import AsyncCall, AsyncContextCall, Call, ContextCall
 from ...llm.context import Context, DepsT
 from ...llm.formatting import FormattableT
@@ -35,6 +36,7 @@ from .traced_functions import (
     TracedContextFunction,
     TracedFunction,
 )
+from .utils import get_original_fn
 
 CallT = TypeVar(
     "CallT",
@@ -106,6 +108,14 @@ class _BaseTracedCall(Generic[CallT]):
     metadata: dict[str, str] = field(default_factory=dict)
     """Arbitrary key-value pairs for additional metadata."""
 
+    __name__: str = field(init=False, repr=False, default="")
+    """The name of the underlying function (preserved for decorator stacking)."""
+
+    def __post_init__(self) -> None:
+        """Preserve standard function attributes for decorator stacking."""
+        original_fn = get_original_fn(self._call.prompt.fn)
+        copy_function_metadata(self, original_fn)
+
 
 @dataclass(kw_only=True)
 class TracedCall(_BaseTracedCall[Call[P, FormattableT]]):
@@ -153,6 +163,7 @@ class TracedCall(_BaseTracedCall[Call[P, FormattableT]]):
 
     def __post_init__(self) -> None:
         """Initialize TracedFunction wrappers for call and stream methods."""
+        super().__post_init__()
         self.call = TracedFunction(
             fn=self._call.call, tags=self.tags, metadata=self.metadata
         )
@@ -213,6 +224,7 @@ class TracedAsyncCall(_BaseTracedCall[AsyncCall[P, FormattableT]]):
 
     def __post_init__(self) -> None:
         """Initialize AsyncTracedFunction wrappers for call and stream methods."""
+        super().__post_init__()
         self.call = AsyncTracedFunction(
             fn=self._call.call, tags=self.tags, metadata=self.metadata
         )
@@ -276,6 +288,7 @@ class TracedContextCall(_BaseTracedCall[ContextCall[P, DepsT, FormattableT]]):
 
     def __post_init__(self) -> None:
         """Initialize TracedContextFunction wrappers for call and stream methods."""
+        super().__post_init__()
         self.call = TracedContextFunction(
             fn=self._call.call, tags=self.tags, metadata=self.metadata
         )
@@ -344,6 +357,7 @@ class TracedAsyncContextCall(_BaseTracedCall[AsyncContextCall[P, DepsT, Formatta
 
     def __post_init__(self) -> None:
         """Initialize AsyncTracedContextFunction wrappers for call and stream methods."""
+        super().__post_init__()
         self.call = AsyncTracedContextFunction(
             fn=self._call.call, tags=self.tags, metadata=self.metadata
         )

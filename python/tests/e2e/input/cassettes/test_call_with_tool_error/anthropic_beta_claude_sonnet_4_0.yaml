@@ -1,7 +1,7 @@
 interactions:
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Use the test
-      tool to retrieve the secret phrase. The passphrase is ''portal"}],"model":"claude-sonnet-4-0","tools":[{"name":"test_tool","description":"A
+      tool to retrieve the secret phrase. The passphrase is ''portal"}],"model":"claude-sonnet-4-0","tools":[{"name":"passphrase_test_tool","description":"A
       tool that must be called with a passphrase.","input_schema":{"properties":{"passphrase":{"title":"Passphrase","type":"string"}},"required":["passphrase"],"additionalProperties":false,"type":"object"},"strict":false,"cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
@@ -15,7 +15,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '464'
+      - '475'
       content-type:
       - application/json
       host:
@@ -51,16 +51,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/3VRX0vDMBD/KiUvvnSybh2VPjoR9GnC/IMiITbHGkyTLLlMx+h391Ipc4oPIcnv
-        310uB9ZZCZrVrNEiSpgEawzgpJzMprPFdFGULGdKEt+FDZ8W81W3Xu3h2uyey+VcXtw/3lbiijS4
-        d5BUEILYAAHe6gSIEFRAYZCgxhoEOtUvh1GP8JmYYavZzZnWWQyQYUsLAmZorc4+FLYD5CjNtV6Q
-        Ym9j5rzdKQnynPX5MZEcnDLGvtM9UudL6ZZRPTx5WV3O17P1dvV2fWdIZUT33UlAnsTJaFykfg7s
-        WJAUznoUmvX9a84CWsc9CBrXac2BCLCNYBoymah1zuIwE8obgqnKO5jA6rKoaCiiaYE3lIXKGn6q
-        mI480fI/bvSmAuBa6MALzRfdX/2RLdrfbJ8zG/EnVJEjgN+pBjgq8PTQ9JNSeElD+ALquc40OgIA
-        AA==
+        H4sIAAAAAAAA/3VRTU+DMBj+K6QXL8wAMlm4eSK6cJgHDxrTVPoKaGm7fky3hf/uWxKyTeOBAM/X
+        +/bpkQyKgyAlaQTzHBZWSQlukS+yJFsmyzQnMek58oNtaZI+3VbtnayKwb211UO9KTL9vvlAjdtr
+        CCqwlrWAgFEiAMza3jomHUKNkg7wq3w5znoH34GZXiW5vxIi8hYi1+ED1kVOKRF99a6bII1pujMM
+        FXvlI23UrufAr8kYnxLRQTFj3jv8e9x8ZW5YVxc1Wx8e82q7uj3s1881qiQbgu+UTcNkGnwhQ2qP
+        qx3P+CBWxjFBxvE1JtYpTQ0wbO5y/ERY2HqQDZqkFyImfqoH86ZgnPIJ0pIyz1LshzUd0AazXK8k
+        vVQkM480/4+bvWEA6A4GMEzQ5fBXf2LT7jc7xkR5dw4VOR4HzK5vsJ0eDB40XCpnhmMJP3BFnvlF
+        AgAA
     headers:
       CF-RAY:
-      - 9c11fda0884b7628-SEA
+      - 9c23fe58b9be11f1-LAX
       Connection:
       - keep-alive
       Content-Encoding:
@@ -68,7 +68,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 20 Jan 2026 22:26:00 GMT
+      - Fri, 23 Jan 2026 02:52:13 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -82,41 +82,41 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2026-01-20T22:25:59Z'
+      - '2026-01-23T02:52:12Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2026-01-20T22:26:00Z'
+      - '2026-01-23T02:52:13Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2026-01-20T22:25:57Z'
+      - '2026-01-23T02:52:11Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2026-01-20T22:25:59Z'
+      - '2026-01-23T02:52:12Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CXKR4Z9LKxuoBGvSyY2n8
+      - req_011CXPYyqSAmwNo1CTRemh95
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '2204'
+      - '2808'
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Use the test
       tool to retrieve the secret phrase. The passphrase is ''portal"},{"role":"assistant","content":[{"text":"I''ll
-      use the test tool with the passphrase you provided.","type":"text"},{"id":"toolu_01CdpCuiVXrd7B3T2TqPbFQn","input":{"passphrase":"portal"},"name":"test_tool","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01CdpCuiVXrd7B3T2TqPbFQn","content":"Incorrect
-      passhrase: The correct passphrase is ''cake''","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","tools":[{"name":"test_tool","description":"A
+      use the test tool with the passphrase you provided.","type":"text"},{"id":"toolu_018r3ahM7MaKzR4Gq86zyKZM","input":{"passphrase":"portal"},"name":"passphrase_test_tool","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_018r3ahM7MaKzR4Gq86zyKZM","content":"Incorrect
+      passhrase: The correct passphrase is ''cake''. Try again.","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","tools":[{"name":"passphrase_test_tool","description":"A
       tool that must be called with a passphrase.","input_schema":{"properties":{"passphrase":{"title":"Passphrase","type":"string"}},"required":["passphrase"],"additionalProperties":false,"type":"object"},"strict":false,"cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
@@ -130,7 +130,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '889'
+      - '923'
       content-type:
       - application/json
       host:
@@ -166,16 +166,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/3VSy07DMBD8FcuXXlLUFCJBbnAoD8EBhHgKRZazNFYdO3jXlFL131kHqlJQT4l3
-        ZnZ2x17K1tdgZSm1VbGGIXrngIYHw/FoXIyK/EBm0tSMtzitRvlkPmnurvN4c+9eDy/Oxif7j/f1
-        DXNo0UFiAaKaAheCt6mgEA2ScsQl7R0B/5XPyzWf4CMh/aeU5ySs9zMU1sxAUAOiY33XBIUgBp0P
-        pOxAzBUK47QPATTtiVumkfdWBKAYHNQsVNSrfzi/uxgUA61mMNgTl0CiZW1YCDVVxom5oWaHrpSr
-        bDM0u1URYR1NOkcO5+FqcVW0OXWv+efp8dHk7O2yPXxillPt97JIVSInoesir7yUG490CTyZXK1e
-        MonkuyqA4vvYduwBhLcITrPERWszGfvQuVvflj1m4FCWRV5w6ko3UGnuRca7apsxWuMM17uwtTYZ
-        QNdAC0HZqmj/8zdo3vxFV5n0kX6Xjng6hPBuNFRkIPCi6anUKtQcwheq1K/3mwIAAA==
+        H4sIAAAAAAAA/3VSbWvCMBD+KyFf/FKHinXYbw72ArqxgSBjjHKkhw22SU0ucyL+913Kirrhlza5
+        5+VyT3KQtS2wkplUFYQC+94ag9Qf90eDUTpIh2OZSF0wXvt1PhjOJqvd/ax086fly5uq0TdmC4E5
+        tG8wstB7WCMXnK1iAbzXnsAQl5Q1hLzKPg4dn/A7Iu0vk8sSRcOKpnTgUfQa6wiqntiBF9oo6xwq
+        uhGRRtZWXCu0AsJCUAnEHxS/pHMb7UVPwQZ7N2KBJGoWu72ANWgjdprKK7pMHpPTObldHjx2acR9
+        4Dxe7e1sttXT97lb340X0+3z6uFxxywDddSd7HJCT3nURQ/TBB74cIbHK+BDyuPxM5GebJM7BL6N
+        y+Yt4HEb0CiWmFBViQxt5OzW2nKPDRovs3SUcuagSswVe5G2Jr9kDDqc4eIa1mljA2xKrNFBlaf1
+        f/4JHZZ/0WMibaDz0nTC46D70oqz0eh40PhQCnAFh/AD0qT1QpkCAAA=
     headers:
       CF-RAY:
-      - 9c11fdaf0ced7628-SEA
+      - 9c23fe6b3bf411f1-LAX
       Connection:
       - keep-alive
       Content-Encoding:
@@ -183,7 +183,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 20 Jan 2026 22:26:03 GMT
+      - Fri, 23 Jan 2026 02:52:16 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -197,44 +197,44 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2026-01-20T22:26:01Z'
+      - '2026-01-23T02:52:15Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2026-01-20T22:26:03Z'
+      - '2026-01-23T02:52:16Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2026-01-20T22:26:00Z'
+      - '2026-01-23T02:52:14Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2026-01-20T22:26:01Z'
+      - '2026-01-23T02:52:15Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CXKR4j4PACH7QgEWKdfMC
+      - req_011CXPYz47fezz3hCrozwfx2
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '2859'
+      - '2696'
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Use the test
       tool to retrieve the secret phrase. The passphrase is ''portal"},{"role":"assistant","content":[{"text":"I''ll
-      use the test tool with the passphrase you provided.","type":"text"},{"id":"toolu_01CdpCuiVXrd7B3T2TqPbFQn","input":{"passphrase":"portal"},"name":"test_tool","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01CdpCuiVXrd7B3T2TqPbFQn","content":"Incorrect
-      passhrase: The correct passphrase is ''cake''","cache_control":null}]},{"role":"assistant","content":[{"text":"It
-      looks like the passphrase ''portal'' was incorrect. The tool returned that the
-      correct passphrase is ''cake''. Let me try again with the correct passphrase:","type":"text"},{"id":"toolu_01XMyM5m1tpf1zGA9FHqLm8Z","input":{"passphrase":"cake"},"name":"test_tool","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01XMyM5m1tpf1zGA9FHqLm8Z","content":"The
-      cake is a lie.","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","tools":[{"name":"test_tool","description":"A
+      use the test tool with the passphrase you provided.","type":"text"},{"id":"toolu_018r3ahM7MaKzR4Gq86zyKZM","input":{"passphrase":"portal"},"name":"passphrase_test_tool","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_018r3ahM7MaKzR4Gq86zyKZM","content":"Incorrect
+      passhrase: The correct passphrase is ''cake''. Try again.","cache_control":null}]},{"role":"assistant","content":[{"text":"The
+      passphrase ''portal'' was incorrect. The tool indicated that the correct passphrase
+      is ''cake''. Let me try again with the correct passphrase:","type":"text"},{"id":"toolu_01Po7AAqi9YKrgB4L9qMWFGw","input":{"passphrase":"cake"},"name":"passphrase_test_tool","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01Po7AAqi9YKrgB4L9qMWFGw","content":"The
+      cake is a lie.","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","tools":[{"name":"passphrase_test_tool","description":"A
       tool that must be called with a passphrase.","input_schema":{"properties":{"passphrase":{"title":"Passphrase","type":"string"}},"required":["passphrase"],"additionalProperties":false,"type":"object"},"strict":false,"cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
@@ -248,7 +248,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1360'
+      - '1392'
       content-type:
       - application/json
       host:
@@ -284,15 +284,15 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/3WRy07DMBBFf8V4002KmtIWkR0SqFueYkGRZdnTxKpjB88Ygar8O5NAxUusbN9z
-        53HlvWyjBS8rabzOFqYYQwCaLqbz2Xw5W5YLWUhnmbdYq1m5Xl2cP6xLcGFXby+vQre9Tmc37KG3
-        DgYXIOoaWEjRD4JGdEg6EEsmBgK+VY/7g5/gdSDjUcnbbAw3OBL36EItqAFhYkpgSHTcqGuSRhAT
-        o3cwKUZMgCQoRi8SUE4B7CgjGH6Lj4JKbOTd0IrLhEOhhXdwvJGyfyokUuxUAs25eQEIVg1t5CdA
-        eM4QDG8asveFzGO4ai9d6DIpijsIKKvV/JTTadOA4rmaXAzqp2N24Iztf+xQOwyAroEWkvZq2f71
-        f9Gy+U37QsZM36UTrkBIL86AIgeJgw5fYnWysu/fAV8LaF8DAgAA
+        H4sIAAAAAAAA/3WQXUvDMBiF/0rMdSdtXYf0Th0ieCV4M5yELDlbw9Kk5mMqo//dpDD8GF4lOc95
+        Oe/JkfZWQtOWCs2jxMxbYxBm81ld1k3ZVHNaUCUT7/2OldVie7vcNE938v1huTfb6n5187gyyRM+
+        B2QXvOc7JMFZnQXuvfKBm5AkYU1AurUvx5M/4COT6WjpcwfiIRwCGTrHPUjHPdkAhiTNKRwgL8i5
+        S/mWrKdpwff5STjRCpdrSsfXgvpgB+bAU7cUAiNZiC4vPQGPtwgj0jYmal3QOBVoj1SZIQYW7B7G
+        03ZxdZ0acNGBpWgelDXst6M88YTlf+w0mwMwdOjhuGZNf+7/plX3l44FtTH8lOo61YE7KAEWFFwq
+        mr9dcifpOH4BCfekp+cBAAA=
     headers:
       CF-RAY:
-      - 9c11fdc17dd17628-SEA
+      - 9c23fe7d0b9811f1-LAX
       Connection:
       - keep-alive
       Content-Encoding:
@@ -300,7 +300,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 20 Jan 2026 22:26:05 GMT
+      - Fri, 23 Jan 2026 02:52:19 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -314,33 +314,33 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2026-01-20T22:26:04Z'
+      - '2026-01-23T02:52:18Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2026-01-20T22:26:05Z'
+      - '2026-01-23T02:52:19Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2026-01-20T22:26:03Z'
+      - '2026-01-23T02:52:16Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2026-01-20T22:26:04Z'
+      - '2026-01-23T02:52:18Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CXKR4wfupBbBLzdbCCvpD
+      - req_011CXPYzGJPkPxZ2gRHjjE1S
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '2400'
+      - '2555'
     status:
       code: 200
       message: OK
