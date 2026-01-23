@@ -4527,8 +4527,8 @@
                 "properties": {
                   "recipientEmail": {
                     "type": "string",
-                    "description": "a string matching the pattern ^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$",
-                    "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
+                    "description": "a string matching the pattern ^[^ \\t\\n\\r\\f\\v@]+@[^ \\t\\n\\r\\f\\v@]+[.][^ \\t\\n\\r\\f\\v@]+$",
+                    "pattern": "^[^ \\t\\n\\r\\f\\v@]+@[^ \\t\\n\\r\\f\\v@]+[.][^ \\t\\n\\r\\f\\v@]+$"
                   },
                   "role": {
                     "type": "string",

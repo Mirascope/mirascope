@@ -1682,7 +1682,7 @@ client.organization_invitations.create(
 <dl>
 <dd>
 
-**recipient_email:** `str` — a string matching the pattern ^[^\s@]+@[^\s@]+\.[^\s@]+$
+**recipient_email:** `str` — a string matching the pattern ^[^ \t\n\r\f\v@]+@[^ \t\n\r\f\v@]+[.][^ \t\n\r\f\v@]+$
     
 </dd>
 </dl>

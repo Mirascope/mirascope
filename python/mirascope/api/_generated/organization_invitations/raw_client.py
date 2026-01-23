@@ -172,7 +172,7 @@ class RawOrganizationInvitationsClient:
         organization_id : str
 
         recipient_email : str
-            a string matching the pattern ^[^\s@]+@[^\s@]+\.[^\s@]+$
+            a string matching the pattern ^[^ \t\n\r\f\v@]+@[^ \t\n\r\f\v@]+[.][^ \t\n\r\f\v@]+$
 
         role : OrganizationInvitationsCreateRequestRole
 
@@ -911,7 +911,7 @@ class AsyncRawOrganizationInvitationsClient:
         organization_id : str
 
         recipient_email : str
-            a string matching the pattern ^[^\s@]+@[^\s@]+\.[^\s@]+$
+            a string matching the pattern ^[^ \t\n\r\f\v@]+@[^ \t\n\r\f\v@]+[.][^ \t\n\r\f\v@]+$
 
         role : OrganizationInvitationsCreateRequestRole
 
