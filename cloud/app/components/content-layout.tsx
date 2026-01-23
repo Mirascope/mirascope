@@ -26,6 +26,7 @@ const SidebarContext = createContext<SidebarContextType>({
     close: () => {},
     closeBtnRef: { current: null },
     previouslyFocusedElementRef: { current: null },
+    setSkipNextClose: () => {},
   },
   rightSidebar: {
     isOpen: false,
@@ -35,8 +36,14 @@ const SidebarContext = createContext<SidebarContextType>({
     close: () => {},
     closeBtnRef: { current: null },
     previouslyFocusedElementRef: { current: null },
+    setSkipNextClose: () => {},
   },
 });
+
+/**
+ * Hook to access the sidebar context from child components
+ */
+export const useSidebarContext = () => useContext(SidebarContext);
 
 /**
  * Toggle button for controlling sidebars with consistent styling
@@ -74,7 +81,7 @@ const SidebarToggle = ({
       size="icon"
       onClick={onClick}
       className={cn(
-        "z-80 rounded-full border p-0 shadow-md",
+        "z-85 rounded-full border p-0 shadow-md",
         "h-6 w-6",
         isOpen ? "bg-muted" : "bg-background",
         className,
@@ -225,7 +232,7 @@ ContentLayout.LeftSidebar = ({
         {collapsible && (
           <div
             className={cn(
-              "fixed left-4 z-80 md:hidden",
+              "fixed left-4 z-85 md:hidden",
               rightSidebarIsOpen && "hidden", // Hide when right sidebar is open
             )}
             style={{ top: SIDEBAR_TOGGLE_POSITION }}
@@ -344,7 +351,7 @@ ContentLayout.RightSidebar = ({
           {/* Mobile toggle button - hidden when left sidebar is open or on large screens */}
           <div
             className={cn(
-              "fixed right-4 z-80 lg:hidden",
+              "fixed right-4 z-85 lg:hidden",
               leftIsOpen && "hidden",
             )}
             style={{ top: SIDEBAR_TOGGLE_POSITION }}
