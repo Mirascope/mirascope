@@ -2,37 +2,30 @@ import {
   getDocsFromSpec,
   type DocInfo,
   type FullDocsSpec,
+  type SectionSpec,
   type VersionSpec,
 } from "../../cloud/app/lib/content/spec";
 import api from "./api/_meta";
-import llm from "./llm/_meta";
-import ops from "./ops/_meta";
+import guides from "./guides/_meta";
+import learn from "./learn/_meta";
 import v1 from "./v1/_meta";
 
-const v2: VersionSpec = {
-  sections: [
-    {
-      label: "Docs",
-      slug: "index",
-      weight: 3,
-      children: [
-        {
-          slug: "index",
-          label: "Quickstart",
-        },
-        {
-          slug: "contributing",
-          label: "Contributing",
-        },
-        llm,
-        ops,
-      ],
-    },
-    api,
+// Welcome section - content at docs root level
+const welcome: SectionSpec = {
+  slug: "index", // "index" means content lives at docs root
+  label: "Welcome",
+  children: [
+    { slug: "index", label: "Welcome" },
+    { slug: "contributing", label: "Contributing" },
   ],
 };
 
-export const docsSpec: FullDocsSpec = [v2, v1];
+// Single version with all sections including v1 as a regular section
+const docs: VersionSpec = {
+  sections: [welcome, learn, guides, api, v1],
+};
+
+export const docsSpec: FullDocsSpec = [docs];
 
 export const docInfos = getDocsFromSpec(docsSpec);
 

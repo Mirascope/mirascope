@@ -1,0 +1,27 @@
+---
+title: Agents
+description: Learn how to build LLM agents that use tools to accomplish tasks autonomously.
+---
+
+# Agents
+
+Agents are LLM-powered systems that use tools to accomplish tasks on your behalf. The core pattern is simple: call the LLM, execute any requested tools, and repeat until done.
+
+Here's a fully-functional coding agent built with Mirascope. It uses [Thinking](/docs/learn/llm/thinking) to reason through problems, [Tools](/docs/learn/llm/tools) to read and write files, and [Streaming](/docs/learn/llm/streaming) for real-time feedback as it works.
+
+<CodeExample file="python/examples/agents/basic.py" />
+
+This example is simple, but it demonstrates the power of Mirascope's abstractions. It serves as a starting point for building more sophisticated agents. Some directions to explore:
+
+- [Context](/docs/learn/llm/context) — Encapsulate the workspace the agent operates in
+- [MCP](/docs/learn/llm/mcp) — Add capabilities like a language server for smarter code assistance
+- [Reliability](/docs/learn/llm/reliability) — Handle failures gracefully with retries and fallbacks
+- Human-in-the-loop — Let the agent ask clarifying questions or request feedback
+
+## Next Steps
+
+- [Tools](/docs/learn/llm/tools) — Tool calling fundamentals
+- [Streaming](/docs/learn/llm/streaming) — Streaming patterns in depth
+- [Async](/docs/learn/llm/async) — Concurrent tool execution
+- [Context](/docs/learn/llm/context) — Inject dependencies into agent tools
+- [MCP](/docs/learn/llm/mcp) — Connect to external tool servers

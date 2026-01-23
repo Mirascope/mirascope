@@ -8,7 +8,7 @@ description: Learn how to use local models with Mirascope via Ollama, vLLM, and 
 Mirascope supports local models through built-in providers and OpenAI-compatible routing. This lets you run models on your own hardware for privacy, cost savings, or offline access.
 
 <Note>
-This guide builds on concepts from [Providers](/docs/llm/providers). Read that first to understand how provider registration and routing work.
+This guide builds on concepts from [Providers](/docs/learn/llm/providers). Read that first to understand how provider registration and routing work.
 </Note>
 
 ## Ollama
@@ -17,7 +17,7 @@ This guide builds on concepts from [Providers](/docs/llm/providers). Read that f
 
 <CodeExample file="python/examples/local_models/local_ollama.py" />
 
-The Ollama provider connects to `http://localhost:11434/v1/` by default. Set the `OLLAMA_BASE_URL` environment variable to use a different endpoint, or use `llm.register_provider()` to configure it programmatically. See [Providers](/docs/llm/providers) for details.
+The Ollama provider connects to `http://localhost:11434/v1/` by default. Set the `OLLAMA_BASE_URL` environment variable to use a different endpoint, or use `llm.register_provider()` to configure it programmatically. See [Providers](/docs/learn/llm/providers) for details.
 
 ## vLLM and OpenAI-Compatible Servers
 
@@ -41,6 +41,6 @@ The MLX provider currently supports basic text generation and streaming. Tools a
 
 ## Next Steps
 
-- [Providers](/docs/llm/providers) — Configure provider settings and routing
-- [Streaming](/docs/llm/streaming) — Stream responses from local models
-- [Tools](/docs/llm/tools) — Use tools with Ollama and vLLM
+- [Providers](/docs/learn/llm/providers) — Configure provider settings and routing
+- [Streaming](/docs/learn/llm/streaming) — Stream responses from local models
+- [Tools](/docs/learn/llm/tools) — Use tools with Ollama and vLLM

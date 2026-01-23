@@ -53,7 +53,7 @@ Configure model behavior by passing parameters to `llm.use_model()` or `llm.Mode
 | `top_k` | `int` | Limits token selection to the k most probable tokens (typically 1 to 100). Combined with `top_p` and `temperature` for final token selection. |
 | `seed` | `int` | Random seed for reproducibility. When set, the model makes a best effort to produce the same response for repeated requests. |
 | `stop_sequences` | `list[str]` | Sequences that stop generation when encountered. The model will stop producing output if any of these strings appear in the response. |
-| `thinking` | `ThinkingConfig` | Configuration for extended reasoning. See [Thinking](/docs/llm/thinking). |
+| `thinking` | `ThinkingConfig` | Configuration for extended reasoning. See [Thinking](/docs/learn/llm/thinking). |
 
 <Note>
 Not every provider supports every parameter. Unsupported parameters are logged and ignored.
@@ -65,6 +65,6 @@ For the full list of `Model` properties and methods, see the [API Reference](/do
 
 Now that you can call models, learn about:
 
-- [Responses](/docs/llm/responses) — Working with LLM responses
-- [Streaming](/docs/llm/streaming) — Streaming response content
-- [Tools](/docs/llm/tools) — Enabling LLMs to call functions
+- [Responses](/docs/learn/llm/responses) — Working with LLM responses
+- [Streaming](/docs/learn/llm/streaming) — Streaming response content
+- [Tools](/docs/learn/llm/tools) — Enabling LLMs to call functions
