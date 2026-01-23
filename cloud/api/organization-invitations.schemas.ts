@@ -52,7 +52,7 @@ export const OrganizationInvitationWithMetadataSchema = Schema.Struct({
 
 // Email validation
 const EmailSchema = Schema.String.pipe(
-  Schema.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, {
+  Schema.pattern(/^[^ \t\n\r\f\v@]+@[^ \t\n\r\f\v@]+[.][^ \t\n\r\f\v@]+$/, {
     message: () => "Invalid email format",
   }),
 );
