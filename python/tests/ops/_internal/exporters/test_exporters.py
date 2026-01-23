@@ -468,15 +468,18 @@ def test_export_with_various_resource_attribute_types(
     sent_data = mirascope_client.traces.create.call_args[1]["resource_spans"]
     assert len(sent_data) == 1
 
-    resource_attrs = {
-        attr.key: (
-            attr.value.string_value
-            or attr.value.bool_value
-            or attr.value.int_value
-            or attr.value.double_value
-        )
-        for attr in sent_data[0].resource.attributes
-    }
+    resource_attrs = {}
+    for attr in sent_data[0].resource.attributes:
+        if attr.value.array_value is not None:
+            # Extract typed AnyValue elements
+            resource_attrs[attr.key] = attr.value.array_value.values
+        else:
+            resource_attrs[attr.key] = (
+                attr.value.string_value
+                or attr.value.bool_value
+                or attr.value.int_value
+                or attr.value.double_value
+            )
 
     assert resource_attrs == snapshot(
         {
@@ -487,7 +490,7 @@ def test_export_with_various_resource_attribute_types(
             "service.enabled": True,
             "service.instance.count": "42",
             "service.load": 3.14,
-            "service.tags": "['tag1', 'tag2']",
+            "service.tags": [{"stringValue": "tag1"}, {"stringValue": "tag2"}],
         }
     )
 
@@ -619,7 +622,20 @@ def test_export_span_with_events(
 
     sequence_event = events[4]
     assert sequence_event["attributes"] == snapshot(
-        [{"key": "sequence_attr", "value": {"stringValue": "['a', 'b', 'c']"}}]
+        [
+            {
+                "key": "sequence_attr",
+                "value": {
+                    "arrayValue": {
+                        "values": [
+                            {"stringValue": "a"},
+                            {"stringValue": "b"},
+                            {"stringValue": "c"},
+                        ]
+                    }
+                },
+            }
+        ]
     )
 
     multi_attr_event = events[5]
@@ -629,3 +645,139 @@ def test_export_span_with_events(
             {"key": "num", "value": {"intValue": "123"}},
         ]
     )
+
+
+def test_span_sequence_attribute_exported_as_array_value(
+    mirascope_client: Mirascope,
+    mock_span_ids: None,
+) -> None:
+    """Test that span sequence attributes are exported as arrayValue, not stringValue."""
+    mirascope_client.traces.create = MagicMock(return_value=None)
+
+    resource = Resource.create({"service.name": "test-service"})
+    provider = TracerProvider(resource=resource, id_generator=RandomIdGenerator())
+    memory_exporter = InMemorySpanExporter()
+    processor = SimpleSpanProcessor(memory_exporter)
+    provider.add_span_processor(processor)
+
+    otlp_exporter = MirascopeOTLPExporter(
+        client=mirascope_client,
+    )
+
+    tracer = provider.get_tracer("array-value-test-tracer")
+    with tracer.start_as_current_span("span-with-sequence-attrs") as span:
+        span.set_attribute("mirascope.trace.tags", ["ml", "production"])
+        span.set_attribute("mirascope.version.tags", ["v1", "stable"])
+
+    provider.force_flush()
+    spans = memory_exporter.get_finished_spans()
+
+    result = otlp_exporter.export(spans)
+    assert result == SpanExportResult.SUCCESS
+
+    mirascope_client.traces.create.assert_called_once()
+    sent_data = mirascope_client.traces.create.call_args[1]["resource_spans"]
+    exported_span = sent_data[0].scope_spans[0].spans[0]
+
+    span_attrs = {attr.key: attr.value for attr in exported_span.attributes}
+
+    trace_tags_value = span_attrs["mirascope.trace.tags"]
+    assert trace_tags_value.string_value is None
+    assert trace_tags_value.array_value is not None
+    assert trace_tags_value.array_value.values == [
+        {"stringValue": "ml"},
+        {"stringValue": "production"},
+    ]
+
+    version_tags_value = span_attrs["mirascope.version.tags"]
+    assert version_tags_value.string_value is None
+    assert version_tags_value.array_value is not None
+    assert version_tags_value.array_value.values == [
+        {"stringValue": "v1"},
+        {"stringValue": "stable"},
+    ]
+
+
+def test_format_trace_id() -> None:
+    """Test format_trace_id utility function."""
+    from mirascope.ops._internal.exporters.utils import format_trace_id
+
+    assert format_trace_id(1) == "00000000000000000000000000000001"
+    assert format_trace_id(255) == "000000000000000000000000000000ff"
+    assert (
+        format_trace_id(0x0123456789ABCDEF0123456789ABCDEF)
+        == "0123456789abcdef0123456789abcdef"
+    )
+
+
+def test_format_span_id() -> None:
+    """Test format_span_id utility function."""
+    from mirascope.ops._internal.exporters.utils import format_span_id
+
+    assert format_span_id(1) == "0000000000000001"
+    assert format_span_id(255) == "00000000000000ff"
+    assert format_span_id(0x0123456789ABCDEF) == "0123456789abcdef"
+
+
+def test_to_otlp_any_value_fallback_for_unsupported_types() -> None:
+    """Test to_otlp_any_value fallback for bytes-like, Mapping, and non-iterable types."""
+    from mirascope.ops._internal.exporters.utils import to_otlp_any_value
+
+    assert to_otlp_any_value(b"hello")["stringValue"] == "b'hello'"
+    assert "bytearray" in to_otlp_any_value(bytearray(b"hello"))["stringValue"]  # type: ignore[arg-type]
+    assert "memory" in to_otlp_any_value(memoryview(b"hello"))["stringValue"]  # type: ignore[arg-type]
+    assert to_otlp_any_value({"key": "value"})["stringValue"] == "{'key': 'value'}"  # type: ignore[arg-type]
+
+    class NonIterable:
+        def __str__(self) -> str:
+            return "non-iterable-object"
+
+    result = to_otlp_any_value(NonIterable())  # type: ignore[arg-type]
+    assert result == {"stringValue": "non-iterable-object"}
+
+
+def test_processor_on_start_after_shutdown() -> None:
+    """Test that on_start does nothing after shutdown."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    from mirascope.ops._internal.exporters.processors import MirascopeSpanProcessor
+
+    otlp_exporter = Mock()
+    executor = ThreadPoolExecutor(max_workers=1)
+
+    processor = MirascopeSpanProcessor(
+        otlp_exporter=otlp_exporter,
+        batch_processor=None,
+        executor=executor,
+    )
+
+    # Shutdown first
+    processor.shutdown()
+
+    # on_start should do nothing after shutdown
+    span = Mock()
+    processor.on_start(span)
+
+    # Verify exporter.export was NOT called (since shutdown)
+    otlp_exporter.export.assert_not_called()
+
+
+def test_processor_force_flush_without_batch_processor() -> None:
+    """Test force_flush returns True when no batch_processor."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    from mirascope.ops._internal.exporters.processors import MirascopeSpanProcessor
+
+    otlp_exporter = Mock()
+    executor = ThreadPoolExecutor(max_workers=1)
+
+    processor = MirascopeSpanProcessor(
+        otlp_exporter=otlp_exporter,
+        batch_processor=None,
+        executor=executor,
+    )
+
+    # force_flush should return True when no batch_processor
+    assert processor.force_flush() is True
+
+    processor.shutdown()

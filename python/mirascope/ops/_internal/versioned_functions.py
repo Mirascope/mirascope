@@ -196,7 +196,7 @@ class _BaseVersionedFunction(_BaseTracedFunction[P, R, Any]):
             if self.name:
                 span.set(**{"mirascope.version.name": self.name})
             if self.tags:
-                span.set(**{"mirascope.version.tags": self.tags})
+                span.set(**{"mirascope.version.tags": list(self.tags)})
             if self.metadata:
                 for key, value in self.metadata.items():
                     span.set(**{f"mirascope.version.meta.{key}": value})
