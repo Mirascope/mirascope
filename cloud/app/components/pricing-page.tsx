@@ -116,7 +116,8 @@ function UsageIndicator({ label, current, limit }: UsageIndicatorProps) {
       <div className="flex justify-between text-sm">
         <span className="text-muted-foreground">{label}</span>
         <span className={cn("font-medium", isOverLimit && "text-destructive")}>
-          {current}/{isUnlimited ? <span className="text-xl">∞</span> : limit}
+          {current}/
+          {isUnlimited ? <span className="text-l font-sans">∞</span> : limit}
         </span>
       </div>
       <div className="bg-muted h-2 overflow-hidden rounded-full">
