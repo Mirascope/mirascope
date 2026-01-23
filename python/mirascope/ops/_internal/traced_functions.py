@@ -200,7 +200,7 @@ class _BaseTracedFunction(_BaseFunction[P, R, FunctionT]):
                 "mirascope.trace.arg_values": json_dumps(arg_values),
             }
             if self.tags:
-                attributes["mirascope.trace.tags"] = self.tags
+                attributes["mirascope.trace.tags"] = list(self.tags)
             if self.metadata:
                 attributes["mirascope.trace.metadata"] = json_dumps(self.metadata)
             span.set(**attributes)
@@ -314,7 +314,7 @@ class _BaseTracedContextFunction(
                 "mirascope.trace.arg_values": json_dumps(arg_values),
             }
             if self.tags:
-                attributes["mirascope.trace.tags"] = self.tags
+                attributes["mirascope.trace.tags"] = list(self.tags)
             if self.metadata:
                 attributes["mirascope.trace.metadata"] = json_dumps(self.metadata)
             span.set(**attributes)
