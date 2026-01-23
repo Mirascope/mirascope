@@ -1,0 +1,756 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: tracing
+description: API documentation for tracing
+---
+
+# tracing
+
+## <ApiType type="Class" slug="trace-decorator" symbolName="TraceDecorator" /> TraceDecorator
+
+Decorator implementation for adding tracing capabilities to functions.
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "tags",
+    "type_info": {
+      "type_str": "tuple[str, ...]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "tuple",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "tuple",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "...",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "...",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Tags to be associated with traced function calls."
+  },
+  {
+    "name": "metadata",
+    "type_info": {
+      "type_str": "dict[str, str]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "dict",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "dict",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Arbitrary key-value pairs for additional metadata."
+  }
+]}
+/>
+
+
+## <ApiType type="Function" slug="trace_fn" symbolName="trace" /> trace
+
+Decorator for adding tracing capabilities to functions and LLM calls.
+
+Creates a wrapper that enables distributed tracing, performance monitoring,
+and execution tracking for decorated functions. When called, the decorated
+function returns a Trace containing both the result and span info.
+
+When decorating an @llm.call function, returns a TracedCall that wraps both
+the call and stream methods with tracing capabilities.
+
+If the decorated function has `trace_ctx: Span` as its first parameter,
+the span will be injected automatically and callers should NOT pass it.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "__fn",
+    "type_info": {
+      "type_str": "AsyncContextCall[P, DepsT, FormattableT] | ContextCall[P, DepsT, FormattableT] | AsyncCall[P, FormattableT] | Call[P, FormattableT] | AsyncSpanFunction[P, R] | SyncSpanFunction[P, R] | AsyncFunction[P, R] | SyncFunction[P, R] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "AsyncContextCall[P, DepsT, FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "AsyncContextCall",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "AsyncContextCall",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": null
+            },
+            {
+              "type_str": "DepsT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "DepsT",
+              "doc_url": null
+            },
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "ContextCall[P, DepsT, FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "ContextCall",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "ContextCall",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": null
+            },
+            {
+              "type_str": "DepsT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "DepsT",
+              "doc_url": null
+            },
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "AsyncCall[P, FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "AsyncCall",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "AsyncCall",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": null
+            },
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "Call[P, FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Call",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Call",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": null
+            },
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "AsyncSpanFunction[P, R]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "AsyncSpanFunction",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "AsyncSpanFunction",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": null
+            },
+            {
+              "type_str": "R",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "R",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "SyncSpanFunction[P, R]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "SyncSpanFunction",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "SyncSpanFunction",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": null
+            },
+            {
+              "type_str": "R",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "R",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "AsyncFunction[P, R]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "AsyncFunction",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "AsyncFunction",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": null
+            },
+            {
+              "type_str": "R",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "R",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "SyncFunction[P, R]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "SyncFunction",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "SyncFunction",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": null
+            },
+            {
+              "type_str": "R",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "R",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "The function or Call object to decorate."
+  },
+  {
+    "name": "tags",
+    "type_info": {
+      "type_str": "Sequence[str] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Sequence[str]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Sequence",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Sequence",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Sequence"
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "str",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional list of string tags to associate with traced executions."
+  },
+  {
+    "name": "metadata",
+    "type_info": {
+      "type_str": "dict[str, str] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "dict[str, str]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "dict",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "dict",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#dict"
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "str",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            },
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "str",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Arbitrary key-value pairs for additional metadata."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "TracedAsyncContextCall[P, DepsT, FormattableT] | TracedContextCall[P, DepsT, FormattableT] | TracedAsyncCall[P, FormattableT] | TracedCall[P, FormattableT] | AsyncTracedSpanFunction[P, R] | TracedSpanFunction[P, R] | AsyncTracedFunction[P, R] | TracedFunction[P, R] | TraceDecorator",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "TracedAsyncContextCall[P, DepsT, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "TracedAsyncContextCall",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "TracedAsyncContextCall",
+          "doc_url": "/docs/mirascope/v2/api/ops/traced-calls#traced-async-context-call"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": null
+          },
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "TracedContextCall[P, DepsT, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "TracedContextCall",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "TracedContextCall",
+          "doc_url": "/docs/mirascope/v2/api/ops/traced-calls#traced-context-call"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": null
+          },
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "TracedAsyncCall[P, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "TracedAsyncCall",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "TracedAsyncCall",
+          "doc_url": "/docs/mirascope/v2/api/ops/traced-calls#traced-async-call"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "TracedCall[P, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "TracedCall",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "TracedCall",
+          "doc_url": "/docs/mirascope/v2/api/ops/traced-calls#traced-call"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "AsyncTracedSpanFunction[P, R]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncTracedSpanFunction",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncTracedSpanFunction",
+          "doc_url": "/docs/mirascope/v2/api/ops/traced-functions#async-traced-span-function"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": null
+          },
+          {
+            "type_str": "R",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "R",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "TracedSpanFunction[P, R]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "TracedSpanFunction",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "TracedSpanFunction",
+          "doc_url": "/docs/mirascope/v2/api/ops/traced-functions#traced-span-function"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": null
+          },
+          {
+            "type_str": "R",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "R",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "AsyncTracedFunction[P, R]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncTracedFunction",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncTracedFunction",
+          "doc_url": "/docs/mirascope/v2/api/ops/traced-functions#async-traced-function"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": null
+          },
+          {
+            "type_str": "R",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "R",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "TracedFunction[P, R]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "TracedFunction",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "TracedFunction",
+          "doc_url": "/docs/mirascope/v2/api/ops/traced-functions#traced-function"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": null
+          },
+          {
+            "type_str": "R",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "R",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "TraceDecorator",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "TraceDecorator",
+        "doc_url": "/docs/mirascope/v2/api/ops/tracing#trace-decorator"
+      }
+    ],
+    "doc_url": null
+  },
+  "description": "A decorator that wraps functions with tracing capabilities."
+}}
+/>
+
+

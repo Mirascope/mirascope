@@ -28,8 +28,10 @@ function generateApiDocs(): void {
   let outputPath: string | undefined;
   let packageName: string | undefined;
   let apiRoot: string | undefined;
+  let internalStructure = false;
   let productSlug: string | undefined;
   let productLabel: string | undefined;
+  let append = false;
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "--source-path" && i + 1 < args.length) {
@@ -44,12 +46,16 @@ function generateApiDocs(): void {
     } else if (args[i] === "--api-root" && i + 1 < args.length) {
       apiRoot = args[i + 1];
       i++;
+    } else if (args[i] === "--internal-structure") {
+      internalStructure = true;
     } else if (args[i] === "--product-slug" && i + 1 < args.length) {
       productSlug = args[i + 1];
       i++;
     } else if (args[i] === "--product-label" && i + 1 < args.length) {
       productLabel = args[i + 1];
       i++;
+    } else if (args[i] === "--append") {
+      append = true;
     }
   }
 
@@ -65,7 +71,7 @@ function generateApiDocs(): void {
     console.error("Error: Missing required arguments");
     console.error("\nUsage:");
     console.error(
-      "  bun run api2mdx/generate-api-docs.ts --source-path <path> --package <name> --output <path> --api-root <path> --product-slug <slug> --product-label <label>",
+      "  bun run api2mdx/generate-api-docs.ts --source-path <path> --package <name> --output <path> --api-root <path> --product-slug <slug> --product-label <label> [--internal-structure] [--append]",
     );
     console.error("\nExample:");
     console.error(
@@ -80,6 +86,12 @@ function generateApiDocs(): void {
   console.log(`  Output: ${outputPath}`);
   console.log(`  API Root: ${apiRoot}`);
   console.log(`  Product: ${productSlug}/ (${productLabel})`);
+  if (internalStructure) {
+    console.log(`  Structure: internal (from _internal imports)`);
+  }
+  if (append) {
+    console.log(`  Append Mode: enabled`);
+  }
 
   const api2mdxDir = resolve(import.meta.dirname, ".");
 
@@ -100,6 +112,14 @@ function generateApiDocs(): void {
     "--product-label",
     productLabel,
   ];
+
+  if (internalStructure) {
+    uvArgs.push("--internal-structure");
+  }
+
+  if (append) {
+    uvArgs.push("--append");
+  }
 
   run("uv", uvArgs, api2mdxDir);
 

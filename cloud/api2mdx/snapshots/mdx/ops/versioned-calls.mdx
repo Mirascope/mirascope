@@ -1,0 +1,1977 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: versioned_calls
+description: API documentation for versioned_calls
+---
+
+# versioned_calls
+
+## <ApiType type="Class" slug="versioned-async-call" symbolName="VersionedAsyncCall" /> VersionedAsyncCall
+
+Versioned wrapper for asynchronous AsyncCall objects.
+
+**Bases:** 
+<TypeLink type={{"type_str": "_BaseVersionedCall", "description": null, "kind": "simple", "symbol_name": "_BaseVersionedCall", "doc_url": null}} />, <TypeLink type={{"type_str": "Generic[P, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": null}], "doc_url": null}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "call",
+    "type_info": {
+      "type_str": "AsyncVersionedFunction[P, AsyncResponse | AsyncResponse[FormattableT]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "AsyncVersionedFunction",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "AsyncVersionedFunction",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "P",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "P",
+          "doc_url": null
+        },
+        {
+          "type_str": "AsyncResponse | AsyncResponse[FormattableT]",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Union",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "AsyncResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "AsyncResponse",
+              "doc_url": null
+            },
+            {
+              "type_str": "AsyncResponse[FormattableT]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "AsyncResponse",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "AsyncResponse",
+                "doc_url": null
+              },
+              "parameters": [
+                {
+                  "type_str": "FormattableT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "FormattableT",
+                  "doc_url": null
+                }
+              ],
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "AsyncVersionedFunction wrapping the call method."
+  },
+  {
+    "name": "stream",
+    "type_info": {
+      "type_str": "AsyncVersionedFunction[P, AsyncStreamResponse | AsyncStreamResponse[FormattableT]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "AsyncVersionedFunction",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "AsyncVersionedFunction",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "P",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "P",
+          "doc_url": null
+        },
+        {
+          "type_str": "AsyncStreamResponse | AsyncStreamResponse[FormattableT]",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Union",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "AsyncStreamResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "AsyncStreamResponse",
+              "doc_url": null
+            },
+            {
+              "type_str": "AsyncStreamResponse[FormattableT]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "AsyncStreamResponse",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "AsyncStreamResponse",
+                "doc_url": null
+              },
+              "parameters": [
+                {
+                  "type_str": "FormattableT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "FormattableT",
+                  "doc_url": null
+                }
+              ],
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "AsyncVersionedFunction wrapping the stream method."
+  }
+]}
+/>
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-versioned_calls--versioned-async-call-wrapped" symbolName="wrapped" /> wrapped
+
+Call the versioned function and return a wrapped Response.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncVersionedResult[AsyncResponse | AsyncResponse[FormattableT]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "AsyncVersionedResult",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AsyncVersionedResult",
+      "doc_url": null
+    },
+    "parameters": [
+      {
+        "type_str": "AsyncResponse | AsyncResponse[FormattableT]",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "AsyncResponse",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "AsyncResponse",
+            "doc_url": null
+          },
+          {
+            "type_str": "AsyncResponse[FormattableT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "AsyncResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "AsyncResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "FormattableT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "FormattableT",
+                "doc_url": null
+              }
+            ],
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-versioned_calls--versioned-async-call-wrapped_stream" symbolName="wrapped_stream" /> wrapped_stream
+
+Stream the versioned function and return a wrapped StreamResponse.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncVersionedResult[AsyncStreamResponse | AsyncStreamResponse[FormattableT]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "AsyncVersionedResult",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AsyncVersionedResult",
+      "doc_url": null
+    },
+    "parameters": [
+      {
+        "type_str": "AsyncStreamResponse | AsyncStreamResponse[FormattableT]",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "AsyncStreamResponse",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "AsyncStreamResponse",
+            "doc_url": null
+          },
+          {
+            "type_str": "AsyncStreamResponse[FormattableT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "AsyncStreamResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "AsyncStreamResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "FormattableT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "FormattableT",
+                "doc_url": null
+              }
+            ],
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="versioned-async-context-call" symbolName="VersionedAsyncContextCall" /> VersionedAsyncContextCall
+
+Versioned wrapper for asynchronous AsyncContextCall objects.
+
+**Bases:** 
+<TypeLink type={{"type_str": "_BaseVersionedCall", "description": null, "kind": "simple", "symbol_name": "_BaseVersionedCall", "doc_url": null}} />, <TypeLink type={{"type_str": "Generic[P, DepsT, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": null}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": null}], "doc_url": null}} />
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-versioned_calls--versioned-async-context-call-call" symbolName="call" /> call
+
+Call the versioned function and return AsyncContextResponse directly.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "AsyncContextResponse[DepsT, None]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncContextResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncContextResponse",
+          "doc_url": null
+        },
+        "parameters": [
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "None",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "None",
+            "doc_url": "https://docs.python.org/3/library/constants.html#None"
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "AsyncContextResponse[DepsT, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncContextResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncContextResponse",
+          "doc_url": null
+        },
+        "parameters": [
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-versioned_calls--versioned-async-context-call-stream" symbolName="stream" /> stream
+
+Stream the versioned function and return an AsyncContextStreamResponse.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncContextStreamResponse[DepsT, None] | AsyncContextStreamResponse[DepsT, FormattableT]",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "AsyncContextStreamResponse[DepsT, None]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncContextStreamResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncContextStreamResponse",
+          "doc_url": null
+        },
+        "parameters": [
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "None",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "None",
+            "doc_url": "https://docs.python.org/3/library/constants.html#None"
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "AsyncContextStreamResponse[DepsT, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncContextStreamResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncContextStreamResponse",
+          "doc_url": null
+        },
+        "parameters": [
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-versioned_calls--versioned-async-context-call-wrapped" symbolName="wrapped" /> wrapped
+
+Call the versioned function and return a wrapped Response.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncVersionedResult[AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "AsyncVersionedResult",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AsyncVersionedResult",
+      "doc_url": null
+    },
+    "parameters": [
+      {
+        "type_str": "AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "AsyncContextResponse[DepsT, None]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "AsyncContextResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "AsyncContextResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "DepsT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "DepsT",
+                "doc_url": null
+              },
+              {
+                "type_str": "None",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "None",
+                "doc_url": "https://docs.python.org/3/library/constants.html#None"
+              }
+            ],
+            "doc_url": null
+          },
+          {
+            "type_str": "AsyncContextResponse[DepsT, FormattableT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "AsyncContextResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "AsyncContextResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "DepsT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "DepsT",
+                "doc_url": null
+              },
+              {
+                "type_str": "FormattableT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "FormattableT",
+                "doc_url": null
+              }
+            ],
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-versioned_calls--versioned-async-context-call-wrapped_stream" symbolName="wrapped_stream" /> wrapped_stream
+
+Stream the versioned function and return a wrapped StreamResponse.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncVersionedResult[AsyncContextStreamResponse[DepsT, None] | AsyncContextStreamResponse[DepsT, FormattableT]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "AsyncVersionedResult",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AsyncVersionedResult",
+      "doc_url": null
+    },
+    "parameters": [
+      {
+        "type_str": "AsyncContextStreamResponse[DepsT, None] | AsyncContextStreamResponse[DepsT, FormattableT]",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "AsyncContextStreamResponse[DepsT, None]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "AsyncContextStreamResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "AsyncContextStreamResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "DepsT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "DepsT",
+                "doc_url": null
+              },
+              {
+                "type_str": "None",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "None",
+                "doc_url": "https://docs.python.org/3/library/constants.html#None"
+              }
+            ],
+            "doc_url": null
+          },
+          {
+            "type_str": "AsyncContextStreamResponse[DepsT, FormattableT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "AsyncContextStreamResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "AsyncContextStreamResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "DepsT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "DepsT",
+                "doc_url": null
+              },
+              {
+                "type_str": "FormattableT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "FormattableT",
+                "doc_url": null
+              }
+            ],
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="versioned-call" symbolName="VersionedCall" /> VersionedCall
+
+Versioned wrapper for synchronous Call objects.
+
+When @ops.version decorates an @llm.call, it returns a VersionedCall that wraps
+the call and stream methods with versioning capabilities.
+
+**Bases:** 
+<TypeLink type={{"type_str": "_BaseVersionedCall", "description": null, "kind": "simple", "symbol_name": "_BaseVersionedCall", "doc_url": null}} />, <TypeLink type={{"type_str": "Generic[P, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": null}], "doc_url": null}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "call",
+    "type_info": {
+      "type_str": "VersionedFunction[P, Response | Response[FormattableT]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "VersionedFunction",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "VersionedFunction",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "P",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "P",
+          "doc_url": null
+        },
+        {
+          "type_str": "Response | Response[FormattableT]",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Union",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "Response",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "Response",
+              "doc_url": null
+            },
+            {
+              "type_str": "Response[FormattableT]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "Response",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "Response",
+                "doc_url": null
+              },
+              "parameters": [
+                {
+                  "type_str": "FormattableT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "FormattableT",
+                  "doc_url": null
+                }
+              ],
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "VersionedFunction wrapping the call method."
+  },
+  {
+    "name": "stream",
+    "type_info": {
+      "type_str": "VersionedFunction[P, StreamResponse | StreamResponse[FormattableT]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "VersionedFunction",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "VersionedFunction",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "P",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "P",
+          "doc_url": null
+        },
+        {
+          "type_str": "StreamResponse | StreamResponse[FormattableT]",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Union",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "StreamResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "StreamResponse",
+              "doc_url": null
+            },
+            {
+              "type_str": "StreamResponse[FormattableT]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "StreamResponse",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "StreamResponse",
+                "doc_url": null
+              },
+              "parameters": [
+                {
+                  "type_str": "FormattableT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "FormattableT",
+                  "doc_url": null
+                }
+              ],
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "VersionedFunction wrapping the stream method."
+  }
+]}
+/>
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-versioned_calls--versioned-call-wrapped" symbolName="wrapped" /> wrapped
+
+Call the versioned function and return a wrapped Response.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "VersionedResult[Response | Response[FormattableT]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "VersionedResult",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "VersionedResult",
+      "doc_url": null
+    },
+    "parameters": [
+      {
+        "type_str": "Response | Response[FormattableT]",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "Response",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Response",
+            "doc_url": null
+          },
+          {
+            "type_str": "Response[FormattableT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "Response",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "Response",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "FormattableT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "FormattableT",
+                "doc_url": null
+              }
+            ],
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-versioned_calls--versioned-call-wrapped_stream" symbolName="wrapped_stream" /> wrapped_stream
+
+Stream the versioned function and return a wrapped StreamResponse.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "VersionedResult[StreamResponse | StreamResponse[FormattableT]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "VersionedResult",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "VersionedResult",
+      "doc_url": null
+    },
+    "parameters": [
+      {
+        "type_str": "StreamResponse | StreamResponse[FormattableT]",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "StreamResponse",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "StreamResponse",
+            "doc_url": null
+          },
+          {
+            "type_str": "StreamResponse[FormattableT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "StreamResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "StreamResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "FormattableT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "FormattableT",
+                "doc_url": null
+              }
+            ],
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="versioned-context-call" symbolName="VersionedContextCall" /> VersionedContextCall
+
+Versioned wrapper for synchronous ContextCall objects.
+
+**Bases:** 
+<TypeLink type={{"type_str": "_BaseVersionedCall", "description": null, "kind": "simple", "symbol_name": "_BaseVersionedCall", "doc_url": null}} />, <TypeLink type={{"type_str": "Generic[P, DepsT, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": null}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": null}], "doc_url": null}} />
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-versioned_calls--versioned-context-call-call" symbolName="call" /> call
+
+Call the versioned function and return ContextResponse directly.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "ContextResponse[DepsT, None]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "ContextResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ContextResponse",
+          "doc_url": null
+        },
+        "parameters": [
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "None",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "None",
+            "doc_url": "https://docs.python.org/3/library/constants.html#None"
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "ContextResponse[DepsT, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "ContextResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ContextResponse",
+          "doc_url": null
+        },
+        "parameters": [
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-versioned_calls--versioned-context-call-stream" symbolName="stream" /> stream
+
+Stream the versioned function and return a ContextStreamResponse.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "ContextStreamResponse[DepsT, None]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "ContextStreamResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ContextStreamResponse",
+          "doc_url": null
+        },
+        "parameters": [
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "None",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "None",
+            "doc_url": "https://docs.python.org/3/library/constants.html#None"
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "ContextStreamResponse[DepsT, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "ContextStreamResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ContextStreamResponse",
+          "doc_url": null
+        },
+        "parameters": [
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-versioned_calls--versioned-context-call-wrapped" symbolName="wrapped" /> wrapped
+
+Call the versioned function and return a wrapped Response.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "VersionedResult[ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "VersionedResult",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "VersionedResult",
+      "doc_url": null
+    },
+    "parameters": [
+      {
+        "type_str": "ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "ContextResponse[DepsT, None]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "ContextResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "ContextResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "DepsT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "DepsT",
+                "doc_url": null
+              },
+              {
+                "type_str": "None",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "None",
+                "doc_url": "https://docs.python.org/3/library/constants.html#None"
+              }
+            ],
+            "doc_url": null
+          },
+          {
+            "type_str": "ContextResponse[DepsT, FormattableT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "ContextResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "ContextResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "DepsT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "DepsT",
+                "doc_url": null
+              },
+              {
+                "type_str": "FormattableT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "FormattableT",
+                "doc_url": null
+              }
+            ],
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-versioned_calls--versioned-context-call-wrapped_stream" symbolName="wrapped_stream" /> wrapped_stream
+
+Stream the versioned function and return a wrapped StreamResponse.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "VersionedResult[ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "VersionedResult",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "VersionedResult",
+      "doc_url": null
+    },
+    "parameters": [
+      {
+        "type_str": "ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "ContextStreamResponse[DepsT, None]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "ContextStreamResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "ContextStreamResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "DepsT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "DepsT",
+                "doc_url": null
+              },
+              {
+                "type_str": "None",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "None",
+                "doc_url": "https://docs.python.org/3/library/constants.html#None"
+              }
+            ],
+            "doc_url": null
+          },
+          {
+            "type_str": "ContextStreamResponse[DepsT, FormattableT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "ContextStreamResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "ContextStreamResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "DepsT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "DepsT",
+                "doc_url": null
+              },
+              {
+                "type_str": "FormattableT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "FormattableT",
+                "doc_url": null
+              }
+            ],
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+

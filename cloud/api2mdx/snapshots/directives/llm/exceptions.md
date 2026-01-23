@@ -1,9 +1,16 @@
 # exceptions
 
 <ApiObject
-  path="mirascope.llm.exceptions.MirascopeLLMError"
-  symbolName="MirascopeLLMError"
-  slug="mirascope-l-l-m-error"
+  path="mirascope.llm.exceptions.Error"
+  symbolName="Error"
+  slug="error"
+  canonicalPath="llm/exceptions"
+/>
+
+<ApiObject
+  path="mirascope.llm.exceptions.ProviderError"
+  symbolName="ProviderError"
+  slug="provider-error"
   canonicalPath="llm/exceptions"
 />
 
@@ -11,13 +18,6 @@
   path="mirascope.llm.exceptions.APIError"
   symbolName="APIError"
   slug="a-p-i-error"
-  canonicalPath="llm/exceptions"
-/>
-
-<ApiObject
-  path="mirascope.llm.exceptions.ConnectionError"
-  symbolName="ConnectionError"
-  slug="connection-error"
   canonicalPath="llm/exceptions"
 />
 
@@ -50,27 +50,6 @@
 />
 
 <ApiObject
-  path="mirascope.llm.exceptions.ToolNotFoundError"
-  symbolName="ToolNotFoundError"
-  slug="tool-not-found-error"
-  canonicalPath="llm/exceptions"
-/>
-
-<ApiObject
-  path="mirascope.llm.exceptions.FeatureNotSupportedError"
-  symbolName="FeatureNotSupportedError"
-  slug="feature-not-supported-error"
-  canonicalPath="llm/exceptions"
-/>
-
-<ApiObject
-  path="mirascope.llm.exceptions.FormattingModeNotSupportedError"
-  symbolName="FormattingModeNotSupportedError"
-  slug="formatting-mode-not-supported-error"
-  canonicalPath="llm/exceptions"
-/>
-
-<ApiObject
   path="mirascope.llm.exceptions.RateLimitError"
   symbolName="RateLimitError"
   slug="rate-limit-error"
@@ -81,6 +60,13 @@
   path="mirascope.llm.exceptions.ServerError"
   symbolName="ServerError"
   slug="server-error"
+  canonicalPath="llm/exceptions"
+/>
+
+<ApiObject
+  path="mirascope.llm.exceptions.ConnectionError"
+  symbolName="ConnectionError"
+  slug="connection-error"
   canonicalPath="llm/exceptions"
 />
 
@@ -99,8 +85,50 @@
 />
 
 <ApiObject
+  path="mirascope.llm.exceptions.ToolError"
+  symbolName="ToolError"
+  slug="tool-error"
+  canonicalPath="llm/exceptions"
+/>
+
+<ApiObject
+  path="mirascope.llm.exceptions.ToolExecutionError"
+  symbolName="ToolExecutionError"
+  slug="tool-execution-error"
+  canonicalPath="llm/exceptions"
+/>
+
+<ApiObject
+  path="mirascope.llm.exceptions.ToolNotFoundError"
+  symbolName="ToolNotFoundError"
+  slug="tool-not-found-error"
+  canonicalPath="llm/exceptions"
+/>
+
+<ApiObject
+  path="mirascope.llm.exceptions.ParseError"
+  symbolName="ParseError"
+  slug="parse-error"
+  canonicalPath="llm/exceptions"
+/>
+
+<ApiObject
+  path="mirascope.llm.exceptions.FeatureNotSupportedError"
+  symbolName="FeatureNotSupportedError"
+  slug="feature-not-supported-error"
+  canonicalPath="llm/exceptions"
+/>
+
+<ApiObject
   path="mirascope.llm.exceptions.NoRegisteredProviderError"
   symbolName="NoRegisteredProviderError"
   slug="no-registered-provider-error"
+  canonicalPath="llm/exceptions"
+/>
+
+<ApiObject
+  path="mirascope.llm.exceptions.MissingAPIKeyError"
+  symbolName="MissingAPIKeyError"
+  slug="missing-a-p-i-key-error"
   canonicalPath="llm/exceptions"
 />

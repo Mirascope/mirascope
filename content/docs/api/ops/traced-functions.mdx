@@ -1,0 +1,826 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: traced_functions
+description: API documentation for traced_functions
+---
+
+# traced_functions
+
+## <ApiType type="Class" slug="async-trace" symbolName="AsyncTrace" /> AsyncTrace
+
+Result container returned by async traced function calls.
+
+Provides access to the function result and trace span metadata,
+as well as per-call operations for annotation, tagging, and assignment.
+
+**Bases:** 
+<TypeLink type={{"type_str": "_BaseTrace[R]", "description": null, "kind": "generic", "base_type": {"type_str": "_BaseTrace", "description": null, "kind": "simple", "symbol_name": "_BaseTrace", "doc_url": null}, "parameters": [{"type_str": "R", "description": null, "kind": "simple", "symbol_name": "R", "doc_url": null}], "doc_url": null}} />
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_functions--async-trace-annotate" symbolName="annotate" /> annotate
+
+Annotates the current trace span.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "label",
+    "type_info": {
+      "type_str": "Literal['pass', 'fail']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Literal"
+      },
+      "parameters": [
+        {
+          "type_str": "'pass'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'pass'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'fail'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'fail'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "reasoning",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None"
+  },
+  {
+    "name": "metadata",
+    "type_info": {
+      "type_str": "dict[str, Jsonable] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "dict[str, Jsonable]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "dict",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "dict",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#dict"
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "str",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            },
+            {
+              "type_str": "Jsonable",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "Jsonable",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_functions--async-trace-tag" symbolName="tag" /> tag
+
+Adds given tags to the current trace span.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "tags",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "default": "()"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_functions--async-trace-assign" symbolName="assign" /> assign
+
+Assigns the trace to users with the given emails.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "emails",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "default": "()"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="async-traced-function" symbolName="AsyncTracedFunction" /> AsyncTracedFunction
+
+Wrapper for asynchronous functions with tracing capabilities.
+
+Provides traced execution of asynchronous functions, returning AsyncTrace
+with access to span information.
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseAsyncTracedFunction[P, R]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseAsyncTracedFunction", "description": null, "kind": "simple", "symbol_name": "BaseAsyncTracedFunction", "doc_url": null}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "R", "description": null, "kind": "simple", "symbol_name": "R", "doc_url": null}], "doc_url": null}} />
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_functions--async-traced-function-wrapped" symbolName="wrapped" /> wrapped
+
+Returns the trace containing the function result and span info.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncTrace[R]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "AsyncTrace",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AsyncTrace",
+      "doc_url": "/docs/api/ops/traced-functions#async-trace"
+    },
+    "parameters": [
+      {
+        "type_str": "R",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "R",
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="async-traced-span-function" symbolName="AsyncTracedSpanFunction" /> AsyncTracedSpanFunction
+
+Wrapper for asynchronous functions that receive Span as first parameter.
+
+The external interface does NOT include `trace_ctx` - it is injected
+automatically by the decorator when calling the inner function.
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseAsyncTracedSpanFunction[P, R]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseAsyncTracedSpanFunction", "description": null, "kind": "simple", "symbol_name": "BaseAsyncTracedSpanFunction", "doc_url": null}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "R", "description": null, "kind": "simple", "symbol_name": "R", "doc_url": null}], "doc_url": null}} />
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_functions--async-traced-span-function-wrapped" symbolName="wrapped" /> wrapped
+
+Returns the trace containing the function result and span info.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncTrace[R]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "AsyncTrace",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AsyncTrace",
+      "doc_url": "/docs/api/ops/traced-functions#async-trace"
+    },
+    "parameters": [
+      {
+        "type_str": "R",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "R",
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="trace" symbolName="Trace" /> Trace
+
+Result container returned by traced function calls.
+
+Provides access to the function result and trace span metadata,
+as well as per-call operations for annotation, tagging, and assignment.
+
+**Bases:** 
+<TypeLink type={{"type_str": "_BaseTrace[R]", "description": null, "kind": "generic", "base_type": {"type_str": "_BaseTrace", "description": null, "kind": "simple", "symbol_name": "_BaseTrace", "doc_url": null}, "parameters": [{"type_str": "R", "description": null, "kind": "simple", "symbol_name": "R", "doc_url": null}], "doc_url": null}} />
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_functions--trace-annotate" symbolName="annotate" /> annotate
+
+Annotates the current trace span.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "label",
+    "type_info": {
+      "type_str": "Literal['pass', 'fail']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Literal"
+      },
+      "parameters": [
+        {
+          "type_str": "'pass'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'pass'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'fail'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'fail'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "reasoning",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None"
+  },
+  {
+    "name": "metadata",
+    "type_info": {
+      "type_str": "dict[str, Jsonable] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "dict[str, Jsonable]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "dict",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "dict",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#dict"
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "str",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            },
+            {
+              "type_str": "Jsonable",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "Jsonable",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_functions--trace-tag" symbolName="tag" /> tag
+
+Adds given tags to the current trace span.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "tags",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "default": "()"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_functions--trace-assign" symbolName="assign" /> assign
+
+Assigns the trace to users with the given emails.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "emails",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "default": "()"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="traced-function" symbolName="TracedFunction" /> TracedFunction
+
+Wrapper for synchronous functions with tracing capabilities.
+
+Provides traced execution of synchronous functions, returning Trace
+with access to span information.
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseSyncTracedFunction[P, R]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseSyncTracedFunction", "description": null, "kind": "simple", "symbol_name": "BaseSyncTracedFunction", "doc_url": null}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "R", "description": null, "kind": "simple", "symbol_name": "R", "doc_url": null}], "doc_url": null}} />
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_functions--traced-function-wrapped" symbolName="wrapped" /> wrapped
+
+Returns the trace containing the function result and span info.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Trace[R]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "Trace",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Trace",
+      "doc_url": "/docs/api/ops/traced-functions#trace"
+    },
+    "parameters": [
+      {
+        "type_str": "R",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "R",
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="traced-span-function" symbolName="TracedSpanFunction" /> TracedSpanFunction
+
+Wrapper for synchronous functions that receive Span as first parameter.
+
+The external interface does NOT include `trace_ctx` - it is injected
+automatically by the decorator when calling the inner function.
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseSyncTracedSpanFunction[P, R]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseSyncTracedSpanFunction", "description": null, "kind": "simple", "symbol_name": "BaseSyncTracedSpanFunction", "doc_url": null}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "R", "description": null, "kind": "simple", "symbol_name": "R", "doc_url": null}], "doc_url": null}} />
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_functions--traced-span-function-wrapped" symbolName="wrapped" /> wrapped
+
+Returns the trace containing the function result and span info.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Trace[R]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "Trace",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Trace",
+      "doc_url": "/docs/api/ops/traced-functions#trace"
+    },
+    "parameters": [
+      {
+        "type_str": "R",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "R",
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+

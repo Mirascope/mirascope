@@ -1,0 +1,480 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: versioned_functions
+description: API documentation for versioned_functions
+---
+
+# versioned_functions
+
+## <ApiType type="Class" slug="async-versioned-function" symbolName="AsyncVersionedFunction" /> AsyncVersionedFunction
+
+Wrapper for asynchronous functions with versioning capabilities.
+
+**Bases:** 
+<TypeLink type={{"type_str": "_BaseVersionedFunction[P, R]", "description": null, "kind": "generic", "base_type": {"type_str": "_BaseVersionedFunction", "description": null, "kind": "simple", "symbol_name": "_BaseVersionedFunction", "doc_url": null}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "R", "description": null, "kind": "simple", "symbol_name": "R", "doc_url": null}], "doc_url": null}} />, <TypeLink type={{"type_str": "BaseAsyncTracedFunction[P, R]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseAsyncTracedFunction", "description": null, "kind": "simple", "symbol_name": "BaseAsyncTracedFunction", "doc_url": null}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "R", "description": null, "kind": "simple", "symbol_name": "R", "doc_url": null}], "doc_url": null}} />
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-versioned_functions--async-versioned-function-wrapped" symbolName="wrapped" /> wrapped
+
+Returns a wrapper around the traced function's result for trace utilities.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncVersionedResult[R]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "AsyncVersionedResult",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AsyncVersionedResult",
+      "doc_url": null
+    },
+    "parameters": [
+      {
+        "type_str": "R",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "R",
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-versioned_functions--async-versioned-function-get_version" symbolName="get_version" /> get_version
+
+Returns the specific version of this function using an `AsyncLilypad` client.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "version",
+    "type_info": {
+      "type_str": "VersionId",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "VersionId",
+      "doc_url": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "VersionedFunction[P, R]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "VersionedFunction",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "VersionedFunction",
+      "doc_url": "/docs/mirascope/v2/api/ops/versioned-functions#versioned-function"
+    },
+    "parameters": [
+      {
+        "type_str": "P",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "P",
+        "doc_url": null
+      },
+      {
+        "type_str": "R",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "R",
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="versioned-function" symbolName="VersionedFunction" /> VersionedFunction
+
+Wrapper for synchronous functions with versioning capabilities.
+
+**Bases:** 
+<TypeLink type={{"type_str": "_BaseVersionedFunction[P, R]", "description": null, "kind": "generic", "base_type": {"type_str": "_BaseVersionedFunction", "description": null, "kind": "simple", "symbol_name": "_BaseVersionedFunction", "doc_url": null}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "R", "description": null, "kind": "simple", "symbol_name": "R", "doc_url": null}], "doc_url": null}} />, <TypeLink type={{"type_str": "BaseSyncTracedFunction[P, R]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseSyncTracedFunction", "description": null, "kind": "simple", "symbol_name": "BaseSyncTracedFunction", "doc_url": null}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "R", "description": null, "kind": "simple", "symbol_name": "R", "doc_url": null}], "doc_url": null}} />
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-versioned_functions--versioned-function-wrapped" symbolName="wrapped" /> wrapped
+
+Return a wrapper around the executed function's result for trace utilities.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "VersionedResult[R]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "VersionedResult",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "VersionedResult",
+      "doc_url": null
+    },
+    "parameters": [
+      {
+        "type_str": "R",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "R",
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  },
+  "description": "A VersionedResult containing the function result and trace context."
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-versioned_functions--versioned-function-get_version" symbolName="get_version" /> get_version
+
+Returns the specific version of this function requested.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "version",
+    "type_info": {
+      "type_str": "VersionId",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "VersionId",
+      "doc_url": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "VersionedFunction[P, R]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "VersionedFunction",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "VersionedFunction",
+      "doc_url": "/docs/mirascope/v2/api/ops/versioned-functions#versioned-function"
+    },
+    "parameters": [
+      {
+        "type_str": "P",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "P",
+        "doc_url": null
+      },
+      {
+        "type_str": "R",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "R",
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="version-info" symbolName="VersionInfo" /> VersionInfo
+
+Static version metadata for a versioned function.
+
+Contains all information needed to identify and describe a specific version
+of a function, including its computed version number and hashes.
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "uuid",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Server-assigned unique identifier for this version (None if not registered)."
+  },
+  {
+    "name": "hash",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    },
+    "description": "SHA256 hash of the complete closure code."
+  },
+  {
+    "name": "signature_hash",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    },
+    "description": "SHA256 hash of the function signature."
+  },
+  {
+    "name": "name",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    },
+    "description": "Display name for the versioned function."
+  },
+  {
+    "name": "description",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Human-readable description of the versioned function."
+  },
+  {
+    "name": "version",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    },
+    "description": "Auto-computed semantic version in X.Y format."
+  },
+  {
+    "name": "tags",
+    "type_info": {
+      "type_str": "tuple[str, ...]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "tuple",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "tuple",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "...",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "...",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Tags associated with this version for filtering/classification."
+  },
+  {
+    "name": "metadata",
+    "type_info": {
+      "type_str": "Mapping[str, str]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Mapping",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Mapping",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Arbitrary key-value pairs for additional metadata."
+  }
+]}
+/>
+
+

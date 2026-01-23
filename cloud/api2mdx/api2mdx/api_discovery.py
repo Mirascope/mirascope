@@ -835,3 +835,142 @@ def discover_flat_export_pages(
                 pages.append(page)
 
     return pages
+
+
+def discover_internal_export_pages(
+    module: Module, product_slug: str
+) -> list[RawDirectivesPage]:
+    """Generate pages by parsing from ._internal.X import patterns in __init__.py.
+
+    This function parses the module's __init__.py to find imports from _internal
+    submodules and groups exports accordingly. The _internal prefix is stripped
+    from the output paths.
+
+    For example:
+        from ._internal.tracing import trace, TraceDecorator
+        → creates page "tracing" with trace, TraceDecorator
+
+        from ._internal.instrumentation.llm import instrument_llm
+        → creates page "instrumentation/llm" with instrument_llm
+
+    Args:
+        module: The Module object to process
+        product_slug: The product directory name (e.g., "ops")
+
+    Returns:
+        List of RawDirectivesPage objects organized by internal module structure
+
+    """
+    pages: list[RawDirectivesPage] = []
+    seen_paths: set[str] = set()
+
+    # Get the module's source code
+    if not module.filepath:
+        print(f"⚠️  Warning: Module {module.name} has no filepath")
+        return pages
+
+    init_path = module.filepath
+    try:
+        with open(init_path) as f:
+            source_code = f.read()
+    except OSError as e:
+        print(f"⚠️  Warning: Could not read {init_path}: {e}")
+        return pages
+
+    # Parse imports from ._internal.X
+    # Match: from ._internal.path.to.module import name1, name2, ...
+    # Handle multiline imports with parentheses
+    import_pattern = re.compile(
+        r"from\s+\._internal\.([a-zA-Z0-9_.]+)\s+import\s+\(?\s*([^)]+?)\s*\)?(?=\n(?:from|import|#|$|\n|[a-zA-Z]))",
+        re.MULTILINE | re.DOTALL,
+    )
+
+    # Also handle non-_internal imports like from .exceptions import ...
+    other_import_pattern = re.compile(
+        r"from\s+\.([a-zA-Z0-9_]+)\s+import\s+\(?\s*([^)]+?)\s*\)?(?=\n(?:from|import|#|$|\n|[a-zA-Z]))",
+        re.MULTILINE | re.DOTALL,
+    )
+
+    # Group exports by their source module path
+    module_exports: dict[str, list[str]] = {}
+
+    # Process _internal imports
+    for match in import_pattern.finditer(source_code):
+        internal_path = match.group(1)  # e.g., "tracing" or "instrumentation.llm"
+        imports_str = match.group(2)
+
+        # Parse the imported names (handle multiline, commas, trailing commas)
+        import_names = [
+            name.strip()
+            for name in re.split(r",\s*", imports_str)
+            if name.strip() and not name.strip().startswith("#")
+        ]
+
+        if internal_path not in module_exports:
+            module_exports[internal_path] = []
+        module_exports[internal_path].extend(import_names)
+
+    # Process non-_internal imports (like .exceptions)
+    for match in other_import_pattern.finditer(source_code):
+        submodule_name = match.group(1)
+        # Skip _internal itself and private modules
+        if submodule_name.startswith("_"):
+            continue
+
+        imports_str = match.group(2)
+        import_names = [
+            name.strip()
+            for name in re.split(r",\s*", imports_str)
+            if name.strip() and not name.strip().startswith("#")
+        ]
+
+        if submodule_name not in module_exports:
+            module_exports[submodule_name] = []
+        module_exports[submodule_name].extend(import_names)
+
+    # Create pages from grouped exports
+    for internal_path, export_names in module_exports.items():
+        directives: list[RawDirective] = []
+
+        for export_name in export_names:
+            if export_name not in module.members:
+                print(f"⚠️  Warning: Export '{export_name}' not found in {module.name}")
+                continue
+
+            member = _resolve_member(module, export_name)
+
+            # Skip modules
+            if isinstance(member, Module):
+                continue
+
+            directive = _create_directive_from_member(member)
+            if directive.object_path not in seen_paths:
+                seen_paths.add(directive.object_path)
+                directives.append(directive)
+
+        if directives:
+            # Convert internal path to directory structure
+            # e.g., "instrumentation.llm" → "instrumentation/llm"
+            path_parts = internal_path.split(".")
+            if len(path_parts) == 1:
+                # Simple case: ops/tracing
+                directory = product_slug
+                page_name = path_parts[0]
+            else:
+                # Nested case: ops/instrumentation/llm
+                directory = f"{product_slug}/{'/'.join(path_parts[:-1])}"
+                page_name = path_parts[-1]
+
+            slug = Slug.from_name(page_name)
+            page = RawDirectivesPage(
+                directives=directives,
+                directory=directory,
+                slug=slug,
+                name=page_name,
+            )
+            pages.append(page)
+
+    # Sort pages by their path for consistent ordering
+    pages.sort(key=lambda p: p.file_path)
+
+    return pages

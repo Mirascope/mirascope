@@ -1,0 +1,374 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: propagation
+description: API documentation for propagation
+---
+
+# propagation
+
+## <ApiType type="Class" slug="context-propagator" symbolName="ContextPropagator" /> ContextPropagator
+
+Manages OpenTelemetry context propagation across service boundaries.
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-propagation--context-propagator-extract_context" symbolName="extract_context" /> extract_context
+
+Extract OTEL context from carrier headers.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "carrier",
+    "type_info": {
+      "type_str": "Mapping[str, CarrierValue]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Mapping",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Mapping",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "CarrierValue",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "CarrierValue",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Dictionary containing HTTP headers or similar carrier data."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Context",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "Context",
+    "doc_url": null
+  },
+  "description": "Extracted OpenTelemetry context. Returns empty context if extraction fails."
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-propagation--context-propagator-inject_context" symbolName="inject_context" /> inject_context
+
+Inject current OTEL context into carrier headers.
+
+This method also injects session context if one is active, adding the
+SESSION_HEADER_NAME header to the carrier.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "carrier",
+    "type_info": {
+      "type_str": "MutableMapping[str, str]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "MutableMapping",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "MutableMapping",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Mutable mapping (e.g., HTTP headers dict) to inject context into."
+  },
+  {
+    "name": "context",
+    "type_info": {
+      "type_str": "Context | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Context",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Context",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional specific context to inject. If None, uses current context."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+
+## <ApiType type="Attribute" slug="propagator-format" symbolName="PropagatorFormat" /> PropagatorFormat
+
+**Type:** <TypeLink type={{"type_str": "TypeAlias", "description": null, "kind": "simple", "symbol_name": "TypeAlias", "doc_url": null}} />
+
+
+## <ApiType type="Function" slug="extract_context" symbolName="extract_context" /> extract_context
+
+Extract OTEL context from carrier headers using the global propagator.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "carrier",
+    "type_info": {
+      "type_str": "Mapping[str, CarrierValue]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Mapping",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Mapping",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "CarrierValue",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "CarrierValue",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Dictionary containing HTTP headers or similar carrier data."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Context",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "Context",
+    "doc_url": null
+  },
+  "description": "Extracted OpenTelemetry context."
+}}
+/>
+
+
+## <ApiType type="Function" slug="get_propagator" symbolName="get_propagator" /> get_propagator
+
+Get or create the singleton ContextPropagator instance.
+
+Reads propagator format from MIRASCOPE_PROPAGATOR environment variable.
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "ContextPropagator",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "ContextPropagator",
+    "doc_url": "/docs/api/ops/propagation#context-propagator"
+  },
+  "description": "The global ContextPropagator instance."
+}}
+/>
+
+
+## <ApiType type="Function" slug="inject_context" symbolName="inject_context" /> inject_context
+
+Inject current OTEL context into carrier headers using the global propagator.
+
+This function also injects session context if one is active, adding the
+SESSION_HEADER_NAME header to the carrier.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "carrier",
+    "type_info": {
+      "type_str": "MutableMapping[str, str]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "MutableMapping",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "MutableMapping",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Mutable mapping (e.g., HTTP headers dict) to inject context into."
+  },
+  {
+    "name": "context",
+    "type_info": {
+      "type_str": "Context | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Context",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Context",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional specific context to inject. If None, uses current context."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="reset_propagator" symbolName="reset_propagator" /> reset_propagator
+
+Reset the singleton ContextPropagator instance.
+
+This is primarily useful for testing to ensure a clean state between tests.
+The next call to get_propagator() will create a new instance.
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+

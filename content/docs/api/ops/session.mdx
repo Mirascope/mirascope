@@ -1,0 +1,378 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: session
+description: API documentation for session
+---
+
+# session
+
+## <ApiType type="Attribute" slug="s-e-s-s-i-o-n_-h-e-a-d-e-r_-n-a-m-e" symbolName="SESSION_HEADER_NAME" /> SESSION_HEADER_NAME
+
+**Type:** <TypeLink type={{"type_str": "'Mirascope-Session-Id'", "description": null, "kind": "simple", "symbol_name": "'Mirascope-Session-Id'", "doc_url": null}} />
+
+
+## <ApiType type="Class" slug="session-context" symbolName="SessionContext" /> SessionContext
+
+Represents a session context for grouping related spans.
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "id",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    },
+    "description": "Unique identifier for the session. Auto-generated if not provided."
+  },
+  {
+    "name": "attributes",
+    "type_info": {
+      "type_str": "Mapping[str, Jsonable] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "Mapping[str, Jsonable]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Mapping",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Mapping",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "str",
+              "doc_url": null
+            },
+            {
+              "type_str": "Jsonable",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "Jsonable",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Optional JSON-serializable metadata associated with the session."
+  }
+]}
+/>
+
+
+## <ApiType type="Function" slug="current_session" symbolName="current_session" /> current_session
+
+Get the current session context if one is active.
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "SessionContext | None",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "SessionContext",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "SessionContext",
+        "doc_url": "/docs/api/ops/session#session-context"
+      },
+      {
+        "type_str": "None",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "None",
+        "doc_url": "https://docs.python.org/3/library/constants.html#None"
+      }
+    ],
+    "doc_url": null
+  },
+  "description": "The active SessionContext or None if no session is active."
+}}
+/>
+
+
+## <ApiType type="Function" slug="extract_session_id" symbolName="extract_session_id" /> extract_session_id
+
+Extract session ID from carrier headers.
+
+Performs case-insensitive header name matching and handles both string
+and list[str] header values.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "headers",
+    "type_info": {
+      "type_str": "Mapping[str, str | list[str]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Mapping",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Mapping",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "str | list[str]",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Union",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "str",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            },
+            {
+              "type_str": "list[str]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "list",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "list",
+                "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+              },
+              "parameters": [
+                {
+                  "type_str": "str",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "str",
+                  "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+                }
+              ],
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Dictionary of HTTP headers or similar carrier data."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "str | None",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "str",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "str",
+        "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+      },
+      {
+        "type_str": "None",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "None",
+        "doc_url": "https://docs.python.org/3/library/constants.html#None"
+      }
+    ],
+    "doc_url": null
+  },
+  "description": "The extracted session ID or None if not present."
+}}
+/>
+
+
+## <ApiType type="Function" slug="session" symbolName="session" /> session
+
+Context manager for setting session context.
+
+Sessions are used to group related traces together. The session ID and
+optional attributes are automatically propagated to all spans created
+within the session context and are included in outgoing HTTP requests.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "id",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Unique identifier for the session. If not provided, a UUID will be\nautomatically generated."
+  },
+  {
+    "name": "attributes",
+    "type_info": {
+      "type_str": "Mapping[str, Jsonable] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Mapping[str, Jsonable]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Mapping",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Mapping",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "str",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            },
+            {
+              "type_str": "Jsonable",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "Jsonable",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional dictionary of JSON-serializable attributes to\nattach to the session."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Iterator[SessionContext]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "Iterator",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Iterator",
+      "doc_url": null
+    },
+    "parameters": [
+      {
+        "type_str": "SessionContext",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "SessionContext",
+        "doc_url": "/docs/api/ops/session#session-context"
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
