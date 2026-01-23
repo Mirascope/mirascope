@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "2.0.1"
+version = "2.0.2"
 description = "Every frontier LLM. One unified interface."
 readme = "README.md"
 license = { file = "LICENSE" }
