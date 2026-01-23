@@ -18,13 +18,13 @@ test_snapshot = snapshot(
             "params": {},
             "finish_reason": None,
             "usage": {
-                "input_tokens": 104,
-                "output_tokens": 31,
+                "input_tokens": 113,
+                "output_tokens": 32,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
-                "raw": "CompletionUsage(completion_tokens=31, prompt_tokens=104, total_tokens=135, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
-                "total_tokens": 135,
+                "raw": "CompletionUsage(completion_tokens=32, prompt_tokens=113, total_tokens=145, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
+                "total_tokens": 145,
             },
             "messages": [
                 UserMessage(
@@ -37,8 +37,8 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_pqZYlGgEIyaGG3rI86Ii3F1V",
-                            name="test_tool",
+                            id="call_Usk6zffuhvy2YSSFmCyLHBlv",
+                            name="passphrase_test_tool",
                             args='{"passphrase":"portal"}',
                         )
                     ],
@@ -50,10 +50,10 @@ test_snapshot = snapshot(
                         "annotations": [],
                         "tool_calls": [
                             {
-                                "id": "call_pqZYlGgEIyaGG3rI86Ii3F1V",
+                                "id": "call_Usk6zffuhvy2YSSFmCyLHBlv",
                                 "function": {
                                     "arguments": '{"passphrase":"portal"}',
-                                    "name": "test_tool",
+                                    "name": "passphrase_test_tool",
                                 },
                                 "type": "function",
                             }
@@ -63,11 +63,11 @@ test_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_pqZYlGgEIyaGG3rI86Ii3F1V",
-                            name="test_tool",
-                            result="Incorrect passhrase: The correct passphrase is 'cake'",
+                            id="call_Usk6zffuhvy2YSSFmCyLHBlv",
+                            name="passphrase_test_tool",
+                            result="Incorrect passhrase: The correct passphrase is 'cake'. Try again.",
                             error=ToolExecutionError(
-                                "Incorrect passhrase: The correct passphrase is 'cake'"
+                                "Incorrect passhrase: The correct passphrase is 'cake'. Try again."
                             ),
                         )
                     ]
@@ -75,14 +75,14 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="It seems that the passphrase provided was incorrect. The correct passphrase is 'cake'. Would you like me to try using that passphrase instead?"
+                            text="It seems the passphrase you provided was incorrect. The correct passphrase is 'cake'. Would you like me to try again with the correct passphrase?"
                         )
                     ],
                     provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message={
-                        "content": "It seems that the passphrase provided was incorrect. The correct passphrase is 'cake'. Would you like me to try using that passphrase instead?",
+                        "content": "It seems the passphrase you provided was incorrect. The correct passphrase is 'cake'. Would you like me to try again with the correct passphrase?",
                         "role": "assistant",
                         "annotations": [],
                     },
@@ -91,7 +91,7 @@ test_snapshot = snapshot(
             "format": None,
             "tools": [
                 {
-                    "name": "test_tool",
+                    "name": "passphrase_test_tool",
                     "description": "A tool that must be called with a passphrase.",
                     "parameters": """\
 {
@@ -115,11 +115,11 @@ test_snapshot = snapshot(
         "tool_outputs": [
             [
                 ToolOutput(
-                    id="call_pqZYlGgEIyaGG3rI86Ii3F1V",
-                    name="test_tool",
-                    result="Incorrect passhrase: The correct passphrase is 'cake'",
+                    id="call_Usk6zffuhvy2YSSFmCyLHBlv",
+                    name="passphrase_test_tool",
+                    result="Incorrect passhrase: The correct passphrase is 'cake'. Try again.",
                     error=ToolExecutionError(
-                        "Incorrect passhrase: The correct passphrase is 'cake'"
+                        "Incorrect passhrase: The correct passphrase is 'cake'. Try again."
                     ),
                 )
             ]

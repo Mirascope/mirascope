@@ -6,17 +6,16 @@ import pytest
 
 from mirascope import llm
 from tests.e2e.conftest import E2E_MODEL_IDS
-from tests.utils import (
-    Snapshot,
-    snapshot_test,
-)
+from tests.utils import Snapshot, snapshot_test
 
 
 @llm.tool
-def test_tool(passphrase: str) -> str:
+def passphrase_test_tool(passphrase: str) -> str:
     """A tool that must be called with a passphrase."""
     if passphrase != "cake":
-        raise ValueError("Incorrect passhrase: The correct passphrase is 'cake'")
+        raise ValueError(
+            "Incorrect passhrase: The correct passphrase is 'cake'. Try again."
+        )
     return "The cake is a lie."
 
 
@@ -29,7 +28,7 @@ def test_call_with_tool_error(
 ) -> None:
     """Test synchronous call with all parameters to verify param handling and logging."""
 
-    @llm.call(model_id, tools=[test_tool])
+    @llm.call(model_id, tools=[passphrase_test_tool])
     def use_test_tool() -> str:
         return (
             "Use the test tool to retrieve the secret phrase. The passphrase is 'portal"

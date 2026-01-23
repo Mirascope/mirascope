@@ -10,6 +10,7 @@ from typing import Any, Generic, Literal, TypeVar
 
 from opentelemetry.util.types import AttributeValue
 
+from ..._utils import copy_function_metadata
 from ...api.client import get_async_client, get_sync_client
 from ...llm.context import Context, DepsT
 from ...llm.responses.root_response import RootResponse
@@ -175,11 +176,15 @@ class _BaseFunction(Generic[P, R, FunctionT], ABC):
     _is_async: bool = field(init=False)
     """Whether the wrapped function is asynchronous."""
 
+    __name__: str = field(init=False, repr=False, default="")
+    """The name of the underlying function (preserved for decorator stacking)."""
+
     def __post_init__(self) -> None:
         """Initialize additional attributes after dataclass init."""
         self._qualified_name = get_qualified_name(self.fn)
         original_fn = get_original_fn(self.fn)
         self._module_name = getattr(original_fn, "__module__", "")
+        copy_function_metadata(self, original_fn)
 
 
 @dataclass(kw_only=True)

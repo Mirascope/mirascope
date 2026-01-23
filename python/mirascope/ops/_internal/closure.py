@@ -738,12 +738,15 @@ class _DependencyCollector:
             # For Python 3.13+
             return definition.func  # pyright: ignore[reportFunctionMemberAccess] # pragma: no cover
 
+        # Handle objects with .fn but no __qualname__ (e.g., old-style wrappers).
+        # With copy_function_metadata() now copying __qualname__ to ToolSchema, Prompt,
+        # Call, etc., this branch is no longer reached in normal usage.
         if (
             (wrapped_function := getattr(definition, "fn", None)) is not None
             and not hasattr(definition, "__qualname__")
             and callable(wrapped_function)
         ):
-            return wrapped_function
+            return wrapped_function  # pragma: no cover
 
         return definition
 
