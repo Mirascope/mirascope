@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { cn } from "@/app/lib/utils";
 import type { ProductOption } from "@/app/lib/content/spec";
+import { useSidebarContext } from "@/app/components/content-layout";
 
 // Styles for product selector
 const PRODUCT_SELECTOR_STYLES = {
@@ -58,6 +59,9 @@ export default function DocsProductSelector({
   const router = useRouterState();
   const currentPath = router.location.pathname;
 
+  // Get sidebar context to prevent closing on product switch
+  const { leftSidebar } = useSidebarContext();
+
   const selectedProduct = getSelectedProduct(currentPath, basePath, products);
 
   // If no products, don't render anything
@@ -75,6 +79,7 @@ export default function DocsProductSelector({
           <Link
             key={product.slug}
             to={productPath}
+            onClick={() => leftSidebar.setSkipNextClose(true)}
             className={cn(
               PRODUCT_SELECTOR_STYLES.pill,
               isActive && PRODUCT_SELECTOR_STYLES.activePill,

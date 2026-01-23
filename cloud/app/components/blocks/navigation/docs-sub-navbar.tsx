@@ -66,10 +66,10 @@ export default function DocsSubNavbar({ className }: DocsSubNavbarProps) {
   return (
     <nav className={cn("flex w-full px-3 pt-3 pb-1 md:px-6", className)}>
       {/* Spacer to match logo width - logo is ~140px with text */}
-      <div className="hidden w-[140px] flex-shrink-0 lg:block" />
+      <div className="hidden w-[140px] shrink-0 lg:block" />
 
-      {/* Links with same ml-6 as desktop nav */}
-      <div className="flex space-x-6 lg:ml-2">
+      {/* Links with same ml-6 as desktop nav - scrollable on mobile */}
+      <div className="hide-scrollbar flex space-x-6 overflow-x-auto lg:ml-2">
         {sections.map((section) => {
           const isActive = isSectionActive(section, currentPath);
           const sectionPath = getSectionPath(section);
@@ -79,7 +79,7 @@ export default function DocsSubNavbar({ className }: DocsSubNavbarProps) {
               key={section.slug}
               to={sectionPath}
               className={cn(
-                "text-lg font-medium transition-colors",
+                "shrink-0 whitespace-nowrap text-lg font-medium transition-colors",
                 isActive
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground",
