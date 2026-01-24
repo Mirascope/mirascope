@@ -15,6 +15,14 @@ export class MirascopeError extends Error {
 }
 
 /**
+ * Options for constructing a ProviderError.
+ */
+export interface ProviderErrorOptions {
+  provider: ProviderId;
+  originalException?: Error | null;
+}
+
+/**
  * Base class for errors that originate from a provider SDK.
  *
  * This wraps exceptions from provider libraries (OpenAI, Anthropic, etc.)
@@ -31,18 +39,21 @@ export class ProviderError extends MirascopeError {
    */
   readonly originalException: Error | null;
 
-  constructor(
-    message: string,
-    provider: ProviderId,
-    originalException: Error | null = null
-  ) {
+  constructor(message: string, options: ProviderErrorOptions) {
     super(message);
-    this.provider = provider;
-    this.originalException = originalException;
-    if (originalException !== null) {
-      this.cause = originalException;
+    this.provider = options.provider;
+    this.originalException = options.originalException ?? null;
+    if (this.originalException !== null) {
+      this.cause = this.originalException;
     }
   }
+}
+
+/**
+ * Options for constructing an APIError.
+ */
+export interface APIErrorOptions extends ProviderErrorOptions {
+  statusCode?: number | null;
 }
 
 /**
@@ -54,14 +65,9 @@ export class APIError extends ProviderError {
    */
   readonly statusCode: number | null;
 
-  constructor(
-    message: string,
-    provider: ProviderId,
-    statusCode: number | null = null,
-    originalException: Error | null = null
-  ) {
-    super(message, provider, originalException);
-    this.statusCode = statusCode;
+  constructor(message: string, options: APIErrorOptions) {
+    super(message, options);
+    this.statusCode = options.statusCode ?? null;
   }
 }
 
@@ -69,13 +75,8 @@ export class APIError extends ProviderError {
  * Raised for authentication failures (401, invalid API keys).
  */
 export class AuthenticationError extends APIError {
-  constructor(
-    message: string,
-    provider: ProviderId,
-    statusCode: number | null = null,
-    originalException: Error | null = null
-  ) {
-    super(message, provider, statusCode ?? 401, originalException);
+  constructor(message: string, options: APIErrorOptions) {
+    super(message, { ...options, statusCode: options.statusCode ?? 401 });
   }
 }
 
@@ -83,13 +84,8 @@ export class AuthenticationError extends APIError {
  * Raised for permission/authorization failures (403).
  */
 export class PermissionError extends APIError {
-  constructor(
-    message: string,
-    provider: ProviderId,
-    statusCode: number | null = null,
-    originalException: Error | null = null
-  ) {
-    super(message, provider, statusCode ?? 403, originalException);
+  constructor(message: string, options: APIErrorOptions) {
+    super(message, { ...options, statusCode: options.statusCode ?? 403 });
   }
 }
 
@@ -97,13 +93,8 @@ export class PermissionError extends APIError {
  * Raised for malformed requests (400, 422).
  */
 export class BadRequestError extends APIError {
-  constructor(
-    message: string,
-    provider: ProviderId,
-    statusCode: number | null = null,
-    originalException: Error | null = null
-  ) {
-    super(message, provider, statusCode ?? 400, originalException);
+  constructor(message: string, options: APIErrorOptions) {
+    super(message, { ...options, statusCode: options.statusCode ?? 400 });
   }
 }
 
@@ -111,13 +102,8 @@ export class BadRequestError extends APIError {
  * Raised when requested resource is not found (404).
  */
 export class NotFoundError extends APIError {
-  constructor(
-    message: string,
-    provider: ProviderId,
-    statusCode: number | null = null,
-    originalException: Error | null = null
-  ) {
-    super(message, provider, statusCode ?? 404, originalException);
+  constructor(message: string, options: APIErrorOptions) {
+    super(message, { ...options, statusCode: options.statusCode ?? 404 });
   }
 }
 
@@ -125,13 +111,8 @@ export class NotFoundError extends APIError {
  * Raised when rate limits are exceeded (429).
  */
 export class RateLimitError extends APIError {
-  constructor(
-    message: string,
-    provider: ProviderId,
-    statusCode: number | null = null,
-    originalException: Error | null = null
-  ) {
-    super(message, provider, statusCode ?? 429, originalException);
+  constructor(message: string, options: APIErrorOptions) {
+    super(message, { ...options, statusCode: options.statusCode ?? 429 });
   }
 }
 
@@ -139,32 +120,39 @@ export class RateLimitError extends APIError {
  * Raised for server-side errors (500+).
  */
 export class ServerError extends APIError {
-  constructor(
-    message: string,
-    provider: ProviderId,
-    statusCode: number | null = null,
-    originalException: Error | null = null
-  ) {
-    super(message, provider, statusCode ?? 500, originalException);
+  constructor(message: string, options: APIErrorOptions) {
+    super(message, { ...options, statusCode: options.statusCode ?? 500 });
   }
 }
 
 /**
  * Raised when unable to connect to the API (network issues, timeouts).
  */
-export class ConnectionError extends ProviderError {}
+export class ConnectionError extends ProviderError {
+  constructor(message: string, options: ProviderErrorOptions) {
+    super(message, options);
+  }
+}
 
 /**
  * Raised when requests timeout or deadline exceeded.
  */
-export class TimeoutError extends ProviderError {}
+export class TimeoutError extends ProviderError {
+  constructor(message: string, options: ProviderErrorOptions) {
+    super(message, options);
+  }
+}
 
 /**
  * Raised when API response fails validation.
  *
  * This wraps the APIResponseValidationErrors that OpenAI and Anthropic both return.
  */
-export class ResponseValidationError extends ProviderError {}
+export class ResponseValidationError extends ProviderError {
+  constructor(message: string, options: ProviderErrorOptions) {
+    super(message, options);
+  }
+}
 
 /**
  * Base class for errors that occur during tool execution.

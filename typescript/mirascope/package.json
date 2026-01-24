@@ -9,7 +9,16 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src"
   },
+  "peerDependencies": {
+    "@anthropic-ai/sdk": ">=0.71.0"
+  },
+  "peerDependenciesMeta": {
+    "@anthropic-ai/sdk": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.71.2",
     "@vitest/coverage-v8": "^3.0.0",
     "vitest": "^3.0.0"
   }
