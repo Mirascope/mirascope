@@ -19,17 +19,14 @@ from opentelemetry import trace as otel_trace
 from .....llm import (
     AsyncContextResponse,
     AsyncContextStreamResponse,
-    AsyncContextTool,
-    AsyncContextToolkit,
+    AsyncContextTools,
     AsyncResponse,
     AsyncStreamResponse,
-    AsyncTool,
-    AsyncToolkit,
+    AsyncTools,
     Context,
     ContextResponse,
     ContextStreamResponse,
-    ContextTool,
-    ContextToolkit,
+    ContextTools,
     DepsT,
     FormattableT,
     Message,
@@ -39,15 +36,13 @@ from .....llm import (
     RootResponse,
     StreamResponse,
     StreamResponseChunk,
-    Tool,
-    Toolkit,
+    Tools,
     UserContent,
 )
 from .....llm.messages import promote_to_messages, user
 from .common import (
     FormatParam,
     SpanContext,
-    ToolsParam,
     attach_response,
     attach_response_async,
     record_dropped_params,
@@ -108,7 +103,7 @@ def _instrumented_model_call(
     self: Model,
     content: UserContent | Sequence[Message],
     *,
-    tools: Sequence[Tool] | Toolkit | None = None,
+    tools: Tools | None = None,
     format: None = None,
 ) -> Response: ...
 
@@ -118,7 +113,7 @@ def _instrumented_model_call(
     self: Model,
     content: UserContent | Sequence[Message],
     *,
-    tools: Sequence[Tool] | Toolkit | None = None,
+    tools: Tools | None = None,
     format: type[FormattableT] | FormatParam,
 ) -> Response[FormattableT]: ...
 
@@ -128,7 +123,7 @@ def _instrumented_model_call(
     self: Model,
     content: UserContent | Sequence[Message],
     *,
-    tools: Sequence[Tool] | Toolkit | None = None,
+    tools: Tools | None = None,
     format: type[FormattableT] | FormatParam | OutputParser[FormattableT] | None = None,
 ) -> Response | Response[FormattableT]: ...
 
@@ -138,7 +133,7 @@ def _instrumented_model_call(
     self: Model,
     content: UserContent | Sequence[Message],
     *,
-    tools: Sequence[Tool] | Toolkit | None = None,
+    tools: Tools | None = None,
     format: FormatParam = None,
 ) -> Response | Response[FormattableT]:
     """Returns a GenAI-instrumented result of `Model.call`."""
@@ -193,7 +188,7 @@ async def _instrumented_model_call_async(
     self: Model,
     content: UserContent | Sequence[Message],
     *,
-    tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+    tools: AsyncTools | None = None,
     format: None = None,
 ) -> AsyncResponse: ...
 
@@ -203,7 +198,7 @@ async def _instrumented_model_call_async(
     self: Model,
     content: UserContent | Sequence[Message],
     *,
-    tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+    tools: AsyncTools | None = None,
     format: type[FormattableT] | FormatParam,
 ) -> AsyncResponse[FormattableT]: ...
 
@@ -213,7 +208,7 @@ async def _instrumented_model_call_async(
     self: Model,
     content: UserContent | Sequence[Message],
     *,
-    tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+    tools: AsyncTools | None = None,
     format: type[FormattableT] | FormatParam | OutputParser[FormattableT] | None = None,
 ) -> AsyncResponse | AsyncResponse[FormattableT]: ...
 
@@ -223,7 +218,7 @@ async def _instrumented_model_call_async(
     self: Model,
     content: UserContent | Sequence[Message],
     *,
-    tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+    tools: AsyncTools | None = None,
     format: FormatParam = None,
 ) -> AsyncResponse | AsyncResponse[FormattableT]:
     """Returns a GenAI-instrumented result of `Model.call_async`."""
@@ -280,7 +275,7 @@ def _instrumented_model_context_call(
     content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
+    tools: ContextTools[DepsT] | None = None,
     format: None = None,
 ) -> ContextResponse[DepsT, None]: ...
 
@@ -291,7 +286,7 @@ def _instrumented_model_context_call(
     content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
+    tools: ContextTools[DepsT] | None = None,
     format: type[FormattableT] | FormatParam,
 ) -> ContextResponse[DepsT, FormattableT]: ...
 
@@ -302,7 +297,7 @@ def _instrumented_model_context_call(
     content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
+    tools: ContextTools[DepsT] | None = None,
     format: type[FormattableT] | FormatParam | OutputParser[FormattableT] | None = None,
 ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]: ...
 
@@ -313,7 +308,7 @@ def _instrumented_model_context_call(
     content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
+    tools: ContextTools[DepsT] | None = None,
     format: FormatParam = None,
 ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
     """Returns a GenAI-instrumented result of `Model.context_call`."""
@@ -371,9 +366,7 @@ async def _instrumented_model_context_call_async(
     content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-    | AsyncContextToolkit[DepsT]
-    | None = None,
+    tools: AsyncContextTools[DepsT] | None = None,
     format: None = None,
 ) -> AsyncContextResponse[DepsT, None]: ...
 
@@ -384,9 +377,7 @@ async def _instrumented_model_context_call_async(
     content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-    | AsyncContextToolkit[DepsT]
-    | None = None,
+    tools: AsyncContextTools[DepsT] | None = None,
     format: type[FormattableT] | FormatParam,
 ) -> AsyncContextResponse[DepsT, FormattableT]: ...
 
@@ -397,9 +388,7 @@ async def _instrumented_model_context_call_async(
     content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-    | AsyncContextToolkit[DepsT]
-    | None = None,
+    tools: AsyncContextTools[DepsT] | None = None,
     format: type[FormattableT] | FormatParam | OutputParser[FormattableT] | None = None,
 ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]: ...
 
@@ -410,9 +399,7 @@ async def _instrumented_model_context_call_async(
     content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-    | AsyncContextToolkit[DepsT]
-    | None = None,
+    tools: AsyncContextTools[DepsT] | None = None,
     format: FormatParam = None,
 ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
     """Returns a GenAI-instrumented result of `Model.context_call_async`."""
@@ -567,7 +554,7 @@ def _instrumented_model_stream(
     self: Model,
     content: UserContent | Sequence[Message],
     *,
-    tools: Sequence[Tool] | Toolkit | None = None,
+    tools: Tools | None = None,
     format: None = None,
 ) -> StreamResponse: ...
 
@@ -577,7 +564,7 @@ def _instrumented_model_stream(
     self: Model,
     content: UserContent | Sequence[Message],
     *,
-    tools: Sequence[Tool] | Toolkit | None = None,
+    tools: Tools | None = None,
     format: type[FormattableT] | FormatParam,
 ) -> StreamResponse[FormattableT]: ...
 
@@ -587,7 +574,7 @@ def _instrumented_model_stream(
     self: Model,
     content: UserContent | Sequence[Message],
     *,
-    tools: Sequence[Tool] | Toolkit | None = None,
+    tools: Tools | None = None,
     format: type[FormattableT] | FormatParam | OutputParser[FormattableT] | None = None,
 ) -> StreamResponse | StreamResponse[FormattableT]: ...
 
@@ -597,7 +584,7 @@ def _instrumented_model_stream(
     self: Model,
     content: UserContent | Sequence[Message],
     *,
-    tools: Sequence[Tool] | Toolkit | None = None,
+    tools: Tools | None = None,
     format: FormatParam = None,
 ) -> StreamResponse | StreamResponse[FormattableT]:
     """Returns a GenAI-instrumented result of `Model.stream`."""
@@ -676,7 +663,7 @@ async def _instrumented_model_stream_async(
     self: Model,
     content: UserContent | Sequence[Message],
     *,
-    tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+    tools: AsyncTools | None = None,
     format: None = None,
 ) -> AsyncStreamResponse: ...
 
@@ -686,7 +673,7 @@ async def _instrumented_model_stream_async(
     self: Model,
     content: UserContent | Sequence[Message],
     *,
-    tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+    tools: AsyncTools | None = None,
     format: type[FormattableT] | FormatParam,
 ) -> AsyncStreamResponse[FormattableT]: ...
 
@@ -696,7 +683,7 @@ async def _instrumented_model_stream_async(
     self: Model,
     content: UserContent | Sequence[Message],
     *,
-    tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+    tools: AsyncTools | None = None,
     format: type[FormattableT] | FormatParam | OutputParser[FormattableT] | None = None,
 ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]: ...
 
@@ -706,7 +693,7 @@ async def _instrumented_model_stream_async(
     self: Model,
     content: UserContent | Sequence[Message],
     *,
-    tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+    tools: AsyncTools | None = None,
     format: FormatParam = None,
 ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
     """Returns a GenAI-instrumented result of `Model.stream_async`."""
@@ -788,7 +775,7 @@ def _instrumented_model_context_stream(
     content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
+    tools: ContextTools[DepsT] | None = None,
     format: None = None,
 ) -> ContextStreamResponse[DepsT, None]: ...
 
@@ -799,7 +786,7 @@ def _instrumented_model_context_stream(
     content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
+    tools: ContextTools[DepsT] | None = None,
     format: type[FormattableT] | FormatParam,
 ) -> ContextStreamResponse[DepsT, FormattableT]: ...
 
@@ -810,7 +797,7 @@ def _instrumented_model_context_stream(
     content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
+    tools: ContextTools[DepsT] | None = None,
     format: type[FormattableT] | FormatParam | OutputParser[FormattableT] | None = None,
 ) -> (
     ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
@@ -823,7 +810,7 @@ def _instrumented_model_context_stream(
     content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
+    tools: ContextTools[DepsT] | None = None,
     format: FormatParam = None,
 ) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]:
     """Returns a GenAI-instrumented result of `Model.context_stream`."""
@@ -905,9 +892,7 @@ async def _instrumented_model_context_stream_async(
     content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-    | AsyncContextToolkit[DepsT]
-    | None = None,
+    tools: AsyncContextTools[DepsT] | None = None,
     format: None = None,
 ) -> AsyncContextStreamResponse[DepsT, None]: ...
 
@@ -918,9 +903,7 @@ async def _instrumented_model_context_stream_async(
     content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-    | AsyncContextToolkit[DepsT]
-    | None = None,
+    tools: AsyncContextTools[DepsT] | None = None,
     format: type[FormattableT] | FormatParam,
 ) -> AsyncContextStreamResponse[DepsT, FormattableT]: ...
 
@@ -931,9 +914,7 @@ async def _instrumented_model_context_stream_async(
     content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-    | AsyncContextToolkit[DepsT]
-    | None = None,
+    tools: AsyncContextTools[DepsT] | None = None,
     format: type[FormattableT] | FormatParam | OutputParser[FormattableT] | None = None,
 ) -> (
     AsyncContextStreamResponse[DepsT, None]
@@ -947,9 +928,7 @@ async def _instrumented_model_context_stream_async(
     content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-    | AsyncContextToolkit[DepsT]
-    | None = None,
+    tools: AsyncContextTools[DepsT] | None = None,
     format: FormatParam = None,
 ) -> (
     AsyncContextStreamResponse[DepsT, None]
@@ -1067,7 +1046,7 @@ def _instrumented_model_resume(
     with start_model_span(
         self,
         messages=messages,
-        tools=cast(ToolsParam, response.toolkit),
+        tools=response.toolkit,
         format=cast(FormatParam, response.format),
     ) as span_ctx:
         result = _ORIGINAL_MODEL_RESUME(
@@ -1147,7 +1126,7 @@ async def _instrumented_model_resume_async(
     with start_model_span(
         self,
         messages=messages,
-        tools=cast(ToolsParam, response.toolkit),
+        tools=response.toolkit,
         format=cast(FormatParam, response.format),
         activate=True,
     ) as span_ctx:
@@ -1232,7 +1211,7 @@ def _instrumented_model_context_resume(
     with start_model_span(
         self,
         messages=messages,
-        tools=cast(ToolsParam, response.toolkit),
+        tools=response.toolkit,
         format=cast(FormatParam, response.format),
         activate=True,
     ) as span_ctx:
@@ -1320,7 +1299,7 @@ async def _instrumented_model_context_resume_async(
     with start_model_span(
         self,
         messages=messages,
-        tools=cast(ToolsParam, response.toolkit),
+        tools=response.toolkit,
         format=cast(FormatParam, response.format),
         activate=True,
     ) as span_ctx:
@@ -1402,7 +1381,7 @@ def _instrumented_model_resume_stream(
     span_cm = start_model_span(
         self,
         messages=messages,
-        tools=cast(ToolsParam, response.toolkit),
+        tools=response.toolkit,
         format=cast(FormatParam, response.format),
         activate=False,
     )
@@ -1505,7 +1484,7 @@ async def _instrumented_model_resume_stream_async(
     span_cm = start_model_span(
         self,
         messages=messages,
-        tools=cast(ToolsParam, response.toolkit),
+        tools=response.toolkit,
         format=cast(FormatParam, response.format),
         activate=False,
     )
@@ -1618,7 +1597,7 @@ def _instrumented_model_context_resume_stream(
     span_cm = start_model_span(
         self,
         messages=messages,
-        tools=cast(ToolsParam, response.toolkit),
+        tools=response.toolkit,
         format=cast(FormatParam, response.format),
         activate=False,
     )
@@ -1735,7 +1714,7 @@ async def _instrumented_model_context_resume_stream_async(
     span_cm = start_model_span(
         self,
         messages=messages,
-        tools=cast(ToolsParam, response.toolkit),
+        tools=response.toolkit,
         format=cast(FormatParam, response.format),
         activate=False,
     )

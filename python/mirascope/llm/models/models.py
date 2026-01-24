@@ -27,16 +27,7 @@ from ..responses import (
     Response,
     StreamResponse,
 )
-from ..tools import (
-    AsyncContextTool,
-    AsyncContextToolkit,
-    AsyncTool,
-    AsyncToolkit,
-    ContextTool,
-    ContextToolkit,
-    Tool,
-    Toolkit,
-)
+from ..tools import AsyncContextTools, AsyncTools, ContextTools, Tools
 from .params import Params
 
 MODEL_CONTEXT: ContextVar[Model | None] = ContextVar("MODEL_CONTEXT", default=None)
@@ -156,7 +147,7 @@ class Model:
         self,
         content: UserContent | Sequence[Message],
         *,
-        tools: Sequence[Tool] | Toolkit | None = None,
+        tools: Tools | None = None,
         format: None = None,
     ) -> Response:
         """Generate an `llm.Response` without a response format."""
@@ -167,7 +158,7 @@ class Model:
         self,
         content: UserContent | Sequence[Message],
         *,
-        tools: Sequence[Tool] | Toolkit | None = None,
+        tools: Tools | None = None,
         format: type[FormattableT] | Format[FormattableT],
     ) -> Response[FormattableT]:
         """Generate an `llm.Response` with a response format."""
@@ -178,7 +169,7 @@ class Model:
         self,
         content: UserContent | Sequence[Message],
         *,
-        tools: Sequence[Tool] | Toolkit | None = None,
+        tools: Tools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -191,7 +182,7 @@ class Model:
         self,
         content: UserContent | Sequence[Message],
         *,
-        tools: Sequence[Tool] | Toolkit | None = None,
+        tools: Tools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -223,7 +214,7 @@ class Model:
         self,
         content: UserContent | Sequence[Message],
         *,
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        tools: AsyncTools | None = None,
         format: None = None,
     ) -> AsyncResponse:
         """Generate an `llm.AsyncResponse` without a response format."""
@@ -234,7 +225,7 @@ class Model:
         self,
         content: UserContent | Sequence[Message],
         *,
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        tools: AsyncTools | None = None,
         format: type[FormattableT] | Format[FormattableT],
     ) -> AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` with a response format."""
@@ -245,7 +236,7 @@ class Model:
         self,
         content: UserContent | Sequence[Message],
         *,
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        tools: AsyncTools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -258,7 +249,7 @@ class Model:
         self,
         content: UserContent | Sequence[Message],
         *,
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        tools: AsyncTools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -290,7 +281,7 @@ class Model:
         self,
         content: UserContent | Sequence[Message],
         *,
-        tools: Sequence[Tool] | Toolkit | None = None,
+        tools: Tools | None = None,
         format: None = None,
     ) -> StreamResponse:
         """Stream an `llm.StreamResponse` without a response format."""
@@ -301,7 +292,7 @@ class Model:
         self,
         content: UserContent | Sequence[Message],
         *,
-        tools: Sequence[Tool] | Toolkit | None = None,
+        tools: Tools | None = None,
         format: type[FormattableT] | Format[FormattableT],
     ) -> StreamResponse[FormattableT]:
         """Stream an `llm.StreamResponse` with a response format."""
@@ -312,7 +303,7 @@ class Model:
         self,
         content: UserContent | Sequence[Message],
         *,
-        tools: Sequence[Tool] | Toolkit | None = None,
+        tools: Tools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -325,7 +316,7 @@ class Model:
         self,
         content: UserContent | Sequence[Message],
         *,
-        tools: Sequence[Tool] | Toolkit | None = None,
+        tools: Tools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -357,7 +348,7 @@ class Model:
         self,
         content: UserContent | Sequence[Message],
         *,
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        tools: AsyncTools | None = None,
         format: None = None,
     ) -> AsyncStreamResponse:
         """Stream an `llm.AsyncStreamResponse` without a response format."""
@@ -368,7 +359,7 @@ class Model:
         self,
         content: UserContent | Sequence[Message],
         *,
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        tools: AsyncTools | None = None,
         format: type[FormattableT] | Format[FormattableT],
     ) -> AsyncStreamResponse[FormattableT]:
         """Stream an `llm.AsyncStreamResponse` with a response format."""
@@ -379,7 +370,7 @@ class Model:
         self,
         content: UserContent | Sequence[Message],
         *,
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        tools: AsyncTools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -392,7 +383,7 @@ class Model:
         self,
         content: UserContent | Sequence[Message],
         *,
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        tools: AsyncTools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -425,9 +416,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
+        tools: ContextTools[DepsT] | None = None,
         format: None = None,
     ) -> ContextResponse[DepsT, None]:
         """Generate an `llm.ContextResponse` without a response format."""
@@ -439,9 +428,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
+        tools: ContextTools[DepsT] | None = None,
         format: type[FormattableT] | Format[FormattableT],
     ) -> ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` with a response format."""
@@ -453,9 +440,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
+        tools: ContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -469,9 +454,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
+        tools: ContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -506,9 +489,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
+        tools: AsyncContextTools[DepsT] | None = None,
         format: None = None,
     ) -> AsyncContextResponse[DepsT, None]:
         """Generate an `llm.AsyncContextResponse` without a response format."""
@@ -520,9 +501,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
+        tools: AsyncContextTools[DepsT] | None = None,
         format: type[FormattableT] | Format[FormattableT],
     ) -> AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` with a response format."""
@@ -534,9 +513,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
+        tools: AsyncContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -550,9 +527,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
+        tools: AsyncContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -587,9 +562,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
+        tools: ContextTools[DepsT] | None = None,
         format: None = None,
     ) -> ContextStreamResponse[DepsT, None]:
         """Stream an `llm.ContextStreamResponse` without a response format."""
@@ -601,9 +574,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
+        tools: ContextTools[DepsT] | None = None,
         format: type[FormattableT] | Format[FormattableT],
     ) -> ContextStreamResponse[DepsT, FormattableT]:
         """Stream an `llm.ContextStreamResponse` with a response format."""
@@ -615,9 +586,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
+        tools: ContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -633,9 +602,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
+        tools: ContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -672,9 +639,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
+        tools: AsyncContextTools[DepsT] | None = None,
         format: None = None,
     ) -> AsyncContextStreamResponse[DepsT, None]:
         """Stream an `llm.AsyncContextStreamResponse` without a response format."""
@@ -686,9 +651,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
+        tools: AsyncContextTools[DepsT] | None = None,
         format: type[FormattableT] | Format[FormattableT],
     ) -> AsyncContextStreamResponse[DepsT, FormattableT]:
         """Stream an `llm.AsyncContextStreamResponse` with a response format."""
@@ -700,9 +663,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
+        tools: AsyncContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -719,9 +680,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
+        tools: AsyncContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]

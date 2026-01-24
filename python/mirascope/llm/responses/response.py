@@ -9,14 +9,14 @@ from ..context import Context, DepsT
 from ..formatting import Format, FormattableT
 from ..messages import AssistantMessage, Message, UserContent
 from ..tools import (
-    AsyncContextTool,
     AsyncContextToolkit,
-    AsyncTool,
+    AsyncContextTools,
     AsyncToolkit,
-    ContextTool,
+    AsyncTools,
     ContextToolkit,
-    Tool,
+    ContextTools,
     Toolkit,
+    Tools,
 )
 from ..types import Jsonable
 from .base_response import BaseResponse
@@ -39,7 +39,7 @@ class Response(BaseResponse[Toolkit, FormattableT]):
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
-        tools: Sequence[Tool] | Toolkit | None = None,
+        tools: Tools | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         assistant_message: AssistantMessage,
@@ -112,7 +112,7 @@ class AsyncResponse(BaseResponse[AsyncToolkit, FormattableT]):
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        tools: AsyncTools | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         assistant_message: AssistantMessage,
@@ -194,9 +194,7 @@ class ContextResponse(
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
+        tools: ContextTools[DepsT] | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         assistant_message: AssistantMessage,
@@ -284,9 +282,7 @@ class AsyncContextResponse(
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
+        tools: AsyncContextTools[DepsT] | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         assistant_message: AssistantMessage,
