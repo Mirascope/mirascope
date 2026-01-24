@@ -11,12 +11,16 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "fix": "bun run format && bun run lint:eslint:fix",
-    "test": "bun run --cwd mirascope test"
+    "test": "bun run --cwd mirascope test",
+    "codegen": "bun run scripts/codegen/run.ts"
   },
   "workspaces": [
     "mirascope",
     "examples"
   ],
+  "dependencies": {
+    "yaml": "^2.7.0"
+  },
   "devDependencies": {
     "@eslint/js": "^9.37.0",
     "@types/bun": "latest",
