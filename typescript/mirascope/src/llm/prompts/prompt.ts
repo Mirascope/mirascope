@@ -7,13 +7,7 @@ import { promoteToMessages } from '@/llm/messages';
 import { Model } from '@/llm/models';
 import type { ModelId } from '@/llm/providers/model-id';
 import type { Response } from '@/llm/responses';
-
-/**
- * Type representing no variables for a prompt.
- * `Record<never, never>` creates an object type with no keys,
- * ensuring `keyof NoVars` is `never`.
- */
-type NoVars = Record<never, never>;
+import type { NoVars } from '@/llm/types';
 
 /**
  * A template function that generates message content from variables.
@@ -153,6 +147,13 @@ export function definePrompt(args: PromptArgs<NoVars>): Prompt<NoVars>;
 export function definePrompt<T extends Record<string, unknown>>(
   args: PromptArgs<T>
 ): Prompt<T>;
+
+/**
+ * Generic overload for internal use (e.g., from defineCall).
+ * Accepts any T without constraints.
+ * @internal
+ */
+export function definePrompt<T>(args: PromptArgs<T>): Prompt<T>;
 
 // Implementation
 export function definePrompt<T>({ template }: PromptArgs<T>): Prompt<T> {
