@@ -80,15 +80,14 @@ class TransformersEncoder(BaseEncoder):
     def encode_request(
         self,
         messages: Sequence[Message],
-        tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
+        tools: BaseToolkit[AnyToolSchema],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
         | None,
     ) -> tuple[Sequence[Message], Format[FormattableT] | None, TokenIds]:
         """Encode a request into a format suitable for the model."""
-        tool_schemas = tools.tools if isinstance(tools, BaseToolkit) else tools or []
-        if len(tool_schemas) > 0:
+        if tools.tools:
             raise NotImplementedError("Tool usage is not supported.")
         if format is not None:
             raise NotImplementedError("Formatting is not supported.")

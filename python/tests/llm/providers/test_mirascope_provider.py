@@ -7,6 +7,12 @@ import pytest
 
 from mirascope.llm.providers.mirascope import _utils
 from mirascope.llm.providers.mirascope.provider import MirascopeProvider
+from mirascope.llm.tools import (
+    AsyncContextToolkit,
+    AsyncToolkit,
+    ContextToolkit,
+    Toolkit,
+)
 
 
 class TestMirascopeUtils:
@@ -205,7 +211,7 @@ class TestMirascopeProvider:
         mock_create_provider.return_value = mock_underlying
 
         provider = MirascopeProvider(api_key="test-key")
-        provider._call(model_id="openai/gpt-4", messages=[])  # pyright: ignore[reportPrivateUsage]
+        provider._call(model_id="openai/gpt-4", messages=[], toolkit=Toolkit(None))  # pyright: ignore[reportPrivateUsage]
 
         mock_underlying.call.assert_called_once()
 
@@ -222,7 +228,9 @@ class TestMirascopeProvider:
 
         provider = MirascopeProvider(api_key="test-key")
         ctx = Context(deps={})
-        provider._context_call(ctx=ctx, model_id="openai/gpt-4", messages=[])  # pyright: ignore[reportPrivateUsage]
+        provider._context_call(  # pyright: ignore[reportPrivateUsage]
+            ctx=ctx, model_id="openai/gpt-4", messages=[], toolkit=ContextToolkit(None)
+        )
 
         mock_underlying.context_call.assert_called_once()
 
@@ -237,7 +245,9 @@ class TestMirascopeProvider:
         mock_create_provider.return_value = mock_underlying
 
         provider = MirascopeProvider(api_key="test-key")
-        await provider._call_async(model_id="openai/gpt-4", messages=[])  # pyright: ignore[reportPrivateUsage]
+        await provider._call_async(  # pyright: ignore[reportPrivateUsage]
+            model_id="openai/gpt-4", messages=[], toolkit=AsyncToolkit(None)
+        )
 
         mock_underlying.call_async.assert_called_once()
 
@@ -256,7 +266,10 @@ class TestMirascopeProvider:
         provider = MirascopeProvider(api_key="test-key")
         ctx = Context(deps={})
         await provider._context_call_async(  # pyright: ignore[reportPrivateUsage]
-            ctx=ctx, model_id="openai/gpt-4", messages=[]
+            ctx=ctx,
+            model_id="openai/gpt-4",
+            messages=[],
+            toolkit=AsyncContextToolkit(None),
         )
 
         mock_underlying.context_call_async.assert_called_once()
@@ -271,7 +284,7 @@ class TestMirascopeProvider:
         mock_create_provider.return_value = mock_underlying
 
         provider = MirascopeProvider(api_key="test-key")
-        provider._stream(model_id="openai/gpt-4", messages=[])  # pyright: ignore[reportPrivateUsage]
+        provider._stream(model_id="openai/gpt-4", messages=[], toolkit=Toolkit(None))  # pyright: ignore[reportPrivateUsage]
 
         mock_underlying.stream.assert_called_once()
 
@@ -288,7 +301,9 @@ class TestMirascopeProvider:
 
         provider = MirascopeProvider(api_key="test-key")
         ctx = Context(deps={})
-        provider._context_stream(ctx=ctx, model_id="openai/gpt-4", messages=[])  # pyright: ignore[reportPrivateUsage]
+        provider._context_stream(  # pyright: ignore[reportPrivateUsage]
+            ctx=ctx, model_id="openai/gpt-4", messages=[], toolkit=ContextToolkit(None)
+        )
 
         mock_underlying.context_stream.assert_called_once()
 
@@ -303,7 +318,9 @@ class TestMirascopeProvider:
         mock_create_provider.return_value = mock_underlying
 
         provider = MirascopeProvider(api_key="test-key")
-        await provider._stream_async(model_id="openai/gpt-4", messages=[])  # pyright: ignore[reportPrivateUsage]
+        await provider._stream_async(  # pyright: ignore[reportPrivateUsage]
+            model_id="openai/gpt-4", messages=[], toolkit=AsyncToolkit(None)
+        )
 
         mock_underlying.stream_async.assert_called_once()
 
@@ -322,7 +339,10 @@ class TestMirascopeProvider:
         provider = MirascopeProvider(api_key="test-key")
         ctx = Context(deps={})
         await provider._context_stream_async(  # pyright: ignore[reportPrivateUsage]
-            ctx=ctx, model_id="openai/gpt-4", messages=[]
+            ctx=ctx,
+            model_id="openai/gpt-4",
+            messages=[],
+            toolkit=AsyncContextToolkit(None),
         )
 
         mock_underlying.context_stream_async.assert_called_once()
@@ -361,7 +381,7 @@ class TestMirascopeProviderErrorHandling:
 
         # Should propagate the RateLimitError from underlying provider
         with pytest.raises(RateLimitError) as exc_info:
-            provider.call(model_id="openai/gpt-4", messages=[])
+            provider.call(model_id="openai/gpt-4", messages=[], toolkit=Toolkit(None))
 
         assert "Rate limit exceeded" in str(exc_info.value)
 
@@ -384,7 +404,9 @@ class TestMirascopeProviderErrorHandling:
 
         # Should propagate the AuthenticationError from underlying provider
         with pytest.raises(AuthenticationError) as exc_info:
-            await provider.call_async(model_id="anthropic/claude-3", messages=[])
+            await provider.call_async(
+                model_id="anthropic/claude-3", messages=[], toolkit=AsyncToolkit(None)
+            )
 
         assert "Invalid API key" in str(exc_info.value)
 
@@ -406,6 +428,8 @@ class TestMirascopeProviderErrorHandling:
 
         # Should propagate the ServerError from underlying provider
         with pytest.raises(ServerError) as exc_info:
-            provider.stream(model_id="google/gemini-pro", messages=[])
+            provider.stream(
+                model_id="google/gemini-pro", messages=[], toolkit=Toolkit(None)
+            )
 
         assert "Internal server error" in str(exc_info.value)

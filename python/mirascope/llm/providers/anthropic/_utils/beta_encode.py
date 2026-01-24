@@ -163,7 +163,7 @@ def beta_encode_request(
     *,
     model_id: str,
     messages: Sequence[Message],
-    tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
+    tools: BaseToolkit[AnyToolSchema],
     format: type[FormattableT]
     | Format[FormattableT]
     | OutputParser[FormattableT]
@@ -185,13 +185,11 @@ def beta_encode_request(
         }
     )
 
-    tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
-
     model_supports_strict = (
         model_name(model_id) not in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
     )
     # Check for strict tools on models that don't support them
-    if _base_utils.has_strict_tools(tools) and not model_supports_strict:
+    if _base_utils.has_strict_tools(tools.tools) and not model_supports_strict:
         raise FeatureNotSupportedError(
             feature="strict tools",
             provider_id="anthropic",
@@ -204,7 +202,7 @@ def beta_encode_request(
         _beta_convert_tool_to_tool_param(
             tool, model_supports_strict=model_supports_strict
         )
-        for tool in tools
+        for tool in tools.tools
     ]
     format = resolve_format(format, default_mode=DEFAULT_FORMAT_MODE)
 
@@ -226,7 +224,7 @@ def beta_encode_request(
                     format_tool_schema, model_supports_strict=model_supports_strict
                 )
             )
-            if tools:
+            if tools.tools:
                 kwargs["tool_choice"] = {"type": "any"}
             else:
                 kwargs["tool_choice"] = {

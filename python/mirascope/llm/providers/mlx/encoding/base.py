@@ -21,7 +21,7 @@ class BaseEncoder(abc.ABC):
     def encode_request(
         self,
         messages: Sequence[Message],
-        tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
+        tools: BaseToolkit[AnyToolSchema],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]

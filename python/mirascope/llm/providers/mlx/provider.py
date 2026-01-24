@@ -23,10 +23,10 @@ from ...responses import (
     StreamResponse,
 )
 from ...tools import (
-    AsyncContextTools,
-    AsyncTools,
-    ContextTools,
-    Tools,
+    AsyncContextToolkit,
+    AsyncToolkit,
+    ContextToolkit,
+    Toolkit,
 )
 from ..base import BaseProvider
 from . import _utils
@@ -85,7 +85,7 @@ class MLXProvider(BaseProvider[None]):
         *,
         model_id: MLXModelId,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -107,7 +107,7 @@ class MLXProvider(BaseProvider[None]):
         mlx = _get_mlx(model_id)
 
         input_messages, format, assistant_message, response = mlx.generate(
-            messages, tools, format, params
+            messages, toolkit, format, params
         )
 
         return Response(
@@ -116,7 +116,7 @@ class MLXProvider(BaseProvider[None]):
             model_id=model_id,
             provider_model_name=model_id,
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=_utils.extract_finish_reason(response),
@@ -130,7 +130,7 @@ class MLXProvider(BaseProvider[None]):
         ctx: Context[DepsT],
         model_id: MLXModelId,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -153,7 +153,7 @@ class MLXProvider(BaseProvider[None]):
         mlx = _get_mlx(model_id)
 
         input_messages, format, assistant_message, response = mlx.generate(
-            messages, tools, format, params
+            messages, toolkit, format, params
         )
 
         return ContextResponse(
@@ -162,7 +162,7 @@ class MLXProvider(BaseProvider[None]):
             model_id=model_id,
             provider_model_name=model_id,
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=_utils.extract_finish_reason(response),
@@ -175,7 +175,7 @@ class MLXProvider(BaseProvider[None]):
         *,
         model_id: MLXModelId,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -202,7 +202,7 @@ class MLXProvider(BaseProvider[None]):
             format,
             assistant_message,
             response,
-        ) = await mlx.generate_async(messages, tools, format, params)
+        ) = await mlx.generate_async(messages, toolkit, format, params)
 
         return AsyncResponse(
             raw=response,
@@ -210,7 +210,7 @@ class MLXProvider(BaseProvider[None]):
             model_id=model_id,
             provider_model_name=model_id,
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=_utils.extract_finish_reason(response),
@@ -224,7 +224,7 @@ class MLXProvider(BaseProvider[None]):
         ctx: Context[DepsT],
         model_id: MLXModelId,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -252,7 +252,7 @@ class MLXProvider(BaseProvider[None]):
             format,
             assistant_message,
             response,
-        ) = await mlx.generate_async(messages, tools, format, params)
+        ) = await mlx.generate_async(messages, toolkit, format, params)
 
         return AsyncContextResponse(
             raw=response,
@@ -260,7 +260,7 @@ class MLXProvider(BaseProvider[None]):
             model_id=model_id,
             provider_model_name=model_id,
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=_utils.extract_finish_reason(response),
@@ -273,7 +273,7 @@ class MLXProvider(BaseProvider[None]):
         *,
         model_id: MLXModelId,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -295,7 +295,7 @@ class MLXProvider(BaseProvider[None]):
         mlx = _get_mlx(model_id)
 
         input_messages, format, chunk_iterator = mlx.stream(
-            messages, tools, format, params
+            messages, toolkit, format, params
         )
 
         return StreamResponse(
@@ -303,7 +303,7 @@ class MLXProvider(BaseProvider[None]):
             model_id=model_id,
             provider_model_name=model_id,
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
             format=format,
@@ -315,7 +315,7 @@ class MLXProvider(BaseProvider[None]):
         ctx: Context[DepsT],
         model_id: MLXModelId,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -338,7 +338,7 @@ class MLXProvider(BaseProvider[None]):
         mlx = _get_mlx(model_id)
 
         input_messages, format, chunk_iterator = mlx.stream(
-            messages, tools, format, params
+            messages, toolkit, format, params
         )
 
         return ContextStreamResponse(
@@ -346,7 +346,7 @@ class MLXProvider(BaseProvider[None]):
             model_id=model_id,
             provider_model_name=model_id,
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
             format=format,
@@ -357,7 +357,7 @@ class MLXProvider(BaseProvider[None]):
         *,
         model_id: MLXModelId,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -379,7 +379,7 @@ class MLXProvider(BaseProvider[None]):
         mlx = _get_mlx(model_id)
 
         input_messages, format, chunk_iterator = await mlx.stream_async(
-            messages, tools, format, params
+            messages, toolkit, format, params
         )
 
         return AsyncStreamResponse(
@@ -387,7 +387,7 @@ class MLXProvider(BaseProvider[None]):
             model_id=model_id,
             provider_model_name=model_id,
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
             format=format,
@@ -399,7 +399,7 @@ class MLXProvider(BaseProvider[None]):
         ctx: Context[DepsT],
         model_id: MLXModelId,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -425,7 +425,7 @@ class MLXProvider(BaseProvider[None]):
         mlx = _get_mlx(model_id)
 
         input_messages, format, chunk_iterator = await mlx.stream_async(
-            messages, tools, format, params
+            messages, toolkit, format, params
         )
 
         return AsyncContextStreamResponse(
@@ -433,7 +433,7 @@ class MLXProvider(BaseProvider[None]):
             model_id=model_id,
             provider_model_name=model_id,
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
             format=format,

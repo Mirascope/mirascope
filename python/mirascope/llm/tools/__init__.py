@@ -19,7 +19,17 @@ from .toolkit import (
     ToolkitT,
 )
 from .tools import AsyncContextTool, AsyncTool, ContextTool, Tool, ToolT
-from .types import AnyTools, AsyncContextTools, AsyncTools, ContextTools, Tools
+from .types import (
+    AnyTools,
+    AsyncContextTools,
+    AsyncTools,
+    ContextTools,
+    Tools,
+    normalize_async_context_tools,
+    normalize_async_tools,
+    normalize_context_tools,
+    normalize_tools,
+)
 
 __all__ = [
     "FORMAT_TOOL_NAME",
@@ -49,5 +59,9 @@ __all__ = [
     "Toolkit",
     "ToolkitT",
     "Tools",
+    "normalize_async_context_tools",
+    "normalize_async_tools",
+    "normalize_context_tools",
+    "normalize_tools",
     "tool",
 ]

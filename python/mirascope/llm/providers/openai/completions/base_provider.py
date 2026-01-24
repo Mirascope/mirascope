@@ -22,7 +22,7 @@ from ....responses import (
     Response,
     StreamResponse,
 )
-from ....tools import AsyncContextTools, AsyncTools, ContextTools, Tools
+from ....tools import AsyncContextToolkit, AsyncToolkit, ContextToolkit, Toolkit
 from ...base import BaseProvider
 from .. import _utils as _shared_utils
 from ..model_id import model_name as openai_model_name
@@ -92,7 +92,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -114,7 +114,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            tools=toolkit,
             format=format,
             params=params,
         )
@@ -134,7 +134,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             model_id=model_id,
             provider_model_name=self._provider_model_name(model_id),
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
@@ -148,7 +148,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -171,7 +171,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            tools=toolkit,
             format=format,
             params=params,
         )
@@ -191,7 +191,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             model_id=model_id,
             provider_model_name=self._provider_model_name(model_id),
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
@@ -204,7 +204,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -227,7 +227,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             model_id=model_id,
             params=params,
             messages=messages,
-            tools=tools,
+            tools=toolkit,
             format=format,
         )
         kwargs["model"] = self._model_name(model_id)
@@ -246,7 +246,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             model_id=model_id,
             provider_model_name=self._provider_model_name(model_id),
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
@@ -260,7 +260,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -284,7 +284,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             model_id=model_id,
             params=params,
             messages=messages,
-            tools=tools,
+            tools=toolkit,
             format=format,
         )
         kwargs["model"] = self._model_name(model_id)
@@ -303,7 +303,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             model_id=model_id,
             provider_model_name=self._provider_model_name(model_id),
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
@@ -316,7 +316,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -338,7 +338,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            tools=toolkit,
             format=format,
             params=params,
         )
@@ -356,7 +356,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             model_id=model_id,
             provider_model_name=self._provider_model_name(model_id),
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
             format=format,
@@ -368,7 +368,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -391,7 +391,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            tools=toolkit,
             format=format,
             params=params,
         )
@@ -410,7 +410,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             model_id=model_id,
             provider_model_name=self._provider_model_name(model_id),
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
             format=format,
@@ -421,7 +421,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -443,7 +443,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            tools=toolkit,
             format=format,
             params=params,
         )
@@ -461,7 +461,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             model_id=model_id,
             provider_model_name=self._provider_model_name(model_id),
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
             format=format,
@@ -473,7 +473,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -499,7 +499,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            tools=toolkit,
             format=format,
             params=params,
         )
@@ -518,7 +518,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             model_id=model_id,
             provider_model_name=self._provider_model_name(model_id),
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
             format=format,

@@ -270,7 +270,7 @@ def encode_request(
     *,
     model_id: GoogleModelId,
     messages: Sequence[Message],
-    tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
+    tools: BaseToolkit[AnyToolSchema],
     format: type[FormattableT]
     | Format[FormattableT]
     | OutputParser[FormattableT]
@@ -314,9 +314,7 @@ def encode_request(
             if thinking_config.get("encode_thoughts_as_text"):
                 encode_thoughts_as_text = True
 
-    tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
-
-    if _base_utils.has_strict_tools(tools):
+    if _base_utils.has_strict_tools(tools.tools):
         raise FeatureNotSupportedError(
             feature="strict tools",
             provider_id="google",
@@ -332,12 +330,14 @@ def encode_request(
     )
     # Older google models do not allow strict mode when using tools; if so, we use tool
     # mode when tools are present by default for compatibility. Otherwise, prefer strict mode.
-    default_mode = "tool" if tools and not allows_strict_mode_with_tools else "strict"
+    default_mode = (
+        "tool" if tools.tools and not allows_strict_mode_with_tools else "strict"
+    )
     format = resolve_format(format, default_mode=default_mode)
     if format is not None:
         if (
             format.mode in ("strict", "json")
-            and tools
+            and tools.tools
             and not allows_strict_mode_with_tools
         ):
             raise FeatureNotSupportedError(
@@ -358,7 +358,7 @@ def encode_request(
             function_calling_config = genai_types.FunctionCallingConfigDict(
                 mode=genai_types.FunctionCallingConfigMode.ANY
             )
-            if not tools:
+            if not tools.tools:
                 function_calling_config["allowed_function_names"] = [FORMAT_TOOL_NAME]
 
             google_config["tool_config"] = genai_types.ToolConfigDict(
@@ -372,9 +372,9 @@ def encode_request(
                 messages, format.formatting_instructions
             )
 
-    if tools:
+    if tools.tools:
         function_declarations = [
-            _convert_tool_to_function_declaration(tool) for tool in tools
+            _convert_tool_to_function_declaration(tool) for tool in tools.tools
         ]
         google_tools.append(
             genai_types.ToolDict(function_declarations=function_declarations)

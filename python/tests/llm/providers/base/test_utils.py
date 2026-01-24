@@ -270,6 +270,6 @@ def test_ensure_all_properties_required_no_properties_key() -> None:
     assert "required" not in schema
 
 
-def test_has_strict_tools_with_none() -> None:
-    """Test that has_strict_tools returns False when tools is None."""
-    assert _utils.has_strict_tools(None) is False
+def test_has_strict_tools_with_empty_list() -> None:
+    """Test that has_strict_tools returns False when tools is an empty list."""
+    assert _utils.has_strict_tools([]) is False

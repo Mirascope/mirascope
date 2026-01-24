@@ -36,3 +36,71 @@ AsyncContextTools = TypeAliasType(
     type_params=(DepsT,),
 )
 """Type alias for async context tool parameters: a sequence of AsyncTools/AsyncContextTools or an AsyncContextToolkit."""
+
+
+def normalize_tools(tools: Tools | None) -> Toolkit:
+    """Normalize tools input to a Toolkit.
+
+    Args:
+        tools: A sequence of Tools, a Toolkit, or None.
+
+    Returns:
+        A Toolkit containing the tools (or an empty Toolkit if None).
+    """
+    if tools is None:
+        return Toolkit(None)
+    if isinstance(tools, Toolkit):
+        return tools
+    return Toolkit(tools)
+
+
+def normalize_async_tools(tools: AsyncTools | None) -> AsyncToolkit:
+    """Normalize async tools input to an AsyncToolkit.
+
+    Args:
+        tools: A sequence of AsyncTools, an AsyncToolkit, or None.
+
+    Returns:
+        An AsyncToolkit containing the tools (or an empty AsyncToolkit if None).
+    """
+    if tools is None:
+        return AsyncToolkit(None)
+    if isinstance(tools, AsyncToolkit):
+        return tools
+    return AsyncToolkit(tools)
+
+
+def normalize_context_tools(
+    tools: ContextTools[DepsT] | None,
+) -> ContextToolkit[DepsT]:
+    """Normalize context tools input to a ContextToolkit.
+
+    Args:
+        tools: A sequence of Tools/ContextTools, a ContextToolkit, or None.
+
+    Returns:
+        A ContextToolkit containing the tools (or an empty ContextToolkit if None).
+    """
+    if tools is None:
+        return ContextToolkit(None)
+    if isinstance(tools, ContextToolkit):
+        return tools
+    return ContextToolkit(tools)
+
+
+def normalize_async_context_tools(
+    tools: AsyncContextTools[DepsT] | None,
+) -> AsyncContextToolkit[DepsT]:
+    """Normalize async context tools input to an AsyncContextToolkit.
+
+    Args:
+        tools: A sequence of AsyncTools/AsyncContextTools, an AsyncContextToolkit, or None.
+
+    Returns:
+        An AsyncContextToolkit containing the tools (or an empty AsyncContextToolkit if None).
+    """
+    if tools is None:
+        return AsyncContextToolkit(None)
+    if isinstance(tools, AsyncContextToolkit):
+        return tools
+    return AsyncContextToolkit(tools)
