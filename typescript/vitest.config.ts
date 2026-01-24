@@ -3,7 +3,7 @@ import { resolve } from 'path';
 import { defineConfig } from 'vitest/config';
 
 // Load .env for e2e tests (no-op if file doesn't exist)
-config({ path: resolve(__dirname, '../.env') });
+config({ path: resolve(__dirname, '.env') });
 
 export default defineConfig({
   test: {
