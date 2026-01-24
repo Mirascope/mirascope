@@ -60,3 +60,25 @@ export {
   system,
   user,
 } from '@/llm/messages';
+
+export {
+  MirascopeError,
+  ProviderError,
+  APIError,
+  AuthenticationError,
+  PermissionError,
+  BadRequestError,
+  NotFoundError,
+  RateLimitError,
+  ServerError,
+  ConnectionError,
+  TimeoutError,
+  ResponseValidationError,
+  ToolError,
+  ToolExecutionError,
+  ToolNotFoundError,
+  ParseError,
+  FeatureNotSupportedError,
+  NoRegisteredProviderError,
+  MissingAPIKeyError,
+} from '@/llm/exceptions';
