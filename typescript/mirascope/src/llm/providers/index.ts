@@ -15,3 +15,10 @@ export type { ProviderErrorMap } from '@/llm/providers/base';
 
 // Anthropic provider
 export { AnthropicProvider } from '@/llm/providers/anthropic';
+
+// Provider registry
+export {
+  getProviderForModel,
+  registerProvider,
+  resetProviderRegistry,
+} from '@/llm/providers/registry';
