@@ -94,6 +94,8 @@ export {
   type TemplateFunc,
 } from '@/llm/prompts';
 
+export { defineCall, type Call, type CallArgs } from '@/llm/calls';
+
 export {
   getProviderForModel,
   registerProvider,
