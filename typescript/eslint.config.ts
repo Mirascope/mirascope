@@ -7,14 +7,13 @@ import prettier from 'eslint-config-prettier';
 export default [
   eslint.configs.recommended,
   {
-    files: ['mirascope/**/*.ts', 'mirascope/**/*.tsx'],
-    ignores: ['mirascope/vitest.config.ts'],
+    files: ['src/**/*.ts', 'src/**/*.tsx', 'tests/**/*.ts', 'tests/**/*.tsx'],
     languageOptions: {
       parser: tsparser,
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        project: './mirascope/tsconfig.json',
+        project: './tsconfig.json',
       },
       globals: {
         ...globals.node,
