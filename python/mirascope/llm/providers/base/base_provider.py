@@ -25,10 +25,10 @@ from ...responses import (
     StreamResponse,
 )
 from ...tools import (
-    AsyncContextTools,
-    AsyncTools,
-    ContextTools,
-    Tools,
+    AsyncContextToolkit,
+    AsyncToolkit,
+    ContextToolkit,
+    Toolkit,
 )
 
 if TYPE_CHECKING:
@@ -146,7 +146,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: None = None,
         **params: Unpack[Params],
     ) -> Response:
@@ -159,7 +159,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> Response[FormattableT]:
@@ -172,7 +172,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -187,7 +187,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -210,7 +210,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
             return self._call(
                 model_id=model_id,
                 messages=messages,
-                tools=tools,
+                toolkit=toolkit,
                 format=format,
                 **params,
             )
@@ -221,7 +221,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -238,7 +238,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None]:
@@ -252,7 +252,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, FormattableT]:
@@ -266,7 +266,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -282,7 +282,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -307,7 +307,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
                 ctx=ctx,
                 model_id=model_id,
                 messages=messages,
-                tools=tools,
+                toolkit=toolkit,
                 format=format,
                 **params,
             )
@@ -319,7 +319,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -335,7 +335,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse:
@@ -348,7 +348,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> AsyncResponse[FormattableT]:
@@ -361,7 +361,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -376,7 +376,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -399,7 +399,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
             return await self._call_async(
                 model_id=model_id,
                 messages=messages,
-                tools=tools,
+                toolkit=toolkit,
                 format=format,
                 **params,
             )
@@ -410,7 +410,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -427,7 +427,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None]:
@@ -441,7 +441,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, FormattableT]:
@@ -455,7 +455,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -471,7 +471,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -496,7 +496,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
                 ctx=ctx,
                 model_id=model_id,
                 messages=messages,
-                tools=tools,
+                toolkit=toolkit,
                 format=format,
                 **params,
             )
@@ -508,7 +508,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -524,7 +524,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: None = None,
         **params: Unpack[Params],
     ) -> StreamResponse:
@@ -537,7 +537,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> StreamResponse[FormattableT]:
@@ -550,7 +550,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -565,7 +565,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -588,7 +588,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
             stream_response = self._stream(
                 model_id=model_id,
                 messages=messages,
-                tools=tools,
+                toolkit=toolkit,
                 format=format,
                 **params,
             )
@@ -603,7 +603,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -620,7 +620,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: None = None,
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT, None]:
@@ -634,7 +634,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT, FormattableT]:
@@ -648,7 +648,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -666,7 +666,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -693,7 +693,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
                 ctx=ctx,
                 model_id=model_id,
                 messages=messages,
-                tools=tools,
+                toolkit=toolkit,
                 format=format,
                 **params,
             )
@@ -709,7 +709,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -727,7 +727,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse:
@@ -740,7 +740,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> AsyncStreamResponse[FormattableT]:
@@ -753,7 +753,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -768,7 +768,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -791,7 +791,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
             stream_response = await self._stream_async(
                 model_id=model_id,
                 messages=messages,
-                tools=tools,
+                toolkit=toolkit,
                 format=format,
                 **params,
             )
@@ -806,7 +806,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -823,7 +823,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: None = None,
         **params: Unpack[Params],
     ) -> AsyncContextStreamResponse[DepsT, None]:
@@ -837,7 +837,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> AsyncContextStreamResponse[DepsT, FormattableT]:
@@ -851,7 +851,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -870,7 +870,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -898,7 +898,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
                 ctx=ctx,
                 model_id=model_id,
                 messages=messages,
-                tools=tools,
+                toolkit=toolkit,
                 format=format,
                 **params,
             )
@@ -914,7 +914,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -991,7 +991,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         return self.call(
             model_id=model_id,
             messages=messages,
-            tools=response.toolkit,
+            toolkit=response.toolkit,
             format=response.format,
             **params,
         )
@@ -1060,7 +1060,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         return await self.call_async(
             model_id=model_id,
             messages=messages,
-            tools=response.toolkit,
+            toolkit=response.toolkit,
             format=response.format,
             **params,
         )
@@ -1135,7 +1135,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
             ctx=ctx,
             model_id=model_id,
             messages=messages,
-            tools=response.toolkit,
+            toolkit=response.toolkit,
             format=response.format,
             **params,
         )
@@ -1212,7 +1212,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
             ctx=ctx,
             model_id=model_id,
             messages=messages,
-            tools=response.toolkit,
+            toolkit=response.toolkit,
             format=response.format,
             **params,
         )
@@ -1281,7 +1281,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         return self.stream(
             model_id=model_id,
             messages=messages,
-            tools=response.toolkit,
+            toolkit=response.toolkit,
             format=response.format,
             **params,
         )
@@ -1350,7 +1350,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         return await self.stream_async(
             model_id=model_id,
             messages=messages,
-            tools=response.toolkit,
+            toolkit=response.toolkit,
             format=response.format,
             **params,
         )
@@ -1431,7 +1431,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
             ctx=ctx,
             model_id=model_id,
             messages=messages,
-            tools=response.toolkit,
+            toolkit=response.toolkit,
             format=response.format,
             **params,
         )
@@ -1514,7 +1514,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
             ctx=ctx,
             model_id=model_id,
             messages=messages,
-            tools=response.toolkit,
+            toolkit=response.toolkit,
             format=response.format,
             **params,
         )

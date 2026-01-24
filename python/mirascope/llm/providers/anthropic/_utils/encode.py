@@ -338,7 +338,7 @@ def encode_request(
     *,
     model_id: AnthropicModelId,
     messages: Sequence[Message],
-    tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
+    tools: BaseToolkit[AnyToolSchema],
     format: type[FormattableT]
     | Format[FormattableT]
     | OutputParser[FormattableT]
@@ -355,10 +355,8 @@ def encode_request(
         {"model": model_name(model_id), "max_tokens": max_tokens, **processed}
     )
 
-    tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
-
     # Check for strict tools - the non-beta API doesn't support them
-    if _base_utils.has_strict_tools(tools):
+    if _base_utils.has_strict_tools(tools.tools):
         raise FeatureNotSupportedError(
             feature="strict tools",
             provider_id="anthropic",
@@ -366,7 +364,7 @@ def encode_request(
             message="Anthropic provider does not support strict tools. Try the beta provider.",
         )
 
-    anthropic_tools = [convert_tool_to_tool_param(tool) for tool in tools]
+    anthropic_tools = [convert_tool_to_tool_param(tool) for tool in tools.tools]
     format = resolve_format(format, default_mode=DEFAULT_FORMAT_MODE)
     if format is not None:
         if format.mode == "strict":
@@ -378,7 +376,7 @@ def encode_request(
         if format.mode == "tool":
             format_tool_schema = format.create_tool_schema()
             anthropic_tools.append(convert_tool_to_tool_param(format_tool_schema))
-            if tools:
+            if tools.tools:
                 kwargs["tool_choice"] = {"type": "any"}
             else:
                 kwargs["tool_choice"] = {

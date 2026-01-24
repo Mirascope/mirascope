@@ -4,6 +4,7 @@ from inline_snapshot import snapshot
 
 from mirascope import llm
 from mirascope.llm.providers.openai.responses._utils import encode_request
+from mirascope.llm.tools import Toolkit
 
 
 def test_prepare_message_multiple_assistant_text_parts() -> None:
@@ -24,7 +25,7 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
         model_id="openai/gpt-4o",
         messages=messages,
         format=None,
-        tools=None,
+        tools=Toolkit(None),
         params={},
     )
     assert kwargs == snapshot(
@@ -51,7 +52,7 @@ def test_prepare_message_multiple_system_messages() -> None:
         model_id="openai/gpt-4o",
         messages=messages,
         format=None,
-        tools=None,
+        tools=Toolkit(None),
         params={},
     )
     assert kwargs == snapshot(

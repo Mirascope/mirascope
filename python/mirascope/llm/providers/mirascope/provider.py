@@ -21,10 +21,10 @@ from ...responses import (
     StreamResponse,
 )
 from ...tools import (
-    AsyncContextTools,
-    AsyncTools,
-    ContextTools,
-    Tools,
+    AsyncContextToolkit,
+    AsyncToolkit,
+    ContextToolkit,
+    Toolkit,
 )
 from ..base import BaseProvider, Provider
 from . import _utils
@@ -152,7 +152,7 @@ class MirascopeProvider(BaseProvider[None]):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -164,7 +164,7 @@ class MirascopeProvider(BaseProvider[None]):
         return provider.call(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            toolkit=toolkit,
             format=format,
             **params,
         )
@@ -175,7 +175,7 @@ class MirascopeProvider(BaseProvider[None]):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -188,7 +188,7 @@ class MirascopeProvider(BaseProvider[None]):
             ctx=ctx,
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            toolkit=toolkit,
             format=format,
             **params,
         )
@@ -198,7 +198,7 @@ class MirascopeProvider(BaseProvider[None]):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -210,7 +210,7 @@ class MirascopeProvider(BaseProvider[None]):
         return await provider.call_async(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            toolkit=toolkit,
             format=format,
             **params,
         )
@@ -221,7 +221,7 @@ class MirascopeProvider(BaseProvider[None]):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -234,7 +234,7 @@ class MirascopeProvider(BaseProvider[None]):
             ctx=ctx,
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            toolkit=toolkit,
             format=format,
             **params,
         )
@@ -244,7 +244,7 @@ class MirascopeProvider(BaseProvider[None]):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -256,7 +256,7 @@ class MirascopeProvider(BaseProvider[None]):
         return provider.stream(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            toolkit=toolkit,
             format=format,
             **params,
         )
@@ -267,7 +267,7 @@ class MirascopeProvider(BaseProvider[None]):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -282,7 +282,7 @@ class MirascopeProvider(BaseProvider[None]):
             ctx=ctx,
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            toolkit=toolkit,
             format=format,
             **params,
         )
@@ -292,7 +292,7 @@ class MirascopeProvider(BaseProvider[None]):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -304,7 +304,7 @@ class MirascopeProvider(BaseProvider[None]):
         return await provider.stream_async(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            toolkit=toolkit,
             format=format,
             **params,
         )
@@ -315,7 +315,7 @@ class MirascopeProvider(BaseProvider[None]):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -331,7 +331,7 @@ class MirascopeProvider(BaseProvider[None]):
             ctx=ctx,
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            toolkit=toolkit,
             format=format,
             **params,
         )

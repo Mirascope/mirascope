@@ -137,7 +137,7 @@ class MLX:
     def stream(
         self,
         messages: Sequence[Message],
-        tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
+        tools: BaseToolkit[AnyToolSchema],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -163,7 +163,7 @@ class MLX:
     async def stream_async(
         self,
         messages: Sequence[Message],
-        tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
+        tools: BaseToolkit[AnyToolSchema],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -190,7 +190,7 @@ class MLX:
     def generate(
         self,
         messages: Sequence[Message],
-        tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
+        tools: BaseToolkit[AnyToolSchema],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -229,7 +229,7 @@ class MLX:
     async def generate_async(
         self,
         messages: Sequence[Message],
-        tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
+        tools: BaseToolkit[AnyToolSchema],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]

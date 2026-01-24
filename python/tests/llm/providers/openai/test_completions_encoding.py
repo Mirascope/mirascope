@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 from mirascope import llm
 from mirascope.llm.providers.openai.completions._utils import encode_request
+from mirascope.llm.tools import Toolkit
 
 
 def test_prepare_message_multiple_user_text_parts() -> None:
@@ -18,7 +19,11 @@ def test_prepare_message_multiple_user_text_parts() -> None:
         llm.messages.user(["Hello there", "fellow humans"]),
     ]
     assert encode_request(
-        model_id="openai/gpt-4o", messages=messages, format=None, tools=None, params={}
+        model_id="openai/gpt-4o",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
     ) == snapshot(
         (
             [
@@ -61,7 +66,11 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
         ),
     ]
     assert encode_request(
-        model_id="openai/gpt-4o", messages=messages, format=None, tools=None, params={}
+        model_id="openai/gpt-4o",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
     ) == snapshot(
         (
             [
@@ -110,6 +119,6 @@ def test_strict_unsupported_legacy_model() -> None:
             model_id="openai/gpt-4",
             messages=messages,
             format=format,
-            tools=None,
+            tools=Toolkit(None),
             params={},
         )

@@ -280,7 +280,7 @@ def encode_request(
     *,
     model_id: OpenAIModelId,
     messages: Sequence[Message],
-    tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
+    tools: BaseToolkit[AnyToolSchema],
     format: type[FormattableT]
     | Format[FormattableT]
     | OutputParser[FormattableT]
@@ -325,9 +325,7 @@ def encode_request(
             if thinking.get("encode_thoughts_as_text"):
                 encode_thoughts_as_text = True
 
-    tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
-
-    openai_tools = [_convert_tool_to_tool_param(tool) for tool in tools]
+    openai_tools = [_convert_tool_to_tool_param(tool) for tool in tools.tools]
 
     model_supports_strict = base_model_name not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
     default_mode = "strict" if model_supports_strict else "tool"
@@ -342,7 +340,7 @@ def encode_request(
                 )
             kwargs["response_format"] = _create_strict_response_format(format)
         elif format.mode == "tool":
-            if tools:
+            if tools.tools:
                 kwargs["tool_choice"] = "required"
             else:
                 kwargs["tool_choice"] = {

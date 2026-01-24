@@ -27,7 +27,16 @@ from ..responses import (
     Response,
     StreamResponse,
 )
-from ..tools import AsyncContextTools, AsyncTools, ContextTools, Tools
+from ..tools import (
+    AsyncContextTools,
+    AsyncTools,
+    ContextTools,
+    Tools,
+    normalize_async_context_tools,
+    normalize_async_tools,
+    normalize_context_tools,
+    normalize_tools,
+)
 from .params import Params
 
 MODEL_CONTEXT: ContextVar[Model | None] = ContextVar("MODEL_CONTEXT", default=None)
@@ -204,7 +213,7 @@ class Model:
         return self.provider.call(
             model_id=self.model_id,
             messages=messages,
-            tools=tools,
+            toolkit=normalize_tools(tools),
             format=format,
             **self.params,
         )
@@ -271,9 +280,9 @@ class Model:
         return await self.provider.call_async(
             model_id=self.model_id,
             messages=messages,
-            tools=tools,
-            **self.params,
+            toolkit=normalize_async_tools(tools),
             format=format,
+            **self.params,
         )
 
     @overload
@@ -338,7 +347,7 @@ class Model:
         return self.provider.stream(
             model_id=self.model_id,
             messages=messages,
-            tools=tools,
+            toolkit=normalize_tools(tools),
             format=format,
             **self.params,
         )
@@ -405,7 +414,7 @@ class Model:
         return await self.provider.stream_async(
             model_id=self.model_id,
             messages=messages,
-            tools=tools,
+            toolkit=normalize_async_tools(tools),
             format=format,
             **self.params,
         )
@@ -478,7 +487,7 @@ class Model:
             ctx=ctx,
             model_id=self.model_id,
             messages=messages,
-            tools=tools,
+            toolkit=normalize_context_tools(tools),
             format=format,
             **self.params,
         )
@@ -551,7 +560,7 @@ class Model:
             ctx=ctx,
             model_id=self.model_id,
             messages=messages,
-            tools=tools,
+            toolkit=normalize_async_context_tools(tools),
             format=format,
             **self.params,
         )
@@ -628,7 +637,7 @@ class Model:
             ctx=ctx,
             model_id=self.model_id,
             messages=messages,
-            tools=tools,
+            toolkit=normalize_context_tools(tools),
             format=format,
             **self.params,
         )
@@ -707,7 +716,7 @@ class Model:
             ctx=ctx,
             model_id=self.model_id,
             messages=messages,
-            tools=tools,
+            toolkit=normalize_async_context_tools(tools),
             format=format,
             **self.params,
         )

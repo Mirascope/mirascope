@@ -23,10 +23,10 @@ from ...responses import (
     StreamResponse,
 )
 from ...tools import (
-    AsyncContextTools,
-    AsyncTools,
-    ContextTools,
-    Tools,
+    AsyncContextToolkit,
+    AsyncToolkit,
+    ContextToolkit,
+    Toolkit,
 )
 from ..base import BaseProvider
 from . import _utils
@@ -158,7 +158,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
         *,
         model_id: OpenAIModelId,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -181,7 +181,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
         return client.call(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            toolkit=toolkit,
             format=format,
             **params,
         )
@@ -192,7 +192,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
         ctx: Context[DepsT],
         model_id: OpenAIModelId,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -217,7 +217,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
             ctx=ctx,
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            toolkit=toolkit,
             format=format,
             **params,
         )
@@ -227,7 +227,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
         *,
         model_id: OpenAIModelId,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -249,7 +249,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
         return await self._choose_subprovider(model_id, messages).call_async(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            toolkit=toolkit,
             format=format,
             **params,
         )
@@ -260,7 +260,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
         ctx: Context[DepsT],
         model_id: OpenAIModelId,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -284,7 +284,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
             ctx=ctx,
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            toolkit=toolkit,
             format=format,
             **params,
         )
@@ -294,7 +294,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
         *,
         model_id: OpenAIModelId,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -317,7 +317,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
         return client.stream(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            toolkit=toolkit,
             format=format,
             **params,
         )
@@ -328,7 +328,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
         ctx: Context[DepsT],
         model_id: OpenAIModelId,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -353,7 +353,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
             ctx=ctx,
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            toolkit=toolkit,
             format=format,
             **params,
         )
@@ -363,7 +363,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
         *,
         model_id: OpenAIModelId,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -385,7 +385,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
         return await self._choose_subprovider(model_id, messages).stream_async(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            toolkit=toolkit,
             format=format,
             **params,
         )
@@ -396,7 +396,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
         ctx: Context[DepsT],
         model_id: OpenAIModelId,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -423,7 +423,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
             ctx=ctx,
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            toolkit=toolkit,
             format=format,
             **params,
         )

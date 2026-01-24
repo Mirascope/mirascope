@@ -23,10 +23,10 @@ from ...responses import (
     StreamResponse,
 )
 from ...tools import (
-    AsyncContextTools,
-    AsyncTools,
-    ContextTools,
-    Tools,
+    AsyncContextToolkit,
+    AsyncToolkit,
+    ContextToolkit,
+    Toolkit,
 )
 from ..base import BaseProvider
 from . import _utils
@@ -65,7 +65,7 @@ class GoogleProvider(BaseProvider[Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -87,7 +87,7 @@ class GoogleProvider(BaseProvider[Client]):
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            tools=toolkit,
             format=format,
             params=params,
         )
@@ -104,7 +104,7 @@ class GoogleProvider(BaseProvider[Client]):
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
@@ -118,7 +118,7 @@ class GoogleProvider(BaseProvider[Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -141,7 +141,7 @@ class GoogleProvider(BaseProvider[Client]):
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            tools=toolkit,
             format=format,
             params=params,
         )
@@ -158,7 +158,7 @@ class GoogleProvider(BaseProvider[Client]):
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
@@ -171,7 +171,7 @@ class GoogleProvider(BaseProvider[Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -193,7 +193,7 @@ class GoogleProvider(BaseProvider[Client]):
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            tools=toolkit,
             format=format,
             params=params,
         )
@@ -210,7 +210,7 @@ class GoogleProvider(BaseProvider[Client]):
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
@@ -224,7 +224,7 @@ class GoogleProvider(BaseProvider[Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -247,7 +247,7 @@ class GoogleProvider(BaseProvider[Client]):
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            tools=toolkit,
             format=format,
             params=params,
         )
@@ -264,7 +264,7 @@ class GoogleProvider(BaseProvider[Client]):
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
@@ -277,7 +277,7 @@ class GoogleProvider(BaseProvider[Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Tools | None = None,
+        toolkit: Toolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -299,7 +299,7 @@ class GoogleProvider(BaseProvider[Client]):
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            tools=toolkit,
             format=format,
             params=params,
         )
@@ -316,7 +316,7 @@ class GoogleProvider(BaseProvider[Client]):
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
             format=format,
@@ -328,7 +328,7 @@ class GoogleProvider(BaseProvider[Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: ContextTools[DepsT] | None = None,
+        toolkit: ContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -351,7 +351,7 @@ class GoogleProvider(BaseProvider[Client]):
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            tools=toolkit,
             format=format,
             params=params,
         )
@@ -368,7 +368,7 @@ class GoogleProvider(BaseProvider[Client]):
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
             format=format,
@@ -379,7 +379,7 @@ class GoogleProvider(BaseProvider[Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: AsyncTools | None = None,
+        toolkit: AsyncToolkit,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -401,7 +401,7 @@ class GoogleProvider(BaseProvider[Client]):
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            tools=toolkit,
             format=format,
             params=params,
         )
@@ -418,7 +418,7 @@ class GoogleProvider(BaseProvider[Client]):
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
             format=format,
@@ -430,7 +430,7 @@ class GoogleProvider(BaseProvider[Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: AsyncContextTools[DepsT] | None = None,
+        toolkit: AsyncContextToolkit[DepsT],
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -456,7 +456,7 @@ class GoogleProvider(BaseProvider[Client]):
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
-            tools=tools,
+            tools=toolkit,
             format=format,
             params=params,
         )
@@ -473,7 +473,7 @@ class GoogleProvider(BaseProvider[Client]):
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
-            tools=tools,
+            tools=toolkit,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
             format=format,
