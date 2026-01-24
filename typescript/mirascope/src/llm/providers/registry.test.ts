@@ -1,0 +1,144 @@
+/**
+ * Tests for the provider registry.
+ */
+
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import {
+  registerProvider,
+  getProviderForModel,
+  resetProviderRegistry,
+} from '@/llm/providers/registry';
+import { AnthropicProvider } from '@/llm/providers/anthropic';
+import {
+  MissingAPIKeyError,
+  NoRegisteredProviderError,
+} from '@/llm/exceptions';
+
+describe('provider registry', () => {
+  beforeEach(() => {
+    resetProviderRegistry();
+    // Set up default API key for tests
+    vi.stubEnv('ANTHROPIC_API_KEY', 'test-key');
+  });
+
+  describe('registerProvider', () => {
+    it('registers a provider instance with default scope', () => {
+      const provider = new AnthropicProvider({ apiKey: 'test' });
+      registerProvider(provider);
+
+      const result = getProviderForModel('anthropic/claude-sonnet-4-20250514');
+      expect(result).toBe(provider);
+    });
+
+    it('registers a provider by ID', () => {
+      const provider = registerProvider('anthropic');
+
+      expect(provider.id).toBe('anthropic');
+      const result = getProviderForModel('anthropic/claude-sonnet-4-20250514');
+      expect(result).toBe(provider);
+    });
+
+    it('registers a provider with custom scope', () => {
+      const provider = new AnthropicProvider({ apiKey: 'test' });
+      registerProvider(provider, { scope: 'anthropic/claude-sonnet-4' });
+
+      const result = getProviderForModel('anthropic/claude-sonnet-4-20250514');
+      expect(result).toBe(provider);
+    });
+
+    it('registers a provider with multiple scopes', () => {
+      const provider = new AnthropicProvider({ apiKey: 'test' });
+      registerProvider(provider, {
+        scope: ['anthropic/claude-sonnet-4', 'anthropic/claude-opus-4'],
+      });
+
+      expect(getProviderForModel('anthropic/claude-sonnet-4-20250514')).toBe(
+        provider
+      );
+      expect(getProviderForModel('anthropic/claude-opus-4-20250514')).toBe(
+        provider
+      );
+    });
+
+    it('registers a provider by ID with apiKey option', () => {
+      const provider = registerProvider('anthropic', { apiKey: 'custom-key' });
+      expect(provider.id).toBe('anthropic');
+    });
+
+    it('registers a provider by ID with baseURL option', () => {
+      const provider = registerProvider('anthropic', {
+        baseURL: 'https://custom.api.com',
+      });
+      expect(provider.id).toBe('anthropic');
+    });
+
+    it('returns cached provider singleton', () => {
+      const provider1 = registerProvider('anthropic', { apiKey: 'key1' });
+      const provider2 = registerProvider('anthropic', { apiKey: 'key1' });
+      expect(provider1).toBe(provider2);
+    });
+
+    it('creates different providers for different options', () => {
+      const provider1 = registerProvider('anthropic', { apiKey: 'key1' });
+      const provider2 = registerProvider('anthropic', { apiKey: 'key2' });
+      expect(provider1).not.toBe(provider2);
+    });
+
+    it('throws for unknown provider ID', () => {
+      expect(() => registerProvider('unknown' as 'anthropic')).toThrow(
+        "Unknown provider: 'unknown'"
+      );
+    });
+  });
+
+  describe('getProviderForModel', () => {
+    it('finds provider by longest matching scope', () => {
+      const generalProvider = new AnthropicProvider({ apiKey: 'general' });
+      const specificProvider = new AnthropicProvider({ apiKey: 'specific' });
+
+      registerProvider(generalProvider, { scope: 'anthropic/' });
+      registerProvider(specificProvider, {
+        scope: 'anthropic/claude-sonnet-4',
+      });
+
+      // Specific scope should win
+      const result = getProviderForModel('anthropic/claude-sonnet-4-20250514');
+      expect(result).toBe(specificProvider);
+
+      // General scope for other models
+      const result2 = getProviderForModel('anthropic/claude-opus-4-20250514');
+      expect(result2).toBe(generalProvider);
+    });
+
+    it('auto-registers provider on first use', () => {
+      // No explicit registration - should auto-register
+      const provider = getProviderForModel(
+        'anthropic/claude-sonnet-4-20250514'
+      );
+      expect(provider.id).toBe('anthropic');
+    });
+
+    it('throws NoRegisteredProviderError for unknown model prefix', () => {
+      expect(() => getProviderForModel('unknown/model')).toThrow(
+        NoRegisteredProviderError
+      );
+    });
+
+    it('throws MissingAPIKeyError when no API key available', () => {
+      // Remove the API key from env
+      const originalKey = process.env['ANTHROPIC_API_KEY'];
+      delete process.env['ANTHROPIC_API_KEY'];
+
+      try {
+        expect(() =>
+          getProviderForModel('anthropic/claude-sonnet-4-20250514')
+        ).toThrow(MissingAPIKeyError);
+      } finally {
+        // Restore the key
+        if (originalKey !== undefined) {
+          process.env['ANTHROPIC_API_KEY'] = originalKey;
+        }
+      }
+    });
+  });
+});

@@ -10,6 +10,7 @@ import { it as vitestIt, describe, expect } from 'vitest';
 import { Polly } from '@pollyjs/core';
 import Persister, { type Har } from '@pollyjs/persister';
 import FetchAdapter from '@pollyjs/adapter-fetch';
+import { resetProviderRegistry } from '@/llm/providers/registry';
 
 // Register adapter
 Polly.register(FetchAdapter);
@@ -97,6 +98,7 @@ function createPolly(recordingName: string, cassettesDir: string): Polly {
       },
     },
     recordIfMissing: true,
+    flushRequestsOnStop: true,
     matchRequestsBy: {
       headers: false,
       body: true,
@@ -149,10 +151,12 @@ function createRecordTestFn(
         const recordingName = toRecordingName(name);
         const namespacedDir = join(cassettesDir, namespace);
         const polly = createPolly(recordingName, namespacedDir);
+        resetProviderRegistry();
         try {
           await fn();
         } finally {
           await polly.stop();
+          resetProviderRegistry();
         }
       },
       timeout
