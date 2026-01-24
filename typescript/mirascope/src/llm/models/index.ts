@@ -7,3 +7,4 @@ export type {
   ThinkingLevel,
 } from '@/llm/models/thinking-config';
 export type { Params } from '@/llm/models/params';
+export { Model, model } from '@/llm/models/model';

@@ -84,6 +84,13 @@ export {
 } from '@/llm/exceptions';
 
 export type { Params, ThinkingConfig, ThinkingLevel } from '@/llm/models';
+export { Model, model } from '@/llm/models';
+
+export {
+  getProviderForModel,
+  registerProvider,
+  resetProviderRegistry,
+} from '@/llm/providers';
 
 export {
   FinishReason,
