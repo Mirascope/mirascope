@@ -8,12 +8,16 @@ export default [
   eslint.configs.recommended,
   {
     files: ['mirascope/**/*.ts', 'mirascope/**/*.tsx'],
+    ignores: ['mirascope/vitest.config.ts'],
     languageOptions: {
       parser: tsparser,
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
         project: './mirascope/tsconfig.json',
+      },
+      globals: {
+        ...globals.node,
       },
     },
     plugins: {
@@ -22,12 +26,17 @@ export default [
     rules: {
       ...tseslint.configs.recommended.rules,
       ...tseslint.configs['recommended-requiring-type-checking'].rules,
-      '@typescript-eslint/no-unused-vars': 'error',
+      // Allow type + const pattern (same name for type and value)
+      'no-redeclare': 'off',
+      '@typescript-eslint/no-redeclare': 'off',
+      // Allow _prefixed unused vars for intentionally unused params
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-inferrable-types': 'off',
-      'no-redeclare': 'off',
-      '@typescript-eslint/no-redeclare': 'error',
     },
   },
   {
@@ -56,7 +65,13 @@ export default [
     },
   },
   {
-    ignores: ['**/dist/', '**/node_modules/', '*.js', '**/coverage/'],
+    ignores: [
+      '**/dist/',
+      '**/node_modules/',
+      '*.js',
+      '**/coverage/',
+      '**/vitest.config.ts',
+    ],
   },
   prettier,
 ];
