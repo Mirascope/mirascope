@@ -39,7 +39,10 @@ describe('MirascopeError', () => {
 describe('ProviderError', () => {
   it('stores provider and original exception', () => {
     const original = new Error('original error');
-    const error = new ProviderError('provider failed', 'openai', original);
+    const error = new ProviderError('provider failed', {
+      provider: 'openai',
+      originalException: original,
+    });
 
     expect(error.provider).toBe('openai');
     expect(error.originalException).toBe(original);
@@ -47,7 +50,9 @@ describe('ProviderError', () => {
   });
 
   it('handles null original exception', () => {
-    const error = new ProviderError('provider failed', 'anthropic');
+    const error = new ProviderError('provider failed', {
+      provider: 'anthropic',
+    });
 
     expect(error.provider).toBe('anthropic');
     expect(error.originalException).toBeNull();
@@ -57,14 +62,17 @@ describe('ProviderError', () => {
 
 describe('APIError', () => {
   it('stores status code', () => {
-    const error = new APIError('api error', 'openai', 500);
+    const error = new APIError('api error', {
+      provider: 'openai',
+      statusCode: 500,
+    });
 
     expect(error.statusCode).toBe(500);
     expect(error.provider).toBe('openai');
   });
 
   it('handles null status code', () => {
-    const error = new APIError('api error', 'openai');
+    const error = new APIError('api error', { provider: 'openai' });
 
     expect(error.statusCode).toBeNull();
   });
@@ -72,13 +80,18 @@ describe('APIError', () => {
 
 describe('AuthenticationError', () => {
   it('defaults to status code 401', () => {
-    const error = new AuthenticationError('invalid key', 'openai');
+    const error = new AuthenticationError('invalid key', {
+      provider: 'openai',
+    });
 
     expect(error.statusCode).toBe(401);
   });
 
   it('allows custom status code', () => {
-    const error = new AuthenticationError('invalid key', 'openai', 403);
+    const error = new AuthenticationError('invalid key', {
+      provider: 'openai',
+      statusCode: 403,
+    });
 
     expect(error.statusCode).toBe(403);
   });
@@ -86,7 +99,9 @@ describe('AuthenticationError', () => {
 
 describe('PermissionError', () => {
   it('defaults to status code 403', () => {
-    const error = new PermissionError('access denied', 'anthropic');
+    const error = new PermissionError('access denied', {
+      provider: 'anthropic',
+    });
 
     expect(error.statusCode).toBe(403);
   });
@@ -94,13 +109,16 @@ describe('PermissionError', () => {
 
 describe('BadRequestError', () => {
   it('defaults to status code 400', () => {
-    const error = new BadRequestError('bad request', 'google');
+    const error = new BadRequestError('bad request', { provider: 'google' });
 
     expect(error.statusCode).toBe(400);
   });
 
   it('allows 422 status code', () => {
-    const error = new BadRequestError('validation error', 'google', 422);
+    const error = new BadRequestError('validation error', {
+      provider: 'google',
+      statusCode: 422,
+    });
 
     expect(error.statusCode).toBe(422);
   });
@@ -108,7 +126,7 @@ describe('BadRequestError', () => {
 
 describe('NotFoundError', () => {
   it('defaults to status code 404', () => {
-    const error = new NotFoundError('not found', 'openai');
+    const error = new NotFoundError('not found', { provider: 'openai' });
 
     expect(error.statusCode).toBe(404);
   });
@@ -116,7 +134,7 @@ describe('NotFoundError', () => {
 
 describe('RateLimitError', () => {
   it('defaults to status code 429', () => {
-    const error = new RateLimitError('rate limited', 'anthropic');
+    const error = new RateLimitError('rate limited', { provider: 'anthropic' });
 
     expect(error.statusCode).toBe(429);
   });
@@ -124,13 +142,16 @@ describe('RateLimitError', () => {
 
 describe('ServerError', () => {
   it('defaults to status code 500', () => {
-    const error = new ServerError('internal error', 'openai');
+    const error = new ServerError('internal error', { provider: 'openai' });
 
     expect(error.statusCode).toBe(500);
   });
 
   it('allows 503 status code', () => {
-    const error = new ServerError('service unavailable', 'openai', 503);
+    const error = new ServerError('service unavailable', {
+      provider: 'openai',
+      statusCode: 503,
+    });
 
     expect(error.statusCode).toBe(503);
   });
@@ -138,7 +159,7 @@ describe('ServerError', () => {
 
 describe('ConnectionError', () => {
   it('extends ProviderError', () => {
-    const error = new ConnectionError('network error', 'google');
+    const error = new ConnectionError('network error', { provider: 'google' });
 
     expect(error).toBeInstanceOf(ProviderError);
     expect(error.provider).toBe('google');
@@ -147,7 +168,9 @@ describe('ConnectionError', () => {
 
 describe('TimeoutError', () => {
   it('extends ProviderError', () => {
-    const error = new TimeoutError('request timed out', 'anthropic');
+    const error = new TimeoutError('request timed out', {
+      provider: 'anthropic',
+    });
 
     expect(error).toBeInstanceOf(ProviderError);
   });
@@ -155,7 +178,9 @@ describe('TimeoutError', () => {
 
 describe('ResponseValidationError', () => {
   it('extends ProviderError', () => {
-    const error = new ResponseValidationError('invalid response', 'openai');
+    const error = new ResponseValidationError('invalid response', {
+      provider: 'openai',
+    });
 
     expect(error).toBeInstanceOf(ProviderError);
   });
