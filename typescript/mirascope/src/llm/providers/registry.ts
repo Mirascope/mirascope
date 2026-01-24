@@ -51,9 +51,11 @@ const DEFAULT_AUTO_REGISTER_SCOPES: Record<string, ProviderDefault[]> = {
  * Check if an API key is available for a provider default.
  */
 function hasApiKey(defaultConfig: ProviderDefault): boolean {
+  /* v8 ignore start - no current providers without API key requirement */
   if (defaultConfig.apiKeyEnvVar === null) {
     return true; // Provider doesn't require API key
   }
+  /* v8 ignore stop */
   return process.env[defaultConfig.apiKeyEnvVar] !== undefined;
 }
 
@@ -177,6 +179,7 @@ export function getProviderForModel(modelId: string): BaseProvider {
   );
 
   if (matchingScopes.length > 0) {
+    /* v8 ignore next 3 - reduce comparison for multiple scope matches, only Anthropic implemented */
     const bestScope = matchingScopes.reduce((a, b) =>
       a.length > b.length ? a : b
     );
@@ -189,6 +192,7 @@ export function getProviderForModel(modelId: string): BaseProvider {
   );
 
   if (matchingDefaults.length > 0) {
+    /* v8 ignore next 3 - reduce only runs with multiple scope matches, only Anthropic implemented */
     const bestScope = matchingDefaults.reduce((a, b) =>
       a.length > b.length ? a : b
     );
@@ -208,6 +212,7 @@ export function getProviderForModel(modelId: string): BaseProvider {
     const primary = fallbackChain[0]!;
     throw new MissingAPIKeyError(
       primary.providerId,
+      /* v8 ignore next - apiKeyEnvVar always defined for current providers */
       primary.apiKeyEnvVar ?? '',
       false
     );

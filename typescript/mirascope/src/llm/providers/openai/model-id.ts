@@ -26,7 +26,6 @@ export function modelName(
   modelId: OpenAIModelId,
   apiMode: ApiMode | null
 ): string {
-  // Fix: Use replace like other providers
   const modelPart = modelId.replace(/^openai\//, '');
   const baseName = modelPart
     .replace(/:responses$/, '')
