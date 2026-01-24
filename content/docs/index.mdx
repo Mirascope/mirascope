@@ -1,21 +1,25 @@
 ---
-title: Quickstart
-description: A quickstart guide to Mirascope's core patterns
+title: Welcome
+description: Welcome to the Mirascope documentation
 ---
 
-# Mirascope Quickstart
+# Welcome to Mirascope
 
-<div className="badge-container">
-    <a href="https://github.com/Mirascope/mirascope/actions/workflows/ci.yml" target="_blank"><img src="https://github.com/Mirascope/mirascope/actions/workflows/ci.yml/badge.svg?branch=main" alt="Tests"/></a>
-    <a href="https://app.codecov.io/github/Mirascope/mirascope" target="_blank"><img src="https://codecov.io/github/Mirascope/mirascope/graph/badge.svg?token=HAEAWT3KC9" alt="Coverage"/></a>
-    <a href="https://pypi.org/project/mirascope/" target="_blank"><img src="https://img.shields.io/pypi/v/mirascope.svg" alt="PyPI Version"/></a>
-    <a href="https://pypi.org/project/mirascope/" target="_blank"><img src="https://img.shields.io/pypi/pyversions/mirascope.svg" alt="Stars"/></a>
-    <a href="https://github.com/Mirascope/mirascope/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Mirascope/mirascope.svg" alt="License"/></a>
-</div>
+The complete toolkit for building LLM-powered applications.
 
-Mirascope is a Python library for building LLM-powered applications. It provides type-safe, provider-agnostic abstractions that make it easy to call LLMs, use tools, and get structured output. 
+- **Provider-agnostic**: One API for OpenAI, Anthropic, Google, and more
+- **Observable by default**: Tracing, versioning, and analytics built-in
+- **Production-ready**: Tools, structured outputs, and reliable error handling
+- **Cloud-native**: Dashboard, cost tracking, and team collaboration
 
-## Installation
+## Get Started
+
+### 1. Create a Mirascope Cloud account
+
+[Sign up for Mirascope Cloud](/cloud/login) to get your API key.
+Your key will be generated during onboarding, or you can create one later in [settings](/cloud/settings/api-keys).
+
+### 2. Install Mirascope
 
 <TabbedSection>
 <Tab value="uv">
@@ -30,149 +34,44 @@ pip install "mirascope[all]"
 </Tab>
 </TabbedSection>
 
-<Info title="Setting Up API Keys" collapsible={true} defaultOpen={false}>
-
-To run any of the LLM-powered examples, you'll need to set up API keys. The easiest way is to sign up for [Mirascope Router](/cloud) and get a Mirascope API key. This single key works for multiple providers, including Anthropic, Google, and OpenAI.
-
-Alternatively, set the API key for your chosen provider:
-
-| Provider | Environment Variable |
-| --- | --- |
-| Anthropic | `ANTHROPIC_API_KEY` |
-| Google | `GOOGLE_API_KEY` |
-| Mirascope | `MIRASCOPE_API_KEY` |
-| OpenAI | `OPENAI_API_KEY` |
-| Together | `TOGETHER_API_KEY` |
-
-Export your key in your shell so all examples run as written:
+### 3. Set your API key
 
 ```bash
-export OPENAI_API_KEY="your-api-key"
+export MIRASCOPE_API_KEY="your-api-key"
 ```
 
-Or use a `.env` file with `python-dotenv`:
+<Info>
+Your Mirascope API key enables two features:
 
-```python
-from dotenv import load_dotenv
+- **Router**: A single key for multiple LLM providers (OpenAI, Anthropic, Google)
+- **Cloud**: Automatic tracing and analytics in your dashboard
 
-load_dotenv()  # Loads variables from .env file
-```
+To use the Router, purchase credits in [Billing](/cloud/settings/billing).
 
-See [Providers](/docs/llm/providers) for the full list of providers and configuration options.
-
+Prefer to use your own provider keys? See [Providers](/docs/learn/llm/providers) for configuration.
 </Info>
 
-## Calling Models
+## Your First Agent
 
-The simplest way to call an LLM is with `llm.Model`. Specify a model ID in the format `"provider/model-name"` and call it with your content:
+Here's a complete agent that uses tools, tracing, and versioning:
 
-<CodeExample file="python/examples/models/basic.py" />
+<CodeExample file="python/examples/intro/welcome.py" />
 
-See [Models](/docs/llm/models) for parameters, model overrides, and more.
+This example shows the core Mirascope patterns:
 
-## Prompts
+- **Tools** let the LLM call your functions (traced with `@ops.trace`)
+- **Versioning** with `@ops.version` tracks changes to your prompts and traces automatically
+- **Tracing** on `run_agent` captures the entire agent loop as a nested trace
+- **Router** routes `"openai/gpt-4o-mini"` through your Mirascope API key
 
-The `@llm.prompt` decorator creates reusable prompt functions. You write a function that returns the content to send, and the decorator handles the rest:
+## View Your Traces
 
-<CodeExample file="python/examples/prompts/basic.py" />
+After running the example, view your traces at [Mirascope Cloud](/cloud/dashboard). You'll see execution time, token usage, costs, and the full call flow.
 
-See [Prompts](/docs/llm/prompts) for return types, multimodal content, and more.
+## What's Next
 
-## Calls
-
-The `@llm.call` decorator bundles a model with your prompt function for a more convenient API:
-
-<CodeExample file="python/examples/calls/basic.py" />
-
-See [Calls](/docs/llm/calls) for runtime overrides, parameters, and more.
-
-## Continuing Conversations
-
-Every response contains the full message history. Use `response.resume()` to continue the conversation:
-
-<CodeExample file="python/examples/responses/resume.py" lines="3-" />
-
-See [Responses](/docs/llm/responses) for content access, metadata, and more.
-
-## Tools
-
-Tools let LLMs request function calls. Define tools with `@llm.tool`, pass them to your call, then loop until done:
-
-<TabbedSection>
-<Tab value="Call">
-<CodeExample file="python/examples/tools/with_call.py" />
-</Tab>
-<Tab value="Prompt">
-<CodeExample file="python/examples/tools/with_prompt.py" />
-</Tab>
-<Tab value="Model">
-<CodeExample file="python/examples/tools/with_model.py" />
-</Tab>
-</TabbedSection>
-
-See [Tools](/docs/llm/tools) for async tools, parallel execution, and more.
-
-## Structured Output
-
-Use the `format` parameter to get typed responses. Mirascope supports primitives, enums, and Pydantic models:
-
-<TabbedSection>
-<Tab value="Call">
-<CodeExample file="python/examples/structured_output/basic_call.py" />
-</Tab>
-<Tab value="Prompt">
-<CodeExample file="python/examples/structured_output/basic_prompt.py" />
-</Tab>
-<Tab value="Model">
-<CodeExample file="python/examples/structured_output/basic_model.py" />
-</Tab>
-</TabbedSection>
-
-See [Structured Output](/docs/llm/structured-output) for formatting modes, validation, and more.
-
-## Streaming
-
-Call `.stream()` to get responses as they're generated:
-
-<TabbedSection>
-<Tab value="Call">
-<CodeExample file="python/examples/streaming/basic_call.py" />
-</Tab>
-<Tab value="Prompt">
-<CodeExample file="python/examples/streaming/basic_prompt.py" />
-</Tab>
-<Tab value="Model">
-<CodeExample file="python/examples/streaming/basic_model.py" />
-</Tab>
-</TabbedSection>
-
-See [Streaming](/docs/llm/streaming) for stream iterators, accumulated content, and more.
-
-## Async
-
-Make any prompt function async for concurrent operations:
-
-<TabbedSection>
-<Tab value="Call">
-<CodeExample file="python/examples/async/basic.py" />
-</Tab>
-<Tab value="Prompt">
-<CodeExample file="python/examples/async/basic_prompt.py" />
-</Tab>
-<Tab value="Model">
-<CodeExample file="python/examples/async/basic_model.py" />
-</Tab>
-</TabbedSection>
-
-See [Async](/docs/llm/async) for parallel calls, async tools, and more.
-
-## Learning More 
-
-If you'd like to learn more about Mirascope, consider the following resources:
-
-- Read all of the focused topic guides that you'll find in these docs. They are organized so you can read them top to bottom, starting with [messages](/docs/llm/messages)
-- We have extensive [end-to-end snapshot testing](https://github.com/Mirascope/mirascope/tree/v2/python/tests/e2e) which consists of real runnable Mirascope code, and snapshots that serialize the expected output. For example, here are [end to end tests for cross-provider thinking support](https://github.com/Mirascope/mirascope/blob/v2/python/tests/e2e/output/test_call_with_thinking_true.py) and [here are the corresponding snapshots](https://github.com/Mirascope/mirascope/tree/v2/python/tests/e2e/output/snapshots/test_call_with_thinking_true).
-- The [API reference](/docs/api) documents all of the public functionality in Mirascope.
-- You can hop on our [Discord](/discord-invite) and ask us questions directly!
-
-We welcome your feedback, questions, and bug reports.
+| Learning Path | Topics |
+| --- | --- |
+| [LLM Quickstart](/docs/learn/llm/quickstart) | Messages, Calls, Tools, Structured Output, Streaming, Agents |
+| [Ops Overview](/docs/learn/ops) | Configuration, Tracing, Sessions, Versioning |
+| [API Reference](/docs/api) | Full API documentation |

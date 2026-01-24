@@ -5,6 +5,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "@tanstack/react-router";
+import { useSidebarContext } from "@/app/components/content-layout";
 
 // Breakpoint definitions - matching Tailwind's defaults
 export const BREAKPOINTS = {
@@ -62,6 +63,9 @@ export function useSidebar({
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
 
+  // Ref to skip closing on the next route change (for section tab navigation)
+  const skipNextCloseRef = useRef(false);
+
   // Router for navigation tracking
   const router = useRouter();
 
@@ -70,6 +74,12 @@ export function useSidebar({
     if (!closeOnRouteChange) return;
 
     const unsubscribe = router.subscribe("onResolved", () => {
+      // Check if we should skip this close (e.g., section tab navigation)
+      if (skipNextCloseRef.current) {
+        skipNextCloseRef.current = false;
+        return;
+      }
+
       // Always close on navigation, but only on mobile
       if (isMobileView() && isOpen) {
         setIsOpen(false);
@@ -80,6 +90,11 @@ export function useSidebar({
       unsubscribe();
     };
   }, [router, isOpen, closeOnRouteChange]);
+
+  // Function to skip the next close (for section tab clicks)
+  const setSkipNextClose = (skip: boolean) => {
+    skipNextCloseRef.current = skip;
+  };
 
   // Handle toggling with focus management
   const toggle = () => {
@@ -142,6 +157,7 @@ export function useSidebar({
     close,
     closeBtnRef,
     previouslyFocusedElementRef,
+    setSkipNextClose,
   };
 }
 
@@ -236,12 +252,14 @@ const SectionTab = ({
   className = "",
   params,
   children,
+  onClick,
 }: {
   to: string;
   isActive: boolean;
   className?: string;
   params?: Record<string, unknown>;
   children: React.ReactNode;
+  onClick?: () => void;
 }) => {
   const activeClass = `bg-primary text-white font-medium`;
   const inactiveClass = `text-muted-foreground hover:bg-muted hover:text-muted-foreground`;
@@ -250,6 +268,7 @@ const SectionTab = ({
     <Link
       to={to as LinkProps["to"]}
       {...(params && { params: params as LinkProps["params"] })}
+      onClick={onClick}
       className={cn(
         "font-handwriting-descent w-full cursor-pointer rounded-md px-3 py-1 text-base",
         className,
@@ -609,6 +628,9 @@ const Sidebar = ({ config, headerContent, footerContent }: SidebarProps) => {
   const router = useRouterState();
   const currentPath = router.location.pathname;
 
+  // Get sidebar context to prevent closing on section tab navigation
+  const { leftSidebar } = useSidebarContext();
+
   // Store and restore scroll position
   const sidebarRef = React.useRef<HTMLDivElement>(null);
   const sidebarId = config.label
@@ -712,6 +734,7 @@ const Sidebar = ({ config, headerContent, footerContent }: SidebarProps) => {
                 key={section.basePath}
                 to={section.basePath}
                 isActive={section.basePath === activeSection}
+                onClick={() => leftSidebar.setSkipNextClose(true)}
               >
                 {section.label}
               </SectionTab>

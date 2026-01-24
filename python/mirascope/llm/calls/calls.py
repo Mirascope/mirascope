@@ -1,8 +1,10 @@
 """The Call module for generating responses using LLMs."""
 
-from dataclasses import dataclass
-from typing import Generic, TypeVar, overload
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from typing import Any, Generic, TypeVar, overload
 
+from ..._utils import copy_function_metadata
 from ..context import Context, DepsT
 from ..formatting import FormattableT
 from ..models import Model, use_model
@@ -12,6 +14,7 @@ from ..prompts import (
     ContextPrompt,
     Prompt,
 )
+from ..prompts.prompts import BasePrompt
 from ..responses import (
     AsyncContextResponse,
     AsyncContextStreamResponse,
@@ -24,24 +27,35 @@ from ..responses import (
 )
 from ..types import P
 
-CallT = TypeVar("CallT", bound="BaseCall")
+PromptT = TypeVar("PromptT", bound=BasePrompt[Callable[..., Any]])
+CallT = TypeVar("CallT", bound="BaseCall[Any]")
 
 
-@dataclass
-class BaseCall:
+@dataclass(kw_only=True)
+class BaseCall(Generic[PromptT]):
     """Base class for all Call types with shared model functionality."""
 
     default_model: Model
     """The default model that will be used if no model is set in context."""
+
+    prompt: PromptT
+    """The underlying Prompt instance that generates messages with tools and format."""
+
+    __name__: str = field(init=False, repr=False, default="")
+    """The name of the underlying function (preserved for decorator stacking)."""
 
     @property
     def model(self) -> Model:
         """The model used for generating responses. May be overwritten via `with llm.model(...)`."""
         return use_model(self.default_model)
 
+    def __post_init__(self) -> None:
+        """Preserve standard function attributes for decorator stacking."""
+        copy_function_metadata(self, self.prompt.fn)
+
 
 @dataclass
-class Call(BaseCall, Generic[P, FormattableT]):
+class Call(BaseCall[Prompt[P, FormattableT]], Generic[P, FormattableT]):
     """A call that directly generates LLM responses without requiring a model argument.
 
     Created by decorating a `MessageTemplate` with `llm.call`. The decorated function
@@ -52,9 +66,6 @@ class Call(BaseCall, Generic[P, FormattableT]):
 
     The model can be overridden at runtime using `with llm.model(...)` context manager.
     """
-
-    prompt: Prompt[P, FormattableT]
-    """The underlying Prompt instance that generates messages with tools and format."""
 
     @overload
     def __call__(
@@ -104,7 +115,7 @@ class Call(BaseCall, Generic[P, FormattableT]):
 
 
 @dataclass
-class AsyncCall(BaseCall, Generic[P, FormattableT]):
+class AsyncCall(BaseCall[AsyncPrompt[P, FormattableT]], Generic[P, FormattableT]):
     """An async call that directly generates LLM responses without requiring a model argument.
 
     Created by decorating an async `MessageTemplate` with `llm.call`. The decorated async
@@ -115,9 +126,6 @@ class AsyncCall(BaseCall, Generic[P, FormattableT]):
 
     The model can be overridden at runtime using `with llm.model(...)` context manager.
     """
-
-    prompt: AsyncPrompt[P, FormattableT]
-    """The underlying AsyncPrompt instance that generates messages with tools and format."""
 
     @overload
     async def __call__(
@@ -169,7 +177,9 @@ class AsyncCall(BaseCall, Generic[P, FormattableT]):
 
 
 @dataclass
-class ContextCall(BaseCall, Generic[P, DepsT, FormattableT]):
+class ContextCall(
+    BaseCall[ContextPrompt[P, DepsT, FormattableT]], Generic[P, DepsT, FormattableT]
+):
     """A context-aware call that directly generates LLM responses without requiring a model argument.
 
     Created by decorating a `ContextMessageTemplate` with `llm.call`. The decorated function
@@ -181,9 +191,6 @@ class ContextCall(BaseCall, Generic[P, DepsT, FormattableT]):
 
     The model can be overridden at runtime using `with llm.model(...)` context manager.
     """
-
-    prompt: ContextPrompt[P, DepsT, FormattableT]
-    """The underlying ContextPrompt instance that generates messages with tools and format."""
 
     @overload
     def __call__(
@@ -255,7 +262,10 @@ class ContextCall(BaseCall, Generic[P, DepsT, FormattableT]):
 
 
 @dataclass
-class AsyncContextCall(BaseCall, Generic[P, DepsT, FormattableT]):
+class AsyncContextCall(
+    BaseCall[AsyncContextPrompt[P, DepsT, FormattableT]],
+    Generic[P, DepsT, FormattableT],
+):
     """An async context-aware call that directly generates LLM responses without requiring a model argument.
 
     Created by decorating an async `ContextMessageTemplate` with `llm.call`. The decorated async
@@ -267,9 +277,6 @@ class AsyncContextCall(BaseCall, Generic[P, DepsT, FormattableT]):
 
     The model can be overridden at runtime using `with llm.model(...)` context manager.
     """
-
-    prompt: AsyncContextPrompt[P, DepsT, FormattableT]
-    """The underlying AsyncContextPrompt instance that generates messages with tools and format."""
 
     @overload
     async def __call__(

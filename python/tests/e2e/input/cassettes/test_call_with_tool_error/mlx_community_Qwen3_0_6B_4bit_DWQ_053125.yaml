@@ -9,14 +9,16 @@ interactions:
       Connection:
       - keep-alive
       X-Amzn-Trace-Id:
-      - b0e94b1f-a398-4e35-aa03-8d3103496b7e
+      - d2dde4e1-3372-4fb3-88a0-7e41b787b382
+      authorization:
+      - <filtered>
       user-agent:
       - unknown/None; hf_hub/0.36.0; python/3.10.16
     method: GET
     uri: https://huggingface.co/api/models/mlx-community/Qwen3-0.6B-4bit-DWQ-053125/revision/main
   response:
     body:
-      string: '{"_id":"683bcf03a60efc804bd567cc","id":"mlx-community/Qwen3-0.6B-4bit-DWQ-053125","private":false,"pipeline_tag":"text-generation","library_name":"mlx","tags":["mlx","safetensors","qwen3","text-generation","conversational","base_model:Qwen/Qwen3-0.6B","base_model:quantized:Qwen/Qwen3-0.6B","license:apache-2.0","4-bit","region:us"],"downloads":30,"likes":1,"modelId":"mlx-community/Qwen3-0.6B-4bit-DWQ-053125","author":"mlx-community","sha":"771f12e6ef2f618c14cb21c4f766c1a5d06ca57f","lastModified":"2025-06-01T03:54:55.000Z","gated":false,"disabled":false,"widgetData":[{"text":"Hi,
+      string: '{"_id":"683bcf03a60efc804bd567cc","id":"mlx-community/Qwen3-0.6B-4bit-DWQ-053125","private":false,"pipeline_tag":"text-generation","library_name":"mlx","tags":["mlx","safetensors","qwen3","text-generation","conversational","base_model:Qwen/Qwen3-0.6B","base_model:quantized:Qwen/Qwen3-0.6B","license:apache-2.0","4-bit","region:us"],"downloads":31,"likes":1,"modelId":"mlx-community/Qwen3-0.6B-4bit-DWQ-053125","author":"mlx-community","sha":"771f12e6ef2f618c14cb21c4f766c1a5d06ca57f","lastModified":"2025-06-01T03:54:55.000Z","gated":false,"disabled":false,"widgetData":[{"text":"Hi,
         what can you help me with?"},{"text":"What is 84 * 3 / 2?"},{"text":"Tell
         me an interesting fact about the universe!"},{"text":"Explain quantum computing
         in simple terms."}],"model-index":null,"config":{"architectures":["Qwen3ForCausalLM"],"model_type":"qwen3","quantization_config":{"bits":4},"tokenizer_config":{"bos_token":null,"chat_template":"{%-
@@ -89,29 +91,29 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Tue, 20 Jan 2026 03:36:50 GMT
+      - Fri, 23 Jan 2026 05:37:24 GMT
       ETag:
-      - W/"1798-FSF6fUMHRq0lGmXU8BrOjXn6n7s"
+      - W/"1798-dvSxRk1hAoquimydvOmRK67klE0"
       RateLimit:
-      - '"api";r=499;t=20'
+      - '"api";r=999;t=99'
       RateLimit-Policy:
-      - '"fixed window";"api";q=500;w=300'
+      - '"fixed window";"api";q=1000;w=300'
       Referrer-Policy:
       - strict-origin-when-cross-origin
       Vary:
       - Origin
       Via:
-      - 1.1 28ece4c2a6dd3c0a95262b04d30d3eb4.cloudfront.net (CloudFront)
+      - 1.1 bba30123f54a6d1251a0db5da01006dc.cloudfront.net (CloudFront)
       X-Amz-Cf-Id:
-      - cAdGZBzoSkcaSOb9P0qUAeRZ2cpHLTfwMPtnNRfgxp-3LmXtYRTyew==
+      - B4MzQyfdoU6RHj-KM06Xkh8R-900Crgn72hM_6NEPpdkdqKVxU3mCg==
       X-Amz-Cf-Pop:
-      - SEA900-P3
+      - LAX53-P4
       X-Cache:
       - Miss from cloudfront
       X-Powered-By:
       - huggingface-moon
       X-Request-Id:
-      - Root=1-696ef852-34a7571836ebec9d523e5ec9;b0e94b1f-a398-4e35-aa03-8d3103496b7e
+      - Root=1-69730914-4da9eb9776e40e2a34835429;d2dde4e1-3372-4fb3-88a0-7e41b787b382
       cross-origin-opener-policy:
       - same-origin
     status:

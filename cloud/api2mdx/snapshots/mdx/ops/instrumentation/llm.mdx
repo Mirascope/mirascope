@@ -1,0 +1,57 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: llm
+description: API documentation for llm
+---
+
+# llm
+
+## <ApiType type="Function" slug="instrument_llm" symbolName="instrument_llm" /> instrument_llm
+
+Enable GenAI 1.38 span emission for future `llm.Model` calls and streams.
+
+Uses the tracer provider configured via `ops.configure()`. If no provider
+was configured, uses the global OpenTelemetry tracer provider.
+
+Example:
+
+    Enable instrumentation with a custom provider:
+    ```python
+    from mirascope import ops
+    from opentelemetry.sdk.trace import TracerProvider
+
+    provider = TracerProvider()
+    ops.configure(tracer_provider=provider)
+    ops.instrument_llm()
+    ```
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="uninstrument_llm" symbolName="uninstrument_llm" /> uninstrument_llm
+
+Disable previously configured instrumentation.
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+

@@ -1,0 +1,97 @@
+---
+title: Chaining
+description: Learn how to combine multiple LLM calls to solve complex tasks through function composition.
+---
+
+# Chaining
+
+Chaining combines multiple LLM calls to solve complex tasks. Since Mirascope calls are just Python functions, chaining them is as simple as calling one function after another:
+
+<TabbedSection>
+<Tab value="Call">
+<CodeExample file="python/examples/chaining/basic_call.py" />
+</Tab>
+<Tab value="Prompt">
+<CodeExample file="python/examples/chaining/basic_prompt.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="python/examples/chaining/basic_model.py" />
+</Tab>
+</TabbedSection>
+
+This approach lets you:
+
+1. **Decompose problems** — Break complex tasks into smaller, focused steps
+2. **Process sequentially** — Pass the output of one step as input to the next
+3. **Mix and match** — Combine calls with different models, tools, or formats
+
+## Nested Chains
+
+You can call one prompt function inside another to encapsulate chains. This also lets you use different models for different steps—for example, a more capable model for nuanced summarization and a faster one for straightforward translation:
+
+<TabbedSection>
+<Tab value="Call">
+<CodeExample file="python/examples/chaining/nested_call.py" />
+</Tab>
+<Tab value="Prompt">
+<CodeExample file="python/examples/chaining/nested_prompt.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="python/examples/chaining/nested_model.py" />
+</Tab>
+</TabbedSection>
+
+The inner call executes first, and its result flows into the outer call's prompt.
+
+## Conditional Chains
+
+Route to different prompts based on prior outputs. Here, we classify sentiment first, then generate an appropriate response:
+
+<TabbedSection>
+<Tab value="Call">
+<CodeExample file="python/examples/chaining/conditional_call.py" />
+</Tab>
+<Tab value="Prompt">
+<CodeExample file="python/examples/chaining/conditional_prompt.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="python/examples/chaining/conditional_model.py" />
+</Tab>
+</TabbedSection>
+
+Using `format=` with an `Enum` ensures the classifier returns a valid value we can branch on.
+
+## Parallel Chains
+
+When steps are independent, run them concurrently with `asyncio.gather()`:
+
+<TabbedSection>
+<Tab value="Call">
+<CodeExample file="python/examples/chaining/parallel_call.py" />
+</Tab>
+<Tab value="Prompt">
+<CodeExample file="python/examples/chaining/parallel_prompt.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="python/examples/chaining/parallel_model.py" />
+</Tab>
+</TabbedSection>
+
+Both `chef_selector` and `ingredients_identifier` run simultaneously. The total time is roughly the slowest call, not the sum of both.
+
+<Note>
+Parallel chains require async functions. See [Async](/docs/learn/llm/async) for more on async patterns.
+</Note>
+
+## Best Practices
+
+- **Keep steps focused** — Each call should do one thing well
+- **Use structured output** — `format=` makes it easier to extract and pass data between steps
+- **Consider async for I/O** — Parallel calls can significantly reduce latency
+- **Handle errors at boundaries** — Validate outputs before passing to the next step
+
+## Next Steps
+
+- [Structured Output](/docs/learn/llm/structured-output) — Parse responses into typed objects
+- [Async](/docs/learn/llm/async) — Concurrent execution patterns
+- [Agents](/docs/learn/llm/agents) — Autonomous systems that chain tools and calls

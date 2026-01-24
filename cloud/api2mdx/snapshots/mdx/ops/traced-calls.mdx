@@ -1,0 +1,1831 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: traced_calls
+description: API documentation for traced_calls
+---
+
+# traced_calls
+
+## <ApiType type="Class" slug="traced-async-call" symbolName="TracedAsyncCall" /> TracedAsyncCall
+
+Traced wrapper for traced asynchronous AsyncCall objects.
+
+**Bases:** 
+<TypeLink type={{"type_str": "_BaseTracedCall[AsyncCall[P, FormattableT]]", "description": null, "kind": "generic", "base_type": {"type_str": "_BaseTracedCall", "description": null, "kind": "simple", "symbol_name": "_BaseTracedCall", "doc_url": null}, "parameters": [{"type_str": "AsyncCall[P, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "AsyncCall", "description": null, "kind": "simple", "symbol_name": "AsyncCall", "doc_url": null}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": null}], "doc_url": null}], "doc_url": null}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "call",
+    "type_info": {
+      "type_str": "AsyncTracedFunction[P, AsyncResponse | AsyncResponse[FormattableT]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "AsyncTracedFunction",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "AsyncTracedFunction",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "P",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "P",
+          "doc_url": null
+        },
+        {
+          "type_str": "AsyncResponse | AsyncResponse[FormattableT]",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Union",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "AsyncResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "AsyncResponse",
+              "doc_url": null
+            },
+            {
+              "type_str": "AsyncResponse[FormattableT]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "AsyncResponse",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "AsyncResponse",
+                "doc_url": null
+              },
+              "parameters": [
+                {
+                  "type_str": "FormattableT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "FormattableT",
+                  "doc_url": null
+                }
+              ],
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "AsyncTracedFunction wrapping the call method."
+  },
+  {
+    "name": "stream",
+    "type_info": {
+      "type_str": "AsyncTracedFunction[P, AsyncStreamResponse | AsyncStreamResponse[FormattableT]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "AsyncTracedFunction",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "AsyncTracedFunction",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "P",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "P",
+          "doc_url": null
+        },
+        {
+          "type_str": "AsyncStreamResponse | AsyncStreamResponse[FormattableT]",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Union",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "AsyncStreamResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "AsyncStreamResponse",
+              "doc_url": null
+            },
+            {
+              "type_str": "AsyncStreamResponse[FormattableT]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "AsyncStreamResponse",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "AsyncStreamResponse",
+                "doc_url": null
+              },
+              "parameters": [
+                {
+                  "type_str": "FormattableT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "FormattableT",
+                  "doc_url": null
+                }
+              ],
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "AsyncTracedFunction wrapping the stream method."
+  }
+]}
+/>
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_calls--traced-async-call-wrapped" symbolName="wrapped" /> wrapped
+
+Call the traced function and return a wrapped Response.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncTrace[AsyncResponse | AsyncResponse[FormattableT]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "AsyncTrace",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AsyncTrace",
+      "doc_url": "/docs/mirascope/v2/api/ops/traced-functions#async-trace"
+    },
+    "parameters": [
+      {
+        "type_str": "AsyncResponse | AsyncResponse[FormattableT]",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "AsyncResponse",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "AsyncResponse",
+            "doc_url": null
+          },
+          {
+            "type_str": "AsyncResponse[FormattableT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "AsyncResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "AsyncResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "FormattableT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "FormattableT",
+                "doc_url": null
+              }
+            ],
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_calls--traced-async-call-wrapped_stream" symbolName="wrapped_stream" /> wrapped_stream
+
+Stream the traced function and return a wrapped StreamResponse.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncTrace[AsyncStreamResponse | AsyncStreamResponse[FormattableT]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "AsyncTrace",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AsyncTrace",
+      "doc_url": "/docs/mirascope/v2/api/ops/traced-functions#async-trace"
+    },
+    "parameters": [
+      {
+        "type_str": "AsyncStreamResponse | AsyncStreamResponse[FormattableT]",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "AsyncStreamResponse",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "AsyncStreamResponse",
+            "doc_url": null
+          },
+          {
+            "type_str": "AsyncStreamResponse[FormattableT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "AsyncStreamResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "AsyncStreamResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "FormattableT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "FormattableT",
+                "doc_url": null
+              }
+            ],
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="traced-async-context-call" symbolName="TracedAsyncContextCall" /> TracedAsyncContextCall
+
+Traced wrapper for traced asynchronous AsyncContextCall objects.
+
+**Bases:** 
+<TypeLink type={{"type_str": "_BaseTracedCall[AsyncContextCall[P, DepsT, FormattableT]]", "description": null, "kind": "generic", "base_type": {"type_str": "_BaseTracedCall", "description": null, "kind": "simple", "symbol_name": "_BaseTracedCall", "doc_url": null}, "parameters": [{"type_str": "AsyncContextCall[P, DepsT, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "AsyncContextCall", "description": null, "kind": "simple", "symbol_name": "AsyncContextCall", "doc_url": null}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": null}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": null}], "doc_url": null}], "doc_url": null}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "call",
+    "type_info": {
+      "type_str": "AsyncTracedContextFunction[P, DepsT, AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "AsyncTracedContextFunction",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "AsyncTracedContextFunction",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "P",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "P",
+          "doc_url": null
+        },
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        },
+        {
+          "type_str": "AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Union",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "AsyncContextResponse[DepsT, None]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "AsyncContextResponse",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "AsyncContextResponse",
+                "doc_url": null
+              },
+              "parameters": [
+                {
+                  "type_str": "DepsT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "DepsT",
+                  "doc_url": null
+                },
+                {
+                  "type_str": "None",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "None",
+                  "doc_url": null
+                }
+              ],
+              "doc_url": null
+            },
+            {
+              "type_str": "AsyncContextResponse[DepsT, FormattableT]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "AsyncContextResponse",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "AsyncContextResponse",
+                "doc_url": null
+              },
+              "parameters": [
+                {
+                  "type_str": "DepsT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "DepsT",
+                  "doc_url": null
+                },
+                {
+                  "type_str": "FormattableT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "FormattableT",
+                  "doc_url": null
+                }
+              ],
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "AsyncTracedContextFunction wrapping the call method."
+  },
+  {
+    "name": "stream",
+    "type_info": {
+      "type_str": "AsyncTracedContextFunction[P, DepsT, AsyncContextStreamResponse[DepsT, None] | AsyncContextStreamResponse[DepsT, FormattableT]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "AsyncTracedContextFunction",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "AsyncTracedContextFunction",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "P",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "P",
+          "doc_url": null
+        },
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        },
+        {
+          "type_str": "AsyncContextStreamResponse[DepsT, None] | AsyncContextStreamResponse[DepsT, FormattableT]",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Union",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "AsyncContextStreamResponse[DepsT, None]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "AsyncContextStreamResponse",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "AsyncContextStreamResponse",
+                "doc_url": null
+              },
+              "parameters": [
+                {
+                  "type_str": "DepsT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "DepsT",
+                  "doc_url": null
+                },
+                {
+                  "type_str": "None",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "None",
+                  "doc_url": null
+                }
+              ],
+              "doc_url": null
+            },
+            {
+              "type_str": "AsyncContextStreamResponse[DepsT, FormattableT]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "AsyncContextStreamResponse",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "AsyncContextStreamResponse",
+                "doc_url": null
+              },
+              "parameters": [
+                {
+                  "type_str": "DepsT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "DepsT",
+                  "doc_url": null
+                },
+                {
+                  "type_str": "FormattableT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "FormattableT",
+                  "doc_url": null
+                }
+              ],
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "AsyncTracedContextFunction wrapping the stream method."
+  }
+]}
+/>
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_calls--traced-async-context-call-wrapped" symbolName="wrapped" /> wrapped
+
+Call the traced function and return a wrapped Response.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncTrace[AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "AsyncTrace",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AsyncTrace",
+      "doc_url": "/docs/mirascope/v2/api/ops/traced-functions#async-trace"
+    },
+    "parameters": [
+      {
+        "type_str": "AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "AsyncContextResponse[DepsT, None]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "AsyncContextResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "AsyncContextResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "DepsT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "DepsT",
+                "doc_url": null
+              },
+              {
+                "type_str": "None",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "None",
+                "doc_url": "https://docs.python.org/3/library/constants.html#None"
+              }
+            ],
+            "doc_url": null
+          },
+          {
+            "type_str": "AsyncContextResponse[DepsT, FormattableT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "AsyncContextResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "AsyncContextResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "DepsT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "DepsT",
+                "doc_url": null
+              },
+              {
+                "type_str": "FormattableT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "FormattableT",
+                "doc_url": null
+              }
+            ],
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_calls--traced-async-context-call-wrapped_stream" symbolName="wrapped_stream" /> wrapped_stream
+
+Stream the traced function and return a wrapped StreamResponse.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncTrace[AsyncContextStreamResponse[DepsT, None] | AsyncContextStreamResponse[DepsT, FormattableT]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "AsyncTrace",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AsyncTrace",
+      "doc_url": "/docs/mirascope/v2/api/ops/traced-functions#async-trace"
+    },
+    "parameters": [
+      {
+        "type_str": "AsyncContextStreamResponse[DepsT, None] | AsyncContextStreamResponse[DepsT, FormattableT]",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "AsyncContextStreamResponse[DepsT, None]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "AsyncContextStreamResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "AsyncContextStreamResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "DepsT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "DepsT",
+                "doc_url": null
+              },
+              {
+                "type_str": "None",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "None",
+                "doc_url": "https://docs.python.org/3/library/constants.html#None"
+              }
+            ],
+            "doc_url": null
+          },
+          {
+            "type_str": "AsyncContextStreamResponse[DepsT, FormattableT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "AsyncContextStreamResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "AsyncContextStreamResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "DepsT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "DepsT",
+                "doc_url": null
+              },
+              {
+                "type_str": "FormattableT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "FormattableT",
+                "doc_url": null
+              }
+            ],
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="traced-call" symbolName="TracedCall" /> TracedCall
+
+Traced wrapper for traced synchronous Call objects.
+
+When @ops.trace decorates an @llm.call, it returns a TracedCall that wraps
+the call and stream methods with tracing capabilities.
+
+**Bases:** 
+<TypeLink type={{"type_str": "_BaseTracedCall[Call[P, FormattableT]]", "description": null, "kind": "generic", "base_type": {"type_str": "_BaseTracedCall", "description": null, "kind": "simple", "symbol_name": "_BaseTracedCall", "doc_url": null}, "parameters": [{"type_str": "Call[P, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Call", "description": null, "kind": "simple", "symbol_name": "Call", "doc_url": null}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": null}], "doc_url": null}], "doc_url": null}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "call",
+    "type_info": {
+      "type_str": "TracedFunction[P, Response | Response[FormattableT]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "TracedFunction",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "TracedFunction",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "P",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "P",
+          "doc_url": null
+        },
+        {
+          "type_str": "Response | Response[FormattableT]",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Union",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "Response",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "Response",
+              "doc_url": null
+            },
+            {
+              "type_str": "Response[FormattableT]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "Response",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "Response",
+                "doc_url": null
+              },
+              "parameters": [
+                {
+                  "type_str": "FormattableT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "FormattableT",
+                  "doc_url": null
+                }
+              ],
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "TracedFunction wrapping the call method."
+  },
+  {
+    "name": "stream",
+    "type_info": {
+      "type_str": "TracedFunction[P, StreamResponse | StreamResponse[FormattableT]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "TracedFunction",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "TracedFunction",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "P",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "P",
+          "doc_url": null
+        },
+        {
+          "type_str": "StreamResponse | StreamResponse[FormattableT]",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Union",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "StreamResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "StreamResponse",
+              "doc_url": null
+            },
+            {
+              "type_str": "StreamResponse[FormattableT]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "StreamResponse",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "StreamResponse",
+                "doc_url": null
+              },
+              "parameters": [
+                {
+                  "type_str": "FormattableT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "FormattableT",
+                  "doc_url": null
+                }
+              ],
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "TracedFunction wrapping the stream method."
+  }
+]}
+/>
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_calls--traced-call-wrapped" symbolName="wrapped" /> wrapped
+
+Call the traced function and return a wrapped Response.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Trace[Response | Response[FormattableT]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "Trace",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Trace",
+      "doc_url": "/docs/mirascope/v2/api/ops/traced-functions#trace"
+    },
+    "parameters": [
+      {
+        "type_str": "Response | Response[FormattableT]",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "Response",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Response",
+            "doc_url": null
+          },
+          {
+            "type_str": "Response[FormattableT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "Response",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "Response",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "FormattableT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "FormattableT",
+                "doc_url": null
+              }
+            ],
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_calls--traced-call-wrapped_stream" symbolName="wrapped_stream" /> wrapped_stream
+
+Stream the traced function and return a wrapped StreamResponse.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Trace[StreamResponse | StreamResponse[FormattableT]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "Trace",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Trace",
+      "doc_url": "/docs/mirascope/v2/api/ops/traced-functions#trace"
+    },
+    "parameters": [
+      {
+        "type_str": "StreamResponse | StreamResponse[FormattableT]",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "StreamResponse",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "StreamResponse",
+            "doc_url": null
+          },
+          {
+            "type_str": "StreamResponse[FormattableT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "StreamResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "StreamResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "FormattableT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "FormattableT",
+                "doc_url": null
+              }
+            ],
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="traced-context-call" symbolName="TracedContextCall" /> TracedContextCall
+
+Traced wrapper for traced synchronous ContextCall objects.
+
+**Bases:** 
+<TypeLink type={{"type_str": "_BaseTracedCall[ContextCall[P, DepsT, FormattableT]]", "description": null, "kind": "generic", "base_type": {"type_str": "_BaseTracedCall", "description": null, "kind": "simple", "symbol_name": "_BaseTracedCall", "doc_url": null}, "parameters": [{"type_str": "ContextCall[P, DepsT, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "ContextCall", "description": null, "kind": "simple", "symbol_name": "ContextCall", "doc_url": null}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": null}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": null}], "doc_url": null}], "doc_url": null}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "call",
+    "type_info": {
+      "type_str": "TracedContextFunction[P, DepsT, ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "TracedContextFunction",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "TracedContextFunction",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "P",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "P",
+          "doc_url": null
+        },
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        },
+        {
+          "type_str": "ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Union",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "ContextResponse[DepsT, None]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "ContextResponse",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "ContextResponse",
+                "doc_url": null
+              },
+              "parameters": [
+                {
+                  "type_str": "DepsT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "DepsT",
+                  "doc_url": null
+                },
+                {
+                  "type_str": "None",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "None",
+                  "doc_url": null
+                }
+              ],
+              "doc_url": null
+            },
+            {
+              "type_str": "ContextResponse[DepsT, FormattableT]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "ContextResponse",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "ContextResponse",
+                "doc_url": null
+              },
+              "parameters": [
+                {
+                  "type_str": "DepsT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "DepsT",
+                  "doc_url": null
+                },
+                {
+                  "type_str": "FormattableT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "FormattableT",
+                  "doc_url": null
+                }
+              ],
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "TracedContextFunction wrapping the call method."
+  },
+  {
+    "name": "stream",
+    "type_info": {
+      "type_str": "TracedContextFunction[P, DepsT, ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "TracedContextFunction",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "TracedContextFunction",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "P",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "P",
+          "doc_url": null
+        },
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        },
+        {
+          "type_str": "ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Union",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "ContextStreamResponse[DepsT, None]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "ContextStreamResponse",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "ContextStreamResponse",
+                "doc_url": null
+              },
+              "parameters": [
+                {
+                  "type_str": "DepsT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "DepsT",
+                  "doc_url": null
+                },
+                {
+                  "type_str": "None",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "None",
+                  "doc_url": null
+                }
+              ],
+              "doc_url": null
+            },
+            {
+              "type_str": "ContextStreamResponse[DepsT, FormattableT]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "ContextStreamResponse",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "ContextStreamResponse",
+                "doc_url": null
+              },
+              "parameters": [
+                {
+                  "type_str": "DepsT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "DepsT",
+                  "doc_url": null
+                },
+                {
+                  "type_str": "FormattableT",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "FormattableT",
+                  "doc_url": null
+                }
+              ],
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "TracedContextFunction wrapping the stream method."
+  }
+]}
+/>
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_calls--traced-context-call-wrapped" symbolName="wrapped" /> wrapped
+
+Call the traced function and return a wrapped Response.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Trace[ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "Trace",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Trace",
+      "doc_url": "/docs/mirascope/v2/api/ops/traced-functions#trace"
+    },
+    "parameters": [
+      {
+        "type_str": "ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "ContextResponse[DepsT, None]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "ContextResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "ContextResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "DepsT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "DepsT",
+                "doc_url": null
+              },
+              {
+                "type_str": "None",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "None",
+                "doc_url": "https://docs.python.org/3/library/constants.html#None"
+              }
+            ],
+            "doc_url": null
+          },
+          {
+            "type_str": "ContextResponse[DepsT, FormattableT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "ContextResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "ContextResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "DepsT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "DepsT",
+                "doc_url": null
+              },
+              {
+                "type_str": "FormattableT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "FormattableT",
+                "doc_url": null
+              }
+            ],
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-ops-_internal-traced_calls--traced-context-call-wrapped_stream" symbolName="wrapped_stream" /> wrapped_stream
+
+Stream the traced function and return a wrapped StreamResponse.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Trace[ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "Trace",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Trace",
+      "doc_url": "/docs/mirascope/v2/api/ops/traced-functions#trace"
+    },
+    "parameters": [
+      {
+        "type_str": "ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "ContextStreamResponse[DepsT, None]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "ContextStreamResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "ContextStreamResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "DepsT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "DepsT",
+                "doc_url": null
+              },
+              {
+                "type_str": "None",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "None",
+                "doc_url": "https://docs.python.org/3/library/constants.html#None"
+              }
+            ],
+            "doc_url": null
+          },
+          {
+            "type_str": "ContextStreamResponse[DepsT, FormattableT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "ContextStreamResponse",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "ContextStreamResponse",
+              "doc_url": null
+            },
+            "parameters": [
+              {
+                "type_str": "DepsT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "DepsT",
+                "doc_url": null
+              },
+              {
+                "type_str": "FormattableT",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "FormattableT",
+                "doc_url": null
+              }
+            ],
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+

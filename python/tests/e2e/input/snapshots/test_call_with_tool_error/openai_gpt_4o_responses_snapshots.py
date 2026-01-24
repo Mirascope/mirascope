@@ -15,13 +15,13 @@ test_snapshot = snapshot(
             "params": {},
             "finish_reason": None,
             "usage": {
-                "input_tokens": 63,
-                "output_tokens": 20,
+                "input_tokens": 65,
+                "output_tokens": 25,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
-                "raw": "ResponseUsage(input_tokens=63, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=20, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=83)",
-                "total_tokens": 83,
+                "raw": "ResponseUsage(input_tokens=65, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=25, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=90)",
+                "total_tokens": 90,
             },
             "messages": [
                 UserMessage(
@@ -34,7 +34,7 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="It seems like the passphrase is incomplete. Could you please provide the full passphrase?"
+                            text="It seems like the passphrase you provided is incomplete due to formatting. Could you please provide the complete passphrase?"
                         )
                     ],
                     provider_id="openai",
@@ -42,11 +42,11 @@ test_snapshot = snapshot(
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
-                            "id": "msg_0c37f8dbe64ea86000696ef754db248190b4645483d84b3b4f",
+                            "id": "msg_02dd2500e3d14768006972e26ad6a48197ac5391c721c8de9c",
                             "content": [
                                 {
                                     "annotations": [],
-                                    "text": "It seems like the passphrase is incomplete. Could you please provide the full passphrase?",
+                                    "text": "It seems like the passphrase you provided is incomplete due to formatting. Could you please provide the complete passphrase?",
                                     "type": "output_text",
                                     "logprobs": [],
                                 }
@@ -61,7 +61,7 @@ test_snapshot = snapshot(
             "format": None,
             "tools": [
                 {
-                    "name": "test_tool",
+                    "name": "passphrase_test_tool",
                     "description": "A tool that must be called with a passphrase.",
                     "parameters": """\
 {

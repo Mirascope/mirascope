@@ -6,7 +6,8 @@ import sys
 from pathlib import Path
 
 REPO_URL = "https://github.com/mirascope/mirascope.git"
-SNAPSHOT_COMMIT = "c7bbfa81f7a203bc4ec527db21a9aa5842da8e3d"
+# Update this commit when mirascope.ops changes or to test against a specific version
+SNAPSHOT_COMMIT = "main"
 CACHE_DIR = Path(__file__).parent.parent.parent / ".build-cache" / "mirascope-snapshots"
 
 
@@ -75,7 +76,7 @@ def main() -> int:
         return 1
 
     commands = [
-        # Regenerate mirascope v2 llm example
+        # Regenerate mirascope llm (flat structure, first product)
         (
             [
                 "uv",
@@ -92,8 +93,38 @@ def main() -> int:
                 "/docs/mirascope/v2/api",
                 "--output-directives",
                 "./snapshots/directives",
+                "--product-slug",
+                "llm",
+                "--product-label",
+                "LLM",
             ],
-            "Regenerating mirascope_v2_llm snapshot",
+            "Regenerating mirascope llm snapshot (flat structure)",
+        ),
+        # Regenerate mirascope ops (internal structure, appended to existing)
+        (
+            [
+                "uv",
+                "run",
+                "-m",
+                "api2mdx.main",
+                "--source-path",
+                str(python_path),
+                "--package",
+                "mirascope.ops",
+                "--output",
+                "./snapshots/mdx",
+                "--api-root",
+                "/docs/mirascope/v2/api",
+                "--output-directives",
+                "./snapshots/directives-ops",
+                "--product-slug",
+                "ops",
+                "--product-label",
+                "Ops",
+                "--internal-structure",
+                "--append",
+            ],
+            "Regenerating mirascope ops snapshot (internal structure, append mode)",
         ),
     ]
 

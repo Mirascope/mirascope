@@ -68,6 +68,8 @@ function AppContent() {
   const currentPath = router.location.pathname;
   const isCloudRoute =
     currentPath === "/cloud" || currentPath.startsWith("/cloud/");
+  const isDocsRoute =
+    currentPath === "/docs" || currentPath.startsWith("/docs/");
   const isLandingPage = useIsLandingPage();
 
   return (
@@ -79,7 +81,9 @@ function AppContent() {
             ? "w-full grow pt-[60px]"
             : isLandingPage
               ? "w-full pt-(--header-height)"
-              : "mx-auto w-full max-w-7xl grow pt-(--header-height)"
+              : isDocsRoute
+                ? "mx-auto w-full max-w-7xl grow pt-(--header-height-with-selector)"
+                : "mx-auto w-full max-w-7xl grow pt-(--header-height)"
         }
       >
         <main className="grow">

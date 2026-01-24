@@ -5,10 +5,11 @@ import { type Provider } from "@/app/components/mdx/elements/model-provider-prov
 import Sidebar from "@/app/components/blocks/navigation/sidebar";
 import type {
   SidebarConfig,
-  SidebarItem,
   SidebarGroup,
+  SidebarItem,
   SidebarSection,
 } from "@/app/components/blocks/navigation/sidebar";
+import DocsProductSelector from "@/app/components/blocks/navigation/docs-product-selector";
 import { docsSpec } from "@/../content/docs/_meta";
 
 interface DocsSidebarProps {
@@ -21,12 +22,9 @@ interface DocsSidebarProps {
  * Returns the version string (e.g., "v1") or undefined for the default version.
  */
 function detectActiveVersion(pathname: string): string | undefined {
-  // URL pattern: /docs/v1/... or /docs/...
   const match = pathname.match(/^\/docs\/([^/]+)/);
   if (match) {
     const segment = match[1];
-    // Check if this segment is a version (e.g., "v1", "v2")
-    // A segment is a version if it matches a VersionSpec with that version
     const isVersion = docsSpec.some((v) => v.version === segment);
     if (isVersion) {
       return segment;
@@ -37,7 +35,6 @@ function detectActiveVersion(pathname: string): string | undefined {
 
 /**
  * Find the VersionSpec that matches the active version.
- * If no version is specified, return the first VersionSpec without a version (default).
  */
 function getActiveVersionSpec(
   activeVersion: string | undefined,
@@ -45,24 +42,90 @@ function getActiveVersionSpec(
   if (activeVersion) {
     return docsSpec.find((v) => v.version === activeVersion);
   }
-  // Return the first version without a version string (the default)
   return docsSpec.find((v) => !v.version);
 }
 
 /**
- * Helper to convert the spec metadata to the sidebar format
+ * Detect the active section from the current URL path.
  */
-function createSidebarConfig(activeVersion: string | undefined): SidebarConfig {
-  // Get all DocInfo objects
-  const allDocInfo = docRegistry.getAllDocs();
+function detectActiveSection(
+  pathname: string,
+  versionSpec: VersionSpec | undefined,
+): SectionSpec | undefined {
+  if (!versionSpec) return undefined;
 
-  // Create a map from slug pattern to routePath for quick lookup
-  // Key format: version/section/slug or version/slug for root items
+  const versionPrefix = versionSpec.version
+    ? `/docs/${versionSpec.version}`
+    : "/docs";
+  const pathAfterVersion = pathname
+    .replace(versionPrefix, "")
+    .replace(/^\//, "");
+  const firstSegment = pathAfterVersion.split("/")[0];
+
+  // Check if this segment matches a non-index section
+  for (const section of versionSpec.sections) {
+    if (section.slug !== "index" && section.slug === firstSegment) {
+      return section;
+    }
+  }
+
+  // Check if we're at the root or in the index section
+  const indexSection = versionSpec.sections.find((s) => s.slug === "index");
+  if (indexSection) {
+    // Check if the path matches a child of the index section
+    const childSlugs = indexSection.children.map((c) => c.slug);
+    if (
+      firstSegment === "" ||
+      childSlugs.includes(firstSegment) ||
+      firstSegment === "index"
+    ) {
+      return indexSection;
+    }
+  }
+
+  // Default to index section or first section
+  return indexSection ?? versionSpec.sections[0];
+}
+
+/**
+ * Detect the selected product from the URL path for sections with products.
+ */
+function detectSelectedProduct(
+  pathname: string,
+  section: SectionSpec,
+  versionSpec: VersionSpec | undefined,
+): string | undefined {
+  if (!section.products || section.products.length === 0) {
+    return undefined;
+  }
+
+  const versionPrefix = versionSpec?.version
+    ? `/docs/${versionSpec.version}`
+    : "/docs";
+  const sectionPath =
+    section.slug === "index"
+      ? versionPrefix
+      : `${versionPrefix}/${section.slug}`;
+  const pathAfterSection = pathname.replace(sectionPath, "").replace(/^\//, "");
+  const productSlug = pathAfterSection.split("/")[0];
+
+  const matchedProduct = section.products.find((p) => p.slug === productSlug);
+  return matchedProduct?.slug ?? section.products[0]?.slug;
+}
+
+/**
+ * Create sidebar configuration for the current section.
+ * Shows flat items filtered by selected product if applicable.
+ */
+function createSidebarConfig(
+  section: SectionSpec,
+  versionSpec: VersionSpec | undefined,
+  selectedProduct: string | undefined,
+): SidebarConfig {
+  const allDocInfo = docRegistry.getAllDocs();
   const slugToRoutePathMap: Map<string, string> = new Map();
 
   allDocInfo.forEach((doc) => {
-    // Extract the slug pattern from the path
-    // Strip "docs/" prefix to match the lookup format
     const prefix = "docs/";
     const keyPath = doc.path.startsWith(prefix)
       ? doc.path.slice(prefix.length)
@@ -70,69 +133,10 @@ function createSidebarConfig(activeVersion: string | undefined): SidebarConfig {
     slugToRoutePathMap.set(keyPath, doc.routePath);
   });
 
-  // Get the active version's spec
-  const versionSpec = getActiveVersionSpec(activeVersion);
-  if (!versionSpec) {
-    // Fallback to empty config if no matching version found
-    return {
-      label: "Documentation",
-      sections: [],
-    };
-  }
+  const versionPrefix = versionSpec?.version ?? "";
 
-  const versionPrefix = versionSpec.version ?? "";
-  const sections = [...versionSpec.sections];
-
-  // Find index section to ensure it appears first
-  const defaultIndex = sections.findIndex((s) => s.slug === "index");
-  if (defaultIndex > 0) {
-    // Move index section to the front
-    const defaultSection = sections.splice(defaultIndex, 1)[0];
-    sections.unshift(defaultSection);
-  }
-
-  // Convert doc specs to sidebar items
-  function convertDocToSidebarItem(
-    doc: DocSpec,
-    parentPath: string,
-  ): SidebarItem {
-    // Construct the logical path for this item (used to look up routePath)
-    const itemPath = parentPath ? `${parentPath}/${doc.slug}` : doc.slug;
-
-    // Look up the routePath from DocInfo if available
-    const routePath = slugToRoutePathMap.get(itemPath);
-
-    // Determine hasContent: explicit value from doc, or default based on children
-    const hasContent = doc.hasContent ?? !doc.children;
-
-    const item: SidebarItem = {
-      slug: doc.slug,
-      label: doc.label,
-      hasContent,
-    };
-
-    // Add routePath if we found a match
-    if (routePath) {
-      item.routePath = routePath;
-    }
-
-    // Process children if any
-    if (doc.children && doc.children.length > 0) {
-      item.items = {};
-
-      doc.children.forEach((childDoc) => {
-        const childItem = convertDocToSidebarItem(childDoc, itemPath);
-        if (item.items) {
-          item.items[childDoc.slug] = childItem;
-        }
-      });
-    }
-
-    return item;
-  }
-
-  // Helper to build path prefix for a section (matches logic in spec.ts getDocsFromSpec)
-  function getSectionPathPrefix(section: SectionSpec): string {
+  // Helper to build path prefix for a section
+  function getSectionPathPrefix(): string {
     const isDefaultSection = section.slug === "index";
     const sectionSlug = isDefaultSection ? "" : section.slug;
 
@@ -146,90 +150,111 @@ function createSidebarConfig(activeVersion: string | undefined): SidebarConfig {
     return "";
   }
 
-  // Create sidebar sections from spec sections
-  const sidebarSections: SidebarSection[] = sections.map((section) => {
-    const pathPrefix = getSectionPathPrefix(section);
+  // Convert doc specs to sidebar items
+  function convertDocToSidebarItem(
+    doc: DocSpec,
+    parentPath: string,
+  ): SidebarItem {
+    const itemPath = parentPath ? `${parentPath}/${doc.slug}` : doc.slug;
+    const routePath = slugToRoutePathMap.get(itemPath);
+    const hasContent = doc.hasContent ?? !doc.children;
 
-    // Create basePath for URL routing
-    const basePath = pathPrefix ? `/docs/${pathPrefix}` : "/docs";
+    const item: SidebarItem = {
+      slug: doc.slug,
+      label: doc.label,
+      hasContent,
+    };
 
-    // Process direct items (those without children) and create groups for top-level folders
-    const items: Record<string, SidebarItem> = {};
-    const groups: Record<string, SidebarGroup> = {};
+    if (routePath) {
+      item.routePath = routePath;
+    }
 
-    section.children.forEach((child) => {
-      const hasContent = child.hasContent ?? !child.children;
-
-      if (hasContent) {
-        // This item has content, add it to items (even if it also has children)
-        items[child.slug] = convertDocToSidebarItem(child, pathPrefix);
-      } else {
-        // This is a pure folder (no content), add it as a group
-        const groupItems: Record<string, SidebarItem> = {};
-
-        // Get path for this group's children
-        const groupPathPrefix = pathPrefix
-          ? `${pathPrefix}/${child.slug}`
-          : child.slug;
-
-        // Process all items in this group
-        if (child.children) {
-          child.children.forEach((grandchild) => {
-            // Convert the grandchild and its descendants to sidebar items
-            const sidebarItem = convertDocToSidebarItem(
-              grandchild,
-              groupPathPrefix,
-            );
-            groupItems[grandchild.slug] = sidebarItem;
-          });
+    // Include nested items for expansion
+    if (doc.children && doc.children.length > 0) {
+      item.items = {};
+      doc.children.forEach((childDoc) => {
+        const childItem = convertDocToSidebarItem(childDoc, itemPath);
+        if (item.items) {
+          item.items[childDoc.slug] = childItem;
         }
+      });
+    }
 
-        // Add the group
-        groups[child.slug] = {
-          slug: child.slug,
-          label: child.label,
-          items: groupItems,
-        };
-      }
-    });
+    return item;
+  }
+
+  // Convert a doc with children to a SidebarGroup (always expanded, colored label)
+  function convertDocToGroup(doc: DocSpec, parentPath: string): SidebarGroup {
+    const groupPath = parentPath ? `${parentPath}/${doc.slug}` : doc.slug;
+    const items: Record<string, SidebarItem> = {};
+
+    if (doc.children) {
+      doc.children.forEach((childDoc) => {
+        items[childDoc.slug] = convertDocToSidebarItem(childDoc, groupPath);
+      });
+    }
 
     return {
-      slug: section.slug,
-      label: section.label,
-      basePath,
+      slug: doc.slug,
+      label: doc.label,
       items,
-      groups: Object.keys(groups).length > 0 ? groups : undefined,
     };
+  }
+
+  const pathPrefix = getSectionPathPrefix();
+  const basePath = pathPrefix ? `/docs/${pathPrefix}` : "/docs";
+
+  // Get children to display
+  let childrenToDisplay: DocSpec[] = section.children;
+
+  // If section has products and a product is selected, filter to that product's children
+  if (section.products && selectedProduct) {
+    // Find the product's DocSpec in section.children
+    const productDoc = section.children.find((c) => c.slug === selectedProduct);
+    if (productDoc && productDoc.children) {
+      childrenToDisplay = productDoc.children;
+    }
+  }
+
+  // Build the correct path prefix for the items
+  const itemPathPrefix =
+    section.products && selectedProduct
+      ? pathPrefix
+        ? `${pathPrefix}/${selectedProduct}`
+        : selectedProduct
+      : pathPrefix;
+
+  // Separate items into flat items (no children) and groups (with children)
+  const items: Record<string, SidebarItem> = {};
+  const groups: Record<string, SidebarGroup> = {};
+
+  childrenToDisplay.forEach((child) => {
+    if (child.children && child.children.length > 0) {
+      // Items with children become groups (always expanded, colored label)
+      groups[child.slug] = convertDocToGroup(child, itemPathPrefix);
+    } else {
+      // Items without children are regular sidebar items
+      items[child.slug] = convertDocToSidebarItem(child, itemPathPrefix);
+    }
   });
 
-  // Add links to other versions (inactive versions) for version switching
-  const inactiveVersionSections: SidebarSection[] = docsSpec
-    .filter((v) => {
-      // Exclude the active version
-      if (activeVersion) {
-        return v.version !== activeVersion;
-      }
-      // If no active version (default), exclude the one without a version
-      return v.version !== undefined;
-    })
-    .map((v) => {
-      // Find the index section to get a nice label, or use a default
-      const indexSection = v.sections.find((s) => s.slug === "index");
-      const label = indexSection?.label ?? `${v.version ?? "Latest"} Docs`;
-      const basePath = v.version ? `/docs/${v.version}` : "/docs";
+  // Create a single section for the sidebar
+  const sectionBasePath =
+    section.products && selectedProduct
+      ? `${basePath}/${selectedProduct}`
+      : basePath;
 
-      return {
-        slug: v.version ?? "latest",
-        label,
-        basePath,
-        items: {},
-      };
-    });
+  const sidebarSection: SidebarSection = {
+    slug: section.slug,
+    label: section.label,
+    basePath: sectionBasePath,
+    items: Object.keys(items).length > 0 ? items : undefined,
+    groups: Object.keys(groups).length > 0 ? groups : undefined,
+  };
 
-  // Return the complete sidebar config with inactive versions at the end
   return {
-    label: "Documentation",
-    sections: [...sidebarSections, ...inactiveVersionSections],
+    label: section.label,
+    sections: [sidebarSection],
   };
 }
 
@@ -238,14 +263,46 @@ const DocsSidebar = (_props: DocsSidebarProps) => {
   const router = useRouter();
   const currentPath = router.state.location.pathname;
 
-  // Detect which version we're viewing based on the URL
+  // Detect which version we're viewing
   const activeVersion = detectActiveVersion(currentPath);
+  const versionSpec = getActiveVersionSpec(activeVersion);
 
-  // Create sidebar configuration for the active version only
-  const sidebarConfig = createSidebarConfig(activeVersion);
+  // Detect which section we're in
+  const activeSection = detectActiveSection(currentPath, versionSpec);
 
-  // No header content needed since product links are in the main header now
-  return <Sidebar config={sidebarConfig} />;
+  // Detect selected product if section has products
+  const selectedProduct = activeSection
+    ? detectSelectedProduct(currentPath, activeSection, versionSpec)
+    : undefined;
+
+  // Create sidebar configuration for the current section only
+  const sidebarConfig = activeSection
+    ? createSidebarConfig(activeSection, versionSpec, selectedProduct)
+    : { label: "Documentation", sections: [] };
+
+  // Compute base path for product selector
+  const versionPrefix = versionSpec?.version
+    ? `/docs/${versionSpec.version}`
+    : "/docs";
+  const sectionBasePath =
+    activeSection?.slug === "index"
+      ? versionPrefix
+      : `${versionPrefix}/${activeSection?.slug}`;
+
+  return (
+    <div className="flex flex-col">
+      {/* Product selector - only show if section has products */}
+      {activeSection?.products && activeSection.products.length > 0 && (
+        <DocsProductSelector
+          products={activeSection.products}
+          basePath={sectionBasePath}
+        />
+      )}
+
+      {/* Sidebar with flat items for current section */}
+      <Sidebar config={sidebarConfig} />
+    </div>
+  );
 };
 
 export default DocsSidebar;

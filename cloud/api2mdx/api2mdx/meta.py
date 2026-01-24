@@ -15,6 +15,31 @@ from api2mdx.api_discovery import DirectivesPage
 SINGLE_NESTING_LEVEL = 2  # Path with format "parent/child" has 2 parts
 
 
+class ProductSpec:
+    """Python representation of TypeScript ProductOption interface.
+
+    Attributes:
+        slug: Product slug for URL
+        label: Display name for the product tab
+
+    """
+
+    def __init__(self, slug: str, label: str) -> None:
+        """Initialize a ProductSpec.
+
+        Args:
+            slug: Product slug for URL
+            label: Display name for the product tab
+
+        """
+        self.slug = slug
+        self.label = label
+
+    def to_dict(self) -> dict[str, str]:
+        """Convert to a dictionary for serialization to TypeScript."""
+        return {"slug": self.slug, "label": self.label}
+
+
 class DocSpec:
     """Python representation of TypeScript DocSpec interface.
 
@@ -84,6 +109,7 @@ class SectionSpec:
         label: Display name
         children: Items in this section
         weight: Search weight for this section (multiplicative with product weight)
+        products: Optional list of product tabs for this section
 
     """
 
@@ -93,6 +119,7 @@ class SectionSpec:
         label: str,
         children: list[DocSpec],
         weight: float | None = None,
+        products: list[ProductSpec] | None = None,
     ) -> None:
         """Initialize a SectionSpec.
 
@@ -101,12 +128,14 @@ class SectionSpec:
             label: Display name
             children: Items in this section
             weight: Search weight for this section (multiplicative with product weight)
+            products: Optional list of product tabs for this section
 
         """
         self.slug = slug
         self.label = label
         self.children = children
         self.weight = weight
+        self.products = products
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to a dictionary for serialization to TypeScript."""
@@ -117,6 +146,9 @@ class SectionSpec:
 
         if self.weight is not None:
             result["weight"] = self.weight
+
+        if self.products is not None:
+            result["products"] = [product.to_dict() for product in self.products]
 
         result["children"] = [child.to_dict() for child in self.children]
 
@@ -172,12 +204,14 @@ def generate_meta_file_content(
 def generate_meta_from_directives(
     directives: list[DirectivesPage],
     weight: float | None,  # Default weight for API sections
+    products: list[ProductSpec] | None = None,
 ) -> SectionSpec:
     """Generate a SectionSpec from API directives.
 
     Args:
         directives: List of ApiDirective objects
         weight: Search weight for this section (default: 0.25)
+        products: Optional list of product tabs for this section
 
     Returns:
         A SectionSpec object representing the API structure
@@ -216,6 +250,7 @@ def generate_meta_from_directives(
         label=section_label,
         children=children,
         weight=weight,
+        products=products,
     )
 
 

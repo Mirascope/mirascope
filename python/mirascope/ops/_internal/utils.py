@@ -33,15 +33,23 @@ def _is_call_method(fn: Callable[..., Any]) -> bool:
 
 
 def get_original_fn(fn: Callable[..., Any]) -> Callable[..., Any]:
-    """Get the original function from a Call method or return fn as-is.
+    """Get the original unwrapped function.
 
-    When fn is a bound method of a Call object (e.g., Call.call or Call.stream),
-    returns the original decorated function from prompt.fn. Otherwise returns fn.
+    Follows the __wrapped__ chain set by copy_function_metadata() to find the
+    original function. Falls back to checking for Call methods for bound methods.
     """
+    # Follow __wrapped__ chain if available (set by copy_function_metadata)
+    # In practice, get_original_fn is called with original functions or bound methods,
+    # so this loop is defensive code for edge cases like @functools.wraps chains.
+    while hasattr(fn, "__wrapped__"):
+        fn = fn.__wrapped__  # pyright: ignore[reportFunctionMemberAccess] # pragma: no cover
+
+    # Handle bound methods of Call objects (e.g., Call.call or Call.stream)
     if _is_call_method(fn):
         prompt = fn.__self__.prompt  # pyright: ignore[reportFunctionMemberAccess]
         if hasattr(prompt, "fn"):
-            return prompt.fn
+            return get_original_fn(prompt.fn)
+
     return fn
 
 

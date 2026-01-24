@@ -20,14 +20,17 @@ from ....api._generated.traces.types import (
     TracesCreateRequestResourceSpansItemResource,
     TracesCreateRequestResourceSpansItemResourceAttributesItem,
     TracesCreateRequestResourceSpansItemResourceAttributesItemValue,
+    TracesCreateRequestResourceSpansItemResourceAttributesItemValueArrayValue,
     TracesCreateRequestResourceSpansItemScopeSpansItem,
     TracesCreateRequestResourceSpansItemScopeSpansItemScope,
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem,
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem,
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue,
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueArrayValue,
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus,
 )
 from ....api.client import Mirascope
+from .utils import to_otlp_any_value
 
 logger = logging.getLogger(__name__)
 
@@ -282,17 +285,7 @@ class MirascopeOTLPExporter(SpanExporter):
     def _convert_attribute_value(
         self, value: AttributeValue
     ) -> TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue:
-        """Convert OpenTelemetry AttributeValue to Mirascope API's KeyValueValue.
-
-        This conversion is necessary because the Fern-generated API client
-        expects KeyValueValue objects, not OpenTelemetry's AttributeValue types.
-
-        Args:
-            value: An OpenTelemetry AttributeValue (bool, int, float, str, or Sequence)
-
-        Returns:
-            A KeyValueValue object for the Mirascope API
-        """
+        """Convert OpenTelemetry AttributeValue to Mirascope API's KeyValueValue."""
         match value:
             case str():
                 return TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue(
@@ -312,49 +305,21 @@ class MirascopeOTLPExporter(SpanExporter):
                 )
             case _:
                 return TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue(
-                    string_value=str(list(value))
+                    array_value=TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueArrayValue(
+                        values=[to_otlp_any_value(v) for v in value]
+                    )
                 )
 
     def _convert_event_attribute_value(
         self, value: AttributeValue
     ) -> dict[str, object]:
-        """Convert OpenTelemetry AttributeValue to OTLP event attribute value format.
-
-        This uses the OTLP JSON format with typed value wrappers (e.g., stringValue, intValue).
-
-        Args:
-            value: An OpenTelemetry AttributeValue (bool, int, float, str, or Sequence)
-
-        Returns:
-            A dict with the typed value (e.g., {"stringValue": "..."})
-        """
-        match value:
-            case str():
-                return {"stringValue": value}
-            case bool():
-                return {"boolValue": value}
-            case int():
-                return {"intValue": str(value)}
-            case float():
-                return {"doubleValue": value}
-            case _:
-                # Sequences - convert to string representation
-                return {"stringValue": str(list(value))}
+        """Convert OpenTelemetry AttributeValue to OTLP event attribute value format."""
+        return to_otlp_any_value(value)
 
     def _convert_resource_attribute_value(
         self, value: AttributeValue
     ) -> TracesCreateRequestResourceSpansItemResourceAttributesItemValue:
-        """Convert OpenTelemetry AttributeValue to Mirascope API's resource KeyValueValue.
-
-        This conversion is necessary because the Fern-generated API client
-        expects KeyValueValue objects, not OpenTelemetry's AttributeValue types.
-
-        Args:
-            value: An OpenTelemetry AttributeValue (bool, int, float, str, or Sequence)
-
-        Returns:
-            A KeyValueValue object for the Mirascope API resource attributes
-        """
+        """Convert OpenTelemetry AttributeValue to Mirascope API's resource KeyValueValue."""
         match value:
             case str():
                 return TracesCreateRequestResourceSpansItemResourceAttributesItemValue(
@@ -374,7 +339,9 @@ class MirascopeOTLPExporter(SpanExporter):
                 )
             case _:
                 return TracesCreateRequestResourceSpansItemResourceAttributesItemValue(
-                    string_value=str(list(value))
+                    array_value=TracesCreateRequestResourceSpansItemResourceAttributesItemValueArrayValue(
+                        values=[to_otlp_any_value(v) for v in value]
+                    )
                 )
 
     def shutdown(self) -> None:

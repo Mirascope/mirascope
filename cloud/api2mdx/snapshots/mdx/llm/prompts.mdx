@@ -1,0 +1,2848 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: prompts
+description: API documentation for prompts
+---
+
+# prompts
+
+## <ApiType type="Class" slug="async-context-message-template" symbolName="AsyncContextMessageTemplate" /> AsyncContextMessageTemplate
+
+Protocol for an async context-aware prompt function that returns `UserContent` or `Sequence[Message]`.
+
+An async `MessageTemplate` with a first parameter named `'ctx'` of type `Context[DepsT]`.
+Can be converted by the `llm.prompt` decorator into an `AsyncContextPrompt`, or by
+the `llm.call` decorator into an `AsyncContextCall`.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[P, DepsT]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/llm/types#p"}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": null}], "doc_url": null}} />
+
+
+## <ApiType type="Class" slug="async-context-prompt" symbolName="AsyncContextPrompt" /> AsyncContextPrompt
+
+An async context-aware prompt that can be called with a model to generate a response.
+
+Created by decorating an async `ContextMessageTemplate` with `llm.prompt`. The decorated
+async function (with first parameter `'ctx'` of type `Context[DepsT]`) becomes callable
+with a `Model` to generate LLM responses asynchronously with context dependencies.
+
+An `AsyncContextPrompt` is essentially: async `ContextMessageTemplate` + tools + format.
+It can be invoked with a model: `await prompt(model, ctx, *args, **kwargs)`.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Generic[P, DepsT, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/llm/types#p"}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": null}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"}], "doc_url": null}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "fn",
+    "type_info": {
+      "type_str": "AsyncContextMessageTemplate[P, DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "AsyncContextMessageTemplate",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "AsyncContextMessageTemplate",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "P",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "P",
+          "doc_url": null
+        },
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The underlying async context-aware prompt function that generates message content."
+  },
+  {
+    "name": "toolkit",
+    "type_info": {
+      "type_str": "AsyncContextToolkit[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "AsyncContextToolkit",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "AsyncContextToolkit",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The toolkit containing this prompt's async context-aware tools."
+  },
+  {
+    "name": "format",
+    "type_info": {
+      "type_str": "type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "type[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "type",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "type",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "Format[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Format",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Format",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "OutputParser[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "OutputParser",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "OutputParser",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The response format for the generated response."
+  }
+]}
+/>
+
+## <ApiType type="Function" slug="mirascope-llm-prompts-prompts--async-context-prompt-messages" symbolName="messages" /> messages
+
+Return the `Messages` from invoking this prompt.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Sequence[Message]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "Sequence",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Sequence",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Sequence"
+    },
+    "parameters": [
+      {
+        "type_str": "Message",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Message",
+        "doc_url": "/docs/mirascope/v2/api/llm/messages#message"
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-llm-prompts-prompts--async-context-prompt-call" symbolName="call" /> call
+
+Generates a response using the provided model asynchronously.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "Model | ModelId",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Model",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Model",
+          "doc_url": "/docs/mirascope/v2/api/llm/models#model"
+        },
+        {
+          "type_str": "ModelId",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ModelId",
+          "doc_url": "/docs/mirascope/v2/api/llm/providers#model-id"
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "AsyncContextResponse[DepsT, None]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncContextResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncContextResponse",
+          "doc_url": "/docs/mirascope/v2/api/llm/responses#async-context-response"
+        },
+        "parameters": [
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "None",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "None",
+            "doc_url": "https://docs.python.org/3/library/constants.html#None"
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "AsyncContextResponse[DepsT, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncContextResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncContextResponse",
+          "doc_url": "/docs/mirascope/v2/api/llm/responses#async-context-response"
+        },
+        "parameters": [
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-llm-prompts-prompts--async-context-prompt-stream" symbolName="stream" /> stream
+
+Generates a streaming response using the provided model asynchronously.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "Model | ModelId",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Model",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Model",
+          "doc_url": "/docs/mirascope/v2/api/llm/models#model"
+        },
+        {
+          "type_str": "ModelId",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ModelId",
+          "doc_url": "/docs/mirascope/v2/api/llm/providers#model-id"
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncContextStreamResponse[DepsT, None] | AsyncContextStreamResponse[DepsT, FormattableT]",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "AsyncContextStreamResponse[DepsT, None]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncContextStreamResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncContextStreamResponse",
+          "doc_url": "/docs/mirascope/v2/api/llm/responses#async-context-stream-response"
+        },
+        "parameters": [
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "None",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "None",
+            "doc_url": "https://docs.python.org/3/library/constants.html#None"
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "AsyncContextStreamResponse[DepsT, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncContextStreamResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncContextStreamResponse",
+          "doc_url": "/docs/mirascope/v2/api/llm/responses#async-context-stream-response"
+        },
+        "parameters": [
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="async-message-template" symbolName="AsyncMessageTemplate" /> AsyncMessageTemplate
+
+Protocol for an async prompt function that returns `UserContent` or `Sequence[Message]`.
+
+An async `MessageTemplate` that can be converted by the `llm.prompt` decorator
+into an `AsyncPrompt`, or by the `llm.call` decorator into an `AsyncCall`.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[P]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/llm/types#p"}], "doc_url": null}} />
+
+
+## <ApiType type="Class" slug="async-prompt" symbolName="AsyncPrompt" /> AsyncPrompt
+
+An async prompt that can be called with a model to generate a response.
+
+Created by decorating an async `MessageTemplate` with `llm.prompt`. The decorated
+async function becomes callable with a `Model` to generate LLM responses asynchronously.
+
+An `AsyncPrompt` is essentially: async `MessageTemplate` + tools + format.
+It can be invoked with a model: `await prompt(model, *args, **kwargs)`.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Generic[P, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/llm/types#p"}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"}], "doc_url": null}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "fn",
+    "type_info": {
+      "type_str": "AsyncMessageTemplate[P]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "AsyncMessageTemplate",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "AsyncMessageTemplate",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "P",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "P",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The underlying async prompt function that generates message content."
+  },
+  {
+    "name": "toolkit",
+    "type_info": {
+      "type_str": "AsyncToolkit",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AsyncToolkit",
+      "doc_url": null
+    },
+    "description": "The toolkit containing this prompt's async tools."
+  },
+  {
+    "name": "format",
+    "type_info": {
+      "type_str": "type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "type[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "type",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "type",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "Format[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Format",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Format",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "OutputParser[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "OutputParser",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "OutputParser",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The response format for the generated response."
+  }
+]}
+/>
+
+## <ApiType type="Function" slug="mirascope-llm-prompts-prompts--async-prompt-messages" symbolName="messages" /> messages
+
+Return the `Messages` from invoking this prompt.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Sequence[Message]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "Sequence",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Sequence",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Sequence"
+    },
+    "parameters": [
+      {
+        "type_str": "Message",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Message",
+        "doc_url": "/docs/mirascope/v2/api/llm/messages#message"
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-llm-prompts-prompts--async-prompt-call" symbolName="call" /> call
+
+Generates a response using the provided model asynchronously.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "Model | ModelId",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Model",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Model",
+          "doc_url": "/docs/mirascope/v2/api/llm/models#model"
+        },
+        {
+          "type_str": "ModelId",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ModelId",
+          "doc_url": "/docs/mirascope/v2/api/llm/providers#model-id"
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncResponse | AsyncResponse[FormattableT]",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "AsyncResponse",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "AsyncResponse",
+        "doc_url": "/docs/mirascope/v2/api/llm/responses#async-response"
+      },
+      {
+        "type_str": "AsyncResponse[FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncResponse",
+          "doc_url": "/docs/mirascope/v2/api/llm/responses#async-response"
+        },
+        "parameters": [
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-llm-prompts-prompts--async-prompt-stream" symbolName="stream" /> stream
+
+Generates a streaming response using the provided model asynchronously.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "Model | ModelId",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Model",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Model",
+          "doc_url": "/docs/mirascope/v2/api/llm/models#model"
+        },
+        {
+          "type_str": "ModelId",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ModelId",
+          "doc_url": "/docs/mirascope/v2/api/llm/providers#model-id"
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncStreamResponse | AsyncStreamResponse[FormattableT]",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "AsyncStreamResponse",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "AsyncStreamResponse",
+        "doc_url": "/docs/mirascope/v2/api/llm/responses#async-stream-response"
+      },
+      {
+        "type_str": "AsyncStreamResponse[FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncStreamResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncStreamResponse",
+          "doc_url": "/docs/mirascope/v2/api/llm/responses#async-stream-response"
+        },
+        "parameters": [
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="context-message-template" symbolName="ContextMessageTemplate" /> ContextMessageTemplate
+
+Protocol for a context-aware prompt function that returns `UserContent` or `Sequence[Message]`.
+
+A `MessageTemplate` with a first parameter named `'ctx'` of type `Context[DepsT]`.
+Can be converted by the `llm.prompt` decorator into a `ContextPrompt`, or by
+the `llm.call` decorator into a `ContextCall`.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[P, DepsT]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/llm/types#p"}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": null}], "doc_url": null}} />
+
+
+## <ApiType type="Class" slug="context-prompt" symbolName="ContextPrompt" /> ContextPrompt
+
+A context-aware prompt that can be called with a model to generate a response.
+
+Created by decorating a `ContextMessageTemplate` with `llm.prompt`. The decorated
+function (with first parameter `'ctx'` of type `Context[DepsT]`) becomes callable
+with a `Model` to generate LLM responses with context dependencies.
+
+A `ContextPrompt` is essentially: `ContextMessageTemplate` + tools + format.
+It can be invoked with a model: `prompt(model, ctx, *args, **kwargs)`.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Generic[P, DepsT, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/llm/types#p"}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": null}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"}], "doc_url": null}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "fn",
+    "type_info": {
+      "type_str": "ContextMessageTemplate[P, DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "ContextMessageTemplate",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "ContextMessageTemplate",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "P",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "P",
+          "doc_url": null
+        },
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The underlying context-aware prompt function that generates message content."
+  },
+  {
+    "name": "toolkit",
+    "type_info": {
+      "type_str": "ContextToolkit[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "ContextToolkit",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "ContextToolkit",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The toolkit containing this prompt's context-aware tools."
+  },
+  {
+    "name": "format",
+    "type_info": {
+      "type_str": "type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "type[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "type",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "type",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "Format[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Format",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Format",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "OutputParser[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "OutputParser",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "OutputParser",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The response format for the generated response."
+  }
+]}
+/>
+
+## <ApiType type="Function" slug="mirascope-llm-prompts-prompts--context-prompt-messages" symbolName="messages" /> messages
+
+Return the `Messages` from invoking this prompt.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Sequence[Message]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "Sequence",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Sequence",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Sequence"
+    },
+    "parameters": [
+      {
+        "type_str": "Message",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Message",
+        "doc_url": "/docs/mirascope/v2/api/llm/messages#message"
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-llm-prompts-prompts--context-prompt-call" symbolName="call" /> call
+
+Generates a response using the provided model.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "Model | ModelId",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Model",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Model",
+          "doc_url": "/docs/mirascope/v2/api/llm/models#model"
+        },
+        {
+          "type_str": "ModelId",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ModelId",
+          "doc_url": "/docs/mirascope/v2/api/llm/providers#model-id"
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "ContextResponse[DepsT, None]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "ContextResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ContextResponse",
+          "doc_url": "/docs/mirascope/v2/api/llm/responses#context-response"
+        },
+        "parameters": [
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "None",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "None",
+            "doc_url": "https://docs.python.org/3/library/constants.html#None"
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "ContextResponse[DepsT, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "ContextResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ContextResponse",
+          "doc_url": "/docs/mirascope/v2/api/llm/responses#context-response"
+        },
+        "parameters": [
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-llm-prompts-prompts--context-prompt-stream" symbolName="stream" /> stream
+
+Generates a streaming response using the provided model.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "Model | ModelId",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Model",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Model",
+          "doc_url": "/docs/mirascope/v2/api/llm/models#model"
+        },
+        {
+          "type_str": "ModelId",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ModelId",
+          "doc_url": "/docs/mirascope/v2/api/llm/providers#model-id"
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "ctx",
+    "type_info": {
+      "type_str": "Context[DepsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Context",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Context",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "DepsT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "DepsT",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "ContextStreamResponse[DepsT, None]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "ContextStreamResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ContextStreamResponse",
+          "doc_url": "/docs/mirascope/v2/api/llm/responses#context-stream-response"
+        },
+        "parameters": [
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "None",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "None",
+            "doc_url": "https://docs.python.org/3/library/constants.html#None"
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "ContextStreamResponse[DepsT, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "ContextStreamResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ContextStreamResponse",
+          "doc_url": "/docs/mirascope/v2/api/llm/responses#context-stream-response"
+        },
+        "parameters": [
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="message-template" symbolName="MessageTemplate" /> MessageTemplate
+
+Protocol for a prompt function that returns `UserContent` or `Sequence[Message]`.
+
+A `MessageTemplate` is a raw function that returns prompt content. It can be
+converted by the `llm.prompt` decorator into a `Prompt` (callable with a `Model`),
+or by the `llm.call` decorator into a `Call` (`Prompt` + `Model`).
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[P]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/llm/types#p"}], "doc_url": null}} />
+
+
+## <ApiType type="Class" slug="prompt" symbolName="Prompt" /> Prompt
+
+A prompt that can be called with a model to generate a response.
+
+Created by decorating a `MessageTemplate` with `llm.prompt`. The decorated
+function becomes callable with a `Model` to generate LLM responses.
+
+A `Prompt` is essentially: `MessageTemplate` + tools + format.
+It can be invoked with a model: `prompt(model, *args, **kwargs)`.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Generic[P, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/llm/types#p"}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"}], "doc_url": null}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "fn",
+    "type_info": {
+      "type_str": "MessageTemplate[P]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "MessageTemplate",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "MessageTemplate",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "P",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "P",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The underlying prompt function that generates message content."
+  },
+  {
+    "name": "toolkit",
+    "type_info": {
+      "type_str": "Toolkit",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Toolkit",
+      "doc_url": null
+    },
+    "description": "The toolkit containing this prompt's tools."
+  },
+  {
+    "name": "format",
+    "type_info": {
+      "type_str": "type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "type[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "type",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "type",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "Format[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Format",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Format",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "OutputParser[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "OutputParser",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "OutputParser",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The response format for the generated response."
+  }
+]}
+/>
+
+## <ApiType type="Function" slug="mirascope-llm-prompts-prompts--prompt-messages" symbolName="messages" /> messages
+
+Return the `Messages` from invoking this prompt.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Sequence[Message]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "Sequence",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Sequence",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Sequence"
+    },
+    "parameters": [
+      {
+        "type_str": "Message",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Message",
+        "doc_url": "/docs/mirascope/v2/api/llm/messages#message"
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-llm-prompts-prompts--prompt-call" symbolName="call" /> call
+
+Generates a response using the provided model.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "Model | ModelId",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Model",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Model",
+          "doc_url": "/docs/mirascope/v2/api/llm/models#model"
+        },
+        {
+          "type_str": "ModelId",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ModelId",
+          "doc_url": "/docs/mirascope/v2/api/llm/providers#model-id"
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Response | Response[FormattableT]",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "Response",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Response",
+        "doc_url": "/docs/mirascope/v2/api/llm/responses#response"
+      },
+      {
+        "type_str": "Response[FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "Response",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Response",
+          "doc_url": "/docs/mirascope/v2/api/llm/responses#response"
+        },
+        "parameters": [
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="mirascope-llm-prompts-prompts--prompt-stream" symbolName="stream" /> stream
+
+Generates a streaming response using the provided model.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "Model | ModelId",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Model",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Model",
+          "doc_url": "/docs/mirascope/v2/api/llm/models#model"
+        },
+        {
+          "type_str": "ModelId",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ModelId",
+          "doc_url": "/docs/mirascope/v2/api/llm/providers#model-id"
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "P.args",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.args",
+      "doc_url": null
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "P.kwargs",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "P.kwargs",
+      "doc_url": null
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "StreamResponse | StreamResponse[FormattableT]",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "StreamResponse",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "StreamResponse",
+        "doc_url": "/docs/mirascope/v2/api/llm/responses#stream-response"
+      },
+      {
+        "type_str": "StreamResponse[FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "StreamResponse",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "StreamResponse",
+          "doc_url": "/docs/mirascope/v2/api/llm/responses#stream-response"
+        },
+        "parameters": [
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="prompt-decorator" symbolName="PromptDecorator" /> PromptDecorator
+
+Decorator for converting a `MessageTemplate` into a `Prompt`.
+
+Takes a raw prompt function that returns message content and wraps it with
+tools and format support, creating a `Prompt` that can be called with a model.
+
+The decorator automatically detects whether the function is async or context-aware
+and creates the appropriate Prompt variant (Prompt, AsyncPrompt, ContextPrompt,
+or AsyncContextPrompt).
+
+**Bases:** 
+<TypeLink type={{"type_str": "Generic[ToolT, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "ToolT", "description": null, "kind": "simple", "symbol_name": "ToolT", "doc_url": "/docs/mirascope/v2/api/llm/tools#tool-t"}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"}], "doc_url": null}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "tools",
+    "type_info": {
+      "type_str": "Sequence[ToolT] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "Sequence[ToolT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Sequence",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Sequence",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "ToolT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "ToolT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The tools that are included in the prompt, if any."
+  },
+  {
+    "name": "format",
+    "type_info": {
+      "type_str": "type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "type[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "type",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "type",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "Format[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Format",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Format",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "OutputParser[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "OutputParser",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "OutputParser",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The structured output format off the prompt, if any."
+  }
+]}
+/>
+
+
+## <ApiType type="Function" slug="prompt_fn" symbolName="prompt" /> prompt
+
+Decorates a `MessageTemplate` to create a `Prompt` callable with a model.
+
+This decorator transforms a raw prompt function (that returns message content)
+into a `Prompt` object that can be invoked with a model to generate LLM responses.
+
+The decorator automatically detects the function type:
+- If the first parameter is named `'ctx'` with type `llm.Context[T]`, creates a `ContextPrompt`
+- If the function is async, creates an `AsyncPrompt` or `AsyncContextPrompt`
+- Otherwise, creates a regular `Prompt`
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "__fn",
+    "type_info": {
+      "type_str": "AsyncContextMessageTemplate[P, DepsT] | ContextMessageTemplate[P, DepsT] | AsyncMessageTemplate[P] | MessageTemplate[P] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "AsyncContextMessageTemplate[P, DepsT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "AsyncContextMessageTemplate",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "AsyncContextMessageTemplate",
+            "doc_url": "/docs/mirascope/v2/api/llm/prompts#async-context-message-template"
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": "/docs/mirascope/v2/api/llm/types#p"
+            },
+            {
+              "type_str": "DepsT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "DepsT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "ContextMessageTemplate[P, DepsT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "ContextMessageTemplate",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "ContextMessageTemplate",
+            "doc_url": "/docs/mirascope/v2/api/llm/prompts#context-message-template"
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": "/docs/mirascope/v2/api/llm/types#p"
+            },
+            {
+              "type_str": "DepsT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "DepsT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "AsyncMessageTemplate[P]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "AsyncMessageTemplate",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "AsyncMessageTemplate",
+            "doc_url": "/docs/mirascope/v2/api/llm/prompts#async-message-template"
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": "/docs/mirascope/v2/api/llm/types#p"
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "MessageTemplate[P]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "MessageTemplate",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "MessageTemplate",
+            "doc_url": "/docs/mirascope/v2/api/llm/prompts#message-template"
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": "/docs/mirascope/v2/api/llm/types#p"
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "The prompt function to decorate (optional, for decorator syntax without parens)"
+  },
+  {
+    "name": "tools",
+    "type_info": {
+      "type_str": "Sequence[ToolT] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Sequence[ToolT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Sequence",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Sequence",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Sequence"
+          },
+          "parameters": [
+            {
+              "type_str": "ToolT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "ToolT",
+              "doc_url": "/docs/mirascope/v2/api/llm/tools#tool-t"
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional `Sequence` of tools to make available to the LLM"
+  },
+  {
+    "name": "format",
+    "type_info": {
+      "type_str": "type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "type[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "type",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "type",
+            "doc_url": "https://docs.python.org/3/library/functions.html#type"
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "Format[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Format",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Format",
+            "doc_url": "/docs/mirascope/v2/api/llm/formatting#format"
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "OutputParser[FormattableT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "OutputParser",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "OutputParser",
+            "doc_url": "/docs/mirascope/v2/api/llm/formatting#output-parser"
+          },
+          "parameters": [
+            {
+              "type_str": "FormattableT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "FormattableT",
+              "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional response format class (`BaseModel`) or Format instance"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncContextPrompt[P, DepsT, FormattableT] | ContextPrompt[P, DepsT, FormattableT] | AsyncPrompt[P, FormattableT] | Prompt[P, FormattableT] | PromptDecorator[ToolT, FormattableT]",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "AsyncContextPrompt[P, DepsT, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncContextPrompt",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncContextPrompt",
+          "doc_url": "/docs/mirascope/v2/api/llm/prompts#async-context-prompt"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": "/docs/mirascope/v2/api/llm/types#p"
+          },
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "ContextPrompt[P, DepsT, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "ContextPrompt",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ContextPrompt",
+          "doc_url": "/docs/mirascope/v2/api/llm/prompts#context-prompt"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": "/docs/mirascope/v2/api/llm/types#p"
+          },
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "AsyncPrompt[P, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncPrompt",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncPrompt",
+          "doc_url": "/docs/mirascope/v2/api/llm/prompts#async-prompt"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": "/docs/mirascope/v2/api/llm/types#p"
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "Prompt[P, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "Prompt",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Prompt",
+          "doc_url": "/docs/mirascope/v2/api/llm/prompts#prompt"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": "/docs/mirascope/v2/api/llm/types#p"
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "PromptDecorator[ToolT, FormattableT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "PromptDecorator",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "PromptDecorator",
+          "doc_url": "/docs/mirascope/v2/api/llm/prompts#prompt-decorator"
+        },
+        "parameters": [
+          {
+            "type_str": "ToolT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "ToolT",
+            "doc_url": "/docs/mirascope/v2/api/llm/tools#tool-t"
+          },
+          {
+            "type_str": "FormattableT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "FormattableT",
+            "doc_url": "/docs/mirascope/v2/api/llm/formatting#formattable-t"
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  },
+  "description": "A `Prompt` variant (Prompt, AsyncPrompt, ContextPrompt, or AsyncContextPrompt)"
+}}
+/>
+
+

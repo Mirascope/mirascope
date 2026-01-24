@@ -1,0 +1,275 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: configuration
+description: API documentation for configuration
+---
+
+# configuration
+
+## <ApiType type="Function" slug="configure" symbolName="configure" /> configure
+
+Configure the ops module for tracing.
+
+When called without arguments, automatically configures Mirascope Cloud
+using the MIRASCOPE_API_KEY environment variable.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "api_key",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional Mirascope Cloud API key. If not provided, uses\nMIRASCOPE_API_KEY environment variable."
+  },
+  {
+    "name": "base_url",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None"
+  },
+  {
+    "name": "tracer_provider",
+    "type_info": {
+      "type_str": "TracerProvider | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "TracerProvider",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "TracerProvider",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional custom TracerProvider. If provided, this takes\nprecedence over automatic Mirascope Cloud configuration."
+  },
+  {
+    "name": "tracer_name",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "default": "DEFAULT_TRACER_NAME",
+    "description": "Tracer name to use when creating a tracer.\nDefaults to \"mirascope.llm\"."
+  },
+  {
+    "name": "tracer_version",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional tracer version."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "None",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="tracer_context" symbolName="tracer_context" /> tracer_context
+
+Context manager for temporarily setting a tracer.
+
+Temporarily sets the tracer for the duration of the context and restores
+the previous tracer when the context exits.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "tracer",
+    "type_info": {
+      "type_str": "Tracer | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Tracer",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Tracer",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The tracer to use within the context."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Iterator[Tracer | None]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "Iterator",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Iterator",
+      "doc_url": null
+    },
+    "parameters": [
+      {
+        "type_str": "Tracer | None",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Union",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "Tracer",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Tracer",
+            "doc_url": null
+          },
+          {
+            "type_str": "None",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "None",
+            "doc_url": "https://docs.python.org/3/library/constants.html#None"
+          }
+        ],
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+

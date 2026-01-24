@@ -1,0 +1,444 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: exceptions
+description: API documentation for exceptions
+---
+
+# exceptions
+
+## <ApiType type="Class" slug="error" symbolName="Error" /> Error
+
+Base exception for all Mirascope LLM errors.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Exception", "description": null, "kind": "simple", "symbol_name": "Exception", "doc_url": "https://docs.python.org/3/library/exceptions.html#Exception"}} />
+
+
+## <ApiType type="Class" slug="provider-error" symbolName="ProviderError" /> ProviderError
+
+Base class for errors that originate from a provider SDK.
+
+This wraps exceptions from provider libraries (OpenAI, Anthropic, etc.)
+and provides a unified interface for error handling.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Error", "description": null, "kind": "simple", "symbol_name": "Error", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#error"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "provider",
+    "type_info": {
+      "type_str": "ProviderId",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "ProviderId",
+      "doc_url": null
+    },
+    "description": "The provider that raised this error."
+  },
+  {
+    "name": "original_exception",
+    "type_info": {
+      "type_str": "Exception | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "Exception",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Exception",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The original exception from the provider SDK, if available."
+  }
+]}
+/>
+
+
+## <ApiType type="Class" slug="a-p-i-error" symbolName="APIError" /> APIError
+
+Base class for HTTP-level API errors.
+
+**Bases:** 
+<TypeLink type={{"type_str": "ProviderError", "description": null, "kind": "simple", "symbol_name": "ProviderError", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#provider-error"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "status_code",
+    "type_info": {
+      "type_str": "int | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "int",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "int",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The HTTP status code, if available."
+  }
+]}
+/>
+
+
+## <ApiType type="Class" slug="authentication-error" symbolName="AuthenticationError" /> AuthenticationError
+
+Raised for authentication failures (401, invalid API keys).
+
+**Bases:** 
+<TypeLink type={{"type_str": "APIError", "description": null, "kind": "simple", "symbol_name": "APIError", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#a-p-i-error"}} />
+
+
+## <ApiType type="Class" slug="permission-error" symbolName="PermissionError" /> PermissionError
+
+Raised for permission/authorization failures (403).
+
+**Bases:** 
+<TypeLink type={{"type_str": "APIError", "description": null, "kind": "simple", "symbol_name": "APIError", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#a-p-i-error"}} />
+
+
+## <ApiType type="Class" slug="bad-request-error" symbolName="BadRequestError" /> BadRequestError
+
+Raised for malformed requests (400, 422).
+
+**Bases:** 
+<TypeLink type={{"type_str": "APIError", "description": null, "kind": "simple", "symbol_name": "APIError", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#a-p-i-error"}} />
+
+
+## <ApiType type="Class" slug="not-found-error" symbolName="NotFoundError" /> NotFoundError
+
+Raised when requested resource is not found (404).
+
+**Bases:** 
+<TypeLink type={{"type_str": "APIError", "description": null, "kind": "simple", "symbol_name": "APIError", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#a-p-i-error"}} />
+
+
+## <ApiType type="Class" slug="rate-limit-error" symbolName="RateLimitError" /> RateLimitError
+
+Raised when rate limits are exceeded (429).
+
+**Bases:** 
+<TypeLink type={{"type_str": "APIError", "description": null, "kind": "simple", "symbol_name": "APIError", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#a-p-i-error"}} />
+
+
+## <ApiType type="Class" slug="server-error" symbolName="ServerError" /> ServerError
+
+Raised for server-side errors (500+).
+
+**Bases:** 
+<TypeLink type={{"type_str": "APIError", "description": null, "kind": "simple", "symbol_name": "APIError", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#a-p-i-error"}} />
+
+
+## <ApiType type="Class" slug="connection-error" symbolName="ConnectionError" /> ConnectionError
+
+Raised when unable to connect to the API (network issues, timeouts).
+
+**Bases:** 
+<TypeLink type={{"type_str": "ProviderError", "description": null, "kind": "simple", "symbol_name": "ProviderError", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#provider-error"}} />
+
+
+## <ApiType type="Class" slug="timeout-error" symbolName="TimeoutError" /> TimeoutError
+
+Raised when requests timeout or deadline exceeded.
+
+**Bases:** 
+<TypeLink type={{"type_str": "ProviderError", "description": null, "kind": "simple", "symbol_name": "ProviderError", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#provider-error"}} />
+
+
+## <ApiType type="Class" slug="response-validation-error" symbolName="ResponseValidationError" /> ResponseValidationError
+
+Raised when API response fails validation.
+
+This wraps the APIResponseValidationErrors that OpenAI and Anthropic both return.
+
+**Bases:** 
+<TypeLink type={{"type_str": "ProviderError", "description": null, "kind": "simple", "symbol_name": "ProviderError", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#provider-error"}} />
+
+
+## <ApiType type="Class" slug="tool-error" symbolName="ToolError" /> ToolError
+
+Base class for errors that occur during tool execution.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Error", "description": null, "kind": "simple", "symbol_name": "Error", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#error"}} />
+
+
+## <ApiType type="Class" slug="tool-execution-error" symbolName="ToolExecutionError" /> ToolExecutionError
+
+Raised if an uncaught exception is thrown while executing a tool.
+
+**Bases:** 
+<TypeLink type={{"type_str": "ToolError", "description": null, "kind": "simple", "symbol_name": "ToolError", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#tool-error"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "tool_exception",
+    "type_info": {
+      "type_str": "Exception",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Exception",
+      "doc_url": null
+    },
+    "description": "The exception that was thrown while executing the tool."
+  }
+]}
+/>
+
+
+## <ApiType type="Class" slug="tool-not-found-error" symbolName="ToolNotFoundError" /> ToolNotFoundError
+
+Raised if a tool call does not match any registered tool.
+
+**Bases:** 
+<TypeLink type={{"type_str": "ToolError", "description": null, "kind": "simple", "symbol_name": "ToolError", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#tool-error"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "tool_name",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    },
+    "description": "The name of the tool that was not found."
+  }
+]}
+/>
+
+
+## <ApiType type="Class" slug="parse-error" symbolName="ParseError" /> ParseError
+
+Raised when response.parse() fails to parse the response content.
+
+This wraps errors from JSON extraction, JSON parsing, Pydantic validation,
+or custom OutputParser functions.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Error", "description": null, "kind": "simple", "symbol_name": "Error", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#error"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "original_exception",
+    "type_info": {
+      "type_str": "Exception",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Exception",
+      "doc_url": null
+    },
+    "description": "The original exception that caused the parse failure."
+  }
+]}
+/>
+
+## <ApiType type="Function" slug="mirascope-llm-exceptions--parse-error-retry_message" symbolName="retry_message" /> retry_message
+
+Generate a message suitable for retrying with the LLM.
+
+Returns a user-friendly message describing what went wrong,
+suitable for including in a retry prompt.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "str",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "str",
+    "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="feature-not-supported-error" symbolName="FeatureNotSupportedError" /> FeatureNotSupportedError
+
+Raised if a Mirascope feature is unsupported by chosen provider.
+
+If compatibility is model-specific, then `model_id` should be specified.
+If the feature is not supported by the provider at all, then it may be `None`.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Error", "description": null, "kind": "simple", "symbol_name": "Error", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#error"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "provider_id",
+    "type_info": {
+      "type_str": "ProviderId",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "ProviderId",
+      "doc_url": null
+    }
+  },
+  {
+    "name": "model_id",
+    "type_info": {
+      "type_str": "ModelId | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "ModelId",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ModelId",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "feature",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" slug="no-registered-provider-error" symbolName="NoRegisteredProviderError" /> NoRegisteredProviderError
+
+Raised when no provider is registered for a given model_id.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Error", "description": null, "kind": "simple", "symbol_name": "Error", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#error"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "model_id",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" slug="missing-a-p-i-key-error" symbolName="MissingAPIKeyError" /> MissingAPIKeyError
+
+Raised when no API key is available for a provider.
+
+This error is raised during auto-registration when the required API key
+environment variable is not set. If a Mirascope fallback is available,
+the error message will suggest using MIRASCOPE_API_KEY as an alternative.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Error", "description": null, "kind": "simple", "symbol_name": "Error", "doc_url": "/docs/mirascope/v2/api/llm/exceptions#error"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "provider_id",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    },
+    "description": "The provider that requires an API key."
+  },
+  {
+    "name": "env_var",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    },
+    "description": "The environment variable that should contain the API key."
+  }
+]}
+/>
+
+

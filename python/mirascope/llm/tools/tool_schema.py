@@ -22,6 +22,7 @@ from docstring_parser import parse
 from pydantic import BaseModel, Field, create_model
 from pydantic.fields import FieldInfo
 
+from ..._utils import copy_function_metadata
 from ..content import ToolCall
 from ..types import Jsonable
 from .protocols import AsyncContextToolFn, AsyncToolFn, ContextToolFn, ToolFn
@@ -159,10 +160,13 @@ class ToolSchema(Generic[ToolFnT]):
 
     strict: bool | None
     """Whether the tool should use strict mode when supported by the model.
-    
-    If set to None, will use the provider's default setting (usually as strict as 
+
+    If set to None, will use the provider's default setting (usually as strict as
     possible).
     """
+
+    __name__: str
+    """The name of the underlying function (preserved for decorator stacking)."""
 
     def __hash__(self) -> int:
         if not hasattr(self, "_hash"):
@@ -200,6 +204,7 @@ class ToolSchema(Generic[ToolFnT]):
         self.description = description
         self.parameters = parameters
         self.strict = strict
+        copy_function_metadata(self, fn)
 
     @classmethod
     def from_function(

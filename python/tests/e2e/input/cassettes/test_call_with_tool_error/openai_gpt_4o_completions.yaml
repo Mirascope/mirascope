@@ -1,7 +1,7 @@
 interactions:
 - request:
     body: '{"messages":[{"role":"user","content":"Use the test tool to retrieve the
-      secret phrase. The passphrase is ''portal"}],"model":"gpt-4o","tools":[{"type":"function","function":{"name":"test_tool","description":"A
+      secret phrase. The passphrase is ''portal"}],"model":"gpt-4o","tools":[{"type":"function","function":{"name":"passphrase_test_tool","description":"A
       tool that must be called with a passphrase.","parameters":{"properties":{"passphrase":{"title":"Passphrase","type":"string"}},"required":["passphrase"],"additionalProperties":false,"type":"object"},"strict":true}}]}'
     headers:
       accept:
@@ -13,7 +13,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '425'
+      - '436'
       content-type:
       - application/json
       host:
@@ -43,19 +43,19 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jFNNb9swDL37Vwg8J0OS5tPXYUtzWTFgK7AthcHKtK1OljRJ3poE+e+D
-        7MR20gyYD4bAx0c+PkqHiDEQKcQMeIGel0YO3+//yHI3eXxYyOL1Hr+oFznff/2Ufb5/EHsYBIZ+
-        fiHuz6x3XJdGkhdaNTC3hJ5C1fFivlwuVqvZtAZKnZIMtNz44VQPJ6PJdDhaDkfzE7HQgpODmP2I
-        GGPsUP+DRJXSK8RsNDhHSnIOc4K4TWIMrJYhAuiccB6Vh0EHcq08qaBaVVL2AK+1TDhK2TVuvkPv
-        3PmEUibm1/dvcp1/2Oxwvb6zm+V8I+4+jh97/ZrSO1MLyirFW396eBuPr5oxBgrLmuvJ+SRovCIz
-        BmjzqiTlg3A4bMGgc6aw6GgL8RaMth7lFo5wQTxGt85PPUcsZZVD+dYqVEp7DIprr55OyLFdi9S5
-        sfrZXVEhE0q4IrGErp62b3p0FlJLgOpir2CsLk0w4CfVTeerpih0t64Dx7MT6LVH2cWX08GNaklK
-        HkW99vamceQFpR2zu3FYpUL3gKg3+Vsxt2o30wuV/0/5DuCcjKc0MZZSwS8H7tIshTf5r7TW41ow
-        OLK/BafEC7JhGyllWMnmuYDbOU9lkgmVkzVW1G8GMpOkhDxNZ9k8g+gY/QUAAP//AwB8Qb+CPAQA
-        AA==
+        H4sIAAAAAAAAAwAAAP//jFNNb9swDL37Vwg8J0OcpU7m4zoM3QdyKdZhXQpDlWhbjSypkpwuC/Lf
+        B9mJ7aQZUB8MgU+PfHykdhEhIDikBFhJPauMHH+K4/uffpIsv8bPL1dP2y9399+WL8ubu/VzmcMo
+        MPTjEzJ/ZL1jujISvdCqhZlF6jFkjefJh/h9Mp9NG6DSHGWgFcaPZ3o8nUxn48liPEkOxFILhg5S
+        8jsihJBd8w8SFcc/kJLJ6Bip0DlaIKTdJULAahkiQJ0TzlPlYdSDTCuPKqhWtZQDwGstM0al7Au3
+        325w7n2iUmY/3Dr5m+d1udlOf93efq6ut99vPsrNoF6bemsaQXmtWOfPAO/i6VkxQkDRquEa6pwp
+        LXWYeXQ+C3LP8hAC1BZ1hcqHHmC3GrBWkK7AaOupXMEeToj76NL5YWCOxbx2VL52jSqlPQ3iG9se
+        Dsi+m5DUhbH60Z1RIRdKuDKzSF3T+ND/6CikkQD1yYjBWF2ZYMAam6LzuE0K/QL2YDw/gF57Kvv4
+        YjG6kC3j6KloNqBbOkZZibxn9stHay70AIgGnb8Wcyl3271QxVvS9wBjaDzyzFjkgp023F+zGJ7n
+        /651HjeCwaHdCIaZF2jDNDjmtJbtywG3dR6rLBeqQGusaJ4P5CbjSBnnV3mSQ7SP/gEAAP//AwBw
+        7xarRwQAAA==
     headers:
       CF-RAY:
-      - 9c0b815cac9a8395-SEA
+      - 9c23fe9b5ac7da6c-LAX
       Connection:
       - keep-alive
       Content-Encoding:
@@ -63,14 +63,14 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 20 Jan 2026 03:32:34 GMT
+      - Fri, 23 Jan 2026 02:52:23 GMT
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=uHJ34H2esuYPVQehWRyJ32DCH3BmdJ2Qs3xDBrb.KWg-1768879954-1.0.1.1-TZllPyol9CHWZKQNz0nVIENW8OcyBz9V0eyNq6lt0wsc0sVeSiYkDWwr5gGYuXRM6xYQQ4wZAfxLHO3HRLDesT5E5beUcVjPMf9prVcT7l4;
-        path=/; expires=Tue, 20-Jan-26 04:02:34 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=U5npR0D0dWeZfcQwf27e3I5brkfScEXm9CGqjGb48Mw-1769136743-1.0.1.1-LD7a_uFpWP16k5GhZAg1azXG6yPcC85ACIVbNj1A6uirsv_RZhIvCs57E5JI0f4UsteLSYFxLEYhOBwD8HpuNtC.5VNhUik.TF5CZCZGYSY;
+        path=/; expires=Fri, 23-Jan-26 03:22:23 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=fTcaK1QHWT03bCpU0rj7zI4V_7reeixNDdrfNgW56Tg-1768879954532-0.0.1.1-604800000;
+      - _cfuvid=MfOjRK9DrmkE3TY6OVBJIwqpUB2uPbxnrAaoEiMU4m8-1769136743107-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
@@ -87,13 +87,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '370'
+      - '626'
       openai-project:
-      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '592'
+      - '904'
       x-openai-proxy-wasm:
       - v0.1
       x-ratelimit-limit-requests:
@@ -109,14 +109,14 @@ interactions:
       x-ratelimit-reset-tokens:
       - 1ms
       x-request-id:
-      - req_563d0cb5bdb34344b08eeddf986168e3
+      - req_f9b6624902544b8f99cce83d36ed7960
     status:
       code: 200
       message: OK
 - request:
     body: '{"messages":[{"role":"user","content":"Use the test tool to retrieve the
-      secret phrase. The passphrase is ''portal"},{"role":"assistant","annotations":[],"tool_calls":[{"id":"call_pqZYlGgEIyaGG3rI86Ii3F1V","function":{"arguments":"{\"passphrase\":\"portal\"}","name":"test_tool"},"type":"function"}]},{"role":"tool","content":"Incorrect
-      passhrase: The correct passphrase is ''cake''","tool_call_id":"call_pqZYlGgEIyaGG3rI86Ii3F1V"}],"model":"gpt-4o","tools":[{"type":"function","function":{"name":"test_tool","description":"A
+      secret phrase. The passphrase is ''portal"},{"role":"assistant","annotations":[],"tool_calls":[{"id":"call_Usk6zffuhvy2YSSFmCyLHBlv","function":{"arguments":"{\"passphrase\":\"portal\"}","name":"passphrase_test_tool"},"type":"function"}]},{"role":"tool","content":"Incorrect
+      passhrase: The correct passphrase is ''cake''. Try again.","tool_call_id":"call_Usk6zffuhvy2YSSFmCyLHBlv"}],"model":"gpt-4o","tools":[{"type":"function","function":{"name":"passphrase_test_tool","description":"A
       tool that must be called with a passphrase.","parameters":{"properties":{"passphrase":{"title":"Passphrase","type":"string"}},"required":["passphrase"],"additionalProperties":false,"type":"object"},"strict":true}}]}'
     headers:
       accept:
@@ -128,7 +128,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '738'
+      - '772'
       content-type:
       - application/json
       cookie:
@@ -160,18 +160,18 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jFNNa+MwEL37Vwy69JKEJI3zdelhYWFhoZeUZVmKUaWxrY0saTXjNmnJ
-        f19sp7Hb7UIvAunNe3rzRnpJAITRYgtClZJVFez4y/OTdXerr7e3Jt1Vh8Ps+e77zv6Z6/TnZiVG
-        DcM//EbFr6yJ8lWwyMa7DlYRJWOjOlst1+vVZpOmLVB5jbahFYHHCz+eT+eL8XQ9ni7PxNIbhSS2
-        8CsBAHhp18ai03gQW5iOXk8qJJIFiu2lCEBEb5sTIYkMsXQsRj2ovGN0retvDIRYEXApGbhECJIo
-        lFESQoj+0WjU8CQJjFM+RlQ8gV2JcN4Myw3BlZJ7vJrAD19bDUdfgzV7hAqBPXA8Qk3GFd1lQ6Yj
-        RqlvhiYj5jXJJiNXWzsApHOeZZNxG8/9GTldArG+CNE/0DuqyI0zVGYRJXnXNE/sg2jRUwJw3wZf
-        v8lShOirwBn7PbbXzaaLTk/0o+7R69kZZM/SDljX6egDvUwjS2NpMDqhpCpR99R+zrLWxg+AZND1
-        v24+0u46N674jHwPKIWBUWchojbqbcd9WcTmJ/yv7JJya1gQxkejMGODsZmExlzWtnukgo7EWGW5
-        cQXGEE33UvOQaZRK6zRf5iI5JX8BAAD//wMAylgQprIDAAA=
+        H4sIAAAAAAAAAwAAAP//jFNNa9wwEL37Vwy65LIb1vuVdi89pBB6KLSQ0jQlmIk0ttWVJaEZJ13C
+        /vdi72btNCn0IpDevKc3b6SnDEBZozagdI2im+imH/P89gZvsF5905/L+PXLtV3uflzxVby8jGrS
+        McL9L9LyzDrXoYmOxAZ/gHUiFOpU84v1+3yxvlgueqAJhlxHq6JMl2E6n82X09m76Wx9JNbBamK1
+        gZ8ZAMBTv3YWvaHfagOzyfNJQ8xYkdqcigBUCq47UchsWdCLmgygDl7I964/CTBRwyA1QUTmWCdk
+        gl1oIabwYA0ZeEQG63VIibScw3VNcNyMKZbhTOOWzs7he2id6TWc3RI0BBJA0g6wQuvh0UrdX/ha
+        5cPYZ6KyZexi8q1zIwC9D4JdzH1Cd0dkf8rEhSqmcM9/UVVpveW6SIQcfNc/S4iqR/cZwF2fffsi
+        ThVTaKIUErbUX5fni4OeGqY9oIv5EZQg6Eas5Wryhl5hSNA6Hk1PadQ1mYE6jBpbY8MIyEZdv3bz
+        lvahc+ur/5EfAK0pCpkiJjJWv+x4KEvUfYZ/lZ1S7g0rpvRgNRViKXWTMFRi6w7vVPGOhZqitL6i
+        FJM9PNYyFoZQG7Mq16XK9tkfAAAA//8DAKfkFMm1AwAA
     headers:
       CF-RAY:
-      - 9c0b81640c058395-SEA
+      - 9c23fea4a93cda6c-LAX
       Connection:
       - keep-alive
       Content-Encoding:
@@ -179,7 +179,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 20 Jan 2026 03:32:35 GMT
+      - Fri, 23 Jan 2026 02:52:24 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -197,13 +197,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '796'
+      - '636'
       openai-project:
-      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '987'
+      - '832'
       x-openai-proxy-wasm:
       - v0.1
       x-ratelimit-limit-requests:
@@ -213,13 +213,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '4999'
       x-ratelimit-remaining-tokens:
-      - '799964'
+      - '799961'
       x-ratelimit-reset-requests:
       - 12ms
       x-ratelimit-reset-tokens:
       - 2ms
       x-request-id:
-      - req_37a26b31307f4e7fb0945b43eaa5a483
+      - req_4175dfc2a0134f328b21f294aa58ec5f
     status:
       code: 200
       message: OK

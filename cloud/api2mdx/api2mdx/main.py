@@ -5,7 +5,7 @@ This tool extracts API documentation from Python source code and generates
 MDX files for use with React-based documentation sites.
 
 Usage:
-  api2mdx --source-path ./src --package mypackage --output ./docs/api --api-root /docs/api
+  api2mdx --source-path ./src --package mypackage --output ./docs/api --api-root /docs/api --product-slug llm --product-label LLM
 """
 
 import argparse
@@ -21,7 +21,11 @@ def generate_documentation(
     docs_path: str,
     output_path: Path,
     api_root: str,
+    product_slug: str,
+    product_label: str,
     directive_output_path: Path | None = None,
+    append_mode: bool = False,
+    internal_structure: bool = False,
 ) -> bool:
     """Generate API documentation from source code.
 
@@ -31,7 +35,11 @@ def generate_documentation(
         docs_path: Path within the package where docs are located
         output_path: Path where generated documentation should be written
         api_root: Root route for links to api docs (e.g. /docs/mirascope/api)
+        product_slug: Product slug for documentation (e.g., 'llm')
+        product_label: Product label for documentation (e.g., 'LLM')
         directive_output_path: Optional path to output intermediate directive files
+        append_mode: Whether to append to existing output instead of clearing it
+        internal_structure: Whether to discover structure from _internal imports
 
     Returns:
         True if successful, False otherwise
@@ -44,6 +52,10 @@ def generate_documentation(
             docs_path=docs_path,
             output_path=output_path,
             api_root=api_root,
+            product_slug=product_slug,
+            product_label=product_label,
+            append_mode=append_mode,
+            internal_structure=internal_structure,
         )
         generator.generate_all(directive_output_path=directive_output_path)
 
@@ -100,6 +112,28 @@ def main(cmd_args: list[str] | None = None) -> int:
         type=Path,
         help="Optional path to output intermediate directive files (e.g., snapshots/directives/)",
     )
+    parser.add_argument(
+        "--internal-structure",
+        action="store_true",
+        help="Discover structure from 'from ._internal.X import' patterns in __init__.py (default: flat structure)",
+    )
+    parser.add_argument(
+        "--product-slug",
+        type=str,
+        required=True,
+        help="Product slug for documentation (e.g., 'llm')",
+    )
+    parser.add_argument(
+        "--product-label",
+        type=str,
+        required=True,
+        help="Product label for documentation (e.g., 'LLM')",
+    )
+    parser.add_argument(
+        "--append",
+        action="store_true",
+        help="Append to existing output instead of clearing it. Useful for multi-product generation.",
+    )
 
     parsed_args = parser.parse_args(cmd_args)
 
@@ -114,7 +148,11 @@ def main(cmd_args: list[str] | None = None) -> int:
         docs_path=parsed_args.docs_path,
         output_path=parsed_args.output,
         api_root=parsed_args.api_root,
+        product_slug=parsed_args.product_slug,
+        product_label=parsed_args.product_label,
         directive_output_path=parsed_args.output_directives,
+        append_mode=parsed_args.append,
+        internal_structure=parsed_args.internal_structure,
     )
 
     return 0 if success else 1

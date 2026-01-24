@@ -1,0 +1,69 @@
+---
+title: Calls
+description: Learn how to use the @llm.call decorator for bundling a model with a prompt function.
+---
+
+# Calls
+
+In the [Prompts](/docs/learn/llm/prompts) guide, we talked about how the `@llm.prompt` decorator streamlines writing LLM powered functions. 
+
+The `@llm.call` decorator functions similarly to `@llm.prompt`, but bundles a specific model with your prompt function:
+
+<CodeExample file="python/examples/calls/basic.py" />
+
+With `@llm.prompt`, you pass the model when calling. With `@llm.call`, the model is fixed at decoration time—you just call the function directly.
+
+This means that `@llm.prompt` is a great fit for reusable library code, or when exploring different models, and `@llm.call` is great if you want to dial in with a specific chosen model.
+
+## Prompt Function Return Types
+
+Like `@llm.prompt`, you can return a string, a list of content parts, or a list of messages:
+
+<CodeExample file="python/examples/calls/return_types.py" />
+
+## Runtime Model Overrides
+
+Even though `@llm.call` bundles a model, you can override it at runtime using `with llm.model(...)`:
+
+<CodeExample file="python/examples/calls/override.py" />
+
+This is useful for A/B testing, switching providers in different environments, managing model fallbacks, or adjusting parameters dynamically.
+
+<Note>
+This override mechanism only works with `@llm.call`. The `@llm.prompt` decorator always uses the model you pass directly—it ignores context overrides.
+
+`@llm.call` does this via `llm.use_model()`, which can be used to manually similar behavior. See [Models](/docs/learn/llm/models).
+</Note>
+
+## Decorator Arguments
+
+The `@llm.call` decorator requires a model ID and accepts additional arguments:
+
+| Argument | Description |
+| --- | --- |
+| `model_id` | Required. The model to use (e.g., `"openai/gpt-4o"`). |
+| `temperature`, `max_tokens`, etc. | Model parameters. See [Models](/docs/learn/llm/models). |
+| `tools` | List of tools the LLM can call. See [Tools](/docs/learn/llm/tools). |
+| `format` | Response format for structured output. See [Structured Output](/docs/learn/llm/structured-output). |
+
+<CodeExample file="python/examples/calls/with_params.py" />
+
+## Accessing the Underlying Prompt
+
+A `Call` is just a `Prompt` with a bundled model. You can access the underlying prompt and model via properties:
+
+| Property | Description |
+| --- | --- |
+| `prompt` | The underlying `Prompt` |
+| `default_model` | The model bundled at decoration time |
+| `model` | The model that will be used (respects context overrides) |
+
+Calling `my_call(...)` is equivalent to `my_call.prompt(my_call.model, ...)`.
+
+<CodeExample file="python/examples/calls/access_prompt.py" />
+
+## Next Steps
+
+- [Thinking](/docs/learn/llm/thinking) — Use extended reasoning capabilities
+- [Tools](/docs/learn/llm/tools) — Let LLMs call functions
+- [Streaming](/docs/learn/llm/streaming) — Stream responses in real-time

@@ -4,6 +4,43 @@ This module provides helper functions for formatting and converting
 OpenTelemetry data types for export.
 """
 
+from __future__ import annotations
+
+from collections.abc import Mapping, Sequence
+
+from opentelemetry.util.types import AttributeValue
+
+
+def to_otlp_any_value(value: AttributeValue) -> dict[str, object]:
+    """Convert AttributeValue to OTLP AnyValue (dict form).
+
+    - string/bool/int/float are converted to stringValue/boolValue/intValue/doubleValue
+    - Sequence (excluding str/bytes/Mapping) is converted to arrayValue.values
+    - Unsupported types fallback to stringValue=str(value)
+
+    Args:
+        value: An OpenTelemetry AttributeValue (bool, int, float, str, or Sequence)
+
+    Returns:
+        A dict representing OTLP AnyValue (e.g., {"stringValue": "..."})
+    """
+    match value:
+        case str():
+            return {"stringValue": value}
+        case bool():
+            return {"boolValue": value}
+        case int():
+            return {"intValue": str(value)}
+        case float():
+            return {"doubleValue": value}
+        case _ if isinstance(value, bytes | bytearray | memoryview | Mapping):
+            return {"stringValue": str(value)}
+        case _ if isinstance(value, Sequence):
+            values = [to_otlp_any_value(v) for v in value]
+            return {"arrayValue": {"values": values}}
+        case _:
+            return {"stringValue": str(value)}
+
 
 def format_trace_id(trace_id: int) -> str:
     """Format a trace ID as a 32-character hex string.

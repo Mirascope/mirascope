@@ -18,13 +18,13 @@ test_snapshot = snapshot(
             "params": {},
             "finish_reason": None,
             "usage": {
-                "input_tokens": 625,
-                "output_tokens": 59,
+                "input_tokens": 638,
+                "output_tokens": 28,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
-                "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=625, output_tokens=59, server_tool_use=None, service_tier='standard')",
-                "total_tokens": 684,
+                "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=638, output_tokens=28, server_tool_use=None, service_tier='standard')",
+                "total_tokens": 666,
             },
             "messages": [
                 UserMessage(
@@ -40,8 +40,8 @@ test_snapshot = snapshot(
                             text="I'll use the test tool with the passphrase you provided."
                         ),
                         ToolCall(
-                            id="toolu_013NzoLieVVEDBXRam9zvRJw",
-                            name="test_tool",
+                            id="toolu_01BKo1nKttK3Fg41xBQ1qBiX",
+                            name="passphrase_test_tool",
                             args='{"passphrase": "portal"}',
                         ),
                     ],
@@ -57,9 +57,9 @@ test_snapshot = snapshot(
                                 "type": "text",
                             },
                             {
-                                "id": "toolu_013NzoLieVVEDBXRam9zvRJw",
+                                "id": "toolu_01BKo1nKttK3Fg41xBQ1qBiX",
                                 "input": {"passphrase": "portal"},
-                                "name": "test_tool",
+                                "name": "passphrase_test_tool",
                                 "type": "tool_use",
                             },
                         ],
@@ -68,11 +68,11 @@ test_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_013NzoLieVVEDBXRam9zvRJw",
-                            name="test_tool",
-                            result="Incorrect passhrase: The correct passphrase is 'cake'",
+                            id="toolu_01BKo1nKttK3Fg41xBQ1qBiX",
+                            name="passphrase_test_tool",
+                            result="Incorrect passhrase: The correct passphrase is 'cake'. Try again.",
                             error=ToolExecutionError(
-                                "Incorrect passhrase: The correct passphrase is 'cake'"
+                                "Incorrect passhrase: The correct passphrase is 'cake'. Try again."
                             ),
                         )
                     ]
@@ -80,11 +80,11 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="The passphrase 'portal' was incorrect. According to the response, the correct passphrase is 'cake'. Let me try again with the correct passphrase:"
+                            text="The passphrase 'portal' was incorrect. The tool indicates that the correct passphrase is 'cake'. Let me try again with the correct passphrase:"
                         ),
                         ToolCall(
-                            id="toolu_01D8NHC3kqAhTW2q7LSCbYA4",
-                            name="test_tool",
+                            id="toolu_0135hLPfnXk1XhtLSdxAuHnF",
+                            name="passphrase_test_tool",
                             args='{"passphrase": "cake"}',
                         ),
                     ],
@@ -96,13 +96,13 @@ test_snapshot = snapshot(
                         "content": [
                             {
                                 "citations": None,
-                                "text": "The passphrase 'portal' was incorrect. According to the response, the correct passphrase is 'cake'. Let me try again with the correct passphrase:",
+                                "text": "The passphrase 'portal' was incorrect. The tool indicates that the correct passphrase is 'cake'. Let me try again with the correct passphrase:",
                                 "type": "text",
                             },
                             {
-                                "id": "toolu_01D8NHC3kqAhTW2q7LSCbYA4",
+                                "id": "toolu_0135hLPfnXk1XhtLSdxAuHnF",
                                 "input": {"passphrase": "cake"},
-                                "name": "test_tool",
+                                "name": "passphrase_test_tool",
                                 "type": "tool_use",
                             },
                         ],
@@ -111,8 +111,8 @@ test_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01D8NHC3kqAhTW2q7LSCbYA4",
-                            name="test_tool",
+                            id="toolu_0135hLPfnXk1XhtLSdxAuHnF",
+                            name="passphrase_test_tool",
                             result="The cake is a lie.",
                         )
                     ]
@@ -120,11 +120,7 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="""\
-Success! Using the correct passphrase 'cake', I retrieved the secret phrase: **"The cake is a lie."**
-
-This is a famous reference from the video game Portal, which makes the connection to your initial (incorrect) passphrase attempt quite fitting!\
-"""
+                            text="Success! Using the correct passphrase 'cake', the secret phrase retrieved is: \"The cake is a lie.\""
                         )
                     ],
                     provider_id="anthropic",
@@ -135,11 +131,7 @@ This is a famous reference from the video game Portal, which makes the connectio
                         "content": [
                             {
                                 "citations": None,
-                                "text": """\
-Success! Using the correct passphrase 'cake', I retrieved the secret phrase: **"The cake is a lie."**
-
-This is a famous reference from the video game Portal, which makes the connection to your initial (incorrect) passphrase attempt quite fitting!\
-""",
+                                "text": "Success! Using the correct passphrase 'cake', the secret phrase retrieved is: \"The cake is a lie.\"",
                                 "type": "text",
                             }
                         ],
@@ -149,7 +141,7 @@ This is a famous reference from the video game Portal, which makes the connectio
             "format": None,
             "tools": [
                 {
-                    "name": "test_tool",
+                    "name": "passphrase_test_tool",
                     "description": "A tool that must be called with a passphrase.",
                     "parameters": """\
 {
@@ -173,18 +165,18 @@ This is a famous reference from the video game Portal, which makes the connectio
         "tool_outputs": [
             [
                 ToolOutput(
-                    id="toolu_013NzoLieVVEDBXRam9zvRJw",
-                    name="test_tool",
-                    result="Incorrect passhrase: The correct passphrase is 'cake'",
+                    id="toolu_01BKo1nKttK3Fg41xBQ1qBiX",
+                    name="passphrase_test_tool",
+                    result="Incorrect passhrase: The correct passphrase is 'cake'. Try again.",
                     error=ToolExecutionError(
-                        "Incorrect passhrase: The correct passphrase is 'cake'"
+                        "Incorrect passhrase: The correct passphrase is 'cake'. Try again."
                     ),
                 )
             ],
             [
                 ToolOutput(
-                    id="toolu_01D8NHC3kqAhTW2q7LSCbYA4",
-                    name="test_tool",
+                    id="toolu_0135hLPfnXk1XhtLSdxAuHnF",
+                    name="passphrase_test_tool",
                     result="The cake is a lie.",
                 )
             ],
