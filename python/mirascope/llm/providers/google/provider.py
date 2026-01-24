@@ -23,14 +23,10 @@ from ...responses import (
     StreamResponse,
 )
 from ...tools import (
-    AsyncContextTool,
-    AsyncContextToolkit,
-    AsyncTool,
-    AsyncToolkit,
-    ContextTool,
-    ContextToolkit,
-    Tool,
-    Toolkit,
+    AsyncContextTools,
+    AsyncTools,
+    ContextTools,
+    Tools,
 )
 from ..base import BaseProvider
 from . import _utils
@@ -69,7 +65,7 @@ class GoogleProvider(BaseProvider[Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
+        tools: Tools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -122,9 +118,7 @@ class GoogleProvider(BaseProvider[Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
+        tools: ContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -177,7 +171,7 @@ class GoogleProvider(BaseProvider[Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        tools: AsyncTools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -230,9 +224,7 @@ class GoogleProvider(BaseProvider[Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
+        tools: AsyncContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -285,7 +277,7 @@ class GoogleProvider(BaseProvider[Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
+        tools: Tools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -336,9 +328,7 @@ class GoogleProvider(BaseProvider[Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
+        tools: ContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -389,7 +379,7 @@ class GoogleProvider(BaseProvider[Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        tools: AsyncTools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -440,9 +430,7 @@ class GoogleProvider(BaseProvider[Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
+        tools: AsyncContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]

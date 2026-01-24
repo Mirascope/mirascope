@@ -23,15 +23,11 @@ from ...responses import (
 )
 from ...tools import (
     AnyToolSchema,
-    AsyncContextTool,
-    AsyncContextToolkit,
-    AsyncTool,
-    AsyncToolkit,
+    AsyncContextTools,
+    AsyncTools,
     BaseToolkit,
-    ContextTool,
-    ContextToolkit,
-    Tool,
-    Toolkit,
+    ContextTools,
+    Tools,
 )
 from ..base import BaseProvider, _utils as _base_utils
 from . import _utils
@@ -93,7 +89,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
+        tools: Tools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -142,9 +138,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
+        tools: ContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -193,7 +187,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        tools: AsyncTools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -242,9 +236,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
+        tools: AsyncContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -293,7 +285,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
+        tools: Tools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -339,9 +331,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
+        tools: ContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -387,7 +377,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        tools: AsyncTools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -432,9 +422,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
+        tools: AsyncContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]

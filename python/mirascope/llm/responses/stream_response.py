@@ -9,14 +9,14 @@ from ..context import Context, DepsT
 from ..formatting import Format, FormattableT
 from ..messages import Message, UserContent
 from ..tools import (
-    AsyncContextTool,
     AsyncContextToolkit,
-    AsyncTool,
+    AsyncContextTools,
     AsyncToolkit,
-    ContextTool,
+    AsyncTools,
     ContextToolkit,
-    Tool,
+    ContextTools,
     Toolkit,
+    Tools,
 )
 from ..types import Jsonable
 from .base_stream_response import (
@@ -98,7 +98,7 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
-        tools: Sequence[Tool] | Toolkit | None = None,
+        tools: Tools | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         chunk_iterator: ChunkIterator,
@@ -224,7 +224,7 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        tools: AsyncTools | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         chunk_iterator: AsyncChunkIterator,
@@ -359,9 +359,7 @@ class ContextStreamResponse(
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
+        tools: ContextTools[DepsT] | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         chunk_iterator: ChunkIterator,
@@ -502,9 +500,7 @@ class AsyncContextStreamResponse(
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
+        tools: AsyncContextTools[DepsT] | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         chunk_iterator: AsyncChunkIterator,

@@ -22,16 +22,7 @@ from ....responses import (
     Response,
     StreamResponse,
 )
-from ....tools import (
-    AsyncContextTool,
-    AsyncContextToolkit,
-    AsyncTool,
-    AsyncToolkit,
-    ContextTool,
-    ContextToolkit,
-    Tool,
-    Toolkit,
-)
+from ....tools import AsyncContextTools, AsyncTools, ContextTools, Tools
 from ...base import BaseProvider
 from .. import _utils as _shared_utils
 from ..model_id import model_name as openai_model_name
@@ -101,7 +92,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
+        tools: Tools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -157,9 +148,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
+        tools: ContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -215,7 +204,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        tools: AsyncTools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -271,9 +260,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
+        tools: AsyncContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -329,7 +316,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
+        tools: Tools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -381,9 +368,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
+        tools: ContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -436,7 +421,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         *,
         model_id: str,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        tools: AsyncTools | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]
@@ -488,9 +473,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         ctx: Context[DepsT],
         model_id: str,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
+        tools: AsyncContextTools[DepsT] | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
         | OutputParser[FormattableT]

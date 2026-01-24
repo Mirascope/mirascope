@@ -18,6 +18,7 @@ from opentelemetry.trace import SpanKind, Status, StatusCode
 
 from .....llm import (
     AnyToolFn,
+    AnyTools,
     AnyToolSchema,
     BaseToolkit,
     Format,
@@ -64,9 +65,7 @@ else:
     Tracer = None
 
 
-ToolsParam: TypeAlias = (
-    Sequence[ToolSchema[AnyToolFn]] | BaseToolkit[AnyToolSchema] | None
-)
+ToolsParam: TypeAlias = AnyTools | None
 FormatParam: TypeAlias = Format[FormattableT] | None
 ParamsDict: TypeAlias = Mapping[str, str | int | float | bool | Sequence[str] | None]
 SpanAttributes: TypeAlias = Mapping[str, AttributeValue]
