@@ -23,15 +23,20 @@
     "codegen": "bun run scripts/codegen/run.ts"
   },
   "peerDependencies": {
-    "@anthropic-ai/sdk": ">=0.71.0"
+    "@anthropic-ai/sdk": ">=0.71.0",
+    "@google/genai": ">=1.0.0"
   },
   "peerDependenciesMeta": {
     "@anthropic-ai/sdk": {
+      "optional": true
+    },
+    "@google/genai": {
       "optional": true
     }
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
+    "@google/genai": "^1.0.0",
     "@eslint/js": "^9.37.0",
     "@pollyjs/adapter-fetch": "^6.0.7",
     "@pollyjs/core": "^6.0.6",
