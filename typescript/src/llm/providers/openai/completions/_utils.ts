@@ -238,7 +238,7 @@ export function buildRequestParams(
     }
 
     // OpenAI doesn't support topK
-    p.throwUnsupported('topK', 'OpenAI does not support the top_k parameter');
+    p.warnUnsupported('topK', 'OpenAI does not support the top_k parameter');
 
     // Thinking not yet implemented
     p.warnNotImplemented('thinking', 'thinking config');

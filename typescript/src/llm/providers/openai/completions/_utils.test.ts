@@ -1,33 +1,21 @@
 /**
  * Unit tests for OpenAI Completions provider utilities.
  *
- * Note: Most encoding tests are covered by e2e tests in tests/e2e/input/.
- * These tests focus on error cases that can't be tested via successful API calls.
+ * Note: Most encoding tests are covered by e2e tests in tests/e2e/.
+ * These tests focus on edge cases that can't be triggered via e2e.
  */
 
 import { describe, it, expect } from 'vitest';
 import type { ChatCompletion } from 'openai/resources/chat/completions';
-import { assistant, system, user } from '@/llm/messages';
-import { FeatureNotSupportedError } from '@/llm/exceptions';
-import { encodeMessages, buildRequestParams, decodeResponse } from './_utils';
+import { assistant, user } from '@/llm/messages';
+import { FinishReason } from '@/llm/responses/finish-reason';
+import {
+  encodeMessages,
+  decodeResponse,
+  buildRequestParams,
+} from '@/llm/providers/openai/completions/_utils';
 
-describe('encodeMessages', () => {
-  it('encodes a simple system message', () => {
-    const messages = [system('You are a helpful assistant.')];
-    const encoded = encodeMessages(messages);
-
-    expect(encoded).toEqual([
-      { role: 'system', content: 'You are a helpful assistant.' },
-    ]);
-  });
-
-  it('encodes a simple user message', () => {
-    const messages = [user('Hello!')];
-    const encoded = encodeMessages(messages);
-
-    expect(encoded).toEqual([{ role: 'user', content: 'Hello!' }]);
-  });
-
+describe('encodeMessages edge cases', () => {
   it('encodes user message with name', () => {
     const messages = [user('Hello!', { name: 'Alice' })];
     const encoded = encodeMessages(messages);
@@ -37,21 +25,18 @@ describe('encodeMessages', () => {
     ]);
   });
 
-  it('encodes a simple assistant message', () => {
+  it('encodes assistant message with empty content', () => {
     const messages = [
-      assistant('Hello back!', {
-        providerId: 'openai',
-        modelId: 'openai/gpt-4o',
-      }),
+      assistant([], { providerId: 'openai', modelId: 'openai/gpt-4o' }),
     ];
     const encoded = encodeMessages(messages);
 
-    expect(encoded).toEqual([{ role: 'assistant', content: 'Hello back!' }]);
+    expect(encoded).toEqual([{ role: 'assistant', content: null }]);
   });
 
   it('encodes assistant message with name', () => {
     const messages = [
-      assistant('Hello back!', {
+      assistant('Hi!', {
         providerId: 'openai',
         modelId: 'openai/gpt-4o',
         name: 'Bot',
@@ -60,49 +45,7 @@ describe('encodeMessages', () => {
     const encoded = encodeMessages(messages);
 
     expect(encoded).toEqual([
-      { role: 'assistant', content: 'Hello back!', name: 'Bot' },
-    ]);
-  });
-
-  it('encodes full conversation with multiple message types', () => {
-    const messages = [
-      system('You are a helpful assistant.'),
-      user('Hello!'),
-      assistant('Hi there!', {
-        providerId: 'openai',
-        modelId: 'openai/gpt-4o',
-      }),
-      user('How are you?'),
-    ];
-    const encoded = encodeMessages(messages);
-
-    expect(encoded).toHaveLength(4);
-    expect(encoded[0]).toEqual({
-      role: 'system',
-      content: 'You are a helpful assistant.',
-    });
-    expect(encoded[1]).toEqual({ role: 'user', content: 'Hello!' });
-    expect(encoded[2]).toEqual({ role: 'assistant', content: 'Hi there!' });
-    expect(encoded[3]).toEqual({ role: 'user', content: 'How are you?' });
-  });
-
-  it('handles user message with multiple text parts', () => {
-    const messages = [
-      user([
-        { type: 'text' as const, text: 'First part.' },
-        { type: 'text' as const, text: 'Second part.' },
-      ]),
-    ];
-    const encoded = encodeMessages(messages);
-
-    expect(encoded).toEqual([
-      {
-        role: 'user',
-        content: [
-          { type: 'text', text: 'First part.' },
-          { type: 'text', text: 'Second part.' },
-        ],
-      },
+      { role: 'assistant', content: 'Hi!', name: 'Bot' },
     ]);
   });
 
@@ -194,16 +137,6 @@ describe('buildRequestParams', () => {
 
     expect(params.stop).toEqual(['END', 'STOP']);
   });
-
-  it('throws FeatureNotSupportedError for topK param', () => {
-    const messages = [user('Hello')];
-
-    expect(() =>
-      buildRequestParams('openai/gpt-4o', messages, {
-        topK: 10,
-      })
-    ).toThrow(FeatureNotSupportedError);
-  });
 });
 
 describe('decodeResponse', () => {
@@ -234,20 +167,7 @@ describe('decodeResponse', () => {
     ...overrides,
   });
 
-  it('decodes basic text response', () => {
-    const response = createMockResponse();
-    const decoded = decodeResponse(response, 'openai/gpt-4o');
-
-    expect(decoded.assistantMessage.role).toBe('assistant');
-    expect(decoded.assistantMessage.content).toEqual([
-      { type: 'text', text: 'Hello!' },
-    ]);
-    expect(decoded.assistantMessage.providerId).toBe('openai');
-    expect(decoded.assistantMessage.modelId).toBe('openai/gpt-4o');
-    expect(decoded.assistantMessage.providerModelName).toBe('gpt-4o');
-  });
-
-  it('decodes response with refusal', () => {
+  it('decodes refusal message as text content', () => {
     const response = createMockResponse({
       choices: [
         {
@@ -255,7 +175,7 @@ describe('decodeResponse', () => {
           message: {
             role: 'assistant',
             content: null,
-            refusal: "I can't help with that.",
+            refusal: "I can't help with that request.",
           },
           finish_reason: 'stop',
           logprobs: null,
@@ -266,38 +186,18 @@ describe('decodeResponse', () => {
     const decoded = decodeResponse(response, 'openai/gpt-4o');
 
     expect(decoded.assistantMessage.content).toEqual([
-      { type: 'text', text: "I can't help with that." },
+      { type: 'text', text: "I can't help with that request." },
     ]);
   });
 
-  it('maps length finish_reason to max_tokens', () => {
+  it('maps content_filter finish reason to REFUSAL', () => {
     const response = createMockResponse({
       choices: [
         {
           index: 0,
           message: {
             role: 'assistant',
-            content: 'Hello!',
-            refusal: null,
-          },
-          finish_reason: 'length',
-          logprobs: null,
-        },
-      ],
-    });
-
-    const decoded = decodeResponse(response, 'openai/gpt-4o');
-    expect(decoded.finishReason).toBe('max_tokens');
-  });
-
-  it('maps content_filter finish_reason to refusal', () => {
-    const response = createMockResponse({
-      choices: [
-        {
-          index: 0,
-          message: {
-            role: 'assistant',
-            content: 'Hello!',
+            content: '',
             refusal: null,
           },
           finish_reason: 'content_filter',
@@ -307,31 +207,8 @@ describe('decodeResponse', () => {
     });
 
     const decoded = decodeResponse(response, 'openai/gpt-4o');
-    expect(decoded.finishReason).toBe('refusal');
-  });
 
-  it('decodes usage tokens', () => {
-    const response = createMockResponse({
-      usage: {
-        prompt_tokens: 10,
-        completion_tokens: 20,
-        total_tokens: 30,
-        prompt_tokens_details: {
-          cached_tokens: 5,
-        },
-        completion_tokens_details: {
-          reasoning_tokens: 3,
-        },
-      },
-    });
-
-    const decoded = decodeResponse(response, 'openai/gpt-4o');
-
-    expect(decoded.usage).not.toBeNull();
-    expect(decoded.usage?.inputTokens).toBe(10);
-    expect(decoded.usage?.outputTokens).toBe(20);
-    expect(decoded.usage?.cacheReadTokens).toBe(5);
-    expect(decoded.usage?.reasoningTokens).toBe(3);
+    expect(decoded.finishReason).toBe(FinishReason.REFUSAL);
   });
 
   it('handles response without usage', () => {
@@ -339,15 +216,7 @@ describe('decodeResponse', () => {
     delete response.usage;
 
     const decoded = decodeResponse(response, 'openai/gpt-4o');
+
     expect(decoded.usage).toBeNull();
-  });
-
-  it('sets provider metadata on assistant message', () => {
-    const response = createMockResponse();
-    const decoded = decodeResponse(response, 'openai/gpt-4o');
-
-    expect(decoded.assistantMessage.providerId).toBe('openai');
-    expect(decoded.assistantMessage.modelId).toBe('openai/gpt-4o');
-    expect(decoded.assistantMessage.providerModelName).toBe('gpt-4o');
   });
 });

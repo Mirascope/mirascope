@@ -128,37 +128,49 @@ describe('ParamHandler', () => {
     });
   });
 
-  describe('throwUnsupported()', () => {
-    it('throws when param is set', () => {
+  describe('warnUnsupported()', () => {
+    it('logs warning when param is set', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const handler = new ParamHandler(
         { seed: 42 },
         'anthropic',
         'claude-sonnet-4'
       );
 
-      expect(() =>
-        handler.throwUnsupported('seed', 'Anthropic does not support seed')
-      ).toThrow(FeatureNotSupportedError);
+      handler.warnUnsupported('seed', 'Anthropic does not support seed');
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Anthropic does not support seed')
+      );
+      warnSpy.mockRestore();
     });
 
-    it('does not throw when param is not set', () => {
+    it('does not log when param is not set', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const handler = new ParamHandler({}, 'anthropic', 'claude-sonnet-4');
 
-      expect(() =>
-        handler.throwUnsupported('seed', 'Anthropic does not support seed')
-      ).not.toThrow();
+      handler.warnUnsupported('seed', 'Anthropic does not support seed');
+
+      expect(warnSpy).not.toHaveBeenCalled();
+      warnSpy.mockRestore();
     });
 
     it('uses default message when not provided', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const handler = new ParamHandler(
         { seed: 42 },
         'anthropic',
         'claude-sonnet-4'
       );
 
-      expect(() => handler.throwUnsupported('seed')).toThrow(
-        "anthropic does not support the 'seed' parameter"
+      handler.warnUnsupported('seed');
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "anthropic does not support the 'seed' parameter"
+        )
       );
+      warnSpy.mockRestore();
     });
   });
 

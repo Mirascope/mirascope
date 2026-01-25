@@ -105,19 +105,17 @@ export class ParamHandler {
   }
 
   /**
-   * Mark a param as unsupported by this provider - throws if set.
+   * Mark a param as unsupported by this provider - logs a warning if set.
    *
    * Use this for features the provider fundamentally doesn't support.
+   * The param will be ignored but the call will proceed.
    */
-  throwUnsupported<K extends keyof Params>(key: K, message?: string): void {
+  warnUnsupported<K extends keyof Params>(key: K, message?: string): void {
     this.handled.add(key as string);
     if (this.params[key] !== undefined) {
-      throw new FeatureNotSupportedError(
-        key as string,
-        this.providerId,
-        this.modelId,
-        message ??
-          `${this.providerId} does not support the '${key as string}' parameter`
+      console.warn(
+        `[mirascope] Warning: ${message ?? `${this.providerId} does not support the '${key as string}' parameter`}. ` +
+          `The '${key as string}' parameter will be ignored.`
       );
     }
   }

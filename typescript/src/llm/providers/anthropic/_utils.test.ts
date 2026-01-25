@@ -1,7 +1,7 @@
 /**
  * Unit tests for Anthropic provider utilities.
  *
- * Note: Most encoding tests are covered by e2e tests in tests/e2e/input/.
+ * Note: Most encoding/decoding tests are covered by e2e tests in tests/e2e/.
  * These tests focus on error cases that can't be tested via successful API calls.
  */
 
@@ -18,16 +18,6 @@ describe('buildRequestParams error handling', () => {
       buildRequestParams('anthropic/claude-haiku-4-5', messages, {
         temperature: 0.7,
         topP: 0.9,
-      })
-    ).toThrow(FeatureNotSupportedError);
-  });
-
-  it('throws FeatureNotSupportedError for seed param', () => {
-    const messages = [user('Hello')];
-
-    expect(() =>
-      buildRequestParams('anthropic/claude-haiku-4-5', messages, {
-        seed: 42,
       })
     ).toThrow(FeatureNotSupportedError);
   });
