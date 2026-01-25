@@ -19,6 +19,12 @@ export { AnthropicProvider } from '@/llm/providers/anthropic';
 // Google provider
 export { GoogleProvider } from '@/llm/providers/google';
 
+// OpenAI provider
+export {
+  OpenAIProvider,
+  OpenAICompletionsProvider,
+} from '@/llm/providers/openai';
+
 // Provider registry
 export {
   getProviderForModel,

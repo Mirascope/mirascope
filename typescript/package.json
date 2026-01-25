@@ -24,7 +24,8 @@
   },
   "peerDependencies": {
     "@anthropic-ai/sdk": ">=0.71.0",
-    "@google/genai": ">=1.0.0"
+    "@google/genai": ">=1.0.0",
+    "openai": "^6.16.0"
   },
   "peerDependenciesMeta": {
     "@anthropic-ai/sdk": {
@@ -32,11 +33,15 @@
     },
     "@google/genai": {
       "optional": true
+    },
+    "openai": {
+      "optional": true
     }
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
     "@google/genai": "^1.0.0",
+    "openai": "^6.16.0",
     "@eslint/js": "^9.37.0",
     "@pollyjs/adapter-fetch": "^6.0.7",
     "@pollyjs/core": "^6.0.6",

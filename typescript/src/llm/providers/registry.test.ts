@@ -19,6 +19,7 @@ describe('provider registry', () => {
     resetProviderRegistry();
     vi.stubEnv('ANTHROPIC_API_KEY', 'test-key');
     vi.stubEnv('GOOGLE_API_KEY', 'test-google-key');
+    vi.stubEnv('OPENAI_API_KEY', 'test-openai-key');
   });
 
   describe('registerProvider', () => {
@@ -101,6 +102,19 @@ describe('provider registry', () => {
         baseURL: 'https://custom.google.api.com',
       });
       expect(provider.id).toBe('google');
+    });
+
+    it('registers openai provider by ID', () => {
+      const provider = registerProvider('openai');
+      expect(provider.id).toBe('openai');
+    });
+
+    it('registers openai provider by ID with options', () => {
+      const provider = registerProvider('openai', {
+        apiKey: 'custom-key',
+        baseURL: 'https://custom.openai.api.com',
+      });
+      expect(provider.id).toBe('openai');
     });
   });
 
