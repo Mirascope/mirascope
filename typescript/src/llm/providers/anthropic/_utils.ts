@@ -231,7 +231,7 @@ export function buildRequestParams(
     }
 
     // Anthropic doesn't support seed
-    p.throwUnsupported('seed', 'Anthropic does not support the seed parameter');
+    p.warnUnsupported('seed', 'Anthropic does not support the seed parameter');
 
     // Thinking not yet implemented
     p.warnNotImplemented('thinking', 'thinking config');

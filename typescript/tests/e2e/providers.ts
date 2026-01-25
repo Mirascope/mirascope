@@ -19,4 +19,5 @@ export interface ProviderConfig {
 export const PROVIDERS: ProviderConfig[] = [
   { providerId: 'anthropic', model: 'anthropic/claude-haiku-4-5' },
   { providerId: 'google', model: 'google/gemini-2.5-flash' },
+  { providerId: 'openai', model: 'openai/gpt-4o-mini' },
 ];
