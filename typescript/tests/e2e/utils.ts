@@ -11,6 +11,7 @@ import { Polly } from '@pollyjs/core';
 import Persister, { type Har } from '@pollyjs/persister';
 import FetchAdapter from '@pollyjs/adapter-fetch';
 import { resetProviderRegistry } from '@/llm/providers/registry';
+import { ProviderConfig } from '@/tests/e2e/providers';
 
 // Register adapter
 Polly.register(FetchAdapter);
@@ -131,9 +132,29 @@ type RecordTestFn = (
   timeout?: number
 ) => void;
 
+type ParameterizedTestFn<T> = (
+  name: string,
+  fn: (config: T) => Promise<void>,
+  timeout?: number
+) => void;
+
 interface RecordIt extends RecordTestFn {
   skip: RecordTestFn;
   only: RecordTestFn;
+  /**
+   * Run the same test for each provider configuration.
+   * Cassettes are namespaced by provider.
+   *
+   * @example
+   * ```typescript
+   * it.record.each(PROVIDERS)('encodes system message', async ({ model }) => {
+   *   const call = defineCall({ model, ... });
+   *   const response = await call();
+   *   expect(response.text().length).toBeGreaterThan(0);
+   * });
+   * ```
+   */
+  each: (providers: ProviderConfig[]) => ParameterizedTestFn<ProviderConfig>;
 }
 
 /**
@@ -161,6 +182,48 @@ function createRecordTestFn(
       },
       timeout
     );
+  };
+}
+
+/**
+ * Creates a parameterized test function that runs for each provider.
+ */
+function createRecordEachFn(
+  cassettesDir: string,
+  namespace: string,
+  original: typeof vitestIt
+): (providers: ProviderConfig[]) => ParameterizedTestFn<ProviderConfig> {
+  return (providers: ProviderConfig[]) => {
+    return (
+      name: string,
+      fn: (config: ProviderConfig) => Promise<void>,
+      timeout?: number
+    ) => {
+      for (const provider of providers) {
+        const testName = `[${provider.providerId}] ${name}`;
+        original(
+          testName,
+          async () => {
+            const recordingName = toRecordingName(name);
+            // Namespace by both test category and provider
+            const namespacedDir = join(
+              cassettesDir,
+              namespace,
+              provider.providerId
+            );
+            const polly = createPolly(recordingName, namespacedDir);
+            resetProviderRegistry();
+            try {
+              await fn(provider);
+            } finally {
+              await polly.stop();
+              resetProviderRegistry();
+            }
+          },
+          timeout
+        );
+      }
+    };
   };
 }
 
@@ -200,6 +263,7 @@ export function createIt(cassettesDir: string, namespace: string) {
         namespace,
         vitestIt.only as typeof vitestIt
       ),
+      each: createRecordEachFn(cassettesDir, namespace, vitestIt),
     }
   );
 

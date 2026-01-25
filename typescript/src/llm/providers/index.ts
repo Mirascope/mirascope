@@ -16,6 +16,9 @@ export type { ProviderErrorMap } from '@/llm/providers/base';
 // Anthropic provider
 export { AnthropicProvider } from '@/llm/providers/anthropic';
 
+// Google provider
+export { GoogleProvider } from '@/llm/providers/google';
+
 // Provider registry
 export {
   getProviderForModel,

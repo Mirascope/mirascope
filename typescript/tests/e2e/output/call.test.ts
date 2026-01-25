@@ -3,19 +3,21 @@
  *
  * These tests verify we correctly decode API responses.
  * Input encoding tests are in e2e/input/.
+ * Tests run against multiple providers via parameterization.
  */
 
 import { resolve } from 'node:path';
 import { createIt, describe, expect } from '@/tests/e2e/utils';
+import { PROVIDERS } from '@/tests/e2e/providers';
 import { defineCall } from '@/llm/calls';
 import { FinishReason } from '@/llm/responses/finish-reason';
 
 const it = createIt(resolve(__dirname, 'cassettes'), 'call');
 
 describe('call output', () => {
-  it.record('decodes text response', async () => {
+  it.record.each(PROVIDERS)('decodes text response', async ({ model }) => {
     const call = defineCall<{ a: number; b: number }>({
-      model: 'anthropic/claude-haiku-4-5',
+      model,
       maxTokens: 100,
       template: ({ a, b }) => `What is ${a} + ${b}?`,
     });
@@ -29,15 +31,18 @@ describe('call output', () => {
     expect(response.finishReason).toBeNull(); // Normal completion
   });
 
-  it.record('returns max_tokens finish reason', async () => {
-    const call = defineCall({
-      model: 'anthropic/claude-haiku-4-5',
-      maxTokens: 5, // Very low to force truncation
-      template: () => 'Write a long story about a dragon.',
-    });
+  it.record.each(PROVIDERS)(
+    'returns max_tokens finish reason',
+    async ({ model }) => {
+      const call = defineCall({
+        model,
+        maxTokens: 5, // Very low to force truncation
+        template: () => 'Write a long story about a dragon.',
+      });
 
-    const response = await call();
+      const response = await call();
 
-    expect(response.finishReason).toBe(FinishReason.MAX_TOKENS);
-  });
+      expect(response.finishReason).toBe(FinishReason.MAX_TOKENS);
+    }
+  );
 });
