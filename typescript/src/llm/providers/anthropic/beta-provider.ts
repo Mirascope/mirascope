@@ -10,6 +10,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { BaseProvider } from '@/llm/providers/base';
+import { getIncludeThoughts } from '@/llm/providers/_utils';
 import type { AnthropicModelId } from '@/llm/providers/anthropic/model-id';
 import { modelName } from '@/llm/providers/anthropic/model-id';
 import { Response } from '@/llm/responses';
@@ -81,9 +82,12 @@ export class AnthropicBetaProvider extends BaseProvider {
     // Use beta API instead of standard
     const betaResponse = await this.client.beta.messages.create(requestParams);
 
+    const includeThoughts = getIncludeThoughts(args.params);
+
     const { assistantMessage, finishReason, usage } = betaDecodeResponse(
       betaResponse,
-      modelId
+      modelId,
+      includeThoughts
     );
 
     return new Response({

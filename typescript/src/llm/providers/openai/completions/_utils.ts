@@ -9,7 +9,6 @@ import type {
   ChatCompletionContentPartText,
   ChatCompletionCreateParamsNonStreaming,
   ChatCompletionMessageParam,
-  ChatCompletionMessageToolCall,
 } from 'openai/resources/chat/completions';
 
 import type {
@@ -31,14 +30,15 @@ import { createUsage } from '@/llm/responses/usage';
 // Content Part Processing
 // ============================================================================
 
+interface ProcessContentOptions {
+  encodeThoughtsAsText?: boolean;
+}
+
 /**
  * Result of processing content parts, categorized by type.
- * Additional fields (images, audio, toolOutputs, toolCalls) will be added
- * when those content types are implemented.
  */
 interface ProcessedContentParts {
   text: ChatCompletionContentPartText[];
-  toolCalls: ChatCompletionMessageToolCall[];
 }
 
 /**
@@ -46,17 +46,27 @@ interface ProcessedContentParts {
  * Categorizes parts by type and converts to OpenAI format where applicable.
  */
 function processContentParts(
-  content: readonly (UserContentPart | AssistantContentPart)[]
+  content: readonly (UserContentPart | AssistantContentPart)[],
+  options: ProcessContentOptions = {}
 ): ProcessedContentParts {
   const result: ProcessedContentParts = {
     text: [],
-    toolCalls: [],
   };
 
   for (const part of content) {
     switch (part.type) {
       case 'text':
         result.text.push({ type: 'text', text: part.text });
+        break;
+
+      case 'thought':
+        // When encodeThoughtsAsText is true, encode as text; otherwise drop
+        if (options.encodeThoughtsAsText) {
+          result.text.push({
+            type: 'text',
+            text: '**Thinking:** ' + part.thought,
+          });
+        }
         break;
 
       /* v8 ignore start - content types not yet implemented */
@@ -99,14 +109,6 @@ function processContentParts(
           null,
           'Tool calls are not yet implemented'
         );
-
-      case 'thought':
-        throw new FeatureNotSupportedError(
-          'thought encoding',
-          'openai',
-          null,
-          'Thought content is not yet implemented'
-        );
       /* v8 ignore stop */
     }
   }
@@ -120,7 +122,7 @@ function processContentParts(
 
 /**
  * Simplify content parts to string if only a single text part.
- * For mixed content or multiple parts, returns the array as-is.
+ * For multiple parts, returns the array as-is.
  */
 function simplifyContent<T extends ChatCompletionContentPart>(
   parts: T[]
@@ -133,9 +135,13 @@ function simplifyContent<T extends ChatCompletionContentPart>(
 
 /**
  * Encode Mirascope messages to OpenAI Chat Completions API format.
+ *
+ * @param messages - The messages to encode
+ * @param encodeThoughtsAsText - Whether to encode thoughts as text in assistant messages
  */
 export function encodeMessages(
-  messages: readonly Message[]
+  messages: readonly Message[],
+  encodeThoughtsAsText: boolean = false
 ): ChatCompletionMessageParam[] {
   const openaiMessages: ChatCompletionMessageParam[] = [];
 
@@ -145,7 +151,9 @@ export function encodeMessages(
     } else if (message.role === 'user') {
       openaiMessages.push(encodeUserMessage(message));
     } else if (message.role === 'assistant') {
-      openaiMessages.push(encodeAssistantMessage(message));
+      openaiMessages.push(
+        encodeAssistantMessage(message, encodeThoughtsAsText)
+      );
     }
   }
 
@@ -180,17 +188,21 @@ function encodeUserMessage(
  * Encode a Mirascope assistant message to OpenAI format.
  */
 function encodeAssistantMessage(
-  message: AssistantMessage
+  message: AssistantMessage,
+  encodeThoughtsAsText: boolean
 ): ChatCompletionAssistantMessageParam {
-  const { text } = processContentParts(message.content);
+  const { text } = processContentParts(message.content, {
+    encodeThoughtsAsText,
+  });
 
-  const result: ChatCompletionAssistantMessageParam = {
+  // Join text parts into a single string for assistant messages
+  const content = text.map((p) => p.text).join('') || null;
+
+  return {
     role: 'assistant',
-    content: text.length === 0 ? null : simplifyContent(text),
+    content,
     ...(message.name && { name: message.name }),
   };
-
-  return result;
 }
 
 /**
@@ -204,9 +216,12 @@ export function buildRequestParams(
   messages: readonly Message[],
   params: Params = {}
 ): ChatCompletionCreateParamsNonStreaming {
-  const openaiMessages = encodeMessages(messages);
-
   return ParamHandler.with(params, 'openai', modelId, (p) => {
+    const thinkingConfig = p.get('thinking');
+    const encodeThoughtsAsText = thinkingConfig?.encodeThoughtsAsText ?? false;
+
+    const openaiMessages = encodeMessages(messages, encodeThoughtsAsText);
+
     const requestParams: ChatCompletionCreateParamsNonStreaming = {
       model: modelName(modelId, null),
       messages: openaiMessages,
@@ -240,9 +255,6 @@ export function buildRequestParams(
 
     // OpenAI doesn't support topK
     p.warnUnsupported('topK', 'OpenAI does not support the top_k parameter');
-
-    // Thinking not yet implemented
-    p.warnNotImplemented('thinking', 'thinking config');
 
     return requestParams;
   });
@@ -279,6 +291,8 @@ export function decodeResponse(
   };
 
   const finishReason = decodeFinishReason(choice.finish_reason);
+
+  /* v8 ignore next - usage is always present in API responses */
   const usage = response.usage ? decodeUsage(response.usage) : null;
 
   return { assistantMessage, finishReason, usage };
@@ -296,10 +310,12 @@ function decodeContent(
   }
 
   // Handle refusal as text (OpenAI returns refusal as separate field)
+  /* v8 ignore start - refusals are difficult to trigger reliably */
   if (message.refusal) {
     const text: Text = { type: 'text', text: message.refusal };
     parts.push(text);
   }
+  /* v8 ignore end */
 
   /* v8 ignore start - tool calls not yet implemented */
   // Handle tool calls
@@ -322,8 +338,10 @@ function decodeFinishReason(
   switch (finishReason) {
     case 'length':
       return FinishReason.MAX_TOKENS;
+    /* v8 ignore start - refusals are difficult to trigger reliably */
     case 'content_filter':
       return FinishReason.REFUSAL;
+    /* v8 ignore end */
     case 'stop':
     case 'tool_calls':
     case 'function_call':

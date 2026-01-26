@@ -100,7 +100,7 @@ describe('betaDecodeResponse', () => {
       ]);
     });
 
-    it('skips thinking blocks', () => {
+    it('skips thinking blocks when includeThoughts is false', () => {
       const response = createMockBetaMessage({
         content: [
           {
@@ -114,11 +114,37 @@ describe('betaDecodeResponse', () => {
 
       const { assistantMessage } = betaDecodeResponse(
         response,
-        'anthropic/claude-haiku-4-5'
+        'anthropic/claude-haiku-4-5',
+        false // includeThoughts
       );
 
       // Only text content should be included
       expect(assistantMessage.content).toEqual([
+        { type: 'text', text: 'Visible response' },
+      ]);
+    });
+
+    it('includes thinking blocks as Thought content when includeThoughts is true', () => {
+      const response = createMockBetaMessage({
+        content: [
+          {
+            type: 'thinking',
+            thinking: 'Internal reasoning...',
+            signature: 'sig',
+          },
+          { type: 'text', text: 'Visible response', citations: null },
+        ],
+      } as Partial<BetaMessage>);
+
+      const { assistantMessage } = betaDecodeResponse(
+        response,
+        'anthropic/claude-haiku-4-5',
+        true // includeThoughts
+      );
+
+      // Both thinking and text content should be included
+      expect(assistantMessage.content).toEqual([
+        { type: 'thought', thought: 'Internal reasoning...' },
         { type: 'text', text: 'Visible response' },
       ]);
     });
