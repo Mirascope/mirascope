@@ -322,7 +322,7 @@ function decodeStopReason(
   }
 }
 
-function decodeUsage(usage: AnthropicMessage['usage']): Usage {
+export function decodeUsage(usage: AnthropicMessage['usage']): Usage {
   return createUsage({
     inputTokens: usage.input_tokens,
     outputTokens: usage.output_tokens,

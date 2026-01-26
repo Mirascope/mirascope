@@ -13,7 +13,6 @@ export { KNOWN_PROVIDER_IDS } from '@/llm/providers/provider-id';
 export { BaseProvider } from '@/llm/providers/base';
 export type { ProviderErrorMap } from '@/llm/providers/base';
 
-// Anthropic provider
 export { AnthropicProvider } from '@/llm/providers/anthropic';
 
 // Google provider
