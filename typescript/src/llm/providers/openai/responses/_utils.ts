@@ -4,21 +4,60 @@
 
 import type OpenAI from 'openai';
 import type { Response as OpenAIResponse } from 'openai/resources/responses/responses';
+import type { Reasoning, ReasoningEffort } from 'openai/resources/shared';
 
 import type {
   AssistantContentPart,
   Text,
+  Thought,
   UserContentPart,
 } from '@/llm/content';
 import { FeatureNotSupportedError } from '@/llm/exceptions';
 import type { AssistantMessage, Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
+import type { ThinkingLevel } from '@/llm/models/thinking-config';
 import { ParamHandler } from '@/llm/providers/base';
 import type { OpenAIModelId } from '@/llm/providers/openai/model-id';
 import { modelName } from '@/llm/providers/openai/model-id';
 import { FinishReason } from '@/llm/responses/finish-reason';
 import type { Usage } from '@/llm/responses/usage';
 import { createUsage } from '@/llm/responses/usage';
+
+/**
+ * Maps ThinkingLevel to OpenAI ReasoningEffort.
+ */
+const THINKING_LEVEL_TO_EFFORT: Record<ThinkingLevel, ReasoningEffort> = {
+  default: 'medium',
+  none: 'none',
+  minimal: 'minimal',
+  low: 'low',
+  medium: 'medium',
+  high: 'high',
+  max: 'xhigh',
+};
+
+/**
+ * Compute OpenAI Reasoning config from ThinkingConfig.
+ *
+ * @param level - The thinking level
+ * @param includeThoughts - Whether to include reasoning summary
+ * @returns OpenAI Reasoning configuration
+ */
+export function computeReasoning(
+  level: ThinkingLevel,
+  includeThoughts: boolean
+): Reasoning {
+  const reasoning: Reasoning = {
+    /* v8 ignore next - all ThinkingLevel values are covered in the map */
+    effort: THINKING_LEVEL_TO_EFFORT[level] ?? 'medium',
+  };
+
+  if (includeThoughts) {
+    reasoning.summary = 'auto';
+  }
+
+  return reasoning;
+}
 
 /**
  * Input item type for OpenAI Responses API.
@@ -180,6 +219,7 @@ export interface ResponsesRequestParams {
   max_output_tokens?: number;
   temperature?: number;
   top_p?: number;
+  reasoning?: Reasoning;
 }
 
 /**
@@ -227,8 +267,14 @@ export function buildRequestParams(
       'OpenAI Responses API does not support stop sequences'
     );
 
-    // Thinking not yet implemented
-    p.warnNotImplemented('thinking', 'thinking config');
+    const thinkingConfig = p.get('thinking');
+    if (thinkingConfig) {
+      const includeThoughts = thinkingConfig.includeThoughts ?? false;
+      requestParams.reasoning = computeReasoning(
+        thinkingConfig.level,
+        includeThoughts
+      );
+    }
 
     return requestParams;
   });
@@ -236,16 +282,21 @@ export function buildRequestParams(
 
 /**
  * Decode OpenAI Responses API response to Mirascope types.
+ *
+ * @param response - The raw OpenAI Responses API response
+ * @param modelId - The model ID used for the request
+ * @param includeThoughts - Whether to include reasoning blocks in the response (default: false)
  */
 export function decodeResponse(
   response: OpenAIResponse,
-  modelId: OpenAIModelId
+  modelId: OpenAIModelId,
+  includeThoughts: boolean = false
 ): {
   assistantMessage: AssistantMessage;
   finishReason: FinishReason | null;
   usage: Usage | null;
 } {
-  const content = decodeContent(response.output);
+  const content = decodeContent(response.output, includeThoughts);
   const finishReason = decodeFinishReason(response);
 
   const assistantMessage: AssistantMessage = {
@@ -258,6 +309,7 @@ export function decodeResponse(
     rawMessage: response as unknown as AssistantMessage['rawMessage'],
   };
 
+  /* v8 ignore next - usage is always present in API responses */
   const usage = response.usage ? decodeUsage(response.usage) : null;
 
   return { assistantMessage, finishReason, usage };
@@ -265,9 +317,13 @@ export function decodeResponse(
 
 /**
  * Decode output items from the Responses API to Mirascope content format.
+ *
+ * @param output - The output items from the response
+ * @param includeThoughts - Whether to include reasoning blocks as thoughts
  */
 function decodeContent(
-  output: OpenAIResponse['output']
+  output: OpenAIResponse['output'],
+  includeThoughts: boolean
 ): AssistantContentPart[] {
   const parts: AssistantContentPart[] = [];
 
@@ -277,12 +333,14 @@ function decodeContent(
         if (contentPart.type === 'output_text') {
           const text: Text = { type: 'text', text: contentPart.text };
           parts.push(text);
+          /* v8 ignore start - refusals are difficult to trigger reliably */
         } else if (contentPart.type === 'refusal') {
           const text: Text = { type: 'text', text: contentPart.refusal };
           parts.push(text);
         }
-        /* v8 ignore start - content types not yet implemented */
+        /* v8 ignore stop */
       }
+      /* v8 ignore start - content types not yet implemented */
     } else if (item.type === 'function_call') {
       throw new FeatureNotSupportedError(
         'function call decoding',
@@ -290,12 +348,35 @@ function decodeContent(
         null,
         'Function calls in responses are not yet implemented'
       );
+      /* v8 ignore stop */
     } else if (item.type === 'reasoning') {
-      // Reasoning blocks are internal model reasoning - skip them in output for now
-      // TODO: Add support for reasoning blocks
-      continue;
+      if (includeThoughts) {
+        // Extract thoughts from summary (preferred) or content
+        /* v8 ignore next - summary is always defined per types, but defensive coding */
+        for (const summaryPart of item.summary ?? []) {
+          if (summaryPart.type === 'summary_text') {
+            const thought: Thought = {
+              type: 'thought',
+              thought: summaryPart.text,
+            };
+            parts.push(thought);
+          }
+        }
+        /* v8 ignore start - reasoning_text content is rare, likely only in open-source models */
+        if (item.content) {
+          for (const contentPart of item.content) {
+            if (contentPart.type === 'reasoning_text') {
+              const thought: Thought = {
+                type: 'thought',
+                thought: contentPart.text,
+              };
+              parts.push(thought);
+            }
+          }
+        }
+        /* v8 ignore stop */
+      }
     }
-    /* v8 ignore stop */
   }
 
   return parts;
@@ -311,9 +392,11 @@ function decodeFinishReason(response: OpenAIResponse): FinishReason | null {
   for (const item of response.output) {
     if (item.type === 'message') {
       for (const contentPart of item.content) {
+        /* v8 ignore start - refusals are difficult to trigger reliably */
         if (contentPart.type === 'refusal') {
           return FinishReason.REFUSAL;
         }
+        /* v8 ignore end */
       }
     }
   }
@@ -324,9 +407,11 @@ function decodeFinishReason(response: OpenAIResponse): FinishReason | null {
     if (reason === 'max_output_tokens') {
       return FinishReason.MAX_TOKENS;
     }
+    /* v8 ignore start - refusals are difficult to trigger reliably */
     if (reason === 'content_filter') {
       return FinishReason.REFUSAL;
     }
+    /* v8 ignore stop */
   }
 
   return null; // Normal completion

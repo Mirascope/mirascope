@@ -7,6 +7,7 @@ import OpenAI from 'openai';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { BaseProvider } from '@/llm/providers/base';
+import { getIncludeThoughts } from '@/llm/providers/_utils';
 import { OPENAI_ERROR_MAP } from '@/llm/providers/openai/_utils/errors';
 import type { OpenAIModelId } from '@/llm/providers/openai/model-id';
 import { modelName } from '@/llm/providers/openai/model-id';
@@ -76,9 +77,12 @@ export class OpenAIResponsesProvider extends BaseProvider {
 
     const openaiResponse = await this.client.responses.create(requestParams);
 
+    const includeThoughts = getIncludeThoughts(args.params);
+
     const { assistantMessage, finishReason, usage } = decodeResponse(
       openaiResponse,
-      modelIdTyped
+      modelIdTyped,
+      includeThoughts
     );
 
     return new Response({

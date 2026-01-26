@@ -12,7 +12,7 @@ import type {
   BetaUsage,
 } from '@anthropic-ai/sdk/resources/beta/messages/messages';
 
-import type { AssistantContentPart, Text } from '@/llm/content';
+import type { AssistantContentPart, Text, Thought } from '@/llm/content';
 import { FeatureNotSupportedError } from '@/llm/exceptions';
 import type { AssistantMessage } from '@/llm/messages';
 import type { AnthropicModelId } from '@/llm/providers/anthropic/model-id';
@@ -25,16 +25,21 @@ import { createUsage } from '@/llm/responses/usage';
  *
  * Similar to standard decodeResponse but handles BetaMessage type
  * which has additional stop reasons (refusal, etc.) and content types.
+ *
+ * @param response - The raw BetaMessage from Anthropic API
+ * @param modelId - The model ID used for the request
+ * @param includeThoughts - Whether to include thinking blocks in the response (default: false)
  */
 export function betaDecodeResponse(
   response: BetaMessage,
-  modelId: AnthropicModelId
+  modelId: AnthropicModelId,
+  includeThoughts: boolean = false
 ): {
   assistantMessage: AssistantMessage;
   finishReason: FinishReason | null;
   usage: Usage | null;
 } {
-  const content = betaDecodeContent(response.content);
+  const content = betaDecodeContent(response.content, includeThoughts);
 
   const assistantMessage: AssistantMessage = {
     role: 'assistant',
@@ -55,9 +60,13 @@ export function betaDecodeResponse(
 
 /**
  * Decode beta content blocks to Mirascope content parts.
+ *
+ * @param content - The content blocks from the beta response
+ * @param includeThoughts - Whether to include thinking blocks
  */
 function betaDecodeContent(
-  content: BetaContentBlock[]
+  content: BetaContentBlock[],
+  includeThoughts: boolean
 ): AssistantContentPart[] {
   const parts: AssistantContentPart[] = [];
 
@@ -66,11 +75,13 @@ function betaDecodeContent(
       const text: Text = { type: 'text', text: block.text };
       parts.push(text);
     } else if (block.type === 'thinking') {
-      // Skip thinking blocks for now (like OpenAI reasoning blocks)
-      // TODO: Add support for thinking blocks
-      continue;
+      if (includeThoughts) {
+        const thought: Thought = { type: 'thought', thought: block.thinking };
+        parts.push(thought);
+      }
     } else if (block.type === 'redacted_thinking') {
-      // Skip redacted thinking blocks
+      // Skip redacted thinking blocks - they contain encrypted thinking
+      // that cannot be decoded
       continue;
       /* v8 ignore start - content types not yet implemented */
     } else if (block.type === 'tool_use') {

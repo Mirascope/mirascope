@@ -7,6 +7,7 @@ import { GoogleGenAI, ApiError } from '@google/genai';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { BaseProvider } from '@/llm/providers/base';
+import { getIncludeThoughts } from '@/llm/providers/_utils';
 import type { GoogleModelId } from '@/llm/providers/google/model-id';
 import { modelName } from '@/llm/providers/google/model-id';
 import { Response } from '@/llm/responses';
@@ -75,9 +76,12 @@ export class GoogleProvider extends BaseProvider {
     const googleResponse =
       await this.client.models.generateContent(requestParams);
 
+    const includeThoughts = getIncludeThoughts(args.params);
+
     const { assistantMessage, finishReason, usage } = decodeResponse(
       googleResponse,
-      modelId
+      modelId,
+      includeThoughts
     );
 
     return new Response({

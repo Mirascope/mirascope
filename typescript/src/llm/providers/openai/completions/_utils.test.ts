@@ -8,6 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import type { ChatCompletion } from 'openai/resources/chat/completions';
 import { assistant, user } from '@/llm/messages';
+import type { Thought } from '@/llm/content';
 import { FinishReason } from '@/llm/responses/finish-reason';
 import {
   encodeMessages,
@@ -48,37 +49,41 @@ describe('encodeMessages edge cases', () => {
       { role: 'assistant', content: 'Hi!', name: 'Bot' },
     ]);
   });
+});
 
-  it('handles assistant message with empty content', () => {
+describe('buildRequestParams thinking config', () => {
+  it('encodes thoughts as text when encodeThoughtsAsText is true', () => {
+    const thought: Thought = { type: 'thought', thought: 'Reasoning...' };
     const messages = [
-      assistant([], { providerId: 'openai', modelId: 'openai/gpt-4o' }),
+      assistant([thought, { type: 'text', text: 'Result' }], {
+        providerId: 'openai',
+        modelId: 'openai/gpt-4o',
+      }),
     ];
-    const encoded = encodeMessages(messages);
 
-    expect(encoded).toEqual([{ role: 'assistant', content: null }]);
+    const params = buildRequestParams('openai/gpt-4o:completions', messages, {
+      thinking: { level: 'medium', encodeThoughtsAsText: true },
+    });
+
+    expect(params.messages).toEqual([
+      { role: 'assistant', content: '**Thinking:** Reasoning...Result' },
+    ]);
   });
 
-  it('handles assistant message with multiple text parts', () => {
+  it('drops thoughts when encodeThoughtsAsText is not set', () => {
+    const thought: Thought = { type: 'thought', thought: 'Reasoning...' };
     const messages = [
-      assistant(
-        [
-          { type: 'text' as const, text: 'First part.' },
-          { type: 'text' as const, text: 'Second part.' },
-        ],
-        { providerId: 'openai', modelId: 'openai/gpt-4o' }
-      ),
+      assistant([thought, { type: 'text', text: 'Result' }], {
+        providerId: 'openai',
+        modelId: 'openai/gpt-4o',
+      }),
     ];
-    const encoded = encodeMessages(messages);
 
-    expect(encoded).toEqual([
-      {
-        role: 'assistant',
-        content: [
-          { type: 'text', text: 'First part.' },
-          { type: 'text', text: 'Second part.' },
-        ],
-      },
-    ]);
+    const params = buildRequestParams('openai/gpt-4o:completions', messages, {
+      thinking: { level: 'medium' },
+    });
+
+    expect(params.messages).toEqual([{ role: 'assistant', content: 'Result' }]);
   });
 });
 

@@ -9,13 +9,19 @@ import type {
   GenerateContentParameters,
   GenerateContentResponse,
   Part,
+  ThinkingConfig as GoogleThinkingConfig,
   FinishReason as GoogleFinishReasonType,
 } from '@google/genai';
-import { ApiError, FinishReason as GoogleFinishReason } from '@google/genai';
+import {
+  ApiError,
+  FinishReason as GoogleFinishReason,
+  ThinkingLevel as GoogleThinkingLevel,
+} from '@google/genai';
 
 import type {
   AssistantContentPart,
   Text,
+  Thought,
   UserContentPart,
 } from '@/llm/content';
 import {
@@ -30,6 +36,10 @@ import {
 } from '@/llm/exceptions';
 import type { AssistantMessage, Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
+import type {
+  ThinkingConfig,
+  ThinkingLevel,
+} from '@/llm/models/thinking-config';
 import { ParamHandler, type ProviderErrorMap } from '@/llm/providers/base';
 import type { GoogleModelId } from '@/llm/providers/google/model-id';
 import { modelName } from '@/llm/providers/google/model-id';
@@ -149,6 +159,104 @@ function processContentParts(
 // ============================================================================
 
 /**
+ * Default max tokens for Google requests.
+ */
+const DEFAULT_MAX_TOKENS = 8192;
+
+/**
+ * Thinking level to budget multiplier for Gemini 2.5 models.
+ */
+const THINKING_LEVEL_TO_BUDGET_MULTIPLIER: Record<
+  Exclude<ThinkingLevel, 'none' | 'default'>,
+  number
+> = {
+  minimal: 0.1,
+  low: 0.2,
+  medium: 0.4,
+  high: 0.6,
+  max: 0.8,
+};
+
+/**
+ * Thinking level mapping for Gemini 3 Pro (only LOW or HIGH supported).
+ */
+const THINKING_LEVEL_FOR_GEMINI_3_PRO: Record<
+  ThinkingLevel,
+  GoogleThinkingLevel
+> = {
+  default: GoogleThinkingLevel.THINKING_LEVEL_UNSPECIFIED,
+  none: GoogleThinkingLevel.LOW,
+  minimal: GoogleThinkingLevel.LOW,
+  low: GoogleThinkingLevel.LOW,
+  medium: GoogleThinkingLevel.HIGH,
+  high: GoogleThinkingLevel.HIGH,
+  max: GoogleThinkingLevel.HIGH,
+};
+
+/**
+ * Thinking level mapping for Gemini 3 Flash (MINIMAL, LOW, MEDIUM, HIGH supported).
+ */
+const THINKING_LEVEL_FOR_GEMINI_3_FLASH: Record<
+  ThinkingLevel,
+  GoogleThinkingLevel
+> = {
+  default: GoogleThinkingLevel.THINKING_LEVEL_UNSPECIFIED,
+  none: GoogleThinkingLevel.MINIMAL,
+  minimal: GoogleThinkingLevel.MINIMAL,
+  low: GoogleThinkingLevel.LOW,
+  medium: GoogleThinkingLevel.MEDIUM,
+  high: GoogleThinkingLevel.HIGH,
+  max: GoogleThinkingLevel.HIGH,
+};
+
+/**
+ * Compute Google thinking configuration based on model version.
+ *
+ * @param thinkingConfig - The ThinkingConfig from params
+ * @param maxTokens - Max output tokens (used to compute budget for 2.5 models)
+ * @param modelId - The Google model ID to determine version
+ * @returns GoogleThinkingConfig with appropriate settings for the model
+ */
+export function computeGoogleThinkingConfig(
+  thinkingConfig: ThinkingConfig,
+  maxTokens: number,
+  modelId: GoogleModelId
+): GoogleThinkingConfig {
+  const level = thinkingConfig.level;
+  const result: GoogleThinkingConfig = {};
+
+  // Set includeThoughts if specified
+  if (thinkingConfig.includeThoughts !== undefined) {
+    result.includeThoughts = thinkingConfig.includeThoughts;
+  }
+
+  // Determine thinking config based on model
+  if (
+    modelId.includes('gemini-3-flash') ||
+    modelId.includes('gemini-3.0-flash')
+  ) {
+    result.thinkingLevel = THINKING_LEVEL_FOR_GEMINI_3_FLASH[level];
+  } else if (
+    modelId.includes('gemini-3-pro') ||
+    modelId.includes('gemini-3.0-pro')
+  ) {
+    result.thinkingLevel = THINKING_LEVEL_FOR_GEMINI_3_PRO[level];
+  } else {
+    // Gemini 2.5 and earlier use thinking_budget
+    if (level === 'default') {
+      result.thinkingBudget = -1; // Dynamic/automatic budget
+    } else if (level === 'none') {
+      result.thinkingBudget = 0; // Disable thinking
+    } else {
+      const multiplier = THINKING_LEVEL_TO_BUDGET_MULTIPLIER[level];
+      result.thinkingBudget = Math.floor(multiplier * maxTokens);
+    }
+  }
+
+  return result;
+}
+
+/**
  * Encode Mirascope messages to Google API format.
  *
  * Converts the unified Mirascope message format to Google's Content array format.
@@ -195,8 +303,9 @@ export function buildRequestParams(
   const { systemInstruction, contents } = encodeMessages(messages);
 
   return ParamHandler.with(params, 'google', modelId, (p) => {
+    const maxTokens = p.getOrDefault('maxTokens', DEFAULT_MAX_TOKENS);
     const config: GenerateContentConfig = {
-      maxOutputTokens: p.getOrDefault('maxTokens', 8192),
+      maxOutputTokens: maxTokens,
     };
 
     if (systemInstruction) {
@@ -228,8 +337,14 @@ export function buildRequestParams(
       config.seed = seed;
     }
 
-    // Thinking not yet implemented
-    p.warnNotImplemented('thinking', 'thinking config');
+    const thinkingConfig = p.get('thinking');
+    if (thinkingConfig) {
+      config.thinkingConfig = computeGoogleThinkingConfig(
+        thinkingConfig,
+        maxTokens,
+        modelId
+      );
+    }
 
     return {
       model: modelName(modelId),
@@ -247,11 +362,13 @@ export function buildRequestParams(
  *
  * @param response - Raw response from Google's generateContent API
  * @param modelId - The model ID used for the request
+ * @param includeThoughts - Whether to include thinking blocks in the response (default: false)
  * @returns Decoded assistant message, finish reason, and usage information
  */
 export function decodeResponse(
   response: GenerateContentResponse,
-  modelId: GoogleModelId
+  modelId: GoogleModelId,
+  includeThoughts: boolean = false
 ): {
   assistantMessage: AssistantMessage;
   finishReason: FinishReason | null;
@@ -260,7 +377,7 @@ export function decodeResponse(
   const candidate = response.candidates?.[0];
   /* v8 ignore next - defensive fallback for missing parts */
   const content = candidate?.content?.parts ?? [];
-  const decodedContent = decodeContent(content);
+  const decodedContent = decodeContent(content, includeThoughts);
 
   const assistantMessage: AssistantMessage = {
     role: 'assistant',
@@ -283,14 +400,23 @@ export function decodeResponse(
  * Decode Google response parts to Mirascope content format.
  *
  * @param parts - Array of Google Part objects from the response
+ * @param includeThoughts - Whether to include thought parts
  * @returns Array of Mirascope AssistantContentPart objects
- * @throws FeatureNotSupportedError for unsupported part types (function_call, thought)
+ * @throws FeatureNotSupportedError for unsupported part types (function_call)
  */
-function decodeContent(parts: Part[]): AssistantContentPart[] {
+function decodeContent(
+  parts: Part[],
+  includeThoughts: boolean
+): AssistantContentPart[] {
   const content: AssistantContentPart[] = [];
 
   for (const part of parts) {
-    if (part.text !== undefined) {
+    if (part.thought && part.text !== undefined) {
+      if (includeThoughts) {
+        const thought: Thought = { type: 'thought', thought: part.text };
+        content.push(thought);
+      }
+    } else if (part.text !== undefined) {
       const text: Text = { type: 'text', text: part.text };
       content.push(text);
       /* v8 ignore start - content types not yet implemented */
@@ -300,13 +426,6 @@ function decodeContent(parts: Part[]): AssistantContentPart[] {
         'google',
         null,
         'Function call blocks in responses are not yet implemented'
-      );
-    } else if (part.thought) {
-      throw new FeatureNotSupportedError(
-        'thought decoding',
-        'google',
-        null,
-        'Thought blocks in responses are not yet implemented'
       );
     } else {
       // Unknown part type - be strict so we know what we're missing

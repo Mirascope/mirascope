@@ -7,6 +7,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { BaseProvider } from '@/llm/providers/base';
+import { getIncludeThoughts } from '@/llm/providers/_utils';
 import type { AnthropicModelId } from '@/llm/providers/anthropic/model-id';
 import { modelName } from '@/llm/providers/anthropic/model-id';
 import { Response } from '@/llm/responses';
@@ -23,12 +24,12 @@ import { AnthropicBetaProvider } from '@/llm/providers/anthropic/beta-provider';
  * Routes to beta when:
  * - Format mode is "strict" (TODO: not yet supported in TypeScript SDK)
  * - Any tools have strict=True (TODO: not yet supported in TypeScript SDK)
- * - AND the model supports strict structured outputs
  *
  * @param _modelId - The model identifier (unused until strict mode is implemented)
+ * @param _params - The request parameters (unused until strict mode is implemented)
  * @returns Whether to use the beta API
  */
-function shouldUseBeta(_modelId: AnthropicModelId): boolean {
+function shouldUseBeta(_modelId: AnthropicModelId, _params?: Params): boolean {
   // TODO: Implement when strict mode format and tools are supported
   // Will check:
   // 1. If format resolves to strict mode
@@ -96,16 +97,16 @@ export class AnthropicProvider extends BaseProvider {
   }): Promise<Response> {
     const modelId = args.modelId as AnthropicModelId;
 
-    // Route to beta provider for strict mode (when implemented)
-    /* v8 ignore start - no routing yet given limited existing feature set */
-    if (shouldUseBeta(modelId)) {
+    // Route to beta provider for strict mode
+    /* v8 ignore start - beta routing not yet implemented */
+    if (shouldUseBeta(modelId, args.params)) {
       return this.betaProvider.call({
         modelId: args.modelId,
         messages: args.messages,
         params: args.params,
       });
     }
-    /* v8 ignore end */
+    /* v8 ignore stop */
 
     const requestParams = buildRequestParams(
       modelId,
@@ -115,9 +116,12 @@ export class AnthropicProvider extends BaseProvider {
 
     const anthropicResponse = await this.client.messages.create(requestParams);
 
+    const includeThoughts = getIncludeThoughts(args.params);
+
     const { assistantMessage, finishReason, usage } = decodeResponse(
       anthropicResponse,
-      modelId
+      modelId,
+      includeThoughts
     );
 
     return new Response({
