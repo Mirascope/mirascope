@@ -5,6 +5,7 @@
 // Provider exports
 export { OpenAIProvider } from '@/llm/providers/openai/provider';
 export { OpenAICompletionsProvider } from '@/llm/providers/openai/completions/provider';
+export { OpenAIResponsesProvider } from '@/llm/providers/openai/responses/provider';
 
 // Model ID exports
 export type { OpenAIModelId, ApiMode } from '@/llm/providers/openai/model-id';

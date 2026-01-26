@@ -99,6 +99,7 @@ function createPolly(recordingName: string, cassettesDir: string): Polly {
       },
     },
     recordIfMissing: true,
+    recordFailedRequests: true,
     flushRequestsOnStop: true,
     matchRequestsBy: {
       headers: false,
