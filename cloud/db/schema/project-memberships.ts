@@ -30,8 +30,8 @@ export const projectMemberships = pgTable(
       .references(() => projects.id, { onDelete: "cascade" })
       .notNull(),
     role: projectRoleEnum("role").notNull(),
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at").defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.memberId, table.projectId] }),

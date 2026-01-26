@@ -117,9 +117,11 @@ export const creditReservations = pgTable(
       .references(() => routerRequests.id),
 
     // Timestamps
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    releasedAt: timestamp("released_at"), // Single field for any release (settled or not)
-    expiresAt: timestamp("expires_at")
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    releasedAt: timestamp("released_at", { withTimezone: true }), // Single field for any release (settled or not)
+    expiresAt: timestamp("expires_at", { withTimezone: true })
       .notNull()
       .$defaultFn(() => new Date(Date.now() + 5 * 60 * 1000)), // 5 minutes from now
   },

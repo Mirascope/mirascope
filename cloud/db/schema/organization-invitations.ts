@@ -35,11 +35,15 @@ export const organizationInvitations = pgTable(
     role: invitationRoleEnum("role").notNull(),
     token: text("token").notNull().unique(),
     status: invitationStatusEnum("status").notNull().default("pending"),
-    expiresAt: timestamp("expires_at").notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
-    acceptedAt: timestamp("accepted_at"),
-    revokedAt: timestamp("revoked_at"),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
   },
   (table) => ({
     validExpiration: check(

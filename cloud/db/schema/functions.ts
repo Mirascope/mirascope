@@ -44,8 +44,8 @@ export const functions = pgTable(
       .references(() => organizations.id, { onDelete: "cascade" })
       .notNull(),
 
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at").defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },
   (table) => ({
     uniqueEnvironmentHash: unique().on(table.environmentId, table.hash),

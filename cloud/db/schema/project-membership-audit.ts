@@ -19,7 +19,9 @@ export const projectMembershipAudit = pgTable("project_membership_audit", {
   action: auditActionEnum("action").notNull(),
   previousRole: projectRoleEnum("previous_role"),
   newRole: projectRoleEnum("new_role"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });
 
 export const projectMembershipAuditRelations = relations(

@@ -100,8 +100,10 @@ export const routerRequests = pgTable(
       .references(() => users.id),
 
     // Timestamps
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    completedAt: timestamp("completed_at"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
   },
   (table) => ({
     // Index for analytics queries by organization over time
