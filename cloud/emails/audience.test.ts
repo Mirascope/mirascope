@@ -10,8 +10,9 @@ import {
 
 describe("Audience", () => {
   describe("add", () => {
-    it("adds contact to audience segment with correct parameters", () => {
-      let capturedParams: unknown;
+    it("creates contact and adds to audience segment with correct parameters", () => {
+      let capturedCreateParams: unknown;
+      let capturedAddParams: unknown;
       const expectedParams = TestAudienceAddParamsFixture();
       const response = TestAudienceAddResponseFixture();
 
@@ -20,16 +21,89 @@ describe("Audience", () => {
 
         const result = yield* emails.audience.add("user@example.com");
 
-        expect(capturedParams).toEqual(expectedParams);
+        expect(capturedCreateParams).toEqual({ email: "user@example.com" });
+        expect(capturedAddParams).toEqual(expectedParams);
         expect(result).toEqual(response);
       }).pipe(
         Effect.provide(
           Emails.Default.pipe(
             Layer.provide(
-              MockResendAudience.layer((params) => {
-                capturedParams = params;
-                return Effect.succeed(response);
-              }),
+              MockResendAudience.layer(
+                (params) => {
+                  capturedAddParams = params;
+                  return Effect.succeed(response);
+                },
+                "seg_test_mock",
+                (params) => {
+                  capturedCreateParams = params;
+                  return Effect.succeed({
+                    id: "contact_123",
+                    object: "contact",
+                  });
+                },
+              ),
+            ),
+          ),
+        ),
+        Effect.runPromise,
+      );
+    });
+
+    it("continues to add to segment when contact already exists", () => {
+      let segmentAddCalled = false;
+      const response = TestAudienceAddResponseFixture();
+
+      return Effect.gen(function* () {
+        const emails = yield* Emails;
+
+        const result = yield* emails.audience.add("user@example.com");
+
+        expect(segmentAddCalled).toBe(true);
+        expect(result).toEqual(response);
+      }).pipe(
+        Effect.provide(
+          Emails.Default.pipe(
+            Layer.provide(
+              MockResendAudience.layer(
+                () => {
+                  segmentAddCalled = true;
+                  return Effect.succeed(response);
+                },
+                "seg_test_mock",
+                () =>
+                  Effect.fail(
+                    new ResendError({ message: "Contact already exists" }),
+                  ),
+              ),
+            ),
+          ),
+        ),
+        Effect.runPromise,
+      );
+    });
+
+    it("propagates error when contact creation fails for non-duplicate reasons", () => {
+      return Effect.gen(function* () {
+        const emails = yield* Emails;
+
+        const result = yield* emails.audience
+          .add("user@example.com")
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(ResendError);
+        expect(result.message).toBe("Rate limit exceeded");
+      }).pipe(
+        Effect.provide(
+          Emails.Default.pipe(
+            Layer.provide(
+              MockResendAudience.layer(
+                () => Effect.succeed({ id: "contact_123" }),
+                "seg_test_mock",
+                () =>
+                  Effect.fail(
+                    new ResendError({ message: "Rate limit exceeded" }),
+                  ),
+              ),
             ),
           ),
         ),

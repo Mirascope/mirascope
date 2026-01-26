@@ -78,9 +78,14 @@ export const MockResendAudience = {
   layer: <P = unknown>(
     addFn: (params: P) => Effect.Effect<{ id: string }, unknown, never>,
     audienceSegmentId = "seg_test_mock",
+    createFn: (
+      params: unknown,
+    ) => Effect.Effect<{ id: string; object: string }, unknown, never> = () =>
+      Effect.succeed({ id: "contact_created", object: "contact" }),
   ) =>
     Layer.succeed(Resend, {
       contacts: {
+        create: createFn,
         segments: {
           add: addFn as (
             params: unknown,

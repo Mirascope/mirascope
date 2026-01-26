@@ -63,6 +63,19 @@ export class Audience {
   ): Effect.Effect<AddContactSegmentResponseSuccess, ResendError, Resend> {
     return Effect.gen(function* () {
       const resend = yield* Resend;
+
+      // First create the contact (ignore only if already exists)
+      yield* resend.contacts
+        .create({ email })
+        .pipe(
+          Effect.catchTag("ResendError", (error) =>
+            error.message.includes("already exists")
+              ? Effect.void
+              : Effect.fail(error),
+          ),
+        );
+
+      // Then add to the segment
       return yield* resend.contacts.segments.add({
         email,
         segmentId: resend.config.audienceSegmentId,

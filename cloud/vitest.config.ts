@@ -11,7 +11,15 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
-      include: ["api", "auth", "db", "payments", "rate-limiting", "workers"],
+      include: [
+        "api",
+        "auth",
+        "db",
+        "emails",
+        "payments",
+        "rate-limiting",
+        "workers",
+      ],
       exclude: [
         "app", // Currently manual testing only. We should cover this at some point
         "**.md",
