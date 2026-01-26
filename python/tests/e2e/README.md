@@ -24,6 +24,7 @@ should be done sparingly because it takes time and API token usage.
 Tests use [inline-snapshot](https://15r10nk.github.io/inline-snapshot/) to validate test outputs. Snapshots are stored in `snapshots/` subdirectories.
 
 To update snapshots:
+
 ```bash
 uv run pytest python/tests/e2e/ --fix
 ```
