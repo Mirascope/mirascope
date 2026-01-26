@@ -137,7 +137,7 @@ function HeroBlock() {
         {/* Subtitle */}
         <div className="mt-6 text-center">
           <p className="font-handwriting text-lg text-white/90 text-shade sm:text-2xl md:text-4xl">
-            The complete toolkit for AI engineers
+            Build. Observe. Iterate. Ship.
           </p>
         </div>
 
