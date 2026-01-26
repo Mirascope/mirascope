@@ -10,6 +10,7 @@ import {
   RealtimeSpans,
   realtimeSpansLayer,
   setRealtimeSpansLayer,
+  createSpanCacheKey,
 } from "./client";
 
 // =============================================================================
@@ -714,6 +715,14 @@ describe("RealtimeSpans client", () => {
 
         expect(result).toBe(false);
       });
+    });
+  });
+
+  describe("createSpanCacheKey", () => {
+    it("creates key from traceId and spanId", () => {
+      expect(createSpanCacheKey("trace-123", "span-456")).toBe(
+        "trace-123:span-456",
+      );
     });
   });
 });

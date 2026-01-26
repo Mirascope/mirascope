@@ -20,6 +20,7 @@ export default defineConfig({
         "db/clickhouse/**",
         "db/schema/**",
         "tests/**",
+        ".build-cache",
         ...coverageConfigDefaults.exclude,
       ],
       thresholds: {

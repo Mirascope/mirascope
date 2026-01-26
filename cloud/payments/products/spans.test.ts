@@ -13,16 +13,17 @@ import { NotFoundError, StripeError, PlanLimitExceededError } from "@/errors";
 import { organizations } from "@/db/schema/organizations";
 import type { PlanTier } from "@/payments/plans";
 
-// Test constants
+// Test constants - use unique IDs per test run to avoid conflicts in parallel execution
+const testRunId = crypto.randomUUID().slice(0, 8);
 const TEST_CUSTOMER_IDS = {
-  underLimit: "cus_spans_under_limit",
-  atLimitMinusOne: "cus_spans_at_limit_minus_one",
-  atLimit: "cus_spans_at_limit",
-  overLimit: "cus_spans_over_limit",
-  cacheTest: "cus_spans_cache_test",
-  proPlan: "cus_spans_pro",
-  teamPlan: "cus_spans_team",
-  stripeError: "cus_spans_error",
+  underLimit: `cus_spans_under_limit_${testRunId}`,
+  atLimitMinusOne: `cus_spans_at_limit_minus_one_${testRunId}`,
+  atLimit: `cus_spans_at_limit_${testRunId}`,
+  overLimit: `cus_spans_over_limit_${testRunId}`,
+  cacheTest: `cus_spans_cache_test_${testRunId}`,
+  proPlan: `cus_spans_pro_${testRunId}`,
+  teamPlan: `cus_spans_team_${testRunId}`,
+  stripeError: `cus_spans_error_${testRunId}`,
 };
 
 /**
@@ -657,7 +658,7 @@ describe("Spans Product", () => {
       },
       {
         plan: "pro",
-        customerId: "cus_pro_over_limit",
+        customerId: `cus_pro_over_limit_${testRunId}`,
         usage: "5000000",
         description: "at 5M spans (overage billed)",
       },
@@ -669,7 +670,7 @@ describe("Spans Product", () => {
       },
       {
         plan: "team",
-        customerId: "cus_team_over_limit",
+        customerId: `cus_team_over_limit_${testRunId}`,
         usage: "10000000",
         description: "at 10M spans (overage billed)",
       },
