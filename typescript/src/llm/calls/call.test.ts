@@ -108,6 +108,15 @@ describe('defineCall', () => {
         'Cannot pass params when model is a Model instance. Use new Model(id, params) instead.'
       );
     });
+
+    it('has a stream method', () => {
+      const call = defineCall<{ genre: string }>({
+        model: 'anthropic/claude-sonnet-4-20250514',
+        template: ({ genre }) => `Recommend a ${genre} book`,
+      });
+
+      expect(typeof call.stream).toBe('function');
+    });
   });
 
   describe('without variables', () => {
@@ -148,6 +157,15 @@ describe('defineCall', () => {
       });
 
       expect(call.model.params).toEqual({ temperature: 0.5 });
+    });
+
+    it('has a stream method', () => {
+      const call = defineCall({
+        model: 'anthropic/claude-sonnet-4-20250514',
+        template: () => 'Hello!',
+      });
+
+      expect(typeof call.stream).toBe('function');
     });
   });
 });

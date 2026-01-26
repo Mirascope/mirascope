@@ -15,3 +15,35 @@ export type { BaseResponseInit } from '@/llm/responses/base-response';
 
 export { Response } from '@/llm/responses/response';
 export type { ResponseInit } from '@/llm/responses/response';
+
+export { StreamResponse } from '@/llm/responses/stream-response';
+export type { StreamResponseArgs } from '@/llm/responses/stream-response';
+
+// Streaming chunk types
+export {
+  textStart,
+  textChunk,
+  textEnd,
+  thoughtStart,
+  thoughtChunk,
+  thoughtEnd,
+  finishReasonChunk,
+  usageDeltaChunk,
+  rawStreamEventChunk,
+  rawMessageChunk,
+} from '@/llm/responses/chunks';
+
+export type {
+  TextStartChunk,
+  TextChunk,
+  TextEndChunk,
+  ThoughtStartChunk,
+  ThoughtChunk,
+  ThoughtEndChunk,
+  FinishReasonChunk,
+  UsageDeltaChunk,
+  RawStreamEventChunk,
+  RawMessageChunk,
+  AssistantContentChunk,
+  StreamResponseChunk,
+} from '@/llm/responses/chunks';

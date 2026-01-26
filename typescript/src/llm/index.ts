@@ -107,6 +107,7 @@ export {
   RootResponse,
   BaseResponse,
   Response,
+  StreamResponse,
   createUsage,
   totalTokens,
 } from '@/llm/responses';
@@ -115,4 +116,18 @@ export type {
   Usage,
   BaseResponseInit,
   ResponseInit,
+  StreamResponseArgs,
+  // Streaming chunk types
+  TextStartChunk,
+  TextChunk,
+  TextEndChunk,
+  ThoughtStartChunk,
+  ThoughtChunk,
+  ThoughtEndChunk,
+  FinishReasonChunk,
+  UsageDeltaChunk,
+  RawStreamEventChunk,
+  RawMessageChunk,
+  AssistantContentChunk,
+  StreamResponseChunk,
 } from '@/llm/responses';

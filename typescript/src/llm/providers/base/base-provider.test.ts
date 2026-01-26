@@ -7,6 +7,7 @@ import { user, type Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import type { ProviderId } from '@/llm/providers/provider-id';
 import { Response } from '@/llm/responses';
+import { StreamResponse } from '@/llm/responses/stream-response';
 import { APIError, ProviderError } from '@/llm/exceptions';
 import {
   BaseProvider,
@@ -56,6 +57,17 @@ class TestProvider extends BaseProvider {
     messages: readonly Message[];
     params?: Params;
   }): Promise<Response> {
+    if (this.errorToThrow) {
+      return Promise.reject(this.errorToThrow);
+    }
+    return Promise.reject(new Error('Not implemented for tests'));
+  }
+
+  protected _stream(_args: {
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<StreamResponse> {
     if (this.errorToThrow) {
       return Promise.reject(this.errorToThrow);
     }

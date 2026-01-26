@@ -14,11 +14,13 @@ import { getIncludeThoughts } from '@/llm/providers/_utils';
 import type { AnthropicModelId } from '@/llm/providers/anthropic/model-id';
 import { modelName } from '@/llm/providers/anthropic/model-id';
 import { Response } from '@/llm/responses';
+import { StreamResponse } from '@/llm/responses/stream-response';
 import {
   ANTHROPIC_ERROR_MAP,
   buildRequestParams,
 } from '@/llm/providers/anthropic/_utils';
 import { betaDecodeResponse } from '@/llm/providers/anthropic/beta-decode';
+import { decodeBetaStream } from '@/llm/providers/anthropic/beta-decode-stream';
 
 /**
  * Provider for the Anthropic Beta API.
@@ -103,6 +105,48 @@ export class AnthropicBetaProvider extends BaseProvider {
       usage,
     });
   }
+
+  /**
+   * Execute a streaming call to the Anthropic Beta API.
+   *
+   * @param args - Call arguments
+   * @param args.modelId - The Anthropic model ID to use
+   * @param args.messages - Array of messages to send
+   * @param args.params - Optional additional parameters
+   * @returns StreamResponse object for streaming consumption
+   */
+  /* v8 ignore start - beta streaming is feature-gated behind shouldUseBeta() */
+  protected _stream(args: {
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<StreamResponse> {
+    const modelId = args.modelId as AnthropicModelId;
+    const requestParams = buildRequestParams(
+      modelId,
+      args.messages,
+      args.params
+    );
+
+    const includeThoughts = getIncludeThoughts(args.params);
+
+    const stream = this.client.beta.messages.stream(requestParams);
+
+    const chunkIterator = decodeBetaStream(stream, includeThoughts);
+
+    return Promise.resolve(
+      new StreamResponse({
+        // Note: providerId is 'anthropic' (not 'anthropic-beta')
+        providerId: 'anthropic',
+        modelId,
+        providerModelName: modelName(modelId),
+        params: args.params ?? /* v8 ignore next 1 */ {},
+        inputMessages: args.messages,
+        chunkIterator,
+      })
+    );
+  }
+  /* v8 ignore stop */
 
   /**
    * Extract the HTTP status code from an Anthropic API error.

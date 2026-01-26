@@ -11,12 +11,14 @@ import { getIncludeThoughts } from '@/llm/providers/_utils';
 import type { GoogleModelId } from '@/llm/providers/google/model-id';
 import { modelName } from '@/llm/providers/google/model-id';
 import { Response } from '@/llm/responses';
+import { StreamResponse } from '@/llm/responses/stream-response';
 import {
   GOOGLE_ERROR_MAP,
   buildRequestParams,
   decodeResponse,
   mapGoogleErrorByStatus,
 } from '@/llm/providers/google/_utils';
+import { decodeStream } from '@/llm/providers/google/decode-stream';
 
 /**
  * Provider for the Google Gemini API.
@@ -94,6 +96,44 @@ export class GoogleProvider extends BaseProvider {
       assistantMessage,
       finishReason,
       usage,
+    });
+  }
+
+  /**
+   * Execute a streaming call to the Google Gemini API.
+   *
+   * @param args - Call arguments
+   * @param args.modelId - The Google model ID to use
+   * @param args.messages - Array of messages to send
+   * @param args.params - Optional additional parameters
+   * @returns StreamResponse object for streaming consumption
+   */
+  protected async _stream(args: {
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<StreamResponse> {
+    const modelId = args.modelId as GoogleModelId;
+    const requestParams = buildRequestParams(
+      modelId,
+      args.messages,
+      args.params
+    );
+
+    const includeThoughts = getIncludeThoughts(args.params);
+
+    const stream =
+      await this.client.models.generateContentStream(requestParams);
+
+    const chunkIterator = decodeStream(stream, includeThoughts);
+
+    return new StreamResponse({
+      providerId: 'google',
+      modelId,
+      providerModelName: modelName(modelId),
+      params: args.params ?? /* v8 ignore next 1 */ {},
+      inputMessages: args.messages,
+      chunkIterator,
     });
   }
 

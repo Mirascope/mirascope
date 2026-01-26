@@ -11,11 +11,13 @@ import { getIncludeThoughts } from '@/llm/providers/_utils';
 import type { AnthropicModelId } from '@/llm/providers/anthropic/model-id';
 import { modelName } from '@/llm/providers/anthropic/model-id';
 import { Response } from '@/llm/responses';
+import { StreamResponse } from '@/llm/responses/stream-response';
 import {
   ANTHROPIC_ERROR_MAP,
   buildRequestParams,
   decodeResponse,
 } from '@/llm/providers/anthropic/_utils';
+import { decodeStream } from '@/llm/providers/anthropic/decode-stream';
 import { AnthropicBetaProvider } from '@/llm/providers/anthropic/beta-provider';
 
 /**
@@ -134,6 +136,55 @@ export class AnthropicProvider extends BaseProvider {
       assistantMessage,
       finishReason,
       usage,
+    });
+  }
+
+  /**
+   * Execute a streaming call to the Anthropic API, routing to beta API if needed.
+   *
+   * @param args - Call arguments
+   * @param args.modelId - The Anthropic model ID to use
+   * @param args.messages - Array of messages to send
+   * @param args.params - Optional additional parameters
+   * @returns StreamResponse object for streaming consumption
+   */
+  protected async _stream(args: {
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<StreamResponse> {
+    const modelId = args.modelId as AnthropicModelId;
+
+    // Route to beta provider for strict mode
+    /* v8 ignore start - beta routing not yet implemented */
+    if (shouldUseBeta(modelId, args.params)) {
+      return this.betaProvider.stream({
+        modelId: args.modelId,
+        messages: args.messages,
+        params: args.params,
+      });
+    }
+    /* v8 ignore stop */
+
+    const requestParams = buildRequestParams(
+      modelId,
+      args.messages,
+      args.params
+    );
+
+    const includeThoughts = getIncludeThoughts(args.params);
+
+    const stream = this.client.messages.stream(requestParams);
+
+    const chunkIterator = decodeStream(stream, includeThoughts);
+
+    return new StreamResponse({
+      providerId: 'anthropic',
+      modelId,
+      providerModelName: modelName(modelId),
+      params: args.params ?? /* v8 ignore next 1 */ {},
+      inputMessages: args.messages,
+      chunkIterator,
     });
   }
 
