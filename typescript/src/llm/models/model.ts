@@ -10,6 +10,7 @@ import type { ModelId } from '@/llm/providers/model-id';
 import type { ProviderId } from '@/llm/providers/provider-id';
 import { getProviderForModel } from '@/llm/providers/registry';
 import type { Response } from '@/llm/responses';
+import type { StreamResponse } from '@/llm/responses/stream-response';
 
 /**
  * The unified LLM interface that delegates to provider-specific clients.
@@ -114,6 +115,50 @@ export class Model {
   async call(content: UserContent | readonly Message[]): Promise<Response> {
     const messages = promoteToMessages(content);
     return this.provider.call({
+      modelId: this.modelId,
+      messages,
+      params: this.params,
+    });
+  }
+
+  /**
+   * Generate a streaming Response by calling this model's LLM provider.
+   *
+   * @param content - Content to send to the LLM. Can be a string (converted to user
+   *   message), UserContent, a sequence of UserContent, or a sequence of Messages
+   *   for full control.
+   * @returns A StreamResponse object for consuming the streamed content.
+   *
+   * @example Simple string input
+   * ```typescript
+   * const response = await model.stream('What is the capital of France?');
+   * for await (const text of response.textStream()) {
+   *   process.stdout.write(text);
+   * }
+   * ```
+   *
+   * @example With message array
+   * ```typescript
+   * import { system, user } from 'mirascope/llm/messages';
+   *
+   * const response = await model.stream([
+   *   system('You are a helpful assistant.'),
+   *   user('What is the capital of France?'),
+   * ]);
+   *
+   * for await (const text of response.textStream()) {
+   *   process.stdout.write(text);
+   * }
+   *
+   * // After consuming the stream, get the full text
+   * console.log(response.text());
+   * ```
+   */
+  async stream(
+    content: UserContent | readonly Message[]
+  ): Promise<StreamResponse> {
+    const messages = promoteToMessages(content);
+    return this.provider.stream({
       modelId: this.modelId,
       messages,
       params: this.params,

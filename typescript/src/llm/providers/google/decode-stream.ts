@@ -1,0 +1,194 @@
+/**
+ * Google stream decoding utilities.
+ *
+ * Converts Google GenerateContentResponse chunks to Mirascope StreamResponseChunk.
+ * Google streaming returns complete parts in each chunk, not deltas.
+ */
+
+import type {
+  GenerateContentResponse,
+  FinishReason as GoogleFinishReasonType,
+} from '@google/genai';
+import { FinishReason as GoogleFinishReason } from '@google/genai';
+
+import type { StreamResponseChunk } from '@/llm/responses/chunks';
+import {
+  textStart,
+  textChunk,
+  textEnd,
+  thoughtStart,
+  thoughtChunk,
+  thoughtEnd,
+  finishReasonChunk,
+  usageDeltaChunk,
+  rawStreamEventChunk,
+  rawMessageChunk,
+} from '@/llm/responses/chunks';
+import { FinishReason } from '@/llm/responses/finish-reason';
+import type { Jsonable } from '@/llm/types/jsonable';
+
+/**
+ * State tracking for stream decoding.
+ */
+interface DecodeState {
+  /** Whether we're in a text block */
+  inTextBlock: boolean;
+  /** Whether we're in a thought block */
+  inThoughtBlock: boolean;
+  /** Whether to include thoughts in output */
+  includeThoughts: boolean;
+}
+
+/**
+ * Create a new decode state for a fresh stream.
+ */
+export function createDecodeState(includeThoughts: boolean): DecodeState {
+  return {
+    inTextBlock: false,
+    inThoughtBlock: false,
+    includeThoughts,
+  };
+}
+
+/**
+ * Decode a Google GenerateContentResponse to Mirascope chunks.
+ *
+ * Unlike Anthropic which streams character-by-character deltas,
+ * Google streams complete parts. We still emit start/chunk/end
+ * to maintain a consistent interface.
+ *
+ * @param response - The Google stream response chunk
+ * @param state - Mutable state tracking current blocks
+ * @returns Array of Mirascope chunks
+ */
+export function decodeStreamEvent(
+  response: GenerateContentResponse,
+  state: DecodeState
+): StreamResponseChunk[] {
+  const chunks: StreamResponseChunk[] = [];
+
+  // Always emit raw event chunk
+  chunks.push(rawStreamEventChunk(response));
+
+  // Emit raw message chunk
+  chunks.push(rawMessageChunk(response as unknown as Jsonable));
+
+  const candidate = response.candidates?.[0];
+  const parts = candidate?.content?.parts ?? [];
+
+  for (const part of parts) {
+    if (part.thought && part.text !== undefined) {
+      if (state.includeThoughts) {
+        // Emit thought start if not already in a thought block
+        if (!state.inThoughtBlock) {
+          // Close any open text block first
+          /* v8 ignore start - edge case when thoughts follow text */
+          if (state.inTextBlock) {
+            chunks.push(textEnd());
+            state.inTextBlock = false;
+          }
+          /* v8 ignore stop */
+          chunks.push(thoughtStart());
+          state.inThoughtBlock = true;
+        }
+        chunks.push(thoughtChunk(part.text));
+      }
+    } else if (part.text !== undefined) {
+      if (!state.inTextBlock) {
+        // Close any open thought block first
+        if (state.inThoughtBlock) {
+          chunks.push(thoughtEnd());
+          state.inThoughtBlock = false;
+        }
+        chunks.push(textStart());
+        state.inTextBlock = true;
+      }
+      chunks.push(textChunk(part.text));
+    }
+    // Note: functionCall parts not yet supported
+  }
+
+  if (candidate?.finishReason) {
+    // Close any open blocks
+    if (state.inTextBlock) {
+      chunks.push(textEnd());
+      state.inTextBlock = false;
+    }
+    /* v8 ignore start - edge case when thought block open at finish */
+    if (state.inThoughtBlock) {
+      chunks.push(thoughtEnd());
+      state.inThoughtBlock = false;
+    }
+    /* v8 ignore stop */
+
+    const finishReason = decodeFinishReason(candidate.finishReason);
+    if (finishReason) {
+      chunks.push(finishReasonChunk(finishReason));
+    }
+  }
+
+  const usage = response.usageMetadata;
+  if (usage) {
+    chunks.push(
+      usageDeltaChunk({
+        inputTokens: usage.promptTokenCount ?? /* v8 ignore next 1 */ 0,
+        outputTokens:
+          (usage.candidatesTokenCount ?? /* v8 ignore next 1 */ 0) +
+          (usage.thoughtsTokenCount ?? /* v8 ignore next 1 */ 0),
+        cacheReadTokens:
+          usage.cachedContentTokenCount ?? /* v8 ignore next 1 */ 0,
+        reasoningTokens: usage.thoughtsTokenCount ?? /* v8 ignore next 1 */ 0,
+      })
+    );
+  }
+
+  return chunks;
+}
+
+/**
+ * Convert Google finish reason to Mirascope FinishReason.
+ */
+function decodeFinishReason(
+  finishReason: GoogleFinishReasonType | undefined
+): FinishReason | null {
+  switch (finishReason) {
+    case GoogleFinishReason.MAX_TOKENS:
+      return FinishReason.MAX_TOKENS;
+    /* v8 ignore start - refusal cases are rare and hard to trigger reliably */
+    case GoogleFinishReason.SAFETY:
+    case GoogleFinishReason.RECITATION:
+    case GoogleFinishReason.BLOCKLIST:
+    case GoogleFinishReason.PROHIBITED_CONTENT:
+    case GoogleFinishReason.SPII:
+      return FinishReason.REFUSAL;
+    /* v8 ignore end */
+    case GoogleFinishReason.STOP:
+    case undefined:
+      return null; // Normal completion
+    /* v8 ignore start - exhaustive switch default */
+    default:
+      return null;
+    /* v8 ignore end */
+  }
+}
+
+/**
+ * Create an async iterator that decodes Google stream responses to Mirascope chunks.
+ *
+ * @param stream - The Google content stream
+ * @param includeThoughts - Whether to include thinking as thought chunks
+ * @returns Async iterator of Mirascope chunks
+ */
+export async function* decodeStream(
+  stream: AsyncIterable<GenerateContentResponse>,
+  includeThoughts: boolean
+): AsyncGenerator<StreamResponseChunk> {
+  const state = createDecodeState(includeThoughts);
+
+  for await (const response of stream) {
+    const chunks = decodeStreamEvent(response, state);
+    for (const chunk of chunks) {
+      yield chunk;
+    }
+  }
+}

@@ -15,7 +15,9 @@ import {
   buildRequestParams,
   decodeResponse,
 } from '@/llm/providers/openai/responses/_utils';
+import { decodeStream } from '@/llm/providers/openai/responses/decode-stream';
 import { Response } from '@/llm/responses';
+import { StreamResponse } from '@/llm/responses/stream-response';
 
 /**
  * Provider for the OpenAI Responses API.
@@ -95,6 +97,46 @@ export class OpenAIResponsesProvider extends BaseProvider {
       assistantMessage,
       finishReason,
       usage,
+    });
+  }
+
+  /**
+   * Execute a streaming call to the OpenAI Responses API.
+   *
+   * @param args - Call arguments
+   * @param args.modelId - The OpenAI model ID to use
+   * @param args.messages - Array of messages to send
+   * @param args.params - Optional additional parameters
+   * @returns StreamResponse object for streaming consumption
+   */
+  protected async _stream(args: {
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<StreamResponse> {
+    const modelIdTyped = args.modelId as OpenAIModelId;
+    const requestParams = buildRequestParams(
+      modelIdTyped,
+      args.messages,
+      args.params
+    );
+
+    const includeThoughts = getIncludeThoughts(args.params);
+
+    const stream = await this.client.responses.create({
+      ...requestParams,
+      stream: true,
+    });
+
+    const chunkIterator = decodeStream(stream, includeThoughts);
+
+    return new StreamResponse({
+      providerId: 'openai',
+      modelId: modelIdTyped,
+      providerModelName: modelName(modelIdTyped, null),
+      params: args.params ?? /* v8 ignore next 1 */ {},
+      inputMessages: args.messages,
+      chunkIterator,
     });
   }
 

@@ -7,6 +7,7 @@ import { promoteToMessages } from '@/llm/messages';
 import { Model } from '@/llm/models';
 import type { ModelId } from '@/llm/providers/model-id';
 import type { Response } from '@/llm/responses';
+import type { StreamResponse } from '@/llm/responses/stream-response';
 import type { NoVars } from '@/llm/types';
 
 /**
@@ -71,6 +72,26 @@ export interface Prompt<T = NoVars> {
     model: Model | ModelId,
     ...args: keyof T extends never ? [] : [vars: T]
   ): Promise<Response>;
+
+  /**
+   * Stream the prompt with a model and variables to generate a streaming response.
+   *
+   * @param model - The model to use, either a Model instance or model ID string.
+   * @param vars - The variables to pass to the template.
+   * @returns A promise that resolves to the streaming LLM response.
+   *
+   * @example
+   * ```typescript
+   * const response = await prompt.stream(model, { genre: 'fantasy' });
+   * for await (const text of response.textStream()) {
+   *   process.stdout.write(text);
+   * }
+   * ```
+   */
+  stream(
+    model: Model | ModelId,
+    ...args: keyof T extends never ? [] : [vars: T]
+  ): Promise<StreamResponse>;
 
   /**
    * Get the messages for this prompt without calling the LLM.
@@ -176,5 +197,14 @@ export function definePrompt<T>({ template }: PromptArgs<T>): Prompt<T> {
     return model.call(messages(vars));
   };
 
-  return Object.assign(call, { messages, template }) as Prompt<T>;
+  const stream = async (
+    modelOrId: Model | ModelId,
+    vars?: T
+  ): Promise<StreamResponse> => {
+    const model =
+      typeof modelOrId === 'string' ? new Model(modelOrId) : modelOrId;
+    return model.stream(messages(vars));
+  };
+
+  return Object.assign(call, { messages, stream, template }) as Prompt<T>;
 }

@@ -6,6 +6,8 @@ import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import type { ProviderId } from '@/llm/providers/provider-id';
 import { Response } from '@/llm/responses';
+import type { StreamResponseChunk } from '@/llm/responses/chunks';
+import { StreamResponse } from '@/llm/responses/stream-response';
 import {
   APIError,
   ProviderError,
@@ -73,6 +75,62 @@ export abstract class BaseProvider {
     messages: readonly Message[];
     params?: Params;
   }): Promise<Response>;
+
+  /**
+   * Generate a StreamResponse by calling this provider's LLM with streaming.
+   *
+   * This method wraps the provider-specific implementation with error handling,
+   * converting provider SDK exceptions to Mirascope error types. It also wraps
+   * the chunk iterator to catch errors during iteration (not just initial call).
+   */
+  async stream(args: {
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<StreamResponse> {
+    let response: StreamResponse;
+    try {
+      response = await this._stream(args);
+    } catch (e) {
+      throw this.wrapError(e);
+    }
+
+    // Wrap the iterator to catch errors during iteration
+    response.wrapChunkIterator((iterator) =>
+      this._wrapIteratorErrors(iterator)
+    );
+
+    return response;
+  }
+
+  /**
+   * Wrap an async iterator to catch errors during iteration.
+   * Converts provider SDK exceptions to Mirascope error types.
+   */
+  private async *_wrapIteratorErrors(
+    iterator: AsyncIterator<StreamResponseChunk>
+  ): AsyncGenerator<StreamResponseChunk> {
+    try {
+      let result = await iterator.next();
+      while (!result.done) {
+        yield result.value;
+        result = await iterator.next();
+      }
+    } catch (e) {
+      throw this.wrapError(e);
+    }
+  }
+
+  /**
+   * Provider-specific implementation of stream().
+   *
+   * Subclasses implement this method to handle the actual streaming API call.
+   */
+  protected abstract _stream(args: {
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<StreamResponse>;
 
   /**
    * Wrap a provider SDK exception in the appropriate Mirascope error type.

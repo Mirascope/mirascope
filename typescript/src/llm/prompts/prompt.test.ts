@@ -25,6 +25,14 @@ describe('definePrompt', () => {
       expect(greet.template).toBe(template);
     });
 
+    it('has a stream method', () => {
+      const prompt = definePrompt<{ genre: string }>({
+        template: ({ genre }) => `Recommend a ${genre} book`,
+      });
+
+      expect(typeof prompt.stream).toBe('function');
+    });
+
     it('supports message arrays', () => {
       const chatBot = definePrompt<{ question: string }>({
         template: ({ question }) => [
@@ -86,6 +94,14 @@ describe('definePrompt', () => {
       const messages = prompt.messages();
 
       expect(messages).toHaveLength(2);
+    });
+
+    it('has a stream method', () => {
+      const prompt = definePrompt({
+        template: () => 'Hello!',
+      });
+
+      expect(typeof prompt.stream).toBe('function');
     });
   });
 });

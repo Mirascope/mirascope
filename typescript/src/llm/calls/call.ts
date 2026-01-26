@@ -10,6 +10,7 @@ import type { Params } from '@/llm/models/params';
 import { definePrompt, type Prompt, type TemplateFunc } from '@/llm/prompts';
 import type { ModelId } from '@/llm/providers/model-id';
 import type { Response } from '@/llm/responses';
+import type { StreamResponse } from '@/llm/responses/stream-response';
 import type { NoVars } from '@/llm/types';
 
 /**
@@ -59,6 +60,24 @@ export interface Call<T = NoVars> {
    * @returns A promise that resolves to the LLM response.
    */
   (...args: keyof T extends never ? [] : [vars: T]): Promise<Response>;
+
+  /**
+   * Stream directly to generate a streaming response (model is bundled).
+   *
+   * @param vars - The variables to pass to the template.
+   * @returns A promise that resolves to the streaming LLM response.
+   *
+   * @example
+   * ```typescript
+   * const response = await call.stream({ genre: 'fantasy' });
+   * for await (const text of response.textStream()) {
+   *   process.stdout.write(text);
+   * }
+   * ```
+   */
+  stream(
+    ...args: keyof T extends never ? [] : [vars: T]
+  ): Promise<StreamResponse>;
 
   /**
    * The bundled model.
@@ -160,9 +179,16 @@ export function defineCall<T>({
     return prompt(resolvedModel, ...vars);
   };
 
+  const stream = async (
+    ...vars: keyof T extends never ? [] : [vars: T]
+  ): Promise<StreamResponse> => {
+    return prompt.stream(resolvedModel, ...vars);
+  };
+
   return Object.assign(call, {
     model: resolvedModel,
     prompt,
+    stream,
     template,
   }) as Call<T>;
 }
