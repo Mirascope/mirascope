@@ -6,57 +6,72 @@
  */
 
 /**
+ * Array of all known Anthropic model IDs.
+ * This is the source of truth - the type and Set are derived from it.
+ */
+const ANTHROPIC_KNOWN_MODELS_ARRAY = [
+  'anthropic/claude-3-5-haiku',
+  'anthropic/claude-3-5-haiku-20241022',
+  'anthropic/claude-3-5-haiku-latest',
+  'anthropic/claude-3-7-sonnet',
+  'anthropic/claude-3-7-sonnet-20250219',
+  'anthropic/claude-3-7-sonnet-latest',
+  'anthropic/claude-3-haiku',
+  'anthropic/claude-3-haiku-20240307',
+  'anthropic/claude-3-haiku-latest',
+  'anthropic/claude-3-opus',
+  'anthropic/claude-3-opus-20240229',
+  'anthropic/claude-3-opus-latest',
+  'anthropic/claude-haiku-4-5',
+  'anthropic/claude-haiku-4-5-0',
+  'anthropic/claude-haiku-4-5-0-20251001',
+  'anthropic/claude-haiku-4-5-0-latest',
+  'anthropic/claude-haiku-4-5-20251001',
+  'anthropic/claude-haiku-4-5-latest',
+  'anthropic/claude-opus-4',
+  'anthropic/claude-opus-4-0',
+  'anthropic/claude-opus-4-0-20250514',
+  'anthropic/claude-opus-4-0-latest',
+  'anthropic/claude-opus-4-1',
+  'anthropic/claude-opus-4-1-0',
+  'anthropic/claude-opus-4-1-0-20250805',
+  'anthropic/claude-opus-4-1-0-latest',
+  'anthropic/claude-opus-4-1-20250805',
+  'anthropic/claude-opus-4-1-latest',
+  'anthropic/claude-opus-4-20250514',
+  'anthropic/claude-opus-4-5',
+  'anthropic/claude-opus-4-5-0',
+  'anthropic/claude-opus-4-5-0-20251101',
+  'anthropic/claude-opus-4-5-0-latest',
+  'anthropic/claude-opus-4-5-20251101',
+  'anthropic/claude-opus-4-5-latest',
+  'anthropic/claude-opus-4-latest',
+  'anthropic/claude-sonnet-4',
+  'anthropic/claude-sonnet-4-0',
+  'anthropic/claude-sonnet-4-0-20250514',
+  'anthropic/claude-sonnet-4-0-latest',
+  'anthropic/claude-sonnet-4-20250514',
+  'anthropic/claude-sonnet-4-5',
+  'anthropic/claude-sonnet-4-5-0',
+  'anthropic/claude-sonnet-4-5-0-20250929',
+  'anthropic/claude-sonnet-4-5-0-latest',
+  'anthropic/claude-sonnet-4-5-20250929',
+  'anthropic/claude-sonnet-4-5-latest',
+  'anthropic/claude-sonnet-4-latest',
+] as const;
+
+/**
  * Valid Anthropic model IDs.
  */
 export type AnthropicKnownModels =
-  | 'anthropic/claude-3-5-haiku'
-  | 'anthropic/claude-3-5-haiku-20241022'
-  | 'anthropic/claude-3-5-haiku-latest'
-  | 'anthropic/claude-3-7-sonnet'
-  | 'anthropic/claude-3-7-sonnet-20250219'
-  | 'anthropic/claude-3-7-sonnet-latest'
-  | 'anthropic/claude-3-haiku'
-  | 'anthropic/claude-3-haiku-20240307'
-  | 'anthropic/claude-3-haiku-latest'
-  | 'anthropic/claude-3-opus'
-  | 'anthropic/claude-3-opus-20240229'
-  | 'anthropic/claude-3-opus-latest'
-  | 'anthropic/claude-haiku-4-5'
-  | 'anthropic/claude-haiku-4-5-0'
-  | 'anthropic/claude-haiku-4-5-0-20251001'
-  | 'anthropic/claude-haiku-4-5-0-latest'
-  | 'anthropic/claude-haiku-4-5-20251001'
-  | 'anthropic/claude-haiku-4-5-latest'
-  | 'anthropic/claude-opus-4'
-  | 'anthropic/claude-opus-4-0'
-  | 'anthropic/claude-opus-4-0-20250514'
-  | 'anthropic/claude-opus-4-0-latest'
-  | 'anthropic/claude-opus-4-1'
-  | 'anthropic/claude-opus-4-1-0'
-  | 'anthropic/claude-opus-4-1-0-20250805'
-  | 'anthropic/claude-opus-4-1-0-latest'
-  | 'anthropic/claude-opus-4-1-20250805'
-  | 'anthropic/claude-opus-4-1-latest'
-  | 'anthropic/claude-opus-4-20250514'
-  | 'anthropic/claude-opus-4-5'
-  | 'anthropic/claude-opus-4-5-0'
-  | 'anthropic/claude-opus-4-5-0-20251101'
-  | 'anthropic/claude-opus-4-5-0-latest'
-  | 'anthropic/claude-opus-4-5-20251101'
-  | 'anthropic/claude-opus-4-5-latest'
-  | 'anthropic/claude-opus-4-latest'
-  | 'anthropic/claude-sonnet-4'
-  | 'anthropic/claude-sonnet-4-0'
-  | 'anthropic/claude-sonnet-4-0-20250514'
-  | 'anthropic/claude-sonnet-4-0-latest'
-  | 'anthropic/claude-sonnet-4-20250514'
-  | 'anthropic/claude-sonnet-4-5'
-  | 'anthropic/claude-sonnet-4-5-0'
-  | 'anthropic/claude-sonnet-4-5-0-20250929'
-  | 'anthropic/claude-sonnet-4-5-0-latest'
-  | 'anthropic/claude-sonnet-4-5-20250929'
-  | 'anthropic/claude-sonnet-4-5-latest'
-  | 'anthropic/claude-sonnet-4-latest';
+  (typeof ANTHROPIC_KNOWN_MODELS_ARRAY)[number];
+
+/**
+ * Set of all known Anthropic model IDs.
+ */
+export const ANTHROPIC_KNOWN_MODELS: ReadonlySet<string> = new Set(
+  ANTHROPIC_KNOWN_MODELS_ARRAY
+);
 
 /**
  * Models that do not support strict structured outputs (strict mode tools).

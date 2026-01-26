@@ -6,179 +6,193 @@
  */
 
 /**
+ * Array of all known OpenAI model IDs.
+ * This is the source of truth - the type and Set are derived from it.
+ */
+const OPENAI_KNOWN_MODELS_ARRAY = [
+  'openai/chatgpt-4o-latest',
+  'openai/chatgpt-4o-latest:completions',
+  'openai/chatgpt-4o-latest:responses',
+  'openai/codex-mini-latest',
+  'openai/codex-mini-latest:responses',
+  'openai/gpt-3.5-turbo',
+  'openai/gpt-3.5-turbo:completions',
+  'openai/gpt-3.5-turbo:responses',
+  'openai/gpt-3.5-turbo-0125',
+  'openai/gpt-3.5-turbo-0125:completions',
+  'openai/gpt-3.5-turbo-0125:responses',
+  'openai/gpt-3.5-turbo-1106',
+  'openai/gpt-3.5-turbo-1106:completions',
+  'openai/gpt-3.5-turbo-1106:responses',
+  'openai/gpt-3.5-turbo-16k',
+  'openai/gpt-3.5-turbo-16k:completions',
+  'openai/gpt-4',
+  'openai/gpt-4:completions',
+  'openai/gpt-4:responses',
+  'openai/gpt-4-0125-preview',
+  'openai/gpt-4-0125-preview:completions',
+  'openai/gpt-4-0125-preview:responses',
+  'openai/gpt-4-0613',
+  'openai/gpt-4-0613:completions',
+  'openai/gpt-4-0613:responses',
+  'openai/gpt-4-1106-preview',
+  'openai/gpt-4-1106-preview:completions',
+  'openai/gpt-4-1106-preview:responses',
+  'openai/gpt-4-turbo',
+  'openai/gpt-4-turbo:completions',
+  'openai/gpt-4-turbo:responses',
+  'openai/gpt-4-turbo-2024-04-09',
+  'openai/gpt-4-turbo-2024-04-09:completions',
+  'openai/gpt-4-turbo-2024-04-09:responses',
+  'openai/gpt-4-turbo-preview',
+  'openai/gpt-4-turbo-preview:completions',
+  'openai/gpt-4-turbo-preview:responses',
+  'openai/gpt-4.1',
+  'openai/gpt-4.1:completions',
+  'openai/gpt-4.1:responses',
+  'openai/gpt-4.1-2025-04-14',
+  'openai/gpt-4.1-2025-04-14:completions',
+  'openai/gpt-4.1-2025-04-14:responses',
+  'openai/gpt-4.1-mini',
+  'openai/gpt-4.1-mini:completions',
+  'openai/gpt-4.1-mini:responses',
+  'openai/gpt-4.1-mini-2025-04-14',
+  'openai/gpt-4.1-mini-2025-04-14:completions',
+  'openai/gpt-4.1-mini-2025-04-14:responses',
+  'openai/gpt-4.1-nano',
+  'openai/gpt-4.1-nano:completions',
+  'openai/gpt-4.1-nano:responses',
+  'openai/gpt-4.1-nano-2025-04-14',
+  'openai/gpt-4.1-nano-2025-04-14:completions',
+  'openai/gpt-4.1-nano-2025-04-14:responses',
+  'openai/gpt-4o',
+  'openai/gpt-4o:completions',
+  'openai/gpt-4o:responses',
+  'openai/gpt-4o-2024-05-13',
+  'openai/gpt-4o-2024-05-13:completions',
+  'openai/gpt-4o-2024-05-13:responses',
+  'openai/gpt-4o-2024-08-06',
+  'openai/gpt-4o-2024-08-06:completions',
+  'openai/gpt-4o-2024-08-06:responses',
+  'openai/gpt-4o-2024-11-20',
+  'openai/gpt-4o-2024-11-20:completions',
+  'openai/gpt-4o-2024-11-20:responses',
+  'openai/gpt-4o-mini',
+  'openai/gpt-4o-mini:completions',
+  'openai/gpt-4o-mini:responses',
+  'openai/gpt-4o-mini-2024-07-18',
+  'openai/gpt-4o-mini-2024-07-18:completions',
+  'openai/gpt-4o-mini-2024-07-18:responses',
+  'openai/gpt-4o-mini-search-preview',
+  'openai/gpt-4o-mini-search-preview:completions',
+  'openai/gpt-4o-mini-search-preview-2025-03-11',
+  'openai/gpt-4o-mini-search-preview-2025-03-11:completions',
+  'openai/gpt-4o-search-preview',
+  'openai/gpt-4o-search-preview:completions',
+  'openai/gpt-4o-search-preview-2025-03-11',
+  'openai/gpt-4o-search-preview-2025-03-11:completions',
+  'openai/gpt-5',
+  'openai/gpt-5:completions',
+  'openai/gpt-5:responses',
+  'openai/gpt-5-2025-08-07',
+  'openai/gpt-5-2025-08-07:completions',
+  'openai/gpt-5-2025-08-07:responses',
+  'openai/gpt-5-chat-latest',
+  'openai/gpt-5-chat-latest:completions',
+  'openai/gpt-5-chat-latest:responses',
+  'openai/gpt-5-codex',
+  'openai/gpt-5-codex:responses',
+  'openai/gpt-5-mini',
+  'openai/gpt-5-mini:completions',
+  'openai/gpt-5-mini:responses',
+  'openai/gpt-5-mini-2025-08-07',
+  'openai/gpt-5-mini-2025-08-07:completions',
+  'openai/gpt-5-mini-2025-08-07:responses',
+  'openai/gpt-5-nano',
+  'openai/gpt-5-nano:completions',
+  'openai/gpt-5-nano:responses',
+  'openai/gpt-5-nano-2025-08-07',
+  'openai/gpt-5-nano-2025-08-07:completions',
+  'openai/gpt-5-nano-2025-08-07:responses',
+  'openai/gpt-5-pro',
+  'openai/gpt-5-pro:responses',
+  'openai/gpt-5-pro-2025-10-06',
+  'openai/gpt-5-pro-2025-10-06:responses',
+  'openai/gpt-5-search-api',
+  'openai/gpt-5-search-api:completions',
+  'openai/gpt-5-search-api-2025-10-14',
+  'openai/gpt-5-search-api-2025-10-14:completions',
+  'openai/gpt-5.1',
+  'openai/gpt-5.1:responses',
+  'openai/gpt-5.1-2025-11-13',
+  'openai/gpt-5.1-2025-11-13:responses',
+  'openai/gpt-5.1-chat-latest',
+  'openai/gpt-5.1-chat-latest:completions',
+  'openai/gpt-5.1-chat-latest:responses',
+  'openai/gpt-5.1-codex',
+  'openai/gpt-5.1-codex:responses',
+  'openai/gpt-5.1-codex-max',
+  'openai/gpt-5.1-codex-max:responses',
+  'openai/gpt-5.1-codex-mini',
+  'openai/gpt-5.1-codex-mini:responses',
+  'openai/gpt-5.2',
+  'openai/gpt-5.2:completions',
+  'openai/gpt-5.2:responses',
+  'openai/gpt-5.2-2025-12-11',
+  'openai/gpt-5.2-2025-12-11:completions',
+  'openai/gpt-5.2-2025-12-11:responses',
+  'openai/gpt-5.2-chat-latest',
+  'openai/gpt-5.2-chat-latest:completions',
+  'openai/gpt-5.2-chat-latest:responses',
+  'openai/gpt-5.2-pro',
+  'openai/gpt-5.2-pro:responses',
+  'openai/gpt-5.2-pro-2025-12-11',
+  'openai/gpt-5.2-pro-2025-12-11:responses',
+  'openai/o1',
+  'openai/o1:completions',
+  'openai/o1:responses',
+  'openai/o1-2024-12-17',
+  'openai/o1-2024-12-17:completions',
+  'openai/o1-2024-12-17:responses',
+  'openai/o1-pro',
+  'openai/o1-pro:responses',
+  'openai/o1-pro-2025-03-19',
+  'openai/o1-pro-2025-03-19:responses',
+  'openai/o3',
+  'openai/o3:completions',
+  'openai/o3:responses',
+  'openai/o3-2025-04-16',
+  'openai/o3-2025-04-16:completions',
+  'openai/o3-2025-04-16:responses',
+  'openai/o3-mini',
+  'openai/o3-mini:completions',
+  'openai/o3-mini:responses',
+  'openai/o3-mini-2025-01-31',
+  'openai/o3-mini-2025-01-31:completions',
+  'openai/o3-mini-2025-01-31:responses',
+  'openai/o3-pro',
+  'openai/o3-pro:responses',
+  'openai/o3-pro-2025-06-10',
+  'openai/o3-pro-2025-06-10:responses',
+  'openai/o4-mini',
+  'openai/o4-mini:completions',
+  'openai/o4-mini:responses',
+  'openai/o4-mini-2025-04-16',
+  'openai/o4-mini-2025-04-16:completions',
+  'openai/o4-mini-2025-04-16:responses',
+] as const;
+
+/**
  * Valid OpenAI model IDs including API-specific variants.
  */
-export type OpenAIKnownModels =
-  | 'openai/chatgpt-4o-latest'
-  | 'openai/chatgpt-4o-latest:completions'
-  | 'openai/chatgpt-4o-latest:responses'
-  | 'openai/codex-mini-latest'
-  | 'openai/codex-mini-latest:responses'
-  | 'openai/gpt-3.5-turbo'
-  | 'openai/gpt-3.5-turbo:completions'
-  | 'openai/gpt-3.5-turbo:responses'
-  | 'openai/gpt-3.5-turbo-0125'
-  | 'openai/gpt-3.5-turbo-0125:completions'
-  | 'openai/gpt-3.5-turbo-0125:responses'
-  | 'openai/gpt-3.5-turbo-1106'
-  | 'openai/gpt-3.5-turbo-1106:completions'
-  | 'openai/gpt-3.5-turbo-1106:responses'
-  | 'openai/gpt-3.5-turbo-16k'
-  | 'openai/gpt-3.5-turbo-16k:completions'
-  | 'openai/gpt-4'
-  | 'openai/gpt-4:completions'
-  | 'openai/gpt-4:responses'
-  | 'openai/gpt-4-0125-preview'
-  | 'openai/gpt-4-0125-preview:completions'
-  | 'openai/gpt-4-0125-preview:responses'
-  | 'openai/gpt-4-0613'
-  | 'openai/gpt-4-0613:completions'
-  | 'openai/gpt-4-0613:responses'
-  | 'openai/gpt-4-1106-preview'
-  | 'openai/gpt-4-1106-preview:completions'
-  | 'openai/gpt-4-1106-preview:responses'
-  | 'openai/gpt-4-turbo'
-  | 'openai/gpt-4-turbo:completions'
-  | 'openai/gpt-4-turbo:responses'
-  | 'openai/gpt-4-turbo-2024-04-09'
-  | 'openai/gpt-4-turbo-2024-04-09:completions'
-  | 'openai/gpt-4-turbo-2024-04-09:responses'
-  | 'openai/gpt-4-turbo-preview'
-  | 'openai/gpt-4-turbo-preview:completions'
-  | 'openai/gpt-4-turbo-preview:responses'
-  | 'openai/gpt-4.1'
-  | 'openai/gpt-4.1:completions'
-  | 'openai/gpt-4.1:responses'
-  | 'openai/gpt-4.1-2025-04-14'
-  | 'openai/gpt-4.1-2025-04-14:completions'
-  | 'openai/gpt-4.1-2025-04-14:responses'
-  | 'openai/gpt-4.1-mini'
-  | 'openai/gpt-4.1-mini:completions'
-  | 'openai/gpt-4.1-mini:responses'
-  | 'openai/gpt-4.1-mini-2025-04-14'
-  | 'openai/gpt-4.1-mini-2025-04-14:completions'
-  | 'openai/gpt-4.1-mini-2025-04-14:responses'
-  | 'openai/gpt-4.1-nano'
-  | 'openai/gpt-4.1-nano:completions'
-  | 'openai/gpt-4.1-nano:responses'
-  | 'openai/gpt-4.1-nano-2025-04-14'
-  | 'openai/gpt-4.1-nano-2025-04-14:completions'
-  | 'openai/gpt-4.1-nano-2025-04-14:responses'
-  | 'openai/gpt-4o'
-  | 'openai/gpt-4o:completions'
-  | 'openai/gpt-4o:responses'
-  | 'openai/gpt-4o-2024-05-13'
-  | 'openai/gpt-4o-2024-05-13:completions'
-  | 'openai/gpt-4o-2024-05-13:responses'
-  | 'openai/gpt-4o-2024-08-06'
-  | 'openai/gpt-4o-2024-08-06:completions'
-  | 'openai/gpt-4o-2024-08-06:responses'
-  | 'openai/gpt-4o-2024-11-20'
-  | 'openai/gpt-4o-2024-11-20:completions'
-  | 'openai/gpt-4o-2024-11-20:responses'
-  | 'openai/gpt-4o-mini'
-  | 'openai/gpt-4o-mini:completions'
-  | 'openai/gpt-4o-mini:responses'
-  | 'openai/gpt-4o-mini-2024-07-18'
-  | 'openai/gpt-4o-mini-2024-07-18:completions'
-  | 'openai/gpt-4o-mini-2024-07-18:responses'
-  | 'openai/gpt-4o-mini-search-preview'
-  | 'openai/gpt-4o-mini-search-preview:completions'
-  | 'openai/gpt-4o-mini-search-preview-2025-03-11'
-  | 'openai/gpt-4o-mini-search-preview-2025-03-11:completions'
-  | 'openai/gpt-4o-search-preview'
-  | 'openai/gpt-4o-search-preview:completions'
-  | 'openai/gpt-4o-search-preview-2025-03-11'
-  | 'openai/gpt-4o-search-preview-2025-03-11:completions'
-  | 'openai/gpt-5'
-  | 'openai/gpt-5:completions'
-  | 'openai/gpt-5:responses'
-  | 'openai/gpt-5-2025-08-07'
-  | 'openai/gpt-5-2025-08-07:completions'
-  | 'openai/gpt-5-2025-08-07:responses'
-  | 'openai/gpt-5-chat-latest'
-  | 'openai/gpt-5-chat-latest:completions'
-  | 'openai/gpt-5-chat-latest:responses'
-  | 'openai/gpt-5-codex'
-  | 'openai/gpt-5-codex:responses'
-  | 'openai/gpt-5-mini'
-  | 'openai/gpt-5-mini:completions'
-  | 'openai/gpt-5-mini:responses'
-  | 'openai/gpt-5-mini-2025-08-07'
-  | 'openai/gpt-5-mini-2025-08-07:completions'
-  | 'openai/gpt-5-mini-2025-08-07:responses'
-  | 'openai/gpt-5-nano'
-  | 'openai/gpt-5-nano:completions'
-  | 'openai/gpt-5-nano:responses'
-  | 'openai/gpt-5-nano-2025-08-07'
-  | 'openai/gpt-5-nano-2025-08-07:completions'
-  | 'openai/gpt-5-nano-2025-08-07:responses'
-  | 'openai/gpt-5-pro'
-  | 'openai/gpt-5-pro:responses'
-  | 'openai/gpt-5-pro-2025-10-06'
-  | 'openai/gpt-5-pro-2025-10-06:responses'
-  | 'openai/gpt-5-search-api'
-  | 'openai/gpt-5-search-api:completions'
-  | 'openai/gpt-5-search-api-2025-10-14'
-  | 'openai/gpt-5-search-api-2025-10-14:completions'
-  | 'openai/gpt-5.1'
-  | 'openai/gpt-5.1:responses'
-  | 'openai/gpt-5.1-2025-11-13'
-  | 'openai/gpt-5.1-2025-11-13:responses'
-  | 'openai/gpt-5.1-chat-latest'
-  | 'openai/gpt-5.1-chat-latest:completions'
-  | 'openai/gpt-5.1-chat-latest:responses'
-  | 'openai/gpt-5.1-codex'
-  | 'openai/gpt-5.1-codex:responses'
-  | 'openai/gpt-5.1-codex-max'
-  | 'openai/gpt-5.1-codex-max:responses'
-  | 'openai/gpt-5.1-codex-mini'
-  | 'openai/gpt-5.1-codex-mini:responses'
-  | 'openai/gpt-5.2'
-  | 'openai/gpt-5.2:completions'
-  | 'openai/gpt-5.2:responses'
-  | 'openai/gpt-5.2-2025-12-11'
-  | 'openai/gpt-5.2-2025-12-11:completions'
-  | 'openai/gpt-5.2-2025-12-11:responses'
-  | 'openai/gpt-5.2-chat-latest'
-  | 'openai/gpt-5.2-chat-latest:completions'
-  | 'openai/gpt-5.2-chat-latest:responses'
-  | 'openai/gpt-5.2-pro'
-  | 'openai/gpt-5.2-pro:responses'
-  | 'openai/gpt-5.2-pro-2025-12-11'
-  | 'openai/gpt-5.2-pro-2025-12-11:responses'
-  | 'openai/o1'
-  | 'openai/o1:completions'
-  | 'openai/o1:responses'
-  | 'openai/o1-2024-12-17'
-  | 'openai/o1-2024-12-17:completions'
-  | 'openai/o1-2024-12-17:responses'
-  | 'openai/o1-pro'
-  | 'openai/o1-pro:responses'
-  | 'openai/o1-pro-2025-03-19'
-  | 'openai/o1-pro-2025-03-19:responses'
-  | 'openai/o3'
-  | 'openai/o3:completions'
-  | 'openai/o3:responses'
-  | 'openai/o3-2025-04-16'
-  | 'openai/o3-2025-04-16:completions'
-  | 'openai/o3-2025-04-16:responses'
-  | 'openai/o3-mini'
-  | 'openai/o3-mini:completions'
-  | 'openai/o3-mini:responses'
-  | 'openai/o3-mini-2025-01-31'
-  | 'openai/o3-mini-2025-01-31:completions'
-  | 'openai/o3-mini-2025-01-31:responses'
-  | 'openai/o3-pro'
-  | 'openai/o3-pro:responses'
-  | 'openai/o3-pro-2025-06-10'
-  | 'openai/o3-pro-2025-06-10:responses'
-  | 'openai/o4-mini'
-  | 'openai/o4-mini:completions'
-  | 'openai/o4-mini:responses'
-  | 'openai/o4-mini-2025-04-16'
-  | 'openai/o4-mini-2025-04-16:completions'
-  | 'openai/o4-mini-2025-04-16:responses';
+export type OpenAIKnownModels = (typeof OPENAI_KNOWN_MODELS_ARRAY)[number];
+
+/**
+ * Set of all known OpenAI model IDs.
+ */
+export const OPENAI_KNOWN_MODELS: ReadonlySet<string> = new Set(
+  OPENAI_KNOWN_MODELS_ARRAY
+);
 
 /**
  * Models that do not support audio inputs.
