@@ -13,10 +13,6 @@ const llm: DocSpec = {
       label: "Overview",
     },
     {
-      slug: "quickstart",
-      label: "Quickstart",
-    },
-    {
       slug: "messages",
       label: "Messages",
     },

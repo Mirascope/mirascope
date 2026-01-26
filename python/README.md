@@ -1,6 +1,63 @@
-## Mirascope v2 Python
+# Mirascope Python
 
-This directory contains the Python implementation of Mirascope.
+This directory contains the Python implementation of Mirascope: The LLM Anti-Framework. It's intended as a "Goldilocks API" that affords the fine-grained control you'd get from using raw provider APIs, as well as the type safety and easy ergonomics that are offered by higher-level agent frameworks. Think of Mirascope as the "React" of LLM development, where provider native APIs are HTML/CSS, and the agent frameworks are Angular.
+
+## Documentation 
+
+- [Why use Mirascope?](https://mirascope.com/docs/why)
+- [Mirascope Quickstart](https://mirascope.com/docs/quickstart)
+- [Mirascope Concepts](https://mirascope.com/docs/learn/llm)
+
+## Installation
+
+```bash
+# using uv, with all provider deps
+uv add "mirascope[all]"
+
+# using uv, with just Anthropic
+uv add "mirascope[anthropic]"
+
+# using pip, with all deps 
+pip install "mirascope[all]"
+
+# using pip, just OpenAI
+pip install "mirascope[openai]"
+```
+
+## Usage
+
+Here's an example of creating a simple agent, with tool-calling and streaming, using Mirascope. For many more examples, [read the docs](https://mirascope.com/docs).
+
+```python
+from mirascope import llm
+
+@llm.tool
+def exp(a: float, b: float) -> float:
+   """Compute an exponent"""
+   return a ** b
+
+@llm.tool
+def add(a: float, b: float) -> float:
+   """Add two numbers"""
+   return a + b
+
+model = llm.Model("anthropic/claude-haiku-4-5")
+response = model.stream("What is 42 ** 4 + 37 ** 3?", tools=[exp, add])
+
+while True:
+   for stream in response.streams():
+         if stream.content_type == "text":
+            for delta in stream:
+               print(delta, end="", flush=True)
+         elif stream.content_type == "tool_call":
+            stream.collect()  # consume the stream
+            print(f"\n> Calling {stream.tool_name}({stream.partial_args})")
+   print()
+   if response.tool_calls:
+         response = response.resume(response.execute_tools())
+   else:
+         break
+```
 
 ## Development Setup
 
@@ -8,97 +65,62 @@ This directory contains the Python implementation of Mirascope.
    ```bash
    cp .env.example .env
    # Edit .env with your API keys
+   # Necessary for updating e2e snapshot tests
    ```
 
 2. **Install Dependencies**:
 
    ```bash
+   cd python
    uv sync --all-extras --dev
    ```
 
-3. **Run Tests**:
-   ```bash
-   uv run pytest
-   ```
+## Helpful Commands:
 
-## `ops.span` and Session Tracing
+Here are helpful development commands. All must be run from within the `python` directory.
 
-`mirascope.ops` provides tracing helpers to trace any Python function, not just
-`llm.Model` calls.
+- `uv run pyright .`
 
-1. Install the OTEL extra and set up a tracer provider exactly as shown above.
-   `ops.span` automatically reuses the active provider, so spans from manual
-   instrumentation and GenAI instrumentation end up in the same trace tree.
-2. Use `ops.session` to group related spans and attach metadata:
-   ```python
-   from mirascope import ops
+Run typechecking.
 
-   with ops.session(id="req-42", attributes={"team": "core"}):
-       with ops.span("load-data") as span:
-           span.set(stage="ingest")
-           # expensive work here
-   ```
-3. The span exposes `span_id`/`trace_id`, logging helpers, and graceful no-op
-   behavior when OTEL is not configured. When OTEL is active, session metadata is
-   attached to every span, and additional tools like `ops.trace`/`ops.version`
-   (planned) can build on the same context.
+- `uv run ruff check --fix .`
 
-## `ops.trace` Decorator
+Check ruff linter (fixing issues where possible).
 
-`@ops.trace` adds span instrumentation to any Python callable (including
-`llm.Model` helpers) so you can capture argument/return metadata alongside the
-GenAI spans emitted by `llm.instrument_opentelemetry`.
+- `uv run ruff format .`
 
-```python
-from mirascope import ops
+Run ruff formatter.
 
-@ops.trace(tags=["ingest"])
-def normalize(record: dict[str, str]) -> dict[str, str]:
-    return {k: v.strip() for k, v in record.items()}
+- `uv run pytest`
 
-result = normalize({"foo": " bar "})
-wrapped = normalize.wrapped({"foo": " bar "})
-print(wrapped.span_id, wrapped.trace_id)
-```
+Run all Python unit tests.
 
-- The decorator automatically handles sync/async functions and reuses `ops.span`
-  serialization logic for arguments/results.
-- Combine with `ops.session` to tag spans with contextual metadata, and with
-  `ops.instrument_opentelemetry` to obtain both model-level GenAI spans
-  and method-level spans like `recommend_book.__call__`.
-- For now we focus on Mirascope-layer entry points (e.g., decorated functions or
-  `llm.Model` wrappers) and do not auto-instrument underlying provider SDK calls.
+- `uv run pytest --cov --cov-config=.coverargc --cov-report=term-missing`
+
+Run all Python unit tests, and report code coverage. (We require 100% coverage in CI.)
+
+- `uv run pytest --fix`
+
+Run all Python unit tests, and update any changed snapshots.
+
+- `uvx codespell --config ../.codespellrc`
+
+Run codespell, identifying many common spelling mistakes.
+
+## Typechecking
+
+We prize type safety, both on the API surface and internally. You can run typechecking via `uv run pyright .` within this `python/` directory. (We're looking into supporting `ty` so as to speed up our typechecking.)
 
 ## Testing
 
-### VCR Cassettes
+This project makes extensive use of e2e tests, which replay real interactions with various LLM providers to ensure that Mirascope truly works on the providers' APIs. We use [VCR.py](https://vcrpy.readthedocs.io/) and [inline-snapshot](https://15r10nk.github.io/inline-snapshot/) to maintain these e2e tests. For more details, read [tests/e2e/README.md](./tests/e2e/README.md).
 
-The project uses [VCR.py](https://vcrpy.readthedocs.io/) to record and replay HTTP interactions with LLM APIs. This allows tests to run quickly and consistently without making actual API calls.
+If you make changes to Mirascope that require new snapshots, you should manually delete the outdated cassette files, and then run `uv run pytest python/tests/e2e --fix`. Note that doing so requires real API keys in your `.env` file.
 
-- **Cassettes Location**: Test cassettes are stored in `tests/llm/clients/*/cassettes/`
-- **Recording Mode**: Tests use `"once"` mode - records new interactions if no cassette exists, replays existing cassettes otherwise
-- **CI/CD**: In CI environments, tests use existing cassettes and never make real API calls
+We require 100% code coverage in CI. You can get a code coverage report via:
 
-### Inline Snapshots
+`uv run pytest --cov --cov-config=.coverargc --cov-report=term-missing`
 
-The project uses [inline-snapshot](https://15r10nk.github.io/inline-snapshot/) to capture expected test outputs directly in the test code.
+## Read More
 
-- **Update Snapshots**: Run `uv run pytest --inline-snapshot=fix` to update all snapshots with actual values
-- **Review Changes**: Run `uv run pytest --inline-snapshot=review` to preview what would change
-- **Formatted Output**: Snapshots are automatically formatted with `ruff` for consistency
-
-Example:
-```python
-def test_api_response():
-    response = client.call(messages=[user("Hello")])
-    assert response.content == snapshot([Text(text="Hi there!")])
-```
-
-### Recording New Test Interactions
-
-To record new test interactions:
-
-1. Ensure your API keys are set in `.env`
-2. Delete the relevant cassette file (if updating an existing test)
-3. Run the specific test: `uv run pytest tests/path/to/test.py::test_name`
-4. The cassette will be automatically created/updated
+For more info on contributing, read [the contributing page in our docs](https://mirascope.com/docs/contributing).
