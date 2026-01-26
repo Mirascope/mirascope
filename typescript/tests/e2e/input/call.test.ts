@@ -10,14 +10,14 @@
 
 import { resolve } from 'node:path';
 import { createIt, describe, expect } from '@/tests/e2e/utils';
-import { PROVIDERS } from '@/tests/e2e/providers';
+import { PROVIDERS, PROVIDERS_FOR_PARAM_TESTS } from '@/tests/e2e/providers';
 import { defineCall } from '@/llm/calls';
 import { assistant, system, user } from '@/llm/messages';
 
 const it = createIt(resolve(__dirname, 'cassettes'), 'call');
 
 describe('call input encoding', () => {
-  it.record.each(PROVIDERS)(
+  it.record.each(PROVIDERS_FOR_PARAM_TESTS)(
     'encodes messages and all params',
     async ({ model }) => {
       // Note: Using topP instead of temperature because Anthropic doesn't allow both together

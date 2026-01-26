@@ -99,7 +99,7 @@ describe('buildRequestParams', () => {
       maxTokens: 100,
     });
 
-    expect(params.max_tokens).toBe(100);
+    expect(params.max_completion_tokens).toBe(100);
   });
 
   it('includes temperature when provided', () => {

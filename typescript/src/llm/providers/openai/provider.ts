@@ -4,28 +4,106 @@
 
 import OpenAI from 'openai';
 
-import { FeatureNotSupportedError } from '@/llm/exceptions';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { BaseProvider } from '@/llm/providers/base';
 import { OPENAI_ERROR_MAP } from '@/llm/providers/openai/_utils/errors';
 import { OpenAICompletionsProvider } from '@/llm/providers/openai/completions/provider';
+import { OpenAIResponsesProvider } from '@/llm/providers/openai/responses/provider';
 import type { ApiMode, OpenAIModelId } from '@/llm/providers/openai/model-id';
+import { OPENAI_KNOWN_MODELS } from '@/llm/providers/openai/model-info';
 import { Response } from '@/llm/responses';
+
+/**
+ * Check if messages contain any audio content.
+ *
+ * Audio content requires the Completions API since Responses API doesn't support it yet.
+ */
+function hasAudioContent(messages: readonly Message[]): boolean {
+  for (const message of messages) {
+    if (message.role === 'system') {
+      continue;
+    }
+    for (const part of message.content) {
+      if (part.type === 'audio') {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * Choose between 'responses' or 'completions' API based on model ID and messages.
+ *
+ * If the user manually specified an API mode (by appending it as a suffix to the model
+ * ID), then we use it.
+ *
+ * Otherwise, we prefer the Responses API where supported (because it has better
+ * reasoning support and better prompt caching). However we will use the Completions API
+ * if the messages contain any audio content, as audio content is not yet supported in
+ * the Responses API.
+ *
+ * @param modelId - The model identifier
+ * @param messages - The messages to send to the LLM
+ * @returns Either "responses" or "completions" depending on the model and message content
+ */
+export function chooseApiMode(
+  modelId: OpenAIModelId,
+  messages: readonly Message[]
+): ApiMode {
+  // Check explicit suffix
+  if (modelId.endsWith(':completions')) {
+    return 'completions';
+  }
+  if (modelId.endsWith(':responses')) {
+    return 'responses';
+  }
+
+  // Audio content requires completions API
+  if (hasAudioContent(messages)) {
+    return 'completions';
+  }
+
+  // Prefer responses API when we know it is available
+  if (OPENAI_KNOWN_MODELS.has(`${modelId}:responses`)) {
+    return 'responses';
+  }
+
+  // If we know from testing that the completions API is available, and
+  // (implied by above) that responses wasn't, then we should use completions
+  if (OPENAI_KNOWN_MODELS.has(`${modelId}:completions`)) {
+    return 'completions';
+  }
+
+  // If we don't have either :responses or :completions in the known models, it's
+  // likely that this is a new model we haven't tested. We default to responses API for
+  // openai/ models (on the assumption that they are new models and OpenAI prefers
+  // the responses API) but completions for other models (on the assumption that they
+  // are other models routing through the OpenAI completions API)
+  if (modelId.startsWith('openai/')) {
+    return 'responses';
+  }
+
+  return 'completions';
+}
 
 /**
  * Provider for the OpenAI API with intelligent routing between Completions and Responses APIs.
  *
- * This provider automatically selects the appropriate API based on the model ID:
+ * This provider automatically selects the appropriate API based on the model ID and messages:
  * - Model IDs ending with `:completions` force the Chat Completions API
  * - Model IDs ending with `:responses` force the Responses API
- * - Otherwise, defaults to the Completions API (Responses API support coming soon)
+ * - Messages with audio content use the Completions API (Responses doesn't support audio)
+ * - Known models prefer the Responses API when available
+ * - Unknown openai/ models default to Responses API
+ * - Other unknown models default to Completions API (for OpenAI-compatible providers)
  *
  * @example
  * ```typescript
  * const provider = new OpenAIProvider();
  *
- * // Uses Completions API (default)
+ * // Smart routing: uses Responses API for known models
  * const response = await provider.call({
  *   modelId: 'openai/gpt-4o',
  *   messages: [user('Hello!')],
@@ -43,6 +121,7 @@ export class OpenAIProvider extends BaseProvider {
   protected readonly errorMap = OPENAI_ERROR_MAP;
 
   private readonly completionsProvider: OpenAICompletionsProvider;
+  private readonly responsesProvider: OpenAIResponsesProvider;
 
   /**
    * Create a new OpenAI provider instance.
@@ -54,6 +133,7 @@ export class OpenAIProvider extends BaseProvider {
   constructor(init: { apiKey?: string; baseURL?: string } = {}) {
     super();
     this.completionsProvider = new OpenAICompletionsProvider(init);
+    this.responsesProvider = new OpenAIResponsesProvider(init);
   }
 
   /**
@@ -71,17 +151,15 @@ export class OpenAIProvider extends BaseProvider {
     params?: Params;
   }): Promise<Response> {
     const modelId = args.modelId as OpenAIModelId;
-    const apiMode = this.chooseApiMode(modelId);
+    const apiMode = chooseApiMode(modelId, args.messages);
 
     if (apiMode === 'responses') {
-      throw new FeatureNotSupportedError(
-        'responses API',
-        'openai',
-        modelId,
-        'The OpenAI Responses API is not yet supported. ' +
-          'Use the :completions suffix (e.g., "openai/gpt-4o:completions") ' +
-          'or wait for Responses API support to be implemented.'
-      );
+      // Delegate to the responses provider
+      return this.responsesProvider.call({
+        modelId: args.modelId,
+        messages: args.messages,
+        params: args.params,
+      });
     }
 
     // Delegate to the completions provider
@@ -90,26 +168,6 @@ export class OpenAIProvider extends BaseProvider {
       messages: args.messages,
       params: args.params,
     });
-  }
-
-  /**
-   * Determine which API mode to use based on the model ID.
-   *
-   * @param modelId - The model ID to check
-   * @returns The API mode to use ('completions' or 'responses')
-   */
-  private chooseApiMode(modelId: OpenAIModelId): ApiMode {
-    // Check explicit suffix
-    if (modelId.endsWith(':completions')) {
-      return 'completions';
-    }
-    if (modelId.endsWith(':responses')) {
-      return 'responses';
-    }
-
-    // Default to completions for now
-    // TODO: Implement smarter routing based on model capabilities
-    return 'completions';
   }
 
   /**
