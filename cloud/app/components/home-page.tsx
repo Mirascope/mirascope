@@ -125,7 +125,7 @@ function HeroBlock() {
 
           <div className="text-center">
             <ResponsiveTextBlock
-              lines={["Build. Observe. Iterate. Ship."]}
+              lines={["The LLM Anti-Framework"]}
               fontSize={styleSystem.heroFontSize}
               className="flex flex-col font-medium tracking-tight text-white"
               lineClassName="font-handwriting"
