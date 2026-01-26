@@ -1,5 +1,8 @@
 /**
  * Anthropic provider implementation.
+ *
+ * The AnthropicProvider handles routing between standard and beta APIs internally.
+ * AnthropicBetaProvider is not exported as it's an internal implementation detail.
  */
 
 export type { AnthropicModelId } from '@/llm/providers/anthropic/model-id';
