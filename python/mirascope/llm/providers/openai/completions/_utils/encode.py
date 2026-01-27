@@ -13,7 +13,13 @@ from openai.types.shared_params.response_format_json_schema import JSONSchema
 from .....exceptions import FeatureNotSupportedError
 from .....formatting import Format, FormattableT, OutputParser, resolve_format
 from .....messages import AssistantMessage, Message, UserMessage
-from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit, ProviderTool
+from .....tools import (
+    FORMAT_TOOL_NAME,
+    AnyToolSchema,
+    BaseToolkit,
+    ProviderTool,
+    WebSearchTool,
+)
 from ....base import _utils as _base_utils
 from ...model_id import OpenAIModelId, model_name
 from ...model_info import (
@@ -231,9 +237,16 @@ def _convert_tool_to_tool_param(
     tool: AnyToolSchema | ProviderTool,
 ) -> openai_types.ChatCompletionToolParam:
     """Convert a single Mirascope `Tool` to OpenAI ChatCompletionToolParam with caching."""
+    if isinstance(tool, WebSearchTool):
+        raise FeatureNotSupportedError(
+            "WebSearchTool",
+            provider_id="openai:completions",
+            message="Web search is only available in the OpenAI Responses API. "
+            "Use a model with :responses suffix (e.g., 'openai/gpt-4o:responses').",
+        )
     if isinstance(tool, ProviderTool):
         raise FeatureNotSupportedError(
-            f"Provider tool {tool.name}", provider_id="openai"
+            f"Provider tool {tool.name}", provider_id="openai:completions"
         )
     schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
     schema_dict["type"] = "object"

@@ -1,0 +1,268 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"Jan 1, 2026 is a date in the past. Use the web search
+      tool to lookup the price of bitcoin on that date.","role":"user"}],"model":"gpt-4o","tools":[{"type":"web_search"}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '192'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        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
+        4054ePXwXwAAAP//AwBuWEs7ZhkAAA==
+    headers:
+      CF-RAY:
+      - 9c4ba81c2f55c4cb-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 27 Jan 2026 22:23:55 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=5L_ZvquvZgFuTeRMJJRqNkNOkm75KYI5SG5fmK8oV84-1769552635-1.0.1.1-kIk1y7AkNzEticsSzFANJA5vkg5x4NROkB6MjPs3AVMOqSB8YdhtJMbmfm6yNz0alUniLPo.9.a6rZTbK_0e1XGCzX3Dv2z0ZI3NhRMCe4s;
+        path=/; expires=Tue, 27-Jan-26 22:53:55 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=ffW51DP3l0.fFGXiq7IAW6vVS5EiyK8wpxWR.YieFJ4-1769552635656-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '6105'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-request-id:
+      - req_7a65b5f43fd2440bb8db99b7b95c9023
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "{\"input\":[{\"content\":\"Jan 1, 2026 is a date in the past. Use the web
+      search tool to lookup the price of bitcoin on that date.\",\"role\":\"user\"},{\"id\":\"ws_0a7994baf3e38d320069793af6cb948196814fa3f46aefa0d7\",\"action\":{\"query\":\"Bitcoin
+      price on January 1, 2026\",\"type\":\"search\",\"queries\":[\"Bitcoin price
+      on January 1, 2026\"],\"sources\":null},\"status\":\"completed\",\"type\":\"web_search_call\"},{\"id\":\"msg_0a7994baf3e38d320069793af90afc81968ccaeb6921390419\",\"content\":[{\"annotations\":[{\"end_index\":358,\"start_index\":258,\"title\":\"Bitcoin
+      Price January 1. 2026 | StatMuse Money\",\"type\":\"url_citation\",\"url\":\"https://www.statmuse.com/money/ask/bitcoin-price-january-1.-2026?utm_source=openai\"},{\"end_index\":639,\"start_index\":538,\"title\":\"Bitcoin
+      Historical Prices - TipRanks.com\",\"type\":\"url_citation\",\"url\":\"https://www.tipranks.com/cryptocurrency/btc-usd/historical-prices?utm_source=openai\"},{\"end_index\":1076,\"start_index\":873,\"title\":\"Bitcoin
+      stays range-bound between $87,500 and $88,000 as crypto consolidation continues\",\"type\":\"url_citation\",\"url\":\"https://m.economictimes.com/markets/cryptocurrency/bitcoin-stays-range-bound-between-87500-and-88000-as-crypto-consolidation-continues/articleshow/126283114.cms?utm_source=openai\"},{\"end_index\":1323,\"start_index\":1223,\"title\":\"Bitcoin
+      Price January 1. 2026 | StatMuse Money\",\"type\":\"url_citation\",\"url\":\"https://www.statmuse.com/money/ask/bitcoin-price-january-1.-2026?utm_source=openai\"},{\"end_index\":1523,\"start_index\":1422,\"title\":\"Bitcoin
+      Historical Prices - TipRanks.com\",\"type\":\"url_citation\",\"url\":\"https://www.tipranks.com/cryptocurrency/btc-usd/historical-prices?utm_source=openai\"},{\"end_index\":1803,\"start_index\":1600,\"title\":\"Bitcoin
+      stays range-bound between $87,500 and $88,000 as crypto consolidation continues\",\"type\":\"url_citation\",\"url\":\"https://m.economictimes.com/markets/cryptocurrency/bitcoin-stays-range-bound-between-87500-and-88000-as-crypto-consolidation-continues/articleshow/126283114.cms?utm_source=openai\"}],\"text\":\"Here\u2019s
+      the historical Bitcoin price (BTC) on January\u202F1,\u202F2026:\\n\\n\u2022
+      According to **StatMuse Money**, the closing price of Bitcoin on January\u202F1,\u202F2026,
+      was **$88,722.07**. This figure is based on hourly data throughout the day,
+      culminating in that closing value. ([statmuse.com](https://www.statmuse.com/money/ask/bitcoin-price-january-1.-2026?utm_source=openai))\\n\\n\u2022
+      By comparison, **TipRanks** reports that on the same date Bitcoin closed at
+      **$88,836.06**, with an opening price of $88,725.47, a high of $89,019.52, and
+      a low of $88,323.34. ([tipranks.com](https://www.tipranks.com/cryptocurrency/btc-usd/historical-prices?utm_source=openai))\\n\\n\u2022
+      Additional context from **Economic Times** indicates that on January\u202F1,\u202F2026,
+      Bitcoin was trading in a relatively narrow range between **$87,500 and $88,000**,
+      with a cited value of **$87,440** at a specific point during the day. ([m.economictimes.com](https://m.economictimes.com/markets/cryptocurrency/bitcoin-stays-range-bound-between-87500-and-88000-as-crypto-consolidation-continues/articleshow/126283114.cms?utm_source=openai))\\n\\nThese
+      figures reflect slight variations depending on the data source and timestamp
+      considered:\\n\\n- **StatMuse**: closing price of **$88,722.07**. ([statmuse.com](https://www.statmuse.com/money/ask/bitcoin-price-january-1.-2026?utm_source=openai))
+      \ \\n- **TipRanks**: closing price of **$88,836.06**, with corresponding open,
+      high, and low values. ([tipranks.com](https://www.tipranks.com/cryptocurrency/btc-usd/historical-prices?utm_source=openai))
+      \ \\n- **Economic Times**: trading around **$87,440** within that day\u2019s
+      range. ([m.economictimes.com](https://m.economictimes.com/markets/cryptocurrency/bitcoin-stays-range-bound-between-87500-and-88000-as-crypto-consolidation-continues/articleshow/126283114.cms?utm_source=openai))
+      \ \\n\\nTo reconcile these, sources may use different exchanges for their data
+      (e.g., Binance, Coinbase) or calculate based on different time zones or intervals.
+      However, a reliable median estimate for the closing price lies between **$88.7k
+      and $88.8k**.\\n\\nLet me know if you'd like additional historical data, price
+      charts, or comparisons across other dates!\",\"type\":\"output_text\",\"logprobs\":[]}],\"role\":\"assistant\",\"status\":\"completed\",\"type\":\"message\"},{\"content\":\"Please
+      also look up the price of Ethereum on that date\",\"role\":\"user\"}],\"model\":\"gpt-4o\",\"tools\":[{\"type\":\"web_search\"}]}"
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '4415'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      CF-RAY:
+      - 9c4ba8452cebc4cb-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 27 Jan 2026 22:24:02 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '6309'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-request-id:
+      - req_ee01e8b6577c4beaab229c9a2ea0d9ba
+    status:
+      code: 200
+      message: OK
+version: 1
