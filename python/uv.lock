@@ -1564,6 +1564,7 @@ version = "2.0.2"
 source = { editable = "." }
 dependencies = [
     { name = "docstring-parser" },
+    { name = "filelock" },
     { name = "httpx" },
     { name = "jiter" },
     { name = "pyasn1" },
@@ -1649,6 +1650,7 @@ dev = [
 requires-dist = [
     { name = "anthropic", marker = "extra == 'anthropic'", specifier = ">=0.76.0,<1.0" },
     { name = "docstring-parser", specifier = ">=0.17.0" },
+    { name = "filelock", specifier = ">=3.20.3" },
     { name = "google-genai", marker = "extra == 'google'", specifier = ">=1.58.0,<2" },
     { name = "httpx", specifier = ">=0.27.0" },
     { name = "jiter", specifier = ">=0.7.0" },
