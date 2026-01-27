@@ -1572,6 +1572,7 @@ dependencies = [
     { name = "starlette" },
     { name = "typing-extensions" },
     { name = "urllib3" },
+    { name = "werkzeug" },
 ]
 
 [package.optional-dependencies]
@@ -1674,6 +1675,7 @@ requires-dist = [
     { name = "starlette", specifier = ">=0.49.1" },
     { name = "typing-extensions", specifier = ">=4.10.0" },
     { name = "urllib3", specifier = ">=2.6.3" },
+    { name = "werkzeug", specifier = ">=3.1.5" },
 ]
 provides-extras = ["anthropic", "api", "google", "openai", "mcp", "ops", "mlx", "all"]
 
