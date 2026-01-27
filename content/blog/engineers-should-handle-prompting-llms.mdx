@@ -4,7 +4,7 @@ description: "Many prompt engineering tools neither follow developer best practi
 date: "2024-03-29"
 readTime: "20 min read"
 author: "William Bakst"
-v2_migration_completed: "2026-01-27"
+updatedAt: "2026-01-27"
 ---
 
 We’ve seen many discussions around Large Language Model (LLM) software development allude to a workflow where prompts live apart from LLM calls and are managed by multiple stakeholders, including non-engineers. In fact, many popular LLM development frameworks and libraries are built in a way that _requires_ prompts to be managed separately from their calls.
@@ -67,28 +67,13 @@ def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 
 response = recommend_book("fantasy")
-print(response.content)
+print(response.text())
 
-# > Sure! I'd recommend "The Name of the Wind" by Patrick Rothfuss...
-
-```
-
-You can also provide a string template directly as an argument of the decorator where the function arguments will be injected into the template automatically:
-
-```python
-from mirascope import llm
-
-@llm.call("openai/gpt-4o-mini", prompt_template="Recommend a {genre} book")
-def recommend_book(genre: str): ...
-
-response = recommend_book("fantasy")
-print(response.content)
-
-# > Sure! I'd recommend "The Name of the Wind" by Patrick Rothfuss...
+# > Sure! I recommend **"The Name of the Wind" by Patrick Rothfuss**. It's ...
 
 ```
 
-By default, Mirascope's `prompt_template` treats the prompt message as a single user message in order to simplify initial use and implementation for straightforward scenarios.
+By default, Mirascope treats a returned string as a single user message in order to simplify initial use and implementation for straightforward scenarios.
 
 But you may want to add more context to prompts in the form of different roles, such as system, user, or assistant roles to generate more nuanced responses, as shown here:
 
@@ -103,34 +88,13 @@ def recommend_book(genre: str):
     ]
 
 response = recommend_book("fantasy")
-print(response.content)
+print(response.text())
 
 # > As a librarian, I'd recommend "The Name of the Wind" by Patrick Rothfuss...
 
 ```
 
-Now running this prompt template will automatically parse and structure the prompt as a list of `BaseMessageParam` message objects that work across all supported providers.
-
-You can also use all caps keywords in a string template for the same functionality:
-
-```python
-from mirascope import llm
-
-@llm.call(
-    "openai/gpt-4o-mini",
-    prompt_template="""
-    SYSTEM: You are a librarian
-    USER: Recommend a {genre} book
-    """,
-)
-def recommend_book(genre: str): ...
-
-response = recommend_book("fantasy")
-print(response.content)
-
-# > As a librarian, I'd recommend "The Name of the Wind" by Patrick Rothfuss...
-
-```
+Mirascope will automatically structure the prompt as a list of `BaseMessageParam` message objects that work across all supported providers.
 
 The `@llm.call` decorator turns prompt templates into actual calls to an LLM API. This reduces the boilerplate needed to write LLM-powered functions:
 
@@ -142,7 +106,7 @@ def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 
 response = recommend_book("fantasy")
-print(response.content)
+print(response.text())
 
 # > Sure! I'd be happy to recommend...
 
@@ -163,11 +127,11 @@ def recommend_book_anthropic(genre: str) -> str:
 
 # OpenAI call and response
 openai_response = recommend_book_openai("fantasy")
-print(openai_response.content)
+print(openai_response.text())
 
 # Anthropic call and response
 anthropic_response = recommend_book_anthropic("fantasy")
-print(anthropic_response.content)
+print(anthropic_response.text())
 ```
 
 Writing prompts this way enables endless possibilities and customization, from few-shot prompting to chat interactions with an LLM and so much more.
@@ -193,7 +157,7 @@ def recommend_recipe(ingredient: str, food_type: str) -> str:
     return f"Imagine you are {chef.content}. Recommend a {food_type} recipe using {ingredient}"
 
 response = recommend_recipe("apples", "japanese")
-print(response.content)
+print(response.text())
 
 # > Certainly! Here's a delightful Japanese-inspired recipe using apples: ...
 
@@ -206,9 +170,9 @@ Below are three example sets of book recommendations for different topics to gui
 ```python
 from mirascope import llm
 
-@llm.call(
-    "openai/gpt-4o-mini",
-    prompt_template="""
+@llm.call("openai/gpt-4o-mini")
+def recommend_books(topic: str) -> str:
+    return f"""
     I'm looking for book recommendations on various topics. Here are some examples:
 
     1. For a topic on 'space exploration', you might recommend:
@@ -224,12 +188,10 @@ from mirascope import llm
         - 'Wolf Hall' by Hilary Mantel
 
     Can you recommend some books on {topic}?
-    """,
-)
-def recommend_books(topic: str): ...
+    """
 
 response = recommend_books("coding")
-print(response.content)
+print(response.text())
 ```
 
 Minimizing complexity lowers the learning curve. In Mirascope’s case, beyond knowing our library and Python, the only framework to learn is Pydantic for structuring and validating outputs.
@@ -259,12 +221,13 @@ class Book(BaseModel):
     title: str
     author: str
 
-@llm.call("openai/gpt-4o-mini", response_model=Book)
+@llm.call("openai/gpt-4o-mini", format=Book)  # `format` not `response_model`
 def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 
 try:
-    book = recommend_book("fantasy")
+    response = recommend_book("fantasy")
+    book = response.parse()  # Call .parse() to get the Book instance
     assert isinstance(book, Book)
     print(book)
 except ValidationError as e:
@@ -279,112 +242,116 @@ except ValidationError as e:
 
 ```
 
-You can also validate data in ways that are difficult if not impossible to code successfully, but that LLMs excel at, such as analyzing sentiment. For instance, you can add Pydantic's [`AfterValidator`](/docs/learn/llm/response-models#validation-and-error-handling) annotation to Mirascope's extracted output as shown below:
+You can also validate data in ways that are difficult if not impossible to code successfully, but that LLMs excel at, such as analyzing sentiment. For instance, you can add Pydantic's [`AfterValidator`](/docs/learn/llm/structured-output#validation-errors) annotation to Mirascope's extracted output as shown below:
 
 ```python
 from typing import Annotated, Literal
 
-from pydantic import AfterValidator, BaseModel, ValidationError
+from pydantic import AfterValidator, ValidationError
 from mirascope import llm
 
-@llm.call("openai/gpt-4o-mini", response_model=Literal["happy", "sad"])
+@llm.call("openai/gpt-4o-mini", format=Literal["happy", "sad"])
 def classify_sentiment(text: str) -> str:
     return f"Is the following text happy or sad? {text}"
 
 def validate_happy(story: str) -> str:
     """Confirm that the story is happy."""
-    assert classify_sentiment(story) == "happy", "Story wasn't happy"
+    sentiment = classify_sentiment(story).parse()
+    assert sentiment == "happy", "Story wasn't happy"
     return story
 
 @llm.call(
     "openai/gpt-4o-mini",
-    response_model=Annotated[str, AfterValidator(validate_happy)],
+    format=Annotated[str, AfterValidator(validate_happy)],
 )
 def tell_sad_story() -> str:
     return "Tell me a very sad story."
 
 try:
-    story = tell_sad_story()
+    response = tell_sad_story()
+    story = response.parse()
     print(story)
 except ValidationError as e:
     print(e)
-    # > 1 validation error for Story
-
-    #   story
-
-    #     Assertion failed, Story wasn't happy. [type=assertion_error, input_value="Once upon a time, there ...er every waking moment.", input_type=str]
-
-    #       For further information visit https://errors.pydantic.dev/2.6/v/assertion_error
-
+    # > 1 validation error for ...
+    #   Assertion failed, Story wasn't happy [type=assertion_error, ...]
 ```
 
 ### Simplify LLM Interactions with Decorators and Integrations
 
 We believe in freeing you from writing boilerplate to interact with APIs, we we made available a number of arguments for easily modifying and customizing how you use the underlying APIs.
 
-For example, you can set `stream=True` in the function decorator, which will generate a stream of chunks:
+For example, you can call `.stream()` on the decorated function to generate a stream of chunks:
 
 ```python
 from mirascope import llm
 
-@llm.call("openai/gpt-4o-mini", stream=True)
+@llm.call("openai/gpt-4o-mini")
 def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 
-for chunk, _ in recommend_book("fantasy"):
-    print(chunk.content, end="", flush=True)
+response: llm.StreamResponse = recommend_book.stream("fantasy")
+for chunk in response.text_stream():
+    print(chunk, end="", flush=True)
 ```
 
-You can also further configure the API call by setting the `call_params` argument, meaning that any time the decorated function is called it will use the correct, colocated call parameters:
+You can also further configure the API call by passing parameters like `temperature` directly to the decorator, meaning that any time the decorated function is called it will use the correct, colocated call parameters:
 
 ```python
 from mirascope import llm
 
-@llm.call("openai/gpt-4o-mini", call_params={"temperature": 0.7})
+@llm.call("openai/gpt-4o-mini", temperature=0.7)
 def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 
 response = recommend_book("fantasy")
-print(response.content)
+print(response.text())
 ```
 
-If a provider has a custom endpoint you can call with their own API (for example, OpenAI compatibility), you can set the `client` argument in the decorator to use the custom client. This is true for providers such as [Ollama](https://ollama.com/), [Anyscale](https://www.anyscale.com/), [Together](https://www.together.ai/), [AzureOpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service), and others that support the OpenAI API through a proxy (as well as any other APIs such as Anthropic that have similar support).
+For providers with OpenAI-compatible APIs like [Ollama](https://ollama.com/), [Together](https://www.together.ai/), and others, you can use the built-in provider support or register a custom provider with a specific `base_url`:
 
 ```python
 from mirascope import llm
-from openai import OpenAI
 
-client = OpenAI(
-    base_url="http://localhost:11434/v1",
-    api_key="ollama",  # required, but unused
-)
-
-@llm.call("openai/gpt-4o-mini", client=client)
+# Ollama is built-in - just use the ollama/ prefix
+@llm.call("ollama/llama3.2")
 def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 
 response = recommend_book("fantasy")
-print(response.content)
+print(response.text())
+```
+
+For custom endpoints or providers not built-in, use `llm.register_provider()`:
+
+```python
+from mirascope import llm
+
+# Register a provider with a custom base_url
+llm.register_provider("openai", scope="custom/", base_url="http://your-endpoint/v1")
+
+@llm.call("custom/model-name")
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
 ```
 
 We also made sure that Mirascope works well with or integrates directly with tools such as Logfire, OpenTelemetry, HyperDX, Langfuse, and more for easily tracking machine learning experiments and visualizing data as well as improving prompt effectiveness through automated refinement and testing. All together these tools work together with Mirascope as [an alternative to LangChain](/blog/langchain-alternatives).
 
-Beyond OpenAI, Mirascope supports currently these [other LLM providers](/docs/learn/llm/calls):
+Mirascope supports these [built-in LLM providers](/docs/learn/llm/providers):
 
 - Anthropic
-- Mistral
-- Google Gemini
-- Groq
-- Cohere
-- LiteLLM
-- Azure AI
-- AWS Bedrock
+- Google
+- Mirascope
+- MLX
+- Ollama
+- OpenAI
+- Together
 
 We've made sure that every example in our documentation shows how to use each provider for easy copy-paste to try it out yourself.
 
 We consistently add support for new providers, so if there is a provider you want to see supported that isn't yet, let us know!
 
-If you want to switch to another model provider (like Anthropic or Mistral, for instance), you just need to change the model string:
+If you want to switch to another model provider (like Anthropic or Google, for instance), you just need to change the model string:
 
 ```python
 from mirascope import llm
@@ -394,7 +361,7 @@ def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 
 response = recommend_book("fantasy")
-print(response.content)
+print(response.text())
 ```
 
 ### Expand LLM Capabilities with Tools
@@ -415,29 +382,32 @@ from typing import Literal
 
 from mirascope import llm
 
+@llm.tool
 def get_current_weather(
     location: str, unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
-):
+) -> str:
     """Get the current weather in a given location."""
     if "tokyo" in location.lower():
-        print(f"It is 10 degrees {unit} in Tokyo, Japan")
+        return f"It is 10 degrees {unit} in Tokyo, Japan"
     elif "san francisco" in location.lower():
-        print(f"It is 72 degrees {unit} in San Francisco, CA")
+        return f"It is 72 degrees {unit} in San Francisco, CA"
     elif "paris" in location.lower():
-        print(f"It is 22 degrees {unit} in Paris, France")
+        return f"It is 22 degrees {unit} in Paris, France"
     else:
-        print(f"I'm not sure what the weather is like in {location}")
+        return f"I'm not sure what the weather is like in {location}"
 
 @llm.call("openai/gpt-4o", tools=[get_current_weather])
 def forecast(city: str) -> str:
     return f"What's the weather in {city}?"
 
 response = forecast("Tokyo")
-if tool := response.tool:
-    tool.call()
+while response.tool_calls:
+    tool_results = response.execute_tools()
+    response = response.resume(tool_results)
+print(response.text())
 ```
 
-Mirascope supports Google, ReST, Numpydoc, and Epydoc style docstrings for creating tools. If a particular function doesn't have a docstring, you can define your own `BaseTool` class. You can then define the `call()` method to attach the docstring-less function's functionality to the tool, but use your own custom docstrings:
+Mirascope supports Google, ReST, Numpydoc, and Epydoc style docstrings for creating tools. If a particular function doesn't have a docstring, you can wrap it with a tool function that provides the documentation:
 
 ```python
 from mirascope import llm
@@ -445,18 +415,15 @@ from mirascope import llm
 # has no docstrings
 def get_weather(city: str) -> str: ...
 
-class GetWeather(llm.BaseTool):
+@llm.tool
+def get_current_weather(city: str) -> str:
     """Gets the weather in a city."""
-
-    city: str
-
-    def call(self) -> str:
-        return get_weather(self.city)
+    return get_weather(city)
 ```
 
 Tools allow you to dynamically generate prompts based on current or user-specified data such as extracting current weather data in a given city before generating a prompt like, "Given the current weather conditions in Tokyo, what are fun outdoor activities?"
 
-See our [documentation](/docs/learn/llm/tools) for details on generating prompts in this way (for instance, by calling the `call` method).
+See our [documentation](/docs/learn/llm/tools) for more details on defining and using tools.
 
 ### Extract Structured Data from LLM-Generated Text
 
@@ -467,7 +434,7 @@ LLMs are great at producing conversations in text, which is unstructured informa
 - Pulling out specific medical data such as symptoms, diagnoses, medication names, dosages, and patient history from clinical notes.
 - Extracting financial metrics, stock data, company performance indicators, and market trends from financial reports and news articles.
 
-To handle such scenarios, we support extraction with the [`response_model`](/docs/learn/llm/response-models) argument in the decorator, which leverages tools (or optionally `json_mode=True`) to reliably extract structured data from the outputs of LLMs according to the schema defined in a Pydantic `BaseModel`. In the example below you can see how due dates, priorities, and descriptions are being extracted:
+To handle such scenarios, we support extraction with the [`format`](/docs/learn/llm/structured-output) argument in the decorator, which leverages tools (or optionally JSON mode) to reliably extract structured data from the outputs of LLMs according to the schema defined in a Pydantic `BaseModel`. In the example below you can see how due dates, priorities, and descriptions are being extracted:
 
 ```python
 from typing import Literal
@@ -480,44 +447,37 @@ class TaskDetails(BaseModel):
     priority: Literal["low", "normal", "high"] = Field(...)
     description: str = Field(...)
 
-@llm.call(
-    "openai/gpt-4o",
-    response_model=TaskDetails,
-    call_params={"tool_choice": "required"},
-)
+@llm.call("openai/gpt-4o", format=TaskDetails)
 def get_task_details(task: str) -> str:
     return f"Extract the details from the following task: {task}"
 
 task = "Submit quarterly report by next Friday. Task is high priority."
-task_details = get_task_details(task)
+response = get_task_details(task)
+task_details = response.parse()
 assert isinstance(task_details, TaskDetails)
 print(task_details)
 
-# > due_date='next Friday' priority='high' description='Submit quarterly report'
+# > due_date='Next Friday' priority='high' description='Submit quarterly report'
 
 ```
 
-You can define schema parameters against which to extract data in Pydantic's `BaseModel` class, by setting certain attributes and fields in that class. Mirascope also lets you set the number of retries to extract data in case a failure occurs. But you also don't have to use a detailed schema like `BaseModel` if you're [extracting built-in types](/docs/learn/llm/response-models#built-in-types) like strings, integers, booleans, etc. The code sample below shows how extraction for a simple structure like a list of strings doesn't need a full-fledged schema definition.
+You can define schema parameters against which to extract data in Pydantic's `BaseModel` class, by setting certain attributes and fields in that class. Mirascope also lets you set the number of retries to extract data in case a failure occurs. But you also don't have to use a detailed schema like `BaseModel` if you're [extracting built-in types](/docs/learn/llm/structured-output) like strings, integers, booleans, etc. The code sample below shows how extraction for a simple structure like a list of strings doesn't need a full-fledged schema definition.
 
 ```python
 from mirascope import llm
 
-@llm.call("openai/gpt-4o", response_model=list[str])
+@llm.call("openai/gpt-4o", format=list[str])
 def recommend_books(genre: str) -> str:
     return f"Recommend 3 {genre} books"
 
 books = recommend_books(genre="fantasy")
-print(books)
+print(books.text())
 
-# > [
-
-#   'The Name of the Wind by Patrick Rothfuss',
-
-#   'Mistborn: The Final Empire by Brandon Sanderson',
-
-#   'The Way of Kings by Brandon Sanderson'
-
-#   ]
+# > {"output": [
+#     "The Name of the Wind by Patrick Rothfuss – Follow the journey of Kvothe, a legendary figure and gifted magician, as he recounts his life story filled with adventure, magic, and mystery.",
+#     "Mistborn: The Final Empire by Brandon Sanderson – Explore a world where the Dark Lord has won, and a group of rebels with unique metal-based powers attempt to overthrow the oppressive regime.",
+#     "The Lies of Locke Lamora by Scott Lynch – Join Locke Lamora and his band of thieves in the bustling city of Camorr as they pull off daring heists, navigating danger and intrigue at every turn.",
+# ]}
 
 ```
 
