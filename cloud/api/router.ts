@@ -45,6 +45,7 @@ import {
   addProjectMemberHandler,
   updateProjectMemberRoleHandler,
   removeProjectMemberHandler,
+  getProjectMembershipHandler,
 } from "@/api/project-memberships.handlers";
 import {
   listEnvironmentsHandler,
@@ -238,6 +239,13 @@ const ProjectMembershipsHandlersLive = HttpApiBuilder.group(
       )
       .handle("create", ({ path, payload }) =>
         addProjectMemberHandler(path.organizationId, path.projectId, payload),
+      )
+      .handle("get", ({ path }) =>
+        getProjectMembershipHandler(
+          path.organizationId,
+          path.projectId,
+          path.memberId,
+        ),
       )
       .handle("update", ({ path, payload }) =>
         updateProjectMemberRoleHandler(

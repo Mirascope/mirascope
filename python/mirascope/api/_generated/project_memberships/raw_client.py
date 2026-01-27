@@ -23,6 +23,7 @@ from .types.project_memberships_create_request_role import (
     ProjectMembershipsCreateRequestRole,
 )
 from .types.project_memberships_create_response import ProjectMembershipsCreateResponse
+from .types.project_memberships_get_response import ProjectMembershipsGetResponse
 from .types.project_memberships_list_response_item import (
     ProjectMembershipsListResponseItem,
 )
@@ -246,6 +247,125 @@ class RawProjectMembershipsClient:
                         typing.Optional[typing.Any],
                         parse_obj_as(
                             type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    def get(
+        self,
+        organization_id: str,
+        project_id: str,
+        member_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[ProjectMembershipsGetResponse]:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        member_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[ProjectMembershipsGetResponse]
+            Success
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}/members/{jsonable_encoder(member_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ProjectMembershipsGetResponse,
+                    parse_obj_as(
+                        type_=ProjectMembershipsGetResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        NotFoundErrorBody,
+                        parse_obj_as(
+                            type_=NotFoundErrorBody,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -748,6 +868,125 @@ class AsyncRawProjectMembershipsClient:
                         typing.Optional[typing.Any],
                         parse_obj_as(
                             type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    async def get(
+        self,
+        organization_id: str,
+        project_id: str,
+        member_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[ProjectMembershipsGetResponse]:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        member_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[ProjectMembershipsGetResponse]
+            Success
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}/members/{jsonable_encoder(member_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ProjectMembershipsGetResponse,
+                    parse_obj_as(
+                        type_=ProjectMembershipsGetResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        NotFoundErrorBody,
+                        parse_obj_as(
+                            type_=NotFoundErrorBody,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),

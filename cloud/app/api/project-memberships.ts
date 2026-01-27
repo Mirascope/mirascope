@@ -28,6 +28,30 @@ export const useProjectMembers = (
   });
 };
 
+export const useGetProjectMember = (
+  organizationId: string | null,
+  projectId: string | null,
+  memberId: string | null,
+) => {
+  return useQuery({
+    ...eq.queryOptions({
+      queryKey: ["projects", organizationId, projectId, "members", memberId],
+      queryFn: () =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client["project-memberships"].get({
+            path: {
+              organizationId: organizationId!,
+              projectId: projectId!,
+              memberId: memberId!,
+            },
+          });
+        }),
+    }),
+    enabled: !!organizationId && !!projectId && !!memberId,
+  });
+};
+
 export const useAddProjectMember = () => {
   const queryClient = useQueryClient();
 

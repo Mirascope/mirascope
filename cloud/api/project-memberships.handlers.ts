@@ -45,6 +45,25 @@ export const addProjectMemberHandler = (
   });
 
 /**
+ * Gets a member's membership info in a project.
+ */
+export const getProjectMembershipHandler = (
+  organizationId: string,
+  projectId: string,
+  memberId: string,
+) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    return yield* db.organizations.projects.memberships.findById({
+      userId: user.id,
+      organizationId,
+      projectId,
+      memberId,
+    });
+  });
+
+/**
  * Updates a member's role in a project.
  */
 export const updateProjectMemberRoleHandler = (

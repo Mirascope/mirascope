@@ -2620,6 +2620,78 @@ client.project_memberships.create(
 </dl>
 </details>
 
+<details><summary><code>client.project_memberships.<a href="src/mirascope/project_memberships/client.py">get</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from mirascope.api._generated import Mirascope
+
+client = Mirascope()
+client.project_memberships.get(
+    organization_id="organizationId",
+    project_id="projectId",
+    member_id="memberId",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**organization_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**project_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**member_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.project_memberships.<a href="src/mirascope/project_memberships/client.py">delete</a>(...)</code></summary>
 <dl>
 <dd>

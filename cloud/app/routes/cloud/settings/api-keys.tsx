@@ -1,13 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useOrganization } from "@/app/contexts/organization";
 import { ApiKeysSection } from "@/app/components/api-keys-section";
+import { useGetProjectMember } from "@/app/api/project-memberships";
+import { useProject } from "@/app/contexts/project";
+import { useAuth } from "@/app/contexts/auth";
 
 function ApiKeysSettingsPage() {
+  const { user } = useAuth();
   const { selectedOrganization } = useOrganization();
+  const { selectedProject } = useProject();
+
+  const { data: projectMembership } = useGetProjectMember(
+    selectedOrganization?.id ?? null,
+    selectedProject?.id ?? null,
+    user?.id ?? null,
+  );
 
   // Organization OWNER/ADMIN have implicit project ADMIN access to all projects
   const orgRole = selectedOrganization?.role;
-  const canManageApiKeys = orgRole === "OWNER" || orgRole === "ADMIN";
+  const projectRole = projectMembership?.role;
+  const canManageApiKeys =
+    orgRole === "OWNER" ||
+    orgRole === "ADMIN" ||
+    projectRole === "ADMIN" ||
+    projectRole === "DEVELOPER";
 
   const header = (
     <div className="mb-6">

@@ -99,6 +99,23 @@ export class ProjectMembershipsApi extends HttpApiGroup.make(
       .addError(DatabaseError, { status: DatabaseError.status }),
   )
   .add(
+    HttpApiEndpoint.get(
+      "get",
+      "/organizations/:organizationId/projects/:projectId/members/:memberId",
+    )
+      .setPath(
+        Schema.Struct({
+          organizationId: Schema.String,
+          projectId: Schema.String,
+          memberId: Schema.String,
+        }),
+      )
+      .addSuccess(ProjectMembershipResponseSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
     HttpApiEndpoint.patch(
       "update",
       "/organizations/:organizationId/projects/:projectId/members/:memberId",

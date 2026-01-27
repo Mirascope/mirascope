@@ -9,6 +9,7 @@ from .types.project_memberships_create_request_role import (
     ProjectMembershipsCreateRequestRole,
 )
 from .types.project_memberships_create_response import ProjectMembershipsCreateResponse
+from .types.project_memberships_get_response import ProjectMembershipsGetResponse
 from .types.project_memberships_list_response_item import (
     ProjectMembershipsListResponseItem,
 )
@@ -119,6 +120,47 @@ class ProjectMembershipsClient:
             member_id=member_id,
             role=role,
             request_options=request_options,
+        )
+        return _response.data
+
+    def get(
+        self,
+        organization_id: str,
+        project_id: str,
+        member_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ProjectMembershipsGetResponse:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        member_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ProjectMembershipsGetResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.project_memberships.get(
+            organization_id="organizationId",
+            project_id="projectId",
+            member_id="memberId",
+        )
+        """
+        _response = self._raw_client.get(
+            organization_id, project_id, member_id, request_options=request_options
         )
         return _response.data
 
@@ -328,6 +370,55 @@ class AsyncProjectMembershipsClient:
             member_id=member_id,
             role=role,
             request_options=request_options,
+        )
+        return _response.data
+
+    async def get(
+        self,
+        organization_id: str,
+        project_id: str,
+        member_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ProjectMembershipsGetResponse:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        member_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ProjectMembershipsGetResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.project_memberships.get(
+                organization_id="organizationId",
+                project_id="projectId",
+                member_id="memberId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get(
+            organization_id, project_id, member_id, request_options=request_options
         )
         return _response.data
 

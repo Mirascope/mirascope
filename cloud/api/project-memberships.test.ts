@@ -245,15 +245,18 @@ describe.sequential("Project Memberships API", (it) => {
 
   // Test that the role was actually updated
   it.effect(
-    "GET /organizations/:id/projects/:id/members - verifies role update persisted",
+    "GET /organizations/:id/projects/:id/members/:id - verifies role update persisted",
     () =>
       Effect.gen(function* () {
         const { client, org, owner } = yield* TestApiContext;
-        const members = yield* client["project-memberships"].list({
-          path: { organizationId: org.id, projectId: project.id },
+        const updatedMember = yield* client["project-memberships"].get({
+          path: {
+            organizationId: org.id,
+            projectId: project.id,
+            memberId: owner.id,
+          },
         });
 
-        const updatedMember = members.find((m) => m.memberId === owner.id);
         expect(updatedMember?.role).toBe("DEVELOPER");
       }),
   );
