@@ -19,7 +19,13 @@ from ....formatting import (
     resolve_format,
 )
 from ....messages import AssistantMessage, Message, UserMessage
-from ....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit, ProviderTool
+from ....tools import (
+    FORMAT_TOOL_NAME,
+    AnyToolSchema,
+    BaseToolkit,
+    ProviderTool,
+    WebSearchTool,
+)
 from ...base import _utils as _base_utils
 from ..model_id import AnthropicModelId, model_name
 
@@ -138,7 +144,7 @@ class MessageCreateKwargs(TypedDict, total=False):
     max_tokens: Required[int]
     messages: Sequence[anthropic_types.MessageParam]
     system: Sequence[anthropic_types.TextBlockParam] | Omit
-    tools: Sequence[anthropic_types.ToolParam] | Omit
+    tools: Sequence[anthropic_types.ToolUnionParam] | Omit
     tool_choice: anthropic_types.ToolChoiceParam | Omit
     temperature: float | Omit
     top_p: float | Omit
@@ -325,8 +331,12 @@ def _encode_messages(
 @lru_cache(maxsize=128)
 def convert_tool_to_tool_param(
     tool: AnyToolSchema | ProviderTool,
-) -> anthropic_types.ToolParam:
+) -> anthropic_types.ToolUnionParam:
     """Convert a single Mirascope tool to Anthropic tool format with caching."""
+    if isinstance(tool, WebSearchTool):
+        return anthropic_types.WebSearchTool20250305Param(
+            type="web_search_20250305", name="web_search"
+        )
     if isinstance(tool, ProviderTool):
         raise FeatureNotSupportedError(
             f"Provider tool {tool.name}", provider_id="anthropic"
@@ -396,7 +406,9 @@ def encode_request(
     if anthropic_tools:
         # Add cache control to the last tool for prompt caching
         last_tool = anthropic_tools[-1]
-        last_tool["cache_control"] = {"type": "ephemeral"}
+        last_tool["cache_control"] = anthropic_types.CacheControlEphemeralParam(
+            type="ephemeral"
+        )
         kwargs["tools"] = anthropic_tools
 
     system_message_content, remaining_messages = _base_utils.extract_system_message(

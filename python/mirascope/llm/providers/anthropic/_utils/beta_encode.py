@@ -7,12 +7,15 @@ from typing_extensions import Required
 from anthropic import Omit
 from anthropic.types.anthropic_beta_param import AnthropicBetaParam
 from anthropic.types.beta import (
+    BetaCacheControlEphemeralParam,
     BetaContentBlockParam,
     BetaMessageParam,
     BetaTextBlockParam,
     BetaThinkingConfigParam,
     BetaToolChoiceParam,
     BetaToolParam,
+    BetaToolUnionParam,
+    BetaWebSearchTool20250305Param,
 )
 from pydantic import BaseModel
 
@@ -25,7 +28,7 @@ from ....formatting import (
     resolve_format,
 )
 from ....messages import AssistantMessage, Message, UserMessage
-from ....tools import AnyToolSchema, BaseToolkit, ProviderTool
+from ....tools import AnyToolSchema, BaseToolkit, ProviderTool, WebSearchTool
 from ...base import _utils as _base_utils
 from ..model_id import model_name
 from ..model_info import MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
@@ -49,7 +52,7 @@ class BetaParseKwargs(TypedDict, total=False):
     max_tokens: Required[int]
     messages: Sequence[BetaMessageParam]
     system: Sequence[BetaTextBlockParam] | Omit
-    tools: Sequence[BetaToolParam] | Omit
+    tools: Sequence[BetaToolUnionParam] | Omit
     tool_choice: BetaToolChoiceParam | Omit
     temperature: float | Omit
     top_p: float | Omit
@@ -136,7 +139,7 @@ def _beta_encode_messages(
 
 def _beta_convert_tool_to_tool_param(
     tool: "AnyToolSchema | ProviderTool", model_supports_strict: bool
-) -> BetaToolParam:
+) -> BetaToolUnionParam:
     """Convert a single Mirascope tool to Beta Anthropic tool format.
 
     If the tool has strict=True (or None, and the model supports strict), the schema
@@ -144,6 +147,10 @@ def _beta_convert_tool_to_tool_param(
     by adding additionalProperties: false to all object schemas, and strict=True
     is passed to the API.
     """
+    if isinstance(tool, WebSearchTool):
+        return BetaWebSearchTool20250305Param(
+            type="web_search_20250305", name="web_search"
+        )
     if isinstance(tool, ProviderTool):
         raise FeatureNotSupportedError(
             f"Provider tool {tool.name}", provider_id="anthropic-beta"
@@ -242,7 +249,7 @@ def beta_encode_request(
     if anthropic_tools:
         # Add cache control to the last tool for prompt caching
         last_tool = anthropic_tools[-1]
-        last_tool["cache_control"] = {"type": "ephemeral"}
+        last_tool["cache_control"] = BetaCacheControlEphemeralParam(type="ephemeral")
         kwargs["tools"] = anthropic_tools
 
     system_message_content, remaining_messages = _base_utils.extract_system_message(

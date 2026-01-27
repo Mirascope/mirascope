@@ -1,0 +1,234 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Jan 1, 2026 is a date in the past. Use
+      the web search tool to lookup the price of bitcoin on that date."}], "role":
+      "user"}], "tools": [{"googleSearch": {}}], "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '217'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.58.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.58.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 27 Jan 2026 22:22:26 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=3390
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Jan 1, 2026 is a date in the past. Use
+      the web search tool to lookup the price of bitcoin on that date."}], "role":
+      "user"}, {"parts": [{"text": "On January 1, 2026, the CoinDesk Bitcoin Price
+      Index (XBX) traded at $88,151.80 at its 4 p.m. ET level."}], "role": "model"},
+      {"parts": [{"text": "Please also look up the price of Ethereum on that date"}],
+      "role": "user"}], "tools": [{"googleSearch": {}}], "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '461'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.58.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.58.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 27 Jan 2026 22:22:31 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=4543
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

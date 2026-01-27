@@ -163,6 +163,7 @@ from .tools import (
     ToolkitT,
     Tools,
     ToolSchema,
+    WebSearchTool,
     tool,
 )
 from .types import Jsonable
@@ -286,6 +287,8 @@ __all__ = [
     "UserContent",
     "UserContentPart",
     "UserMessage",
+    "WebSearchTool",
+    "WebSearchTool",
     "call",
     "calls",
     "content",

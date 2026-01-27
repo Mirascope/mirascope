@@ -112,7 +112,8 @@ def decode_response(
                 for reasoning_content in output_item.content:
                     if reasoning_content.type == "reasoning_text":
                         parts.append(Thought(thought=reasoning_content.text))
-
+        elif output_item.type == "web_search_call":
+            pass  # Skip, preserved in raw_message
         else:
             raise NotImplementedError(f"Unsupported output item: {output_item.type}")
 
