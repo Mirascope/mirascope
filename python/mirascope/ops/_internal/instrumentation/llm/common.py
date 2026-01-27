@@ -17,7 +17,6 @@ from opentelemetry.semconv.attributes import error_attributes as ErrorAttributes
 from opentelemetry.trace import SpanKind, Status, StatusCode
 
 from .....llm import (
-    AnyToolFn,
     AnyTools,
     AnyToolSchema,
     BaseToolkit,
@@ -31,7 +30,6 @@ from .....llm import (
     ProviderId,
     RootResponse,
     ToolkitT,
-    ToolSchema,
 )
 from ...configuration import get_tracer
 from ...utils import json_dumps
@@ -46,6 +44,7 @@ from .serialize import (
     serialize_mirascope_cost,
     serialize_mirascope_messages,
     serialize_mirascope_usage,
+    serialize_tools,
 )
 
 logger = logging.getLogger(__name__)
@@ -65,7 +64,6 @@ else:
     Tracer = None
 
 
-ToolsParam: TypeAlias = AnyTools | None
 FormatParam: TypeAlias = Format[FormattableT] | None
 ParamsDict: TypeAlias = Mapping[str, str | int | float | bool | Sequence[str] | None]
 SpanAttributes: TypeAlias = Mapping[str, AttributeValue]
@@ -179,53 +177,13 @@ def _assign_request_message_attributes(
     )
 
 
-def _collect_tool_schemas(
-    tools: Sequence[ToolSchema[AnyToolFn]] | BaseToolkit[AnyToolSchema],
-) -> list[ToolSchema[AnyToolFn]]:
-    """Collect ToolSchema instances from a tools parameter."""
-    iterable = list(tools.tools) if isinstance(tools, BaseToolkit) else list(tools)
-    schemas: list[ToolSchema[AnyToolFn]] = []
-    for tool in iterable:
-        if isinstance(tool, ToolSchema):
-            schemas.append(tool)
-    return schemas
-
-
-def _serialize_tool_definitions(
-    tools: ToolsParam,
-    format: FormatParam = None,
-) -> str | None:
-    """Serialize tool definitions to JSON for span attributes."""
-    if tools is None:
-        tool_schemas: list[ToolSchema[AnyToolFn]] = []
-    else:
-        tool_schemas = _collect_tool_schemas(tools)
-
-    if isinstance(format, Format) and format.mode == "tool":
-        tool_schemas.append(format.create_tool_schema())
-
-    if not tool_schemas:
-        return None
-    definitions: list[dict[str, str | int | bool | dict[str, str | int | bool]]] = []
-    for tool in tool_schemas:
-        tool_def: dict[str, str | int | bool | dict[str, str | int | bool]] = {
-            "name": tool.name,
-            "description": tool.description,
-            "parameters": tool.parameters.model_dump(by_alias=True, mode="json"),
-        }
-        if tool.strict is not None:
-            tool_def["strict"] = tool.strict
-        definitions.append(tool_def)
-    return json_dumps(definitions)
-
-
 def _build_request_attributes(
     *,
     operation: str,
     provider: ProviderId,
     model_id: ModelId,
     messages: Sequence[Message],
-    tools: ToolsParam,
+    tools: AnyTools | None,
     format: FormatParam,
     params: ParamsDict,
 ) -> dict[str, AttributeValue]:
@@ -243,7 +201,18 @@ def _build_request_attributes(
         messages=messages,
     )
 
-    tool_payload = _serialize_tool_definitions(tools, format=format)
+    tool_schemas: list[AnyToolSchema] = []
+    if tools is None:
+        tool_schemas = []
+    elif isinstance(tools, BaseToolkit):
+        tool_schemas = list(tools.tools)
+    else:
+        tool_schemas = list(tools)
+
+    if isinstance(format, Format) and format.mode == "tool":
+        tool_schemas.append(format.create_tool_schema())
+
+    tool_payload = serialize_tools(tool_schemas)
     if tool_payload:
         # The incubating semconv module does not yet expose a constant for this key.
         attrs["gen_ai.tool.definitions"] = tool_payload
@@ -476,7 +445,7 @@ def start_model_span(
     model: Model,
     *,
     messages: Sequence[Message],
-    tools: ToolsParam,
+    tools: AnyTools | None,
     format: FormatParam,
     activate: bool = True,
 ) -> Iterator[SpanContext]:
