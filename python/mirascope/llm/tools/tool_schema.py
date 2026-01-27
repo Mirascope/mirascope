@@ -40,8 +40,7 @@ ToolFnT = TypeVar(
     covariant=True,
 )
 
-AnyToolSchema: TypeAlias = "ToolSchema[AnyToolFn]"
-ToolSchemaT = TypeVar("ToolSchemaT", bound=AnyToolSchema, covariant=True)
+ToolSchemaT = TypeVar("ToolSchemaT", bound="ToolSchema[AnyToolFn]", covariant=True)
 
 
 ModelJsonSchema = TypedDict(
@@ -317,3 +316,6 @@ class ToolSchema(Generic[ToolFnT]):
         is performed.
         """
         return tool_call.name == self.name
+
+
+AnyToolSchema: TypeAlias = ToolSchema[AnyToolFn]

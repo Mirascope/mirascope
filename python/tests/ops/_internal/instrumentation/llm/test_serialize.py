@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from inline_snapshot import snapshot
 
 from mirascope.llm.content import (
     Audio,
@@ -26,6 +27,7 @@ from mirascope.llm.content.document import (
 from mirascope.llm.content.image import Base64ImageSource, URLImageSource
 from mirascope.llm.messages import AssistantMessage, SystemMessage, UserMessage
 from mirascope.llm.responses.usage import Usage
+from mirascope.llm.tools import ProviderTool
 from mirascope.ops._internal.instrumentation.llm.serialize import (
     attach_mirascope_response,
     attach_mirascope_response_async,
@@ -33,6 +35,7 @@ from mirascope.ops._internal.instrumentation.llm.serialize import (
     serialize_mirascope_cost,
     serialize_mirascope_messages,
     serialize_mirascope_usage,
+    serialize_tools,
 )
 
 if TYPE_CHECKING:
@@ -596,3 +599,13 @@ class TestAttachMirascopeResponseAsync:
 
         # Cost should not be attached when calculation returns None
         assert "mirascope.response.cost" not in span.attributes
+
+
+class TestSerializeTools:
+    """Tests for serialize_tools function."""
+
+    def test_serialize_provider_tool(self) -> None:
+        """Test serialization of ProviderTool."""
+        tool = ProviderTool(name="test_tool")
+        result = serialize_tools([tool])
+        assert result == snapshot('[{"name":"test_tool","type":"extension"}]')

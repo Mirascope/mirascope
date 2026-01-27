@@ -25,7 +25,7 @@ from ....formatting import (
     resolve_format,
 )
 from ....messages import AssistantMessage, Message, UserMessage
-from ....tools import AnyToolSchema, BaseToolkit
+from ....tools import AnyToolSchema, BaseToolkit, ProviderTool
 from ...base import _utils as _base_utils
 from ..model_id import model_name
 from ..model_info import MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
@@ -135,7 +135,7 @@ def _beta_encode_messages(
 
 
 def _beta_convert_tool_to_tool_param(
-    tool: AnyToolSchema, model_supports_strict: bool
+    tool: "AnyToolSchema | ProviderTool", model_supports_strict: bool
 ) -> BetaToolParam:
     """Convert a single Mirascope tool to Beta Anthropic tool format.
 
@@ -144,6 +144,10 @@ def _beta_convert_tool_to_tool_param(
     by adding additionalProperties: false to all object schemas, and strict=True
     is passed to the API.
     """
+    if isinstance(tool, ProviderTool):
+        raise FeatureNotSupportedError(
+            f"Provider tool {tool.name}", provider_id="anthropic-beta"
+        )
     schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
     schema_dict["type"] = "object"
 

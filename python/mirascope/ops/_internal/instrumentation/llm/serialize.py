@@ -17,6 +17,7 @@ from .....llm import (
     Image,
     Jsonable,
     Message,
+    ProviderTool,
     RootResponse,
     SystemMessage,
     Text,
@@ -168,10 +169,13 @@ def serialize_mirascope_usage(usage: Usage | None) -> AttributeValue | None:
     )
 
 
-def _serialize_tool(tool: AnyToolSchema) -> dict[str, Jsonable]:
+def _serialize_tool(tool: AnyToolSchema | ProviderTool) -> dict[str, Jsonable]:
+    if isinstance(tool, ProviderTool):
+        return {"name": tool.name, "type": "extension"}
     result: dict[str, Jsonable] = {
         "name": tool.name,
         "description": tool.description,
+        "type": "function",
         "parameters": tool.parameters.model_dump(by_alias=True, mode="json"),
     }
     if tool.strict is not None:
@@ -179,7 +183,7 @@ def _serialize_tool(tool: AnyToolSchema) -> dict[str, Jsonable]:
     return result
 
 
-def serialize_tools(tools: Sequence[AnyToolSchema]) -> str | None:
+def serialize_tools(tools: Sequence[AnyToolSchema | ProviderTool]) -> str | None:
     """Serialize a sequence of Mirascope tools"""
     if not tools:
         return None

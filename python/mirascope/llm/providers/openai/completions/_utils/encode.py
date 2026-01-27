@@ -13,7 +13,7 @@ from openai.types.shared_params.response_format_json_schema import JSONSchema
 from .....exceptions import FeatureNotSupportedError
 from .....formatting import Format, FormattableT, OutputParser, resolve_format
 from .....messages import AssistantMessage, Message, UserMessage
-from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
+from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit, ProviderTool
 from ....base import _utils as _base_utils
 from ...model_id import OpenAIModelId, model_name
 from ...model_info import (
@@ -228,9 +228,13 @@ def _encode_message(
 
 @lru_cache(maxsize=128)
 def _convert_tool_to_tool_param(
-    tool: AnyToolSchema,
+    tool: AnyToolSchema | ProviderTool,
 ) -> openai_types.ChatCompletionToolParam:
     """Convert a single Mirascope `Tool` to OpenAI ChatCompletionToolParam with caching."""
+    if isinstance(tool, ProviderTool):
+        raise FeatureNotSupportedError(
+            f"Provider tool {tool.name}", provider_id="openai"
+        )
     schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
     schema_dict["type"] = "object"
     _base_utils.ensure_additional_properties_false(schema_dict)

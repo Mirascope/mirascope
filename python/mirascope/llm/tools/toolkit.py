@@ -6,6 +6,7 @@ from ..content import ToolCall, ToolOutput
 from ..context import Context, DepsT
 from ..exceptions import ToolNotFoundError
 from ..types import Jsonable
+from .provider_tools import ProviderTool
 from .tool_schema import ToolSchemaT
 from .tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 
@@ -24,13 +25,24 @@ class BaseToolkit(Generic[ToolSchemaT]):
     including name validation and tool lookup.
     """
 
-    tools: Sequence[ToolSchemaT]
+    tools: Sequence[ToolSchemaT | ProviderTool]
     """The tools included in the toolkit."""
 
     tools_dict: dict[str, ToolSchemaT]
-    """A mapping from tool names to tools in the toolkit."""
+    """A mapping from tool names to tools in the toolkit.
 
-    def __init__(self, tools: Sequence[ToolSchemaT] | None) -> None:
+    This dict does not include any `ProviderTool`s, since they do not correspond
+    to tool calls that your code executes.
+    """
+
+    provider_tools_dict: dict[str, ProviderTool]
+    """A mapping from provider tool names to provider tools in the toolkit.
+
+    Provider tools are capabilities built into the provider's API (like web search)
+    that are executed server-side, not by your code.
+    """
+
+    def __init__(self, tools: Sequence[ToolSchemaT | ProviderTool] | None) -> None:
         """Initialize the toolkit with a collection of tools.
 
         Args:
@@ -41,10 +53,16 @@ class BaseToolkit(Generic[ToolSchemaT]):
         """
         self.tools = tools or []
         self.tools_dict = {}
+        self.provider_tools_dict = {}
         for tool in self.tools:
-            if tool.name in self.tools_dict:
-                raise ValueError(f"Multiple tools with name: {tool.name}")
-            self.tools_dict[tool.name] = tool
+            if isinstance(tool, ProviderTool):
+                if tool.name in self.provider_tools_dict:
+                    raise ValueError(f"Multiple provider tools with name: {tool.name}")
+                self.provider_tools_dict[tool.name] = tool
+            else:
+                if tool.name in self.tools_dict:
+                    raise ValueError(f"Multiple tools with name: {tool.name}")
+                self.tools_dict[tool.name] = tool
 
     def get(self, tool_call: ToolCall) -> ToolSchemaT:
         """Get a tool that can execute a specific tool call.

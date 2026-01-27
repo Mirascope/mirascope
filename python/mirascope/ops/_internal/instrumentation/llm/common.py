@@ -28,6 +28,7 @@ from .....llm import (
     ModelId,
     Params,
     ProviderId,
+    ProviderTool,
     RootResponse,
     ToolkitT,
 )
@@ -201,7 +202,7 @@ def _build_request_attributes(
         messages=messages,
     )
 
-    tool_schemas: list[AnyToolSchema] = []
+    tool_schemas: list[AnyToolSchema | ProviderTool] = []
     if tools is None:
         tool_schemas = []
     elif isinstance(tools, BaseToolkit):

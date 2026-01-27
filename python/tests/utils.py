@@ -1,5 +1,7 @@
 """Test utilities for response testing."""
 
+from __future__ import annotations
+
 import contextlib
 import logging
 from collections.abc import Generator
@@ -28,8 +30,11 @@ def format_snapshot(
 
 
 def tool_snapshot(
-    tool: llm.tools.AnyToolSchema,
+    tool: llm.tools.AnyToolSchema | llm.ProviderTool,
 ) -> dict[str, Any]:
+    if isinstance(tool, llm.ProviderTool):
+        return {"name": tool.name}
+
     return {
         "name": tool.name,
         "description": tool.description,

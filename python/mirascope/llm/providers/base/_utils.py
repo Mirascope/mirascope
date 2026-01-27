@@ -10,7 +10,7 @@ from ...messages import AssistantMessage, Message, SystemMessage, UserMessage
 from ...models.params import (
     Params,  # Import directly from params.py to avoid circular dependency
 )
-from ...tools import AnyToolSchema
+from ...tools import AnyToolSchema, ProviderTool, ToolSchema
 from ..provider_id import ProviderId
 
 if TYPE_CHECKING:
@@ -28,7 +28,7 @@ def get_include_thoughts(params: Params) -> bool:
     return (thinking_config or {}).get("include_thoughts", False)
 
 
-def has_strict_tools(tools: Sequence[AnyToolSchema]) -> bool:
+def has_strict_tools(tools: Sequence[AnyToolSchema | ProviderTool]) -> bool:
     """Check if any tools have strict=True explicitly set.
 
     Args:
@@ -37,7 +37,7 @@ def has_strict_tools(tools: Sequence[AnyToolSchema]) -> bool:
     Returns:
         True if any tool has strict=True, False otherwise
     """
-    return any(tool.strict is True for tool in tools)
+    return any(isinstance(tool, ToolSchema) and tool.strict is True for tool in tools)
 
 
 def ensure_additional_properties_false(obj: object) -> None:
