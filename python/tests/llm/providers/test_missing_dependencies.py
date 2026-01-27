@@ -1,10 +1,19 @@
 """Tests for missing optional dependency handling."""
 
+import builtins
 import sys
 from types import ModuleType
 from typing import Any
 
 import pytest
+
+from mirascope import _stubs
+from mirascope._stubs import (
+    _finder,
+    _make_import_error,
+    _StubModule,
+    stub_module_if_missing,
+)
 
 # pyright: reportPrivateUsage=false
 
@@ -14,8 +23,6 @@ class TestMissingDependencies:
 
     def test_stub_module_creation(self) -> None:
         """Test that _StubModule works as expected."""
-        from mirascope._stubs import _StubModule
-
         stub = _StubModule("test.module", "test_package")
 
         # Should return a stub class for any attribute
@@ -34,8 +41,6 @@ class TestMissingDependencies:
 
     def test_stub_class_attribute_access(self) -> None:
         """Test that stub classes fail on attribute access."""
-        from mirascope._stubs import _StubModule
-
         stub = _StubModule("test.module", "test_package")
         stub_class = stub.SomeClass
 
@@ -48,8 +53,6 @@ class TestMissingDependencies:
 
     def test_stub_class_isinstance(self) -> None:
         """Test that isinstance checks fail with helpful error."""
-        from mirascope._stubs import _StubModule
-
         stub = _StubModule("test.module", "test_package")
         stub_class = stub.SomeClass
 
@@ -61,8 +64,6 @@ class TestMissingDependencies:
 
     def test_stub_class_issubclass_with_other(self) -> None:
         """Test that issubclass checks fail with helpful error."""
-        from mirascope._stubs import _StubModule
-
         stub = _StubModule("test.module", "test_package")
         stub_class = stub.SomeClass
 
@@ -74,8 +75,6 @@ class TestMissingDependencies:
 
     def test_stub_class_issubclass_with_self(self) -> None:
         """Test that issubclass with self returns True."""
-        from mirascope._stubs import _StubModule
-
         stub = _StubModule("test.module", "test_package")
         stub_class = stub.SomeClass
 
@@ -84,8 +83,6 @@ class TestMissingDependencies:
 
     def test_stub_class_can_be_subclassed_in_definition(self) -> None:
         """Test that stub classes can be subclassed (but using the subclass fails)."""
-        from mirascope._stubs import _StubModule
-
         stub = _StubModule("test.module", "test_package")
         stub_class = stub.SomeClass
 
@@ -102,8 +99,6 @@ class TestMissingDependencies:
 
     def test_stub_private_attribute_raises_attribute_error(self) -> None:
         """Test that private attributes raise AttributeError, not ImportError."""
-        from mirascope._stubs import _StubModule
-
         stub = _StubModule("test.module", "test_package")
 
         with pytest.raises(AttributeError):
@@ -115,8 +110,6 @@ class TestMissingDependencies:
 
     def test_stub_module_dir_returns_empty_list(self) -> None:
         """Test that __dir__ returns empty list for stub modules."""
-        from mirascope._stubs import _StubModule
-
         stub = _StubModule("test.module", "test_package")
 
         # __dir__ should return empty list
@@ -124,8 +117,6 @@ class TestMissingDependencies:
 
     def test_stub_module_call_raises_import_error(self) -> None:
         """Test that calling a stub module raises ImportError."""
-        from mirascope._stubs import _StubModule
-
         stub = _StubModule("test.module", "test_package")
 
         # Calling the module itself should fail
@@ -137,8 +128,6 @@ class TestMissingDependencies:
 
     def test_stub_module_isinstance_raises_import_error(self) -> None:
         """Test that isinstance checks on stub modules raise ImportError."""
-        from mirascope._stubs import _StubModule
-
         stub = _StubModule("test.module", "test_package")
 
         # isinstance check with the module itself should fail
@@ -150,8 +139,6 @@ class TestMissingDependencies:
 
     def test_stub_module_issubclass_with_other_raises_import_error(self) -> None:
         """Test that issubclass checks on stub modules raise ImportError."""
-        from mirascope._stubs import _StubModule
-
         stub = _StubModule("test.module", "test_package")
 
         # issubclass check with another class should fail
@@ -163,8 +150,6 @@ class TestMissingDependencies:
 
     def test_stub_module_issubclass_with_self_returns_true(self) -> None:
         """Test that issubclass with itself returns True for stub modules."""
-        from mirascope._stubs import _StubModule
-
         stub = _StubModule("test.module", "test_package")
 
         # issubclass with itself should return True
@@ -174,11 +159,6 @@ class TestMissingDependencies:
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test stub_module_if_missing when package is not installed."""
-        import builtins
-
-        from mirascope import _stubs
-        from mirascope._stubs import stub_module_if_missing
-
         # Add fake extra to EXTRA_IMPORTS
         monkeypatch.setitem(_stubs.EXTRA_IMPORTS, "fake_package", ["fake_package"])
 
@@ -204,9 +184,6 @@ class TestMissingDependencies:
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test stub_module_if_missing when package is installed."""
-        from mirascope import _stubs
-        from mirascope._stubs import stub_module_if_missing
-
         # Add pytest to EXTRA_IMPORTS (it's installed in dev environment)
         monkeypatch.setitem(_stubs.EXTRA_IMPORTS, "pytest", ["pytest"])
 
@@ -218,8 +195,6 @@ class TestMissingDependencies:
 
     def test_stub_module_if_missing_with_unknown_package(self) -> None:
         """Test stub_module_if_missing raises KeyError for unknown package."""
-        from mirascope._stubs import stub_module_if_missing
-
         # Should raise KeyError for unknown package name
         with pytest.raises(
             KeyError, match="Unknown extra 'unknown_package_xyz'"
@@ -230,10 +205,65 @@ class TestMissingDependencies:
         assert "anthropic" in str(exc_info.value)
         assert "openai" in str(exc_info.value)
 
+    def test_stub_module_if_missing_with_multiple_extras_all_available(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Test stub_module_if_missing with multiple extras all available."""
+        # Add fake extras that use packages we know are installed
+        monkeypatch.setitem(_stubs.EXTRA_IMPORTS, "extra1", ["pytest"])
+        monkeypatch.setitem(_stubs.EXTRA_IMPORTS, "extra2", ["sys"])
+
+        # Should return True when ALL extras are available
+        result = stub_module_if_missing("test.multi.all", ["extra1", "extra2"])
+        assert result is True
+        # Should not install a stub
+        assert "test.multi.all" not in sys.modules
+
+    def test_stub_module_if_missing_with_multiple_extras_one_missing(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Test stub_module_if_missing returns False if any extra is missing."""
+        # Add fake extras: one available, one missing
+        monkeypatch.setitem(_stubs.EXTRA_IMPORTS, "available_extra", ["pytest"])
+        monkeypatch.setitem(_stubs.EXTRA_IMPORTS, "missing_extra", ["nonexistent_pkg"])
+
+        # Mock __import__ to raise ImportError for the missing package
+        original_import = builtins.__import__
+
+        def mock_import(name: str, *args: Any, **kwargs: Any) -> ModuleType:  # noqa: ANN401
+            if name == "nonexistent_pkg":
+                raise ImportError(f"No module named '{name}'")
+            return original_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", mock_import)
+
+        # Should return False because not ALL extras are available
+        result = stub_module_if_missing(
+            "test.multi.partial", ["available_extra", "missing_extra"]
+        )
+        assert result is False
+        assert "test.multi.partial" in sys.modules
+
+        # Verify the stub references the MISSING extra, not the first one
+        stub_module = sys.modules["test.multi.partial"]
+        assert isinstance(stub_module, _StubModule)
+        # The error message should reference "missing_extra", not "available_extra"
+        with pytest.raises(ImportError, match="missing_extra"):
+            stub_module.SomeClass()
+
+        # Clean up
+        del sys.modules["test.multi.partial"]
+
+    def test_stub_module_if_missing_with_empty_sequence(self) -> None:
+        """Test stub_module_if_missing returns True for empty sequence."""
+        # Empty sequence means no extras to check, so all are satisfied (vacuously true)
+        result = stub_module_if_missing("test.module", [])
+        assert result is True
+        # Should not install a stub
+        assert "test.module" not in sys.modules
+
     def test_error_message_format(self) -> None:
         """Test that error messages are helpful and properly formatted."""
-        from mirascope._stubs import _make_import_error
-
         error = _make_import_error("anthropic", "AnthropicProvider")
         assert "anthropic" in str(error)
         assert "AnthropicProvider" in str(error)
@@ -242,8 +272,6 @@ class TestMissingDependencies:
 
     def test_nested_import_via_finder(self) -> None:
         """Test that the finder creates stub modules for nested imports."""
-        from mirascope._stubs import _finder, _StubModule
-
         # Manually create a stub module and register it
         stub = _StubModule("test_finder_stub", "test_package")
         sys.modules["test_finder_stub"] = stub
