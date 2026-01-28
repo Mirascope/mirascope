@@ -5,7 +5,7 @@ import os
 import pytest
 
 from mirascope import llm
-from mirascope.llm.providers.azure import AzureOpenAIProvider, AzureProvider
+from mirascope.llm.providers.azure import AzureOpenAIProvider
 from mirascope.llm.providers.azure.model_id import model_name as azure_model_name
 from mirascope.llm.providers.openai.completions._utils import encode_request
 from mirascope.llm.tools import Toolkit
@@ -49,32 +49,16 @@ def test_azure_model_name() -> None:
     assert azure_model_name("gpt-5-mini") == "gpt-5-mini"
 
 
-def test_azure_provider_initialization() -> None:
-    """Test AzureProvider initialization."""
-    provider = AzureProvider(
-        api_key="test-key", base_url="https://example.openai.azure.com"
-    )
-    assert provider.id == "azure"
-    assert provider.default_scope == "azure/openai/"
-    assert provider.client is not None
-    assert (
-        str(provider.client.base_url) == "https://example.openai.azure.com/openai/v1/"
-    )
-
-
 def test_azure_provider_get_error_status() -> None:
-    """Test AzureProvider.get_error_status extracts status code."""
-    provider = AzureProvider(
+    """Test AzureOpenAIProvider.get_error_status extracts status code."""
+    provider = AzureOpenAIProvider(
         api_key="test-key", base_url="https://example.openai.azure.com"
     )
 
-    # Test with exception that has status_code
     class MockException(Exception):
         status_code = 401
 
     assert provider.get_error_status(MockException()) == 401
-
-    # Test with exception without status_code
     assert provider.get_error_status(ValueError("no status")) is None
 
 

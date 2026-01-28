@@ -3,14 +3,13 @@
 import builtins
 import sys
 from types import ModuleType
-from typing import Any
+from typing import Any, cast
 
 import pytest
 
 from mirascope import _stubs
 from mirascope._stubs import (
     _finder,
-    _make_import_error,
     _StubModule,
     stub_module_if_missing,
 )
@@ -264,7 +263,9 @@ class TestMissingDependencies:
 
     def test_error_message_format(self) -> None:
         """Test that error messages are helpful and properly formatted."""
-        error = _make_import_error("anthropic", "AnthropicProvider")
+        from mirascope._stubs import make_import_error
+
+        error = make_import_error("anthropic", "AnthropicProvider")
         assert "anthropic" in str(error)
         assert "AnthropicProvider" in str(error)
         assert "uv add 'mirascope[anthropic]'" in str(error)
@@ -375,6 +376,155 @@ class TestProviderStubs:
 
         # Should be importable without error
         assert OpenAIProvider is not None
+
+    def test_azure_provider_import_without_openai(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Test that Azure provider imports without OpenAI installed."""
+        import builtins
+        import importlib
+
+        module_names = [
+            "mirascope.llm.providers.azure",
+            "mirascope.llm.providers.azure.openai",
+            "mirascope.llm.providers.azure.openai.provider",
+        ]
+        original_modules = {name: sys.modules.get(name) for name in module_names}
+        for name in module_names:
+            sys.modules.pop(name, None)
+
+        original_import = builtins.__import__
+
+        def mock_import(name: str, *args: Any, **kwargs: Any) -> ModuleType:  # noqa: ANN401
+            level = kwargs.get("level", args[2] if len(args) >= 3 else 0)
+            if level == 0 and (name == "openai" or name.startswith("openai.")):
+                raise ImportError(f"No module named '{name}'")
+            return original_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", mock_import)
+
+        try:
+            azure_module = importlib.import_module("mirascope.llm.providers.azure")
+            assert "AzureOpenAIProvider" in azure_module.__all__
+            assert "AzureAnthropicProvider" in azure_module.__all__
+            assert azure_module.AzureProvider is not None
+        finally:
+            for name, module in original_modules.items():
+                if module is None:
+                    sys.modules.pop(name, None)
+                else:
+                    sys.modules[name] = module
+
+    def test_azure_provider_import_without_anthropic(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Test that Azure provider imports without Anthropic installed."""
+        import builtins
+        import importlib
+
+        module_names = [
+            "mirascope.llm.providers.azure",
+            "mirascope.llm.providers.azure.anthropic",
+            "mirascope.llm.providers.azure.anthropic.provider",
+        ]
+        original_modules = {name: sys.modules.get(name) for name in module_names}
+        for name in module_names:
+            sys.modules.pop(name, None)
+
+        original_import = builtins.__import__
+
+        def mock_import(name: str, *args: Any, **kwargs: Any) -> ModuleType:  # noqa: ANN401
+            level = kwargs.get("level", args[2] if len(args) >= 3 else 0)
+            if level == 0 and (name == "anthropic" or name.startswith("anthropic.")):
+                raise ImportError(f"No module named '{name}'")
+            return original_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", mock_import)
+
+        try:
+            azure_module = importlib.import_module("mirascope.llm.providers.azure")
+            assert "AzureAnthropicProvider" in azure_module.__all__
+            assert "AzureOpenAIProvider" in azure_module.__all__
+            assert azure_module.AzureProvider is not None
+        finally:
+            for name, module in original_modules.items():
+                if module is None:
+                    sys.modules.pop(name, None)
+                else:
+                    sys.modules[name] = module
+
+    def test_providers_import_without_openai(self) -> None:
+        """Test providers module handles missing Azure OpenAI dependency."""
+        import importlib
+        from types import ModuleType
+
+        import mirascope.llm.providers.azure as real_azure
+
+        module_names = ["mirascope.llm.providers", "mirascope.llm.providers.azure"]
+        original_modules = {name: sys.modules.get(name) for name in module_names}
+        for name in module_names:
+            sys.modules.pop(name, None)
+
+        stub_azure: Any = ModuleType("mirascope.llm.providers.azure")
+        stub_azure.AzureModelId = real_azure.AzureModelId
+        stub_azure.AzureProvider = real_azure.AzureProvider
+        stub_azure.AzureAnthropicProvider = real_azure.AzureAnthropicProvider
+        stub_azure.AzureOpenAIProvider = real_azure.AzureOpenAIProvider
+
+        sys.modules["mirascope.llm.providers.azure"] = stub_azure
+
+        try:
+            providers_module = importlib.import_module("mirascope.llm.providers")
+            assert "AzureOpenAIProvider" in providers_module.__all__
+        finally:
+            for name, module in original_modules.items():
+                if module is None:
+                    sys.modules.pop(name, None)
+                else:
+                    sys.modules[name] = module
+            if original_modules["mirascope.llm.providers"] is None:
+                sys.modules.pop("mirascope.llm.providers", None)
+                importlib.import_module("mirascope.llm.providers")
+            llm_module = sys.modules.get("mirascope.llm")
+            if llm_module is not None:
+                cast(Any, llm_module).providers = sys.modules["mirascope.llm.providers"]
+
+    def test_providers_import_without_anthropic(self) -> None:
+        """Test providers module handles missing Azure Anthropic dependency."""
+        import importlib
+        from types import ModuleType
+
+        import mirascope.llm.providers.azure as real_azure
+
+        module_names = ["mirascope.llm.providers", "mirascope.llm.providers.azure"]
+        original_modules = {name: sys.modules.get(name) for name in module_names}
+        for name in module_names:
+            sys.modules.pop(name, None)
+
+        stub_azure: Any = ModuleType("mirascope.llm.providers.azure")
+        stub_azure.AzureModelId = real_azure.AzureModelId
+        stub_azure.AzureProvider = real_azure.AzureProvider
+        stub_azure.AzureOpenAIProvider = real_azure.AzureOpenAIProvider
+        stub_azure.AzureAnthropicProvider = real_azure.AzureAnthropicProvider
+
+        sys.modules["mirascope.llm.providers.azure"] = stub_azure
+
+        try:
+            providers_module = importlib.import_module("mirascope.llm.providers")
+            assert "AzureAnthropicProvider" in providers_module.__all__
+            assert "AzureOpenAIProvider" in providers_module.__all__
+        finally:
+            for name, module in original_modules.items():
+                if module is None:
+                    sys.modules.pop(name, None)
+                else:
+                    sys.modules[name] = module
+            if original_modules["mirascope.llm.providers"] is None:
+                sys.modules.pop("mirascope.llm.providers", None)
+                importlib.import_module("mirascope.llm.providers")
+            llm_module = sys.modules.get("mirascope.llm")
+            if llm_module is not None:
+                cast(Any, llm_module).providers = sys.modules["mirascope.llm.providers"]
 
     def test_mlx_provider_is_importable(self) -> None:
         """Test that MLXProvider can be imported (will be real or stub)."""
