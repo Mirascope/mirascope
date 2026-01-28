@@ -16,8 +16,14 @@ export type { BaseResponseInit } from '@/llm/responses/base-response';
 export { Response } from '@/llm/responses/response';
 export type { ResponseInit } from '@/llm/responses/response';
 
+export { ContextResponse } from '@/llm/responses/context-response';
+export type { ContextResponseInit } from '@/llm/responses/context-response';
+
 export { StreamResponse } from '@/llm/responses/stream-response';
-export type { StreamResponseArgs } from '@/llm/responses/stream-response';
+export type { StreamResponseInit as StreamResponseInit } from '@/llm/responses/stream-response';
+
+export { ContextStreamResponse } from '@/llm/responses/context-stream-response';
+export type { ContextStreamResponseInit as ContextStreamResponseInit } from '@/llm/responses/context-stream-response';
 
 // Streaming chunk types
 export {

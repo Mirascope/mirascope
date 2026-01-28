@@ -4,6 +4,7 @@
 
 import { GoogleGenAI, ApiError } from '@google/genai';
 
+import type { Context } from '@/llm/context';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { BaseProvider } from '@/llm/providers/base';
@@ -11,6 +12,8 @@ import { getIncludeThoughts } from '@/llm/providers/_utils';
 import type { GoogleModelId } from '@/llm/providers/google/model-id';
 import { modelName } from '@/llm/providers/google/model-id';
 import { Response } from '@/llm/responses';
+import { ContextResponse } from '@/llm/responses/context-response';
+import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 import { StreamResponse } from '@/llm/responses/stream-response';
 import {
   GOOGLE_ERROR_MAP,
@@ -91,7 +94,7 @@ export class GoogleProvider extends BaseProvider {
       providerId: 'google',
       modelId,
       providerModelName: modelName(modelId),
-      params: args.params ?? {},
+      params: args.params ?? /* v8 ignore next 1 */ {},
       inputMessages: args.messages,
       assistantMessage,
       finishReason,
@@ -128,6 +131,95 @@ export class GoogleProvider extends BaseProvider {
     const chunkIterator = decodeStream(stream, includeThoughts);
 
     return new StreamResponse({
+      providerId: 'google',
+      modelId,
+      providerModelName: modelName(modelId),
+      params: args.params ?? /* v8 ignore next 1 */ {},
+      inputMessages: args.messages,
+      chunkIterator,
+    });
+  }
+
+  /**
+   * Execute a context-aware call to the Google Gemini API.
+   *
+   * NOTE: This implementation intentionally duplicates _call() rather than delegating.
+   * When context-aware tools are implemented, this method will diverge to handle
+   * passing context to tools during execution. We keep them separate now to make
+   * that future change clearer.
+   *
+   * @param args - Call arguments including context and model
+   * @returns ContextResponse object containing the API response
+   */
+  protected async _contextCall<DepsT>(args: {
+    ctx: Context<DepsT>;
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<ContextResponse<DepsT>> {
+    const modelId = args.modelId as GoogleModelId;
+    const requestParams = buildRequestParams(
+      modelId,
+      args.messages,
+      args.params
+    );
+
+    const googleResponse =
+      await this.client.models.generateContent(requestParams);
+
+    const includeThoughts = getIncludeThoughts(args.params);
+
+    const { assistantMessage, finishReason, usage } = decodeResponse(
+      googleResponse,
+      modelId,
+      includeThoughts
+    );
+
+    return new ContextResponse({
+      raw: googleResponse,
+      providerId: 'google',
+      modelId,
+      providerModelName: modelName(modelId),
+      params: args.params ?? /* v8 ignore next 1 */ {},
+      inputMessages: args.messages,
+      assistantMessage,
+      finishReason,
+      usage,
+    });
+  }
+
+  /**
+   * Execute a context-aware streaming call to the Google Gemini API.
+   *
+   * NOTE: This implementation intentionally duplicates _stream() rather than delegating.
+   * When context-aware tools are implemented, this method will diverge to handle
+   * passing context to tools during execution. We keep them separate now to make
+   * that future change clearer.
+   *
+   * @param args - Call arguments including context and model
+   * @returns ContextStreamResponse object for streaming consumption
+   */
+  protected async _contextStream<DepsT>(args: {
+    ctx: Context<DepsT>;
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<ContextStreamResponse<DepsT>> {
+    const modelId = args.modelId as GoogleModelId;
+    const requestParams = buildRequestParams(
+      modelId,
+      args.messages,
+      args.params
+    );
+
+    const includeThoughts = getIncludeThoughts(args.params);
+
+    const stream =
+      await this.client.models.generateContentStream(requestParams);
+
+    const chunkIterator = decodeStream(stream, includeThoughts);
+
+    return new ContextStreamResponse({
       providerId: 'google',
       modelId,
       providerModelName: modelName(modelId),

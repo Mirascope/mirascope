@@ -11,6 +11,8 @@ export type {
 } from '@/llm/providers';
 export { KNOWN_PROVIDER_IDS } from '@/llm/providers';
 
+export { type Context, createContext } from '@/llm/context';
+
 export type {
   AssistantContentPart,
   ContentPart,
@@ -87,9 +89,21 @@ export {
   type Prompt,
   type PromptArgs,
   type TemplateFunc,
+  defineContextPrompt,
+  type ContextMessageTemplate,
+  type ContextPrompt,
+  type ContextPromptArgs,
+  type ContextTemplateFunc,
 } from '@/llm/prompts';
 
-export { defineCall, type Call, type CallArgs } from '@/llm/calls';
+export {
+  defineCall,
+  type Call,
+  type CallArgs,
+  defineContextCall,
+  type ContextCall,
+  type ContextCallArgs,
+} from '@/llm/calls';
 
 export {
   getProviderForModel,
@@ -102,7 +116,9 @@ export {
   RootResponse,
   BaseResponse,
   Response,
+  ContextResponse,
   StreamResponse,
+  ContextStreamResponse,
   createUsage,
   totalTokens,
 } from '@/llm/responses';
@@ -111,7 +127,9 @@ export type {
   Usage,
   BaseResponseInit,
   ResponseInit,
-  StreamResponseArgs,
+  ContextResponseInit,
+  StreamResponseInit,
+  ContextStreamResponseInit,
   // Streaming chunk types
   TextStartChunk,
   TextChunk,

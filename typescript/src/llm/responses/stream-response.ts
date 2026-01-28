@@ -33,7 +33,7 @@ import type { Jsonable } from '@/llm/types/jsonable';
 /**
  * Arguments for constructing a StreamResponse.
  */
-export interface StreamResponseArgs {
+export interface StreamResponseInit {
   /** The provider ID (e.g., 'anthropic', 'openai') */
   providerId: ProviderId;
 
@@ -136,7 +136,7 @@ export class StreamResponse extends RootResponse {
   /** Raw message from provider */
   private _rawMessage: Jsonable = null;
 
-  constructor(args: StreamResponseArgs) {
+  constructor(args: StreamResponseInit) {
     super();
     this.providerId = args.providerId;
     this.modelId = args.modelId;

@@ -106,3 +106,21 @@ describe('model helper', () => {
     expect(m.params).toEqual({ temperature: 0.5 });
   });
 });
+
+describe('Model context methods', () => {
+  afterEach(() => {
+    resetProviderRegistry();
+  });
+
+  it('has contextCall method', () => {
+    const m = new Model('anthropic/claude-sonnet-4-20250514');
+
+    expect(typeof m.contextCall).toBe('function');
+  });
+
+  it('has contextStream method', () => {
+    const m = new Model('anthropic/claude-sonnet-4-20250514');
+
+    expect(typeof m.contextStream).toBe('function');
+  });
+});
