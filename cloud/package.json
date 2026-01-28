@@ -29,6 +29,7 @@
     "generate:api-docs:ops": "bun run api2mdx/generate-api-docs.ts --source-path ../python --package mirascope.ops --output ../content/docs/api --api-root /docs/api --internal-structure --product-slug ops --product-label Ops --append",
     "generate:social-cards-test": "bun run scripts/generate-test-social-cards.ts",
     "generate:snippets": "bun run scripts/generate-snippets.ts",
+    "validate:snippets": "bash scripts/validate-snippets.sh",
     "email:dev": "email dev --dir ./emails/templates --port 3333",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
