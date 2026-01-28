@@ -19,7 +19,8 @@ export function JsonView({ value, className }: JsonViewProps) {
       style={{
         ...theme,
         overflow: "auto",
-      }}
+        "--w-rjv-background-color": "hsl(var(--muted))",
+      } as React.CSSProperties}
       displayDataTypes={false}
       displayObjectSize={false}
     />
