@@ -2,6 +2,7 @@
 title: "Understanding LangChain Runnables"
 description: "Learn about LangChain runnables, how they work, and when best to use them. We also contrast runnables with Mirascope's pythonic chaining techniques."
 date: "2024-07-10"
+updatedAt: "2026-01-28"
 readTime: "22 min read"
 author: "William Bakst"
 ---
@@ -110,7 +111,7 @@ Here we have four simple functions: `greet` , `append_datetime` , `to_uppercase`
 
 We can then create a `RunnableSequence` by passing these runnables to its constructor:
 
-```python
+```python-snippet-skip
 chain = RunnableSequence(
    first=greet_runnable,
    middle=[datetime_runnable, uppercase_runnable],
@@ -274,7 +275,7 @@ Here, the `passed` key was called with `RunnablePassthrough`, passing on the inp
 
 Wrapping a callable in a `RunnableLambda` makes the callable usable within either a `sync` or `async` context and can be composed as any other runnable. ‍
 
-```python
+```python-snippet-skip
 
 # This is a RunnableLambda
 
@@ -311,532 +312,61 @@ As shown above, the code handles individual values and batches of data, using th
 
 ## Chaining with Mirascope
 
-[Mirascope](/docs/mirascope) dispenses with abstractions like runnables and offers two ways of chaining: computed fields and function arguments.
+[Mirascope](/docs/learn/llm) dispenses with abstractions like runnables and offers two ways of chaining: computed fields and function arguments.
 
 ### Chaining with Computed Fields
 
 An example of chaining using Python's native functionality is shown below, where `explain_book` first calls `recommend_book` once and injects the result into the prompt template as a computed field:
 
 ```python
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
-@openai.call("gpt-4o-mini")
-@prompt_template(
-   """
-   Recommend a popular book in the {genre} genre.
-   Give me just the title.
-   """
-)
-def recommend_book(genre: str): ...
+@llm.call("openai/gpt-4o-mini")
+def recommend_book(genre: str) -> str:
+   return f"Recommend a popular book in the {genre} genre. Give me just the title."
 
-@openai.call("gpt-4o-mini")
-@prompt_template(
-   """
-   SYSTEM:
-   You are the world's greatest librarian.
-   Your task is to explain why the book "{book_title}" is popular in the {genre} genre.
-
-   USER:
-   Explain why "{book_title}" in the {genre} genre is popular.
-   """
-)
-def explain_book(genre: str) -> openai.OpenAIDynamicConfig:
-   return {"computed_fields": {"book_title": recommend_book(genre)}}
+@llm.call("openai/gpt-4o-mini")
+def explain_book(genre: str) -> llm.DynamicConfig[list, llm.Tools]:
+   book_title = recommend_book(genre).text()
+   return {
+       "messages": [
+           llm.messages.system(f"""You are the world's greatest librarian.
+Your task is to explain why the book "{book_title}" is popular in the {genre} genre."""),
+           llm.messages.user(f'Explain why "{book_title}" in the {genre} genre is popular.'),
+       ],
+       "computed_fields": {"book_title": book_title},
+   }
 
 explanation = explain_book("science fiction")
-print(explanation)
+print(explanation.text())
 
 # > "Dune," written by Frank Herbert, has garnered immense popularity in the science fiction genre...
 
 ```
 
-Additionally, `computed_fields` includes the output at every step of the chain in the final dump:
+You can also access the raw provider response for serialization:
 
-```python
-print(explanation.model_dump())
+```python-snippet-skip
+print(explanation.raw.model_dump_json(indent=2))
 
 # {
-
-#   "metadata": {},
-
-#   "response": {
-
-#     "id": "chatcmpl-ANYSOekHdvVOVKTUziTvDzCtCrbB4",
-
-#     "choices": [
-
-#       {
-
-#         "finish_reason": "stop",
-
-#         "index": 0,
-
-#         "logprobs": null,
-
-#         "message": {
-
-#           "content": "\"Dune,\" written by Frank Herbert and first published in 1965, is considered a cornerstone of the science fiction genre for several compelling reasons:\n\n1. **Complex World-Building**: Herbert created an intricate universe with detailed geography, politics, religion, and ecology. The desert planet of Arrakis (Dune) is not merely a backdrop, but a living ecosystem that plays a crucial role in the story. The depth of this world-building allows readers to immerse themselves fully in the narrative.\n\n2. **Themes of Power and Politics**: \"Dune\" delves into themes of imperialism, feudalism, and the struggle for power. It explores how individuals and groups navigate political machinations, often with profound consequences. These themes resonate with readers as they reflect real-world issues of governance, control, and rebellion.\n\n3. **Ecological and Environmental Awareness**: The book introduces the idea of the environment\u2019s fragility, particularly through the significance of the spice melange, which is vital for space travel and has profound effects on the human mind. It raises awareness about ecological balance and the exploitation of natural resources, themes that are increasingly relevant in today\u2019s context of climate change and environmental degradation.\n\n4. **Fascination with Mysticism and Religion**: Herbert infused the narrative with elements of mysticism and religious symbolism, particularly through the character of Paul Atreides, who embodies the potential for messianic and prophetic power. This adds layers of philosophical inquiry about destiny, belief, and the nature of knowledge.\n\n5. **Rich Characterization and Development**: The characters in \"Dune\" are multifaceted and undergo significant development, making them relatable and memorable. Paul's journey from heir to a noble family to a powerful leader is complex, and readers are drawn into his internal conflicts and growth.\n\n6. **Cultural Impact**: \"Dune\" has influenced numerous other works in literature, film, and games. Its themes, motifs, and characters have become archetypes within the genre. Adaptations, such as David Lynch's 1984 film and Denis Villeneuve's 2021 adaptation, have further renewed interest and engagement with the original text.\n\n7. **Innovative Concepts**: The book introduces groundbreaking ideas, such as the concept of a human mind augmenting through the spice and the intricate workings of the Bene Gesserit sisterhood. These innovative concepts challenge the status quo of science fiction and push the boundaries of imagination.\n\n8. **Longevity and Nuance**: \"Dune\" continues to be relevant and compelling across generations. It invites diverse interpretations and discussions, offering new insights on every read. Its sophistication and richness allow for deep exploration of its themes, keeping it alive in academic discussions.\n\nOverall, \"Dune\" is popular not just for its compelling narrative and characters, but also for its deep engagement with significant and timeless themes, making it a rich text that continues to inspire and influence readers and creators in the science fiction genre.",
-
-#           "refusal": null,
-
-#           "role": "assistant",
-
-#           "audio": null,
-
-#           "function_call": null,
-
-#           "tool_calls": null
-
-#         }
-
-#       }
-
-#     ],
-
-#     "created": 1730177360,
-
-#     "model": "gpt-4o-mini-2024-07-18",
-
-#     "object": "chat.completion",
-
-#     "service_tier": null,
-
-#     "system_fingerprint": "fp_f59a81427f",
-
-#     "usage": {
-
-#       "completion_tokens": 600,
-
-#       "prompt_tokens": 52,
-
-#       "total_tokens": 652,
-
-#       "completion_tokens_details": {
-
-#         "audio_tokens": null,
-
-#         "reasoning_tokens": 0
-
-#       },
-
-#       "prompt_tokens_details": {
-
-#         "audio_tokens": null,
-
-#         "cached_tokens": 0
-
-#       }
-
-#     }
-
-#   },
-
-#   "tool_types": null,
-
-#   "prompt_template": "\n   SYSTEM:\n   You are the world's greatest librarian.\n   Your task is to explain why the book \"{book_title}\" is popular in the {genre} genre.\n\n\n   USER:\n   Explain why \"{book_title}\" in the {genre} genre is popular.\n   ",
-
-#   "fn_args": {
-
-#     "genre": "science fiction",
-
-#     "book_title": {
-
-#       "metadata": {},
-
-#       "response": {
-
-#         "id": "chatcmpl-ANYSNPhRVQlMRuEUiwMeL07Z44k3f",
-
-#         "choices": [
-
-#           {
-
-#             "finish_reason": "stop",
-
-#             "index": 0,
-
-#             "logprobs": null,
-
-#             "message": {
-
-#               "content": "Dune",
-
-#               "refusal": null,
-
-#               "role": "assistant",
-
-#               "audio": null,
-
-#               "function_call": null,
-
-#               "tool_calls": null
-
-#             }
-
-#           }
-
-#         ],
-
-#         "created": 1730177359,
-
-#         "model": "gpt-4o-mini-2024-07-18",
-
-#         "object": "chat.completion",
-
-#         "service_tier": null,
-
-#         "system_fingerprint": "fp_f59a81427f",
-
-#         "usage": {
-
-#           "completion_tokens": 2,
-
-#           "prompt_tokens": 23,
-
-#           "total_tokens": 25,
-
-#           "completion_tokens_details": {
-
-#             "audio_tokens": null,
-
-#             "reasoning_tokens": 0
-
-#           },
-
-#           "prompt_tokens_details": {
-
-#             "audio_tokens": null,
-
-#             "cached_tokens": 0
-
-#           }
-
-#         }
-
-#       },
-
-#       "tool_types": null,
-
-#       "prompt_template": "\n   Recommend a popular book in the {genre} genre.\n   Give me just the title.\n   ",
-
-#       "fn_args": {
-
-#         "genre": "science fiction"
-
-#       },
-
-#       "dynamic_config": null,
-
-#       "messages": [
-
-#         {
-
-#           "role": "user",
-
-#           "content": "Recommend a popular book in the science fiction genre.\nGive me just the title."
-
-#         }
-
-#       ],
-
-#       "call_params": {},
-
-#       "call_kwargs": {
-
-#         "model": "gpt-4o-mini",
-
-#         "messages": [
-
-#           {
-
-#             "role": "user",
-
-#             "content": "Recommend a popular book in the science fiction genre.\nGive me just the title."
-
-#           }
-
-#         ]
-
-#       },
-
-#       "user_message_param": {
-
-#         "content": "Recommend a popular book in the science fiction genre.\nGive me just the title.",
-
-#         "role": "user"
-
-#       },
-
-#       "start_time": 1730177359100.959,
-
-#       "end_time": 1730177359672.126,
-
-#       "message_param": {
-
-#         "content": "Dune",
-
-#         "refusal": null,
-
-#         "role": "assistant",
-
-#         "tool_calls": null
-
-#       },
-
-#       "tools": null,
-
-#       "tool": null,
-
-#       "audio": null,
-
-#       "audio_transcript": null
-
-#     }
-
-#   },
-
-#   "dynamic_config": {
-
-#     "computed_fields": {
-
-#       "book_title": {
-
-#         "metadata": {},
-
-#         "response": {
-
-#           "id": "chatcmpl-ANYSNPhRVQlMRuEUiwMeL07Z44k3f",
-
-#           "choices": [
-
-#             {
-
-#               "finish_reason": "stop",
-
-#               "index": 0,
-
-#               "logprobs": null,
-
-#               "message": {
-
-#                 "content": "Dune",
-
-#                 "refusal": null,
-
-#                 "role": "assistant",
-
-#                 "audio": null,
-
-#                 "function_call": null,
-
-#                 "tool_calls": null
-
-#               }
-
-#             }
-
-#           ],
-
-#           "created": 1730177359,
-
-#           "model": "gpt-4o-mini-2024-07-18",
-
-#           "object": "chat.completion",
-
-#           "service_tier": null,
-
-#           "system_fingerprint": "fp_f59a81427f",
-
-#           "usage": {
-
-#             "completion_tokens": 2,
-
-#             "prompt_tokens": 23,
-
-#             "total_tokens": 25,
-
-#             "completion_tokens_details": {
-
-#               "audio_tokens": null,
-
-#               "reasoning_tokens": 0
-
-#             },
-
-#             "prompt_tokens_details": {
-
-#               "audio_tokens": null,
-
-#               "cached_tokens": 0
-
-#             }
-
-#           }
-
-#         },
-
-#         "tool_types": null,
-
-#         "prompt_template": "\n   Recommend a popular book in the {genre} genre.\n   Give me just the title.\n   ",
-
-#         "fn_args": {
-
-#           "genre": "science fiction"
-
-#         },
-
-#         "dynamic_config": null,
-
-#         "messages": [
-
-#           {
-
-#             "role": "user",
-
-#             "content": "Recommend a popular book in the science fiction genre.\nGive me just the title."
-
-#           }
-
-#         ],
-
-#         "call_params": {},
-
-#         "call_kwargs": {
-
-#           "model": "gpt-4o-mini",
-
-#           "messages": [
-
-#             {
-
-#               "role": "user",
-
-#               "content": "Recommend a popular book in the science fiction genre.\nGive me just the title."
-
-#             }
-
-#           ]
-
-#         },
-
-#         "user_message_param": {
-
-#           "content": "Recommend a popular book in the science fiction genre.\nGive me just the title.",
-
-#           "role": "user"
-
-#         },
-
-#         "start_time": 1730177359100.959,
-
-#         "end_time": 1730177359672.126,
-
-#         "message_param": {
-
-#           "content": "Dune",
-
-#           "refusal": null,
-
-#           "role": "assistant",
-
-#           "tool_calls": null
-
-#         },
-
-#         "tools": null,
-
-#         "tool": null,
-
-#         "audio": null,
-
-#         "audio_transcript": null
-
-#       }
-
-#     }
-
-#   },
-
-#   "messages": [
-
+#   "id": "chatcmpl-ANYSOekHdvVOVKTUziTvDzCtCrbB4",
+#   "choices": [
 #     {
-
-#       "role": "system",
-
-#       "content": "You are the world's greatest librarian.\nYour task is to explain why the book \"Dune\" is popular in the science fiction genre."
-
-#     },
-
-#     {
-
-#       "role": "user",
-
-#       "content": "Explain why \"Dune\" in the science fiction genre is popular."
-
+#       "finish_reason": "stop",
+#       "index": 0,
+#       "message": {
+#         "content": "\"Dune,\" written by Frank Herbert...",
+#         "role": "assistant"
+#       }
 #     }
-
 #   ],
-
-#   "call_params": {},
-
-#   "call_kwargs": {
-
-#     "model": "gpt-4o-mini",
-
-#     "messages": [
-
-#       {
-
-#         "role": "system",
-
-#         "content": "You are the world's greatest librarian.\nYour task is to explain why the book \"Dune\" is popular in the science fiction genre."
-
-#       },
-
-#       {
-
-#         "role": "user",
-
-#         "content": "Explain why \"Dune\" in the science fiction genre is popular."
-
-#       }
-
-#     ]
-
-#   },
-
-#   "user_message_param": {
-
-#     "content": "Explain why \"Dune\" in the science fiction genre is popular.",
-
-#     "role": "user"
-
-#   },
-
-#   "start_time": 1730177359689.837,
-
-#   "end_time": 1730177366119.564,
-
-#   "message_param": {
-
-#     "content": "\"Dune,\" written by Frank Herbert and first published in 1965, is considered a cornerstone of the science fiction genre for several compelling reasons:\n\n1. **Complex World-Building**: Herbert created an intricate universe with detailed geography, politics, religion, and ecology. The desert planet of Arrakis (Dune) is not merely a backdrop, but a living ecosystem that plays a crucial role in the story. The depth of this world-building allows readers to immerse themselves fully in the narrative.\n\n2. **Themes of Power and Politics**: \"Dune\" delves into themes of imperialism, feudalism, and the struggle for power. It explores how individuals and groups navigate political machinations, often with profound consequences. These themes resonate with readers as they reflect real-world issues of governance, control, and rebellion.\n\n3. **Ecological and Environmental Awareness**: The book introduces the idea of the environment\u2019s fragility, particularly through the significance of the spice melange, which is vital for space travel and has profound effects on the human mind. It raises awareness about ecological balance and the exploitation of natural resources, themes that are increasingly relevant in today\u2019s context of climate change and environmental degradation.\n\n4. **Fascination with Mysticism and Religion**: Herbert infused the narrative with elements of mysticism and religious symbolism, particularly through the character of Paul Atreides, who embodies the potential for messianic and prophetic power. This adds layers of philosophical inquiry about destiny, belief, and the nature of knowledge.\n\n5. **Rich Characterization and Development**: The characters in \"Dune\" are multifaceted and undergo significant development, making them relatable and memorable. Paul's journey from heir to a noble family to a powerful leader is complex, and readers are drawn into his internal conflicts and growth.\n\n6. **Cultural Impact**: \"Dune\" has influenced numerous other works in literature, film, and games. Its themes, motifs, and characters have become archetypes within the genre. Adaptations, such as David Lynch's 1984 film and Denis Villeneuve's 2021 adaptation, have further renewed interest and engagement with the original text.\n\n7. **Innovative Concepts**: The book introduces groundbreaking ideas, such as the concept of a human mind augmenting through the spice and the intricate workings of the Bene Gesserit sisterhood. These innovative concepts challenge the status quo of science fiction and push the boundaries of imagination.\n\n8. **Longevity and Nuance**: \"Dune\" continues to be relevant and compelling across generations. It invites diverse interpretations and discussions, offering new insights on every read. Its sophistication and richness allow for deep exploration of its themes, keeping it alive in academic discussions.\n\nOverall, \"Dune\" is popular not just for its compelling narrative and characters, but also for its deep engagement with significant and timeless themes, making it a rich text that continues to inspire and influence readers and creators in the science fiction genre.",
-
-#     "refusal": null,
-
-#     "role": "assistant",
-
-#     "tool_calls": null
-
-#   },
-
-#   "tools": null,
-
-#   "tool": null,
-
-#   "audio": null,
-
-#   "audio_transcript": null
-
+#   "model": "gpt-4o-mini-2024-07-18",
+#   "usage": {
+#     "completion_tokens": 600,
+#     "prompt_tokens": 52,
+#     "total_tokens": 652
+#   }
 # }
 
 ```
@@ -848,36 +378,26 @@ We generally recommend [chaining with computed fields](/blog/prompt-chaining) fo
 You can alternatively chain components together by explicitly passing the output of one function as input into the next function in the chain:
 
 ```python
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
-@openai.call("gpt-4o-mini")
-@prompt_template(
-   """
-   Recommend a popular book in the {genre} genre.
-   Give me just the title.
-   """
-)
-def recommend_book(genre: str): ...
+@llm.call("openai/gpt-4o-mini")
+def recommend_book(genre: str) -> str:
+   return f"Recommend a popular book in the {genre} genre. Give me just the title."
 
-@openai.call("gpt-4o-mini")
-@prompt_template(
-   """
-   SYSTEM:
-   You are the world's greatest librarian.
-   Your task is to explain why the book "{book_title}" is popular in the {genre} genre.
-
-   USER:
-   Explain why "{book_title}" in the {genre} genre is popular.
-   """
-)
-def explain_book(genre: str, book_title: str): ...
+@llm.call("openai/gpt-4o-mini")
+def explain_book(genre: str, book_title: str) -> list:
+   return [
+       llm.messages.system(f"""You are the world's greatest librarian.
+Your task is to explain why the book "{book_title}" is popular in the {genre} genre."""),
+       llm.messages.user(f'Explain why "{book_title}" in the {genre} genre is popular.'),
+   ]
 
 genre = "science fiction"
 
 def explain_book_chain(genre: str):
    book_title = recommend_book(genre)
-   explanation = explain_book(genre, book_title.content)
-   print(explanation.content)
+   explanation = explain_book(genre, book_title.text())
+   print(explanation.text())
 
 explain_book_chain("science fiction")
 
@@ -905,4 +425,4 @@ In contrast, Mirascope allows you to build and chain components using familiar p
 
 Mirascope doesn’t impose unnecessary abstractions or steep learning curves, and allows you to implement chaining with clean, pythonic logic. It also promotes true prompt engineering best practices like colocation and [version control](/blog/prompt-versioning), so you can focus on your core task of building LLM applications for many different use cases like chatbots and RAG (retrieval augmentation generation).
 
-‍Want to learn more? You can find more Mirascope code samples on both our [docs](/docs/mirascope) and on [GitHub](https://github.com/mirascope/mirascope/).
+‍Want to learn more? You can find more Mirascope code samples on both our [docs](/docs/learn/llm) and on [GitHub](https://github.com/mirascope/mirascope/).
