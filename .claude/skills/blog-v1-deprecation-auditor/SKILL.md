@@ -107,9 +107,10 @@ Iterate through **every issue** from the Phase 2 audit (code blocks, prose, link
    **IMPORTANT**: Always verify rewritten code against the live docs at https://mirascope.com/docs before proposing. Fetch the relevant doc page to confirm the correct API usage and patterns.
 
 4. **Present user options**:
-   > "How would you like to handle this issue?"
+   > "How would you like to handle this issue? (apply / auto / skip / modify / done)"
+
    - **"apply"** - Claude applies the proposed fix using the Edit tool
-   - **"auto"** - Claude automatically applies all issues that can be auto-fixed (code, prose, links); images are skipped for manual review
+   - **"auto"** - Claude automatically applies all remaining issues that can be auto-fixed (code, prose, links); images are skipped for manual review
    - **"skip"** - Move on without fixing (user may handle later)
    - **"modify"** - User provides feedback, Claude regenerates the fix
    - **"done"** - User already fixed it manually; Claude verifies and moves on
