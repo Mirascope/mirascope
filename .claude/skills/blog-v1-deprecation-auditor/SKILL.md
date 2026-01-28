@@ -99,11 +99,12 @@ Example with 52 posts and 3 batches:
 
 ### Instructions
 
-1. **Check Linear for existing sub-issue**:
+1. **ALWAYS Check Linear for existing sub-issue FIRST**:
+   - **MANDATORY**: You MUST check for existing issues before ANY creation attempt
    - Use `mcp__linear-server__list_issues` with:
      - `parentId`: `ce78a778-d632-43e5-97e4-f01b46bb752c` (GROWTH-51's ID)
      - `query`: the filename (e.g., `engineers-should-handle-prompting-llms.mdx`)
-   - If a matching sub-issue exists, note its ID for later status updates
+   - If a matching sub-issue exists, note its ID - do NOT create a new issue
    - If no sub-issue exists, ask the user:
      > "No Linear sub-issue found for this post. Would you like me to create one? (yes/no)"
    - If yes, use `mcp__linear-server__create_issue` with:
@@ -124,6 +125,11 @@ Example with 52 posts and 3 batches:
    > "Would you like me to help rewrite the deprecated code blocks in this post? (yes/no)"
 
 5. If user says no, offer to select a different post or end. If yes, proceed to Phase 3.
+
+**IMPORTANT: Linear Issue Status**
+- NEVER mark Linear issues as "Done" or change their status
+- Only update the issue description with migration notes/summary
+- Leave status changes to humans for final review
 
 ---
 
@@ -155,6 +161,15 @@ Iterate through **every issue** from the Phase 2 audit (code blocks, prose, link
    - `references/current-patterns.md` for transformation rules
    - `references/api-reference.md` for quick API lookup
    - Python library source (`python/mirascope/llm/__init__.py`, `python/mirascope/ops/__init__.py`) for edge cases
+
+   **CRITICAL: Style Guide Verification**
+   Before proposing ANY code fix, you MUST:
+   1. Read `references/current-patterns.md` completely
+   2. Check ALL style guidelines, not just API patterns. Key style rules include:
+      - Response text access: Break up chained calls (e.g., `print(func().text())` → separate assignment + print)
+      - Code formatting and readability patterns
+   3. Compare EVERY code block in the post against these style guidelines
+   4. Fix style violations even if the audit script didn't flag them
 
    **IMPORTANT**: Always verify rewritten code against the live docs at https://mirascope.com/docs before proposing. Fetch the relevant doc page to confirm the correct API usage and patterns.
 
@@ -230,16 +245,23 @@ When `--batch N/M` is provided, follow these non-interactive phases instead:
 
 For each post in the batch, perform these steps automatically:
 
-#### 2a. Create Linear Issue (Auto)
+#### 2a. Check/Create Linear Issue (Auto)
 
-1. Check for existing sub-issue under GROWTH-51:
+1. **ALWAYS check for existing sub-issue FIRST** under GROWTH-51:
+   - **MANDATORY**: You MUST check for existing issues before ANY creation attempt
    - Use `mcp__linear-server__list_issues` with `parentId: ce78a778-d632-43e5-97e4-f01b46bb752c` and `query: <filename>`
+   - If a matching sub-issue exists, note its ID - do NOT create a new issue
 
-2. If no existing issue, create one automatically:
+2. **Only if no existing issue found**, create one automatically:
    - Use `mcp__linear-server__create_issue` with:
      - `title`: `Migrate: <filename>`
      - `team`: `Growth`
      - `parentId`: `ce78a778-d632-43e5-97e4-f01b46bb752c`
+
+**IMPORTANT: Linear Issue Status**
+- NEVER mark Linear issues as "Done" or change their status
+- Only update the issue description with migration notes/summary
+- Leave status changes to humans for final review
 
 #### 2b. Run Detailed Audit
 
@@ -258,6 +280,15 @@ For the current post, iterate through every issue and apply fixes automatically:
    - `references/current-patterns.md`
    - `references/api-reference.md`
    - Python library source if needed
+
+   **CRITICAL: Style Guide Verification**
+   Before applying ANY code fix, you MUST:
+   1. Read `references/current-patterns.md` completely
+   2. Check ALL style guidelines, not just API patterns. Key style rules include:
+      - Response text access: Break up chained calls (e.g., `print(func().text())` → separate assignment + print)
+      - Code formatting and readability patterns
+   3. Compare EVERY code block in the post against these style guidelines
+   4. Fix style violations even if the audit script didn't flag them
 
 2. **For each issue**, apply the appropriate fix:
 
