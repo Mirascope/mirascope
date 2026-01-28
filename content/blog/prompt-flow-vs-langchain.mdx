@@ -2,6 +2,7 @@
 title: "Comparing Prompt Flow vs LangChain vs Mirascope"
 description: "We do a head-to-head comparison of Prompt Flow vs LangChain, along with our own modular LLM development toolkit, Mirascope."
 date: "2024-05-03"
+updatedAt: "2026-01-27"
 readTime: "17 min read"
 author: "William Bakst"
 ---
@@ -112,26 +113,25 @@ from mirascope import llm
 
 
 @llm.call("openai/gpt-4o-mini")
-def select_guide(region_type: str) -> str:
+def select_guide(region_type: str):
     return f"Name a travel guide who is very knowledgeable about {region_type} regions"
 
 
 @llm.call("openai/gpt-4o-mini")
-def recommend_destination(region_type: str, feature: str) -> llm.DynamicConfig:
+def recommend_destination(region_type: str, feature: str):
     guide = select_guide(feature)
-    return {
-        "messages": [
-            llm.messages.system(
-                f"Imagine that you are the guide {guide}. "
-                f"Your task is to recommend travel destinations that you, {guide}, would be excited to showcase."
-            ),
-            llm.messages.user(f"Recommend a {region_type} destination that includes {feature}."),
-        ],
-    }
+    return [
+        llm.messages.system(
+            f"Imagine that you are the guide {guide}. "
+            f"Your task is to recommend travel destinations that you, {guide}, would be excited to showcase."
+        ),
+        llm.messages.user(f"Recommend a {region_type} destination that includes {feature}."),
+    ]
 
 
-print(recommend_destination(region_type="European", feature="historic sites"))
-# > Certainly! Here's a travel guide to a stunning destination in Europe known for its rich history and magnificent historic sites.
+response = recommend_destination(region_type="European", feature="historic sites")
+print(response.text())
+# > One fantastic European destination that brims with historic sites is Rome, Italy. Known as the "Eternal City ...
 ```
 
 Relying on native Python for structuring sequences of steps keeps the development environment familiar and accessible to Python developers, and reduces the learning curve and integration overhead that comes with using new domain-specific languages or proprietary frameworks. This means that users can often easily figure out how to do things without additional documentation or research.
@@ -219,7 +219,9 @@ The way we typically do this is by passing all the parameters pertaining to the 
 from mirascope import llm
 
 
+@llm.tool
 def get_weather(city: str) -> str:
+    """Get the weather for a city."""
     if city == "Tokyo":
         return "85 degrees"
     else:
@@ -232,28 +234,29 @@ def get_city_weather(city: str) -> str:
 
 
 response = get_city_weather(city="Tokyo")
-if tool := response.tool:
-    print(tool.call())
+if response.tool_calls:
+    tool_results = response.execute_tools()
+    print(tool_results[0])
 ```
 
-Parameters like `tools` are passed directly to the `@llm.call` decorator, keeping all call configuration colocated with the prompt.
+The `@llm.call` decorator accepts configuration parameters directly, such as `tools=[get_weather]` to associate tools with the LLM call.
 
 Not having to manage arguments dynamically configured at runtime also simplifies pipeline management and increases predictability and ease of use.
 
-**Note**: Although not required, you can modify these settings in Mirascope at runtime without altering the general configuration. For instance, you can override the default parameters dynamically using a context manager:
+**Note**: Although not required, you can modify these settings in Mirascope at runtime without altering the general configuration. For instance, you can override the default parameters dynamically using the `llm.model()` context manager:
 
 ```python
 from mirascope import llm
 
 
-@llm.call("openai/gpt-4o-mini")
-def recommend_book(genre: str) -> str:
+@llm.call("openai/gpt-4o-mini", temperature=0.8)
+def recommend_book(genre: str):
     return f"Recommend me a {genre} book."
 
 
-# Override model parameters at runtime
-with llm.model("openai/gpt-4o-mini", temperature=0.8):
-    response = recommend_book("fantasy")
+# Override at runtime with a different model or parameters
+with llm.model("anthropic/claude-sonnet-4-5", temperature=0.5):
+    response = recommend_book("fantasy")  # Uses Claude with temperature=0.5
 ```
 
 ## How Prompts are Versioned
@@ -280,32 +283,32 @@ While versioning in this way allows you to effectively experiment with prompts, 
 
 ### Mirascope Cloud: Prompt Versioning and Management for Fine-Tuning LLM Inputs
 
-Mirascope includes [`ops`](/docs/learn/ops), a module that versions and traces every LLM call automatically. This is the necessary first step for prompt engineering. Without versioning and tracing, you lack the data to engineer prompts effectively.
+Mirascope offers [Mirascope Cloud](/docs/learn/ops), which versions and traces every LLM call automatically. This is the necessary first step for prompt engineering. Without versioning and tracing, you lack the data to engineer prompts effectively.
 
-We've purpose built Mirascope Cloud for prompt engineering to be simple and easy so you can take your mind off annoying and manual tedium and focus on what really matters: engineering quality prompts. In line with our commitment to open-source, Mirascope is fully open-source and can even be run locally.
+We've purpose built Mirascope Cloud for prompt engineering to be simple and easy so you can take your mind off annoying and manual tedium and focus on what really matters: engineering quality prompts. In line with our commitment to open-source, Mirascope Cloud is fully open-source and can even be run locally.
 
-To automatically version and trace LLM functions, you simply use the `@ops.version` decorator:
+To automatically version and trace LLM functions, you simply wrap the function in the `@ops.version` decorator:
 
 ```python
 from mirascope import llm, ops
 
-ops.configure()  # [!code highlight]
+ops.configure()
 ops.instrument_llm()  # [!code highlight]
 
 
 @ops.version
 @llm.call("openai/gpt-4o-mini")
-def recommend_book(genre: str) -> str:
+def recommend_book(genre: str):
     return f"Recommend a {genre} book"
 
 
 output = recommend_book("fantasy")
-print(output.content)
+print(output.text())
 ```
 
 Now the `recommend_book` function will be automatically versioned and traced on every call.
 
-We also understand that not everyone uses Mirascope, so we've engineered the `ops` module to work with provider SDKs directly:
+We also understand that not everyone uses Mirascope, so we've engineered Mirascope Cloud to work with provider SDKs directly:
 
 ```python
 from mirascope import ops
@@ -354,7 +357,7 @@ def recommend_book(genre: str) -> str:
 
 
 output = recommend_book("fantasy")
-print(output.content)
+print(output.text())
 ```
 
 ## Automatic Data Validation of Prompt Inputs and Outputs
@@ -399,12 +402,13 @@ class Movie(BaseModel):
 
 
 @llm.call("openai/gpt-4o-mini", format=Movie)
-def recommend_movie() -> str:
+def recommend_movie():
     return "Recommend a movie"
 
 
 try:
-    movie = recommend_movie()
+    response = recommend_movie()
+    movie = response.parse()
     assert isinstance(movie, Movie)
     print(movie)
 except ValidationError as e:
