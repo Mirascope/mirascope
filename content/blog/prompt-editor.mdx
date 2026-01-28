@@ -2,6 +2,7 @@
 title: "Prompt Editor: The Best AI Tools for Marketers, Creators, and Engineers"
 description: "Explore top AI prompt editor platforms designed to help marketers, creators, and developers write, test, and optimize prompts with ease."
 date: "2025-09-27"
+updatedAt: "2026-01-28"
 readTime: "6 min read"
 author: "William Bakst"
 ---
@@ -111,65 +112,65 @@ Reproducibility of prompts is therefore key to debugging, evaluating, and ensuri
 
 This approach contrasts with the other two groups of editors above, where iteration is more about trial and error, and success is judged by when the output finally feels “good enough.”
 
-### 7. Lilypad: Best for Ensuring Prompt Reproducibility
+### 7. Mirascope Cloud: Best for Ensuring Prompt Reproducibility
 
-![Lilypad Landing Page](/assets/blog/prompt-editor/lilypad-landing-page.webp)
+![Mirascope Cloud Landing Page](/assets/blog/prompt-editor/lilypad-landing-page.webp)
 
-[Lilypad](/docs/lilypad) is an open source prompt engineering framework that lets users create, edit, and manage prompts through a playground interface that stays tightly synced with the application’s codebase. Unlike tools that store prompts separately, **Lilypad treats prompts as part of the code**, allowing it to version not just the prompt text, but the full context that shapes LLM behavior.
+[Mirascope Cloud](/docs/learn/ops) is an open source prompt engineering framework that lets users create, edit, and manage prompts through a playground interface that stays tightly synced with the application's codebase. Unlike tools that store prompts separately, **Mirascope Cloud treats prompts as part of the code**, allowing it to version not just the prompt text, but the full context that shapes LLM behavior.
 
-This includes model settings, conditional logic, input structure, and any other code that influences the output. As a result, Lilypad makes it easy to reproduce results, compare prompt versions, and improve performance systematically. 
+This includes model settings, conditional logic, input structure, and any other code that influences the output. As a result, Mirascope Cloud makes it easy to reproduce results, compare prompt versions, and improve performance systematically.
 
-It supports a wide range of LLM providers, including OpenAI, Google, Anthropic, Azure, AWS Bedrock, and more. Below, we explore the different ways users can work with prompts within Lilypad.
+It supports a wide range of LLM providers, including OpenAI, Google, Anthropic, Azure, AWS Bedrock, and more. Below, we explore the different ways users can work with prompts within Mirascope Cloud.
 
 #### Ensuring Changes Are Predictable and Traceable
 
-Lilypad approaches prompt engineering as a structured optimization process, not just creative trial-and-error. Like software development, it emphasizes discipline, reproducibility, and version control.
+Mirascope Cloud approaches prompt engineering as a structured optimization process, not just creative trial-and-error. Like software development, it emphasizes discipline, reproducibility, and version control.
 
 [Prompt optimization](/blog/prompt-optimization) involves not only looking at what the LLM said; you need to also understand why it responded that way. This shifts prompt editing from a purely creative task to a more systematic one, where every change should be tracked, tested, and refined.
 
-With Lilypad, prompts become part of an iterative feedback loop, powered by tools like annotations, comparisons, and A/B testing. To support this workflow, Lilypad offers a dedicated playground where users can write, test, and improve prompts, all while staying connected to the actual codebase.
+With Mirascope Cloud, prompts become part of an iterative feedback loop, powered by tools like annotations, comparisons, and A/B testing. To support this workflow, Mirascope Cloud offers a dedicated playground where users can write, test, and improve prompts, all while staying connected to the actual codebase.
 
-The Lilypad playground supports markdown-based editing with typed variable placeholders, which helps prevent common errors like missing values, incorrect formats, or injection vulnerabilities.
+The Mirascope Cloud playground supports markdown-based editing with typed variable placeholders, which helps prevent common errors like missing values, incorrect formats, or injection vulnerabilities.
 
-Users can also directly adjust model settings like temperature or `top_p`. Combined, these features ensure all prompt edits remain consistent, traceable, and fully integrated into the application’s codebase.
+Users can also directly adjust model settings like temperature or `top_p`. Combined, these features ensure all prompt edits remain consistent, traceable, and fully integrated into the application's codebase.
 
 However, prompt editor users cannot modify the underlying code, only the prompt:
 
-![Lilypad Playground](/assets/blog/prompt-editor/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/prompt-editor/lilypad-playground.webp)
 
-Unlike other prompt editors, Lilypad automatically versions every change you make to a prompt without you having to hit “Save.”
+Unlike other prompt editors, Mirascope Cloud automatically versions every change you make to a prompt without you having to hit "Save."
 
 This allows you to freely make changes and roll back to previous states as needed, ensuring full reproducibility even for small adjustments and allowing you to easily trace and understand every change and its impact on LLM behavior and outputs.
 
-![Lilypad Traces](/assets/blog/prompt-editor/lilypad-traces.webp)
+![Mirascope Cloud Traces](/assets/blog/prompt-editor/lilypad-traces.webp)
 
-Lilypad’s [prompt management tool](/blog/prompt-management-tool) also allows you to compare different versions. Hitting the “Compare” button lets you see the differences between various versions of the code:
+Mirascope Cloud's [prompt management tool](/blog/prompt-management-tool) also allows you to compare different versions. Hitting the "Compare" button lets you see the differences between various versions of the code:
 
-![Lilypad Click Compare](/assets/blog/prompt-editor/lilypad-click-compare.webp)
+![Mirascope Cloud Click Compare](/assets/blog/prompt-editor/lilypad-click-compare.webp)
 
 Clicking this displays a second dropdown menu, where you can select another version and view the differences side-by-side:
 
-![Lilypad Compare Versions](/assets/blog/prompt-editor/lilypad-compare-versions.webp)
+![Mirascope Cloud Compare Versions](/assets/blog/prompt-editor/lilypad-compare-versions.webp)
 
 You can also view all kinds of stats around prompts and LLM outputs like cost, response times, latency, etc.
 
 #### Testing Prompts Before Deployment
 
-A [prompt testing framework](/blog/prompt-testing-framework) ensures an AI’s output meets quality standards before it’s deployed to production, and helps catch issues in the prompt that could lead to inaccurate, irrelevant, or otherwise problematic responses. It also confirms that the prompt delivers the right results for your intended audience and use case.
+A [prompt testing framework](/blog/prompt-testing-framework) ensures an AI's output meets quality standards before it's deployed to production, and helps catch issues in the prompt that could lead to inaccurate, irrelevant, or otherwise problematic responses. It also confirms that the prompt delivers the right results for your intended audience and use case.
 
-Lilypad allows users to test prompts and annotate LLM outputs accordingly, while comparing them alongside other versions.
+Mirascope Cloud allows users to test prompts and annotate LLM outputs accordingly, while comparing them alongside other versions.
 
-Lilypad’s annotation system is built around a simple but important question: is the model’s output good enough for the given prompt? Reviewers label each output as either Pass or Fail, with the option to add reasoning.
+Mirascope Cloud's annotation system is built around a simple but important question: is the model's output good enough for the given prompt? Reviewers label each output as either Pass or Fail, with the option to add reasoning.
 
-This binary approach is often more practical than numeric rating systems (like a 1–5 scale), which can lead to inconsistent judgments, for example, one reviewer might rate a response a 4 and another a 5, even if they agree it’s acceptable. Pass/fail ratings reduce this ambiguity and make evaluations more actionable.
+This binary approach is often more practical than numeric rating systems (like a 1–5 scale), which can lead to inconsistent judgments, for example, one reviewer might rate a response a 4 and another a 5, even if they agree it's acceptable. Pass/fail ratings reduce this ambiguity and make evaluations more actionable.
 
 Annotations are managed through structured queues, where outputs can be reviewed and labeled. To minimize bias, existing labels and comments remain hidden until after a reviewer submits their own evaluation.
 
-![Lilypad Annotation Queue](/assets/blog/prompt-editor/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/prompt-editor/lilypad-annotation-queue.webp)
 
 These annotations form high-quality datasets that can later support automated evaluation methods, such as using an [LLM-as-judge](/blog/llm-as-judge), ultimately reducing manual labeling and shifting human reviewers into a verification role.
 
-You can [sign up for Lilypad](https://lilypad.mirascope.com/?_gl=1*o5ec17*_ga*NDUwMDMyNjI4LjE3MjgxOTExMzk.*_ga_DJHT1QG9GK*czE3NTUyNjUzMzQkbzYyNCRnMSR0MTc1NTI2NjE0NyRqNDQkbDAkaDA.) using your GitHub account and get started with tracing and versioning your LLM calls with only a few lines of code.
+You can [sign up for Mirascope Cloud](https://cloud.mirascope.com/) using your GitHub account and get started with tracing and versioning your LLM calls with only a few lines of code.
 
 ### 8. LangSmith: Best for Testing Prompts Against Datasets
 
@@ -193,4 +194,4 @@ LangSmith also supports a wide variety of model providers, like Google, OpenAI, 
 
 Prompt editing shouldn’t be guesswork. With versioning, comparisons, and evaluation built in, you can trace every change, reproduce outputs, improve prompts systematically, and do [advanced prompt engineering](/blog/advanced-prompt-engineering). Treat your prompts with the same rigor as your code; reproducible, testable, and ready for production.
 
-Want to learn more about Lilypad? Check out our code samples in our [documentation](/docs/lilypad) or on [GitHub](https://github.com/mirascope/lilypad). Lilypad offers first-class support for [Mirascope](https://github.com/mirascope/mirascope), our lightweight toolkit for building [LLM agents](/blog/llm-agents).
+Want to learn more about Mirascope Cloud? Check out our code samples in our [documentation](/docs/learn/ops) or on [GitHub](https://github.com/mirascope/mirascope). Mirascope Cloud offers first-class support for [Mirascope](https://github.com/mirascope/mirascope), our lightweight toolkit for building [LLM agents](/blog/llm-agents).
