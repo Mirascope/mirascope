@@ -2,9 +2,9 @@
 title: "Prompt Chaining in AI Development"
 description: "Prompt chaining is a way to simplify large, complex prompts by breaking them down into smaller prompts, each making their own separate LLM call."
 date: "2024-06-05"
+updatedAt: "2026-01-28"
 readTime: "28 min read"
 author: "William Bakst"
-updatedAt: "2026-01-27"
 ---
 
 Prompt chaining is a way to sequence LLM calls (and their prompts) by using the output of the last call as input to the next, to guide an LLM to produce more useful answers than if it had been prompted only once.
@@ -69,7 +69,8 @@ def recommend_recipe(food_type: str, ingredient: str):
     Recommend a {food_type} recipe using {ingredient}.
     """
 
-print(recommend_recipe(food_type="Japanese", ingredient="apples").text())
+response = recommend_recipe(food_type="Japanese", ingredient="apples")
+print(response.text())
 ```
 
 ### Parallel Prompts
@@ -113,7 +114,8 @@ async def recommend_recipe(ingredient: str):
 async def recommend_recipe_parallel_chaining(ingredient: str):
     return await recommend_recipe(ingredient=ingredient)
 
-print(asyncio.run(recommend_recipe_parallel_chaining(ingredient="apples")).text())
+response = asyncio.run(recommend_recipe_parallel_chaining(ingredient="apples"))
+print(response.text())
 ```
 
 ### Conditional Prompts
@@ -521,4 +523,4 @@ Mirascope leverages Python for chaining LLM calls, avoiding the need for complex
 
 By keeping things simple, Mirascope lets you work with your data directly, helping you keep your workflows smoother and more intuitive.
 
-Want to learn more? You can find more Mirascope code samples on both our [docs](/docs/mirascope) and on [GitHub](https://github.com/mirascope/mirascope/).
+Want to learn more? You can find more Mirascope code samples on both our [docs](/docs/) and on [GitHub](https://github.com/mirascope/mirascope/).
