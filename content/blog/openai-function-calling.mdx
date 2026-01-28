@@ -2,6 +2,7 @@
 title: "A Guide to Function Calling in OpenAI"
 description: "OpenAI function calling extends the capabilities of large language models by providing them with tools for calling external APIs and applications."
 date: "2024-07-12"
+updatedAt: "2026-01-28"
 readTime: "12 min read"
 author: "William Bakst"
 ---
@@ -32,30 +33,32 @@ In this article, we explain how OpenAI tools work, and provide examples of this.
 
 The `tools` parameter of OpenAI’s [Chat Completion API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api) is an array that defines a list of tools (functions) that the model may call if and when it needs to. You define a function by specifying its list of parameters: `name`, `description`, and `parameters`.
 
-```python
-"tools": [
+```json
+{
+  "tools": [
     {
-        "type": "function",
-        "function": {
-            "name": "get_current_stock_price",
-            "description": "Get the current stock price",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "company": {
-                        "type": "string",
-                        "description": "The name of the company, eg. Apple Inc.",
-                    },
-                    "format": {
-                        "type": "string",
-                        "enum": ["USD", "EUR", "JPY"],
-                    },
-                    "required": ["company", "currency"],
-                },
+      "type": "function",
+      "function": {
+        "name": "get_current_stock_price",
+        "description": "Get the current stock price",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "The name of the company, eg. Apple Inc."
             },
-        },
+            "format": {
+              "type": "string",
+              "enum": ["USD", "EUR", "JPY"]
+            }
+          },
+          "required": ["company", "currency"]
+        }
+      }
     }
-]
+  ]
+}
 ```
 
 The `tools` array takes multiple functions that you define. The more detailed your `description` above is in terms of the situations in which it can and should call the function, the better. Note, however, that function descriptions are part of the [prompt](/blog/langchain-prompt-template) and so consume tokens all the same.
@@ -66,20 +69,20 @@ After specifying your function call signature(s), you send the prompt to the LLM
 
 If and when the natural language model wants you to call a function you’ve provided, it returns a JSON object similar to this:
 
-```python
+```json
 {
-    "index": 0,
-    "message": {
-        "role": "assistant",
-        "content": null,
-        "tool_calls": [
-            {
-                "name": "get_current_stock_price",
-                "arguments": '{\n  "company": "Apple Inc.",\n  "format": "USD"\n}',
-            }
-        ],
-    },
-    "finish_reason": "tool_calls",
+  "index": 0,
+  "message": {
+    "role": "assistant",
+    "content": null,
+    "tool_calls": [
+      {
+        "name": "get_current_stock_price",
+        "arguments": "{\n  \"company\": \"Apple Inc.\",\n  \"format\": \"USD\"\n}"
+      }
+    ]
+  },
+  "finish_reason": "tool_calls"
 }
 ```
 
@@ -108,11 +111,12 @@ Rather than getting your hands dirty with manual coding in JSON, Mirascope extra
 
 One way is to extract function descriptions from docstrings: this lets you use any function as a tool without additional effort.
 
-For example, we designate `tools=[get_current_stock_price]` below in the `openai.call` decorator. You then execute the function by calling the tool's `call` method, which calls the original function with the arguments provided by the LLM.
+For example, we designate `tools=[get_current_stock_price]` below in the `llm.call` decorator. You then execute the function by calling `response.execute_tools()`, which calls the original function with the arguments provided by the LLM.
 
 ```python
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
+@llm.tool
 def get_current_stock_price(company: str) -> str:
     """Get the current stock price for `company` and prints it.
 
@@ -126,29 +130,29 @@ def get_current_stock_price(company: str) -> str:
     else:
         return f"I'm sorry, I don't have the stock price for {company}."
 
-@openai.call("gpt-4o-mini", tools=[get_current_stock_price])
-@prompt_template("What's the stock price of {company}")
-def stock_price(company: str): ...
+@llm.call("openai/gpt-4o-mini", tools=[get_current_stock_price])
+def stock_price(company: str) -> str:
+    return f"What's the stock price of {company}"
 
 response = stock_price("Apple, Inc.")
-if tool := response.tool:
-    print(tool.call())
+if response.tool_calls:
+    tool_results = response.execute_tools()
+    print(tool_results[0])
 
 # > The current stock price of Apple Inc. is $200.
-
 ```
 
-### Using the BaseTool Class
+### Using the @llm.tool Decorator
 
-If your function doesn’t have a docstring or can’t be modified for some reason (like if it’s third-party code) you can alternatively use Mirascope’s `BaseTool` class and call the original function in the tools `call` method, which makes it more easily callable. You can also write the function you want to call directly in the `call` method for colocation.
+The `@llm.tool` decorator is the preferred way to define tools. It automatically extracts the function signature and docstring to generate the tool definition. You can use `Field` from Pydantic to add descriptions:
 
 ```python
-from mirascope.core import BaseTool, openai, prompt_template
+from mirascope import llm
 from pydantic import Field
+from typing import Annotated
 
-def get_current_stock_price(company: str) -> str:
+def get_current_stock_price_impl(company: str) -> str:
     # Assume this function does not have a docstring
-
     if company == "Apple, Inc.":
         return f"The current stock price of {company} is $200."
     elif company == "Google LLC":
@@ -156,71 +160,60 @@ def get_current_stock_price(company: str) -> str:
     else:
         return f"I'm sorry, I don't have the stock price for {company}."
 
-class GetCurrentStockPrice(BaseTool):
+@llm.tool
+def get_current_stock_price(
+    company: Annotated[str, Field(description="The name of the company, e.g., Apple Inc.")]
+) -> str:
     """Get the current stock price for a given company."""
+    return get_current_stock_price_impl(company)
 
-    company: str = Field(
-        ...,
-        description="The name of the company, e.g., Apple Inc.",
-    )
-
-    def call(self):
-        return get_current_stock_price(self.company)
-
-@openai.call("gpt-4o", tools=[GetCurrentStockPrice])
-@prompt_template("What's the stock price of {company}")
-def stock_price(company: str): ...
+@llm.call("openai/gpt-4o", tools=[get_current_stock_price])
+def stock_price(company: str) -> str:
+    return f"What's the stock price of {company}"
 
 response = stock_price("Apple, Inc.")
-if tool := response.tool:
-    print(tool.call())
+if response.tool_calls:
+    tool_results = response.execute_tools()
+    print(tool_results[0])
 
 # > The current stock price of Apple, Inc. is $200.
-
 ```
 
-**Note:** Both the functional and `BaseTool` definitions of tools work across all providers that Mirascope supports, making it easy to test your tool usage with other providers such as Anthropic's Claude, Google's Gemini, and more.
+**Note:** The `@llm.tool` decorator works across all providers that Mirascope supports, making it easy to test your tool usage with other providers such as Anthropic's Claude, Google's Gemini, and more.
 
 ### Provide Examples for Tool Definitions
 
-Large language models often provide better outputs when you use examples, and Mirascope lets you add these to your tool definitions. In the code below, we add examples directly in the `title` and `author` fields in `FormatMovie`, as well as for the JSON schema:
+Large language models often provide better outputs when you use examples, and Mirascope lets you add these to your tool definitions. In the code below, we add examples directly in the `title` and `director` fields using `Field`:
 
 ```python
-from mirascope.core import BaseTool
-from pydantic import ConfigDict, Field
+from mirascope import llm
+from pydantic import Field
+from typing import Annotated
 
-class FormatMovie(BaseTool):
+@llm.tool
+def format_movie(
+    title: Annotated[str, Field(examples=["Inception"])],
+    director: Annotated[str, Field(examples=["Nolan, Christopher"])]
+) -> str:
     """Returns the title and director of a movie nicely formatted."""
-
-    title: str = Field(..., examples=["Inception"])
-    director: str = Field(..., examples=["Nolan, Christopher"])
-
-    model_config = ConfigDict(
-        json_schema_extra={
-            "examples": [
-                {"title": "Inception", "director": "Nolan, Christopher"}
-            ]
-        }
-    )
-
-    def call(self) -> str:
-        return f"{self.title} directed by {self.director}"
+    return f"{title} directed by {director}"
 ```
 
 ### Reinsert Function Calls Back into Messages
 
-To retain context and allow the model to continue the conversation with knowledge of previous interactions, you can reinsert the tool call into chat messages, using the call’s result as the basis for further responses and allowing it to handle multi-step tasks and complex queries.
+To retain context and allow the model to continue the conversation with knowledge of previous interactions, you can use the built-in tool loop functionality. Mirascope handles reinserting tool calls and results automatically through the `response.resume()` method.
 
-Below, the result of the first tool call is reinserted into the chat using the `response.tool_message_params` convenience method, ensuring that the context of the tool's output is preserved for future interactions.
+Below, the result of the tool calls are automatically handled with `execute_tools()` and `resume()`:
 
 ```python
 from typing import Literal
+from mirascope import llm
 
-from openai.types.chat import ChatCompletionMessageParam
-
-from mirascope.core import openai, prompt_template
-
-def get_current_stock_price(company: str, format: Literal["USD", "EUR", "JPY"] = "USD"):
+@llm.tool
+def get_current_stock_price(
+    company: str,
+    format: Literal["USD", "EUR", "JPY"] = "USD"
+) -> str:
     """Get the current stock price of a company."""
     if "apple" in company.lower():
         return f"The current stock price of {company} is 200 {format}"
@@ -231,48 +224,27 @@ def get_current_stock_price(company: str, format: Literal["USD", "EUR", "JPY"] =
     else:
         return f"I'm not sure what the stock price of {company} is."
 
-@openai.call("gpt-4o-mini", tools=[get_current_stock_price])
-@prompt_template(
-    """
-    MESSAGES: {history}
-    USER: {question}
-    """
-)
-def check_stock_price(question: str, history: list[ChatCompletionMessageParam]): ...
+@llm.call("openai/gpt-4o-mini", tools=[get_current_stock_price])
+def check_stock_price(question: str) -> str:
+    return question
 
-# Make the first call to the LLM
+# Make the call to the LLM and handle tool calls automatically
+response = check_stock_price("What's the stock price of Apple Inc?")
 
-history = []
-response = check_stock_price("What's the stock price of Apple Inc?", history)
-if response.user_message_param:
-    history.append(response.user_message_param)
-history.append(response.message_param)
+while response.tool_calls:
+    tool_results = response.execute_tools()
+    print("Tool results:", tool_results)
+    # > ['The current stock price of Apple Inc is 200 USD']
+    response = response.resume(tool_results)
 
-if tool := response.tool:
-    print("Tool arguments:", tool.model_dump())
-    # > {'company': 'Apple Inc', 'format': 'USD'}
-
-    output = tool.call()
-    print("Tool output:", output)
-    # > The current stock price of Apple Inc is 200 USD
-
-    # Reinsert the tool call into the chat messages through history
-
-    history += response.tool_message_params([(tool, output)])
-else:
-    print(response.content)  # if no tool, print the content of the response
-
-# Make an API call to the LLM again with the history including the tool call and no new user message
-
-response = check_stock_price("", history)
-print("After Tools Response:", response.content)
+print("Final Response:", response.text())
 ```
 
 ### Use Other Model Providers-Not Just OpenAI
 
-As long as your functions are documented with docstrings, you can work with [other providers](/docs/v1/learn/calls) without needing to make many code changes, as Mirascope reformats the code in the background.
+As long as your functions are decorated with `@llm.tool` and documented with docstrings, you can work with [other providers](/docs/learn/llm/tools) without needing to make many code changes, as Mirascope reformats the code in the background.
 
-As well, you can define tools in Mirascope using `BaseTool`, which works across all providers by default so you don’t have to change anything when switching providers.
+Tools defined with `@llm.tool` work across all providers by default so you don't have to change anything when switching providers.
 
 ## Function Calling with Mirascope vs OpenAI
 
@@ -294,94 +266,101 @@ def get_current_stock_price(company: str) -> str:
 
 Whereas with the OpenAI API, you’d need to hand code this definition in JSON:
 
-```python
-tools = [
+```json
+{
+  "tools": [
     {
-        "type": "function",
-        "function": {
-            "name": "get_current_stock_price",
-            "description": "Get the current stock price of a company",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "company": {
-                        "type": "string",
-                        "description": "The name of the company, e.g., 'Apple Inc.' or 'Google LLC'",
-                    },
-                },
-                "required": ["company"],
-            },
-        },
+      "type": "function",
+      "function": {
+        "name": "get_current_stock_price",
+        "description": "Get the current stock price of a company",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "The name of the company, e.g., 'Apple Inc.' or 'Google LLC'"
+            }
+          },
+          "required": ["company"]
+        }
+      }
     }
-]
+  ]
+}
 ```
 
 When we define multiple definitions at the same time, our code starts getting verbose:
 
-```python
-tools = [
+```json
+{
+  "tools": [
     {
-        "type": "function",
-        "function": {
-            "name": "get_current_stock_price",
-            "description": "Get the current stock price of a company",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "company": {
-                        "type": "string",
-                        "description": "The name of the company, e.g., 'Apple Inc.' or 'Google LLC'",
-                    },
-                },
-                "required": ["company"],
-            },
-        },
+      "type": "function",
+      "function": {
+        "name": "get_current_stock_price",
+        "description": "Get the current stock price of a company",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "The name of the company, e.g., 'Apple Inc.' or 'Google LLC'"
+            }
+          },
+          "required": ["company"]
+        }
+      }
     },
     {
-        "type": "function",
-        "function": {
-            "name": "get_stock_price_in_currency",
-            "description": "Get the current stock price of a company in a specific currency",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "company": {
-                        "type": "string",
-                        "description": "The name of the company, e.g., 'Apple Inc.' or 'Google LLC'",
-                    },
-                    "currency": {
-                        "type": "string",
-                        "description": "The currency to get the stock price in, e.g., 'USD', 'EUR', 'JPY'",
-                    },
-                },
-                "required": ["company", "currency"],
+      "type": "function",
+      "function": {
+        "name": "get_stock_price_in_currency",
+        "description": "Get the current stock price of a company in a specific currency",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "The name of the company, e.g., 'Apple Inc.' or 'Google LLC'"
             },
-        },
+            "currency": {
+              "type": "string",
+              "description": "The currency to get the stock price in, e.g., 'USD', 'EUR', 'JPY'"
+            }
+          },
+          "required": ["company", "currency"]
+        }
+      }
     }
-]
+  ]
+}
 ```
 
-Whereas generating the function definitions above is more cleanly done with class inheritance:
+Whereas generating the function definitions above is more cleanly done with the `@llm.tool` decorator:
 
 ```python
-class GetCurrentStockPrice(BaseTool):
+from mirascope import llm
+from pydantic import Field
+from typing import Annotated, Literal
+
+@llm.tool
+def get_current_stock_price(
+    company: Annotated[str, Field(description="The name of the company, e.g., 'Apple Inc.' or 'Google LLC'")]
+) -> str:
     """Get the current stock price of a company."""
+    ...
 
-    company: str = Field(
-        ...,
-        description="The name of the company, e.g., 'Apple Inc.' or 'Google LLC'"
-    )
-
-class GetStockPriceInCurrency(BaseTool):
-    """Get the current stock price of a company in a specific currency"""
-
-    currency: Literal["USD", "EUR", "JPY"] = Field(
-        ...,
-        description="The currency to get the stock price in, e.g., 'USD', 'EUR', 'JPY'"
-    )
+@llm.tool
+def get_stock_price_in_currency(
+    company: Annotated[str, Field(description="The name of the company")],
+    currency: Annotated[Literal["USD", "EUR", "JPY"], Field(description="The currency to get the stock price in")]
+) -> str:
+    """Get the current stock price of a company in a specific currency."""
+    ...
 ```
 
-Mirascope lets you write the schema in a pythonic way that’s easier to write and read compared with coding the JSON yourself. Under the hood, the underlying JSON is reliably generated using [Pydantic](https://docs.pydantic.dev/latest/). Our prompt classes also extend Pydantic’s `BaseModel` class, saving you from having to write your own error-checking boilerplate.
+Mirascope lets you write the schema in a pythonic way that's easier to write and read compared with coding the JSON yourself. Under the hood, the underlying JSON is reliably generated using [Pydantic](https://docs.pydantic.dev/latest/).
 
 Generating tool definitions as part of function calling (or even parallel function calling) is thus rolled up into your [prompt engineering workflow](/blog/prompt-engineering-best-practices), allowing you to focus on building your application rather than painstakingly formatting tool definitions so they conform to the JSON specification.
 
@@ -389,4 +368,4 @@ Generating tool definitions as part of function calling (or even parallel functi
 
 Mirascope offers other advantages as well: it’s a lightweight, extensible toolkit that takes a building block over a framework approach to [LLM prompting](/blog/engineers-should-handle-prompting-llms), letting you write clean code thanks to best practices like colocation, built-in Pydantic type safety, and full editor support. Our toolkit was designed with software developer best practices in mind so you can focus on getting the most out of OpenAI models like GPT-4 or external APIs rather than on chasing errors due to overly complex abstractions.
 
-Want to learn more? You can find more Mirascope code samples, docs, and a tutorial on both our [docs](/docs/mirascope) and on [GitHub](https://github.com/mirascope/mirascope/).
+Want to learn more? You can find more Mirascope code samples, docs, and a tutorial on both our [docs](/docs) and on [GitHub](https://github.com/mirascope/mirascope/).
