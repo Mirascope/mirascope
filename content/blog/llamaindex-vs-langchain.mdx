@@ -2,6 +2,7 @@
 title: "LlamaIndex vs LangChain vs Mirascope - An In-Depth Comparison"
 description: "Explore our comprehensive guide on LlamaIndex vs LangChain. We also introduce Mirascope's modular toolkit for LLM application development."
 date: "2024-05-15"
+updatedAt: "2026-01-28"
 readTime: "16 min read"
 author: "William Bakst"
 ---
@@ -47,7 +48,7 @@ As for the prompts themselves, LlamaIndex makes available several predefined tem
 
 In this [example reproduced from their documentation](https://docs.llamaindex.ai/en/stable/module_guides/models/prompts/), the `PromptTemplate` class is imported and can then be customized with a query string:
 
-```python
+```python-snippet-skip
 from llama_index.core import PromptTemplate
 
 template = (
@@ -80,7 +81,7 @@ LangChain encourages you to customize these templates, though you’re free to c
 
 An example of a `FewShotPromptTemplate` from [LangChain’s documentation](https://python.langchain.com/docs/how_to/few_shot_examples/):
 
-```python
+```python-snippet-skip
 from langchain_core.prompts.few_shot import FewShotPromptTemplate
 from langchain_core.prompts.prompt import PromptTemplate
 
@@ -164,7 +165,7 @@ from typing import Annotated
 from mirascope import llm
 from pydantic import AfterValidator, BaseModel, ValidationError
 
-class ComplianceStatus(Enum):
+class ComplianceStatus(str, Enum):
     COMPLIANT = "compliant"
     NON_COMPLIANT = "non_compliant"
 
@@ -241,7 +242,7 @@ If you have any strong opinions about what's missing from existing RAG framework
 
 We provide a class to simplify the chunking of documents into manageable pieces for efficient semantic search. In the code below, we instantiate a simple `TextChunker` but you can extend `BaseChunker` as needed:
 
-```python
+```python-snippet-skip
 import uuid
 
 from mirascope.beta.rag import BaseChunker, Document
@@ -266,8 +267,8 @@ class TextChunker(BaseChunker):
 
 With this class you transform text chunks into vectors with minimal setup. At the moment Mirascope supports OpenAI and Cohere embeddings, but you can extend `BaseEmbedder` to suit your particular use case.
 
-```python
-from mirascope.beta.rap.openai import OpenAIEmbedder
+```python-snippet-skip
+from mirascope.beta.rag.openai import OpenAIEmbedder
 
 embedder = OpenAIEmbedder()
 response = embedder.embed(["your_message_to_embed"])
@@ -279,13 +280,12 @@ Besides chunking and vectorizing information, Mirascope also provides storage vi
 
 The code below shows usage of both `TextChunker` and the `OpenAIEmbedder` together with `ChromaVectorStore`:
 
-```python
-
+```python-snippet-skip
 # your_repo.stores.py
 
 from mirascope.beta.rag.base import TextChunker
 from mirascope.beta.rag.chroma import ChromaVectorStore
-frim mirascope.beta.rag.openai import OpenAIEmbedder
+from mirascope.beta.rag.openai import OpenAIEmbedder
 
 class MyStore(ChromaVectorStore):
     embedder = OpenAIEmbedder()
@@ -354,8 +354,7 @@ LangChain similarly offers its own abstractions for chaining, requiring explicit
 
 A typical example of a chain in LangChain is shown below, which uses `RunnablePassthrough`, an object that forwards data to where it needs to go in the chain without changes:
 
-```python
-
+```python-snippet-skip
 # Setup for temperature conversion using a query pipeline
 
 runnable = (
