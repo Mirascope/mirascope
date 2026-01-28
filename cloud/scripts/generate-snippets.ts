@@ -94,11 +94,12 @@ async function findMdxFilesRecursive(
  */
 async function generateDocSnippets(
   filePath: string,
+  contentRoot: string,
   verbose = false,
 ): Promise<boolean> {
   try {
     // Extract new snippets
-    const files = await processFile(filePath);
+    const files = await processFile(filePath, contentRoot);
 
     if (files.length > 0) {
       if (verbose) {
@@ -121,13 +122,13 @@ async function generateDocSnippets(
       console.error(`Error in ${filePath}: ${error.message}`);
       console.error("Make sure to use only these block types:");
       console.error(
-        "  ```python           - Standard Python block for extraction",
+        "  ```python (or ```py)           - Standard Python block for extraction",
       );
       console.error(
-        "  ```python-snippet-concat - To concat with the previous Python block",
+        "  ```python-snippet-concat (or ```py-snippet-concat) - To concat with the previous Python block",
       );
       console.error(
-        "  ```python-snippet-skip   - Python code that should not be extracted",
+        "  ```python-snippet-skip (or ```py-snippet-skip)   - Python code that should not be extracted",
       );
     } else {
       console.error(`Error generating snippets for ${filePath}:`, error);
@@ -185,7 +186,11 @@ async function main(): Promise<number> {
     }
 
     console.log(`Processing single file: ${absolutePath}`);
-    const success = await generateDocSnippets(absolutePath, verbose);
+    const success = await generateDocSnippets(
+      absolutePath,
+      CONTENT_ROOT,
+      verbose,
+    );
     return success ? 0 : 1;
   }
 
@@ -215,7 +220,7 @@ async function main(): Promise<number> {
   // Generate snippets for each doc
   let allSuccessful = true;
   for (const filePath of paths) {
-    const success = await generateDocSnippets(filePath, verbose);
+    const success = await generateDocSnippets(filePath, CONTENT_ROOT, verbose);
     allSuccessful = allSuccessful && success;
   }
 
