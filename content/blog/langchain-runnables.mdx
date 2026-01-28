@@ -1,10 +1,10 @@
 ---
-title: "Understanding LangChain Runnables"
-description: "Learn about LangChain runnables, how they work, and when best to use them. We also contrast runnables with Mirascope's pythonic chaining techniques."
+author: William Bakst
 date: "2024-07-10"
+description: Learn about LangChain runnables, how they work, and when best to use them. We also contrast runnables with Mirascope's pythonic chaining techniques.
+readTime: 22 min read
+title: Understanding LangChain Runnables
 updatedAt: "2026-01-28"
-readTime: "22 min read"
-author: "William Bakst"
 ---
 
 A LangChain runnable is a protocol that allows you to create and invoke custom chains. It’s designed to sequence tasks, taking the output of one call and feeding it as input to the next, making it suitable for straightforward, linear tasks where each step directly builds upon the previous one.
@@ -155,7 +155,7 @@ As previously mentioned, LangChain runnables provide three key methods to execut
 
 - `invoke`: executes a runnable with a single input, and is typically used when you have a single piece of data to process.
 - `batch`: allows you to process multiple inputs in parallel. This method is useful when you have a list of inputs and want to run them through the chain simultaneously.
-  ‍
+   ‍
 - `stream`: processes input data as a stream, handling one piece of data at a time and providing results as they are available. This method is ideal for handling streamed output for real-time data processing or for large datasets that you want to process incrementally. At the time of this writing, streaming support for retries is being added for higher reliability without any latency cost (as explained in their docs).
 
 ### Key Runnable Types in LangChain
@@ -326,21 +326,18 @@ def recommend_book(genre: str) -> str:
    return f"Recommend a popular book in the {genre} genre. Give me just the title."
 
 @llm.call("openai/gpt-4o-mini")
-def explain_book(genre: str) -> llm.DynamicConfig[list, llm.Tools]:
+def explain_book(genre: str):
    book_title = recommend_book(genre).text()
-   return {
-       "messages": [
-           llm.messages.system(f"""You are the world's greatest librarian.
+   return [
+       llm.messages.system(f"""You are the world's greatest librarian.
 Your task is to explain why the book "{book_title}" is popular in the {genre} genre."""),
-           llm.messages.user(f'Explain why "{book_title}" in the {genre} genre is popular.'),
-       ],
-       "computed_fields": {"book_title": book_title},
-   }
+       llm.messages.user(f'Explain why "{book_title}" in the {genre} genre is popular.'),
+   ]
 
 explanation = explain_book("science fiction")
 print(explanation.text())
 
-# > "Dune," written by Frank Herbert, has garnered immense popularity in the science fiction genre...
+# > "Dune" by Frank Herbert is a cornerstone of the science fiction genre for several ...
 
 ```
 
@@ -401,7 +398,7 @@ def explain_book_chain(genre: str):
 
 explain_book_chain("science fiction")
 
-# > "Dune," a science fiction novel by Frank Herbert, is popular because...
+# > "Neuromancer" by William Gibson is a seminal work in the science fiction genre for ...
 
 ```
 
