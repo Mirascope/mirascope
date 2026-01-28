@@ -629,12 +629,61 @@ def find_blog_dir() -> Path | None:
     return None
 
 
+def get_batch_posts(
+    all_posts: list[PostAudit], batch_num: int, total_batches: int
+) -> list[PostAudit]:
+    """Get posts assigned to this batch.
+
+    Posts are sorted by title and assigned via modulo for stable distribution.
+    batch_num is 1-indexed (1, 2, 3, ..., total_batches)
+
+    IMPORTANT: Batch assignment is based on ALL posts with issues (not just
+    incomplete ones) to ensure stable assignments when running multiple batches
+    in parallel. As posts get completed, they drop from their assigned batch
+    but don't shift other posts' assignments.
+    """
+    # Get ALL posts with issues (stable list for assignment)
+    posts_with_issues = [p for p in all_posts if p.issues]
+
+    # Sort by title (case-insensitive) for predictable ordering
+    posts_with_issues.sort(key=lambda p: p.title.lower())
+
+    # Assign via modulo on the STABLE list, then filter to incomplete
+    batch_all = [
+        p for i, p in enumerate(posts_with_issues) if i % total_batches == (batch_num - 1)
+    ]
+
+    # Return only incomplete posts from this batch's assignment
+    return [p for p in batch_all if not p.completed]
+
+
+def generate_batch_report(
+    batch_posts: list[PostAudit], batch_num: int, total_batches: int
+) -> str:
+    """Generate a report for batch mode showing assigned posts."""
+    report = f"# Batch {batch_num}/{total_batches} - {len(batch_posts)} posts assigned\n\n"
+
+    if not batch_posts:
+        report += "*No posts assigned to this batch.*\n"
+        return report
+
+    report += "Processing posts (sorted by title):\n"
+    for i, audit in enumerate(batch_posts, 1):
+        high = sum(1 for issue in audit.issues if issue.priority == "HIGH")
+        med = sum(1 for issue in audit.issues if issue.priority == "MEDIUM")
+        low = sum(1 for issue in audit.issues if issue.priority == "LOW")
+        report += f"{i}. **{audit.filename}** - \"{audit.title}\" (H:{high} M:{med} L:{low})\n"
+
+    return report
+
+
 def main():
     """Main entry point.
 
     Usage:
         audit_posts.py              # Summary only (default)
         audit_posts.py --file X.mdx # Detailed audit for one file
+        audit_posts.py --batch N/M  # Batch mode: get posts for batch N of M total
     """
     import sys
 
@@ -646,6 +695,7 @@ def main():
     # Parse arguments
     args = sys.argv[1:]
     single_file = None
+    batch_spec = None
 
     if "--file" in args:
         idx = args.index("--file")
@@ -655,9 +705,41 @@ def main():
             print("Error: --file requires a filename")
             return
 
+    if "--batch" in args:
+        idx = args.index("--batch")
+        if idx + 1 < len(args):
+            batch_spec = args[idx + 1]
+        else:
+            print("Error: --batch requires N/M format (e.g., 1/3)")
+            return
+
     posts = sorted(blog_dir.glob("*.mdx"))
 
-    if single_file:
+    if batch_spec:
+        # Batch mode - filter posts by modulo
+        try:
+            batch_num, total_batches = map(int, batch_spec.split("/"))
+            if batch_num < 1 or batch_num > total_batches:
+                print(f"Error: Invalid batch number {batch_num}. Must be 1-{total_batches}")
+                return
+            if total_batches < 1:
+                print("Error: Total batches must be at least 1")
+                return
+        except ValueError:
+            print(f"Error: Invalid batch format '{batch_spec}'. Use N/M (e.g., 1/3)")
+            return
+
+        # Audit all posts first
+        audits = []
+        for post in posts:
+            audit = audit_post(post)
+            audits.append(audit)
+
+        # Get posts for this batch
+        batch_posts = get_batch_posts(audits, batch_num, total_batches)
+        print(generate_batch_report(batch_posts, batch_num, total_batches))
+
+    elif single_file:
         # Single file mode - detailed audit
         target = blog_dir / single_file
         if not target.exists():
