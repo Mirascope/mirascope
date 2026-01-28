@@ -77,9 +77,9 @@ Example with 52 posts and 3 batches:
    ```
    This validates that all Python code blocks use supported types (`python`, `python-snippet-concat`, `python-snippet-skip`). Any unsupported block types will be reported as errors.
 
-2. Run the audit script (summary mode):
+2. Run the audit script (summary mode). **IMPORTANT**: Use the absolute path from the skill's base directory:
    ```bash
-   uv run .claude/skills/blog-v1-deprecation-auditor/scripts/audit_posts.py
+   uv run "$(git rev-parse --show-toplevel)/.claude/skills/blog-v1-deprecation-auditor/scripts/audit_posts.py"
    ```
 
 4. The script outputs a compact summary:
@@ -113,7 +113,7 @@ Example with 52 posts and 3 batches:
 
 2. Run the audit script with the selected file:
    ```bash
-   uv run .claude/skills/blog-v1-deprecation-auditor/scripts/audit_posts.py --file <filename>.mdx
+   uv run "$(git rev-parse --show-toplevel)/.claude/skills/blog-v1-deprecation-auditor/scripts/audit_posts.py" --file <filename>.mdx
    ```
 
 3. This shows detailed issues for that file only:
@@ -216,7 +216,7 @@ When `--batch N/M` is provided, follow these non-interactive phases instead:
 
 2. Run the audit script with batch argument:
    ```bash
-   uv run .claude/skills/blog-v1-deprecation-auditor/scripts/audit_posts.py --batch N/M
+   uv run "$(git rev-parse --show-toplevel)/.claude/skills/blog-v1-deprecation-auditor/scripts/audit_posts.py" --batch N/M
    ```
 
 4. The script outputs:
@@ -245,7 +245,7 @@ For each post in the batch, perform these steps automatically:
 
 1. Run:
    ```bash
-   uv run .claude/skills/blog-v1-deprecation-auditor/scripts/audit_posts.py --file <filename>.mdx
+   uv run "$(git rev-parse --show-toplevel)/.claude/skills/blog-v1-deprecation-auditor/scripts/audit_posts.py" --file <filename>.mdx
    ```
 
 2. Note all issues by category and line number.
