@@ -114,7 +114,7 @@ This approach contrasts with the other two groups of editors above, where iterat
 
 ### 7. Mirascope Cloud: Best for Ensuring Prompt Reproducibility
 
-![Mirascope Cloud Landing Page](/assets/blog/prompt-editor/lilypad-landing-page.webp)
+![Mirascope Cloud Landing Page](/assets/blog/_shared/lilypad-homepage.webp)
 
 [Mirascope Cloud](/docs/learn/ops) is an open source prompt engineering framework that lets users create, edit, and manage prompts through a playground interface that stays tightly synced with the application's codebase. Unlike tools that store prompts separately, **Mirascope Cloud treats prompts as part of the code**, allowing it to version not just the prompt text, but the full context that shapes LLM behavior.
 
@@ -136,21 +136,21 @@ Users can also directly adjust model settings like temperature or `top_p`. Combi
 
 However, prompt editor users cannot modify the underlying code, only the prompt:
 
-![Mirascope Cloud Playground](/assets/blog/prompt-editor/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/_shared/lilypad-playground-v3.webp)
 
 Unlike other prompt editors, Mirascope Cloud automatically versions every change you make to a prompt without you having to hit "Save."
 
 This allows you to freely make changes and roll back to previous states as needed, ensuring full reproducibility even for small adjustments and allowing you to easily trace and understand every change and its impact on LLM behavior and outputs.
 
-![Mirascope Cloud Traces](/assets/blog/prompt-editor/lilypad-traces.webp)
+![Mirascope Cloud Traces](/assets/blog/_shared/lilypad-trace.webp)
 
 Mirascope Cloud's [prompt management tool](/blog/prompt-management-tool) also allows you to compare different versions. Hitting the "Compare" button lets you see the differences between various versions of the code:
 
-![Mirascope Cloud Click Compare](/assets/blog/prompt-editor/lilypad-click-compare.webp)
+![Mirascope Cloud Click Compare](/assets/blog/_shared/lilypad-click-compare.webp)
 
 Clicking this displays a second dropdown menu, where you can select another version and view the differences side-by-side:
 
-![Mirascope Cloud Compare Versions](/assets/blog/prompt-editor/lilypad-compare-versions.webp)
+![Mirascope Cloud Compare Versions](/assets/blog/_shared/lilypad-compare-versions-v2.webp)
 
 You can also view all kinds of stats around prompts and LLM outputs like cost, response times, latency, etc.
 
@@ -166,7 +166,7 @@ This binary approach is often more practical than numeric rating systems (like a
 
 Annotations are managed through structured queues, where outputs can be reviewed and labeled. To minimize bias, existing labels and comments remain hidden until after a reviewer submits their own evaluation.
 
-![Mirascope Cloud Annotation Queue](/assets/blog/prompt-editor/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
 
 These annotations form high-quality datasets that can later support automated evaluation methods, such as using an [LLM-as-judge](/blog/llm-as-judge), ultimately reducing manual labeling and shifting human reviewers into a verification role.
 
@@ -174,7 +174,7 @@ You can [sign up for Mirascope Cloud](https://cloud.mirascope.com/) using your G
 
 ### 8. LangSmith: Best for Testing Prompts Against Datasets
 
-![LangSmith Diagram](/assets/blog/prompt-editor/langsmith-diagram.webp)
+![LangSmith Diagram](/assets/blog/_shared/langsmith-diagram.webp)
 
 [LangSmith](https://www.langchain.com/langsmith) is a closed source platform to create, edit, test, version, and manage prompts. It's a part of the LangChain ecosystem and works best with that framework.
 

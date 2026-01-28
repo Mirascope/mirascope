@@ -302,11 +302,11 @@ Such code lines wire your LLM applications into Mirascope Cloud's playground env
 
 Below, we show an example of how versioning works. A function wrapped in `@ops.version` is displayed in the playground as V6:
 
-![Mirascope Cloud Answer Question v6 Trace](/assets/blog/langchain-prompt-template/lilypad-answer-question-v6-trace.webp)
+![Mirascope Cloud Answer Question v6 Trace](/assets/blog/_shared/lilypad-answer-question-v6-trace.webp)
 
 We then edit the function to change the model type in the call to `gpt-4o-mini` and Mirascope Cloud automatically increments it to V7:
 
-![Mirascope Cloud Answer Question v7 Trace](/assets/blog/langchain-prompt-template/lilypad-answer-question-v7-trace.webp)
+![Mirascope Cloud Answer Question v7 Trace](/assets/blog/_shared/lilypad-answer-question-v7-trace.webp)
 
 The fact such changes are done automatically is especially useful when running large numbers of prompts and calls.
 
@@ -320,11 +320,11 @@ The playground provides:
 * Call settings, like provider, model, and temperature
 * Type-safe prompt arguments and values
 
-![Mirascope Cloud Playground](/assets/blog/langchain-prompt-template/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/_shared/lilypad-playground.webp)
 
 Mirascope Cloud also captures outputs and traces using the [OpenTelemetry Gen AI](https://opentelemetry.io/) spec to make observability easier, giving users an exact snapshot of every output:
 
-![Mirascope Cloud OpenTelemetry GenAI Data](/assets/blog/langchain-prompt-template/lilypad-otel-genai-data.webp)
+![Mirascope Cloud OpenTelemetry GenAI Data](/assets/blog/_shared/lilypad-otel-genai-data.webp)
 
 Domain experts can evaluate outputs using a simple and effective pass/fail labeling system, based on whether the output meets the bar for being "good enough" in context.
 
@@ -334,7 +334,7 @@ By contrast, a binary pass/fail system keeps evaluations focused, fast, and alig
 
 So Mirascope Cloud encourages users to assess outputs through a practical lens: would this be an acceptable output? If yes, it's a pass. If not, it's a fail, and you can (optionally) explain why:
 
-![Mirascope Cloud Annotation Queue](/assets/blog/langchain-prompt-template/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue-v3.webp)
 
 Having a domain expert who really knows the task go through the results and mark what's good and what's not gives you solid training examples for automating evaluations.
 

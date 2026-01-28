@@ -24,7 +24,7 @@ Below we take a closer look at each option and what it brings to the table.
 
 ## 1. Mirascope Cloud: The Developer's Framework for Reproducible LLM Workflows
 
-![Mirascope Cloud Homepage](/assets/blog/langfuse-alternatives/lilypad-homepage.webp)
+![Mirascope Cloud Homepage](/assets/blog/_shared/lilypad-homepage.webp)
 
 [Mirascope Cloud](/docs/learn/ops) is a user-friendly open source prompt engineering framework. Unlike other solutions that focus only on the prompt text, Mirascope Cloud treats every LLM call as a complete software artifact, capturing the entire context that influences the output.
 
@@ -76,21 +76,21 @@ The results are shown in Mirascope Cloud's Traces tab. If you're using a Mirasco
 
 When the code above is first run, it creates a nested trace and is logged as version 1:
 
-![Answer Question V1 Trace](/assets/blog/langfuse-alternatives/answer-question-v1-trace.webp)
+![Answer Question V1 Trace](/assets/blog/_shared/answer-question-v1-trace.webp)
 
 Changing anything in the function or the prompt and then running the code again automatically produces version 2:
 
-![Answer Question V2 Trace](/assets/blog/langfuse-alternatives/answer-question-v2-trace.webp)
+![Answer Question V2 Trace](/assets/blog/_shared/answer-question-v2-trace.webp)
 
 Note that if you change a function so that it's identical to any previous version, the version isn't incremented.
 
 You can also compare function versions by clicking the "Compare" button:
 
-![Answer Question Click Compare](/assets/blog/langfuse-alternatives/answer-question-click-compare.webp)
+![Answer Question Click Compare](/assets/blog/_shared/answer-question-click-compare.webp)
 
 This toggles a second dropdown menu, where you can select another version and view the differences side-by-side.
 
-![Answer Question Compare Versions](/assets/blog/langfuse-alternatives/answer-question-compare-versions.webp)
+![Answer Question Compare Versions](/assets/blog/_shared/lilypad-compare-versions.webp)
 
 Mirascope Cloud also supports A/B testing and rollbacks, since every function run creates a trace with metadata. 
 
@@ -127,7 +127,7 @@ Each time an [LLM prompt](/blog/llm-prompt) is run in the playground, Mirascope 
 
 You can review it in the Traces tab, where each span is timestamped, costed, and ready to annotate or compare:
 
-![Answer Question GenAI Data](/assets/blog/langfuse-alternatives/answer-question-genai-data.webp)
+![Answer Question GenAI Data](/assets/blog/_shared/lilypad-genai-trace-data.webp)
 
 Mirascope Cloud uses the [OpenTelemetry Gen AI spec](https://opentelemetry.io/) to trace every LLM call with standardized, structured metadata, making your runs easy to debug, visualize, and analyze across tools. Playground users can also quickly annotate traces, adding pass/fail labels, reasoning, and comments, right from the trace viewer, as we'll see in the next section.
 
@@ -141,7 +141,7 @@ The Annotation Queue lets you easily annotate traces and supports quick, inline 
 
 Each review stays connected to the exact version of the function, the prompt, the inputs, and the model settings that were used. You can also include a reason for your decision and explain the criteria you applied; this helps others understand how you made your call, especially when judgment is involved.
 
-![Mirascope Cloud Annotation Queue](/assets/blog/langfuse-alternatives/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
 
 To keep things fair, Mirascope Cloud hides any existing annotations while you're reviewing a trace so your opinion isn't influenced.
 
@@ -182,7 +182,7 @@ Mirascope Cloud gives you full visibility into every LLM call: prompt, parameter
 
 ## 2. LangSmith: Build, Debug, and Evaluate with LangChain’s Companion Platform
 
-![LangSmith Screenshot](/assets/blog/langfuse-alternatives/langsmith-screenshot.webp)
+![LangSmith Screenshot](/assets/blog/_shared/langsmith-screenshot.webp)
 
 [LangSmith](https://www.langchain.com/langsmith) is a closed source platform for LLM observability, testing, and evaluation, excelling in LangChain\-centric environments and offering comprehensive team features and integrations.
 
@@ -198,7 +198,7 @@ Available as a managed cloud service or self-hosted with a paid enterprise licen
 
 ## 3. Helicone: Monitor, Debug, and Optimize, All in One Place
 
-![Helicone Screenshot](/assets/blog/langfuse-alternatives/helicone-screenshot.webp)
+![Helicone Screenshot](/assets/blog/_shared/helicone-screenshot.webp)
 
 [Helicone](https://www.helicone.ai/) is an open source platform built for observability and management of LLM applications. It offers a full suite of tools to monitor, debug, and optimize AI agent performance across major providers like OpenAI, Anthropic, and Azure. With real-time request logging and tracing, Helicone gives developers a clear view into their system’s behavior, helping them identify performance bottlenecks, control costs, and experiment with prompts more effectively.
 
@@ -222,7 +222,7 @@ Collaboration is centralized and designed to support mixed teams, with real-time
 
 ## 5. Phoenix: Open-Source Observability for RAG Workflows
 
-![Phoenix Screenshot](/assets/blog/langfuse-alternatives/phoenix-screenshot.webp)
+![Phoenix Screenshot](/assets/blog/_shared/phoenix-screenshot.webp)
 
 [Phoenix](https://phoenix.arize.com/) (by Arize AI) is an open source observability and evaluation platform built specifically for LLM applications, with a strong focus on experimental and development workflows, particularly in retrieval augmented generation (RAG) scenarios. It comes with built-in evaluation metrics designed to assess correctness, hallucination, and toxicity. While these metrics provide a solid foundation for quality assessment, they’re fixed, meaning teams with more specialized or granular evaluation needs may need to extend Phoenix’s functionality.
 
@@ -236,7 +236,7 @@ Despite these gaps, Arize Phoenix is accessible, offering free plans for both se
 
 ## 6. Lunary: Analytics-Driven LLM Development
 
-![Lunary Screenshot](/assets/blog/langfuse-alternatives/lunary-screenshot.webp)
+![Lunary Screenshot](/assets/blog/_shared/lunary-screenshot.webp)
 
 [Lunary](https://lunary.ai/) is an open source, self-hostable platform for full-stack observability, analytics, evaluation, and prompt management in LLM\-powered applications. You can deploy it on your own infrastructure, giving you complete control over data privacy, system behavior, and customization.
 
@@ -248,7 +248,7 @@ Paid plans start at $20 per user per month and include 50,000 tracked events, un
 
 ## 7. HoneyHive: Visualize, Evaluate, and Improve Your AI Stack
 
-![HoneyHive Screenshot](/assets/blog/langfuse-alternatives/honeyhive-screenshot.webp)
+![HoneyHive Screenshot](/assets/blog/_shared/honeyhive-screenshot.webp)
 
 [HoneyHive](https://www.honeyhive.ai/) is an AI observability and evaluation platform designed to help teams monitor, debug, and optimize LLM\-powered applications in production. It offers robust tracing, performance analytics, and both human and automated evaluation tools, making it easier to understand how AI systems behave in real-world scenarios.
 

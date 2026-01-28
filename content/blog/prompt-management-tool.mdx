@@ -31,27 +31,27 @@ In this sense, prompt management complements prompt engineering: while engineeri
 
 We recommend you look for a tool that:
 
-### Tracks and Versions *Every* Prompt Change
+### Tracks and Versions _Every_ Prompt Change
 
 Versioning and tracing allow you to treat prompting like real software development rather than as trial-and-error guesswork because it preserves the history of changes and records what actually happened on each run.
 
 At the very least, a good tool allows you to select and save a given prompt change, which is useful since it lets you run controlled experiments without losing track of what worked before.
 
-But having to manually save changes introduces some friction while ideally you shouldn’t *have* to think about what to save. An advanced tool will just save all your changes automatically while you focus on [prompt optimization](/blog/prompt-optimization).
+But having to manually save changes introduces some friction while ideally you shouldn’t _have_ to think about what to save. An advanced tool will just save all your changes automatically while you focus on [prompt optimization](/blog/prompt-optimization).
 
 A strong versioning system also links each prompt to not only metadata like model type, version, and parameters, but also to its surrounding context like the execution flow around the LLM call, its input formatting, and any downstream validation steps. All this creates an auditable trail that supports debugging and compliance.
 
 ### Allows Technical and Non-Technical Teams to Collaborate
 
-Having a space where domain experts can separately iterate on prompts without involving developers lets them experiment faster without needing to change or redeploy the code. 
+Having a space where domain experts can separately iterate on prompts without involving developers lets them experiment faster without needing to change or redeploy the code.
 
 Basic requirements for such a space are:
 
-* Clear visibility into prompt history, versions, and related metadata.  
-* Role-based access control with granular permissions for developer, domain expert, and reviewer roles.  
-* A no-code editing environment for non-technical users.  
-* The capability to preview and test prompt changes instantly.  
-* Support for prompt templates with input variables.
+- Clear visibility into prompt history, versions, and related metadata.
+- Role-based access control with granular permissions for developer, domain expert, and reviewer roles.
+- A no-code editing environment for non-technical users.
+- The capability to preview and test prompt changes instantly.
+- Support for prompt templates with input variables.
 
 An advanced system also works with existing version control systems like Git or CI/CD pipelines so developers can automate testing and deployment while non-technical contributors safely make updates.
 
@@ -71,7 +71,7 @@ Advanced systems also let users collaboratively evaluate prompts against predefi
 
 ### 1. Mirascope Cloud: Full-Context Prompt Management for LLM Workflows
 
-![Mirascope Cloud Landing Page](/assets/blog/prompt-management-tool/lilypad-landing-page.webp)
+![Mirascope Cloud Landing Page](/assets/blog/_shared/lilypad-homepage.webp)
 
 [Mirascope Cloud](/docs/mirascope-cloud) approaches prompt engineering as an optimization problem, applying proven software engineering practices to LLM application development. It allows users to version, trace, and optimize workflows by capturing the full context of every LLM interaction.
 
@@ -83,10 +83,10 @@ Below, we break down key Mirascope Cloud prompt management and observability cap
 
 To record the full context of a prompt, Mirascope Cloud encourages users to wrap the prompt, the LLM call, and any surrounding code in a Python function. This snapshots everything that influences the call's outcome, including:
 
-* Input arguments, such as the user query or chat history  
-* LLM model settings  
-* Any pre- or post-processing steps and helper functions  
-* The code logic within the function's scope
+- Input arguments, such as the user query or chat history
+- LLM model settings
+- Any pre- or post-processing steps and helper functions
+- The code logic within the function's scope
 
 Everything within the function's closure effectively becomes the prompt, rather than just the prompt instruction.
 
@@ -117,21 +117,21 @@ print(answer)
 
 All this offers a complete audit trail of what changed and why (not only in the prompt but in the prompt's context). Incremented versions are shown in the Mirascope Cloud UI:
 
-![Mirascope Cloud Trace View](/assets/blog/prompt-management-tool/lilypad-trace-view.webp)
+![Mirascope Cloud Trace View](/assets/blog/_shared/lilypad-trace.webp)
 
 It even logs and tracks changes to user-defined functions or classes outside the main prompt function as long as these are within the decorated function's scope.
 
 The "Compare" button in the Mirascope Cloud UI allows you to see the differences between various versions of the code:
 
-![Mirascope Cloud Click Compare](/assets/blog/prompt-management-tool/lilypad-click-compare.webp)
+![Mirascope Cloud Click Compare](/assets/blog/_shared/lilypad-click-compare.webp)
 
 Clicking this displays a second dropdown menu, where you can select another version and view the differences side-by-side:
 
-![Mirascope Cloud Compare Versions](/assets/blog/prompt-management-tool/lilypad-compare-versions.webp)
+![Mirascope Cloud Compare Versions](/assets/blog/_shared/lilypad-compare-versions-v2.webp)
 
 The UI also lets you inspect trace data for any LLM call in a function in order to see the full picture of what happened during the run, including any changes to inputs, logic, prompt changes, and model settings:
 
-![Mirascope Cloud Trace Data](/assets/blog/prompt-management-tool/lilypad-trace-data.webp)
+![Mirascope Cloud Trace Data](/assets/blog/_shared/lilypad-trace-genai-data.webp)
 
 Downstream, you can use the `.version` method to compare outputs, track changes, or reproduce earlier results.
 
@@ -153,7 +153,7 @@ The Mirascope Cloud playground supports markdown-based editing with typed variab
 
 Users can also directly adjust model settings like temperature or `top_p`. Together, these features ensure all prompt edits remain consistent, traceable, and fully integrated into the application's codebase.
 
-![Mirascope Cloud Playground](/assets/blog/prompt-management-tool/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/_shared/lilypad-playground-v3.webp)
 
 #### Building Reliable Evaluation Pipelines
 
@@ -161,7 +161,7 @@ Mirascope Cloud allows teams to annotate LLM outputs to track evaluation decisio
 
 Every review is tied to the exact function version, inputs, prompt text, and model settings that produced the output. This means teams can always see why a prompt behaved the way it did and recreate those conditions if needed.
 
-But evaluation goes beyond checking if an answer is right or wrong. In many real-world cases, the goal is to decide whether an output is “good enough” for the intended use. For this, human judgment often plays a central role. 
+But evaluation goes beyond checking if an answer is right or wrong. In many real-world cases, the goal is to decide whether an output is “good enough” for the intended use. For this, human judgment often plays a central role.
 
 For example, on a 1–5 scale, one reviewer might rate a response a 3 while another rates it a 4, showing how subjective judgment can shape evaluations even when both reviewers agree the output is usable.
 
@@ -169,7 +169,7 @@ Because of this subjectivity, evaluation tools need a structured way to capture 
 
 The outputs to evaluate appear in structured queues, where reviewers can label them as pass or fail and add reasoning notes. To reduce bias, existing annotations remain hidden until the review is complete.
 
-![Mirascope Cloud Annotation Queue](/assets/blog/prompt-management-tool/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
 
 The result is a body of searchable evaluation data stored alongside trace details and version history, making reviews easy to audit and reproduce.
 
@@ -211,35 +211,35 @@ You can [sign up for Mirascope Cloud](https://cloud.mirascope.com) using your Gi
 
 ### 2. LangSmith: Prompt Management Inside the LangChain Ecosystem
 
-![LangSmith Diagram](/assets/blog/prompt-management-tool/langsmith-diagram.webp)
+![LangSmith Diagram](/assets/blog/_shared/langsmith-diagram.webp)
 
 [LangSmith](https://www.langchain.com/langsmith) (part of the LangChain ecosystem) provides observability and helps teams manage, test, and optimize prompts. It offers a central workspace where prompts can be organized, versioned, evaluated, and integrated into applications.
 
 Key prompt management features include:
 
-* A visual environment (playground) to create, edit, and experiment with prompts, adjust parameters (like model, temperature), and test outcomes.  
-* Version control with commit-like identifiers (SHA numbers) and tags to separate development, QA, and production versions; versions must be explicitly saved, as the system doesn’t track them automatically..  
-* The ability to run prompts against datasets, measure prompt performance with automated or human evaluators, and compare different versions in a structured, metric-driven way.  
-* A shared workspace for team members to co-create, edit, comment on, and review prompt changes.  
-* Make prompts public or private and share or collaborate across different teams and projects, including publishing to the broader LangChain community if desired (via LangChain Hub).  
-* Management of prompts via the SDK that offers tight coupling with code-driven workflows.
+- A visual environment (playground) to create, edit, and experiment with prompts, adjust parameters (like model, temperature), and test outcomes.
+- Version control with commit-like identifiers (SHA numbers) and tags to separate development, QA, and production versions; versions must be explicitly saved, as the system doesn’t track them automatically..
+- The ability to run prompts against datasets, measure prompt performance with automated or human evaluators, and compare different versions in a structured, metric-driven way.
+- A shared workspace for team members to co-create, edit, comment on, and review prompt changes.
+- Make prompts public or private and share or collaborate across different teams and projects, including publishing to the broader LangChain community if desired (via LangChain Hub).
+- Management of prompts via the SDK that offers tight coupling with code-driven workflows.
 
 LangSmith is closed source and requires an enterprise license to self-host.
 
 ### 3. Langfuse: Open Sourced Control Over Your Prompt Lifecycle
 
-![Langfuse Dashboard](/assets/blog/prompt-management-tool/langfuse-dashboard.webp)
+![Langfuse Dashboard](/assets/blog/_shared/langfuse-dashboard.webp)
 
 [Langfuse](https://langfuse.com/) is an open source prompt management system that enables creation, storage, versioning, testing, and deployment of prompts.
 
 [Langfuse prompt management](/blog/langfuse-prompt-management) offers:
 
-* A prompt management tool for creating and editing prompts, allowing you to build, template (with variables), and update text and chat prompts using the UI or SDKs.  
-* Simple labeling and version tagging enabling quick rollback, reliable tracking, and parallel experimentation with different prompt versions.  
-* Real-time collaboration via shared UI and APIs; tracking who made changes and when.  
-* The capability of marking prompts for usage in development, staging, or production environments, and switching versions instantly via label promotion.  
-* Integration with performance tracking and evaluation dashboards for [LLM observability](/blog/llm-observability) and to monitor how changes in prompts affect model outputs, latency, and cost metrics over time.  
-* Fetching, compiling, and deploying the latest version of prompts via code, without manual intervention.
+- A prompt management tool for creating and editing prompts, allowing you to build, template (with variables), and update text and chat prompts using the UI or SDKs.
+- Simple labeling and version tagging enabling quick rollback, reliable tracking, and parallel experimentation with different prompt versions.
+- Real-time collaboration via shared UI and APIs; tracking who made changes and when.
+- The capability of marking prompts for usage in development, staging, or production environments, and switching versions instantly via label promotion.
+- Integration with performance tracking and evaluation dashboards for [LLM observability](/blog/llm-observability) and to monitor how changes in prompts affect model outputs, latency, and cost metrics over time.
+- Fetching, compiling, and deploying the latest version of prompts via code, without manual intervention.
 
 ### 4. Agenta: A Self-Hostable Platform for Versioning, Testing, and Evaluating Prompts
 
@@ -249,25 +249,25 @@ LangSmith is closed source and requires an enterprise license to self-host.
 
 Key prompt management features include:
 
-* AI tools for tracking every version of an [LLM prompt](/blog/llm-prompt), maintaining history of changes, and enabling comparison of performance between versions.  
-* Running experiments that compare outputs from different prompt versions or model configurations, and visualizing these outputs side by side.  
-* Associating each prompt version with its testing and production metrics, allowing organizations to see which prompt was used for any output and how changes affected results over time.  
-* An interactive environment for building and testing prompts collaboratively, including the ability to compare outputs from different large language models, adjust parameters, and deploy new prompt versions or variants as needed.  
-* The ability to self-host their projects, and to modify the source code to fit their workflow, and benefit from community contributions.
+- AI tools for tracking every version of an [LLM prompt](/blog/llm-prompt), maintaining history of changes, and enabling comparison of performance between versions.
+- Running experiments that compare outputs from different prompt versions or model configurations, and visualizing these outputs side by side.
+- Associating each prompt version with its testing and production metrics, allowing organizations to see which prompt was used for any output and how changes affected results over time.
+- An interactive environment for building and testing prompts collaboratively, including the ability to compare outputs from different large language models, adjust parameters, and deploy new prompt versions or variants as needed.
+- The ability to self-host their projects, and to modify the source code to fit their workflow, and benefit from community contributions.
 
 ### 5. PromptLayer: A Visual Workspace for Prompt Versioning and Testing
 
-![Prompt Layer Diagram](/assets/blog/prompt-management-tool/prompt-layer-diagram.webp)
+![Prompt Layer Diagram](/assets/blog/_shared/prompt-layer-diagram.webp)
 
 [PromptLayer](https://www.promptlayer.com/) is a closed source, prompt management platform that allows team members to store, organize, version, evaluate, and iterate on AI prompts for large language models like Anthropic, OpenAI, and Google. It provides a central prompt workbench for deploying and monitoring prompts in [LLM applications](/blog/llm-applications).
 
 Key prompt management features include:
 
-* Version control for maintaining a historical record of changes and supporting easy rollbacks and comparisons for designing LLM interactions using, e.g.,  [prompt chaining](/blog/prompt-chaining).  
-* A user-friendly UI for editing, A/B testing, and deploying prompts visually.  
-* Multi-user editing, reviews, and roles, bridging technical and non-technical team members.  
-* Functionality and AI tools for testing prompts against usage history, with support for regression and batch tests.  
-* The capability to assign permissions, managing who can view, edit, or deploy prompts.
+- Version control for maintaining a historical record of changes and supporting easy rollbacks and comparisons for designing LLM interactions using, e.g., [prompt chaining](/blog/prompt-chaining).
+- A user-friendly UI for editing, A/B testing, and deploying prompts visually.
+- Multi-user editing, reviews, and roles, bridging technical and non-technical team members.
+- Functionality and AI tools for testing prompts against usage history, with support for regression and batch tests.
+- The capability to assign permissions, managing who can view, edit, or deploy prompts.
 
 ## Bring Engineering Discipline to Prompt Management
 

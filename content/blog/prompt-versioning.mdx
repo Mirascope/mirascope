@@ -29,7 +29,7 @@ In the rest of this article, we'll walk you through five top frameworks (includi
 
 ## 1. Mirascope Cloud — Structuring AI Development for Continuous Improvement
 
-![Mirascope Cloud Homepage](/assets/blog/prompt-versioning/lilypad-homepage.webp)
+![Mirascope Cloud Homepage](/assets/blog/_shared/lilypad-homepage.webp)
 
 [Mirascope Cloud](/docs/learn/ops) addresses the challenges of working with non-deterministic LLM outputs by providing open source tools for automatic versioning and tracing of LLM calls, allowing you to manage and evaluate prompts.
 
@@ -76,19 +76,19 @@ By using `@ops.version`, **we're telling Mirascope Cloud that this function shou
 
 And it does this using only a few lines of code. So by adding the `@ops.version` decorator to a function, you're ensuring that any and all changes get automatically versioned and traced every time you run the code. And the output will show up in Mirascope Cloud:
 
-![Answer Question Version 1 Trace](/assets/blog/prompt-versioning/answer-question-v1.webp)
+![Answer Question Version 1 Trace](/assets/blog/_shared/lilypad-answer-question-v1-trace.webp)
 
 Note the version numbers: Mirascope Cloud assigns this initial version as V1. To the right you see a panel with all of the trace information, such as the output. Running the same function again will capture that execution's trace against the same version.
 
 When we change the model type in the call to `gpt-4o`, Mirascope Cloud automatically increments it to V2:
 
-![Answer Question V2 Trace](/assets/blog/prompt-versioning/answer-question-v2.webp)
+![Answer Question V2 Trace](/assets/blog/_shared/lilypad-traces-view.webp)
 
 Changing any aspect of the function automatically increments the version number. In fact, Mirascope Cloud will automatically detect the correct version so you can simply revert and not worry about properly tracing everything. And if a change is identical to a previous version, Mirascope Cloud won't create a new version because it will detect the existing version automatically.
 
 This makes comparing versions extremely easy:
 
-![Answer Question V1 & V2 Comparison](/assets/blog/prompt-versioning/answer-question-v1-v2-comparison.webp)
+![Answer Question V1 & V2 Comparison](/assets/blog/_shared/lilypad-answer-question-comparison.webp)
 
 Mirascope Cloud versions LLM calls using their function closure, which means any user-defined functions or classes it interacts with (that are within scope) **are also logged and tracked automatically**.
 
@@ -117,11 +117,11 @@ if __name__ == "__main__":
 
 Now even changes to the return type will be correctly captured as a new version:
 
-![Answer Question V3 Structured](/assets/blog/prompt-versioning/answer-question-v3-structured.webp)
+![Answer Question V3 Structured](/assets/blog/_shared/lilypad-answer-question-v3-trace.webp)
 
 The `ops.instrument_llm()` call ensures Mirascope Cloud also traces and logs every LLM call made (using the [OpenTelemetry Gen AI spec](https://opentelemetry.io/) to make observability easier) to give you an exact snapshot of each LLM output to help you monitor the performance of prompts over time:
 
-![Answer Question Auto LLM OpenTelemetry Span](/assets/blog/prompt-versioning/answer-question-auto-llm-span.webp)
+![Answer Question Auto LLM OpenTelemetry Span](/assets/blog/_shared/lilypad-genai-trace-data.webp)
 
 Any of these spans will properly appear nested inside of whichever other span or trace contains their execution.
 
@@ -135,7 +135,7 @@ Managing and iterating on prompts in collaborative workflows presents several ch
 
 As described in the last section, Mirascope Cloud provides a playground that allows non-technical team members to iterate on prompts (and run them) through an intuitive GUI, reducing the need for direct engineering involvement:
 
-![Answer Question Playground](/assets/blog/prompt-versioning/answer-question-playground.webp)
+![Answer Question Playground](/assets/blog/_shared/lilypad-playground-v2.webp)
 
 The playground attaches to a versioned function, and every time it runs it will be traced and versioned automatically against that function. 
 
@@ -182,7 +182,7 @@ You just choose a particular trace to evaluate:
 
 And then mark the trace as “Pass” or “Fail” with an optional reason:
 
-![Add Annotation Criteria](/assets/blog/prompt-versioning/add-annotation-criteria.webp)
+![Add Annotation Criteria](/assets/blog/_shared/lilypad-annotation-queue.webp)
 
 You'll notice that we also utilize the discussions to provide additional unstructured metadata for other team members.
 
@@ -202,7 +202,7 @@ Mirascope Cloud simplifies prompt versioning so you can experiment with ease. Wi
 
 ## 2. LangSmith — Prompt Versioning from a Central Hub
 
-![LangSmith Website](/assets/blog/prompt-versioning/langsmith-homepage.webp)
+![LangSmith Website](/assets/blog/_shared/langsmith-screenshot.webp)
 
 [LangSmith](https://www.langchain.com/langsmith) is a closed-source tool for managing and optimizing the performance of chains and intelligent agents in LLM applications. Its parent framework is LangChain, with which it integrates, although you can use LangSmith on its own or with other tools besides LangChain. Note however, that while LangSmith is able to trace calls made by third-party tools, it’s less likely to version them.
 
@@ -214,7 +214,7 @@ You can find more information about how to manage prompts in LangChain Hub in it
 
 ## 3. Langfuse — Direct Integration with LLMs Without a Proxy Layer
 
-![Langfuse Homepage](/assets/blog/prompt-versioning/langfuse-homepage.webp)
+![Langfuse Homepage](/assets/blog/_shared/langfuse-homepage.webp)
 
 [Langfuse](https://langfuse.com/) is an open-source LLM platform that helps teams collaboratively debug, analyze, and iterate on their LLM applications. 
 
@@ -242,7 +242,7 @@ You can find more information on Weave’s prompt management in its documentatio
 
 ## 5. PromptHub — User-Friendly Collaborations for Team Members
 
-![Prompthub Homepage](/assets/blog/prompt-versioning/prompthub-homepage.webp)
+![Prompthub Homepage](/assets/blog/_shared/prompthub-homepage.webp)
 
 [PromptHub](https://www.prompthub.us/) is a prompt management platform for teams. It lets you test, collaborate, and deploy prompts, and features built-in prompt versioning, comparison, and approval workflows.
 

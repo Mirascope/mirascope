@@ -66,11 +66,11 @@ This turns your prompt experiments into something closer to software engineering
 
 As an example of this, below we show a code sample that's similarly wrapped in `@ops.version` after it first appears in Mirascope Cloud playground as V6:
 
-![Answer Question v6 Trace](/assets/blog/langchain-alternatives/answer-question-v6-trace.webp)
+![Answer Question v6 Trace](/assets/blog/_shared/lilypad-answer-question-v6-trace.webp)
 
 As soon as we change any part of the function, e.g., edit the model type to be `gpt-4o-mini`, Mirascope Cloud automatically increments the version to V7:
 
-![Answer Question v7 Trace](/assets/blog/langchain-alternatives/answer-question-v7-trace.webp)
+![Answer Question v7 Trace](/assets/blog/_shared/lilypad-answer-question-v7-trace.webp)
 
 If Mirascope Cloud detects that nothing has changed when you run the code, or a change is identical to a previous version, the version won't be updated.
 
@@ -78,7 +78,7 @@ Mirascope Cloud versions functions using their function closure, which means any
 
 Mirascope Cloud uses the [OpenTelemetry Gen AI spec](https://opentelemetry.io/) to trace every call made by a generation.
 
-![Mirascope Cloud OpenTelemetry GenAI Data](/assets/blog/langchain-alternatives/lilypad-otel-genai-data.webp)
+![Mirascope Cloud OpenTelemetry GenAI Data](/assets/blog/_shared/lilypad-otel-genai-data.webp)
 
 Each generation's output can be annotated with pass/fail labels and reasoning, enabling systematic evaluation of whether prompt changes improve output quality (as described later).
 
@@ -96,7 +96,7 @@ Engineers still control what runs in production, **but prompts can be hot swappe
 
 Mirascope Cloud's markdown prompt templates support variables backed by type-safe function signatures, which hold prompt arguments and values:
 
-![Mirascope Cloud Playground](/assets/blog/langchain-alternatives/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/_shared/lilypad-playground.webp)
 
 ### Evaluating LLM Outputs with Easy Annotations
 
@@ -110,7 +110,7 @@ The goal is to ultimately ship useful, reliable features, not perfect ones. Pass
 
 Mirascope Cloud allows non-technical teams to easily annotate prompts with pass/fail labels by simply selecting an output in the playground:
 
-![Mirascope Cloud Annotation Queue](/assets/blog/langchain-alternatives/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
 
 A simple pass/fail label, backed by a short explanation, is one of the best ways to start automating your evaluations. By consistently tagging outputs as pass/fail and explaining why, you can train an LLM judge to take over that job. Instead of spending all your time labeling, you shift the work to verifying, which is faster and more efficient.
 
@@ -120,7 +120,7 @@ Get started with [Mirascope Cloud](https://cloud.mirascope.com/) to structure yo
 
 ## 2. Mirascope: User-Friendly Library that Simplifies LLM Application Development
 
-![Mirascope Homepage](/assets/blog/langchain-alternatives/mirascope-homepage.webp)
+![Mirascope Homepage](/assets/blog/_shared/mirascope-homepage.webp)
 
 [Mirascope](https://github.com/mirascope/mirascope) is a lightweight Python toolkit that prioritizes simplicity, reliability, and developer experience. It's designed to be simple, modular, enjoyable to use, and to work with Mirascope Cloud.
 
@@ -234,7 +234,7 @@ print(book.author) # Output: Isaac Asimov
 
 Your IDE immediately shows whether the return type matches the structure you expect when you hover the cursor over `response`, which is inferred as an instance of the `Book` model.
 
-![Mirascope IDE Support](/assets/blog/langchain-alternatives/mirascope-ide-support.webp)
+![Mirascope IDE Support](/assets/blog/_shared/mirascope-type-safety.webp)
 
 Response models also feature auto-complete for expected values:
 
@@ -246,7 +246,7 @@ Start building intelligent [LLM agents](/blog/llm-agents/) faster with Mirascope
 
 ## 3. LlamaIndex: Empowers Developers to Build Data-Driven Apps
 
-![LlamaIndex Screenshot](/assets/blog/langchain-alternatives/llamaindex-screenshot.webp)
+![LlamaIndex Screenshot](/assets/blog/_shared/llama-index-diagram.webp)
 
 [Llamaindex](https://www.llamaindex.ai/), formerly GPT Index, is a data framework for building LLM applications that benefit from “context augmentation,” meaning that user queries also retrieve relevant information from external data sources (e.g., documents and knowledge bases).
 

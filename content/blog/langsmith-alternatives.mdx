@@ -32,7 +32,7 @@ In this article, we cover nine alternatives to LangSmith, starting with [Mirasco
 
 ## 1. Mirascope Cloud: Full-Code Snapshot Versioning for Reproducible LLM Development
 
-![Mirascope Cloud Homepage](/assets/blog/langsmith-alternatives/lilypad-homepage.webp)
+![Mirascope Cloud Homepage](/assets/blog/_shared/lilypad-homepage.webp)
 
 [Mirascope Cloud](/docs/learn/ops) is built for software developers and lets them run their LLM workflows with the same structure and reliability as real code. It approaches prompt engineering as an optimization problem, recognizing that LLM calls are inherently non-deterministic and that even small adjustments can have unpredictable effects on the output.
 
@@ -70,25 +70,25 @@ print(response.text())
 
 This creates a nested trace and logs that function execution as version 1 in the Mirascope Cloud playground:
 
-![Answer Question Version 1 Trace](/assets/blog/langsmith-alternatives/answer-question-trace.webp)
+![Answer Question Version 1 Trace](/assets/blog/_shared/answer-question-v1-trace.webp)
 
 If you update the function (even slightly), Mirascope Cloud automatically creates version 2 and logs it.
 
-![Answer Question Version 2](/assets/blog/langsmith-alternatives/answer-question-v2.webp)
+![Answer Question Version 2](/assets/blog/_shared/answer-question-v2-trace.webp)
 
 You can also compare function versions by clicking the “Compare” button:  
 
-![Answer Question Click Compare](/assets/blog/langsmith-alternatives/answer-question-click-compare.webp)
+![Answer Question Click Compare](/assets/blog/_shared/answer-question-click-compare.webp)
 
 This toggles a second dropdown menu, where you can select another version and view the differences side-by-side.  
 
-![Answer Question Compare Versions](/assets/blog/langsmith-alternatives/answer-question-compare-versions.webp)
+![Answer Question Compare Versions](/assets/blog/_shared/lilypad-compare-versions.webp)
 
 For better observability, Mirascope Cloud instruments everything using the [OpenTelemetry Gen AI spec](https://opentelemetry.io/).
 
 Each trace breaks down the full story: what was asked, how it was asked, and what came back. It’s perfect for debugging and improving tricky workflows. You also get all the key details: inputs, outputs, model and provider info, token usage, latency, and cost.
 
-![Answer Question GenAI OTel Trace Data](/assets/blog/langsmith-alternatives/answer-question-genai-data.webp)
+![Answer Question GenAI OTel Trace Data](/assets/blog/_shared/lilypad-otel-genai-data-v2.webp)
 
 This kind of automatic tracing and version control lets you easily measure improvements and iterate without guessing what was different between runs.
 
@@ -102,7 +102,7 @@ This lets non-developers interact with and tweak prompts directly, without touch
 
 It also separates concerns, allowing software engineers to focus on system architecture while SMEs handle prompt logic and evaluation. 
 
-![Answer Question Playground](/assets/blog/langsmith-alternatives/answer-question-playground.webp)
+![Answer Question Playground](/assets/blog/_shared/lilypad-playground-v5.webp)
 
 The dashboard provides Markdown-supported prompt templates with type-safe variables, along with their associated Python functions, so you can see both the prompt and the exact code it ties into. 
 
@@ -128,11 +128,11 @@ Secondly, because "correctness" often involves subjective judgment or fuzzy crit
 
 The playground also lets you easily select any output for annotation: 
 
-![Answer Question Assign Annotation](/assets/blog/langsmith-alternatives/answer-question-assign-annotation.webp)  
+![Answer Question Assign Annotation](/assets/blog/_shared/lilypad-answer-question-assign-annotation.webp)  
 
 From there, just click the “Pass” or “Fail” label, add any context or reasoning if you want, and click “submit annotation.”   
 
-![Answer Question Submit Annotation](/assets/blog/langsmith-alternatives/answer-question-submit-annotation.webp)
+![Answer Question Submit Annotation](/assets/blog/_shared/lilypad-annotation-queue-v4.webp)
 
 We encourage users to manually label outputs, especially early in a project. Because each label is tied to a specific versioned output, it helps build high-quality, human-annotated datasets that can later be used to train automated evaluation systems, such as LLM judges, which we plan to launch soon.    
 
@@ -147,7 +147,7 @@ You can open a free account using your [GitHub](https://github.com/mirascope/mir
 
 ## 2. PromptLayer: Closed-Source Simplicity With Drag-and-Drop Prompt Tools
 
-![PromptLayer Screenshot](/assets/blog/langsmith-alternatives/prompt-layer-screenshot.webp)
+![PromptLayer Screenshot](/assets/blog/_shared/prompt-layer-diagram.webp)
 
 [PromptLayer](https://www.promptlayer.com/) is a developer tool that helps you monitor and manage prompts by acting as a lightweight wrapper around OpenAI’s Python SDK. 
 
@@ -171,7 +171,7 @@ Cloud pricing starts at $29/month, with a Pro tier at $60/user/month (or $100/us
 
 ## 4. Helicone: Real-Time Dashboards and Workflow Tracing, No Lock-In
 
-![Helicone Screenshot](/assets/blog/langsmith-alternatives/helicone-screenshot.webp)
+![Helicone Screenshot](/assets/blog/_shared/helicone-screenshot.webp)
 
 [Helicone](https://www.helicone.ai/) allows you to monitor, debug, and optimize LLM applications in real time. It emphasizes ease of integration and flexibility, offering features like session tracking, prompt management, workflow tracing, and real-time dashboards. 
 
@@ -195,7 +195,7 @@ The platform is still relatively new, so community support and third-party integ
 
 ## 6. Phoenix: Open-Source Observability With ML Roots
 
-![Phoenix Screenshot](/assets/blog/langsmith-alternatives/phoenix-screenshot.webp)
+![Phoenix Screenshot](/assets/blog/_shared/phoenix-screenshot.webp)
 
 [Phoenix](https://phoenix.arize.com/) by Arize AI is an open-source observability tool that allows you to evaluate, debug, and monitor AI models (large language models included). 
 
@@ -221,7 +221,7 @@ There are no direct fees for OpenLLMetry since it’s open source, but you may i
 
 ## 8. HoneyHive: Built-In Prompt Studio With Versioning and Guardrails
 
-![HoneyHive Screenshot](/assets/blog/langsmith-alternatives/honeyhive-screenshot.webp)
+![HoneyHive Screenshot](/assets/blog/_shared/honeyhive-screenshot.webp)
 
 [HoneyHive](https://www.honeyhive.ai/) provides end-to-end visualization into AI agent interactions using OpenTelemetry standards. It captures detailed distributed traces, logs, and metrics across multi-step AI pipelines, including retrieval, tool use, model inference, and guardrails, enabling fast debugging and root cause analysis. 
 
@@ -233,7 +233,7 @@ The platform has a free plan and an enterprise tier with custom usage limits, se
 
 ## 9. Portkey: Centralize Prompt Development Across Models and Teams
 
-![Portkey Screenshot](/assets/blog/langsmith-alternatives/portkey-screenshot.webp)
+![Portkey Screenshot](/assets/blog/_shared/portkey-screenshot.webp)
 
 [Portkey](https://portkey.ai/) helps you build, monitor, and manage LLM applications and offers a unified API to connect with over 250 AI models like OpenAI, Anthropic, and Stability AI, while layering in performance optimization, observability, guardrails, and budget control features to streamline the entire development lifecycle. 
 
