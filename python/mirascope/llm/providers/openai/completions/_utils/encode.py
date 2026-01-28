@@ -11,7 +11,7 @@ from openai.types import chat as openai_types, shared_params as shared_openai_ty
 from openai.types.shared_params.response_format_json_schema import JSONSchema
 
 from .....exceptions import FeatureNotSupportedError
-from .....formatting import Format, FormattableT, OutputParser, resolve_format
+from .....formatting import Format, FormatSpec, FormattableT, resolve_format
 from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit, ProviderTool
 from ....base import _utils as _base_utils
@@ -287,10 +287,7 @@ def encode_request(
     model_id: OpenAIModelId,
     messages: Sequence[Message],
     tools: BaseToolkit[AnyToolSchema],
-    format: type[FormattableT]
-    | Format[FormattableT]
-    | OutputParser[FormattableT]
-    | None,
+    format: FormatSpec[FormattableT] | None,
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ChatCompletionCreateKwargs]:
     """Prepares a request for the `OpenAI.chat.completions.create` method."""

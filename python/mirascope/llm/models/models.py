@@ -9,7 +9,7 @@ from typing import overload
 from typing_extensions import Unpack
 
 from ..context import Context, DepsT
-from ..formatting import Format, FormattableT, OutputParser
+from ..formatting import Format, FormatSpec, FormattableT
 from ..messages import Message, UserContent, promote_to_messages
 from ..providers import (
     ModelId,
@@ -179,10 +179,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         tools: Tools | None = None,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None,
+        format: FormatSpec[FormattableT] | None,
     ) -> Response | Response[FormattableT]:
         """Generate an `llm.Response` with an optional response format."""
         ...
@@ -192,10 +189,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         tools: Tools | None = None,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
     ) -> Response | Response[FormattableT]:
         """Generate an `llm.Response` by synchronously calling this model's LLM provider.
 
@@ -246,10 +240,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         tools: AsyncTools | None = None,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None,
+        format: FormatSpec[FormattableT] | None,
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` with an optional response format."""
         ...
@@ -259,10 +250,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         tools: AsyncTools | None = None,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` by asynchronously calling this model's LLM provider.
 
@@ -313,10 +301,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         tools: Tools | None = None,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None,
+        format: FormatSpec[FormattableT] | None,
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Stream an `llm.StreamResponse` with an optional response format."""
         ...
@@ -326,10 +311,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         tools: Tools | None = None,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Generate an `llm.StreamResponse` by synchronously streaming from this model's LLM provider.
 
@@ -380,10 +362,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         tools: AsyncTools | None = None,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None,
+        format: FormatSpec[FormattableT] | None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Stream an `llm.AsyncStreamResponse` with an optional response format."""
         ...
@@ -393,10 +372,7 @@ class Model:
         content: UserContent | Sequence[Message],
         *,
         tools: AsyncTools | None = None,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Generate an `llm.AsyncStreamResponse` by asynchronously streaming from this model's LLM provider.
 
@@ -450,10 +426,7 @@ class Model:
         *,
         ctx: Context[DepsT],
         tools: ContextTools[DepsT] | None = None,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None,
+        format: FormatSpec[FormattableT] | None,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` with an optional response format."""
         ...
@@ -464,10 +437,7 @@ class Model:
         *,
         ctx: Context[DepsT],
         tools: ContextTools[DepsT] | None = None,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` by synchronously calling this model's LLM provider.
 
@@ -523,10 +493,7 @@ class Model:
         *,
         ctx: Context[DepsT],
         tools: AsyncContextTools[DepsT] | None = None,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None,
+        format: FormatSpec[FormattableT] | None,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` with an optional response format."""
         ...
@@ -537,10 +504,7 @@ class Model:
         *,
         ctx: Context[DepsT],
         tools: AsyncContextTools[DepsT] | None = None,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` by asynchronously calling this model's LLM provider.
 
@@ -596,10 +560,7 @@ class Model:
         *,
         ctx: Context[DepsT],
         tools: ContextTools[DepsT] | None = None,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None,
+        format: FormatSpec[FormattableT] | None,
     ) -> (
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
     ):
@@ -612,10 +573,7 @@ class Model:
         *,
         ctx: Context[DepsT],
         tools: ContextTools[DepsT] | None = None,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
     ) -> (
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
     ):
@@ -673,10 +631,7 @@ class Model:
         *,
         ctx: Context[DepsT],
         tools: AsyncContextTools[DepsT] | None = None,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None,
+        format: FormatSpec[FormattableT] | None,
     ) -> (
         AsyncContextStreamResponse[DepsT, None]
         | AsyncContextStreamResponse[DepsT, FormattableT]
@@ -690,10 +645,7 @@ class Model:
         *,
         ctx: Context[DepsT],
         tools: AsyncContextTools[DepsT] | None = None,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
     ) -> (
         AsyncContextStreamResponse[DepsT, None]
         | AsyncContextStreamResponse[DepsT, FormattableT]
