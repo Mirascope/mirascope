@@ -2,6 +2,7 @@
 title: "LLM Agents - What They Are, Tools, and Examples"
 description: "Learn what LLM agents are, how they work, and the tools behind them. Explore real-world examples and see how to build an LLM agent for your projects."
 date: "2025-02-04"
+updatedAt: "2026-01-28"
 readTime: "21 min read"
 author: "William Bakst"
 ---
@@ -37,7 +38,7 @@ In this article, we explain how LLM agents work, their core components and use c
 
 ## Components of an LLM Agent
 
-[LLM agents](/docs/v1/learn/agents) are built around four key parts that work together to enable reasoning, planning, and execution.
+[LLM agents](/docs/learn/agents) are built around four key parts that work together to enable reasoning, planning, and execution.
 
 These components include:
 
@@ -62,7 +63,7 @@ Planning refers to the process where the agent figures out the steps needed to c
 
 For instance, if the agent is built for customer support, it might plan by first identifying the user’s question, then retrieving the necessary information, and finally generating a helpful response.
 
-Popular techniques like [Chain-of-thought (CoT)](/docs/v1/guides/prompt-engineering/text-based/chain-of-thought/) and Tree-of-thought (ToT) prompting or decision trees can help structure this process - enabling the agent to think through problems step by step, especially when dealing with complex multi-step tasks.  
+Popular techniques like [Chain-of-thought (CoT)](/docs/learn/llm) and Tree-of-thought (ToT) prompting or decision trees can help structure this process - enabling the agent to think through problems step by step, especially when dealing with complex multi-step tasks.  
 
 It can also use feedback mechanisms allowing the agent to iteratively refine its execution plan based on past actions and observations.
 
@@ -109,7 +110,7 @@ Below are some of the most notable examples of [frameworks](/blog/llm-frameworks
 
 ### Mirascope
 
-Mirascope lets you build autonomous or semi-autonomous systems that handle tasks, make decisions, and interact with users to integrate with tools, manage state, and even bring [humans into the loop](/docs/v1/learn/agents/) when needed.
+Mirascope lets you build autonomous or semi-autonomous systems that handle tasks, make decisions, and interact with users to integrate with tools, manage state, and even bring [humans into the loop](/docs/learn/agents) when needed.
 
 Mirascope provides several key benefits, such as:
 
@@ -127,11 +128,12 @@ Instead of manually coding JSON yourself when defining tools, Mirascope does thi
 
 For example, tools can be defined directly from a Python docstring as shown below, where the function `get_city_population` is converted into a tool with arguments defined in the docstring.
 
-We designate that function as a tool by listing it as a parameter in the `openai.call` decorator:
+We designate that function as a tool by listing it as a parameter in the `@llm.call` decorator:
 
 ```python
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
+@llm.tool
 def get_city_population(city: str) -> str:
     """Get the current population for `city` and prints it.
 
@@ -145,85 +147,46 @@ def get_city_population(city: str) -> str:
     else:
         return f"I'm sorry, I don't have the population data for {city}."
 
-@openai.call("gpt-4o-mini", tools=[get_city_population])
-@prompt_template("What's the population of {city}")
-def city_population(city: str): ...
+@llm.call("openai/gpt-4o-mini", tools=[get_city_population])
+def city_population(city: str):
+    return f"What's the population of {city}"
 
 response = city_population("New York City")
-if tool := response.tool:
-    print(tool.call())
+if response.tool_calls:
+    tool_results = response.execute_tools()
+    print(tool_results[0])
 
-# > The current population of New York City is approximately 8.8 million. 
-
+# > The current population of New York City is approximately 8.8 million.
 ```
 
-If the function doesn’t contain a docstring or can’t be changed for some reason (like if it’s third-party code) then you can use Mirascope’s [`BaseTool` class](/docs/v1/learn/tools/#__tabbed_2_1) to define the tool.
-
-Below, we specify the `GetCityPopulation` class to be a tool with a defined argument:
-
-```python
-from mirascope.core import BaseTool, openai, prompt_template
-from pydantic import Field
-
-def get_city_population(city: str) -> str:
-    """Fetch the current population of a city."""
-    if city == "New York City":
-        return f"The current population of {city} is approximately 8.8 million."
-    elif city == "Los Angeles":
-        return f"The current population of {city} is approximately 4 million."
-    else:
-        return f"I'm sorry, I don't have the population data for {city}."
-
-class GetCityPopulation(BaseTool):
-    """Get the current population for a given city."""
-
-    city: str = Field(
-        ...,
-        description="The name of the city, e.g., New York City.",
-    )
-
-    def call(self):
-        return get_city_population(self.city)
-
-@openai.call("gpt-4o", tools=[GetCityPopulation])
-@prompt_template("What's the population of {city}")
-def city_population(city: str): ...
-
-response = city_population("New York City")
-if tool := response.tool:
-    print(tool.call())
-
-# > The current population of New York City is approximately 8.8 million. 
-
-```
-
-Tool definitions in both examples are automatically generated at runtime.
+Tool definitions are automatically generated at runtime from function signatures and docstrings.
 
 Mirascope also embraces developer best practices like [colocation](/blog/engineers-should-handle-prompting-llms/), where function calls and their parameters - such as prompts, model parameters, and other configuration details are kept together within a single workflow.
 
-You can see this in the code example above, where the `@openai.call` decorator encapsulates parameters such as the model name (`"gpt-4o-mini"`) and tool definitions (`tools=[GetCityPopulation]`) within the context of the `city_population` call.
+You can see this in the code example above, where the `@llm.call` decorator encapsulates parameters such as the model name (`"openai/gpt-4o-mini"`) and tool definitions (`tools=[get_city_population]`) within the context of the `city_population` call.
 
-Our prompt management tool [Lilypad](/docs/lilypad) automatically versions and traces every LLM function call to ensure code readability and maintainability and to facilitate testing.
+Our prompt management tool [Mirascope Cloud](/docs/learn/ops) automatically versions and traces every LLM function call to ensure code readability and maintainability and to facilitate testing.
 
-For instance, you can version an LLM call simply by adding the `trace` decorator to ensure that any call the function makes is traced against the version:
+For instance, you can version an LLM call simply by adding the `@ops.version` decorator to ensure that any call the function makes is traced against the version:
 
-```python
-import lilypad
+```python-snippet-skip
+from mirascope import ops
 from openai import OpenAI
- 
-lilypad.configure(auto_llm=True)  # [!code highlight]
+
+ops.configure()  # [!code highlight]
+ops.instrument_llm()  # [!code highlight]
 client = OpenAI()
- 
- 
-@lilypad.trace(versioning="automatic")  # [!code highlight]
+
+
+@ops.version  # [!code highlight]
 def answer_question(question: str) -> str:
-d    completion = client.chat.completions.create(
+    completion = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": question}],
     )
     return str(completion.choices[0].message.content)
- 
- 
+
+
 answer = answer_question("What's the population of New York?")
 print(answer)
 ```
@@ -232,14 +195,14 @@ In the code above, `answer_question` will be versioned and traced when called, a
 
 #### Validating LLM Responses
 
-Mirascope makes defining, structuring, and validating outputs easier with its `response_model`, an extension of Pydantic’s `BaseModel`.
+Mirascope makes defining, structuring, and validating outputs easier with its `format` parameter, an extension of Pydantic's `BaseModel`.
 
-Response models handle output validation outside of runtime and add type safety under the hood, allowing you to catch errors earlier in development.
+Structured output handles output validation outside of runtime and adds type safety under the hood, allowing you to catch errors earlier in development.
 
-In this example, we define the expected structure of the language model’s response (`Movie`) and add this as a response model in the LLM call to enforce its structure in order to more easily validate the model’s [output](/blog/langchain-structured-output/):
+In this example, we define the expected structure of the language model's response (`Movie`) and add this as a format in the LLM call to enforce its structure in order to more easily validate the model's [output](/blog/langchain-structured-output/):
 
 ```python
-from mirascope.core import openai
+from mirascope import llm
 from pydantic import BaseModel
 
 class Movie(BaseModel):
@@ -248,15 +211,15 @@ class Movie(BaseModel):
     title: str
     director: str
 
-@openai.call("gpt-4o-mini", response_model=Movie)
-def extract_movie(text: str) -> str:
+@llm.call("openai/gpt-4o-mini", format=Movie)
+def extract_movie(text: str):
     return f"Extract {text}"
 
-movie = extract_movie("Inception directed by Christopher Nolan")
+response = extract_movie("Inception directed by Christopher Nolan")
+movie = response.parse()
 print(movie)
 
-# Output: title='Inception' director='Christopher Nolan' 
-
+# Output: title='Inception' director='Christopher Nolan'
 ```
 
 Mirascope’s output validation is also shown directly in your IDE. Below, a response from an OpenAI call is typed as an `OpenAIStream` object.
@@ -353,7 +316,7 @@ A typical [LLM pipeline](/blog/llm-pipeline/) uses retrieved data or documents t
 
 That means if our agent (here a chatbot) believes it already has enough context or can handle a request in another way, it might skip retrieval entirely.
 
-You can find more details about the code below in our [tutorial library](/docs/v1/guides/agents/local-chat-with-codebase/).
+You can find more details about the code below in our [tutorial library](/docs/learn/agents).
 
 **Prerequisites**:
 
@@ -378,7 +341,7 @@ Here, we install:
 
 Below, we configure the agent's language understanding and memory capabilities (via embeddings) to enable it to process queries and retain a memory of prior interactions..
 
-```python
+```python-snippet-skip
 from llama_index.core import (
     Settings,
     SimpleDirectoryReader,
@@ -408,7 +371,7 @@ In this step, we use `SimpleDirectoryReader` to load our onboarding docs (e.g., 
 
 While this example uses a `SimpleVectorStore`, you can easily swap it out for a cloud vector store like Pinecone.
 
-```python
+```python-snippet-skip
 from llama_index.core.storage import StorageContext
 from llama_index.core.vector_stores import SimpleVectorStore
 
@@ -435,7 +398,7 @@ index.storage_context.persist()
 
 Once the embeddings and index are persisted (in the previous step), we can load them back into memory to handle queries without reindexing every time, which is useful especially when working with large datasets:
 
-```python
+```python-snippet-skip
 from llama_index.core import load_index_from_storage
 
 # Recreate a storage context pointing to the persisted index
@@ -454,7 +417,7 @@ After reloading the index and embeddings, we create `query_engine` to process na
 
 To improve the quality of retrieved documents, we add a reranking step. This is still part of the RAG workflow, but it further supports the agent’s decision-making by ensuring it gets the best options to choose from:
 
-```python
+```python-snippet-skip
 import re
 
 from llama_index.core.base.response.schema import Response
@@ -501,7 +464,7 @@ def custom_parse_choice_select_answer_fn(
 
 def get_documents(query: str) -> str:
     """
-    The "get_documents" tool retrieves the most relevant pieces of 
+    The "get_documents" tool retrieves the most relevant pieces of
     onboarding docs based on the user's query, optionally reranking them.
     """
     query_engine = loaded_index.as_query_engine(
@@ -519,7 +482,7 @@ def get_documents(query: str) -> str:
     response = query_engine.query(query)
     if isinstance(response, Response):
         return response.response or "No documents found."
-    return "No documents found." 
+    return "No documents found."
 ```
 
 Above, we import the necessary modules for:
@@ -535,38 +498,36 @@ The top-ranked documents are summarized and returned to the user. If no document
 
 Finally, we define a chatbot class called **OnboardingBot** that uses the local LLM and `get_documents` to provide context-based answers about onboarding policies:
 
-1. The `_call()` method composes a system/user prompt that includes the context retrieved using `get_documents` as a computed field, which ensures that calling this method will retrieve the context based on the question internally to the function before calling the LLM.  
-2. The `run()` method starts an interactive loop, letting a user ask questions about our company’s onboarding procedures.
+1. The `_call()` method composes a system/user prompt that includes the context retrieved using `get_documents`.
+2. The `run()` method starts an interactive loop, letting a user ask questions about our company's onboarding procedures.
 
-```python
-from mirascope.core import openai
-from openai import OpenAI
+```python-snippet-skip
+from mirascope import llm
+from pydantic import BaseModel
 
-client = OpenAI(
+# Register ollama provider for local LLM
+llm.register_provider(
+    name="ollama",
     base_url="http://localhost:11434/v1",
     api_key="ollama",
 )
 
 class OnboardingBot(BaseModel):
-    @openai.call("llama3.1", client=client)
-    @prompt_template(
-        """
-        SYSTEM:
-        You are a helpful AI that is an expert at answering questions 
-        about the company's onboarding docs. Here is relevant context.
-
-        Context:
-        {context}
-
-        USER:
-        {question}
-
-        Please provide a helpful, concise answer.
-        """
-    )
-    def _call(self, question: str) -> openai.OpenAIDynamicConfig:
+    def _call(self, question: str):
         context = get_documents(question)
-        return {"computed_fields": {"context": context}}
+
+        @llm.call("ollama/llama3.1")
+        def call_llm():
+            return [
+                llm.messages.system(f"""You are a helpful AI that is an expert at answering questions
+about the company's onboarding docs. Here is relevant context.
+
+Context:
+{context}"""),
+                llm.messages.user(f"{question}\n\nPlease provide a helpful, concise answer."),
+            ]
+
+        return call_llm()
 
     def run(self):
         while True:
@@ -574,8 +535,8 @@ class OnboardingBot(BaseModel):
             if question.strip().lower() in ["exit", "quit"]:
                 print("Goodbye!")
                 break
-            answer = self._call(context, question)
-            print(f"(Assistant): {answer.content}")
+            answer = self._call(question)
+            print(f"(Assistant): {answer.text()}")
 
 # Start the chatbot
 
@@ -604,4 +565,4 @@ Mirascope’s modular and Python-first design simplifies the process of building
 
 It integrates with your existing projects and lets you enhance your applications by leveraging other libraries' functionality as needed.
 
-Want to learn more? You can find Mirascope code samples both on our [documentation site](/docs/mirascope) and on our [GitHub page](https://github.com/mirascope/mirascope).
+Want to learn more? You can find Mirascope code samples both on our [documentation site](/docs) and on our [GitHub page](https://github.com/mirascope/mirascope).
