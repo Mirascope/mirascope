@@ -150,6 +150,7 @@ target-version = "py310"
     "B905",  # ignore zip() without strict parameter
     "PL",    # ignore pylint
     "RUF",   # ignore ruff rules
+    "ANN",   # ignore missing type annotations for blog examples
 ]
 
 [tool.ruff.lint]
