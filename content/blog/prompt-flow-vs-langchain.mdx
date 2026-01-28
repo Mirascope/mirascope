@@ -2,7 +2,7 @@
 title: "Comparing Prompt Flow vs LangChain vs Mirascope"
 description: "We do a head-to-head comparison of Prompt Flow vs LangChain, along with our own modular LLM development toolkit, Mirascope."
 date: "2024-05-03"
-updatedAt: "2026-01-27"
+updatedAt: "2026-01-28"
 readTime: "17 min read"
 author: "William Bakst"
 ---
@@ -52,7 +52,7 @@ It’s also [characterized as an interface](https://python.langchain.com/docs/co
 
 Each Runnable in a chain accepts input, performs an action, and passes its output to the next Runnable in the chain. Understood as a whole, runnables facilitate the orchestration and execution of tasks. The code below illustrates this, showing an example of [`RunnablePassthrough()`](https://python.langchain.com/docs/how_to/passthrough/) (which allows you to pass inputs unchanged):
 
-```python
+```python-snippet-skip
 from langchain_community.vectorstores import FAISS
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
@@ -113,12 +113,12 @@ from mirascope import llm
 
 
 @llm.call("openai/gpt-4o-mini")
-def select_guide(region_type: str):
+def select_guide(region_type: str) -> str:
     return f"Name a travel guide who is very knowledgeable about {region_type} regions"
 
 
 @llm.call("openai/gpt-4o-mini")
-def recommend_destination(region_type: str, feature: str):
+def recommend_destination(region_type: str, feature: str) -> list[llm.Message]:
     guide = select_guide(feature)
     return [
         llm.messages.system(
@@ -144,7 +144,7 @@ In LangChain, you’re free to make LLM calls wherever convenient, and so calls 
 
 LangChain also allows you to [bind arguments](https://python.langchain.com/docs/how_to/binding/) (such as tools and model ID) to the call at runtime to dynamically specify call parameters. For example:
 
-```python
+```python-snippet-skip
 tools = [
     {
         "type": "function",
@@ -171,7 +171,7 @@ model.invoke("What's the stock price for AAPL, MSFT, and GOOGL?")
 
 This is useful for dynamically specifying or changing the language model as the code is being run, and is beneficial especially in cases where you might not know up front which model will be used, for example.You can also use `.bind()` to set a specific runtime argument like a stopping condition or directive. This can be helpful for developing an LLM-driven tech support bot, for instance:
 
-```python
+```python-snippet-skip
 runnable = (
     {"support_query": RunnablePassthrough()}  # Passes through customer support queries unchanged.
 
@@ -250,7 +250,7 @@ from mirascope import llm
 
 
 @llm.call("openai/gpt-4o-mini", temperature=0.8)
-def recommend_book(genre: str):
+def recommend_book(genre: str) -> str:
     return f"Recommend me a {genre} book."
 
 
@@ -298,7 +298,7 @@ ops.instrument_llm()  # [!code highlight]
 
 @ops.version
 @llm.call("openai/gpt-4o-mini")
-def recommend_book(genre: str):
+def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 
 
@@ -402,7 +402,7 @@ class Movie(BaseModel):
 
 
 @llm.call("openai/gpt-4o-mini", format=Movie)
-def recommend_movie():
+def recommend_movie() -> str:
     return "Recommend a movie"
 
 
