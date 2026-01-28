@@ -2,6 +2,7 @@
 title: "Context Engineering Platform: A Guide to Tools, Features, and Benefits"
 description: "Learn what a context engineering platform is, the features that matter, and the top tools helping teams build reliable and scalable LLM applications."
 date: "2025-09-27"
+updatedAt: "2026-01-28"
 readTime: "6 min read"
 author: "William Bakst"
 ---
@@ -14,11 +15,11 @@ LLMs are also increasingly driving stateful, tool-using agents and multi-turn as
 
 Yet many observability tools still version and reproduce only the prompt itself, along with its instructions, placeholders, and model settings. They don't track other important elements influencing an LLM's output, like input arguments, helper functions, pre-processing logic, etc.
 
-That's why we built [Lilypad](/docs/lilypad), a context engineering framework that versions, traces, and evaluates everything influencing an LLM’s output, not just the prompt, allowing you to reproduce, compare, and improve every input, parameter, and piece of context systematically, rather than through trial and error.
+That's why we built [Mirascope Cloud](/docs/learn/ops), a context engineering framework that versions, traces, and evaluates everything influencing an LLM's output, not just the prompt, allowing you to reproduce, compare, and improve every input, parameter, and piece of context systematically, rather than through trial and error.
 
 Below, we describe context and prompt engineering side-by-side and discuss what to look for in a context engineering platform. We then present the following five [LLM tools](/blog/llm-tools) for managing and orchestrating context:
 
-1. [Lilypad](#1-lilypad)
+1. [Mirascope Cloud](#1-mirascope-cloud)
 2. [LangSmith](#2-langsmith)
 3. [LlamaIndex](#3-llamaindex)
 4. [PromptLayer](#4-promptlayer)
@@ -71,118 +72,117 @@ It's also important that the platform offer strong evaluation systems to measure
 
 ## Five Context Engineering Platforms for Teams Building Agentic Workflows
 
-### 1. Lilypad
+### 1. Mirascope Cloud
 
-![Lilypad Landing Page](/assets/blog/context-engineering-platform/lilypad-landing-page.webp)
+![Mirascope Cloud Landing Page](/assets/blog/context-engineering-platform/lilypad-landing-page.webp)
 
-[Lilypad](/docs/lilypad) is an open source context engineering framework that treats LLM interactions like an optimization problem, recognizing that reliable outputs depend on the entire context, not just the prompt.
+[Mirascope Cloud](/docs/learn/ops) is an open source context engineering framework that treats LLM interactions like an optimization problem, recognizing that reliable outputs depend on the entire context, not just the prompt.
 
-Consistent with this approach, the platform automatically versions not only the prompt but also other key factors, including any code, parameters, helper functions, preprocessing logic, and anything else that could influence the model’s behavior, ensuring that every output can be traced, reproduced, and compared across versions.
+Consistent with this approach, the platform automatically versions not only the prompt but also other key factors, including any code, parameters, helper functions, preprocessing logic, and anything else that could influence the model's behavior, ensuring that every output can be traced, reproduced, and compared across versions.
 
-Lilypad also traces every LLM call, capturing inputs, outputs, costs, and latency to give developers complete visibility in analyzing and debugging model outputs.
+Mirascope Cloud also traces every LLM call, capturing inputs, outputs, costs, and latency to give developers complete visibility in analyzing and debugging model outputs.
 
-As a lightweight open source tool, Lilypad integrates with existing workflows and libraries (like LangChain, Mirascope, or direct provider SDKs), making it framework-agnostic. It can also be self-hosted.
+As a lightweight open source tool, Mirascope Cloud integrates with existing workflows and libraries (like LangChain, Mirascope, or direct provider SDKs), making it framework-agnostic. It can also be self-hosted.
 
-Lilypad supports popular models like OpenAI, Google, AWS Bedrock, Anthropic, Azure, and many others.
+Mirascope Cloud supports popular models like OpenAI, Google, AWS Bedrock, Anthropic, Azure, and many others.
 
-Below, we highlight how Lilypad helps you manage context in building LLM applications.
+Below, we highlight how Mirascope Cloud helps you manage context in building LLM applications.
 
 #### Structuring and Managing Context
 
-To ensure consistency across iterations, Lilypad encourages developers to organize their code and prompts within Python functions that encapsulate LLM calls. 
+To ensure consistency across iterations, Mirascope Cloud encourages developers to organize their code and prompts within Python functions that encapsulate LLM calls.
 
 In this way, every call is treated as a complete software artifact since all elements relevant to a particular call, like user queries, chat history, prompts, model settings, etc., are contained within one versioned function, ensuring each interaction is consistent and reproducible.
 
-For example, below we define a function `answer_question` and decorate it with `@lilypad.trace(versioning="automatic")` to set up tracing with every run, and automatically version everything within the function’s closure whenever a change is made:
+For example, below we define a function `answer_question` and decorate it with `@ops.version` to set up tracing with every run, and automatically version everything within the function's closure whenever a change is made:
 
 ```python
-import lilypad
-from mirascope import llm
+from mirascope import llm, ops
 
-lilypad.configure(auto_llm=True)  # [!code highlight]
+ops.configure()  # [!code highlight]
+ops.instrument_llm()  # [!code highlight]
 
-@lilypad.trace(versioning="automatic")  # [!code highlight]
-@llm.call(provider="openai", model="gpt-4o-mini")
+@ops.version  # [!code highlight]
+@llm.call("openai/gpt-4o-mini")
 def answer_question(question: str) -> str:
     return f"Answer this question in one word: {question}"
 
 response = answer_question("What is the capital of France?")
-print(response.content)
+print(response.text())
 # > Paris
-
 ```
 
 This provides a snapshot of all that directly influences an LLM call's outcome.
 
-Both Lilypad and Mirascope (for which Lilypad gives first-class support) provide out-of-the box pythonic abstractions for managing the context fed into the prompt.
+Both Mirascope Cloud and Mirascope (for which Mirascope Cloud gives first-class support) provide out-of-the box pythonic abstractions for managing the context fed into the prompt.
 
-For example, in the code above, [Mirascope’s `@llm.call` decorator](/docs/v1/learn/calls) turns the prompt function into a call with minimal boilerplate code.
+For example, in the code above, [Mirascope's `@llm.call` decorator](/docs/learn/llm/calls) turns the prompt function into a call with minimal boilerplate code.
 
-`@llm.call` provides a unified interface for working with model providers like OpenAI, Grok, Google (Gemini/Vertex), Anthropic, and many others, and you can change the provider by changing the values for model and provider in the decorator’s arguments.
+`@llm.call` provides a unified interface for working with model providers like OpenAI, Grok, Google (Gemini/Vertex), Anthropic, and many others, and you can change the provider by changing the model string (e.g., `"anthropic/claude-sonnet-4-20250514"`).
 
-This decorator also provides an interface for [tool calling](/docs/v1/learn/tools), [structured outputs and schema](/docs/v1/learn/output_parsers), Pydantic-based input validation, [prompt chaining](/blog/prompt-chaining), type hints (integrated into your IDE), and others.
+This decorator also provides an interface for [tool calling](/docs/learn/llm/tools), [structured outputs](/docs/learn/llm/structured-output), Pydantic-based input validation, [prompt chaining](/blog/prompt-chaining), type hints (integrated into your IDE), and others.
 
-You can work with prompts and their associated code within the Lilypad UI, a no-code environment that lets non-technical users test, edit, and evaluate prompts while keeping them tied to the exact versioned code that runs in production.
+You can work with prompts and their associated code within the Mirascope Cloud UI, a no-code environment that lets non-technical users test, edit, and evaluate prompts while keeping them tied to the exact versioned code that runs in production.
 
-![Lilypad Trace GenAI Data](/assets/blog/context-engineering-platform/lilypad-trace-genai-data.webp)
+![Mirascope Cloud Trace GenAI Data](/assets/blog/context-engineering-platform/lilypad-trace-genai-data.webp)
 
-Lilyad uses the [OpenTelemetry Gen AI spec](https://opentelemetry.io/) to instrument calls and their surrounding code, capturing metadata like costs, token usage, latency, messages, warnings, and others.
+Mirascope Cloud uses the [OpenTelemetry Gen AI spec](https://opentelemetry.io/) to instrument calls and their surrounding code, capturing metadata like costs, token usage, latency, messages, warnings, and others.
 
-Lilypad traces LLM calls not only at the level of the API to tell you what the model call did as [LLM call spans](/docs/lilypad/observability/spans), but also at the function level, capturing how your code shaped the call through inputs, logic, and outputs.
+Mirascope Cloud traces LLM calls not only at the level of the API to tell you what the model call did as LLM call spans, but also at the function level, capturing how your code shaped the call through inputs, logic, and outputs.
 
-The Lilypad UI also shows the output of every call, as well as any changes made to the prompt or its context:
+The Mirascope Cloud UI also shows the output of every call, as well as any changes made to the prompt or its context:
 
-![Lilypad Trace](/assets/blog/context-engineering-platform/lilypad-trace.webp)
+![Mirascope Cloud Trace](/assets/blog/context-engineering-platform/lilypad-trace.webp)
 
 The UI also lets you easily compare the outputs of different versions:
 
-![Lilypad Click Compare](/assets/blog/context-engineering-platform/lilypad-click-compare.webp)
+![Mirascope Cloud Click Compare](/assets/blog/context-engineering-platform/lilypad-click-compare.webp)
 
 You can select another version and view the differences side-by-side:
 
-![Lilypad Compare Versions](/assets/blog/context-engineering-platform/lilypad-compare-versions.webp)
+![Mirascope Cloud Compare Versions](/assets/blog/context-engineering-platform/lilypad-compare-versions.webp)
 
-Alongside each call, the UI also shows detailed metadata, like latency, cost, and inputs,  giving you full visibility into what happened and what influenced the result.
+Alongside each call, the UI also shows detailed metadata, like latency, cost, and inputs, giving you full visibility into what happened and what influenced the result.
 
 You can also work with different versions downstream using commands like .version, for example:
 
-```python
+```python-snippet-skip
 response = answer_question.version(4)("What's the capital of France?")
 ```
 
-This gives you access to much of the same versioning functionality as the Lilypad UI, such as A/B testing for different subsets of users.
+This gives you access to much of the same versioning functionality as the Mirascope Cloud UI, such as A/B testing for different subsets of users.
 
 #### Editing and Refining Prompts
 
-Lilypad’s playground is a [prompt management tool](/blog/prompt-management-tool) allowing you to create, modify, test, and evaluate prompts without needing to alter the underlying code.
+Mirascope Cloud's playground is a [prompt management tool](/blog/prompt-management-tool) allowing you to create, modify, test, and evaluate prompts without needing to alter the underlying code.
 
-It features Markdown-supported prompt templates with type-safe input variables to ensure that inputs provided in the playground match the associated function's schema (here we’re referring to the Python functions we described in the last section, which also contain the prompt) preventing injection bugs, missing parameters, or incorrect input formats.
+It features Markdown-supported prompt templates with type-safe input variables to ensure that inputs provided in the playground match the associated function's schema (here we're referring to the Python functions we described in the last section, which also contain the prompt) preventing injection bugs, missing parameters, or incorrect input formats.
 
-![Lilypad Playground](/assets/blog/context-engineering-platform/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/context-engineering-platform/lilypad-playground.webp)
 
 Prompt templates are mapped to Python function signatures for strong typing and reproducibility, and allow users to define call settings like the LLM provider, model, and temperature.
 
-Every time a user runs an [LLM prompt](/blog/llm-prompt) in the UI, Lilypad automatically versions and traces the prompt against the underlying function.
+Every time a user runs an [LLM prompt](/blog/llm-prompt) in the UI, Mirascope Cloud automatically versions and traces the prompt against the underlying function.
 
 This lets SMEs run prompts and practice [prompt engineering best practices](/blog/prompt-engineering-best-practices) without needing the involvement of developers, who can access prompts and context downstream via methods like `.version` that return type-safe signatures matching the expected arguments.
 
-Other systems treat prompts as standalone assets managed separately from the application code, which developers then have to manually pull downstream to interact with. 
+Other systems treat prompts as standalone assets managed separately from the application code, which developers then have to manually pull downstream to interact with.
 
-Lilypad takes a different approach by versioning prompts as part of the codebase itself, ensuring that what runs in the playground is the same type-safe code developers run downstream in production, eliminating the brittleness of separating prompts from the rest of the system.
+Mirascope Cloud takes a different approach by versioning prompts as part of the codebase itself, ensuring that what runs in the playground is the same type-safe code developers run downstream in production, eliminating the brittleness of separating prompts from the rest of the system.
 
 #### Evaluating the Quality of Context-Driven Outputs
 
 Over time, running code with automatic [prompt versioning](/blog/prompt-versioning) and tracing builds up real-world datasets that serve as living benchmarks for testing changes, refining prompts, and validating improvements.
 
-To make use of these datasets, Lilypad provides lightweight evaluation tools that turn raw runs into actionable feedback.
+To make use of these datasets, Mirascope Cloud provides lightweight evaluation tools that turn raw runs into actionable feedback.
 
 These allow users to evaluate runs using a pass or fail labeling system, which provides a clearer, faster, more consistent, and more real-world evaluation of outputs than a granular scoring system that often adds noise without improving insight.
 
 For example, instead of asking evaluators to score a response on a scale of 1 to 5 for relevance or style, which often leads to inconsistent judgments, they can simply decide whether the output is acceptable or not (i.e., Pass or Fail).
 
-![Lilypad Annotation Queue](/assets/blog/context-engineering-platform/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/context-engineering-platform/lilypad-annotation-queue.webp)
 
-Lilypad also offers features allowing teams to collaborate on evaluations and discuss results, as well as to assign tasks to other users.
+Mirascope Cloud also offers features allowing teams to collaborate on evaluations and discuss results, as well as to assign tasks to other users.
 
 As for building datasets, we encourage manual labeling of outputs, especially at the beginning of a project, since human-annotated feedback contributes to high-quality datasets.
 
@@ -190,7 +190,7 @@ The ultimate goal is to transition to semi-automated evaluations using [LLM-as-a
 
 This shifts the majority of work for humans from labeling to verification, speeding up the process while keeping humans in the loop for final accuracy verification.
 
-You can [sign up for Lilypad](https://lilypad.mirascope.com/) using your GitHub account and get started with tracing and versioning your LLM calls with only a few lines of code
+You can [sign up for Mirascope Cloud](https://cloud.mirascope.com/) using your GitHub account and get started with tracing and versioning your LLM calls with only a few lines of code.
 
 ### 2. LangSmith
 
@@ -246,6 +246,6 @@ Key features of LangChain include:
 
 ## Bring Context Engineering Into Your Workflow
 
-Lilypad helps you version, trace, and evaluate every factor that shapes an LLM’s output, allowing you to reproduce results, debug faster, and ensure your applications behave reliably as they grow in complexity.
+Mirascope Cloud helps you version, trace, and evaluate every factor that shapes an LLM's output, allowing you to reproduce results, debug faster, and ensure your applications behave reliably as they grow in complexity.
 
-Want to learn more? Check out Lilypad code samples on our [documentation site](/docs/lilypad) and [GitHub](https://github.com/mirascope/lilypad). Lilypad offers first-class support for [Mirascope](/docs/mirascope), our lightweight toolkit for building AI agents.
+Want to learn more? Check out Mirascope Cloud code samples on our [documentation site](/docs/learn/ops) and [GitHub](https://github.com/mirascope/mirascope). Mirascope Cloud offers first-class support for [Mirascope](/docs), our lightweight toolkit for building AI agents.
