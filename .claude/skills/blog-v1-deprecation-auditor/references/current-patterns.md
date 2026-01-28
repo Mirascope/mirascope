@@ -176,6 +176,21 @@ def recommend_book(genre: str):
     return f"Recommend a {genre} book."
 ```
 
+### Runtime Model Override
+
+**Current (correct) - use `llm.model()` context manager:**
+```python
+from mirascope import llm
+
+@llm.call("openai/gpt-4o-mini", temperature=0.8)
+def recommend_book(genre: str):
+    return f"Recommend me a {genre} book."
+
+# Override at runtime with a different model or parameters
+with llm.model("anthropic/claude-sonnet-4-20250514", temperature=0.5):
+    response = recommend_book("fantasy")  # Uses Claude with temperature=0.5
+```
+
 ### Custom Providers / Base URL
 
 **Current (correct) - use `llm.register_provider()`:**

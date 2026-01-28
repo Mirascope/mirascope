@@ -130,8 +130,8 @@ Iterate through **every issue** from the Phase 2 audit (code blocks, prose, link
    ```
 
 2. **If all issues resolved**, offer to mark the post complete:
-   > "All issues resolved! Add `v2_migration_completed` to frontmatter? (yes/no)"
-   - If yes: Add `v2_migration_completed: "YYYY-MM-DD"` (today's date) to frontmatter
+   > "All issues resolved! Add `updatedAt` to frontmatter? (yes/no)"
+   - If yes: Add `updatedAt: "YYYY-MM-DD"` (today's date) to frontmatter
 
 3. **Offer next steps**:
    > "Would you like to work on another post or exit?"
@@ -211,7 +211,7 @@ ops.instrument_llm()
 
 ## Completion Tracking
 
-### The `v2_migration_completed` Key
+### The `updatedAt` Key
 
 When a blog post has been fully migrated to v2 patterns, add this key to its frontmatter:
 
@@ -219,11 +219,11 @@ When a blog post has been fully migrated to v2 patterns, add this key to its fro
 ---
 title: "My Blog Post"
 date: "2024-03-15"
-v2_migration_completed: "2026-01-26"
+updatedAt: "2026-01-26"
 ---
 ```
 
-**Key name**: `v2_migration_completed`
+**Key name**: `updatedAt`
 
 **Value**: ISO date string when the migration was completed (e.g., `"2026-01-26"`)
 
