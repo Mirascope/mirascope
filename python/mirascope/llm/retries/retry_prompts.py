@@ -4,7 +4,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Generic, overload
 
-from ..formatting import Format, FormattableT
+from ..formatting import Format, FormattableT, OutputParser
 from ..messages import Message
 from ..models import Model
 from ..prompts import (
@@ -58,7 +58,9 @@ class RetryPrompt(Generic[P, FormattableT]):
         return self.wrapped_prompt.toolkit
 
     @property
-    def format(self) -> type[FormattableT] | Format[FormattableT] | None:
+    def format(
+        self,
+    ) -> type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT] | None:
         """The response format for the generated response."""
         return self.wrapped_prompt.format
 
@@ -111,7 +113,7 @@ class RetryPrompt(Generic[P, FormattableT]):
         retry_model = _ensure_retry_model(model, self.retry_config)
         messages = self.messages(*args, **kwargs)
         return retry_model.call(
-            messages=messages, tools=self.toolkit, format=self.format
+            content=messages, tools=self.toolkit, format=self.format
         )
 
 
@@ -136,7 +138,9 @@ class AsyncRetryPrompt(Generic[P, FormattableT]):
         return self.wrapped_prompt.toolkit
 
     @property
-    def format(self) -> type[FormattableT] | Format[FormattableT] | None:
+    def format(
+        self,
+    ) -> type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT] | None:
         """The response format for the generated response."""
         return self.wrapped_prompt.format
 
@@ -189,5 +193,5 @@ class AsyncRetryPrompt(Generic[P, FormattableT]):
         retry_model = _ensure_retry_model(model, self.retry_config)
         messages = await self.messages(*args, **kwargs)
         return await retry_model.call_async(
-            messages=messages, tools=self.toolkit, format=self.format
+            content=messages, tools=self.toolkit, format=self.format
         )

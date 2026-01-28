@@ -1,9 +1,9 @@
 """RetryModel wraps Model to add retry logic."""
 
 from collections.abc import Sequence
-from typing import overload
+from typing import cast, overload
 
-from ..formatting import Format, FormattableT
+from ..formatting import Format, FormattableT, OutputParser
 from ..messages import Message, UserContent
 from ..models import Model, Params
 from ..providers import ModelId
@@ -20,6 +20,7 @@ from .retry_responses import (
     AsyncRetryResponse,
     RetryResponse,
 )
+from .retry_utils import with_retry, with_retry_async
 
 
 class RetryModel:
@@ -63,8 +64,8 @@ class RetryModel:
     @overload
     def call(
         self,
-        *,
         content: UserContent | Sequence[Message],
+        *,
         tools: Tools | None = None,
         format: None = None,
     ) -> RetryResponse[None]: ...
@@ -72,8 +73,8 @@ class RetryModel:
     @overload
     def call(
         self,
-        *,
         content: UserContent | Sequence[Message],
+        *,
         tools: Tools | None = None,
         format: type[FormattableT] | Format[FormattableT],
     ) -> RetryResponse[FormattableT]: ...
@@ -81,18 +82,24 @@ class RetryModel:
     @overload
     def call(
         self,
-        *,
         content: UserContent | Sequence[Message],
+        *,
         tools: Tools | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None,
     ) -> RetryResponse[None] | RetryResponse[FormattableT]: ...
 
     def call(
         self,
-        *,
         content: UserContent | Sequence[Message],
+        *,
         tools: Tools | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
     ) -> RetryResponse[None] | RetryResponse[FormattableT]:
         """Generate a RetryResponse by calling this model's LLM provider.
 
@@ -103,16 +110,28 @@ class RetryModel:
 
         Returns:
             A RetryResponse object containing the LLM-generated content and retry metadata.
+
+        Raises:
+            Exception: The last exception encountered if all retry attempts fail.
         """
-        # TODO: Wire in retry implementation
-        response = self.wrapped_model.call(content=content, tools=tools, format=format)
-        return RetryResponse(response=response, retry_config=self.retry_config)  # pyright: ignore[reportArgumentType]
+        response, retry_state = with_retry(
+            lambda: self.wrapped_model.call(
+                content=content, tools=tools, format=format
+            ),
+            self.retry_config,
+        )
+        # The overloads ensure type safety; cast needed due to union in implementation
+        return RetryResponse(
+            response=cast("Response[FormattableT]", response),
+            retry_config=self.retry_config,
+            retry_state=retry_state,
+        )
 
     @overload
     async def call_async(
         self,
-        *,
         content: UserContent | Sequence[Message],
+        *,
         tools: AsyncTools | None = None,
         format: None = None,
     ) -> AsyncRetryResponse[None]: ...
@@ -120,8 +139,8 @@ class RetryModel:
     @overload
     async def call_async(
         self,
-        *,
         content: UserContent | Sequence[Message],
+        *,
         tools: AsyncTools | None = None,
         format: type[FormattableT] | Format[FormattableT],
     ) -> AsyncRetryResponse[FormattableT]: ...
@@ -129,18 +148,24 @@ class RetryModel:
     @overload
     async def call_async(
         self,
-        *,
         content: UserContent | Sequence[Message],
+        *,
         tools: AsyncTools | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None,
     ) -> AsyncRetryResponse[None] | AsyncRetryResponse[FormattableT]: ...
 
     async def call_async(
         self,
-        *,
         content: UserContent | Sequence[Message],
+        *,
         tools: AsyncTools | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
     ) -> AsyncRetryResponse[None] | AsyncRetryResponse[FormattableT]:
         """Generate an AsyncRetryResponse by asynchronously calling this model's LLM provider.
 
@@ -151,12 +176,22 @@ class RetryModel:
 
         Returns:
             An AsyncRetryResponse object containing the LLM-generated content and retry metadata.
+
+        Raises:
+            Exception: The last exception encountered if all retry attempts fail.
         """
-        # TODO: Wire in retry implementation
-        response = await self.wrapped_model.call_async(
-            content=content, tools=tools, format=format
+        response, retry_state = await with_retry_async(
+            lambda: self.wrapped_model.call_async(
+                content=content, tools=tools, format=format
+            ),
+            self.retry_config,
         )
-        return AsyncRetryResponse(response=response, retry_config=self.retry_config)  # pyright: ignore[reportArgumentType]
+        # The overloads ensure type safety; cast needed due to union in implementation
+        return AsyncRetryResponse(
+            response=cast("AsyncResponse[FormattableT]", response),
+            retry_config=self.retry_config,
+            retry_state=retry_state,
+        )
 
     # Resume methods
 
@@ -198,10 +233,20 @@ class RetryModel:
 
         Returns:
             A new RetryResponse containing the extended conversation.
+
+        Raises:
+            Exception: The last exception encountered if all retry attempts fail.
         """
-        # TODO: Wire in retry implementation
-        new_response = self.wrapped_model.resume(response=response, content=content)
-        return RetryResponse(response=new_response, retry_config=self.retry_config)  # pyright: ignore[reportArgumentType]
+        new_response, retry_state = with_retry(
+            lambda: self.wrapped_model.resume(response=response, content=content),
+            self.retry_config,
+        )
+        # The overloads ensure type safety; cast needed due to union in implementation
+        return RetryResponse(
+            response=cast("Response[FormattableT]", new_response),
+            retry_config=self.retry_config,
+            retry_state=retry_state,
+        )
 
     @overload
     async def resume_async(
@@ -241,9 +286,17 @@ class RetryModel:
 
         Returns:
             A new AsyncRetryResponse containing the extended conversation.
+
+        Raises:
+            Exception: The last exception encountered if all retry attempts fail.
         """
-        # TODO: Wire in retry implementation
-        new_response = await self.wrapped_model.resume_async(
-            response=response, content=content
+        new_response, retry_state = await with_retry_async(
+            lambda: self.wrapped_model.resume_async(response=response, content=content),
+            self.retry_config,
         )
-        return AsyncRetryResponse(response=new_response, retry_config=self.retry_config)  # pyright: ignore[reportArgumentType]
+        # The overloads ensure type safety; cast needed due to union in implementation
+        return AsyncRetryResponse(
+            response=cast("AsyncResponse[FormattableT]", new_response),
+            retry_config=self.retry_config,
+            retry_state=retry_state,
+        )
