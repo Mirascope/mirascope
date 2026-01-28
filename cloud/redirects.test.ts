@@ -5,6 +5,42 @@ const createRequest = (path: string): Request =>
   new Request(`https://mirascope.com${path}`);
 
 describe("handleRedirect", () => {
+  describe("trailing slash normalization", () => {
+    it("redirects trailing slash to non-trailing slash with 301", () => {
+      const response = handleRedirect(createRequest("/blog/llm-prompt/"));
+
+      expect(response).not.toBeNull();
+      expect(response!.status).toBe(301);
+      expect(response!.headers.get("Location")).toBe(
+        "https://mirascope.com/blog/llm-prompt",
+      );
+    });
+
+    it("preserves query string when removing trailing slash", () => {
+      const response = handleRedirect(
+        createRequest("/docs/v1/learn/?tab=python"),
+      );
+
+      expect(response).not.toBeNull();
+      expect(response!.status).toBe(301);
+      expect(response!.headers.get("Location")).toBe(
+        "https://mirascope.com/docs/v1/learn?tab=python",
+      );
+    });
+
+    it("does not redirect root path with trailing slash", () => {
+      const response = handleRedirect(createRequest("/"));
+
+      expect(response).toBeNull();
+    });
+
+    it("does not redirect paths without trailing slash", () => {
+      const response = handleRedirect(createRequest("/blog/some-post"));
+
+      expect(response).toBeNull();
+    });
+  });
+
   describe("simple redirects", () => {
     it("redirects /discord-invite to Discord URL with 301", () => {
       const response = handleRedirect(createRequest("/discord-invite"));

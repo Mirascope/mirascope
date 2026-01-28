@@ -155,6 +155,12 @@ export const handleRedirect = (request: Request): Response | null => {
   const url = new URL(request.url);
   const pathname = url.pathname;
 
+  // 0. Normalize trailing slashes (except root) with 301 for SEO
+  if (pathname !== "/" && pathname.endsWith("/")) {
+    const normalized = pathname.slice(0, -1) + url.search;
+    return Response.redirect(new URL(normalized, url.origin).toString(), 301);
+  }
+
   // 1. Check simple exact matches
   const simple = simpleRedirects[pathname];
   if (simple) {
