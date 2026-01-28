@@ -1,0 +1,86 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Is the first
+      fibonacci number to end with the digits 57 prime?"},{"role":"assistant","content":[{"type":"text","text":"**Thinking:**
+      Let me see... I have instantenously remembered this table of fibonacci\nnumbers
+      with their prime factorizations. That''s sure convenient! Let\nme see if it
+      has the answer:\n0 : 0\n1 : 1\n2 : 1\n3 : 2\n4 : 3\n5 : 5\n6 : 8 = 23\n7 : 13\n8
+      : 21 = 3 x 7\n9 : 34 = 2 x 17\n10 : 55 = 5 x 11\n11 : 89\n12 : 144 = 24 x 32\n13
+      : 233\n14 : 377 = 13 x 29\n15 : 610 = 2 x 5 x 61\n16 : 987 = 3 x 7 x 47\n17
+      : 1597\n18 : 2584 = 23 x 17 x 19\n19 : 4181 = 37 x 113\n20 : 6765 = 3 x 5 x
+      11 x 41\n21 : 10946 = 2 x 13 x 421\n22 : 17711 = 89 x 199\n23 : 28657\n\nThere
+      we have it! 28657 is the first fibonacci number ending in 57,\nand it is prime.
+      I''m supposed to answer with extreme concision, so I''ll\njust say ''Yes.''"},{"type":"text","text":"Yes.","cache_control":null}]},{"role":"user","content":[{"type":"text","text":"Please
+      tell me what the number is.","cache_control":{"type":"ephemeral"}}]}],"system":[{"type":"text","text":"Always
+      answer with extreme concision, giving the answer and no added context.","cache_control":{"type":"ephemeral"}}],"thinking":{"type":"enabled","budget_tokens":1024},"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1315'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.75.0
+      x-amz-date:
+      - 20260123T124239Z
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01A1a3HTHHTQ4nYfuv36sVQq","type":"message","role":"assistant","content":[{"type":"thinking","thinking":"The
+        user is asking me to tell them what the first Fibonacci number to end with
+        the digits 57 is. From my previous response, I stated it was 28657, and it''s
+        the 23rd Fibonacci number. The user wants me to provide the actual number.\n\nSince
+        I need to answer with extreme concision, I should just give the number.\n\n28657","signature":"EucDCkgICxABGAIqQDwIrWjZGXc80hQn7IrHkbTuJpVISMGCGUZFOvnYQyJ92qYC0EN6lxE7HoF3tBT1OCEdJkMDa1da11ofUmvB38oSDLuLMYy/H6O/MAchxBoMWX+xhshbK0bKI65ZIjBrNbgCLl5rYa7fCrs7j0ZZXlRY1lHQTuY/daEbDtzHPX5ASsVTi2H5J8ym5fhrufQqzAKNFJ35iEESPXloGx1owM3Ex00F3nBurzwW1TQubrhGL9H0b/z9Z6WQStwmBKo3aJtYn9UxpCyBjAT+P4qj3WpLFz0mI/5JnN1tH5WvAuLsOMixLvNPuMcff0ujcFc1FLW+m0/0lok8UwlIWLf7z1HkHmN+8HIIEEpsonocXcp9Bjuu69Zlg3OjEZk74dQisuDVyH4Y6JUauJVRVDFm1ihr/NlRgmtSmjHGhdApTS4tqFdkshl6Fs7WTTDFFePxVunENChQTOkOQEWUeL6B3GKwkhspQA/KUozPdz+eO97xeIF6MhK7AwVNc9lk84mjiYZaXknEEGn6dEX7PgkwpArHw1ycOk9DZfGknegf863e+7RyeEnzLq2zqPkXSwu/Mf68lkQ9zPUjCBnflzHBhy4ecUi6cvfkCF/uQ3yUyWryCKDCOLwAPLHZrVWDARgB"},{"type":"text","text":"28657"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":446,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":92}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1415'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 12:42:41 GMT
+      X-Amzn-Bedrock-Cache-Read-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Cache-Write-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '446'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '1217'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '92'
+      x-amzn-RequestId:
+      - 1ca6f0f7-de85-4e9f-86f9-6130adec5415
+    status:
+      code: 200
+      message: OK
+version: 1

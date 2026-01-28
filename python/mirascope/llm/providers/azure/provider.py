@@ -143,11 +143,12 @@ class AzureProvider(BaseProvider["OpenAI | AnthropicFoundry | Anthropic | None"]
             for provider_id, scopes in routing_scopes.items():
                 self._routing_scopes[provider_id].extend(scopes)
 
-        if (api_key or os.environ.get("AZURE_OPENAI_API_KEY")) and (
-            base_url or os.environ.get("AZURE_OPENAI_ENDPOINT")
-        ):
-            # Initialize the OpenAI client eagerly when credentials are available.
-            self._get_openai_provider()
+        if api_key is None and base_url is None:
+            env_api_key = os.environ.get("AZURE_OPENAI_API_KEY")
+            env_base_url = os.environ.get("AZURE_OPENAI_ENDPOINT")
+            if env_api_key and env_base_url:
+                # Initialize the OpenAI client eagerly only when relying on env.
+                self._get_openai_provider()
 
     def _get_openai_provider(self) -> AzureOpenAIRoutedProvider:
         if self._openai_provider is None:

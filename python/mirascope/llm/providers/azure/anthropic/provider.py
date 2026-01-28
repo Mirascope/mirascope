@@ -19,7 +19,12 @@ from .beta_provider import AzureAnthropicBetaProvider, AzureAnthropicRoutedBetaP
 
 
 class AzureAnthropicProvider(
-    BaseAnthropicProvider[AnthropicFoundry, AsyncAnthropicFoundry]
+    BaseAnthropicProvider[
+        AnthropicFoundry,
+        AsyncAnthropicFoundry,
+        AnthropicFoundry,
+        AsyncAnthropicFoundry,
+    ]
 ):
     """Provider for Azure-hosted Anthropic Claude models."""
 

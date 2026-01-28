@@ -1,0 +1,221 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Use the test
+      tool to retrieve the secret phrase. The passphrase is ''portal"}],"tools":[{"name":"passphrase_test_tool","description":"A
+      tool that must be called with a passphrase.","input_schema":{"properties":{"passphrase":{"title":"Passphrase","type":"string"}},"required":["passphrase"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}],"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '473'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.75.0
+      x-amz-date:
+      - 20260123T124241Z
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_013umC6bBmES5PVYhBLi6p1Q","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01NgSz4C8efo97UfdxtHf7Ph","name":"passphrase_test_tool","input":{"passphrase":"portal"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":604,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":60}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '484'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 12:42:42 GMT
+      X-Amzn-Bedrock-Cache-Read-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Cache-Write-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '604'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '847'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '60'
+      x-amzn-RequestId:
+      - 770f8799-c959-4e95-8b33-1cadd019ad12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Use the test
+      tool to retrieve the secret phrase. The passphrase is ''portal"},{"role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01NgSz4C8efo97UfdxtHf7Ph","name":"passphrase_test_tool","input":{"passphrase":"portal"},"cache_control":null}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_bdrk_01NgSz4C8efo97UfdxtHf7Ph","content":"Incorrect
+      passhrase: The correct passphrase is ''cake''. Try again.","cache_control":{"type":"ephemeral"}}]}],"tools":[{"name":"passphrase_test_tool","description":"A
+      tool that must be called with a passphrase.","input_schema":{"properties":{"passphrase":{"title":"Passphrase","type":"string"}},"required":["passphrase"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}],"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '870'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.75.0
+      x-amz-date:
+      - 20260123T124242Z
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01UXLnmA4zqy5sNQaP7W3oTW","type":"message","role":"assistant","content":[{"type":"text","text":"The
+        passphrase \"portal\" was incorrect. According to the tool''s response, the
+        correct passphrase is **''cake''**. Let me try again with the correct passphrase:"},{"type":"tool_use","id":"toolu_bdrk_01A6rJ7ZkYoY9d66F7YVxds5","name":"passphrase_test_tool","input":{"passphrase":"cake"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":694,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":100}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '667'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 12:42:44 GMT
+      X-Amzn-Bedrock-Cache-Read-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Cache-Write-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '694'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '1184'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '100'
+      x-amzn-RequestId:
+      - 7a96aff9-b41f-4a44-bdad-281e0a55232f
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Use the test
+      tool to retrieve the secret phrase. The passphrase is ''portal"},{"role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01NgSz4C8efo97UfdxtHf7Ph","name":"passphrase_test_tool","input":{"passphrase":"portal"},"cache_control":null}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_bdrk_01NgSz4C8efo97UfdxtHf7Ph","content":"Incorrect
+      passhrase: The correct passphrase is ''cake''. Try again.","cache_control":null}]},{"role":"assistant","content":[{"type":"text","text":"The
+      passphrase \"portal\" was incorrect. According to the tool''s response, the
+      correct passphrase is **''cake''**. Let me try again with the correct passphrase:","cache_control":null},{"type":"tool_use","id":"toolu_bdrk_01A6rJ7ZkYoY9d66F7YVxds5","name":"passphrase_test_tool","input":{"passphrase":"cake"},"cache_control":null}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_bdrk_01A6rJ7ZkYoY9d66F7YVxds5","content":"The
+      cake is a lie.","cache_control":{"type":"ephemeral"}}]}],"tools":[{"name":"passphrase_test_tool","description":"A
+      tool that must be called with a passphrase.","input_schema":{"properties":{"passphrase":{"title":"Passphrase","type":"string"}},"required":["passphrase"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}],"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1407'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.75.0
+      x-amz-date:
+      - 20260123T124244Z
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_016UQQFCTWJEMNyR6pA3G3Yc","type":"message","role":"assistant","content":[{"type":"text","text":"Great!
+        I''ve successfully used the test tool with the correct passphrase \"cake\".
+        The secret phrase retrieved is: **\"The cake is a lie.\"**"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":811,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":36}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '525'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 12:42:45 GMT
+      X-Amzn-Bedrock-Cache-Read-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Cache-Write-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '811'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '976'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '36'
+      x-amzn-RequestId:
+      - a583769f-8932-4d3c-8a4d-17fe2c634c57
+    status:
+      code: 200
+      message: OK
+version: 1
