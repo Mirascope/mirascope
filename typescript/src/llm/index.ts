@@ -45,6 +45,31 @@ export {
 
 export { ToolOutput } from '@/llm/content';
 
+export {
+  defineTool,
+  defineContextTool,
+  isZodLike,
+  Toolkit,
+  ContextToolkit,
+  createToolkit,
+  createContextToolkit,
+} from '@/llm/tools';
+
+export type {
+  JsonSchemaProperty,
+  ToolParameterSchema,
+  ToolSchema,
+  FieldDefinition,
+  ZodLike,
+  ToolArgs,
+  ContextToolArgs,
+  BaseTool,
+  BaseContextTool,
+  Tool,
+  ContextTool,
+  AnyTool,
+} from '@/llm/tools';
+
 export type {
   AssistantContent,
   AssistantMessage,
