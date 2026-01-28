@@ -2,6 +2,7 @@ import ReactJsonView from "@uiw/react-json-view";
 import { vscodeTheme } from "@uiw/react-json-view/vscode";
 import { githubLightTheme } from "@uiw/react-json-view/githubLight";
 import { useTheme } from "@/app/components/blocks/theme-provider";
+import type { CSSProperties } from "react";
 
 interface JsonViewProps {
   value: object;
@@ -20,7 +21,7 @@ export function JsonView({ value, className }: JsonViewProps) {
         ...theme,
         overflow: "auto",
         "--w-rjv-background-color": "hsl(var(--muted))",
-      } as React.CSSProperties}
+      } as CSSProperties}
       displayDataTypes={false}
       displayObjectSize={false}
     />
