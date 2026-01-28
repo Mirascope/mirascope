@@ -63,7 +63,7 @@ def test_is_primitive_type_union() -> None:
     """Test detection of Union types."""
     assert is_primitive_type(str | int) is True
     assert is_primitive_type(str | None) is True
-    assert is_primitive_type(Optional[str]) is True  # noqa: UP007 (expect error for testing)
+    assert is_primitive_type(Optional[str]) is True  # noqa: UP045 # noqa: UP007 (expect error for testing)
     assert is_primitive_type(int | str | float) is True
 
 

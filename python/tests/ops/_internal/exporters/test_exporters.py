@@ -485,7 +485,7 @@ def test_export_with_various_resource_attribute_types(
         {
             "telemetry.sdk.language": "python",
             "telemetry.sdk.name": "opentelemetry",
-            "telemetry.sdk.version": "1.38.0",
+            "telemetry.sdk.version": "1.39.1",
             "service.name": "test-service",
             "service.enabled": True,
             "service.instance.count": "42",

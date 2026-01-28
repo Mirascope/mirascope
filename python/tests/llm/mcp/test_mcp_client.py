@@ -47,12 +47,7 @@ Returns:
                 by_alias=True, exclude_none=True
             ) == snapshot(
                 {
-                    "properties": {
-                        "name": {
-                            "title": "Name",
-                            "type": "string",
-                        }
-                    },
+                    "properties": {"name": {"type": "string"}},
                     "required": ["name"],
                     "additionalProperties": False,
                 }
@@ -101,10 +96,7 @@ Returns:
             assert schema == snapshot(
                 {
                     "properties": {
-                        "answer_data": {
-                            "$ref": "#/$defs/UltimateAnswer",
-                            "title": "Answer Data",
-                        },
+                        "answer_data": {"$ref": "#/$defs/UltimateAnswer"},
                     },
                     "required": ["answer_data"],
                     "additionalProperties": False,
@@ -113,17 +105,14 @@ Returns:
                             "properties": {
                                 "name": {
                                     "description": "The name of the computer",
-                                    "title": "Name",
                                     "type": "string",
                                 },
                                 "years_computed": {
                                     "description": "How many years it took to compute",
-                                    "title": "Years Computed",
                                     "type": "integer",
                                 },
                             },
                             "required": ["name", "years_computed"],
-                            "title": "ComputerInfo",
                             "description": "Information about Deep Thought computer.",
                             "type": "object",
                         },
@@ -132,12 +121,10 @@ Returns:
                             "properties": {
                                 "answer": {
                                     "description": "The numerical answer",
-                                    "title": "Answer",
                                     "type": "integer",
                                 },
                                 "question": {
                                     "description": "The question that was asked",
-                                    "title": "Question",
                                     "type": "string",
                                 },
                                 "computed_by": {
@@ -146,7 +133,6 @@ Returns:
                                 },
                             },
                             "required": ["answer", "question", "computed_by"],
-                            "title": "UltimateAnswer",
                             "type": "object",
                         },
                     },
@@ -191,16 +177,7 @@ Returns:
                 [
                     {
                         "type": "text",
-                        "text": """\
-{
-  "answer": 42,
-  "question": "What is the answer to life, the universe, and everything?",
-  "computed_by": {
-    "name": "Deep Thought",
-    "years_computed": 7500000
-  }
-}\
-""",
+                        "text": '{"answer":42,"question":"What is the answer to life, the universe, and everything?","computed_by":{"name":"Deep Thought","years_computed":7500000}}',
                         "annotations": None,
                         "meta": None,
                     }
