@@ -2,6 +2,7 @@
 title: "Using LLM-as-a-Judge to Evaluate AI Outputs"
 description: "Learn how LLM as a judge offers scalable and reliable AI output evaluation by leveraging advanced reasoning and scoring. We also show a basic example of how to build one."
 date: "2025-01-24"
+updatedAt: "2026-01-28"
 readTime: "15 min read"
 author: "William Bakst"
 ---
@@ -250,24 +251,24 @@ Also in the example we use Mirascope and Pydantic to prompt the judges and enfor
 
 Mirascope in particular follows a “use-when-you-need” design philosophy that lets you choose modules off the shelf and easily slot these into existing workflows, **rather than having to adopt [larger abstractions](/blog/langchain-runnables/) wholesale and cope with their lack of transparency**, as other [frameworks](/blog/llm-frameworks/) might encourage you to do.
 
-The example below is from the Mirascope docs about [evaluations](/docs/v1/learn/evals/#panel-of-judges).
+The example below demonstrates how to implement LLM evaluations with Mirascope.
 
 ### Set Up the Environment
 
-First we import Mirascope’s core functionality for working with large language models and Pydantic to enforce structured responses and type safety:
+First we import Mirascope's `llm` module for working with large language models and Pydantic to enforce structured responses and type safety:
 
 ```python
 import inspect
 
-from mirascope.core import anthropic, openai, prompt_template
+from mirascope import llm
 from pydantic import BaseModel, Field
 ```
 
 ### 1. Define an Evaluation Model
 
-Next we create a Pydantic data model (`Eval`) to define the schema of the evaluation output, which will contain both a score and the judge’s reasoning behind the score:
+Next we create a Pydantic data model (`Eval`) to define the schema of the evaluation output, which will contain both a score and the judge's reasoning behind the score:
 
-```python
+```python-snippet-concat
 class Eval(BaseModel):
     reasoning: str = Field(..., description="Reasoning for score in < 100 characters.")
     score: float = Field(..., description="A score between [0, 5]")
@@ -279,8 +280,8 @@ Mirascope’s response model uses `Eval` to validate and structure LLM responses
 
 We use a Mirascope prompt decorator to define a [reusable, parameterized template](/blog/langchain-prompt-template/) for evaluating the helpfulness of a given text:
 
-```python
-@prompt_template()
+```python-snippet-concat
+@llm.prompt()
 def evaluate_helpfulness(text: str) -> str:
     return inspect.cleandoc(
         f"""
@@ -311,31 +312,32 @@ The [prompt instruction](/blog/prompt-engineering-best-practices/) defines what 
 
 We then set up two language models to be evaluators and execute the evaluations:
 
-```python
-judges = [
-    openai.call("gpt-4o-mini", response_model=Eval),
-    anthropic.call("claude-3-5-sonnet-20240620", response_model=Eval),
-]
+```python-snippet-concat
+models = ["openai/gpt-4o-mini", "anthropic/claude-sonnet-4-20250514"]
 
-evaluations: list[Eval] = [
-    judge(evaluate_helpfulness)(
-        "To improve your productivity, you could try using a time-blocking method. Break your day into segments and assign specific tasks to each segment."
-    )
-    for judge in judges
-]
+text_to_evaluate = "To improve your productivity, you could try using a time-blocking method. Break your day into segments and assign specific tasks to each segment."
+
+evaluations: list[Eval] = []
+for model in models:
+    @llm.call(model, format=Eval)
+    def evaluate(text: str) -> str:
+        return evaluate_helpfulness(text).text()
+
+    response = evaluate(text_to_evaluate)
+    evaluations.append(response.parse())
 ```
 
-This involves creating a list of judges, each making a call to a specific provider. 
+This involves iterating through a list of models and creating a call for each.
 
-Mirascope call functions like `openai.call` let you easily switch providers using minimal boilerplate since Mirascope abstracts away the details of working with their APIs.
+Mirascope's `@llm.call` decorator lets you easily switch providers using minimal boilerplate since it abstracts away the details of working with their APIs.
 
-We also support a range of [popular providers](/docs/v1/), like OpenAI, Mistral, Gemini, Groq, and more.
+We support a range of [popular providers](/docs/learn/llm), like OpenAI, Anthropic, Google, Mistral, and more.
 
 Next, we run `evaluate_helpfulness` with a sample text through both LLMs as judges and parse the response of each with `Eval` to ensure structured and validated output.
 
 Printing the code shows the results:
 
-```python
+```python-snippet-concat
 for evaluation in evaluations:
     print(evaluation)
 
@@ -357,4 +359,4 @@ Mirascope also ensures that structured responses are properly typed for IDE inte
 
 Mirascope lets you scale and optimize LLM-as-a-judge evaluations with minimal overhead and maximum flexibility. You can build [LLM-driven applications](/blog/llm-applications/) with our Python library offering simple, provider-agnostic tooling.
 
-Want to learn more about how Mirascope can help you simplify and scale the evaluation process? You can find Mirascope code samples both in our [documentation](/docs/mirascope) and on [GitHub](https://github.com/mirascope/mirascope/).
+Want to learn more about how Mirascope can help you simplify and scale the evaluation process? You can find Mirascope code samples both in our [documentation](/docs) and on [GitHub](https://github.com/mirascope/mirascope/).
