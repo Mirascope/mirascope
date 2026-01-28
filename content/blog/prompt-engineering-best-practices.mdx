@@ -2,6 +2,7 @@
 title: "11 Prompt Engineering Best Practices Every Modern Dev Needs "
 description: "Build better AI systems with these 11 prompt engineering best practices. Ideal for devs working across teams and tools."
 date: "2025-07-01"
+updatedAt: "2026-01-28"
 readTime: "13 min read"
 author: "William Bakst"
 ---
@@ -14,7 +15,7 @@ In this article, we’ll share 11 prompt engineering best practices that modern 
 
 Then we’ll shift from prompt writing to *actual* prompt engineering. Because while most advice on “prompt engineering” ends at tips for phrasing, **real engineering means treating AI behavior like a system**, something you can version, trace, and optimize like any other part of your stack.
 
-That’s where our platform [Lilypad](/docs/lilypad) comes in. It’s a prompt engineering framework built for developers, designed to help them capture everything that influences an LLM’s output, from the prompt to the code that wraps it, and trace snippets back to its source. With Lilypad, teams can iterate faster, evaluate reliably, and ship AI features that actually hold up under real-world use cases.
+That's where [Mirascope Cloud](/docs/learn/ops) comes in. It's a prompt engineering platform built for developers, designed to help them capture everything that influences an LLM's output, from the prompt to the code that wraps it, and trace snippets back to its source. With Mirascope Cloud, teams can iterate faster, evaluate reliably, and ship AI features that actually hold up under real-world use cases.
 
 ## 7 Fundamental Prompt Engineering Best Practices
 
@@ -181,11 +182,11 @@ Solving it means tracking *everything* that changes, measuring what works, and t
 
 The four best practices below approach prompt engineering as a system-level discipline that you version, trace, and improve over time.
 
-**We built Lilypad with this in mind**. While other platforms focus on narrow slices, like playgrounds or prompt versioning, they often fall short when it comes to implementing prompt engineering techniques that make LLM behavior repeatable at scale.
+**We built Mirascope Cloud with this in mind**. While other platforms focus on narrow slices, like playgrounds or prompt versioning, they often fall short when it comes to implementing prompt engineering techniques that make LLM behavior repeatable at scale.
 
 For example, such tools version the prompt but ignore things like parameters or helper logic. Others silo tracing and evaluation, forcing constant context-switching just to label or compare outputs.
 
-Lilypad brings it all together. In the best practices for prompt engineering that follow, we’ll show how it helps teams apply real engineering principles to prompt development and make outputs reliably good.
+Mirascope Cloud brings it all together. In the best practices for prompt engineering that follow, we'll show how it helps teams apply real engineering principles to prompt development and make outputs reliably good.
 
 ### 8. Version Everything that Influences the Output
 
@@ -195,68 +196,62 @@ Without versioning, you can’t reproduce outputs or track what changed. That’
 
 Versioning gives you visibility. It lets you roll back, track progress, and understand exactly what changed when results shift.
 
-Lilypad makes this easy by versioning the full context; not just the prompt, but the code that shapes the call. In fact, we recommend wrapping every LLM call in a Python function to capture the model, parameters, prompt, and any pre/post-processing in one place, even when working with multi-step patterns like [LLM chaining](/blog/llm-chaining/).
+Mirascope Cloud makes this easy by versioning the full context; not just the prompt, but the code that shapes the call. In fact, we recommend wrapping every LLM call in a Python function to capture the model, parameters, prompt, and any pre/post-processing in one place, even when working with multi-step patterns like [LLM chaining](/blog/llm-chaining/).
 
-Add the `@lilypad.trace` decorator and set `versioning=automatic` to have Lilypad version every change made within the function closure.
+Add the `@ops.version` decorator to have Mirascope Cloud version every change made within the function closure.
 
 ```python
-import lilypad
-import os
-from openai import OpenAI
+from mirascope import llm, ops
 
-lilypad.configure(auto_llm=True)  # [!code highlight]  
+ops.configure()  # [!code highlight]
+ops.instrument_llm()  # [!code highlight]
 
-client = OpenAI()
-
-@lilypad.trace(versioning="automatic")  # [!code highlight]
+@ops.version  # [!code highlight]
+@llm.call("openai/gpt-4o-mini")
 def answer_question(question: str) -> str:
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": question}],
-    )
-    return str(completion.choices[0].message.content) 
+    return question
 
-response = answer_question("What makes popcorn pop?")    
-print(response)
+response = answer_question("What makes popcorn pop?")
+print(response.text())
 ```
 
 This shifts your workflow from ad hoc prompt tweaking to a structured, iterative process. The function now becomes a unit of optimization, something you can version, evaluate, and refine over time, much like a machine learning model.
 
-You’re no longer asking, “Did this prompt change help?” You’re comparing, “Did version 4 outperform version 3 on our eval set?” Each time that function runs, whether in dev, staging, or production, Lilypad captures the full generation: it can break down the inputs, model responses, parameters, and the exact version of the code that produced it. That data flows straight into the Lilypad playground.
+You're no longer asking, "Did this prompt change help?" You're comparing, "Did version 4 outperform version 3 on our eval set?" Each time that function runs, whether in dev, staging, or production, Mirascope Cloud captures the full generation: it can break down the inputs, model responses, parameters, and the exact version of the code that produced it. That data flows straight into the Mirascope Cloud playground.
 
 The playground is a collaborative prompt engineering environment where you evaluate and compare results. You can:
 
-* View outputs across different versions  
-* Inspect inputs and parameters for every call  
-* Swap between model or prompt versions to see how behavior changes  
-* Annotate outputs with pass/fail labels or notes  
+* View outputs across different versions
+* Inspect inputs and parameters for every call
+* Swap between model or prompt versions to see how behavior changes
+* Annotate outputs with pass/fail labels or notes
 * Replay generations to test reproducibility or debug edge cases
 
-Instead of guessing what changed (or why) you get a full trace, backed by version history and real inputs. 
+Instead of guessing what changed (or why) you get a full trace, backed by version history and real inputs.
 
 For example, we see below that V6 of our code calls `gpt-4o`:
 
-![Lilypad Answer Question v6 Trace](/assets/blog/prompt-engineering-best-practices/lilypad-answer-question-v6-trace.webp)
+![Mirascope Cloud Answer Question v6 Trace](/assets/blog/prompt-engineering-best-practices/lilypad-answer-question-v6-trace.webp)
 
 Changing the model type automatically increments the version number:
 
-![Lilypad Answer Question v7 Trace](/assets/blog/prompt-engineering-best-practices/lilypad-answer-question-v7-trace.webp)
+![Mirascope Cloud Answer Question v7 Trace](/assets/blog/prompt-engineering-best-practices/lilypad-answer-question-v7-trace.webp)
 
 ### 9. Trace Every Output You Generate
 
 Tracing is how you observe what the model actually did, given a specific input, set of parameters, and version of your code.
 
-A good trace captures everything that matters: inputs, outputs, model settings, token usage, latency, cost, and more. When something breaks or performance drops, traces let you debug the issue instead of guessing. Observability isn’t optional. It’s foundational to building reliable LLM\-powered apps, especially in production.
+A good trace captures everything that matters: inputs, outputs, model settings, token usage, latency, cost, and more. When something breaks or performance drops, traces let you debug the issue instead of guessing. Observability isn't optional. It's foundational to building reliable LLM-powered apps, especially in production.
 
-That’s why we recommend to trace not just raw API calls, but also the structured execution of your LLM\-powered functions. You want to know not only *what* happened, but where it happened, and why.
+That's why we recommend to trace not just raw API calls, but also the structured execution of your LLM-powered functions. You want to know not only *what* happened, but where it happened, and why.
 
-That’s where Lilypad’s tracing system comes in. Just call `lilypad.configure()` to enable automatic tracing. This captures raw LLM API calls and logs critical metadata like inputs, outputs, token usage, and costs, giving you an API\-level footprint of your versioned calls.
+That's where Mirascope Cloud's tracing system comes in. Just call `ops.configure()` and `ops.instrument_llm()` to enable automatic tracing. This captures raw LLM API calls and logs critical metadata like inputs, outputs, token usage, and costs, giving you an API-level footprint of your versioned calls.
 
-![Lilypad Traces Tab](/assets/blog/prompt-engineering-best-practices/lilypad-traces-tab.webp)
+![Mirascope Cloud Traces Tab](/assets/blog/prompt-engineering-best-practices/lilypad-traces-tab.webp)
 
-But to make those traces truly actionable, the `@lilypad.trace` decorator promotes each trace from a loose log to a structured unit of execution, linking it directly to the function that made the call, like `answer_question()` in our earlier example. That lets you filter, group, and analyze traces by logical units, not just endpoints or paths.
+But to make those traces truly actionable, the `@ops.trace` decorator promotes each trace from a loose log to a structured unit of execution, linking it directly to the function that made the call, like `answer_question()` in our earlier example. That lets you filter, group, and analyze traces by logical units, not just endpoints or paths.
 
-![Lilypad Nested OpenTelemetry Span](/assets/blog/prompt-engineering-best-practices/lilypad-nested-otel-span.webp)
+![Mirascope Cloud Nested OpenTelemetry Span](/assets/blog/prompt-engineering-best-practices/lilypad-nested-otel-span.webp)
 
 ### 10. Offer Safe and Controlled Prompt Collaboration
 
@@ -264,19 +259,19 @@ Prompt tuning shouldn't be limited to engineers. Product managers, writers, and 
 
 That means you need a way to let non-developers contribute without touching production code.
 
-With Lilypad, you can do exactly that. It supports managed prompts, which are versioned prompt templates that live in the playground. This lets contributors edit, test, and iterate on prompts directly in the browser, while developers reference those prompts safely in code, without ever needing to redeploy the app just to apply a wording tweak.
+With Mirascope Cloud, you can do exactly that. It supports managed prompts, which are versioned prompt templates that live in the playground. This lets contributors edit, test, and iterate on prompts directly in the browser, while developers reference those prompts safely in code, without ever needing to redeploy the app just to apply a wording tweak.
 
-![Lilypad Playground](/assets/blog/prompt-engineering-best-practices/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/prompt-engineering-best-practices/lilypad-playground.webp)
 
 This creates a clean separation of concerns: developers handle infrastructure and application logic, while subject matter experts own the prompt wording. This division is especially valuable when collaborating on more advanced use cases, such as [LLM agents](/blog/llm-agents/), where prompt components and control logic need to evolve independently.
 
 Each team can move quickly without blocking or breaking the other, improving the user experience. And because the playground features prompts that are markdown-enabled and fully versioned, collaborators can experiment freely, revert changes, and keep improving without risk.
 
-But make no mistake: an [LLM prompt](/blog/llm-prompt/) isn’t a floating artifact detached from your codebase. Under the hood, Lilypad treats them just like any other function. The playground generates type-safe code that matches the prompt version you’re referencing in production. 
+But make no mistake: an [LLM prompt](/blog/llm-prompt/) isn't a floating artifact detached from your codebase. Under the hood, Mirascope Cloud treats them just like any other function. The playground generates type-safe code that matches the prompt version you're referencing in production.
 
-If Lilypad ever goes offline, your code keeps running as-is, with no hidden dependencies, no broken links.
+If Mirascope Cloud ever goes offline, your code keeps running as-is, with no hidden dependencies, no broken links.
 
-This contrasts with many other systems, which treat prompts as separate from code entirely. That kind of separation might seem flexible, but it makes your system brittle. When the logic that drives model behavior lives outside your source of truth, it’s harder to test, debug, or trust what’s actually going into production.
+This contrasts with many other systems, which treat prompts as separate from code entirely. That kind of separation might seem flexible, but it makes your system brittle. When the logic that drives model behavior lives outside your source of truth, it's harder to test, debug, or trust what's actually going into production.
 
 ### 11. Make Evals a First-Class Citizen
 
@@ -288,16 +283,16 @@ By contrast, ratings like 1–5 often suffer from ambiguity. What distinguishes 
 
 Pass/fail evaluations avoid that ambiguity and better reflect real-world needs. They align with the core question most teams care about: is this output good enough to deploy?
 
-This structure also lends itself to automation. Once you’ve built a solid evaluation dataset, some [LLM tools](/blog/llm-tools/) allow you to prompt an LLM to act as a judge, replicating the behavior of human evaluators. That said, [LLM-as-a-judge](/blog/llm-as-judge/) outputs should still be verified by humans, especially when dealing with edge cases where outputs may be difficult to assess.
+This structure also lends itself to automation. Once you've built a solid evaluation dataset, some [LLM tools](/blog/llm-tools/) allow you to prompt an LLM to act as a judge, replicating the behavior of human evaluators. That said, [LLM-as-a-judge](/blog/llm-as-judge/) outputs should still be verified by humans, especially when dealing with edge cases where outputs may be difficult to assess.
 
-Lilypad makes evaluation easy to adopt. Non-technical contributors can annotate outputs from AI tools directly in the playground UI: selecting pass or fail and providing reasoning with just a few clicks.
+Mirascope Cloud makes evaluation easy to adopt. Non-technical contributors can annotate outputs from AI tools directly in the playground UI: selecting pass or fail and providing reasoning with just a few clicks.
 
-![Lilypad Annotation Queue](/assets/blog/prompt-engineering-best-practices/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/prompt-engineering-best-practices/lilypad-annotation-queue.webp)
 
 Each evaluation is tied to a specific version of the function that generated the model outputs. That means when quality shifts, whether for better or worse, you can immediately trace back to what changed: the prompt, model, code, parameters, or any combination of the above.
 
 ## Go Beyond Prompt Writing, Start Prompt Engineering
 
-Build with the same rigor you apply to the rest of your stack: Lilypad brings versioning, observability, and [prompt evaluation](/blog/prompt-evaluation/) to every call made to AI models to help ensure desired outcomes.
+Build with the same rigor you apply to the rest of your stack: Mirascope Cloud brings versioning, observability, and [prompt evaluation](/blog/prompt-evaluation/) to every call made to AI models to help ensure desired outcomes.
 
-[To get started with Lilypad](https://lilypad.mirascope.com/), you can use your GitHub credentials to sign up and begin tracing and versioning your LLM functions with just a few lines of code.
+[To get started with Mirascope Cloud](https://app.mirascope.com/), you can use your GitHub credentials to sign up and begin tracing and versioning your LLM functions with just a few lines of code.
