@@ -2,6 +2,7 @@
 title: "A Guide to LLM Orchestration"
 description: "Explore our detailed guide to LLM orchestration and discover how it improves the performance and efficiency of applications driven by large language models."
 date: "2024-08-12"
+updatedAt: "2026-01-28"
 readTime: "15 min read"
 author: "William Bakst"
 ---
@@ -60,23 +61,20 @@ An example of such a task is the [development of prompts](/blog/llamaindex-vs-la
 To get the best responses, prompts should [contain clear instructions](/blog/prompt-engineering-best-practices) as shown in the example code below, which generates a prompt for recommending movies based on recently watched titles:
 
 ```python
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
-@openai.call("gpt-4o-mini")
-@prompt_template(
-    """
+@llm.call("openai/gpt-4o-mini")
+def recommend_movie_prompt(movie_titles: list[str]) -> str:
+    titles_in_quotes = ", ".join([f'"{title}"' for title in movie_titles])
+    return f"""
     I've recently watched the following movies: {titles_in_quotes}.
     What should I watch next?
     """
-)
-def recommend_movie_prompt(movie_titles: list[str]) -> openai.OpenAIDynamicConfig:
-    titles_in_quptes = ", ".join([f'"{title}"' for title in movie_titles])
-    return {"computed_fields": {"titles_in_quotes": titles_in_quotes}}
 
-response = recommend_movie_propmt(["The Dark Knight", "Forrest Gump"])
+response = recommend_movie_prompt(["The Dark Knight", "Forrest Gump"])
 ```
 
-This uses Mirascope's [`prompt_template`](/docs/v1/learn/prompts) decorator in tandem with the [`openai.call`](/docs/v1/learn/calls) decorator, which centralizes internal prompt logic and turns the prompt into an actual LLM API call, respectively.
+This uses Mirascope's [`@llm.call`](/docs/learn/llm/calls) decorator, which centralizes internal prompt logic and turns the prompt into an actual LLM API call.
 
 The above code also illustrates our principle of colocation, where everything impacting the quality of a call is colocated and versioned together. This can be seen in the computed field `titles_in_quotes` computed within the prompt function.
 
@@ -90,7 +88,7 @@ For example, prompting an LLM with flight information will return a call to a fu
 
 You enable this capability by passing it a function call signature, which will usually be a raw JSON file in a format like this:
 
-```python
+```json
 "tools": [
   {
     "type": "function",
@@ -121,10 +119,11 @@ Writing your own JSON schema code can get messy quickly.
 With Mirascope, we've added a convenient feature that allows you to use a function's docstring to automatically generate the function signature for you:
 
 ```python
-from mirascope.core import openai
+from mirascope import llm
 
+@llm.tool
 def get_flight_information(flight_number: str, date: str) -> str:
-    """Get the current flight status for `flight_number` on `date` and print  it.
+    """Get the current flight status for `flight_number` on `date` and print it.
 
     Args:
         flight_number: The flight number, e.g., AA123.
@@ -137,19 +136,20 @@ def get_flight_information(flight_number: str, date: str) -> str:
     else:
         return f"I'm sorry, I don't have the information for flight {flight_number} on {date}."
 
-@openai.call("gpt-4o", tools=[get_flight_information])
+@llm.call("openai/gpt-4o", tools=[get_flight_information])
 def flight_info(flight_number: str, date: str) -> str:
     return f"What's the flight status of {flight_number} on {date}?"
 
 response = flight_info("AA123", "2024-08-05")
-if tool := response.tool:
-    print(tool.call())
+while response.tool_calls:
+    tool_results = response.execute_tools()
+    response = response.resume(tool_results)
+print(response.text())
 
 # > The flight AA123 on 2024-08-05 is on time.
-
 ```
 
-In the above code, we set up the function `get_flight_information` to generate a function call with its docstring, and then we register this function as a tool with OpenAI (Mirascope also provides ways of turning functions into tools [without needing a docstring](/docs/v1/learn/tools)).
+In the above code, we set up the function `get_flight_information` with the `@llm.tool` decorator and docstring to generate a function call schema, and then we register this function as a tool (Mirascope also provides ways of turning functions into tools [without needing a docstring](/docs/learn/llm/tools)).
 
 ### 2. Data Preparation
 
@@ -157,31 +157,31 @@ Data preparation involves cleaning, structuring, and formatting data from variou
 
 An example of this is data extraction, where LLM outputs (usually raw text) are parsed to extract key information and save it in a format like CSV or JSON. This prepares the data for usage by other components and external applications.
 
-The Mirascope code below provides an example of data extraction where key film details are extracted from the model’s responses:
+The Mirascope code below provides an example of data extraction where key film details are extracted from the model's responses:
 
 ```python
 from pydantic import BaseModel
 
-from mirascope.core import openai
+from mirascope import llm
 
 class MovieDetails(BaseModel):
     title: str
     director: str
 
-@openai.call(model="gpt-4o", response_model=MovieDetails)
+@llm.call("openai/gpt-4o", format=MovieDetails)
 def extract_movie_details(movie: str) -> str:
     return f"Extract details from this movie: {movie}"
 
 movie = "Inception directed by Christopher Nolan."
-movie_details = extract_movie_details(movie)
+response = extract_movie_details(movie)
+movie_details = response.parse()
 assert isinstance(movie_details, MovieDetails)
 print(movie_details)
 
 # > title='Inception' director='Christopher Nolan'
-
 ```
 
-The function `extract_movie_details` takes a string input (`movie`), which is passed to the LLM. The model then generates an output that’s validated by Pydantic against the `MovieDetails` schema.
+The function `extract_movie_details` takes a string input (`movie`), which is passed to the LLM. The model then generates an output that's parsed and validated by Pydantic against the `MovieDetails` schema using `.parse()`.
 
 Extracting details in this way allows you to parse large documents, articles, or research papers, and to store the details in databases or in so-called extract, transform, load (ETL) pipelines for ingestion into data warehouses.
 
@@ -193,59 +193,49 @@ This includes maintaining [version control of prompts](/blog/prompt-versioning) 
 
 #### Changing Model Providers
 
-Mirascope allows you to [change model providers](/docs/v1/learn/calls) in just three lines (corresponding to the highlighted code below):
-
-1. Change the `from mirascope.core import {provider}` import to the new provider.
-2. Update any specific call params such as `model`.
-3. Update your class to use the new provider.
+Mirascope allows you to [change model providers](/docs/learn/llm/calls) by simply changing the model string. The provider is specified in the model identifier:
 
 ```python
-from mirascope.core import anthropic
+from mirascope import llm
 
-@anthropic.call(model="claude-3-5-sonnet-20240620")
+@llm.call("anthropic/claude-sonnet-4-20250514")
 def recommend_recipe(ingredient: str) -> str:
-    return f"Recommend a recipe that includes {ingedient}"
+    return f"Recommend a recipe that includes {ingredient}"
 
 response = recommend_recipe(ingredient="chicken")
-print(response.content)
+print(response.text())
 
 # > Chicken Alfredo with Creamy Garlic Sauce
-
 ```
 
-Mirascope also makes it convenient to switch between providers that are very different, like OpenAI and Anthropic. Our simplest use case requires only one line to make the switch:
+Mirascope also makes it convenient to switch between providers at runtime using the `llm.model()` context manager:
 
 ```python
-from mirascope.core import anthropic, openai, prompt_template
+from mirascope import llm
 
-@prompt_template()
-def recommend_book_prompt(genre: str) -> str:
+@llm.call("openai/gpt-4o-mini")
+def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 
-# OpenAI
+# OpenAI (default)
+openai_response = recommend_book("fantasy")
+print(openai_response.text())
 
-openai_model = "gpt-4o-mini"
-openai_recommend_book = openai.call(openai_model)(recommend_book_prompt)
-openai_response = openai_recommend_book("fantasy")
-print(openai_response.content)
-
-# Anthropic
-
-anthropic_model = "claude-3-5-sonnet-20240620"
-anthropic_recommend_book = anthropic.call(anthropic_model)(recommend_book_prompt)
-anthropic_response = anthropic_recommend_book("fantasy")
-print(anthropic_response.content)
+# Anthropic (runtime override)
+with llm.model("anthropic/claude-sonnet-4-20250514"):
+    anthropic_response = recommend_book("fantasy")
+    print(anthropic_response.text())
 ```
 
-This is because the Mirascope allows us to use the `run` or `run_async` method to run the decorator for a specific provider against that prompt.
+This unified API means you can easily experiment with different providers without changing your core logic.
 
 #### Prompt Management
 
 A prompt management system maintains [consistency in prompting](/blog/langchain-prompt-template) while helping you iterate and experiment more productively. It also integrates with CI/CD pipelines while promoting collaboration and automates change tracking.
 
-An example of prompt management is [Lilypad](/blog/prompt-versioning), which versions and traces all prompts automatically so you don't have to worry about it and can instead focus on iterating and improving your prompts.
+An example of prompt management is [Mirascope Cloud](/blog/prompt-versioning), which versions and traces all prompts automatically so you don't have to worry about it and can instead focus on iterating and improving your prompts.
 
-The magic is that Lilypad automatically versions the entire lexical closure. This means that changes to helper methods and utility functions will be considered version changes, enabling you to more easily catch changes that impact your prompt quality even when unexpected.
+The magic is that Mirascope Cloud automatically versions the entire lexical closure. This means that changes to helper methods and utility functions will be considered version changes, enabling you to more easily catch changes that impact your prompt quality even when unexpected.
 
 ### 4. Scalability
 
@@ -253,45 +243,41 @@ To support scalability, frameworks leverage technologies that enable high throug
 
 #### Streaming Model Responses
 
-A common strategy is to stream large responses as chunks, rather than waiting for the entire response to be generated. Mirascope [streams](/docs/v1/learn/streams), which you can enable by setting `stream=True` in the [`call`](/docs/v1/learn/calls) decorator, provide `BaseCallResponseChunk` convenience wrappers around the original response chunks, as well as tools (if provided) that are constructed on your behalf:
+A common strategy is to stream large responses as chunks, rather than waiting for the entire response to be generated. Mirascope [streams](/docs/learn/llm/streams), which you can access using the `.stream()` method on the [`call`](/docs/learn/llm/calls) function, provide convenience wrappers around the original response chunks:
 
 ```python
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
-@openai.call(model="gpt-4o", stream=True)
-@prompt_template("Recommend some {genre} books.")
-def recommend_book(genre: str): ...
+@llm.call("openai/gpt-4o")
+def recommend_book(genre: str) -> str:
+    return f"Recommend some {genre} books."
 
-stream = recommend_book(genre="science fiction")
-for chunk, tool in stream:
-    if tool:  # will be `None` since no tools were set
-
-        print(tool.call())
-    else:
-        print(chunk.content, end="", flush=True)
+stream = recommend_book.stream(genre="science fiction")
+for chunk in stream.text_stream():
+    print(chunk, end="", flush=True)
 ```
 
-The response is processed chunk by chunk in a `for` loop, printing each chunk's content as it’s received. The response can be displayed incrementally as it’s generated, rather than waiting for the entire response to be completed.
+The response is processed chunk by chunk in a `for` loop, printing each chunk's text as it's received. The response can be displayed incrementally as it's generated, rather than waiting for the entire response to be completed.
 
 Streaming reduces the wait time associated with generating and delivering large responses and is ideal for real-time applications or when multiple users are interacting with the system simultaneously.
 
 #### Async Streaming
 
-[Asynchronous streaming](/docs/v1/learn/async/#async-streaming) supports concurrency, as offered by our `stream_book_recommendation` function that sets up an asynchronous stream to get responses from the natural language processing model:
+[Asynchronous streaming](/docs/learn/llm/async/#async-streaming) supports concurrency, as offered by our `stream_book_recommendation` function that sets up an asynchronous stream to get responses from the natural language processing model:
 
 ```python
 import asyncio
 
-from mirascope.core import openai
+from mirascope import llm
 
-@openai.call(model="gpt-4o", stream=True)
+@llm.call("openai/gpt-4o")
 async def recommend_book(genre: str) -> str:
-    return f"Recomment a {genre} book"
+    return f"Recommend a {genre} book"
 
 async def stream_book_recommendation(genre: str):
-    stream = await recommend_book(genre=genre)
-    async for chunk, _ in stream:
-        print(chunk.content, end="", flush=True)
+    stream = await recommend_book.stream(genre=genre)
+    async for chunk in stream.text_stream():
+        print(chunk, end="", flush=True)
 
 asyncio.run(stream_book_recommendation(genre="science fiction"))
 ```
@@ -306,22 +292,23 @@ Since LLMs have an element of unpredictability and sometimes produce undesired r
 
 This is done using validation methods and custom error-handling rules, which can detect potential issues before they become problems and ensure applications run better.
 
-As we’ve already covered above in [Data Preparation](#2-data-preparation), Pydantic is a popular library for catching errors. We can handle these errors gracefully using both Python and Pydantic as shown below:
+As we've already covered above in [Data Preparation](#2-data-preparation), Pydantic is a popular library for catching errors. We can handle these errors gracefully using both Python and Pydantic as shown below:
 
 ```python
-from mirascope.core import openai
+from mirascope import llm
 from pydantic import BaseModel, ValidationError
 
 class Movie(BaseModel):
     title: str
     rating: float
 
-@openai.call(model="gpt-4o-mini", response_model=Movie)
+@llm.call("openai/gpt-4o-mini", format=Movie)
 def recommend_movie() -> str:
-    return f"Recommend a movie"
+    return "Recommend a movie"
 
 try:
-    movie = recommend_movie()
+    response = recommend_movie()
+    movie = response.parse()
     assert isinstance(movie, Movie)
     print(movie)
     # > title='Inception' rating=8.8
@@ -329,16 +316,12 @@ try:
 except ValidationError as e:
     print(e)
     # > 1 validation error for Movie
-
     #  rating
-
     #    Input should be a valid number, unable to parse string as a number [type=float_parsing, input_value='excellent', input_type=str]
-
     #      For further information visit https://errors.pydantic.dev/2.6/v/float_parsing
-
 ```
 
-The `Movie` class above defines a schema with `title` as a string and `rating` as a float, while `recommend_movie()` extracts data according to the `Movie` schema, using a prompt to recommend a movie.
+The `Movie` class above defines a schema with `title` as a string and `rating` as a float, while `recommend_movie()` returns a response that can be parsed according to the `Movie` schema.
 
 The `try-except` block with `ValidationError` provides error handling.
 
@@ -357,23 +340,22 @@ Another way to handle errors is by retrying tasks like calling an LLM provider w
 For instance, Mirascope offers automatic retry functionality via integrating with [Tenacity](https://tenacity.readthedocs.io/en/latest/#):
 
 ```python
-from mirascope.core import openai
+from mirascope import llm
 from tenacity import retry, retry_if_result, stop_after_attempt
 
 @retry(
     stop=stop_after_attempt(3),
-    retry=retry_if_result(lambda result: "math" in result.content.lower()),
+    retry=retry_if_result(lambda result: "math" in result.text().lower()),
 )
-@openai.call("gpt-4o-mini")
+@llm.call("openai/gpt-4o-mini")
 def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 
 response = recommend_book(genre="science fiction")
-print(response.content)  # Content should not contain "math"
-
+print(response.text())  # Content should not contain "math"
 ```
 
-Since Tenacity's `retry` is a decorator, you can use it with any Mirascope `call` decorated LLM function as well.
+Since Tenacity's `retry` is a decorator, you can use it with any Mirascope `@llm.call` decorated function as well.
 
 ### 6. Performance Optimization
 
@@ -383,27 +365,29 @@ Performance optimization is about making sure applications run efficiently, with
 
 Async streaming is an example of performance optimization that we’ve previously discussed above, and other examples include LLM call chaining and high-level wrappers for model APIs, described below.
 
-[Chaining LLM calls using computed fields](/blog/prompt-chaining) can be an optimization strategy as this enables using the `@functools.lru_cache` decorator to cache the output of each call in the chain so it only has to be made once:
+[Chaining LLM calls](/blog/prompt-chaining) can be an optimization strategy as this enables using the `@functools.lru_cache` decorator to cache the output of each call in the chain so it only has to be made once:
 
 ```python
 from functools import lru_cache
 
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
-@lru_cache()
-@openai.call("gpt-4o-mini")
+@lru_cache
+@llm.call("openai/gpt-4o-mini")
 def select_painter(art_style: str) -> str:
     return f"Name a painter known for {art_style}. Return only their name."
 
-@lru_cache()
-@openai.call("gpt-4o-mini")
+@lru_cache
+@llm.call("openai/gpt-4o-mini")
 def select_artwork(painter: str) -> str:
     return f"Name an art piece created by {painter}. Return only the name."
 
-@lru_cache()
-@openai.call("gpt-4o-mini")
-@prompt_template(
-    """
+@lru_cache
+@llm.call("openai/gpt-4o-mini")
+def describe_artwork(art_style: str) -> str:
+    painter = select_painter(art_style).text()
+    artwork = select_artwork(painter).text()
+    return f"""
     SYSTEM:
     Imagine that you are {painter}.
     Your task is to describe a famous painting that you, {painter}, created.
@@ -411,34 +395,28 @@ def select_artwork(painter: str) -> str:
     USER:
     Describe {artwork}.
     """
-)
-def describe_artwork(art_style: str) -> openai.OpenAIDynamicConfig:
-    painter = select_painter(art_style)
-    artwork = select_artwork(painter.content)
-    return {"computed_fields": {"painter": painter, "artwork": artwork}}
 
-print(describe_artwork("contemporary"))
+print(describe_artwork("contemporary").text())
 
 # > As Yayoi Kusama, I am thrilled to share my work "Infinity Mirror Room," a...
 
-print(describe_artwork("contemporary"))  # uses cached values
+print(describe_artwork("contemporary").text())  # uses cached values
 
 # > As Yayoi Kusama, I am thrilled to share my work "Infinity Mirror Room," a...
 
-print(describe_artwork("modern"))  # generates new output
+print(describe_artwork("modern").text())  # generates new output
 
 # > Guernica, my monumental work created in 1937, is a passionate response...
-
 ```
 
 Above, the `@functools.lru_cache` decorator caches the result of the call for each function by its arguments. This means that any calls made to the chain with the same inputs will reuse the previously generated values without re-executing the call.
 
 Another way to optimize performance is by using high-level wrappers around APIs of both model providers and external tools and libraries. These abstract away the low-level details involved in making API calls.
 
-Besides offering a range of utilities for external providers, Mirascope also provides a simple interface for LLM calls with a class decorator, e.g., `@openai.call` for calling OpenAI. You can make calls to other providers (e.g., Groq and Mistral) using this same decorator syntax, allowing for switching without needing to change the core logic.
+Besides offering a range of utilities for external providers, Mirascope also provides a simple interface for LLM calls with the `@llm.call` decorator using a unified `"provider/model"` format. You can make calls to various providers (e.g., OpenAI, Anthropic, Google) using this same decorator syntax, allowing for switching without needing to change the core logic.
 
 ## Achieve Orchestration with Mirascope
 
 Designed according to [software development best practices](/blog/engineers-should-handle-prompting-llms), Mirascope offers tools that handle the complexity of LLM orchestration for building production-grade LLM apps. Our library supports data integration and lets you code in the Python you normally code in, ensuring a smooth integration with your existing projects.
 
-Want to learn more? You can find more Mirascope code samples both on our [docs](/docs/mirascope) and on our [GitHub page](https://github.com/mirascope/mirascope).
+Want to learn more? You can find more Mirascope code samples both on our [docs](/docs/learn/llm) and on our [GitHub page](https://github.com/mirascope/mirascope).
