@@ -2,6 +2,7 @@
 title: "Overview of LLM Evaluation Metrics and Approaches"
 description: "Discover key metrics and methods for comprehensive LLM evaluation. Improve your language model's performance with these proven strategies."
 date: "2024-11-16"
+updatedAt: "2026-01-28"
 readTime: "16 min read"
 author: "William Bakst"
 ---
@@ -174,12 +175,12 @@ Below, we show two ways of using LLMs as judges.
 
 #### 1. Evaluate an Output Using a Single Model
 
-This example shows how to evaluate a text for answer relevance, using a single LLM via an API (OpenAI’s GPT-4o-mini).
+This example shows how to evaluate a text for answer relevance, using a single LLM via an API (OpenAI's GPT-4o-mini).
 
 ```py
 from typing import Literal
 
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 from pydantic import BaseModel, Field
 
 class Eval(BaseModel):
@@ -190,11 +191,11 @@ class Eval(BaseModel):
         ..., description="The reasoning for the score in 100 characters or less."
     )
 
-@openai.call(model="gpt-4o-mini", response_model=Eval)
-@prompt_template(
-    """
+@llm.call("openai/gpt-4o-mini", format=Eval)
+def evaluate_answer_relevance(question: str, answer: str) -> str:
+    return f"""
     Evaluate the relevance of the generated answer to the given question on a continuous scale from poor to excellent.
-    A generation is considered relevant (score > poor ) if it addresses the core of the question, provides accurate information, 
+    A generation is considered relevant (score > poor ) if it addresses the core of the question, provides accurate information,
     and stays focused on the topic.
 
     Consider the following aspects when evaluating the answer:
@@ -204,7 +205,7 @@ class Eval(BaseModel):
     - Clarity: Is the answer clear and easy to understand?
 
     Use the following relevance scale:
-    
+
     poor - No relevance; the answer is completely unrelated or nonsensical
     ok - Low relevance; minor relation to the question but missing key details or accuracy
     good - Moderate relevance; somewhat addresses the question but lacks depth or focus
@@ -216,25 +217,24 @@ class Eval(BaseModel):
     Question: {question}
     Answer: {answer}
     """
-)
-def evaluate_answer_relevance(question: str, answer: str): ...
 
 # Example usage
 
 question = "What are the benefits of renewable energy?"
 answer = "Renewable energy comes from natural sources like solar and wind, which are infinite and produce less pollution."
 response = evaluate_answer_relevance(question=question, answer=answer)
-print(response)
+evaluation = response.parse()
+print(evaluation)
 
 # Output: score='good' reasoning="Accurate but lacks depth; doesn't cover all benefits comprehensively."
 
 question = "What are the benefits of renewable energy?"
 irrelevant_answer = "I enjoy watching movies on the weekends."
 response = evaluate_answer_relevance(question=question, answer=irrelevant_answer)
-print(response)
+evaluation = response.parse()
+print(evaluation)
 
 # Output: score='poor' reasoning='The answer is completely unrelated to the question about renewable energy benefits.'
-
 ```
 
 Note that we use NLP scores (e.g. "good") instead of numerical scores. In our experience, we've found that LLMs are better at scoring using natural language than numbers.
@@ -243,12 +243,12 @@ Note that we use NLP scores (e.g. "good") instead of numerical scores. In our ex
 
 In cases where a single model’s evaluation might be limited or biased, you may opt for a more comprehensive and balanced evaluation that accounts for different model strengths, weaknesses, and biases.
 
-Here’s another example of evaluating for answer relevance using OpenAI’s GPT-4o-mini and Anthropic’s Claude 3.5 Sonnet:
+Here's another example of evaluating for answer relevance using OpenAI's GPT-4o and Anthropic's Claude Sonnet:
 
 ```py
 from typing import Literal
 
-from mirascope.core import BasePrompt, anthropic, openai, prompt_template
+from mirascope import llm
 from pydantic import BaseModel, Field
 
 class Eval(BaseModel):
@@ -259,8 +259,9 @@ class Eval(BaseModel):
         ..., description="The reasoning for the score in 100 characters or less."
     )
 
-@prompt_template(
-    """
+@llm.call("openai/gpt-4o", format=Eval)
+def evaluate_relevance(question: str, answer: str) -> str:
+    return f"""
     Evaluate the relevance of the answer to the given question on a scale from poor to excellent:
 
     poor - No relevance; the answer is completely unrelated or nonsensical
@@ -280,39 +281,33 @@ class Eval(BaseModel):
     Question: {question}
     Answer: {answer}
     """
-)
-class AnswerRelevancePrompt(BasePrompt):
-    question: str
-    answer: str
 
 # Example question and answers
 
 question = "What are the benefits of renewable energy?"
 answer = "Renewable energy comes from natural sources like solar and wind, which are infinite and produce less pollution."
 
-prompt = AnswerRelevancePrompt(question=question, answer=answer)
+# Evaluate with GPT-4o
+gpt_response = evaluate_relevance(question=question, answer=answer)
+gpt_eval = gpt_response.parse()
+print(f"(GPT-4o) {gpt_eval}")
 
-judges = [
-    openai.call("gpt-4o", response_model=Eval),
-    anthropic.call("claude-3-5-sonnet-20240620", response_model=Eval),
-]
-
-evaluations: list[Eval] = [prompt.run(judge) for judge in judges]
-
-for evaluation in evaluations:
-    print(evaluation)
+# Evaluate with Claude Sonnet
+with llm.model("anthropic/claude-sonnet-4-20250514"):
+    claude_response = evaluate_relevance(question=question, answer=answer)
+    claude_eval = claude_response.parse()
+    print(f"(Sonnet) {claude_eval}")
 
 # Output:
 
 # (GPT-4o) score='great' reasoning='Accurate, on-topic, but lacks breadth in benefits.'
 
-# (Sonnet) score='good' reasoning='Accurate but lacks depth. Mentions key points (sources, infinity, less pollution) but misses economic benefits.' 
-
+# (Sonnet) score='good' reasoning='Accurate but lacks depth. Mentions key points (sources, infinity, less pollution) but misses economic benefits.'
 ```
 
 ### Mirascope Evaluation Guide
 
-See our [documentation](/docs/v1/learn/evals/) for rich examples and techniques to help you write evaluations for a range of LLM-driven applications.
+See our [documentation](/docs) for rich examples and techniques to help you write evaluations for a range of LLM-driven applications.
 
 ## 6 Best Practices for Evaluating Language Models
 
@@ -362,4 +357,4 @@ On the other hand, testing with a narrow or overly specific set of inputs can re
 
 Mirascope supports comprehensive, scalable evaluations throughout your [pipeline](/blog/llm-pipeline), helping ensure your model performs reliably across diverse scenarios, while reducing bias and delivering consistent, high-quality outputs. Start refining your evaluation process to drive better outcomes for your AI initiatives.
 
-Want to explore more LLM evaluation techniques? You can find Mirascope code samples both on our [documentation site](/docs/mirascope) and our [GitHub repository](https://github.com/mirascope/mirascope).
+Want to explore more LLM evaluation techniques? You can find Mirascope code samples both on our [documentation site](/docs) and our [GitHub repository](https://github.com/mirascope/mirascope).
