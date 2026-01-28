@@ -276,10 +276,28 @@ For each post in the batch, perform these steps automatically:
 
 For the current post, iterate through every issue and apply fixes automatically:
 
-1. **Read the post file** and reference patterns from:
-   - `references/current-patterns.md`
-   - `references/api-reference.md`
-   - Python library source if needed
+#### For each issue:
+
+1. **Note the issue details** (from audit output):
+   - Category (e.g., "Deprecated Decorator Syntax", "Prose Reference", "Image")
+   - Line number and found text
+   - Priority level (HIGH/MEDIUM/LOW)
+
+2. **Read surrounding context** from the MDX file using the line numbers.
+
+3. **Apply the appropriate fix**:
+
+   | Issue Type | Auto Action |
+   |------------|-------------|
+   | **Code block** | Rewrite with v2 patterns using Edit tool |
+   | **Prose/inline code** | Update text using Edit tool |
+   | **Link** | Replace with correct URL using Edit tool |
+   | **Image** | **Skip** - flag in final summary for manual review |
+
+   For code/prose fixes, gather context from:
+   - `references/current-patterns.md` for transformation rules
+   - `references/api-reference.md` for quick API lookup
+   - Python library source (`python/mirascope/llm/__init__.py`, `python/mirascope/ops/__init__.py`) for edge cases
 
    **CRITICAL: Style Guide Verification**
    Before applying ANY code fix, you MUST:
@@ -290,32 +308,27 @@ For the current post, iterate through every issue and apply fixes automatically:
    3. Compare EVERY code block in the post against these style guidelines
    4. Fix style violations even if the audit script didn't flag them
 
-2. **For each issue**, apply the appropriate fix:
+   **IMPORTANT**: Always verify rewritten code against the live docs at https://mirascope.com/docs. Fetch the relevant doc page to confirm the correct API usage and patterns.
 
-   | Issue Type | Auto Action |
-   |------------|-------------|
-   | **Code block** | Rewrite with v2 patterns using Edit tool |
-   | **Prose/inline code** | Update text using Edit tool |
-   | **Link** | Replace with correct URL using Edit tool |
-   | **Image** | **Skip** - flag in final summary for manual review |
+4. **Move to next issue** and repeat.
 
-3. **Verify rewrites** against live docs at https://mirascope.com/docs when needed.
+#### After all issues in the post:
 
-4. **Validate snippet extraction** for the updated file:
+1. **Validate snippet extraction** for the updated file:
    ```bash
    cd cloud && bun run generate:snippets --file=../content/blog/<filename>.mdx
    ```
 
-5. **Type check and lint the extracted snippet**:
+2. **Type check and lint the extracted snippet**:
    ```bash
    cd cloud && bun run validate:snippets --path=.extracted-snippets/blog/<post-slug>/
    ```
 
-6. **After all fixable issues are addressed**:
+3. **Mark post complete**:
    - Add `updatedAt: "YYYY-MM-DD"` to frontmatter (today's date)
    - Report: "Completed: <filename> (X issues fixed, Y images skipped)"
 
-7. **Move to next post** in the batch.
+4. **Move to next post** in the batch.
 
 ### Batch Phase 4: Final Summary
 
