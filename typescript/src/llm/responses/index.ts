@@ -19,8 +19,11 @@ export type { ResponseInit } from '@/llm/responses/response';
 export { ContextResponse } from '@/llm/responses/context-response';
 export type { ContextResponseInit } from '@/llm/responses/context-response';
 
+export { BaseStreamResponse } from '@/llm/responses/base-stream-response';
+export type { BaseStreamResponseInit } from '@/llm/responses/base-stream-response';
+
 export { StreamResponse } from '@/llm/responses/stream-response';
-export type { StreamResponseInit as StreamResponseInit } from '@/llm/responses/stream-response';
+export type { StreamResponseInit } from '@/llm/responses/stream-response';
 
 export { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 export type { ContextStreamResponseInit as ContextStreamResponseInit } from '@/llm/responses/context-stream-response';

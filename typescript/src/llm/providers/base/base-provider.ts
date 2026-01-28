@@ -3,13 +3,15 @@
  */
 
 import type { Context } from '@/llm/context';
-import type { Message } from '@/llm/messages';
+import type { Message, UserContent } from '@/llm/messages';
+import { user } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import type { ProviderId } from '@/llm/providers/provider-id';
 import { Response } from '@/llm/responses';
 import type { StreamResponseChunk } from '@/llm/responses/chunks';
 import { ContextResponse } from '@/llm/responses/context-response';
 import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
+import type { RootResponse } from '@/llm/responses/root-response';
 import { StreamResponse } from '@/llm/responses/stream-response';
 import {
   APIError,
@@ -214,6 +216,120 @@ export abstract class BaseProvider {
     messages: readonly Message[];
     params?: Params;
   }): Promise<ContextStreamResponse<DepsT>>;
+
+  // ===== Resume Methods =====
+
+  /**
+   * Generate a new Response by extending a previous response's messages with additional user content.
+   *
+   * Uses the previous response's tools and output format. The default implementation
+   * appends a user message and delegates to call().
+   *
+   * @param args.modelId - The model ID to use.
+   * @param args.response - The previous response to extend.
+   * @param args.content - The new user content to append.
+   * @param args.params - Optional parameters for the request.
+   * @returns A new Response containing the extended conversation.
+   */
+  async resume(args: {
+    modelId: string;
+    response: RootResponse;
+    content: UserContent;
+    params?: Params;
+  }): Promise<Response> {
+    const messages = [...args.response.messages, user(args.content)];
+    return this.call({
+      modelId: args.modelId,
+      messages,
+      params: args.params,
+    });
+  }
+
+  /**
+   * Generate a new StreamResponse by extending a previous response's messages with additional user content.
+   *
+   * Uses the previous response's tools and output format. The default implementation
+   * appends a user message and delegates to stream().
+   *
+   * @param args.modelId - The model ID to use.
+   * @param args.response - The previous response to extend.
+   * @param args.content - The new user content to append.
+   * @param args.params - Optional parameters for the request.
+   * @returns A new StreamResponse for consuming the extended conversation.
+   */
+  async resumeStream(args: {
+    modelId: string;
+    response: RootResponse;
+    content: UserContent;
+    params?: Params;
+  }): Promise<StreamResponse> {
+    const messages = [...args.response.messages, user(args.content)];
+    return this.stream({
+      modelId: args.modelId,
+      messages,
+      params: args.params,
+    });
+  }
+
+  /**
+   * Generate a new ContextResponse by extending a previous response's messages with additional user content.
+   *
+   * Uses the previous response's tools and output format. The default implementation
+   * appends a user message and delegates to contextCall().
+   *
+   * @template DepsT - The type of dependencies in the context.
+   * @param args.ctx - The context containing dependencies for tools.
+   * @param args.modelId - The model ID to use.
+   * @param args.response - The previous response to extend.
+   * @param args.content - The new user content to append.
+   * @param args.params - Optional parameters for the request.
+   * @returns A new ContextResponse containing the extended conversation.
+   */
+  async contextResume<DepsT>(args: {
+    ctx: Context<DepsT>;
+    modelId: string;
+    response: RootResponse;
+    content: UserContent;
+    params?: Params;
+  }): Promise<ContextResponse<DepsT>> {
+    const messages = [...args.response.messages, user(args.content)];
+    return this.contextCall({
+      ctx: args.ctx,
+      modelId: args.modelId,
+      messages,
+      params: args.params,
+    });
+  }
+
+  /**
+   * Generate a new ContextStreamResponse by extending a previous response's messages with additional user content.
+   *
+   * Uses the previous response's tools and output format. The default implementation
+   * appends a user message and delegates to contextStream().
+   *
+   * @template DepsT - The type of dependencies in the context.
+   * @param args.ctx - The context containing dependencies for tools.
+   * @param args.modelId - The model ID to use.
+   * @param args.response - The previous response to extend.
+   * @param args.content - The new user content to append.
+   * @param args.params - Optional parameters for the request.
+   * @returns A new ContextStreamResponse for consuming the extended conversation.
+   */
+  async contextResumeStream<DepsT>(args: {
+    ctx: Context<DepsT>;
+    modelId: string;
+    response: RootResponse;
+    content: UserContent;
+    params?: Params;
+  }): Promise<ContextStreamResponse<DepsT>> {
+    const messages = [...args.response.messages, user(args.content)];
+    return this.contextStream({
+      ctx: args.ctx,
+      modelId: args.modelId,
+      messages,
+      params: args.params,
+    });
+  }
 
   /**
    * Wrap a provider SDK exception in the appropriate Mirascope error type.

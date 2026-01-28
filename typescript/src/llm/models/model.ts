@@ -5,6 +5,7 @@
 import type { Context } from '@/llm/context';
 import type { Message, UserContent } from '@/llm/messages';
 import { promoteToMessages } from '@/llm/messages';
+import type { RootResponse } from '@/llm/responses/root-response';
 import type { Params } from '@/llm/models/params';
 import type { BaseProvider } from '@/llm/providers/base';
 import type { ModelId } from '@/llm/providers/model-id';
@@ -232,6 +233,133 @@ export class Model {
       ctx,
       modelId: this.modelId,
       messages,
+      params: this.params,
+    });
+  }
+
+  // ===== Resume Methods =====
+
+  /**
+   * Generate a new Response by extending a previous response's messages with additional user content.
+   *
+   * Uses the previous response's tools and output format, and this model's params.
+   *
+   * @param response - Previous response to extend.
+   * @param content - Additional user content to append.
+   * @returns A new Response object containing the extended conversation.
+   *
+   * @example
+   * ```typescript
+   * const response = await model.call('Hello!');
+   * const followUp = await model.resume(response, 'Tell me more');
+   * console.log(followUp.text());
+   * ```
+   */
+  async resume(
+    response: RootResponse,
+    content: UserContent
+  ): Promise<Response> {
+    return this.provider.resume({
+      modelId: this.modelId,
+      response,
+      content,
+      params: this.params,
+    });
+  }
+
+  /**
+   * Generate a new StreamResponse by extending a previous response's messages with additional user content.
+   *
+   * Uses the previous response's tools and output format, and this model's params.
+   *
+   * @param response - Previous response to extend.
+   * @param content - Additional user content to append.
+   * @returns A new StreamResponse object for consuming the streamed content.
+   *
+   * @example
+   * ```typescript
+   * const response = await model.call('Hello!');
+   * const followUp = await model.resumeStream(response, 'Tell me more');
+   * for await (const text of followUp.textStream()) {
+   *   process.stdout.write(text);
+   * }
+   * ```
+   */
+  async resumeStream(
+    response: RootResponse,
+    content: UserContent
+  ): Promise<StreamResponse> {
+    return this.provider.resumeStream({
+      modelId: this.modelId,
+      response,
+      content,
+      params: this.params,
+    });
+  }
+
+  /**
+   * Generate a new ContextResponse by extending a previous response's messages with additional user content.
+   *
+   * Uses the previous response's tools and output format, and this model's params.
+   *
+   * @template DepsT - The type of dependencies in the context.
+   * @param ctx - The context containing dependencies for tools.
+   * @param response - Previous response to extend.
+   * @param content - Additional user content to append.
+   * @returns A new ContextResponse object containing the extended conversation.
+   *
+   * @example
+   * ```typescript
+   * const response = await model.contextCall(ctx, 'Hello!');
+   * const followUp = await model.contextResume(ctx, response, 'Tell me more');
+   * console.log(followUp.text());
+   * ```
+   */
+  async contextResume<DepsT>(
+    ctx: Context<DepsT>,
+    response: RootResponse,
+    content: UserContent
+  ): Promise<ContextResponse<DepsT>> {
+    return this.provider.contextResume({
+      ctx,
+      modelId: this.modelId,
+      response,
+      content,
+      params: this.params,
+    });
+  }
+
+  /**
+   * Generate a new ContextStreamResponse by extending a previous response's messages with additional user content.
+   *
+   * Uses the previous response's tools and output format, and this model's params.
+   *
+   * @template DepsT - The type of dependencies in the context.
+   * @param ctx - The context containing dependencies for tools.
+   * @param response - Previous response to extend.
+   * @param content - Additional user content to append.
+   * @returns A new ContextStreamResponse object for consuming the streamed content.
+   *
+   * @example
+   * ```typescript
+   * const response = await model.contextStream(ctx, 'Hello!');
+   * await response.consume();
+   * const followUp = await model.contextResumeStream(ctx, response, 'Tell me more');
+   * for await (const text of followUp.textStream()) {
+   *   process.stdout.write(text);
+   * }
+   * ```
+   */
+  async contextResumeStream<DepsT>(
+    ctx: Context<DepsT>,
+    response: RootResponse,
+    content: UserContent
+  ): Promise<ContextStreamResponse<DepsT>> {
+    return this.provider.contextResumeStream({
+      ctx,
+      modelId: this.modelId,
+      response,
+      content,
       params: this.params,
     });
   }
