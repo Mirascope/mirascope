@@ -2,6 +2,7 @@
 title: "LLM Prompt - Examples and Best Practices"
 description: "Everything you want to know about LLM prompts, including examples, tips, and coding examples for creating well-structured and effective prompts."
 date: "2024-09-20"
+updatedAt: "2026-01-28"
 readTime: "23 min read"
 author: "William Bakst"
 ---
@@ -93,10 +94,10 @@ Notice how this output is overly broad and misses key details because the prompt
 
 Let's use a well-structured prompt with a general example to guide the model in summarizing effectively:
 
-```python
+```plaintext
 Instruction: "Summarize the following article."
 
-Text: “The rapid melting of polar ice caps has accelerated in recent years, leading to a significant rise in global sea levels. Coastal cities around the world are facing increased flooding risks, with some communities already experiencing regular inundations during high tides. Scientists warn that without immediate action to reduce greenhouse gas emissions, these trends will continue, putting millions of people at risk of displacement. Moreover, the economic impact on these regions could be devastating, with billions of dollars in property damage and the loss of vital infrastructure. Governments and international organizations are now pushing for more aggressive climate policies to mitigate these effects and protect vulnerable populations."
+Text: "The rapid melting of polar ice caps has accelerated in recent years, leading to a significant rise in global sea levels. Coastal cities around the world are facing increased flooding risks, with some communities already experiencing regular inundations during high tides. Scientists warn that without immediate action to reduce greenhouse gas emissions, these trends will continue, putting millions of people at risk of displacement. Moreover, the economic impact on these regions could be devastating, with billions of dollars in property damage and the loss of vital infrastructure. Governments and international organizations are now pushing for more aggressive climate policies to mitigate these effects and protect vulnerable populations."
 
 Example text: "New research indicates that urban air pollution levels have risen sharply over the past decade. Major cities are now experiencing more frequent 'smog days,' with adverse effects on public health, particularly for those with respiratory conditions. Despite growing awareness, many cities struggle to implement effective air quality regulations due to economic and political constraints."
 
@@ -206,7 +207,7 @@ Create a Python class for a simple calculator that can add and subtract numbers.
 
 Expected output:
 
-```python
+```python-snippet-skip
 class Calculator:
     def add(self, a, b):
         return a + b
@@ -364,26 +365,18 @@ After evaluating the options, the best approach is the multi-purpose space, as i
 In the code sample below, we guide the LLM through a structured analysis, setting up ToT to evaluate the best design approach for a new public park.
 
 ```python
-from openai import OpenAI
+from mirascope import llm
 
-client = OpenAI()
-
-def tree_of_thought(task: str) -> str | None:
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "system",
-                "content": "When given a task, consider at least three different approaches first, outlining the pros and cons of each approach. Then choose the best one.",
-            },
-            {"role": "user", "content": task},
-        ],
-    )
-    return completion.choices[0].message.content
+@llm.call("openai/gpt-4o-mini")
+def tree_of_thought(task: str):
+    return [
+        llm.messages.system("When given a task, consider at least three different approaches first, outlining the pros and cons of each approach. Then choose the best one."),
+        llm.messages.user(task),
+    ]
 
 task = "Design a new public park in a city with limited space."
-output = tree_of_thought(task)
-print(output)
+response = tree_of_thought(task)
+print(response.text())
 
 # OUTPUT:
 
@@ -443,7 +436,7 @@ After considering the pros and cons, Approach 3: Multi-Functional Community Hub 
 Below, we provide an alternative using Mirascope, which makes it easier to approach Tree-of-Thought through a structured approach:
 
 ```python
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 from pydantic import BaseModel, Field
 
 class Thought(BaseModel):
@@ -451,42 +444,30 @@ class Thought(BaseModel):
     pros: list[str] = Field(..., description="The pros of this approach")
     cons: list[str] = Field(..., description="The cons of this approach")
 
-@openai.call("gpt-4o-mini", response_model=list[Thought])
-@prompt_template(
-    """
-    SYSTEM:
-    When given a task, think through at least three different approaches.
-    Outline the pros and cons of each approach.
-
-    USER: {task}
-    """
-)
-def think(task: str): ...
-
-@openai.call("gpt-4o-mini")
-@prompt_template(
-    """
-    Based on the following thoughts on how to solve the task, select the best approach.
-    Output ONLY your evaluation and conclusion.
-
-    Thoughts:
-    {thoughts:lists}
-    """
-)
-def tree_of_thought(task: str) -> openai.OpenAIDynamicConfig:
-    thoughts = [
-        [
-            f"Approach: {thought.approach}",
-            f"Pros: {thought.pros}",
-            f"Cons: {thought.cons}",
-        ]
-        for thought in think(task)
+@llm.call("openai/gpt-4o-mini", format=list[Thought])
+def think(task: str):
+    return [
+        llm.messages.system("When given a task, think through at least three different approaches. Outline the pros and cons of each approach."),
+        llm.messages.user(task),
     ]
-    return {"computed_fields": {"thoughts": thoughts}}
+
+@llm.call("openai/gpt-4o-mini")
+def tree_of_thought(task: str):
+    thoughts_response = think(task)
+    thoughts_list = thoughts_response.parse()
+    thoughts_text = "\n\n".join([
+        f"Approach: {thought.approach}\nPros: {thought.pros}\nCons: {thought.cons}"
+        for thought in thoughts_list
+    ])
+    return f"""Based on the following thoughts on how to solve the task, select the best approach.
+Output ONLY your evaluation and conclusion.
+
+Thoughts:
+{thoughts_text}"""
 
 task = "Design a new public park in a city with limited space."
 response = tree_of_thought(task)
-print(response.content)
+print(response.text())
 print("Thoughts:")
 for thought in response.dynamic_config["computed_fields"]["thoughts"]:
     for part in thought:
@@ -562,7 +543,7 @@ From there, gradually iterate and refine the prompt (as we saw earlier with mult
 
 The choice of model - whether it’s GPT-3.5, GPT-4, Claude, or others - can impact the quality of your responses. That’s why testing your prompt across multiple AI models is generally a good idea.
 
-Mirascope’s `propt_template` decorator (combined with the [call decorator](/docs/v1/learn/calls)) serves as a kind of [template](/blog/langchain-prompt-template) to formulate model-agnostic prompts without needing to make major changes to the prompt structure or content.
+Mirascope's `@llm.call` decorator (see the [call documentation](/docs/learn/llm/calls)) serves as a kind of [template](/blog/langchain-prompt-template) to formulate model-agnostic prompts without needing to make major changes to the prompt structure or content.
 
 ### Colocate Parameters and Code with LLM Calls
 
@@ -573,17 +554,14 @@ We’ve designed Mirascope so that prompts, model parameters, and other configur
 An example can be seen below, where all the relevant parameters for the API call (such as the model, temperature, and prompt template) are bundled together with the function.
 
 ```python
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
-@openai.call(model="gpt-4o-mini", call_params={"temperature": 0.9})
-@prompt_template("Provide the estimated driving time from {city1} to {city2}")
-def report_driving_time(city1: str, city2: str): ...
+@llm.call("openai/gpt-4o-mini", temperature=0.9)
+def report_driving_time(city1: str, city2: str):
+    return f"Provide the estimated driving time from {city1} to {city2}"
 
 response = report_driving_time(city1="Los Angeles", city2="San Francisco")
-print(response.content)  # prints the string content of the call
-
-print(response.call_params) # prints the call parameters of the call
-
+print(response.text())  # prints the string content of the call
 ```
 
 More examples of colocation can be found throughout our [library](https://github.com/mirascope/mirascope/).
@@ -602,12 +580,12 @@ For instance, `response` below is assigned the output of an OpenAI call that ret
 
 Just like code, prompts are iterated and refined over time, so they too should be placed under [version control](/blog/prompt-versioning).
 
-It's helpful to use a local working directory for this. Mirascope offers a dedicated prompt management framework called [Lilypad](/docs/lilypad) that versions and traces every prompt and LLM call automatically.
+It's helpful to use a local working directory for this. Mirascope offers a dedicated prompt management framework called [Mirascope Cloud](/docs/learn/ops) that versions and traces every prompt and LLM call automatically.
 
 ## Use Mirascope for Effective Prompting
 
-Mirascope is a lightweight Python toolkit that’s premised on software engineering best practices. Our library offers tools for reducing boilerplate when writing LLM functions, and Lilypad offers prompt management and automatic versioning and tracing as a symbiotic partner library.
+Mirascope is a lightweight Python toolkit that's premised on software engineering best practices. Our library offers tools for reducing boilerplate when writing LLM functions, and Mirascope Cloud offers prompt management and automatic versioning and tracing as a symbiotic partner library.
 
-To use Mirascope, you only need to know Python and the Pydantic library - there are no other unique abstractions or fancy concepts to learn. Mirascope’s modules slot readily into existing developer workflows, making it easy to get started.
+To use Mirascope, you only need to know Python and the Pydantic library - there are no other unique abstractions or fancy concepts to learn. Mirascope's modules slot readily into existing developer workflows, making it easy to get started.
 
-Want to learn more? You can find more Mirascope code samples both on our [docs](/docs/mirascope) and the [GitHub repository](https://github.com/mirascope/mirascope).
+Want to learn more? You can find more Mirascope code samples both on our [docs](/docs) and the [GitHub repository](https://github.com/mirascope/mirascope).
