@@ -74,6 +74,16 @@ describe("handleRedirect", () => {
       );
     });
 
+    it("redirects /docs/mirascope/v2 to /docs (v2 is now current)", () => {
+      const response = handleRedirect(createRequest("/docs/mirascope/v2"));
+
+      expect(response).not.toBeNull();
+      expect(response!.status).toBe(301);
+      expect(response!.headers.get("Location")).toBe(
+        "https://mirascope.com/docs",
+      );
+    });
+
     it("redirects /docs/mirascope (exact, no trailing slash) to /docs/v1", () => {
       const response = handleRedirect(createRequest("/docs/mirascope"));
 

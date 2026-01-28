@@ -19,6 +19,8 @@ const simpleRedirects: Record<string, { to: string; status: RedirectStatus }> =
       to: "/docs/v1/guides/getting-started/quickstart",
       status: 301,
     },
+    // v2 became the current version, so redirect to current docs
+    "/docs/mirascope/v2": { to: "/docs", status: 301 },
     // Exact path matches for legacy docs sections (without trailing slash)
     "/docs/mirascope": { to: "/docs/v1", status: 301 },
     "/docs/mirascope/learn": { to: "/docs/v1/learn", status: 301 },
