@@ -21,6 +21,52 @@ This starts an interactive workflow that guides you through:
 
 ---
 
+## Batch Mode
+
+For processing multiple posts in parallel across instances:
+
+### Invocation
+
+```
+/blog-v1-deprecation-auditor --batch 1/3
+```
+
+Where `1/3` means "batch 1 of 3 total batches".
+
+### Behavior
+
+In batch mode:
+- Posts are sorted alphabetically by title (case-insensitive)
+- Posts are assigned to batches via modulo (predictable, stable assignment)
+- All interactive prompts are skipped
+- Claude rewrites all deprecated code blocks using the same logic as interactive mode
+- "auto" mode is the default - Claude applies all fixes without confirmation
+- Linear issues are created automatically (no confirmation)
+- `updatedAt` is added to frontmatter after successful migration
+
+### Parallel Execution
+
+Run multiple instances simultaneously:
+- Instance 1: `/blog-v1-deprecation-auditor --batch 1/3`
+- Instance 2: `/blog-v1-deprecation-auditor --batch 2/3`
+- Instance 3: `/blog-v1-deprecation-auditor --batch 3/3`
+
+Each instance processes ~1/3 of the posts with no overlap.
+
+### Post Assignment Algorithm
+
+Posts are assigned using modulo distribution:
+- Posts are filtered to only those with issues and no `updatedAt`
+- Posts are sorted by title (case-insensitive) for stable ordering
+- Post at index `i` goes to batch `(i % total_batches) + 1`
+
+Example with 52 posts and 3 batches:
+- Batch 1: posts 0, 3, 6, 9, ... (indices where i % 3 == 0) → ~18 posts
+- Batch 2: posts 1, 4, 7, 10, ... (indices where i % 3 == 1) → ~17 posts
+- Batch 3: posts 2, 5, 8, 11, ... (indices where i % 3 == 2) → ~17 posts
+
+---
+
 ## Phase 1: Generate Audit Summary
 
 ### Instructions
@@ -135,6 +181,97 @@ Iterate through **every issue** from the Phase 2 audit (code blocks, prose, link
 
 3. **Offer next steps**:
    > "Would you like to work on another post or exit?"
+
+---
+
+## Batch Mode Phases
+
+When `--batch N/M` is provided, follow these non-interactive phases instead:
+
+### Batch Phase 1: Get Assigned Posts
+
+1. Run the audit script with batch argument:
+   ```bash
+   uv run .claude/skills/blog-v1-deprecation-auditor/scripts/audit_posts.py --batch N/M
+   ```
+
+2. The script outputs:
+   - Batch identifier (e.g., "Batch 1/3")
+   - Number of posts assigned
+   - Numbered list of posts sorted by title
+
+3. **No user prompt** - proceed directly to processing each post sequentially.
+
+### Batch Phase 2: Process Each Post
+
+For each post in the batch, perform these steps automatically:
+
+#### 2a. Create Linear Issue (Auto)
+
+1. Check for existing sub-issue under GROWTH-51:
+   - Use `mcp__linear-server__list_issues` with `parentId: ce78a778-d632-43e5-97e4-f01b46bb752c` and `query: <filename>`
+
+2. If no existing issue, create one automatically:
+   - Use `mcp__linear-server__create_issue` with:
+     - `title`: `Migrate: <filename>`
+     - `team`: `Growth`
+     - `parentId`: `ce78a778-d632-43e5-97e4-f01b46bb752c`
+
+#### 2b. Run Detailed Audit
+
+1. Run:
+   ```bash
+   uv run .claude/skills/blog-v1-deprecation-auditor/scripts/audit_posts.py --file <filename>.mdx
+   ```
+
+2. Note all issues by category and line number.
+
+### Batch Phase 3: Auto-Fix All Issues
+
+For the current post, iterate through every issue and apply fixes automatically:
+
+1. **Read the post file** and reference patterns from:
+   - `references/current-patterns.md`
+   - `references/api-reference.md`
+   - Python library source if needed
+
+2. **For each issue**, apply the appropriate fix:
+
+   | Issue Type | Auto Action |
+   |------------|-------------|
+   | **Code block** | Rewrite with v2 patterns using Edit tool |
+   | **Prose/inline code** | Update text using Edit tool |
+   | **Link** | Replace with correct URL using Edit tool |
+   | **Image** | **Skip** - flag in final summary for manual review |
+
+3. **Verify rewrites** against live docs at https://mirascope.com/docs when needed.
+
+4. **After all fixable issues are addressed**:
+   - Add `updatedAt: "YYYY-MM-DD"` to frontmatter (today's date)
+   - Report: "Completed: <filename> (X issues fixed, Y images skipped)"
+
+5. **Move to next post** in the batch.
+
+### Batch Phase 4: Final Summary
+
+After all posts in the batch are processed, output a summary:
+
+```
+# Batch N/M Complete
+
+## Posts Processed: X
+
+| Post | Issues Fixed | Images Skipped | Status |
+|------|--------------|----------------|--------|
+| post-1.mdx | 12 | 1 | ✓ Complete |
+| post-2.mdx | 8 | 0 | ✓ Complete |
+| post-3.mdx | 15 | 2 | ✓ Complete |
+
+## Items Requiring Manual Review
+
+- post-1.mdx: 1 image at line 45
+- post-3.mdx: 2 images at lines 78, 156
+```
 
 ---
 
