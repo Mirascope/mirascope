@@ -14,7 +14,9 @@ import {
   BadRequestError,
   ServerError,
   APIError,
+  FeatureNotSupportedError,
 } from '@/llm/exceptions';
+import { Image } from '@/llm/content';
 import { user } from '@/llm/messages';
 import {
   mapGoogleErrorByStatus,
@@ -158,5 +160,16 @@ describe('buildRequestParams thinking config', () => {
     expect(params.config?.thinkingConfig).toEqual({
       thinkingBudget: 4000, // medium = 0.4 multiplier
     });
+  });
+});
+
+describe('image encoding', () => {
+  it('throws FeatureNotSupportedError for URL image source', () => {
+    const urlImage = Image.fromUrl('https://example.com/image.png');
+    const messages = [user(['Check this image', urlImage])];
+
+    expect(() =>
+      buildRequestParams('google/gemini-2.5-flash', messages, {})
+    ).toThrow(FeatureNotSupportedError);
   });
 });

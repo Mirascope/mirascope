@@ -7,6 +7,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { user } from '@/llm/messages';
+import { Audio, Image } from '@/llm/content';
+import { FeatureNotSupportedError } from '@/llm/exceptions';
 import { computeReasoning, buildRequestParams } from './_utils';
 
 describe('computeReasoning', () => {
@@ -65,5 +67,54 @@ describe('buildRequestParams thinking config', () => {
     });
 
     expect(params.reasoning).toEqual({ effort: 'high', summary: 'auto' });
+  });
+});
+
+describe('image encoding', () => {
+  it('encodes URL image source', () => {
+    const urlImage = Image.fromUrl('https://example.com/image.png');
+    const messages = [user(['Describe this', urlImage])];
+
+    const params = buildRequestParams('openai/gpt-4o:responses', messages, {});
+
+    // Check that the URL is passed through correctly
+    expect(params.input).toContainEqual({
+      role: 'user',
+      content: [
+        { type: 'input_text', text: 'Describe this' },
+        {
+          type: 'input_image',
+          image_url: 'https://example.com/image.png',
+          detail: 'auto',
+        },
+      ],
+    });
+  });
+});
+
+describe('audio encoding', () => {
+  it('throws FeatureNotSupportedError for audio input', () => {
+    // Create valid WAV audio with proper magic bytes (RIFF....WAVE)
+    const wavAudio = Audio.fromBytes(
+      new Uint8Array([
+        0x52,
+        0x49,
+        0x46,
+        0x46, // 'RIFF'
+        0x00,
+        0x00,
+        0x00,
+        0x00, // file size (placeholder)
+        0x57,
+        0x41,
+        0x56,
+        0x45, // 'WAVE'
+      ])
+    );
+    const messages = [user(['Listen to this', wavAudio])];
+
+    expect(() =>
+      buildRequestParams('openai/gpt-4o:responses', messages, {})
+    ).toThrow(FeatureNotSupportedError);
   });
 });
