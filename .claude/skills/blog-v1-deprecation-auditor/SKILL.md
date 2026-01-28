@@ -71,21 +71,27 @@ Example with 52 posts and 3 batches:
 
 ### Instructions
 
-1. Run the audit script (summary mode):
+1. Run snippet extraction to validate code block types:
+   ```bash
+   cd cloud && bun run generate:snippets --blog
+   ```
+   This validates that all Python code blocks use supported types (`python`, `python-snippet-concat`, `python-snippet-skip`). Any unsupported block types will be reported as errors.
+
+2. Run the audit script (summary mode):
    ```bash
    uv run .claude/skills/blog-v1-deprecation-auditor/scripts/audit_posts.py
    ```
 
-2. The script outputs a compact summary:
+4. The script outputs a compact summary:
    - Total posts scanned
    - Posts needing updates (count)
    - Total issues by priority (H/M/L)
    - Numbered list of posts with issues (filename + counts only)
 
-3. Ask the user:
+5. Ask the user:
    > "Would you like to select a blog post to work through? Enter a number or 'no' to exit."
 
-4. If user says no, end the workflow. If they enter a number, proceed to Phase 2.
+6. If user says no, end the workflow. If they enter a number, proceed to Phase 2.
 
 ---
 
@@ -175,11 +181,17 @@ Iterate through **every issue** from the Phase 2 audit (code blocks, prose, link
    Issues skipped: Z
    ```
 
-2. **If all issues resolved**, offer to mark the post complete:
+2. **Validate snippet extraction** for the updated file:
+   ```bash
+   cd cloud && bun run generate:snippets --file=../content/blog/<filename>.mdx
+   ```
+   This confirms all code blocks can be extracted successfully after migration.
+
+3. **If all issues resolved**, offer to mark the post complete:
    > "All issues resolved! Add `updatedAt` to frontmatter? (yes/no)"
    - If yes: Add `updatedAt: "YYYY-MM-DD"` (today's date) to frontmatter
 
-3. **Offer next steps**:
+4. **Offer next steps**:
    > "Would you like to work on another post or exit?"
 
 ---
@@ -190,17 +202,23 @@ When `--batch N/M` is provided, follow these non-interactive phases instead:
 
 ### Batch Phase 1: Get Assigned Posts
 
-1. Run the audit script with batch argument:
+1. Run snippet extraction to validate code block types:
+   ```bash
+   cd cloud && bun run generate:snippets --blog
+   ```
+   This validates all blog posts have valid Python block types.
+
+2. Run the audit script with batch argument:
    ```bash
    uv run .claude/skills/blog-v1-deprecation-auditor/scripts/audit_posts.py --batch N/M
    ```
 
-2. The script outputs:
+4. The script outputs:
    - Batch identifier (e.g., "Batch 1/3")
    - Number of posts assigned
    - Numbered list of posts sorted by title
 
-3. **No user prompt** - proceed directly to processing each post sequentially.
+5. **No user prompt** - proceed directly to processing each post sequentially.
 
 ### Batch Phase 2: Process Each Post
 
@@ -246,11 +264,16 @@ For the current post, iterate through every issue and apply fixes automatically:
 
 3. **Verify rewrites** against live docs at https://mirascope.com/docs when needed.
 
-4. **After all fixable issues are addressed**:
+4. **Validate snippet extraction** for the updated file:
+   ```bash
+   cd cloud && bun run generate:snippets --file=../content/blog/<filename>.mdx
+   ```
+
+5. **After all fixable issues are addressed**:
    - Add `updatedAt: "YYYY-MM-DD"` to frontmatter (today's date)
    - Report: "Completed: <filename> (X issues fixed, Y images skipped)"
 
-5. **Move to next post** in the batch.
+6. **Move to next post** in the batch.
 
 ### Batch Phase 4: Final Summary
 
