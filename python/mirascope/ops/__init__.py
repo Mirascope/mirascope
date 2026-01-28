@@ -12,9 +12,18 @@ stub_module_if_missing("mirascope.ops", "ops")
 # ruff: noqa: E402
 from ._internal.configuration import configure, tracer_context
 from ._internal.context import propagated_context
-from ._internal.instrumentation.llm import (
+from ._internal.instrumentation import (
+    instrument_anthropic,
+    instrument_google_genai,
     instrument_llm,
+    instrument_openai,
+    is_anthropic_instrumented,
+    is_google_genai_instrumented,
+    is_openai_instrumented,
+    uninstrument_anthropic,
+    uninstrument_google_genai,
     uninstrument_llm,
+    uninstrument_openai,
 )
 from ._internal.propagation import (
     ContextPropagator,
@@ -99,13 +108,22 @@ __all__ = [
     "extract_session_id",
     "get_propagator",
     "inject_context",
+    "instrument_anthropic",
+    "instrument_google_genai",
     "instrument_llm",
+    "instrument_openai",
+    "is_anthropic_instrumented",
+    "is_google_genai_instrumented",
+    "is_openai_instrumented",
     "propagated_context",
     "reset_propagator",
     "session",
     "span",
     "trace",
     "tracer_context",
+    "uninstrument_anthropic",
+    "uninstrument_google_genai",
     "uninstrument_llm",
+    "uninstrument_openai",
     "version",
 ]
