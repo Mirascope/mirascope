@@ -53,13 +53,8 @@ export type {
   UserMessage,
 } from '@/llm/messages';
 
-export {
-  assistant,
-  isMessages,
-  promoteToMessages,
-  system,
-  user,
-} from '@/llm/messages';
+import * as messages from '@/llm/messages';
+export { messages };
 
 export {
   MirascopeError,
