@@ -46,7 +46,7 @@ To help you monitor and improve large language models with the clarity needed, b
 
 ### 1. Mirascope Cloud: Captures the Why Behind LLM Outputs
 
-![Mirascope Cloud Landing Page](/assets/blog/llm-monitoring-tools/lilypad-landing-page.webp)
+![Mirascope Cloud Landing Page](/assets/blog/_shared/lilypad-landing-page.webp)
 
 [Mirascope Cloud](/docs/learn/ops) is an open source framework built for tracking, debugging, and optimizing [LLM applications](/blog/llm-applications), letting developers run their LLM workflows with the same insight, traceability, and reliability they're used to when working with traditional software.
 
@@ -111,15 +111,15 @@ print(answer.text())
 
 This makes LLM interactions reproducible, debuggable, and easy to compare, so you can quickly identify the root cause of any unexpected behavior. You can roll back to a previous version, run A/B tests, and track performance over time without losing the thread of what changed or why. Mirascope Cloud avoids creating duplicate versions if nothing inside the function has changed, so your version history stays clean.
 
-![Mirascope Cloud Trace](/assets/blog/llm-monitoring-tools/lilypad-trace.webp)
+![Mirascope Cloud Trace](/assets/blog/_shared/lilypad-trace.webp)
 
 Inside the Mirascope Cloud UI, you can view side-by-side comparisons of spans and function versions and can click the "Compare" button to see exactly what was different between two runs:
 
-![Mirascope Cloud Click Compare](/assets/blog/llm-monitoring-tools/lilypad-click-compare.webp)
+![Mirascope Cloud Click Compare](/assets/blog/_shared/lilypad-click-compare.webp)
 
 You can select another version and view the differences side-by-side:
 
-![Mirascope Cloud Compare Versions](/assets/blog/llm-monitoring-tools/lilypad-compare-versions.webp)
+![Mirascope Cloud Compare Versions](/assets/blog/_shared/lilypad-compare-versions-v2.webp)
 
 Alongside each call, the UI also shows detailed metadata, like latency, cost, and inputs,  giving you full visibility into what happened and what influenced the result.
 
@@ -157,13 +157,13 @@ Mirascope Cloud's framework simplifies the evaluation process by using a pass/fa
 
 In granular scoring, for instance, evaluation metrics might include rating scale from 1 to 5. But objectively rating the difference between a 3 and 4 for any given output could be challenging. A simple binary system of "pass" or "fail" can make it easier for teams to align on what counts as "good enough" in the real world.
 
-![Mirascope Cloud Annotation Queue](/assets/blog/llm-monitoring-tools/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
 
 This kind of binary labeling makes it easier for domain experts to annotate outputs directly in Mirascope Cloud traces or in the playground interface, helping create a continuous feedback loop.
 
 Each annotation is saved alongside the trace and the exact version of the function that produced it. To keep evaluations fair, Mirascope Cloud hides existing annotations when someone is reviewing a trace. That way, each reviewer gives feedback without being influenced by what others said.
 
-![Mirascope Cloud Annotations](/assets/blog/llm-monitoring-tools/lilypad-annotations.webp)
+![Mirascope Cloud Annotations](/assets/blog/_shared/lilypad-annotations.webp)
 
 Mirascope Cloud encourages manual labeling early in a project to build a strong, high-quality dataset of human-reviewed results. These labeled examples can later be used to train automated evaluators like [LLM-as-a-judge](/blog/llm-as-judge). Even with automation, though, Mirascope Cloud recommends keeping humans in the loop to verify final results.
 
@@ -171,7 +171,7 @@ To see for yourself how evaluations in the platform work, you can [**sign up for
 
 ### 2. Langfuse: Experimentation, Feedback, and Benchmarking for LLMs
 
-![Langfuse Dashboard](/assets/blog/llm-monitoring-tools/langfuse-dashboard.webp)
+![Langfuse Dashboard](/assets/blog/_shared/langfuse-dashboard.webp)
 
 [Langfuse](https://langfuse.com/) is an observability solution that helps teams manage, track, and debug LLM workflows in production. As LLM-powered applications introduce complexities not addressed by traditional monitoring tools, Langfuse provides deep tracing, analytics, and evaluation tailored to generative AI systems.
 
@@ -184,7 +184,7 @@ The platform:
 
 ### 3. Phoenix (by Arize): A Monitoring Tool Designed for Experimentation and Debugging
 
-![Phoenix Landing Page](/assets/blog/llm-monitoring-tools/phoenix-landing-page.webp)
+![Phoenix Landing Page](/assets/blog/_shared/phoenix-screenshot.webp)
 
 [Phoenix](https://phoenix.arize.com/) automatically traces requests and responses handled by LLM workflows and records metrics (like latency and token usage). It also collects contextual metadata, parameters, errors, prompt information, and retrieved documents.
 
@@ -229,7 +229,7 @@ Key features include:
 
 ### 6. Lunary: A Full-Stack Monitoring Toolkit for LLMs
 
-![Lunary Dashboard](/assets/blog/llm-monitoring-tools/lunary-dashboard.webp)
+![Lunary Dashboard](/assets/blog/_shared/lunary-screenshot.webp)
 
 [Lunary](https://lunary.ai/) is a production toolkit and observability platform specifically designed for monitoring and managing LLM applications, including chatbots and AI agents. It allows AI developers to capture, analyze, and improve AI interactions across their entire stack with [LLM tools](/blog/llm-tools) for debugging, analytics, prompt management, security, and collaboration.
 

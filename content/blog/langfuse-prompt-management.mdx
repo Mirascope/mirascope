@@ -143,7 +143,7 @@ You can also manually score outputs and collect direct user feedback in Langfuse
 
 For example, in the Annotate tab you might select a set of traces and label each answer as “Correct” or “Incorrect,” or rate it on a 1–5 scale. These annotations are saved as evaluation scores attached to the trace, just like any other performance metric in Langfuse. 
 
-![Langfuse Manual Annotation](/assets/blog/langfuse-prompt-management/langfuse-manual-annotation.webp)
+![Langfuse Manual Annotation](/assets/blog/_shared/langfuse-manual-annotation.webp)
 
 Langfuse also provides an “Annotation queue” feature for distributing tasks to team members and ensuring consistency.
 
@@ -191,17 +191,17 @@ Each time we run the function using the `@ops.version` decorator, Mirascope Clou
 
 Clicking the “Compare” button allows you to see and compare changes between versions:  
 
-![Lilypad Click Compare](/assets/blog/langfuse-prompt-management/lilypad-click-compare.webp)
+![Lilypad Click Compare](/assets/blog/_shared/answer-question-click-compare.webp)
 
 You then select different versions to view the differences side-by-side. 
 
-![Mirascope Cloud Compare Versions](/assets/blog/langfuse-prompt-management/lilypad-compare-versions.webp)
+![Mirascope Cloud Compare Versions](/assets/blog/_shared/lilypad-compare-versions.webp)
 
 Mirascope Cloud instruments everything using the [OpenTelemetry GenAI spec](https://opentelemetry.io/) for deep observability.
 
 Each trace captures the full context: what was asked, how it was asked, and what the model returned. You also get detailed metadata like inputs, outputs, model and provider info, token usage, latency, and cost.  
 
-![Lilypad OTel GenAI Data](/assets/blog/langfuse-prompt-management/lilypad-otel-genai-data.webp)
+![Lilypad OTel GenAI Data](/assets/blog/_shared/lilypad-otel-genai-data-v2.webp)
 
 This level of visibility lets you easily measure improvements and iterate without guessing what was different between runs.
 
@@ -211,7 +211,7 @@ Mirascope Cloud provides a no-code, browser-based playground that makes prompt m
 
 SMEs can edit, test, and ship prompt updates without requiring direct developer intervention for every iteration. This separation of concerns lets devs focus on system architecture, while SMEs handle prompt logic and evaluation.
 
-![Lilypad Playground](/assets/blog/langfuse-prompt-management/lilypad-playground.webp)
+![Lilypad Playground](/assets/blog/_shared/lilypad-playground-v5.webp)
 
 In the playground, non-technical users can:  
 
@@ -241,7 +241,7 @@ In the playground, both developers and non-technical users can review captured t
 
 You can optionally provide reasoning for your pass/fail decision to help others understand the criteria applied.
 
-![Lilypad Annotation Queue](/assets/blog/langfuse-prompt-management/lilypad-annotation-queue.webp)
+![Lilypad Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue-v4.webp)
 
 A discussion section is also available for adding comments or context to traces: 
 

@@ -11,49 +11,49 @@ Observability in LLM systems means seeing what’s really going on, whether it�
 
 That means tracking everything, like prompt formats, API calls, response times, token counts, and user feedback. You collect data, run tests, and keep improving how the system behaves.
 
-But you still  can’t see how LLMs work on the inside, since their weights and decision-making are hidden. So you rely on what you can see: outputs, metadata, and system logs.
+But you still can’t see how LLMs work on the inside, since their weights and decision-making are hidden. So you rely on what you can see: outputs, metadata, and system logs.
 
 A lot of tools call themselves “observability” platforms, **but they only cover the basics**, like inputs, outputs, token counts, latency, and error rates. That’s standard telemetry, not true observability. Such tools help you track costs and performance, but they don’t explain why the model behaved a certain way. It’s like watching the scoreboard without seeing the plays that led to the score.
 
-The goal isn’t just to watch but to *understand*. Observability helps you debug, test, and fine-tune prompts. You can tweak things in real time, compare versions, and use data to make better changes that actually improve results.
+The goal isn’t just to watch but to _understand_. Observability helps you debug, test, and fine-tune prompts. You can tweak things in real time, compare versions, and use data to make better changes that actually improve results.
 
 In this article, we'll show you six tools that make this possible, starting with Mirascope Cloud, our open source framework for LLM observability. Mirascope Cloud treats every model call like an experiment, tracking what happened, versioning the call, and showing you what changed and why it matters.
 
 Keep reading, or feel free to skip down to one of the observability tools below:
-  
-* [Mirascope Cloud](#1-mirascope-cloud-understanding-what-happened-and-why)  
-* [Langfuse](#2-langfuse-metrics-traces-and-model-insights-in-one-place)  
-* [Phoenix](#3-phoenix-visual-debugging-and-evaluation)  
-* [Helicone](#4-helicone-full-visibility-via-proxy)  
-* [Lunary](#5-lunary-analytics-that-drive-better-conversations)  
-* [Portkey](#6-portkey-monitoring-and-optimization-for-llm-apps)
+
+- [Mirascope Cloud](#1-mirascope-cloud-understanding-what-happened-and-why)
+- [Langfuse](#2-langfuse-metrics-traces-and-model-insights-in-one-place)
+- [Phoenix](#3-phoenix-visual-debugging-and-evaluation)
+- [Helicone](#4-helicone-full-visibility-via-proxy)
+- [Lunary](#5-lunary-analytics-that-drive-better-conversations)
+- [Portkey](#6-portkey-monitoring-and-optimization-for-llm-apps)
 
 ## What to Look for in an LLM Observability Tool
 
 A basic observability solution should help you:
 
-* Spot outputs that sound right but are factually wrong (hallucinations).  
-* Check for bias or unfair responses, so your [LLM applications](/blog/llm-applications) stay ethical and balanced.  
-* Catch prompt injection and prompt hacking, which can mess with your system or leak data.  
-* Detect model drift, where the model’s behavior slowly changes over time for no clear reason.
+- Spot outputs that sound right but are factually wrong (hallucinations).
+- Check for bias or unfair responses, so your [LLM applications](/blog/llm-applications) stay ethical and balanced.
+- Catch prompt injection and prompt hacking, which can mess with your system or leak data.
+- Detect model drift, where the model’s behavior slowly changes over time for no clear reason.
 
 That’s a start, but true observability offer deeper capabilities, like:
 
-* End-to-end traceability, or full visibility into what happened, step by step (even for complex sequences like in [prompt chaining](/blog/prompt-chaining)). You should be able to see the inputs, outputs, nested calls, and internal logic that led to the final result.  
-* Reproducibility and versioning through snapshots of code, prompts, and even function closures, so you can go back, compare versions, and understand what changed and why.  
-* Human-in-the-loop evaluation, or tools that let you add notes, comments, and reasoning directly into traces, making it easier to review results and improve the model with human feedback.
+- End-to-end traceability, or full visibility into what happened, step by step (even for complex sequences like in [prompt chaining](/blog/prompt-chaining)). You should be able to see the inputs, outputs, nested calls, and internal logic that led to the final result.
+- Reproducibility and versioning through snapshots of code, prompts, and even function closures, so you can go back, compare versions, and understand what changed and why.
+- Human-in-the-loop evaluation, or tools that let you add notes, comments, and reasoning directly into traces, making it easier to review results and improve the model with human feedback.
 
 We dive into tools offering these capabilities.
 
 ## 1. Mirascope Cloud: Understanding What Happened, and Why
 
-![Mirascope Cloud Homepage](/assets/blog/llm-observability/lilypad-homepage.webp)
+![Mirascope Cloud Homepage](/assets/blog/_shared/lilypad-homepage.webp)
 
 [Mirascope Cloud](/docs/learn/ops) is an open-source tool built for observing non-deterministic [LLM agents](/blog/llm-agents), where the same prompt doesn't always give the same result. It's designed to help you understand why something happened, not just what happened.
 
 Unlike tools that only capture inputs and outputs, Mirascope Cloud traces each generation back to the exact version of the code that produced it. This means you get the full picture: inputs, logic, prompt transformations, model settings, and results, all tied to a specific function and version.
 
-Because it works at the code level, you don't need to rely on fragile manual versioning or be locked into writing prompts in a UI. You can work in plain Python, and Mirascope Cloud handles the observability and versioning for you, making  [LLM integration](/blog/llm-integration) easier.
+Because it works at the code level, you don't need to rely on fragile manual versioning or be locked into writing prompts in a UI. You can work in plain Python, and Mirascope Cloud handles the observability and versioning for you, making [LLM integration](/blog/llm-integration) easier.
 
 It also supports any model provider or framework, and you can [self-host it for full control](/docs/learn/ops).
 
@@ -65,7 +65,7 @@ For starters, you can add `ops.configure()` and `ops.instrument_llm()` to automa
 
 This ensures spans are generated for each API call and that data like cost, token usage, and latency are captured.
 
-But to trace the *why* and *how* (not just the *what*) we recommend wrapping your LLM calls in Python functions and decorating them with `@ops.version`. This captures the full execution context: inputs, model configuration, helper logic, and prompt transformations. Every run then becomes a reproducible, versioned snapshot of your code in action.
+But to trace the _why_ and _how_ (not just the _what_) we recommend wrapping your LLM calls in Python functions and decorating them with `@ops.version`. This captures the full execution context: inputs, model configuration, helper logic, and prompt transformations. Every run then becomes a reproducible, versioned snapshot of your code in action.
 
 ```python-snippet-skip
 from openai import OpenAI
@@ -96,7 +96,7 @@ Mirascope Cloud works with your actual code and automatically tracks changes at 
 
 Once you've added the lines of code mentioned above, you can view the changes in the Mirascope Cloud UI, which automatically increments the version number for any change (e.g., changing the temperature or the prompt itself) you make within the function's closure:
 
-![Mirascope Cloud Answer Question v7 Trace](/assets/blog/llm-observability/lilypad-answer-question-v7-trace.webp)
+![Mirascope Cloud Answer Question v7 Trace](/assets/blog/_shared/lilypad-trace.webp)
 
 It even logs and tracks changes to user-defined functions or classes outside the main prompt function (as long as they’re within scope).
 
@@ -106,17 +106,17 @@ While other tools might offer the user experience of logging the prompt and mayb
 
 In the playground, the “Compare” button allows you to compare different versions of the code:
 
-![Mirascope Cloud Answer Question Click Compare](/assets/blog/llm-observability/lilypad-answer-question-click-compare.webp)
+![Mirascope Cloud Answer Question Click Compare](/assets/blog/_shared/answer-question-click-compare.webp)
 
 This shows a second dropdown menu, where you can select another version and view the differences side-by-side:
 
-![Mirascope Cloud Answer Question Compare Versions](/assets/blog/llm-observability/lilypad-answer-question-compare-versions.webp)
+![Mirascope Cloud Answer Question Compare Versions](/assets/blog/_shared/lilypad-compare-versions.webp)
 
 You can inspect trace data for any LLM call that’s wrapped in a function by selecting that function. This lets you see the full picture of what happened during the call, including inputs, logic, prompt changes, and model settings:
 
-![Mirascope Cloud Answer Question Trace Data](/assets/blog/llm-observability/lilypad-answer-question-trace-data.webp)
+![Mirascope Cloud Answer Question Trace Data](/assets/blog/_shared/lilypad-trace-genai-data.webp)
 
-The `.version` method lets you access specific versions downstream and  re-run their exact code to compare outputs, track changes, or reproduce earlier results.
+The `.version` method lets you access specific versions downstream and re-run their exact code to compare outputs, track changes, or reproduce earlier results.
 
 For example:
 
@@ -130,7 +130,7 @@ You can also use `.version` to run different versions of the same function, e.g.
 
 Mirascope Cloud offers a visual, interactive interface that brings together traces, versioning, and annotations all in one place, allowing non-technical users to collaborate. This no-code environment is designed for domain experts who want to improve how LLMs behave and test different prompt wordings, tweak parameters, and observe how the model responds, all without needing to touch the underlying code or ask engineers for help.
 
-![Mirascope Cloud Playground](/assets/blog/llm-observability/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/_shared/lilypad-playground-v2.webp)
 
 The Mirascope Cloud playground allows users to write prompts in markdown with typed variable placeholders. When someone edits a prompt, like changing the wording or adjusting a setting, Mirascope Cloud automatically creates a new version of the Python function behind the scenes. This has the same effect as editing and rerunning the function directly in code.
 
@@ -142,19 +142,19 @@ Mirascope Cloud's playground also visualizes the full trace of each run, includi
 
 ### Turning Outputs into Feedback Loops
 
-[LLM evaluation](/blog/llm-evaluation) isn’t just about checking if an answer is right or wrong; it’s about understanding whether the response was *good enough* for the situation. In many cases, there’s no clear correct answer, so human judgment becomes an all-important part of the process. Observability, in this context, isn't just about catching failures: it’s about recognizing what made a response succeed or fall short.
+[LLM evaluation](/blog/llm-evaluation) isn’t just about checking if an answer is right or wrong; it’s about understanding whether the response was _good enough_ for the situation. In many cases, there’s no clear correct answer, so human judgment becomes an all-important part of the process. Observability, in this context, isn't just about catching failures: it’s about recognizing what made a response succeed or fall short.
 
 Mirascope Cloud makes this possible by treating annotations as a key part of its observability system. An annotation is tied directly to a single span, which means it's connected to the exact function version, inputs, prompt, and model settings that produced the output. This grounds feedback in its full context.
 
-![Mirascope Cloud Annotation Queue](/assets/blog/llm-observability/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
 
 You can assign reviewers to specific outputs and organize them into [prompt evaluation](/blog/prompt-evaluation) queues. Human reviewers define what “good enough” really means, and label outputs as pass or fail, adding optional notes to explain their reasoning. This turns gut checks into structured, searchable data.
 
 These annotations are saved alongside traces and function versions, creating a feedback trail that's easy to review and reproduce. To keep reviews unbiased, Mirascope Cloud hides existing annotations when someone is evaluating a trace.
 
-![Mirascope Cloud Answer Question Annotations](/assets/blog/llm-observability/lilypad-answer-question-annotations.webp)
+![Mirascope Cloud Answer Question Annotations](/assets/blog/_shared/lilypad-annotations.webp)
 
-Developers can also add annotations directly in code, right after a function runs. By using the `@ops.trace` decorator, the function's return value becomes a special object that still includes the output, but also lets you add annotations with `.annotate()`. 
+Developers can also add annotations directly in code, right after a function runs. By using the `@ops.trace` decorator, the function's return value becomes a special object that still includes the output, but also lets you add annotations with `.annotate()`.
 
 This is useful for automated testing, scripted evals, or CI/CD workflows, where you want to capture evaluations without switching to the playground.
 
@@ -195,76 +195,76 @@ You can [sign up for Mirascope Cloud](https://cloud.mirascope.com/) using your G
 
 ## 2. Langfuse: Metrics, Traces, and Model Insights in One Place
 
-![Langfuse Screenshot](/assets/blog/llm-observability/langfuse-screenshot.webp)
+![Langfuse Screenshot](/assets/blog/_shared/langfuse-dashboard.webp)
 
 [Langfuse](https://langfuse.com/) is an open-source platform that gives you LLM monitoring, debugging, and analytics for your LLM applications. It tracks the entire flow of how your app runs, from API calls and prompts to retrieval steps and agent actions, so you can clearly see how your LLM workflows behave and where things might be going wrong.
 
 ### Langfuse Key Features
 
-* Enables granular tracing of all LLM-related components, including support for multi-modal data like text, audio, and images.  
-* Monitors LLM performance and key metrics like cost and latency at detailed levels, helping teams manage performance and backend resource usage across models, prompts, and users.  
-* Integrates user feedback and supports both manual and automated output evaluation to improve model quality continuously.  
-* Provides prompt versioning and testing tools, making it easier to iterate quickly and link prompt changes to observed outcomes.  
-* Offers dataset tools for benchmarking and testing using real production traces, enabling reliable experimentation and validation.  
-* Works with any model or framework, supports multiple SDKs, and integrates with tools like OpenAI, LangChain, and LlamaIndex.
+- Enables granular tracing of all LLM-related components, including support for multi-modal data like text, audio, and images.
+- Monitors LLM performance and key metrics like cost and latency at detailed levels, helping teams manage performance and backend resource usage across models, prompts, and users.
+- Integrates user feedback and supports both manual and automated output evaluation to improve model quality continuously.
+- Provides prompt versioning and testing tools, making it easier to iterate quickly and link prompt changes to observed outcomes.
+- Offers dataset tools for benchmarking and testing using real production traces, enabling reliable experimentation and validation.
+- Works with any model or framework, supports multiple SDKs, and integrates with tools like OpenAI, LangChain, and LlamaIndex.
 
 ## 3. Phoenix: Visual Debugging and Evaluation
 
-![Phoenix Screenshot](/assets/blog/llm-observability/phoenix-screenshot.webp)
+![Phoenix Screenshot](/assets/blog/_shared/phoenix-screenshot.webp)
 
 [Phoenix](https://phoenix.arize.com/), built by Arize AI, shows how your LLM applications are behaving and performing, and acts as a central hub where you can trace, evaluate, and debug your LLM workflow.
 
 ### Phoenix Key Features
 
-* Captures detailed traces of LLM executions, including inputs, outputs, intermediate steps, and latency metrics.  
-* Visualizes hierarchical workflows to identify bottlenecks and failures across chains and agent steps.  
-* Supports multiple evaluation metrics and types: LLM-based, code-based, and human-in-the-loop, for assessing relevance, safety, and accuracy.  
-* Enables benchmarking against datasets to detect hallucinations, biases, and regressions.  
-* Offers replay functionality to test the impact of changes (e.g., prompt edits) on outputs.  
-* Integrates with OpenTelemetry and OpenInference to support diverse stack and deployment environments.
+- Captures detailed traces of LLM executions, including inputs, outputs, intermediate steps, and latency metrics.
+- Visualizes hierarchical workflows to identify bottlenecks and failures across chains and agent steps.
+- Supports multiple evaluation metrics and types: LLM-based, code-based, and human-in-the-loop, for assessing relevance, safety, and accuracy.
+- Enables benchmarking against datasets to detect hallucinations, biases, and regressions.
+- Offers replay functionality to test the impact of changes (e.g., prompt edits) on outputs.
+- Integrates with OpenTelemetry and OpenInference to support diverse stack and deployment environments.
 
 ## 4. Helicone: Full Visibility via Proxy
 
-![Helicone Screenshot](/assets/blog/llm-observability/helicone-screenshot.webp)
+![Helicone Screenshot](/assets/blog/_shared/helicone-screenshot.webp)
 
 [Helicone](https://www.helicone.ai/) is a proxy-based tool that sits between your app and the LLM provider, capturing data from every request and response. You don’t need to change much in your code; it works by simply switching the API base URL. This makes it easy to set up and fast to use, especially for teams who want quick observability without a lot of extra work.
 
 ### Helicone Key Features
 
-* Logs and traces interaction histories, including multi-step agent workflows, to help debug and optimize behavior across user journeys.  
-* Provides centralized visibility into latency, token usage, and costs, supporting both real-time and historical analysis.  
-* Supports multiple LLM providers (OpenAI, Azure, Anthropic, Gemini, Cohere).  
-* Includes gateway features like provider routing, model failover, and rate limiting to improve reliability and control.  
-* Offers both cloud and self-hosted deployment options, with scalable performance and minimal added latency.
+- Logs and traces interaction histories, including multi-step agent workflows, to help debug and optimize behavior across user journeys.
+- Provides centralized visibility into latency, token usage, and costs, supporting both real-time and historical analysis.
+- Supports multiple LLM providers (OpenAI, Azure, Anthropic, Gemini, Cohere).
+- Includes gateway features like provider routing, model failover, and rate limiting to improve reliability and control.
+- Offers both cloud and self-hosted deployment options, with scalable performance and minimal added latency.
 
 ## 5. Lunary: Analytics That Drive Better Conversations
 
-![Lunary Screenshot](/assets/blog/llm-observability/lunary-screenshot.webp)
+![Lunary Screenshot](/assets/blog/_shared/lunary-screenshot.webp)
 
 [Lunary](https://lunary.ai/) is an open-source platform that gives you visibility into how your LLM-powered apps are working, from chatbots to agent workflows. It's designed to be model-agnostic, meaning it works with any LLM provider. Lunary helps you monitor performance, understand what’s going on under the hood, and debug problems at a production level.
 
 ### Lunary Key Features
 
-* Captures full traces of every LLM call, including prompts, LLM responses, and errors, to support detailed debugging and analysis.  
-* Logs usage metrics like latency, token counts, cost, and user activity for ongoing performance monitoring and trend analysis.  
-* Enables versioned prompt management, collaboration, and A/B testing to improve prompt design across technical and non-technical teams.  
-* Supports human-in-the-loop review and automated scoring of outputs, helping teams evaluate response quality and gather training data.  
-* Provides classification tools (e.g., topic and sentiment analysis) to extract trends and increase interpretability of conversation logs.  
-* Offers customizable dashboards and alerting for stakeholders, surfacing anomalies, failures, and usage patterns in real time.
+- Captures full traces of every LLM call, including prompts, LLM responses, and errors, to support detailed debugging and analysis.
+- Logs usage metrics like latency, token counts, cost, and user activity for ongoing performance monitoring and trend analysis.
+- Enables versioned prompt management, collaboration, and A/B testing to improve prompt design across technical and non-technical teams.
+- Supports human-in-the-loop review and automated scoring of outputs, helping teams evaluate response quality and gather training data.
+- Provides classification tools (e.g., topic and sentiment analysis) to extract trends and increase interpretability of conversation logs.
+- Offers customizable dashboards and alerting for stakeholders, surfacing anomalies, failures, and usage patterns in real time.
 
 ## 6. Portkey: Monitoring and Optimization for LLM Apps
 
-![Portkey Screenshot](/assets/blog/llm-observability/portkey-screenshot.webp)
+![Portkey Screenshot](/assets/blog/_shared/portkey-screenshot.webp)
 
 [Portkey](https://portkey.ai/) is an observability platform that helps teams work with large language models, acting as a gateway to give you a single API to connect with many different AI models, no matter the provider. With Portkey, teams can build, monitor, and improve their LLM-powered apps efficiently and without having to manage each model separately.
 
 ### Portkey Key Features
 
-* Captures requests and responses with many different performance metrics (e.g., cost, latency, accuracy).  
-* Real-time dashboards and analytics expose system health, token usage, error rates, and performance inefficiencies.  
-* Centralized logging of inputs, outputs, and errors supports debugging and root cause analysis.  
-* OpenTelemetry-compliant tracing follows each request through the full LLM stack to isolate bottlenecks and failures.  
-* Tracks prompt performance and usage trends to optimize prompt engineering in production.
+- Captures requests and responses with many different performance metrics (e.g., cost, latency, accuracy).
+- Real-time dashboards and analytics expose system health, token usage, error rates, and performance inefficiencies.
+- Centralized logging of inputs, outputs, and errors supports debugging and root cause analysis.
+- OpenTelemetry-compliant tracing follows each request through the full LLM stack to isolate bottlenecks and failures.
+- Tracks prompt performance and usage trends to optimize prompt engineering in production.
 
 ## See Beyond the Output
 

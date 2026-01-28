@@ -231,11 +231,11 @@ Instead of guessing what changed (or why) you get a full trace, backed by versio
 
 For example, we see below that V6 of our code calls `gpt-4o`:
 
-![Mirascope Cloud Answer Question v6 Trace](/assets/blog/prompt-engineering-best-practices/lilypad-answer-question-v6-trace.webp)
+![Mirascope Cloud Answer Question v6 Trace](/assets/blog/_shared/lilypad-answer-question-v6-trace.webp)
 
 Changing the model type automatically increments the version number:
 
-![Mirascope Cloud Answer Question v7 Trace](/assets/blog/prompt-engineering-best-practices/lilypad-answer-question-v7-trace.webp)
+![Mirascope Cloud Answer Question v7 Trace](/assets/blog/_shared/lilypad-answer-question-v7-trace.webp)
 
 ### 9. Trace Every Output You Generate
 
@@ -247,7 +247,7 @@ That's why we recommend to trace not just raw API calls, but also the structured
 
 That's where Mirascope Cloud's tracing system comes in. Just call `ops.configure()` and `ops.instrument_llm()` to enable automatic tracing. This captures raw LLM API calls and logs critical metadata like inputs, outputs, token usage, and costs, giving you an API-level footprint of your versioned calls.
 
-![Mirascope Cloud Traces Tab](/assets/blog/prompt-engineering-best-practices/lilypad-traces-tab.webp)
+![Mirascope Cloud Traces Tab](/assets/blog/_shared/lilypad-trace.webp)
 
 But to make those traces truly actionable, the `@ops.trace` decorator promotes each trace from a loose log to a structured unit of execution, linking it directly to the function that made the call, like `answer_question()` in our earlier example. That lets you filter, group, and analyze traces by logical units, not just endpoints or paths.
 
@@ -261,7 +261,7 @@ That means you need a way to let non-developers contribute without touching prod
 
 With Mirascope Cloud, you can do exactly that. It supports managed prompts, which are versioned prompt templates that live in the playground. This lets contributors edit, test, and iterate on prompts directly in the browser, while developers reference those prompts safely in code, without ever needing to redeploy the app just to apply a wording tweak.
 
-![Mirascope Cloud Playground](/assets/blog/prompt-engineering-best-practices/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/_shared/lilypad-playground.webp)
 
 This creates a clean separation of concerns: developers handle infrastructure and application logic, while subject matter experts own the prompt wording. This division is especially valuable when collaborating on more advanced use cases, such as [LLM agents](/blog/llm-agents/), where prompt components and control logic need to evolve independently.
 
@@ -287,7 +287,7 @@ This structure also lends itself to automation. Once you've built a solid evalua
 
 Mirascope Cloud makes evaluation easy to adopt. Non-technical contributors can annotate outputs from AI tools directly in the playground UI: selecting pass or fail and providing reasoning with just a few clicks.
 
-![Mirascope Cloud Annotation Queue](/assets/blog/prompt-engineering-best-practices/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
 
 Each evaluation is tied to a specific version of the function that generated the model outputs. That means when quality shifts, whether for better or worse, you can immediately trace back to what changed: the prompt, model, code, parameters, or any combination of the above.
 

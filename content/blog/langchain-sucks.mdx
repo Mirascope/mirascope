@@ -200,7 +200,7 @@ print(book.author) # Output: Isaac Asimov
 
 Hovering over `response` below shows it expects a response with a `Book` return type from `.parse()`:
 
-![Mirascope Type Safety](/assets/blog/langchain-sucks/mirascope-type-safety.webp)
+![Mirascope Type Safety](/assets/blog/_shared/mirascope-type-safety.webp)
 
 Since the `@call` decorator wraps a regular Python function, you can still use type hints on its inputs, like `text: str`, which helps your IDE provide better autocomplete, inline docs, and error checking as you write code.
 
@@ -256,15 +256,15 @@ The playground shows you everything you need to understand your LLM calls, like:
 
 For example, we see where the non-deterministic function (`answer_question`) is indicated as V6 in the playground:
 
-![Mirascope Cloud Answer Question v6 Trace](/assets/blog/langchain-sucks/lilypad-answer-question-v6-trace.webp)
+![Mirascope Cloud Answer Question v6 Trace](/assets/blog/_shared/lilypad-answer-question-v6-trace.webp)
 
 Any changes to the code would increment this to V7.
 
-![Mirascope Cloud Answer Question v7 Trace](/assets/blog/langchain-sucks/lilypad-answer-question-v7-trace.webp)
+![Mirascope Cloud Answer Question v7 Trace](/assets/blog/_shared/lilypad-answer-question-v7-trace.webp)
 
 Mirascope Cloud automatically creates a nested trace whenever the function is executed:
 
-![Mirascope Cloud OpenTelemetry GenAI Data](/assets/blog/langchain-sucks/lilypad-otel-genai-data.webp)
+![Mirascope Cloud OpenTelemetry GenAI Data](/assets/blog/_shared/lilypad-otel-genai-data.webp)
 
 This gives you a full snapshot of the function — code, config, and logic — so you can accurately compare how different versions affect LLM output on the exact same input.
 
@@ -280,13 +280,13 @@ Mirascope Cloud also keeps things simple with a binary scoring system: pass or f
 
 In the Mirascope Cloud playground you evaluate outputs by picking any output:
 
-![Mirascope Cloud Answer Question Assign Annotation](/assets/blog/langchain-sucks/lilypad-answer-question-assign-annotation.webp)
+![Mirascope Cloud Answer Question Assign Annotation](/assets/blog/_shared/lilypad-answer-question-assign-annotation.webp)
 
 Then you can assign a label, like "Pass" or "Fail," and optionally add a comment to explain why you made that choice:
 
 And subsequently marking that output as "Pass" or "Fail" (you can optionally provide reasoning):
 
-![Mirascope Cloud Annotation Queue](/assets/blog/langchain-sucks/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue-v3.webp)
 
 Mirascope Cloud's unified [LLM evaluation](/blog/llm-evaluation/) workflow provides a better dev experience whether you're testing LLM apps built on an SDK or building apps like chatbots because it ties every output directly to the exact code, prompt, and settings that produced it. 
 
