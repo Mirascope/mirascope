@@ -75,6 +75,9 @@ ops = [
     "opentelemetry-propagator-jaeger>=1.38.0",
     "libcst>=1.8.6",
     "packaging>=25.0",
+    "opentelemetry-instrumentation-openai-v2>=2.0b0,<3",
+    "opentelemetry-instrumentation-anthropic>=0.50.0,<1",
+    "opentelemetry-instrumentation-google-genai>=0.3b0,<1",
 ]
 mlx = ["mlx-lm>=0.28.4,<1"]
 all = ["mirascope[anthropic,api,google,openai,mcp,ops,mlx]"]
