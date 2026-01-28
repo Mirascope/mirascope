@@ -2,6 +2,7 @@
 title: "A Guide to Advanced Prompt Engineering"
 description: "Learn the real strategies behind advanced prompt engineering, from versioning and evaluation to building repeatable, scalable workflows."
 date: "2025-06-30"
+updatedAt: "2026-01-28"
 readTime: "14 min read"
 author: "William Bakst"
 ---
@@ -18,7 +19,7 @@ Advanced prompt engineering means treating the model like a tool inside a bigger
 
 **But LLMs are non-deterministic**, so the same input can return different outputs each time. To get real, repeatable results, you need to understand how the model behaves, version your prompts, and track what’s changing.
 
-That’s not so easy with the current state-of-the-art [LLM tools](/blog/llm-tools/), so we built our own prompt engineering framework, [Lilypad](/docs/lilypad), to make it easy to track every change, not just to the prompt text, but also to the code that calls the model. 
+That's not so easy with the current state-of-the-art [LLM tools](/blog/llm-tools/), so we built our own prompt engineering framework, [Mirascope Cloud](/docs/learn/ops), to make it easy to track every change, not just to the prompt text, but also to the code that calls the model. 
 
 This includes LLM settings, the code structure, and any data transformations involved, so you can version, compare, and optimize model outputs like a real engineering workflow.
 
@@ -32,7 +33,7 @@ In this article we describe advanced prompt engineering techniques that we found
 * [Chain of Verification](#6-chain-of-verification-cov)  
 * [Self-Consistency](#7-self-consistency)
 
-At the end, we’ll also show how our LLM engineering platform [Lilypad’s experimentation framework](#why-prompts-alone-aren’t-enough) makes iterating and testing your prompts easy and why that matters, since advanced prompt techniques alone aren’t guaranteed solutions but instead are hypotheses about how to guide the model toward better results.
+At the end, we'll also show how our LLM engineering platform [Mirascope Cloud's experimentation framework](#why-prompts-alone-aren't-enough) makes iterating and testing your prompts easy and why that matters, since advanced prompt techniques alone aren't guaranteed solutions but instead are hypotheses about how to guide the model toward better results.
 
 ## 7 Highly Useful Prompt Engineering Techniques
 
@@ -92,7 +93,7 @@ Let’s walk through it step-by-step:
 Therefore, after both Bella and Carlos have toggled the switch, the light is once again in the "on" position.
 ```
 
-You can also see a version of this [RaR prompt in Python](/docs/v1/guides/prompt-engineering/text-based/rephrase-and-respond) in our code tutorials.
+You can also see a version of this RaR prompt in Python in our [documentation](/docs).
 
 ### 3. Chain of Thought (CoT)
 
@@ -124,7 +125,7 @@ Marbles left = 40 - 28 = 12
 So, Liam has 12 marbles left after giving marbles to his friends.
 ```
 
-You can also check out our code tutorial for creating both zero- and few-shot variants of [CoT prompts](/docs/v1/guides/prompt-engineering/text-based/chain-of-thought) using Mirascope.
+You can also check out our code tutorial for creating both zero- and few-shot variants of CoT prompts using Mirascope in our [documentation](/docs).
 
 ### 4. Self-Ask Prompt
 
@@ -151,7 +152,7 @@ Intermediate answer: Peak fall foliage in Colorado typically occurs from late Se
 Final Answer: Peak fall foliage in the state where ZIP code 80302 is located (Colorado) typically happens from late September to early October.
 ```
 
-Our [self-ask prompt coding recipe](/docs/v1/guides/prompt-engineering/text-based/self-ask) shows you how to implement both basic and enhanced (with dynamic example selection) versions.
+Our self-ask prompt coding recipe shows you how to implement both basic and enhanced (with dynamic example selection) versions. See our [documentation](/docs) for details.
 
 ### 5. Tree-of-Thought (ToT)
 
@@ -247,7 +248,7 @@ Verified List of Explorers and Their Achievements:
 - Roald Amundsen – First to reach the South Pole (1911)
 ```
 
-See our [coding tutorial](/docs/v1/guides/prompt-engineering/chaining-based/chain-of-verification) for a complete example of building a CoV prompt using Python.
+See our [documentation](/docs) for a complete example of building a CoV prompt using Python.
 
 ### 7. Self-Consistency
 
@@ -302,7 +303,7 @@ Conclusion:
 The most frequent and correct answer is 17 marbles. Each method, whether direct calculation, step-by-step subtraction, algebraic reasoning, or estimation, correctly accounts for the 28 marbles Liam gave away. Therefore, 17 marbles is the final and accurate answer.
 ```
 
-Our coding tutorial shows you how to construct both a basic version of the [self-consistency prompt](/docs/v1/guides/prompt-engineering/chaining-based/self-consistency), as well as using automated answer extraction.
+Our coding tutorial shows you how to construct both a basic version of the self-consistency prompt, as well as using automated answer extraction. Check our [documentation](/docs) for details.
 
 ## Why Prompts Alone Aren’t Enough
 
@@ -314,30 +315,26 @@ And if you’re running experiments, you need an experiment framework because th
 
 The real goal of prompt engineering is to optimize your model's outputs across repeated, real-world inputs, like those required for production-grade [LLM applications](/blog/llm-applications/). Not just once, but consistently. To do that at scale, you need a system that versions your prompts, tracks every change, and ties every output back to its exact input, code, and model settings.
 
-**That’s why we built [Lilypad](https://lilypad.so/docs)** to treat your prompts, and the full context around them, as versioned, traceable units so that prompt engineering becomes more like professional software development.
+**That's why we built [Mirascope Cloud](/docs/learn/ops)** to treat your prompts, and the full context around them, as versioned, traceable units so that prompt engineering becomes more like professional software development.
 
-To use Lilypad, we advocate encapsulating calls in functions as a first step so that each LLM interaction can be versioned, traced, evaluated, and optimized independently, giving you full control over how prompts evolve and how your system improves over time.
+To use Mirascope Cloud, we advocate encapsulating calls in functions as a first step so that each LLM interaction can be versioned, traced, evaluated, and optimized independently, giving you full control over how prompts evolve and how your system improves over time.
 
-Next, you simply add the `@lilypad.trace` decorator to turn the function into a managed prompt. This allows Lilypad to automatically version all changes made within the function closure, i.e., the prompt itself, model settings, input arguments, any pre-processing code, etc.
+Next, you simply add the `@ops.version` decorator to turn the function into a managed prompt. This allows Mirascope Cloud to automatically version all changes made within the function closure, i.e., the prompt itself, model settings, input arguments, any pre-processing code, etc.
 
 ```py
-from openai import OpenAI
-import lilypad
+from mirascope import llm, ops
 
-lilypad.configure()
-client = OpenAI()
+ops.configure()
+ops.instrument_llm()
 
-@lilypad.trace(versioning="automatic")  # [!code highlight]
+@ops.version  # [!code highlight]
+@llm.call("openai/gpt-4o")
 def answer_question(question: str) -> str:
-    completion = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": question}],
-    )
-    return str(completion.choices[0].message.content) 
-    
+    return question
+
 response = answer_question("What is the largest planet in the solar system?")
-print(response)
-# > The largest planet in the solar system is Jupiter. 
+print(response.text())
+# > The largest planet in the solar system is Jupiter.
 ```
 
 Versioning the full function closure means you can:
@@ -349,25 +346,25 @@ Versioning the full function closure means you can:
 
 All of this brings real structure to the prompt engineering process, making it possible to trace every change, label failures clearly, and improve systematically, instead of flying blind.
 
-Lilypad displays all versions and traces in its playground environment (described below), which is a no-code user interface where SMEs can experiment with different prompts and settings, and where you can easily visualize how different versions perform.
+Mirascope Cloud displays all versions and traces in its playground environment (described below), which is a no-code user interface where SMEs can experiment with different prompts and settings, and where you can easily visualize how different versions perform.
 
 For example, for every LLM call we make, that versioned code appears in the playground:
 
-![Lilypad Answer Question Trace](/assets/blog/advanced-prompt-engineering/lilypad-answer-question-trace.webp)
+![Mirascope Cloud Answer Question Trace](/assets/blog/advanced-prompt-engineering/lilypad-answer-question-trace.webp)
 
 Changing anything within the function closure (including the prompt text) and running the code will automatically increment the version number, unless that change is identical to a previous version.
 
-Lilypad traces not just the raw API request to the model, capturing input/output tokens, costs, and model metadata (which is key for doing [LLM evaluation](/blog/llm-evaluation/)), but also the full function that generated the call, including the code, prompt logic, arguments, and version.
+Mirascope Cloud traces not just the raw API request to the model, capturing input/output tokens, costs, and model metadata (which is key for doing [LLM evaluation](/blog/llm-evaluation/)), but also the full function that generated the call, including the code, prompt logic, arguments, and version.
 
-You’re not just saving outputs; you’re building a complete history of how your prompts and the artificial intelligence behaves. This lets you spot bugs faster, track down unexpected costs, compare versions, and make real improvements based on data, not guesswork. It turns prompt engineering into something you can test, trust, and scale like real software, not just hope for the best.
+You're not just saving outputs; you're building a complete history of how your prompts and the artificial intelligence behaves. This lets you spot bugs faster, track down unexpected costs, compare versions, and make real improvements based on data, not guesswork. It turns prompt engineering into something you can test, trust, and scale like real software, not just hope for the best.
 
-## How Lilypad Makes Prompt Collaboration Actually Work
+## How Mirascope Cloud Makes Prompt Collaboration Actually Work
 
 A lot of prompt observability platforms, like LangSmith or Langfuse Prompt Manager, completely separate prompts from the codebase. On paper, this sounds great: prompts on one side, code on the other, each managed by different teams.
 
-But in practice, **we’ve found this setup fragile, error-prone, and hard to scale**. Once you break the link between prompts and the code that influences them, it becomes easy for things to drift out of sync, leading to confusing bugs and messy failures when changes happen.
+But in practice, **we've found this setup fragile, error-prone, and hard to scale**. Once you break the link between prompts and the code that influences them, it becomes easy for things to drift out of sync, leading to confusing bugs and messy failures when changes happen.
 
-In Lilypad, we take a different approach: we treat the prompt and the code as a single, versioned unit. Every time you update your [LLM prompt](/blog/llm-prompt/) or the function around it, Lilypad automatically keeps them in lockstep. The type-safe code generated in the playground always matches what’s running in production, no gaps, no surprises. And even if Lilypad’s servers went down, your local project stays fully intact.
+In Mirascope Cloud, we take a different approach: we treat the prompt and the code as a single, versioned unit. Every time you update your [LLM prompt](/blog/llm-prompt/) or the function around it, Mirascope Cloud automatically keeps them in lockstep. The type-safe code generated in the playground always matches what's running in production, no gaps, no surprises. And even if Mirascope Cloud's servers went down, your local project stays fully intact.
 
 Nonetheless, we still offer the playground as a separate, no-code environment where non-technical domain experts can safely create, modify, and manage prompts, without developers needing to redeploy code.
 
@@ -377,7 +374,7 @@ Inside the playground, domain experts have everything they need, from type-safe 
 
 Experts can use the markdown-supported prompt templates to try different prompting techniques and compare outputs as often as needed, all without having to manually save effective prompts or risk breakage by inadvertently changing application logic.
 
-![Lilypad Playground](/assets/blog/advanced-prompt-engineering/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/advanced-prompt-engineering/lilypad-playground.webp)
 
 ## Stop Guessing, Start Testing Your Prompts
 
@@ -399,14 +396,14 @@ That’s because different reviewers might see the scale differently: what feels
 
 Also, if you successfully collect accurate evals over time, you can train large language models to introduce automation in evals later (using [LLM-as-a-judge](/blog/llm-as-judge/) for instance). This means you can start automating parts of the review process without losing the consistency and quality needed to keep improving your prompts (although we strongly recommend manually verifying all automated evals to catch errors, prevent drift, and avoid quietly shipping broken prompts).
 
-Lilypad makes it easy for reviewers to quickly label outputs. Just pick a response in the playground, mark it pass or fail, and (if you want) add a quick note. Over time, you build up a clear record of what’s working and what’s not.
+Mirascope Cloud makes it easy for reviewers to quickly label outputs. Just pick a response in the playground, mark it pass or fail, and (if you want) add a quick note. Over time, you build up a clear record of what's working and what's not.
 
-![Lilypad Annotation Queue](/assets/blog/advanced-prompt-engineering/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/advanced-prompt-engineering/lilypad-annotation-queue.webp)
 
 This simple process builds a ground truth dataset that can be compared against new outputs to see if things got better, worse, or stayed the same.
 
 ## Turn Prompt Engineering into a Repeatable Process
 
-Lilypad lets you treat your prompts like real software: versioned, traceable, and always improving based on real feedback, not just intuition. It’s ideal for teams building and scaling [LLM agents](/blog/llm-agents/).
+Mirascope Cloud lets you treat your prompts like real software: versioned, traceable, and always improving based on real feedback, not just intuition. It's ideal for teams building and scaling [LLM agents](/blog/llm-agents/).
 
-[To get started with Lilypad](https://lilypad.mirascope.com/), you can use your GitHub credentials to sign up and begin tracing and versioning your LLM functions with just a few lines of code.
+[To get started with Mirascope Cloud](https://app.mirascope.com/), you can use your GitHub credentials to sign up and begin tracing and versioning your LLM functions with just a few lines of code.
