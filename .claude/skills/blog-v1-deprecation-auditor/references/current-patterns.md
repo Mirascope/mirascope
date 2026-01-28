@@ -108,6 +108,21 @@ response = recommend_book("fantasy")
 print(response.content)  # .content property is deprecated
 ```
 
+**Style guideline - separate assignment and printing:**
+```python
+# Correct (readable, debuggable)
+response = recommend_book("fantasy")
+print(response.text())
+
+# Avoid (chained calls are harder to debug)
+print(recommend_book("fantasy").text())
+```
+
+When migrating code, always break up chained response calls into separate lines for:
+- Better readability
+- Easier debugging (can inspect `response` object)
+- Consistent code style across blog posts
+
 ### Structured Output (Response Models)
 
 **Current (correct) - use `format=` and `.parse()`:**

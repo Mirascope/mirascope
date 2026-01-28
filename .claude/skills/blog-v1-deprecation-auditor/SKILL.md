@@ -187,6 +187,12 @@ Iterate through **every issue** from the Phase 2 audit (code blocks, prose, link
    ```
    This confirms all code blocks can be extracted successfully after migration.
 
+3. **Type check and lint the extracted snippet**:
+   ```bash
+   cd cloud && bun run validate:snippets --path=.extracted-snippets/blog/<post-slug>/
+   ```
+   This confirms the migrated code passes pyright type checking and ruff linting.
+
 3. **If all issues resolved**, offer to mark the post complete:
    > "All issues resolved! Add `updatedAt` to frontmatter? (yes/no)"
    - If yes: Add `updatedAt: "YYYY-MM-DD"` (today's date) to frontmatter
@@ -269,15 +275,28 @@ For the current post, iterate through every issue and apply fixes automatically:
    cd cloud && bun run generate:snippets --file=../content/blog/<filename>.mdx
    ```
 
-5. **After all fixable issues are addressed**:
+5. **Type check and lint the extracted snippet**:
+   ```bash
+   cd cloud && bun run validate:snippets --path=.extracted-snippets/blog/<post-slug>/
+   ```
+
+6. **After all fixable issues are addressed**:
    - Add `updatedAt: "YYYY-MM-DD"` to frontmatter (today's date)
    - Report: "Completed: <filename> (X issues fixed, Y images skipped)"
 
-6. **Move to next post** in the batch.
+7. **Move to next post** in the batch.
 
 ### Batch Phase 4: Final Summary
 
-After all posts in the batch are processed, output a summary:
+After all posts in the batch are processed:
+
+1. **Run full validation on all blog snippets**:
+   ```bash
+   cd cloud && bun run validate:snippets --path=.extracted-snippets/blog/
+   ```
+   This ensures all migrated posts pass type checking and linting.
+
+2. **Output a summary**:
 
 ```
 # Batch N/M Complete
