@@ -84,6 +84,19 @@ describe("handleRedirect", () => {
       );
     });
 
+    it("redirects /docs/mirascope/v2/ (with trailing slash) directly to /docs without double redirect", () => {
+      // This tests that URLs with trailing slashes that match simple redirects
+      // go directly to the final destination, avoiding a redirect chain
+      const response = handleRedirect(createRequest("/docs/mirascope/v2/"));
+
+      expect(response).not.toBeNull();
+      expect(response!.status).toBe(301);
+      // Should go directly to /docs, not to /docs/mirascope/v2 first
+      expect(response!.headers.get("Location")).toBe(
+        "https://mirascope.com/docs",
+      );
+    });
+
     it("redirects /docs/mirascope (exact, no trailing slash) to /docs/v1", () => {
       const response = handleRedirect(createRequest("/docs/mirascope"));
 

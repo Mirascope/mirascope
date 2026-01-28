@@ -157,14 +157,14 @@ export const handleRedirect = (request: Request): Response | null => {
   const url = new URL(request.url);
   const pathname = url.pathname;
 
-  // 0. Normalize trailing slashes (except root) with 301 for SEO
-  if (pathname !== "/" && pathname.endsWith("/")) {
-    const normalized = pathname.slice(0, -1) + url.search;
-    return Response.redirect(new URL(normalized, url.origin).toString(), 301);
-  }
+  // Normalize pathname by removing trailing slash (except root) for consistent matching
+  const cleanPathname =
+    pathname !== "/" && pathname.endsWith("/")
+      ? pathname.slice(0, -1)
+      : pathname;
 
-  // 1. Check simple exact matches
-  const simple = simpleRedirects[pathname];
+  // 1. Check simple exact matches (using cleaned pathname to avoid double redirects)
+  const simple = simpleRedirects[cleanPathname];
   if (simple) {
     const destination = simple.to.startsWith("/")
       ? new URL(simple.to, url.origin).toString()
@@ -172,7 +172,14 @@ export const handleRedirect = (request: Request): Response | null => {
     return Response.redirect(destination, simple.status);
   }
 
-  // 2. Check underscore paths (with or without trailing content)
+  // 2. Normalize trailing slashes (except root) with 301 for SEO
+  // This comes after simple redirects to avoid double redirects
+  if (pathname !== cleanPathname) {
+    const normalized = cleanPathname + url.search;
+    return Response.redirect(new URL(normalized, url.origin).toString(), 301);
+  }
+
+  // 3. Check underscore paths (with or without trailing content)
   for (const underscorePath of underscorePaths) {
     const oldPath = `/${underscorePath}`;
     if (pathname === oldPath || pathname.startsWith(oldPath + "/")) {
@@ -184,7 +191,7 @@ export const handleRedirect = (request: Request): Response | null => {
     }
   }
 
-  // 3. Check prefix redirects (order matters)
+  // 4. Check prefix redirects (order matters)
   for (const { prefix, to, status } of prefixRedirects) {
     if (pathname.startsWith(prefix)) {
       const splat = pathname.slice(prefix.length);
