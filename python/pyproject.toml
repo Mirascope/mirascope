@@ -142,6 +142,15 @@ target-version = "py310"
 "mirascope/api/_generated/**" = ["ALL"]
 "tests/ops/_internal/closure_test_functions/**" = ["ANN"]
 "tests/ops/_internal/test_closure.py" = ["ANN"]
+"../cloud/.extracted-snippets/**/*.py" = [
+    "E501",  # ignore line too long
+    "I",     # ignore isort for examples
+    "D",     # ignore docstring issues
+    "T",     # ignore type checking issues
+    "B905",  # ignore zip() without strict parameter
+    "PL",    # ignore pylint
+    "RUF",   # ignore ruff rules
+]
 
 [tool.ruff.lint]
 select = [

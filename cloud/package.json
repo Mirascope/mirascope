@@ -30,6 +30,7 @@
     "generate:social-cards-test": "bun run scripts/generate-test-social-cards.ts",
     "generate:snippets": "bun run scripts/generate-snippets.ts",
     "fetch-github-stats": "bun run scripts/fetch-github-stats.ts",
+    "validate:snippets": "bash scripts/validate-snippets.sh",
     "email:dev": "email dev --dir ./emails/templates --port 3333",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
