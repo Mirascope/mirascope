@@ -2,10 +2,14 @@
 title: "Mirascope V1 Release - Lessons Learned from Building an LLM Package"
 description: "Mirascope's stable release, V1 has been released. We discuss the reasons behind creating Mirascope and what led us to the changes from the original design to our V1 and what's coming down the road."
 date: "2024-08-19"
+updatedAt: "2026-01-28"
 readTime: "10 min read"
 author: "William Bakst"
 ---
 
+<Callout title="Historical Content" type="info">
+This post documents the Mirascope V1 release from August 2024. Code examples show V1 patterns which have since been superseded by V2. For current API patterns and documentation, see our [latest documentation](/docs/learn/llm).
+</Callout>
 
 After months of development, countless iterations, and invaluable community feedback, we're excited to announce the release of Mirascope V1. This journey has been filled with challenges, insights, and breakthroughs. In this post, I'll share my experience building an LLM package, the design issues we encountered in V0, and how we've addressed them in V1.
 
@@ -43,7 +47,7 @@ Our community has been incredible, providing consistent feedback that has influe
 
 It's worth going through our solutions to each of these problems to properly highlight why we made the changes we did in our v1 release. Of course, there were many other points of feedback we addressed as well as additional features we've included in the release.
 
-Take a look at our [migration guide](/docs/v1/getting-started/migration/) and [learn documentation](/docs/v1/learn) for a deeper dive that covers everything in detail.
+Take a look at our [documentation](/docs/learn/llm) for a deeper dive that covers everything in detail.
 
 ### Separation of State and Arguments
 
@@ -206,7 +210,7 @@ Mirascope V1 is a significant step forward, but our journey doesn't end here. We
 
 - **More Programming Languages** : I started with Python because that's what felt most natural as an MLE / AI research engineer. But I think developers that program with other languages deserve tooling that follows the same principles with which we've built Mirascope. I expect the next language we support will be JavaScript/TypeScript.
 - **Provider Support** : New providers (and new features) are popping up all of the time. For example, OpenAI just recently released structured output support natively, and Anthropic just released prompt caching. We want to push ourselves to support such releases as soon as they are released.
-- **Version Control** : Versioning a text prompt may be easy, but the reality is that prompts are often far more than just a single text snippet - they involve code. We love git, but it falls short in this instance. We're excited about discovering new ways to support versioning on the fly for better hot-swapping of entire flows to enable easier evaluation and comparison of various implementation versions. We're currently working a new library, [`Lilypad`](/docs/lilypad), which automatically versions and traces LLM functions on every call.
+- **Version Control** : Versioning a text prompt may be easy, but the reality is that prompts are often far more than just a single text snippet - they involve code. We love git, but it falls short in this instance. We're excited about discovering new ways to support versioning on the fly for better hot-swapping of entire flows to enable easier evaluation and comparison of various implementation versions. We've since released [Mirascope Cloud](/docs/learn/ops), which automatically versions and traces LLM functions on every call.
 - **Postgres and pgvec** : Similar to improving the ergonomics of LLM APIs, we think there is a single layer abstraction on top of Postgres and pgvec that's waiting to be built. We envision something like a CRUD interface for RAG apps where the underlying data can live where all of your data already lives.
 
 Let us know if there's anything specific you'd like to see included in future releases!
@@ -217,8 +221,8 @@ We invite you to try out Mirascope V1, share your experiences, and join us in sh
 
 Ready to get started? Here's how:
 
-1. Check out our [Quick Start Guide](/docs/v1/guides/getting-started/quickstart) to set up Mirascope in minutes.
-2. Explore our [Usage Documentation](/docs/v1/learn) for in-depth guides and examples.
+1. Check out our [Quick Start Guide](/docs/learn/llm) to set up Mirascope in minutes.
+2. Explore our [Documentation](/docs) for in-depth guides and examples.
 3. Join our [Discord Community](https://mirascope.com/discord-invite) to discuss questions, stay up to date on announcements, or even show off what you've built.
 
 Let's build the future of AI together!
