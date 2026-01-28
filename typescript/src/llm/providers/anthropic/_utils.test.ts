@@ -8,6 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { user } from '@/llm/messages';
 import { FeatureNotSupportedError } from '@/llm/exceptions';
+import { Audio, Image } from '@/llm/content';
 import { buildRequestParams, computeThinkingBudget } from './_utils';
 
 describe('computeThinkingBudget', () => {
@@ -109,6 +110,61 @@ describe('buildRequestParams', () => {
 
       // Default means don't set thinking parameter
       expect(params.thinking).toBeUndefined();
+    });
+  });
+
+  describe('image encoding', () => {
+    it('throws FeatureNotSupportedError for HEIC image format', () => {
+      // Create a minimal HEIC image (using magic bytes)
+      // HEIC files start with 'ftyp' at offset 4 with 'heic' brand
+      const heicMagicBytes = new Uint8Array([
+        0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, 0x68, 0x65, 0x69, 0x63,
+      ]);
+      const heicImage = Image.fromBytes(heicMagicBytes);
+      const messages = [user(['Check this image', heicImage])];
+
+      expect(() =>
+        buildRequestParams('anthropic/claude-haiku-4-5', messages, {})
+      ).toThrow(FeatureNotSupportedError);
+    });
+
+    it('throws FeatureNotSupportedError for HEIF image format', () => {
+      // HEIF files also use 'ftyp' but with 'mif1' brand
+      const heifMagicBytes = new Uint8Array([
+        0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, 0x6d, 0x69, 0x66, 0x31,
+      ]);
+      const heifImage = Image.fromBytes(heifMagicBytes);
+      const messages = [user(['Check this image', heifImage])];
+
+      expect(() =>
+        buildRequestParams('anthropic/claude-haiku-4-5', messages, {})
+      ).toThrow(FeatureNotSupportedError);
+    });
+  });
+
+  describe('audio encoding', () => {
+    it('throws FeatureNotSupportedError for audio input', () => {
+      // MP3 magic bytes (ID3 tag with padding to meet 12-byte minimum)
+      const mp3MagicBytes = new Uint8Array([
+        0x49,
+        0x44,
+        0x33, // 'ID3'
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00, // padding
+      ]);
+      const audio = Audio.fromBytes(mp3MagicBytes);
+      const messages = [user(['Transcribe this', audio])];
+
+      expect(() =>
+        buildRequestParams('anthropic/claude-haiku-4-5', messages, {})
+      ).toThrow(FeatureNotSupportedError);
     });
   });
 });

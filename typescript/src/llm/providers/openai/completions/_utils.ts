@@ -5,7 +5,8 @@
 import type {
   ChatCompletion,
   ChatCompletionAssistantMessageParam,
-  ChatCompletionContentPart,
+  ChatCompletionContentPartImage,
+  ChatCompletionContentPartInputAudio,
   ChatCompletionContentPartText,
   ChatCompletionCreateParamsNonStreaming,
   ChatCompletionMessageParam,
@@ -13,79 +14,169 @@ import type {
 
 import type {
   AssistantContentPart,
+  Audio,
+  AudioMimeType,
+  Image,
   Text,
-  UserContentPart,
 } from '@/llm/content';
 import { FeatureNotSupportedError } from '@/llm/exceptions';
-import type { AssistantMessage, Message, SystemMessage } from '@/llm/messages';
+import type { AssistantMessage, Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { ParamHandler } from '@/llm/providers/base';
 import type { OpenAIModelId } from '@/llm/providers/openai/model-id';
 import { modelName } from '@/llm/providers/openai/model-id';
+import { MODELS_WITHOUT_AUDIO_SUPPORT } from '@/llm/providers/openai/model-info';
 import { FinishReason } from '@/llm/responses/finish-reason';
 import type { Usage } from '@/llm/responses/usage';
 import { createUsage } from '@/llm/responses/usage';
 
 // ============================================================================
-// Content Part Processing
+// Content Part Encoding
 // ============================================================================
 
-interface ProcessContentOptions {
-  encodeThoughtsAsText?: boolean;
-}
+/**
+ * Content part types for user messages.
+ */
+type UserContentPartOpenAI =
+  | ChatCompletionContentPartText
+  | ChatCompletionContentPartImage
+  | ChatCompletionContentPartInputAudio;
 
 /**
- * Result of processing content parts, categorized by type.
+ * Encode an Image content part to OpenAI's format.
+ * OpenAI accepts either a URL or a base64 data URI.
  */
-interface ProcessedContentParts {
-  text: ChatCompletionContentPartText[];
-}
-
-/**
- * Process content parts from either user or assistant messages.
- * Categorizes parts by type and converts to OpenAI format where applicable.
- */
-function processContentParts(
-  content: readonly (UserContentPart | AssistantContentPart)[],
-  options: ProcessContentOptions = {}
-): ProcessedContentParts {
-  const result: ProcessedContentParts = {
-    text: [],
+function encodeImage(image: Image): ChatCompletionContentPartImage {
+  let url: string;
+  if (image.source.type === 'url_image_source') {
+    url = image.source.url;
+  } else {
+    url = `data:${image.source.mimeType};base64,${image.source.data}`;
+  }
+  return {
+    type: 'image_url',
+    image_url: { url, detail: 'auto' },
   };
+}
 
-  for (const part of content) {
+/**
+ * OpenAI-supported audio formats for input.
+ */
+type OpenAIAudioFormat = 'wav' | 'mp3';
+
+/**
+ * Extract the audio format from a MIME type.
+ *
+ * @throws FeatureNotSupportedError if the format is not supported by OpenAI
+ */
+function toOpenAIAudioFormat(mimeType: AudioMimeType): OpenAIAudioFormat {
+  const format = mimeType.split('/')[1];
+  if (format === 'wav' || format === 'mp3') {
+    return format;
+  }
+  throw new FeatureNotSupportedError(
+    `audio format: ${mimeType}`,
+    'openai',
+    null,
+    `OpenAI only supports 'wav' and 'mp3' audio formats, got '${format}'.`
+  );
+}
+
+/**
+ * Encode an Audio content part to OpenAI's format.
+ *
+ * @throws FeatureNotSupportedError if the model doesn't support audio or format is unsupported
+ */
+function encodeAudio(
+  audio: Audio,
+  modelId: OpenAIModelId | undefined
+): ChatCompletionContentPartInputAudio {
+  // Check if model supports audio
+  if (modelId) {
+    const baseModelName = modelName(modelId, null);
+    if (MODELS_WITHOUT_AUDIO_SUPPORT.has(baseModelName)) {
+      throw new FeatureNotSupportedError(
+        'audio input',
+        'openai',
+        modelId,
+        `Model '${modelId}' does not support audio inputs.`
+      );
+    }
+  }
+
+  const format = toOpenAIAudioFormat(audio.source.mimeType);
+  return {
+    type: 'input_audio',
+    input_audio: {
+      data: audio.source.data,
+      format,
+    },
+  };
+}
+
+// ============================================================================
+// Message Encoding
+// ============================================================================
+
+/**
+ * Encode Mirascope messages to OpenAI Chat Completions API format.
+ *
+ * @param messages - The messages to encode
+ * @param encodeThoughtsAsText - Whether to encode thoughts as text in assistant messages
+ * @param modelId - The model ID (used for checking audio support)
+ */
+export function encodeMessages(
+  messages: readonly Message[],
+  encodeThoughtsAsText: boolean = false,
+  modelId?: OpenAIModelId
+): ChatCompletionMessageParam[] {
+  const openaiMessages: ChatCompletionMessageParam[] = [];
+
+  for (const message of messages) {
+    if (message.role === 'system') {
+      openaiMessages.push({
+        role: 'system',
+        content: message.content.text,
+      });
+    } else if (message.role === 'user') {
+      openaiMessages.push(encodeUserMessage(message, modelId));
+    } else if (message.role === 'assistant') {
+      openaiMessages.push(
+        encodeAssistantMessage(message, encodeThoughtsAsText)
+      );
+    }
+  }
+
+  return openaiMessages;
+}
+
+/**
+ * Encode a Mirascope user message to OpenAI format.
+ *
+ * Iterates over content parts and builds the appropriate content structure.
+ * Single text part is simplified to string, multiple parts become an array.
+ */
+function encodeUserMessage(
+  message: Extract<Message, { role: 'user' }>,
+  modelId?: OpenAIModelId
+): ChatCompletionMessageParam {
+  const contentParts: UserContentPartOpenAI[] = [];
+
+  for (const part of message.content) {
     switch (part.type) {
       case 'text':
-        result.text.push({ type: 'text', text: part.text });
+        contentParts.push({ type: 'text', text: part.text });
         break;
 
-      case 'thought':
-        // When encodeThoughtsAsText is true, encode as text; otherwise drop
-        if (options.encodeThoughtsAsText) {
-          result.text.push({
-            type: 'text',
-            text: '**Thinking:** ' + part.thought,
-          });
-        }
+      case 'image':
+        contentParts.push(encodeImage(part));
+        break;
+
+      case 'audio':
+        contentParts.push(encodeAudio(part, modelId));
         break;
 
       /* v8 ignore start - content types not yet implemented */
-      case 'image':
-        throw new FeatureNotSupportedError(
-          'image content encoding',
-          'openai',
-          null,
-          'Image content is not yet implemented'
-        );
-
-      case 'audio':
-        throw new FeatureNotSupportedError(
-          'audio content encoding',
-          'openai',
-          null,
-          'Audio content is not yet implemented'
-        );
-
       case 'document':
         throw new FeatureNotSupportedError(
           'document content encoding',
@@ -101,7 +192,52 @@ function processContentParts(
           null,
           'Tool outputs are not yet implemented'
         );
+      /* v8 ignore stop */
+    }
+  }
 
+  // Simplify to string if only a single text part
+  let content: string | UserContentPartOpenAI[] = contentParts;
+  if (contentParts.length === 1 && contentParts[0]?.type === 'text') {
+    content = contentParts[0].text;
+  }
+
+  return {
+    role: 'user',
+    content,
+    ...(message.name && { name: message.name }),
+  };
+}
+
+/**
+ * Encode a Mirascope assistant message to OpenAI format.
+ *
+ * Iterates over content parts and builds text content.
+ * Single text part is simplified to string, multiple parts become an array.
+ */
+function encodeAssistantMessage(
+  message: AssistantMessage,
+  encodeThoughtsAsText: boolean
+): ChatCompletionAssistantMessageParam {
+  const textParts: ChatCompletionContentPartText[] = [];
+
+  for (const part of message.content) {
+    switch (part.type) {
+      case 'text':
+        textParts.push({ type: 'text', text: part.text });
+        break;
+
+      case 'thought':
+        // Encode thoughts as text when requested, otherwise drop
+        if (encodeThoughtsAsText) {
+          textParts.push({
+            type: 'text',
+            text: '**Thinking:** ' + part.thought,
+          });
+        }
+        break;
+
+      /* v8 ignore start - content types not yet implemented */
       case 'tool_call':
         throw new FeatureNotSupportedError(
           'tool call encoding',
@@ -113,90 +249,14 @@ function processContentParts(
     }
   }
 
-  return result;
-}
-
-// ============================================================================
-// Content Simplification
-// ============================================================================
-
-/**
- * Simplify content parts to string if only a single text part.
- * For multiple parts, returns the array as-is.
- */
-function simplifyContent<T extends ChatCompletionContentPart>(
-  parts: T[]
-): string | T[] {
-  if (parts.length === 1 && parts[0] && parts[0].type === 'text') {
-    return parts[0].text;
+  // Simplify to string if single text part, otherwise keep as list
+  // Empty content becomes null
+  let content: string | ChatCompletionContentPartText[] | null = null;
+  if (textParts.length === 1) {
+    content = textParts[0]!.text;
+  } else if (textParts.length > 1) {
+    content = textParts;
   }
-  return parts;
-}
-
-/**
- * Encode Mirascope messages to OpenAI Chat Completions API format.
- *
- * @param messages - The messages to encode
- * @param encodeThoughtsAsText - Whether to encode thoughts as text in assistant messages
- */
-export function encodeMessages(
-  messages: readonly Message[],
-  encodeThoughtsAsText: boolean = false
-): ChatCompletionMessageParam[] {
-  const openaiMessages: ChatCompletionMessageParam[] = [];
-
-  for (const message of messages) {
-    if (message.role === 'system') {
-      openaiMessages.push(encodeSystemMessage(message));
-    } else if (message.role === 'user') {
-      openaiMessages.push(encodeUserMessage(message));
-    } else if (message.role === 'assistant') {
-      openaiMessages.push(
-        encodeAssistantMessage(message, encodeThoughtsAsText)
-      );
-    }
-  }
-
-  return openaiMessages;
-}
-
-function encodeSystemMessage(
-  message: SystemMessage
-): ChatCompletionMessageParam {
-  return {
-    role: 'system',
-    content: message.content.text,
-  };
-}
-
-/**
- * Encode a Mirascope user message to OpenAI format.
- */
-function encodeUserMessage(
-  message: Extract<Message, { role: 'user' }>
-): ChatCompletionMessageParam {
-  const { text } = processContentParts(message.content);
-
-  return {
-    role: 'user',
-    content: simplifyContent(text),
-    ...(message.name && { name: message.name }),
-  };
-}
-
-/**
- * Encode a Mirascope assistant message to OpenAI format.
- */
-function encodeAssistantMessage(
-  message: AssistantMessage,
-  encodeThoughtsAsText: boolean
-): ChatCompletionAssistantMessageParam {
-  const { text } = processContentParts(message.content, {
-    encodeThoughtsAsText,
-  });
-
-  // Join text parts into a single string for assistant messages
-  const content = text.map((p) => p.text).join('') || null;
 
   return {
     role: 'assistant',
@@ -220,7 +280,11 @@ export function buildRequestParams(
     const thinkingConfig = p.get('thinking');
     const encodeThoughtsAsText = thinkingConfig?.encodeThoughtsAsText ?? false;
 
-    const openaiMessages = encodeMessages(messages, encodeThoughtsAsText);
+    const openaiMessages = encodeMessages(
+      messages,
+      encodeThoughtsAsText,
+      modelId
+    );
 
     const requestParams: ChatCompletionCreateParamsNonStreaming = {
       model: modelName(modelId, null),

@@ -3,15 +3,14 @@
  */
 
 import type OpenAI from 'openai';
-import type { Response as OpenAIResponse } from 'openai/resources/responses/responses';
+import type {
+  Response as OpenAIResponse,
+  ResponseInputContent,
+  ResponseInputImage,
+} from 'openai/resources/responses/responses';
 import type { Reasoning, ReasoningEffort } from 'openai/resources/shared';
 
-import type {
-  AssistantContentPart,
-  Text,
-  Thought,
-  UserContentPart,
-} from '@/llm/content';
+import type { AssistantContentPart, Image, Text, Thought } from '@/llm/content';
 import { FeatureNotSupportedError } from '@/llm/exceptions';
 import type { AssistantMessage, Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
@@ -68,87 +67,20 @@ export function computeReasoning(
 type ResponseInputItem = OpenAI.Responses.EasyInputMessage;
 
 // ============================================================================
-// Content Part Processing
+// Content Part Encoding
 // ============================================================================
 
 /**
- * Result of processing content parts for the Responses API.
- * Since Responses API only accepts string content, we accumulate text strings.
+ * Encode an Image to the Responses API format.
  */
-interface ProcessedContentParts {
-  text: string[];
-}
-
-/**
- * Process content parts from either user or assistant messages.
- * Extracts text content as strings for the Responses API format.
- */
-function processContentParts(
-  content: readonly (UserContentPart | AssistantContentPart)[]
-): ProcessedContentParts {
-  const result: ProcessedContentParts = {
-    text: [],
-  };
-
-  for (const part of content) {
-    switch (part.type) {
-      case 'text':
-        result.text.push(part.text);
-        break;
-
-      /* v8 ignore start - content types not yet implemented */
-      case 'image':
-        throw new FeatureNotSupportedError(
-          'image content encoding',
-          'openai',
-          null,
-          'Image content is not yet implemented'
-        );
-
-      case 'audio':
-        throw new FeatureNotSupportedError(
-          'audio content encoding',
-          'openai',
-          null,
-          'Audio content is not yet implemented'
-        );
-
-      case 'document':
-        throw new FeatureNotSupportedError(
-          'document content encoding',
-          'openai',
-          null,
-          'Document content is not yet implemented'
-        );
-
-      case 'tool_output':
-        throw new FeatureNotSupportedError(
-          'tool output encoding',
-          'openai',
-          null,
-          'Tool outputs are not yet implemented'
-        );
-
-      case 'tool_call':
-        throw new FeatureNotSupportedError(
-          'tool call encoding',
-          'openai',
-          null,
-          'Tool calls are not yet implemented'
-        );
-
-      case 'thought':
-        throw new FeatureNotSupportedError(
-          'thought encoding',
-          'openai',
-          null,
-          'Thought content is not yet implemented'
-        );
-      /* v8 ignore stop */
-    }
+function encodeImage(image: Image): ResponseInputImage {
+  let imageUrl: string;
+  if (image.source.type === 'url_image_source') {
+    imageUrl = image.source.url;
+  } else {
+    imageUrl = `data:${image.source.mimeType};base64,${image.source.data}`;
   }
-
-  return result;
+  return { type: 'input_image', image_url: imageUrl, detail: 'auto' };
 }
 
 // ============================================================================
@@ -162,6 +94,7 @@ function processContentParts(
  * - System messages use role: 'developer' (not 'system')
  * - Uses EasyInputMessageParam for simple message format
  * - Returns flat array of input items (not nested messages)
+ * - Assistant messages with multiple text parts are encoded as separate messages
  */
 export function encodeMessages(
   messages: readonly Message[]
@@ -177,7 +110,8 @@ export function encodeMessages(
     } else if (message.role === 'user') {
       inputItems.push(encodeUserMessage(message));
     } else if (message.role === 'assistant') {
-      inputItems.push(encodeAssistantMessage(message));
+      // Assistant messages may produce multiple items (one per text part)
+      inputItems.push(...encodeAssistantMessage(message));
     }
   }
 
@@ -186,28 +120,93 @@ export function encodeMessages(
 
 /**
  * Encode a Mirascope user message to OpenAI Responses API format.
+ *
+ * - Single text part: string content (simplified)
+ * - Multiple parts or non-text content: array of content items
  */
 function encodeUserMessage(
   message: Extract<Message, { role: 'user' }>
 ): ResponseInputItem {
-  const { text } = processContentParts(message.content);
+  const contentItems: ResponseInputContent[] = [];
 
+  for (const part of message.content) {
+    switch (part.type) {
+      case 'text':
+        contentItems.push({ type: 'input_text', text: part.text });
+        break;
+
+      case 'image':
+        contentItems.push(encodeImage(part));
+        break;
+
+      case 'audio':
+        throw new FeatureNotSupportedError(
+          'audio input',
+          'openai',
+          null,
+          'OpenAI Responses API does not support audio inputs. Try appending ":completions" to your model ID instead.'
+        );
+
+      /* v8 ignore start - content types not yet implemented */
+      case 'document':
+        throw new FeatureNotSupportedError(
+          'document content encoding',
+          'openai',
+          null,
+          'Document content is not yet implemented'
+        );
+
+      case 'tool_output':
+        throw new FeatureNotSupportedError(
+          'tool output encoding',
+          'openai',
+          null,
+          'Tool outputs are not yet implemented'
+        );
+      /* v8 ignore stop */
+    }
+  }
+
+  // Single text part: simplify to string
+  if (contentItems.length === 1 && contentItems[0]?.type === 'input_text') {
+    return {
+      role: 'user',
+      content: contentItems[0].text,
+    };
+  }
+
+  // Multiple parts or non-text content: use array format
   return {
     role: 'user',
-    content: text.join(''),
+    content: contentItems,
   };
 }
 
 /**
  * Encode a Mirascope assistant message to OpenAI Responses API format.
+ *
+ * Note: OpenAI does not provide any way to encode multiple pieces of assistant-generated
+ * text as adjacent content within the same Message. Rather than generating fake fields,
+ * we encode each text part as a separate EasyInputMessage.
+ *
+ * @returns Array of input items (one per text part)
  */
-function encodeAssistantMessage(message: AssistantMessage): ResponseInputItem {
-  const { text } = processContentParts(message.content);
+function encodeAssistantMessage(
+  message: AssistantMessage
+): ResponseInputItem[] {
+  const result: ResponseInputItem[] = [];
 
-  return {
-    role: 'assistant',
-    content: text.join(''),
-  };
+  for (const part of message.content) {
+    if (part.type === 'text') {
+      result.push({
+        role: 'assistant',
+        content: part.text,
+      });
+    }
+    // Note: tool_call and thought are not yet implemented
+  }
+
+  return result;
 }
 
 /**

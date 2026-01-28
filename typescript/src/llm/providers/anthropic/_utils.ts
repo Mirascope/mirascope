@@ -4,13 +4,18 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 import type {
+  Base64ImageSource as AnthropicBase64ImageSource,
   ContentBlock,
+  ImageBlockParam,
   Message as AnthropicMessage,
   MessageCreateParamsNonStreaming,
+  URLImageSource as AnthropicURLImageSource,
 } from '@anthropic-ai/sdk/resources/messages';
 
 import type {
   AssistantContentPart,
+  Image,
+  ImageMimeType,
   Text,
   Thought,
   UserContentPart,
@@ -40,6 +45,59 @@ import { createUsage } from '@/llm/responses/usage';
  * Default max tokens for Anthropic requests.
  */
 const DEFAULT_MAX_TOKENS = 4096;
+
+/**
+ * Supported Anthropic image MIME types.
+ */
+type AnthropicImageMimeType =
+  | 'image/jpeg'
+  | 'image/png'
+  | 'image/gif'
+  | 'image/webp';
+
+/**
+ * Convert an ImageMimeType to Anthropic-supported media type.
+ *
+ * @throws FeatureNotSupportedError for unsupported formats (HEIC, HEIF)
+ */
+function toAnthropicImageMimeType(
+  mimeType: ImageMimeType
+): AnthropicImageMimeType {
+  if (
+    mimeType === 'image/jpeg' ||
+    mimeType === 'image/png' ||
+    mimeType === 'image/gif' ||
+    mimeType === 'image/webp'
+  ) {
+    return mimeType;
+  }
+  throw new FeatureNotSupportedError(
+    `image format: ${mimeType}`,
+    'anthropic',
+    null,
+    `Anthropic does not support ${mimeType}. Supported formats: JPEG, PNG, GIF, WebP.`
+  );
+}
+
+/**
+ * Encode an Image content part to Anthropic's ImageBlockParam format.
+ */
+function encodeImage(image: Image): ImageBlockParam {
+  if (image.source.type === 'base64_image_source') {
+    const source: AnthropicBase64ImageSource = {
+      type: 'base64',
+      media_type: toAnthropicImageMimeType(image.source.mimeType),
+      data: image.source.data,
+    };
+    return { type: 'image', source };
+  } else {
+    const source: AnthropicURLImageSource = {
+      type: 'url',
+      url: image.source.url,
+    };
+    return { type: 'image', source };
+  }
+}
 
 /**
  * Thinking level to budget multiplier mapping.
@@ -114,23 +172,19 @@ function processContentParts(
         blocks.push({ type: 'text', text: part.text });
         break;
 
-      /* v8 ignore start - content types not yet implemented */
       case 'image':
-        throw new FeatureNotSupportedError(
-          'image content encoding',
-          'anthropic',
-          null,
-          'Image content is not yet implemented'
-        );
+        blocks.push(encodeImage(part));
+        break;
 
       case 'audio':
         throw new FeatureNotSupportedError(
-          'audio content encoding',
+          'audio input',
           'anthropic',
           null,
-          'Audio content is not yet implemented'
+          'Anthropic does not support audio inputs.'
         );
 
+      /* v8 ignore start - content types not yet implemented */
       case 'document':
         throw new FeatureNotSupportedError(
           'document content encoding',
@@ -174,10 +228,10 @@ function processContentParts(
 // ============================================================================
 
 /**
- * Simplify user content to string if only a single text part.
- * Anthropic accepts string for simple user messages.
+ * Simplify content to string if only a single text part.
+ * Anthropic accepts string for simple messages.
  */
-function simplifyUserContent(
+function simplifyContent(
   blocks: Anthropic.Messages.ContentBlockParam[]
 ): string | Anthropic.Messages.ContentBlockParam[] {
   if (blocks.length === 1 && blocks[0] && blocks[0].type === 'text') {
@@ -207,12 +261,13 @@ export function encodeMessages(messages: readonly Message[]): {
       const blocks = processContentParts(message.content);
       anthropicMessages.push({
         role: 'user',
-        content: simplifyUserContent(blocks),
+        content: simplifyContent(blocks),
       });
     } else if (message.role === 'assistant') {
+      const blocks = processContentParts(message.content);
       anthropicMessages.push({
         role: 'assistant',
-        content: processContentParts(message.content),
+        content: simplifyContent(blocks),
       });
     }
   }
