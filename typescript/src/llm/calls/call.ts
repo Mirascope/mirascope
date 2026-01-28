@@ -5,7 +5,7 @@
  * without passing a model argument.
  */
 
-import { Model } from '@/llm/models';
+import { Model, useModel } from '@/llm/models';
 import type { Params } from '@/llm/models/params';
 import { definePrompt, type Prompt, type TemplateFunc } from '@/llm/prompts';
 import type { ModelId } from '@/llm/providers/model-id';
@@ -89,9 +89,16 @@ export interface Call<T = NoVars> {
   ): Promise<StreamResponse>;
 
   /**
-   * The bundled model.
+   * The model used for generating responses.
+   * Returns the context model if one is set via `withModel`, otherwise returns `defaultModel`.
    */
   readonly model: Model;
+
+  /**
+   * The default model configured when defining this call.
+   * Use `model` to get the effective model (which respects context).
+   */
+  readonly defaultModel: Model;
 
   /**
    * The underlying prompt.
@@ -177,7 +184,8 @@ export function defineCall<T>({
     );
   }
 
-  const resolvedModel: Model =
+  // Resolve the default model at definition time (bakes in params)
+  const defaultModel: Model =
     typeof model === 'string' ? new Model(model, params) : model;
 
   const prompt = definePrompt<T>({ template });
@@ -185,7 +193,7 @@ export function defineCall<T>({
   const call = async (
     ...vars: keyof T extends never ? [] : [vars: T]
   ): Promise<Response> => {
-    return prompt.call(resolvedModel, ...vars);
+    return prompt.call(useModel(defaultModel), ...vars);
   };
 
   const callable = async (
@@ -197,14 +205,21 @@ export function defineCall<T>({
   const stream = async (
     ...vars: keyof T extends never ? [] : [vars: T]
   ): Promise<StreamResponse> => {
-    return prompt.stream(resolvedModel, ...vars);
+    return prompt.stream(useModel(defaultModel), ...vars);
   };
 
-  return Object.assign(callable, {
+  const definedCall = Object.assign(callable, {
     call,
-    model: resolvedModel,
+    defaultModel,
     prompt,
     stream,
     template,
-  }) as Call<T>;
+  });
+
+  Object.defineProperty(definedCall, 'model', {
+    get: () => useModel(defaultModel),
+    enumerable: true,
+  });
+
+  return definedCall as Call<T>;
 }

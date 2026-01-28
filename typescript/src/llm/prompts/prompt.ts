@@ -4,7 +4,7 @@
 
 import type { Message, UserContent } from '@/llm/messages';
 import { promoteToMessages } from '@/llm/messages';
-import { Model } from '@/llm/models';
+import { Model, useModel } from '@/llm/models';
 import type { ModelId } from '@/llm/providers/model-id';
 import type { Response } from '@/llm/responses';
 import type { StreamResponse } from '@/llm/responses/stream-response';
@@ -201,29 +201,22 @@ export function definePrompt<T>({ template }: PromptArgs<T>): Prompt<T> {
     return promoteToMessages(content);
   };
 
-  const call = async (
-    modelOrId: Model | ModelId,
-    vars?: T
-  ): Promise<Response> => {
-    const model =
-      typeof modelOrId === 'string' ? new Model(modelOrId) : modelOrId;
-    return model.call(messages(vars));
+  const call = async (model: Model | ModelId, vars?: T): Promise<Response> => {
+    return useModel(model).call(messages(vars));
   };
 
   const callable = async (
-    modelOrId: Model | ModelId,
+    model: Model | ModelId,
     vars?: T
   ): Promise<Response> => {
-    return call(modelOrId, vars);
+    return call(model, vars);
   };
 
   const stream = async (
-    modelOrId: Model | ModelId,
+    model: Model | ModelId,
     vars?: T
   ): Promise<StreamResponse> => {
-    const model =
-      typeof modelOrId === 'string' ? new Model(modelOrId) : modelOrId;
-    return model.stream(messages(vars));
+    return useModel(model).stream(messages(vars));
   };
 
   return Object.assign(callable, {
