@@ -75,6 +75,7 @@ from .exceptions import (
 )
 from .formatting import (
     Format,
+    FormatSpec,
     FormattableT,
     FormattingMode,
     OutputParser,
@@ -219,6 +220,7 @@ __all__ = [
     "FeatureNotSupportedError",
     "FinishReason",
     "Format",
+    "FormatSpec",
     "FormattableT",
     "FormattingMode",
     "Image",

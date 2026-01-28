@@ -15,8 +15,8 @@ from ....content import ContentPart
 from ....exceptions import FeatureNotSupportedError
 from ....formatting import (
     Format,
+    FormatSpec,
     FormattableT,
-    OutputParser,
     resolve_format,
 )
 from ....messages import AssistantMessage, Message, UserMessage
@@ -275,10 +275,7 @@ def encode_request(
     model_id: GoogleModelId,
     messages: Sequence[Message],
     tools: BaseToolkit[AnyToolSchema],
-    format: type[FormattableT]
-    | Format[FormattableT]
-    | OutputParser[FormattableT]
-    | None,
+    format: FormatSpec[FormattableT] | None,
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, GoogleKwargs]:
     """Prepares a request for the genai `Client.models.generate_content` method."""
