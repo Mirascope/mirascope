@@ -196,7 +196,7 @@ def third_party_fn() -> BaseMessageParam:
 """
     )
     assert closure.dependencies == snapshot(
-        {"pydantic": {"version": "2.11.5", "extras": None}}
+        {"pydantic": {"version": "2.12.5", "extras": None}}
     )
 
 
@@ -485,7 +485,7 @@ def aliased_module_import_fn(query: str) -> str:
 """
     )
     assert closure.dependencies == snapshot(
-        {"openai": {"version": "2.15.0", "extras": None}}
+        {"openai": {"version": "2.16.0", "extras": None}}
     )
 
 
@@ -506,7 +506,7 @@ def aliased_import_fn(query: str) -> str:
 """
     )
     assert closure.dependencies == snapshot(
-        {"openai": {"version": "2.15.0", "extras": None}}
+        {"openai": {"version": "2.16.0", "extras": None}}
     )
 
 
@@ -640,7 +640,7 @@ def annotated_assignment_fn() -> str:
 """
     )
     assert closure.dependencies == snapshot(
-        {"openai": {"version": "2.15.0", "extras": None}}
+        {"openai": {"version": "2.16.0", "extras": None}}
     )
 
 
@@ -664,7 +664,7 @@ def internal_imports_fn() -> str:
 """
     )
     assert closure.dependencies == snapshot(
-        {"openai": {"version": "2.15.0", "extras": None}}
+        {"openai": {"version": "2.16.0", "extras": None}}
     )
 
 
@@ -1106,7 +1106,7 @@ def nested_base_model_definitions(issue: str) -> str:
 """
     )
     assert closure.dependencies == snapshot(
-        {"pydantic": {"version": "2.11.5", "extras": None}}
+        {"pydantic": {"version": "2.12.5", "extras": None}}
     )
 
 
@@ -1180,7 +1180,7 @@ def handle_issue(issue: str) -> str:
 """
     )
     assert closure.dependencies == snapshot(
-        {"pydantic": {"version": "2.11.5", "extras": None}}
+        {"pydantic": {"version": "2.12.5", "extras": None}}
     )
 
 

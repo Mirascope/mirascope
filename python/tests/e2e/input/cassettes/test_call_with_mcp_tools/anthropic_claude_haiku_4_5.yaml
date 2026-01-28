@@ -6,58 +6,57 @@ interactions:
       you learn from all tools."}],"model":"claude-haiku-4-5","system":[{"type":"text","text":"You
       have access to MCP tools. Use them as needed.","cache_control":{"type":"ephemeral"}}],"tools":[{"name":"greet","description":"Greet
       a user with very special welcome.\n\nArgs:\n    name: The name of the person
-      to greet\n\nReturns:\n    A personalized welcome message","input_schema":{"properties":{"name":{"title":"Name","type":"string"}},"required":["name"],"additionalProperties":false,"type":"object"}},{"name":"answer_ultimate_question","description":"Answer
+      to greet\n\nReturns:\n    A personalized welcome message","input_schema":{"properties":{"name":{"type":"string"}},"required":["name"],"additionalProperties":false,"type":"object"}},{"name":"answer_ultimate_question","description":"Answer
       the ultimate question of life, the universe, and everything.\n\nReturns:\n    A
       structured answer with metadata about the computation","input_schema":{"properties":{},"required":[],"additionalProperties":false,"type":"object"}},{"name":"process_answer","description":"Process
       and format an ultimate answer.\n\nThis tool demonstrates complex schema with
       $defs by accepting\na nested Pydantic model as input.\n\nArgs:\n    answer_data:
       The answer data to process\n\nReturns:\n    A formatted string describing the
-      answer","input_schema":{"properties":{"answer_data":{"$ref":"#/$defs/UltimateAnswer","title":"Answer
-      Data"}},"required":["answer_data"],"additionalProperties":false,"$defs":{"ComputerInfo":{"description":"Information
+      answer","input_schema":{"properties":{"answer_data":{"$ref":"#/$defs/UltimateAnswer"}},"required":["answer_data"],"additionalProperties":false,"$defs":{"ComputerInfo":{"description":"Information
       about Deep Thought computer.","properties":{"name":{"description":"The name
-      of the computer","title":"Name","type":"string"},"years_computed":{"description":"How
-      many years it took to compute","title":"Years Computed","type":"integer"}},"required":["name","years_computed"],"title":"ComputerInfo","type":"object"},"UltimateAnswer":{"description":"The
+      of the computer","type":"string"},"years_computed":{"description":"How many
+      years it took to compute","type":"integer"}},"required":["name","years_computed"],"type":"object"},"UltimateAnswer":{"description":"The
       answer to life, the universe, and everything.","properties":{"answer":{"description":"The
-      numerical answer","title":"Answer","type":"integer"},"question":{"description":"The
-      question that was asked","title":"Question","type":"string"},"computed_by":{"$ref":"#/$defs/ComputerInfo","description":"Information
-      about the computer"}},"required":["answer","question","computed_by"],"title":"UltimateAnswer","type":"object"}},"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
+      numerical answer","type":"integer"},"question":{"description":"The question
+      that was asked","type":"string"},"computed_by":{"$ref":"#/$defs/ComputerInfo","description":"Information
+      about the computer"}},"required":["answer","question","computed_by"],"type":"object"}},"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
     headers:
-      accept:
+      Accept:
       - application/json
-      accept-encoding:
+      Accept-Encoding:
       - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2178'
+      Content-Type:
+      - application/json
+      Host:
+      - api.anthropic.com
+      User-Agent:
+      - AsyncAnthropic/Python 0.76.0
+      X-Api-Key:
+      - <filtered>
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - async:asyncio
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.76.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.10.16
       anthropic-version:
       - '2023-06-01'
-      connection:
-      - keep-alive
-      content-length:
-      - '2339'
-      content-type:
-      - application/json
-      host:
-      - api.anthropic.com
-      user-agent:
-      - AsyncAnthropic/Python 0.75.0
-      x-api-key:
-      - <filtered>
-      x-stainless-arch:
-      - arm64
-      x-stainless-async:
-      - async:asyncio
-      x-stainless-lang:
-      - python
-      x-stainless-os:
-      - MacOS
-      x-stainless-package-version:
-      - 0.75.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
       - '0'
-      x-stainless-runtime:
-      - CPython
-      x-stainless-runtime-version:
-      - 3.10.16
       x-stainless-timeout:
       - '600'
     method: POST
@@ -65,17 +64,17 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/41SXW8TMRD8K5ZfeLlUd4GI5l6rtIBoFVTRFhCyHHubM/HZF3vdNIruv7M+dAoB
-        VerLfezM7OysfeCt12B5zZWVScOkkWaTJu8ms8m0nM6qsqx4wY0mQhvXoqze7zdXN4u9ue8Wyw3q
-        28tFdXGHxMF9B5kFMco1UCF4mwsyRhNRusxR3iHQV/3jMPIRngd1ftX84xtrmZL0wAYiMPTeRmYc
-        i7BN4BSwRx/Y3qcz9hmQtcCodUC2M9hkCXs0ISLDnf8jLXLRsZRbNWACCxCTxXgUYGOCHshnvC+O
-        Y1FBkGwMn/8TxV883Hxf/Qr+fL6Sl3c6ybVqv94Sy8k269YBIOcxrksU6DDWr02QUXnq3b/C5cPb
-        7fXT/GH55f559+3T1XKlt/Pq4ugiXdxBEJTEtBJB0G4iGu/+Mu77nwWP6DsRQEaCTtwGYNwpr12y
-        tuBpODiaeegh0G/ARV5X1fScjk6qBoSiZtlInFLKESdYv4SN2uwAXQMtBGnFrP2ff0Sr5l+0L7hP
-        eDJfOaNAEJ6MAoEGAkXNF07LoGnbvwGNv8t34gIAAA==
+        H4sIAAAAAAAA/41SwW7UMBD9FcsXLtkqKbtQclt1OQAt2m5pK0DIspwh8daxgz3ubrTKvzMOSpcW
+        VeKSxPPezHtvnANvXQWGl1wZGSuYNVLfx9l8tpid5qeLIs8LnnFdEaENtciL9e0e/U6uavx89qXo
+        N8tquarnxMG+g8SCEGQNVPDOpIIMQQeUFqmknEWgr/L7YeIj7BMyvkr+4ZUxTEl6YAMBGDpnAtOW
+        BfgVwSo4YReArAVGIz2yncYmUVntgeqJnqWzZdKGHXgRDepWIghqD6idzQip2E9tSaRnnXeKDIs/
+        7BM+ZEdjNEvEAFP8dI60gE8Pm69btBdrW8u7/fn86vr1TX9OLCvb1Dc6SU22ixTpMNUvtZdBOZo9
+        /IfK7dV7u75Zvumu29W77dm3fnvZbD4eVV6K95fwMPzIeEDXCQ8yEPREbQSmrfLSRmMyHserI8/j
+        DIHuHmzgZZG/zenypGpAKBqWhMRTyiNOcPUSNvUmBegaaMFLIxbtv/wjWjTP0SHjLuIzfxQI/INW
+        IFCDp6jpl6ukr2jbvwEFq93D5AIAAA==
     headers:
       CF-RAY:
-      - 9b9ff8b9397efc2f-SEA
+      - 9c4c6952bf65535a-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -83,7 +82,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 07 Jan 2026 02:19:41 GMT
+      - Wed, 28 Jan 2026 00:35:44 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -97,33 +96,33 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '4000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2026-01-07T02:19:41Z'
+      - '2026-01-28T00:35:43Z'
       anthropic-ratelimit-output-tokens-limit:
       - '800000'
       anthropic-ratelimit-output-tokens-remaining:
       - '800000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2026-01-07T02:19:41Z'
+      - '2026-01-28T00:35:44Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2026-01-07T02:19:40Z'
+      - '2026-01-28T00:35:43Z'
       anthropic-ratelimit-tokens-limit:
       - '4800000'
       anthropic-ratelimit-tokens-remaining:
       - '4800000'
       anthropic-ratelimit-tokens-reset:
-      - '2026-01-07T02:19:41Z'
+      - '2026-01-28T00:35:43Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CWsDZPsnd7UPKRAMWdgFw
+      - req_011CXYqcrRdnDVsqKRD7RrLw
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '1465'
+      - '840'
     status:
       code: 200
       message: OK
@@ -132,68 +131,66 @@ interactions:
       greet tool with name ''Mirascope'', then call the answer_ultimate_question tool.
       Finally, try using the process_answer tool to see what it does. Report what
       you learn from all tools."},{"role":"assistant","content":[{"citations":null,"text":"I''ll
-      call these tools in sequence for you. Let me start with the first two tools,
-      then use their results with the third tool.","type":"text"},{"id":"toolu_01EXNZbjro89baFVduagcmUS","input":{"name":"Mirascope"},"name":"greet","type":"tool_use"},{"id":"toolu_01H3qMv9XPQWxwYJGPbdq91C","input":{},"name":"answer_ultimate_question","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01EXNZbjro89baFVduagcmUS","content":"[{''type'':
+      call these tools in sequence. Let me start with the greet tool, then answer_ultimate_question,
+      and finally process_answer.","type":"text"},{"id":"toolu_01KvRYjtnLPngaWxC4QS3UyC","input":{"name":"Mirascope"},"name":"greet","type":"tool_use"},{"id":"toolu_01VQEnPUA6pSmD9j8ZyjMhRJ","input":{},"name":"answer_ultimate_question","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01KvRYjtnLPngaWxC4QS3UyC","content":"[{''type'':
       ''text'', ''text'': ''Welcome to Zombo.com, Mirascope'', ''annotations'': None,
-      ''meta'': None}]","cache_control":null},{"type":"tool_result","tool_use_id":"toolu_01H3qMv9XPQWxwYJGPbdq91C","content":"[{''type'':
-      ''text'', ''text'': ''{\\n  \"answer\": 42,\\n  \"question\": \"What is the
-      answer to life, the universe, and everything?\",\\n  \"computed_by\": {\\n    \"name\":
-      \"Deep Thought\",\\n    \"years_computed\": 7500000\\n  }\\n}'', ''annotations'':
-      None, ''meta'': None}]","cache_control":{"type":"ephemeral"}}]}],"model":"claude-haiku-4-5","system":[{"type":"text","text":"You
+      ''meta'': None}]","cache_control":null},{"type":"tool_result","tool_use_id":"toolu_01VQEnPUA6pSmD9j8ZyjMhRJ","content":"[{''type'':
+      ''text'', ''text'': ''{\"answer\":42,\"question\":\"What is the answer to life,
+      the universe, and everything?\",\"computed_by\":{\"name\":\"Deep Thought\",\"years_computed\":7500000}}'',
+      ''annotations'': None, ''meta'': None}]","cache_control":{"type":"ephemeral"}}]}],"model":"claude-haiku-4-5","system":[{"type":"text","text":"You
       have access to MCP tools. Use them as needed.","cache_control":{"type":"ephemeral"}}],"tools":[{"name":"greet","description":"Greet
       a user with very special welcome.\n\nArgs:\n    name: The name of the person
-      to greet\n\nReturns:\n    A personalized welcome message","input_schema":{"properties":{"name":{"title":"Name","type":"string"}},"required":["name"],"additionalProperties":false,"type":"object"}},{"name":"answer_ultimate_question","description":"Answer
+      to greet\n\nReturns:\n    A personalized welcome message","input_schema":{"properties":{"name":{"type":"string"}},"required":["name"],"additionalProperties":false,"type":"object"}},{"name":"answer_ultimate_question","description":"Answer
       the ultimate question of life, the universe, and everything.\n\nReturns:\n    A
       structured answer with metadata about the computation","input_schema":{"properties":{},"required":[],"additionalProperties":false,"type":"object"}},{"name":"process_answer","description":"Process
       and format an ultimate answer.\n\nThis tool demonstrates complex schema with
       $defs by accepting\na nested Pydantic model as input.\n\nArgs:\n    answer_data:
       The answer data to process\n\nReturns:\n    A formatted string describing the
-      answer","input_schema":{"properties":{"answer_data":{"$ref":"#/$defs/UltimateAnswer","title":"Answer
-      Data"}},"required":["answer_data"],"additionalProperties":false,"$defs":{"ComputerInfo":{"description":"Information
+      answer","input_schema":{"properties":{"answer_data":{"$ref":"#/$defs/UltimateAnswer"}},"required":["answer_data"],"additionalProperties":false,"$defs":{"ComputerInfo":{"description":"Information
       about Deep Thought computer.","properties":{"name":{"description":"The name
-      of the computer","title":"Name","type":"string"},"years_computed":{"description":"How
-      many years it took to compute","title":"Years Computed","type":"integer"}},"required":["name","years_computed"],"title":"ComputerInfo","type":"object"},"UltimateAnswer":{"description":"The
+      of the computer","type":"string"},"years_computed":{"description":"How many
+      years it took to compute","type":"integer"}},"required":["name","years_computed"],"type":"object"},"UltimateAnswer":{"description":"The
       answer to life, the universe, and everything.","properties":{"answer":{"description":"The
-      numerical answer","title":"Answer","type":"integer"},"question":{"description":"The
-      question that was asked","title":"Question","type":"string"},"computed_by":{"$ref":"#/$defs/ComputerInfo","description":"Information
-      about the computer"}},"required":["answer","question","computed_by"],"title":"UltimateAnswer","type":"object"}},"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
+      numerical answer","type":"integer"},"question":{"description":"The question
+      that was asked","type":"string"},"computed_by":{"$ref":"#/$defs/ComputerInfo","description":"Information
+      about the computer"}},"required":["answer","question","computed_by"],"type":"object"}},"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
     headers:
-      accept:
+      Accept:
       - application/json
-      accept-encoding:
+      Accept-Encoding:
       - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '3160'
+      Content-Type:
+      - application/json
+      Host:
+      - api.anthropic.com
+      User-Agent:
+      - AsyncAnthropic/Python 0.76.0
+      X-Api-Key:
+      - <filtered>
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - async:asyncio
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.76.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.10.16
       anthropic-version:
       - '2023-06-01'
-      connection:
-      - keep-alive
-      content-length:
-      - '3361'
-      content-type:
-      - application/json
-      host:
-      - api.anthropic.com
-      user-agent:
-      - AsyncAnthropic/Python 0.75.0
-      x-api-key:
-      - <filtered>
-      x-stainless-arch:
-      - arm64
-      x-stainless-async:
-      - async:asyncio
-      x-stainless-lang:
-      - python
-      x-stainless-os:
-      - MacOS
-      x-stainless-package-version:
-      - 0.75.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
       - '0'
-      x-stainless-runtime:
-      - CPython
-      x-stainless-runtime-version:
-      - 3.10.16
       x-stainless-timeout:
       - '600'
     method: POST
@@ -201,17 +198,17 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/3VSTWvcMBD9K6ouvXjB3qxJ8aVQ0i9oCi0LpS1FqNaspUSWHI20W7P4v3fkxGw2
-        ITrY0ntvZt6MdOS9V2B5w1srk4KVluY2rTarerUu13VVlhUvuFEk6LETZXX95Wa/vtv6yy6p7lNV
-        1Ydf+zSSJo4DZBUgyg4ICN5mQCIajNJFglrvItCu+X1c9BH+ZWb+NfxjABlfsa/+wD6/tpYlBBY1
-        MOnwAIEpGSXbBd/PIALlUyx6b+nDWkkBGR+Cb8mFeAjKfMOn4lSSAEGZl8byOVFr22/vxt3Bde9v
-        4AN+/3mF7fU27EjlZJ/jzvPmaDckcn3k94jI9k5H3mzWBb9LgNF4R/E/tIzM4OOGyLY1OyhmLDmz
-        h4B0ktQW0H6M2rju7Ty5nmqBEn/HXOHB0RXAwLbap07nIY4gA4pFypvLusxrovWn4Bj9IGi+OJt5
-        NISZQCCnrqWsLllb8DTfIpWamxTR34JD3lSbi4rcyFaDaPNlUWviXFIuPNHqJW6JzRVg0NBDkFbU
-        /XP9ia30U3YquE/xzN/FG2oIwt60IKLJt8Dz61MyKD5N/wGHtydr7wIAAA==
+        H4sIAAAAAAAA/3VSYW/TMBD9K8afUykpSSn5Mg3QJlXaNCQkhhCyvOQWmzl2ap8Xuqr/feewrBSE
+        v8R37929d+fsee9aMLzmjZGxhYWS+iEuykW1WObLqsjzgmdct0ToQyfy4qK8qVbbb835xaZbXz8N
+        77vL23NJHNwNkFgQguyAEt6ZlJAh6IDSIqUaZxHoVn/fz3yEXwmZPjW/9CDxDbt2IzOArAcWAzBU
+        wAbvGmotpA0jeIbOGTZqVBPYSpTs3rue/YZFNKh7iSC2EQJqZ2t+yI6aVCyo8TxZiiPNVm0/fhjj
+        7d3n1c+x2XRX66un8mZDLCv7VHfqIVXbIZLtPX+RTT6OIa/LZcZnB1T/VUlkOkyWX+dgRt9DNuWi
+        1Y/gA0XStgzovkOlbXc2ra4nLWjF3S4pvDj6BDCwL8rFTqUt7kD6IGYqr99VeToHOj8yHtANghYc
+        JjN/LGECApBT21BXG43JeJyekaSmIQW6B7CB18XbckVuZKNANOm1aDRxSslnnOD2f9hcmxRgUNCD
+        l0ZU/b/8I1qov9FDxl3EU39rGgj8o25AoE6vwNPv10rf8sPhGdR2IsXwAgAA
     headers:
       CF-RAY:
-      - 9b9ff8c39876fc2f-SEA
+      - 9c4c6958bf74091b-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -219,7 +216,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 07 Jan 2026 02:19:43 GMT
+      - Wed, 28 Jan 2026 00:35:45 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -233,33 +230,33 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '3999000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2026-01-07T02:19:42Z'
+      - '2026-01-28T00:35:44Z'
       anthropic-ratelimit-output-tokens-limit:
       - '800000'
       anthropic-ratelimit-output-tokens-remaining:
       - '800000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2026-01-07T02:19:43Z'
+      - '2026-01-28T00:35:45Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2026-01-07T02:19:42Z'
+      - '2026-01-28T00:35:44Z'
       anthropic-ratelimit-tokens-limit:
       - '4800000'
       anthropic-ratelimit-tokens-remaining:
       - '4799000'
       anthropic-ratelimit-tokens-reset:
-      - '2026-01-07T02:19:42Z'
+      - '2026-01-28T00:35:44Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CWsDZX1uBUdStHLUDnyWK
+      - req_011CXYqcvZg986anv9K6gWds
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '1247'
+      - '1143'
     status:
       code: 200
       message: OK
@@ -268,75 +265,72 @@ interactions:
       greet tool with name ''Mirascope'', then call the answer_ultimate_question tool.
       Finally, try using the process_answer tool to see what it does. Report what
       you learn from all tools."},{"role":"assistant","content":[{"citations":null,"text":"I''ll
-      call these tools in sequence for you. Let me start with the first two tools,
-      then use their results with the third tool.","type":"text"},{"id":"toolu_01EXNZbjro89baFVduagcmUS","input":{"name":"Mirascope"},"name":"greet","type":"tool_use"},{"id":"toolu_01H3qMv9XPQWxwYJGPbdq91C","input":{},"name":"answer_ultimate_question","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01EXNZbjro89baFVduagcmUS","content":"[{''type'':
+      call these tools in sequence. Let me start with the greet tool, then answer_ultimate_question,
+      and finally process_answer.","type":"text"},{"id":"toolu_01KvRYjtnLPngaWxC4QS3UyC","input":{"name":"Mirascope"},"name":"greet","type":"tool_use"},{"id":"toolu_01VQEnPUA6pSmD9j8ZyjMhRJ","input":{},"name":"answer_ultimate_question","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01KvRYjtnLPngaWxC4QS3UyC","content":"[{''type'':
       ''text'', ''text'': ''Welcome to Zombo.com, Mirascope'', ''annotations'': None,
-      ''meta'': None}]","cache_control":null},{"type":"tool_result","tool_use_id":"toolu_01H3qMv9XPQWxwYJGPbdq91C","content":"[{''type'':
-      ''text'', ''text'': ''{\\n  \"answer\": 42,\\n  \"question\": \"What is the
-      answer to life, the universe, and everything?\",\\n  \"computed_by\": {\\n    \"name\":
-      \"Deep Thought\",\\n    \"years_computed\": 7500000\\n  }\\n}'', ''annotations'':
-      None, ''meta'': None}]","cache_control":null}]},{"role":"assistant","content":[{"citations":null,"text":"Great!
-      Now I''ll use the answer data from the second tool to call the process_answer
-      tool:","type":"text"},{"id":"toolu_01TQByfwngEjeFsRYDscMTrf","input":{"answer_data":{"answer":42,"question":"What
+      ''meta'': None}]","cache_control":null},{"type":"tool_result","tool_use_id":"toolu_01VQEnPUA6pSmD9j8ZyjMhRJ","content":"[{''type'':
+      ''text'', ''text'': ''{\"answer\":42,\"question\":\"What is the answer to life,
+      the universe, and everything?\",\"computed_by\":{\"name\":\"Deep Thought\",\"years_computed\":7500000}}'',
+      ''annotations'': None, ''meta'': None}]","cache_control":null}]},{"role":"assistant","content":[{"citations":null,"text":"Great!
+      Now let me use the process_answer tool with the data from answer_ultimate_question:","type":"text"},{"id":"toolu_015qCBwuXbQ6jwcJgM8Mz4PJ","input":{"answer_data":{"answer":42,"question":"What
       is the answer to life, the universe, and everything?","computed_by":{"name":"Deep
-      Thought","years_computed":7500000}}},"name":"process_answer","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01TQByfwngEjeFsRYDscMTrf","content":"[{''type'':
+      Thought","years_computed":7500000}}},"name":"process_answer","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_015qCBwuXbQ6jwcJgM8Mz4PJ","content":"[{''type'':
       ''text'', ''text'': \"The answer 42 to ''What is the answer to life, the universe,
       and everything?'' was computed by Deep Thought over 7,500,000 years\", ''annotations'':
       None, ''meta'': None}]","cache_control":{"type":"ephemeral"}}]}],"model":"claude-haiku-4-5","system":[{"type":"text","text":"You
       have access to MCP tools. Use them as needed.","cache_control":{"type":"ephemeral"}}],"tools":[{"name":"greet","description":"Greet
       a user with very special welcome.\n\nArgs:\n    name: The name of the person
-      to greet\n\nReturns:\n    A personalized welcome message","input_schema":{"properties":{"name":{"title":"Name","type":"string"}},"required":["name"],"additionalProperties":false,"type":"object"}},{"name":"answer_ultimate_question","description":"Answer
+      to greet\n\nReturns:\n    A personalized welcome message","input_schema":{"properties":{"name":{"type":"string"}},"required":["name"],"additionalProperties":false,"type":"object"}},{"name":"answer_ultimate_question","description":"Answer
       the ultimate question of life, the universe, and everything.\n\nReturns:\n    A
       structured answer with metadata about the computation","input_schema":{"properties":{},"required":[],"additionalProperties":false,"type":"object"}},{"name":"process_answer","description":"Process
       and format an ultimate answer.\n\nThis tool demonstrates complex schema with
       $defs by accepting\na nested Pydantic model as input.\n\nArgs:\n    answer_data:
       The answer data to process\n\nReturns:\n    A formatted string describing the
-      answer","input_schema":{"properties":{"answer_data":{"$ref":"#/$defs/UltimateAnswer","title":"Answer
-      Data"}},"required":["answer_data"],"additionalProperties":false,"$defs":{"ComputerInfo":{"description":"Information
+      answer","input_schema":{"properties":{"answer_data":{"$ref":"#/$defs/UltimateAnswer"}},"required":["answer_data"],"additionalProperties":false,"$defs":{"ComputerInfo":{"description":"Information
       about Deep Thought computer.","properties":{"name":{"description":"The name
-      of the computer","title":"Name","type":"string"},"years_computed":{"description":"How
-      many years it took to compute","title":"Years Computed","type":"integer"}},"required":["name","years_computed"],"title":"ComputerInfo","type":"object"},"UltimateAnswer":{"description":"The
+      of the computer","type":"string"},"years_computed":{"description":"How many
+      years it took to compute","type":"integer"}},"required":["name","years_computed"],"type":"object"},"UltimateAnswer":{"description":"The
       answer to life, the universe, and everything.","properties":{"answer":{"description":"The
-      numerical answer","title":"Answer","type":"integer"},"question":{"description":"The
-      question that was asked","title":"Question","type":"string"},"computed_by":{"$ref":"#/$defs/ComputerInfo","description":"Information
-      about the computer"}},"required":["answer","question","computed_by"],"title":"UltimateAnswer","type":"object"}},"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
+      numerical answer","type":"integer"},"question":{"description":"The question
+      that was asked","type":"string"},"computed_by":{"$ref":"#/$defs/ComputerInfo","description":"Information
+      about the computer"}},"required":["answer","question","computed_by"],"type":"object"}},"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
     headers:
-      accept:
+      Accept:
       - application/json
-      accept-encoding:
+      Accept-Encoding:
       - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '3905'
+      Content-Type:
+      - application/json
+      Host:
+      - api.anthropic.com
+      User-Agent:
+      - AsyncAnthropic/Python 0.76.0
+      X-Api-Key:
+      - <filtered>
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - async:asyncio
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.76.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.10.16
       anthropic-version:
       - '2023-06-01'
-      connection:
-      - keep-alive
-      content-length:
-      - '4105'
-      content-type:
-      - application/json
-      host:
-      - api.anthropic.com
-      user-agent:
-      - AsyncAnthropic/Python 0.75.0
-      x-api-key:
-      - <filtered>
-      x-stainless-arch:
-      - arm64
-      x-stainless-async:
-      - async:asyncio
-      x-stainless-lang:
-      - python
-      x-stainless-os:
-      - MacOS
-      x-stainless-package-version:
-      - 0.75.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
       - '0'
-      x-stainless-runtime:
-      - CPython
-      x-stainless-runtime-version:
-      - 3.10.16
       x-stainless-timeout:
       - '600'
     method: POST
@@ -344,25 +338,27 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/51V227bRhD9lSnz4FigBEqx2kIvRYugcYq6LVq3AVoV9IociRstd5m9WFEM/3vO
-        LkVZsZOXPJGcnduZc3Z4l7WmZpUtskqJUPO4EXIbxhfj+XhWzObTophmeSZrOLRuUxbTK78Wb/9w
-        jblav7VbM/1Z/vPT35fw8fuOoxc7JzYMgzUqGoRz0nmhPUyV0Z7xtvjvbvD3/D6epMcie/aM/uTO
-        WE9G07Uxin5lYbXUG7fUS33Jls8c7Rrh6TWpeMQ1ra1pqRJKwY18w47JI9QtYsh0QqPRxjL7ZByN
-        FnTdSJc+qLPmVtbsSFDH1hktlPyAjDtWlWmZDmAm9KZhnUrEQ+mbWIa0gMsyu5JWuMp0vMxykp4s
-        +5D6ErQOesixgOebQ1pv6F/TrswEXzmdxNNzgfA1UOoqucUy74K02z16Wjnp+XwSUc0iKqHdjm0Z
-        lJet8Fy+C+y8xOCeAu17cilfHzZkX4vWBEddI5VxBg+gpGMm9BxnLR9HKrnmPNmClrcYHb6Eronx
-        vvcNiPgBaMZgSlZNDB+NLmaj0RN8L03YKOHox1q07gzlrpHyUvqqaeSWLbh+FUDQ0OwrocT7/TI7
-        n1B0tOw6o0G31JUKkceWvaiFF7DUQOJ7RaD+ofUdamHoXfDgZ7UHRS6A+YPJJkprtPGSuUMJdNd4
-        ADGARd/l86LIi6KgPYTnEg8vIg9QUQWSy+N4Hk/fiy33E3TehgpUoMhA29BaajvOcG0s7C5KSWoA
-        F9SEVuixZUBbqZQEuCb02p9k1mAMWX/56/ffHqrQ8yRWqfuckVGxMsGfsJkfye4Z7EcR51ZjllK5
-        82RGEMzxomhZsdofuowlTwR+/SCSi1kk7eyr5XP2hKtTTj7LyDKLlMQe0vUHgBbq8DYNOfVNO2O3
-        a2V2ECZESDdfukI3tGHNMdKdchY56jv1cSHcfMr8zZE6H1EnQmHBlsFK0j7Nvxfuwz4iUdfusCmG
-        rcOKW/gPoocI0EkVo7/J7v/PM+dNV0IN2FdYmazrMl7u7HDgGCBwvbKFDkrlWUjreHGXSY1Rlt5s
-        WbtsMf129j0WsqgaLiski+nLT12K4Twq70tnQ2yswF2Dzq1Q5bx96v9wOm0en97nWa+wo+lFMQcg
-        tregrfSSLaDG30gtbJ3d338EudP8/LgGAAA=
+        H4sIAAAAAAAA/51VYW/bNhD9KzflQxzDLuw0RgF/GYIGTTNga9A5a7d5EGjpbHGmSJWk4nhB/vse
+        SdlOmgQD9skyeffu7t3j3X1Wm5JVNs0KJdqSh5WQ63Z4NpwMT0enk/FoNM4GmSxhULtVPhq/W97M
+        1r8Vfxe/ny0278uV+7Yov17Cxm8bDlbsnFgxDqxR4UA4J50X2uOoMNozvqZ/3u/sPd+Fm/gzzY6O
+        6DM3xnoyS5oZo+iD1KXUKzfXc/2RLR872lTC0xUpFlZzSUtramodjIhFUZGH2zSYHwFt/Ib6/ZVl
+        9hGu35/rIU6uW9sYx/3+lK6tuZUlOxLUsHVGCyX/AeyGVWFqpq6g5Helm9YHr5lYRxctYNIIix/P
+        lnpXyATO8+xnaYUrTMPz7CT5fmp95/yZfWt1cE9BQupdmClcv3SRvaE/TL0wb/BvQI8AO7yFY3sr
+        vDQ6gN64mNCmkrWThVBkeQm+dPEUaEfMaSBGaLdhm7fKy1p4zr+17ALea1ydR3tHvmJaitq0jna+
+        tPcVC9N6UnLJg2jYankLJ/wTuiTG99ZXKPlFRrU5sOle5+2nXz/9Qs7btsAJU9CVkBqgaDzRcF9a
+        8Do7pV7IQ8JKFpQukmouTLtSwtF5KWp3DOpnsPsofVFVcs0WWrtsoY1AYEC4FErcbWNDU5BdzSEM
+        +hZ0KRM7XRQ4/jcRP4aOJkA0CLVymS+2AfNKL42txSNaA05nBPQQcOdC0sfiE1DQZcrqgrmhWYVK
+        Kz/PEhWuhdT3MJGKcLwwZu1ODiBbvDCX7wIEuHeDyWg0GI1GFO9eFOI5YaBIRFu234nQFTJ+LmUR
+        S1IS4UXo4E6Vb4MqG2sKvIa84/AVLSa97DVQHpTY+ZXCi8h04tCBIJIaaQiq2lrooWVRioXiAPJc
+        j+dFwY2PbxxNBv71tsQUg4LixKTeTRcvPYoT2khfdfLrMughHK9wl073L6SXAnbHj3pOvfddU0Ln
+        I2KaMKGMp914NlQ+dFWGRsbSu1oPVXIYvkUcMbODRPE8YHf8v8V7TBu8oL0KUcRjxZGB5TPZvDzB
+        Lrg2GtSAU0eV2URQxXe7Bux7jXBC0wKDNykFdyEpvG8EC5bIHGPYDpcWgivVlkykKajsXCnUg4UQ
+        9wSWibFrfK4YRVrCgGCYwz/tjFg5kAagET1D2enoqdQGj2QWVIYvpMaB8FjcD9nDX4PMedPk6AZW
+        DDYd8srDNMu6C8eQB7qTTXWr1CBr4xad3mcyCDL3Zs3aZdPx5Owt9ij2HOcFwAJ8/tRktLsPnX/t
+        bucbInBTcY2HqPJJ/dz+cDuuvr99GGSJ2f3R2WSCgtBVEJl7yRalhu1fCltmDw//AqNAtcRvCAAA
     headers:
       CF-RAY:
-      - 9b9ff8cbfa20fc2f-SEA
+      - 9c4c6960db2e7609-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -370,7 +366,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 07 Jan 2026 02:19:47 GMT
+      - Wed, 28 Jan 2026 00:35:49 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -384,33 +380,33 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '3999000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2026-01-07T02:19:44Z'
+      - '2026-01-28T00:35:45Z'
       anthropic-ratelimit-output-tokens-limit:
       - '800000'
       anthropic-ratelimit-output-tokens-remaining:
       - '800000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2026-01-07T02:19:47Z'
+      - '2026-01-28T00:35:49Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2026-01-07T02:19:43Z'
+      - '2026-01-28T00:35:45Z'
       anthropic-ratelimit-tokens-limit:
       - '4800000'
       anthropic-ratelimit-tokens-remaining:
       - '4799000'
       anthropic-ratelimit-tokens-reset:
-      - '2026-01-07T02:19:44Z'
+      - '2026-01-28T00:35:45Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CWsDZciCk4XvK4WncN877
+      - req_011CXYqd29XfSnhA5ygCnxUP
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '4194'
+      - '3723'
     status:
       code: 200
       message: OK

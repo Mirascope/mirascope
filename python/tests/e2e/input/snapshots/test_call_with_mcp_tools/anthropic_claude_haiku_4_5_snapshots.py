@@ -18,13 +18,13 @@ test_snapshot = snapshot(
             "params": {},
             "finish_reason": None,
             "usage": {
-                "input_tokens": 1628,
-                "output_tokens": 305,
+                "input_tokens": 1543,
+                "output_tokens": 455,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
-                "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=1628, output_tokens=305, server_tool_use=None, service_tier='standard')",
-                "total_tokens": 1933,
+                "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=1543, output_tokens=455, server_tool_use=None, service_tier='standard')",
+                "total_tokens": 1998,
             },
             "messages": [
                 SystemMessage(
@@ -42,15 +42,15 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="I'll call these tools in sequence for you. Let me start with the first two tools, then use their results with the third tool."
+                            text="I'll call these tools in sequence. Let me start with the greet tool, then answer_ultimate_question, and finally process_answer."
                         ),
                         ToolCall(
-                            id="toolu_01EXNZbjro89baFVduagcmUS",
+                            id="toolu_01KvRYjtnLPngaWxC4QS3UyC",
                             name="greet",
                             args='{"name": "Mirascope"}',
                         ),
                         ToolCall(
-                            id="toolu_01H3qMv9XPQWxwYJGPbdq91C",
+                            id="toolu_01VQEnPUA6pSmD9j8ZyjMhRJ",
                             name="answer_ultimate_question",
                             args="{}",
                         ),
@@ -63,17 +63,17 @@ test_snapshot = snapshot(
                         "content": [
                             {
                                 "citations": None,
-                                "text": "I'll call these tools in sequence for you. Let me start with the first two tools, then use their results with the third tool.",
+                                "text": "I'll call these tools in sequence. Let me start with the greet tool, then answer_ultimate_question, and finally process_answer.",
                                 "type": "text",
                             },
                             {
-                                "id": "toolu_01EXNZbjro89baFVduagcmUS",
+                                "id": "toolu_01KvRYjtnLPngaWxC4QS3UyC",
                                 "input": {"name": "Mirascope"},
                                 "name": "greet",
                                 "type": "tool_use",
                             },
                             {
-                                "id": "toolu_01H3qMv9XPQWxwYJGPbdq91C",
+                                "id": "toolu_01VQEnPUA6pSmD9j8ZyjMhRJ",
                                 "input": {},
                                 "name": "answer_ultimate_question",
                                 "type": "tool_use",
@@ -84,7 +84,7 @@ test_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01EXNZbjro89baFVduagcmUS",
+                            id="toolu_01KvRYjtnLPngaWxC4QS3UyC",
                             name="greet",
                             result=[
                                 {
@@ -96,21 +96,12 @@ test_snapshot = snapshot(
                             ],
                         ),
                         ToolOutput(
-                            id="toolu_01H3qMv9XPQWxwYJGPbdq91C",
+                            id="toolu_01VQEnPUA6pSmD9j8ZyjMhRJ",
                             name="answer_ultimate_question",
                             result=[
                                 {
                                     "type": "text",
-                                    "text": """\
-{
-  "answer": 42,
-  "question": "What is the answer to life, the universe, and everything?",
-  "computed_by": {
-    "name": "Deep Thought",
-    "years_computed": 7500000
-  }
-}\
-""",
+                                    "text": '{"answer":42,"question":"What is the answer to life, the universe, and everything?","computed_by":{"name":"Deep Thought","years_computed":7500000}}',
                                     "annotations": None,
                                     "meta": None,
                                 }
@@ -121,10 +112,10 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="Great! Now I'll use the answer data from the second tool to call the process_answer tool:"
+                            text="Great! Now let me use the process_answer tool with the data from answer_ultimate_question:"
                         ),
                         ToolCall(
-                            id="toolu_01TQByfwngEjeFsRYDscMTrf",
+                            id="toolu_015qCBwuXbQ6jwcJgM8Mz4PJ",
                             name="process_answer",
                             args='{"answer_data": {"answer": 42, "question": "What is the answer to life, the universe, and everything?", "computed_by": {"name": "Deep Thought", "years_computed": 7500000}}}',
                         ),
@@ -137,11 +128,11 @@ test_snapshot = snapshot(
                         "content": [
                             {
                                 "citations": None,
-                                "text": "Great! Now I'll use the answer data from the second tool to call the process_answer tool:",
+                                "text": "Great! Now let me use the process_answer tool with the data from answer_ultimate_question:",
                                 "type": "text",
                             },
                             {
-                                "id": "toolu_01TQByfwngEjeFsRYDscMTrf",
+                                "id": "toolu_015qCBwuXbQ6jwcJgM8Mz4PJ",
                                 "input": {
                                     "answer_data": {
                                         "answer": 42,
@@ -161,7 +152,7 @@ test_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01TQByfwngEjeFsRYDscMTrf",
+                            id="toolu_015qCBwuXbQ6jwcJgM8Mz4PJ",
                             name="process_answer",
                             result=[
                                 {
@@ -178,17 +169,37 @@ test_snapshot = snapshot(
                     content=[
                         Text(
                             text="""\
-## Report on Tool Learnings
+## Report of Tool Findings
 
-Here's what I learned from calling these tools:
+Here's what I learned from using each tool:
 
-1. **greet tool**: This tool provides a personalized welcome message. When called with the name "Mirascope", it returned a fun message: "Welcome to Zombo.com, Mirascope" (a reference to the quirky website).
+### 1. **greet Tool**
+- **Purpose**: Provides a personalized welcome message
+- **Input**: Takes a name parameter (I used "Mirascope")
+- **Output**: Returns a welcoming message: "Welcome to Zombo.com, Mirascope"
+- **Observation**: Uses a whimsical reference to Zombo.com
 
-2. **answer_ultimate_question tool**: This tool returns the answer to the famous philosophical question "What is the answer to life, the universe, and everything?" - which is **42** (a reference to Douglas Adams' "The Hitchhiker's Guide to the Galaxy"). The response includes metadata indicating this answer was computed by a supercomputer named "Deep Thought" over 7,500,000 years.
+### 2. **answer_ultimate_question Tool**
+- **Purpose**: Answers the famous ultimate question about life, the universe, and everything
+- **Input**: Takes no parameters
+- **Output**: Returns a JSON structure containing:
+  - **answer**: 42 (the iconic answer from Douglas Adams' "The Hitchhiker's Guide to the Galaxy")
+  - **question**: "What is the answer to life, the universe, and everything?"
+  - **computed_by**: Information about the computer that computed it:
+    - **name**: "Deep Thought" (the supercomputer from the books)
+    - **years_computed**: 7,500,000 years
+- **Observation**: A delightful reference to science fiction literature
 
-3. **process_answer tool**: This tool takes the structured ultimate answer data and formats it into a human-readable string. It takes the nested JSON structure (with information about the answer, question, and computing details) and outputs a nicely formatted message: "The answer 42 to 'What is the answer to life, the universe, and everything?' was computed by Deep Thought over 7,500,000 years"
+### 3. **process_answer Tool**
+- **Purpose**: Takes structured ultimate answer data and formats it into a human-readable string
+- **Input**: Accepts a nested Pydantic model (UltimateAnswer) with:
+  - answer (integer)
+  - question (string)
+  - computed_by (ComputerInfo with name and years_computed)
+- **Output**: Formats the data into a readable sentence: "The answer 42 to 'What is the answer to life, the universe, and everything?' was computed by Deep Thought over 7,500,000 years"
+- **Observation**: Demonstrates how complex nested structures can be processed and converted to user-friendly output
 
-The tools demonstrate a nice workflow where `answer_ultimate_question` generates structured data, and then `process_answer` formats that data for presentation. The greet tool adds a fun welcome element to the interaction!\
+All three tools work together nicely to greet the user, retrieve the ultimate answer, and format it for presentation!\
 """
                         )
                     ],
@@ -201,17 +212,37 @@ The tools demonstrate a nice workflow where `answer_ultimate_question` generates
                             {
                                 "citations": None,
                                 "text": """\
-## Report on Tool Learnings
+## Report of Tool Findings
 
-Here's what I learned from calling these tools:
+Here's what I learned from using each tool:
 
-1. **greet tool**: This tool provides a personalized welcome message. When called with the name "Mirascope", it returned a fun message: "Welcome to Zombo.com, Mirascope" (a reference to the quirky website).
+### 1. **greet Tool**
+- **Purpose**: Provides a personalized welcome message
+- **Input**: Takes a name parameter (I used "Mirascope")
+- **Output**: Returns a welcoming message: "Welcome to Zombo.com, Mirascope"
+- **Observation**: Uses a whimsical reference to Zombo.com
 
-2. **answer_ultimate_question tool**: This tool returns the answer to the famous philosophical question "What is the answer to life, the universe, and everything?" - which is **42** (a reference to Douglas Adams' "The Hitchhiker's Guide to the Galaxy"). The response includes metadata indicating this answer was computed by a supercomputer named "Deep Thought" over 7,500,000 years.
+### 2. **answer_ultimate_question Tool**
+- **Purpose**: Answers the famous ultimate question about life, the universe, and everything
+- **Input**: Takes no parameters
+- **Output**: Returns a JSON structure containing:
+  - **answer**: 42 (the iconic answer from Douglas Adams' "The Hitchhiker's Guide to the Galaxy")
+  - **question**: "What is the answer to life, the universe, and everything?"
+  - **computed_by**: Information about the computer that computed it:
+    - **name**: "Deep Thought" (the supercomputer from the books)
+    - **years_computed**: 7,500,000 years
+- **Observation**: A delightful reference to science fiction literature
 
-3. **process_answer tool**: This tool takes the structured ultimate answer data and formats it into a human-readable string. It takes the nested JSON structure (with information about the answer, question, and computing details) and outputs a nicely formatted message: "The answer 42 to 'What is the answer to life, the universe, and everything?' was computed by Deep Thought over 7,500,000 years"
+### 3. **process_answer Tool**
+- **Purpose**: Takes structured ultimate answer data and formats it into a human-readable string
+- **Input**: Accepts a nested Pydantic model (UltimateAnswer) with:
+  - answer (integer)
+  - question (string)
+  - computed_by (ComputerInfo with name and years_computed)
+- **Output**: Formats the data into a readable sentence: "The answer 42 to 'What is the answer to life, the universe, and everything?' was computed by Deep Thought over 7,500,000 years"
+- **Observation**: Demonstrates how complex nested structures can be processed and converted to user-friendly output
 
-The tools demonstrate a nice workflow where `answer_ultimate_question` generates structured data, and then `process_answer` formats that data for presentation. The greet tool adds a fun welcome element to the interaction!\
+All three tools work together nicely to greet the user, retrieve the ultimate answer, and format it for presentation!\
 """,
                                 "type": "text",
                             }
@@ -236,7 +267,6 @@ Returns:
 {
   "properties": {
     "name": {
-      "title": "Name",
       "type": "string"
     }
   },
@@ -285,8 +315,7 @@ Returns:
 {
   "properties": {
     "answer_data": {
-      "$ref": "#/$defs/UltimateAnswer",
-      "title": "Answer Data"
+      "$ref": "#/$defs/UltimateAnswer"
     }
   },
   "required": [
@@ -299,12 +328,10 @@ Returns:
       "properties": {
         "name": {
           "description": "The name of the computer",
-          "title": "Name",
           "type": "string"
         },
         "years_computed": {
           "description": "How many years it took to compute",
-          "title": "Years Computed",
           "type": "integer"
         }
       },
@@ -312,7 +339,6 @@ Returns:
         "name",
         "years_computed"
       ],
-      "title": "ComputerInfo",
       "type": "object"
     },
     "UltimateAnswer": {
@@ -320,12 +346,10 @@ Returns:
       "properties": {
         "answer": {
           "description": "The numerical answer",
-          "title": "Answer",
           "type": "integer"
         },
         "question": {
           "description": "The question that was asked",
-          "title": "Question",
           "type": "string"
         },
         "computed_by": {
@@ -338,7 +362,6 @@ Returns:
         "question",
         "computed_by"
       ],
-      "title": "UltimateAnswer",
       "type": "object"
     }
   }
