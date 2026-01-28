@@ -2,6 +2,7 @@
 title: "LLM Chaining - Techniques and Best Practices"
 description: "Learn how LLM chaining improves generative AI workflows, enhances responses, and powers sophisticated applications like RAG and autonomous agents."
 date: "2025-03-03"
+updatedAt: "2026-01-28"
 readTime: "24 min read"
 author: "William Bakst"
 ---
@@ -25,7 +26,7 @@ This is why LLM chains are useful: they let you build sophisticated applications
 
 It’s for that reason we designed [Mirascope](https://github.com/mirascope/mirascope), our developer-friendly, pythonic toolkit, to overcome shortcomings of modern frameworks.
 
-Mirascope works together with [Lilypad](/docs/lilypad), our open source AI observability platform that allows software developers to version, trace, and optimize language model calls, treating these as non-deterministic functions.
+Mirascope works together with [Mirascope Cloud](/docs/learn/ops), our AI observability platform that allows software developers to version, trace, and optimize language model calls, treating these as non-deterministic functions.
 
 Below, we dive into techniques for chaining and discuss what to look for in an LLM chaining framework.
 
@@ -56,31 +57,31 @@ A simple example of using a sequential approach to generate a B2B trend insights
 We show this below using Mirascope’s built-in declarative chaining:
 
 ```python
-
 # Sequential chain
 
-from mirascope.core import llm, prompt_template
+from mirascope import llm
 
-@llm.call(provider="openai", model="gpt-4o-mini")
-@prompt_template("Name an expert known for insights on {industry} trends")
-def select_expert(industry: str): ...
 
-@llm.call(provider="openai", model="gpt-4o-mini")
-@prompt_template(
-    """
-    Imagine that you are {expert}, a renowned expert in {industry}.
+@llm.call("openai/gpt-4o-mini")
+def select_expert(industry: str):
+    return f"Name an expert known for insights on {industry} trends"
+
+
+@llm.call("openai/gpt-4o-mini")
+def identify_trend(industry: str, topic: str):
+    expert = select_expert(industry)
+    return f"""
+    Imagine that you are {expert.text()}, a renowned expert in {industry}.
     Provide insights on a key {industry} trend related to {topic}.
     """
-)
-def identify_trend(industry: str, topic: str) -> openai.OpenAIDynamicConfig:
-    return {"computed_fields": {"expert": select_expert(industry)}}
 
-print(identify_trend("AI", "automation"))
+response = identify_trend("AI", "automation")
+print(response.text())
 ```
 
-First, we call `identify_trend` to explore the topic of automation in the AI industry. Adding Mirascope’s `llm.call` decorator to a function (along with `prompt_template`) turns the function into an LLM API call that uses minimal boilerplate code.
+First, we call `identify_trend` to explore the topic of automation in the AI industry. Adding Mirascope's `@llm.call` decorator to a function turns the function into an LLM API call that uses minimal boilerplate code.
 
-Inside `identify_trends`, the `computed_fields` argument includes a call to `select_expert`, which calls the LLM first to get an expert’s name for the AI industry, and whose return value is then passed into a further LLM call by `identify_trends`.
+Inside `identify_trend`, we first call `select_expert` to get an expert's name for the AI industry, then use that response in the prompt for the main LLM call.
 
 ### Parallel Chains
 
@@ -105,56 +106,54 @@ Below, we show an example of a parallel chain using Python’s `asyncio.gather()
 We execute both `identify_business_leader` and `identify_b2b_trends` in parallel by running independent LLM API calls, and then generating a recommendation.
 
 ```python
-
 # Parallel chain
 
 import asyncio
 
-from mirascope.core import llm, prompt_template
+from mirascope import llm
 
-@llm.call(provider="openai", model="gpt-4o-mini")
-@prompt_template(
-    """
+
+@llm.call("openai/gpt-4o-mini")
+async def identify_business_leader(industry: str):
+    return f"""
     Please identify a business leader who is well known for pioneering advancements in {industry}.
     Respond only with the leader's name.
     """
-)
-async def identify_business_leader(industry: str): ...
 
-@llm.call(provider="openai", model="gpt-4o-mini")
-@prompt_template(
-    """
+
+@llm.call("openai/gpt-4o-mini")
+async def identify_b2b_trends(industry: str):
+    return f"""
     Given the industry {industry}, return a list of emerging B2B trends.
     Make sure to exclude general trends that apply to all industries, and respond only with the list.
     """
-)
-async def identify_b2b_trends(industry: str): ...
 
-@llm.call(provider="openai", model="gpt-4o-mini")
-@prompt_template(
-    """
-    SYSTEM:
-    Your task is to recommend a strategic business move. Pretend that you are {leader}.
 
-    USER:
-    Given the following emerging B2B trends in the {industry} industry:
-    {trends}
-    
-    Recommend a key strategic move that businesses in this space should consider.
-    """
-)
-async def recommend_strategy(industry: str) -> openai.OpenAIDynamicConfig:
+@llm.call("openai/gpt-4o-mini")
+async def recommend_strategy(industry: str):
     leader, trends = await asyncio.gather(
         identify_business_leader(industry), identify_b2b_trends(industry)
     )
-    return {
-        "computed_fields": {"leader": leader, "trends": trends}
-    }
+    return [
+        llm.messages.system(
+            f"Your task is to recommend a strategic business move. Pretend that you are {leader.text()}."
+        ),
+        llm.messages.user(
+            f"""
+            Given the following emerging B2B trends in the {industry} industry:
+            {trends.text()}
+
+            Recommend a key strategic move that businesses in this space should consider.
+            """
+        ),
+    ]
+
 
 async def recommend_strategy_parallel_chaining(industry: str):
     return await recommend_strategy(industry=industry)
 
-print(asyncio.run(recommend_strategy_parallel_chaining("fintech")))
+response = asyncio.run(recommend_strategy_parallel_chaining("fintech"))
+print(response.text())
 ```
 
 ### Conditional Chains
@@ -176,67 +175,54 @@ Below we implement a conditional prompt that determines whether a trend is emerg
 First, `classify_trend` determines whether the trend is emerging or declining using a predefined prompt. Based on this classification, `analyze_trend` generates a targeted analysis - either a growth opportunity analysis for emerging trends or a risk mitigation strategy for declining trends - by dynamically adjusting the prompt before passing it to the AI model.
 
 ```python
-
 # Conditional chain
 
 from enum import Enum
 
-from mirascope.core import openai, prompt_template
+from mirascope import llm
+
 
 class TrendCategory(str, Enum):
     EMERGING = "emerging"
     DECLINING = "declining"
 
-@llm.call(provider="openai", model="gpt-4o-mini", response_model=TrendCategory)
-@prompt_template("Does the following market trend appear to be emerging or declining? {trend_description}")
-def classify_trend(trend_description: str): ...
 
-@llm.call(provider="openai", model="gpt-4o-mini")
-@prompt_template(
-    """
-    SYSTEM:
-    Your task is to analyze a B2B market trend.
-    The trend has been identified as {trend_category}.
+@llm.call("openai/gpt-4o-mini", format=TrendCategory)
+def classify_trend(trend_description: str):
+    return f"Does the following market trend appear to be emerging or declining? {trend_description}"
 
-    USER: Provide a {trend_analysis_type} for the following trend: {trend_description}
-    """
-)
-def analyze_trend(trend_description: str) -> openai.OpenAIDynamicConfig:
-    trend_category = classify_trend(trend_description)
+
+@llm.call("openai/gpt-4o-mini")
+def analyze_trend(trend_description: str):
+    trend_category = classify_trend(trend_description).parse()
     trend_analysis_type = (
         "growth opportunity analysis"
         if trend_category == TrendCategory.EMERGING
         else "risk mitigation strategy"
     )
-    return {
-        "computed_fields": {
-            "trend_category": trend_category,
-            "trend_analysis_type": trend_analysis_type,
-        }
-    }
+    return [
+        llm.messages.system(
+            f"Your task is to analyze a B2B market trend. The trend has been identified as {trend_category}."
+        ),
+        llm.messages.user(
+            f"Provide a {trend_analysis_type} for the following trend: {trend_description}"
+        ),
+    ]
+
 
 emerging_trend_analysis = analyze_trend(
     trend_description="More enterprises are adopting AI-driven automation for workflow optimization."
 )
-print(emerging_trend_analysis)
+print(emerging_trend_analysis.text())
 
 # > This trend represents a significant growth opportunity as enterprises seek greater efficiency through AI-driven automation...
-
-print(emerging_trend_analysis.user_message_param)
-
-# > {'content': "Provide a growth opportunity analysis for the following trend: More enterprises are adopting AI-driven automation for workflow optimization.", 'role': 'user'}
 
 declining_trend_analysis = analyze_trend(
     trend_description="Traditional on-premise software solutions are being replaced by cloud-based SaaS offerings."
 )
-print(declining_trend_analysis)
+print(declining_trend_analysis.text())
 
 # > This trend indicates a decline in demand for on-premise software, requiring businesses to adapt with cloud migration strategies...
-
-print(declining_trend_analysis.user_message_param)
-
-# > {'content': "Provide a risk mitigation strategy for the following trend: Traditional on-premise software solutions are being replaced by cloud-based SaaS offerings.", 'role': 'user'}
-
 ```
 
 ### Iterative Chains
@@ -259,12 +245,12 @@ Example scenarios include:
 In the example below, `summarize` first generates a one-sentence summary of a B2B trends passage using an AI model. Then, `resummarize` critiques and refines the summary iteratively within the `rewrite_iteratively` function, which calls `resummarize` multiple times before returning the final improved version.
 
 ```python
-
-# Recursive chain 
+# Recursive chain
 
 from pydantic import BaseModel, Field
 
-from mirascope.core import llm, prompt_template
+from mirascope import llm
+
 
 class SummaryFeedback(BaseModel):
     """Feedback on summary with a critique and review rewrite based on said critique."""
@@ -275,42 +261,43 @@ class SummaryFeedback(BaseModel):
         description="A rewritten summary that takes the critique into account.",
     )
 
-@llm.call(provider="openai", model="gpt-4o-mini")
-@prompt_template("Summarize the following text into one sentence: {original_text}")
-def summarize(original_text: str): ...
 
-@llm.call(provider="openai", model="gpt-4o-mini", response_model=SummaryFeedback)
-@prompt_template(
-    """
+@llm.call("openai/gpt-4o-mini")
+def summarize(original_text: str):
+    return f"Summarize the following text into one sentence: {original_text}"
+
+
+@llm.call("openai/gpt-4o-mini", format=SummaryFeedback)
+def resummarize(original_text: str, summary: str):
+    return f"""
     Original Text: {original_text}
     Summary: {summary}
 
     Critique the summary of the original text.
     Then rewrite the summary based on the critique. It must be one sentence.
     """
-)
-def resummarize(original_text: str, summary: str): ...
+
 
 def rewrite_iteratively(original_text: str, depth=2):
-    summary = summarize(original_text=original_text).content
+    summary = summarize(original_text=original_text).text()
     for _ in range(depth):
-        feedback = resummarize(original_text=original_text, summary=summary)
+        feedback = resummarize(original_text=original_text, summary=summary).parse()
         summary = feedback.rewritten_summary
     return summary
 
+
 original_text = """
-As digital transformation accelerates, B2B companies are increasingly leveraging AI-driven analytics,automation, and personalization to enhance decision-making and customer engagement.  
-Supply chain resilience has emerged as a top priority, with firms investing in predictive analytics and decentralized networks to mitigate disruptions. Additionally, the rise of account-based marketing (ABM) 
-and data-driven sales strategies is reshaping how businesses approach lead generation and relationship management.  
-Sustainability and ESG initiatives are also becoming central to corporate strategies, driven by regulatory pressures and customer expectations. 
+As digital transformation accelerates, B2B companies are increasingly leveraging AI-driven analytics,automation, and personalization to enhance decision-making and customer engagement.
+Supply chain resilience has emerged as a top priority, with firms investing in predictive analytics and decentralized networks to mitigate disruptions. Additionally, the rise of account-based marketing (ABM)
+and data-driven sales strategies is reshaping how businesses approach lead generation and relationship management.
+Sustainability and ESG initiatives are also becoming central to corporate strategies, driven by regulatory pressures and customer expectations.
 """
 
 print(rewrite_iteratively(original_text=original_text))
 
-# > B2B companies are embracing AI-driven analytics, automation, and account-based marketing to enhance engagement, 
+# > B2B companies are embracing AI-driven analytics, automation, and account-based marketing to enhance engagement,
 
-# > while prioritizing supply chain resilience and sustainability in response to evolving market and regulatory demands. 
-
+# > while prioritizing supply chain resilience and sustainability in response to evolving market and regulatory demands.
 ```
 
 ## Pros and Cons of Using an LLM Chaining Framework
@@ -339,8 +326,8 @@ A case in point is LangChain expression language (LCEL) and particularly its run
 
 This provides a standardized way for different components to interact: with a single function call you can execute a chain of operations by stringing together different components like calls and user inputs using the pipe operator:
 
-```python
-chain = prompt | model | output_parser 
+```python-snippet-skip
+chain = prompt | model | output_parser
 ```
 
 While this works elegantly for simple operations, it’s not so suitable for complex chains and becomes quickly unmanageable and difficult to debug.
@@ -377,271 +364,38 @@ This is a declarative and readable way to structure complex workflows, and ensur
 
 In the prompt chain below, we use computed fields to automatically pass the recommended movie title from the first function (`recommend_movie`) as input to the second function (`explain_movie`), eliminating the need for manual intervention and ensuring a seamless, dynamic flow of information between prompts:
 
-```python {10 23-24}
-from mirascope.core import llm, prompt_template
+```python {7-8 17-22}
+from mirascope import llm
 
-@llm.call(provider="openai", model="gpt-4o-mini")
-@prompt_template(
-   """
-   Recommend a popular movie in the {genre} genre.
-   Give me just the title.
-   """
-)
-def recommend_movie(genre: str): ...
 
-@llm.call(provider="openai", model="gpt-4o-mini")
-@prompt_template(
-   """
-   SYSTEM:
-   You are the world's greatest film critic.
-   Your task is to explain why the movie "{movie_title}" is popular in the {genre} genre.
+@llm.call("openai/gpt-4o-mini")
+def recommend_movie(genre: str):
+    return f"""
+    Recommend a popular movie in the {genre} genre.
+    Give me just the title.
+    """
 
-   USER:
-   Explain why "{movie_title}" in the {genre} genre is popular.
-   """
-)
-def explain_movie(genre: str) -> openai.OpenAIDynamicConfig:
-   return {"computed_fields": {"movie_title": recommend_movie(genre)}}
+
+@llm.call("openai/gpt-4o-mini")
+def explain_movie(genre: str):
+    movie_title = recommend_movie(genre).text()
+    return [
+        llm.messages.system(
+            f'You are the world\'s greatest film critic. Your task is to explain why the movie "{movie_title}" is popular in the {genre} genre.'
+        ),
+        llm.messages.user(
+            f'Explain why "{movie_title}" in the {genre} genre is popular.'
+        ),
+    ]
+
 
 explanation = explain_movie("science fiction")
-print(explanation)
+print(explanation.text())
 
-# > "Inception," directed by Christopher Nolan, has achieved immense popularity in the science fiction genre... 
-
+# > "Inception," directed by Christopher Nolan, has achieved immense popularity in the science fiction genre...
 ```
 
-Also, `@computed_fields` includes the output at every step of the chain in the final dump:
-
-```python {118}
-print(explanation.model_dump())
-{
-    'metadata': {},
-    'response': {
-        'id': 'chatcmpl-B1E319PRZoX8pGIWkTb0YAF9i1zXe',
-        'choices': [{
-            'finish_reason': 'stop',
-            'index': 0,
-            'logprobs': None,
-            'message': {...,
-                'refusal': None,
-                'role': 'assistant',
-                'audio': None,
-                'function_call': None,
-                'tool_calls': None
-            }
-        }],
-        'created': 1739632027,
-        'model': 'gpt-4o-mini-2024-07-18',
-        'object': 'chat.completion',
-        'service_tier': 'default',
-        'system_fingerprint': 'fp_00428b782a',
-        'usage': {
-            'completion_tokens': 694,
-            'prompt_tokens': 54,
-            'total_tokens': 748,
-            'completion_tokens_details': {
-                'accepted_prediction_tokens': 0,
-                'audio_tokens': 0,
-                'reasoning_tokens': 0,
-                'rejected_prediction_tokens': 0
-            },
-            'prompt_tokens_details': {
-                'audio_tokens': 0,
-                'cached_tokens': 0
-            }
-        }
-    },
-    'tool_types': None,
-    'prompt_template': '\n   SYSTEM:\n   You are the world\'s greatest film critic.\n   Your task is to explain why the movie "{movie_title}" is popular in the {genre} genre.\n\n   USER:\n   Explain why "{movie_title}" in the {genre} genre is popular.\n   ',
-    'fn_args': {
-        'genre': 'science fiction',
-        'movie_title': {
-            'metadata': {},
-            'response': {
-                'id': 'chatcmpl-B1E31fVXIScxUvuzJ45ohASipgi2b',
-                'choices': [{
-                    'finish_reason': 'stop',
-                    'index': 0,
-                    'logprobs': None,
-                    'message': {
-                        'content': 'Inception',
-                        'refusal': None,
-                        'role': 'assistant',
-                        'audio': None,
-                        'function_call': None,
-                        'tool_calls': None
-                    }
-                }],
-                'created': 1739632027,
-                'model': 'gpt-4o-mini-2024-07-18',
-                'object': 'chat.completion',
-                'service_tier': 'default',
-                'system_fingerprint': 'fp_13eed4fce1',
-                'usage': {
-                    'completion_tokens': 3,
-                    'prompt_tokens': 23,
-                    'total_tokens': 26,
-                    'completion_tokens_details': {
-                        'accepted_prediction_tokens': 0,
-                        'audio_tokens': 0,
-                        'reasoning_tokens': 0,
-                        'rejected_prediction_tokens': 0
-                    },
-                    'prompt_tokens_details': {
-                        'audio_tokens': 0,
-                        'cached_tokens': 0
-                    }
-                }
-            },
-            'tool_types': None,
-            'prompt_template': '\n   Recommend a popular movie in the {genre} genre.\n   Give me just the title.\n   ',
-            'fn_args': {
-                'genre': 'science fiction'
-            },
-            'dynamic_config': None,
-            'messages': [{
-                'role': 'user',
-                'content': 'Recommend a popular movie in the science fiction genre.\nGive me just the title.'
-            }],
-            'call_params': {},
-            'call_kwargs': {
-                'model': 'gpt-4o-mini',
-                'messages': [{
-                    'role': 'user',
-                    'content': 'Recommend a popular movie in the science fiction genre.\nGive me just the title.'
-                }]
-            },
-            'user_message_param': {
-                'content': 'Recommend a popular movie in the science fiction genre.\nGive me just the title.',
-                'role': 'user'
-            },
-            'start_time': 1739632027273.4211,
-            'end_time': 1739632027643.734,
-            'message_param': {
-                'content': 'Inception',
-                'refusal': None,
-                'role': 'assistant',
-                'tool_calls': None
-            },
-            'tools': None,
-            'tool': None,
-            'audio': None,
-            'audio_transcript': None
-        }
-    },
-    'dynamic_config': {
-        'computed_fields': {
-            'movie_title': {
-                'metadata': {},
-                'response': {
-                    'id': 'chatcmpl-B1E31fVXIScxUvuzJ45ohASipgi2b',
-                    'choices': [{
-                        'finish_reason': 'stop',
-                        'index': 0,
-                        'logprobs': None,
-                        'message': {
-                            'content': 'Inception',
-                            'refusal': None,
-                            'role': 'assistant',
-                            'audio': None,
-                            'function_call': None,
-                            'tool_calls': None
-                        }
-                    }],
-                    'created': 1739632027,
-                    'model': 'gpt-4o-mini-2024-07-18',
-                    'object': 'chat.completion',
-                    'service_tier': 'default',
-                    'system_fingerprint': 'fp_13eed4fce1',
-                    'usage': {
-                        'completion_tokens': 3,
-                        'prompt_tokens': 23,
-                        'total_tokens': 26,
-                        'completion_tokens_details': {
-                            'accepted_prediction_tokens': 0,
-                            'audio_tokens': 0,
-                            'reasoning_tokens': 0,
-                            'rejected_prediction_tokens': 0
-                        },
-                        'prompt_tokens_details': {
-                            'audio_tokens': 0,
-                            'cached_tokens': 0
-                        }
-                    }
-                },
-                'tool_types': None,
-                'prompt_template': '\n   Recommend a popular movie in the {genre} genre.\n   Give me just the title.\n   ',
-                'fn_args': {
-                    'genre': 'science fiction'
-                },
-                'dynamic_config': None,
-                'messages': [{
-                    'role': 'user',
-                    'content': 'Recommend a popular movie in the science fiction genre.\nGive me just the title.'
-                }],
-                'call_params': {},
-                'call_kwargs': {
-                    'model': 'gpt-4o-mini',
-                    'messages': [{
-                        'role': 'user',
-                        'content': 'Recommend a popular movie in the science fiction genre.\nGive me just the title.'
-                    }]
-                },
-                'user_message_param': {
-                    'content': 'Recommend a popular movie in the science fiction genre.\nGive me just the title.',
-                    'role': 'user'
-                },
-                'start_time': 1739632027273.4211,
-                'end_time': 1739632027643.734,
-                'message_param': {
-                    'content': 'Inception',
-                    'refusal': None,
-                    'role': 'assistant',
-                    'tool_calls': None
-                },
-                'tools': None,
-                'tool': None,
-                'audio': None,
-                'audio_transcript': None
-            }
-        }
-    },
-    'messages': [{
-        'role': 'system',
-        'content': 'You are the world\'s greatest film critic.\n   Your task is to explain why the movie "Inception" is popular in the science fiction genre.'
-    }, {
-        'role': 'user',
-        'content': 'Explain why "Inception" in the science fiction genre is popular.'
-    }],
-    'call_params': {},
-    'call_kwargs': {
-        'model': 'gpt-4o-mini',
-        'messages': [{
-            'role': 'system',
-            'content': 'You are the world\'s greatest film critic.\n   Your task is to explain why the movie "Inception" is popular in the science fiction genre.'
-        }, {
-            'role': 'user',
-            'content': 'Explain why "Inception" in the science fiction genre is popular.'
-        }]
-    },
-    'user_message_param': {
-        'content': 'Explain why "Inception" in the science fiction genre is popular.',
-        'role': 'user'
-    },
-    'start_time': 1739632027649.208,
-    'end_time': 1739632043802.302,
-    'message_param': {
-        'content': '..',
-        'refusal': None,
-        'role': 'assistant',
-        'tool_calls': None
-    },
-    'tools': None,
-    'tool': None,
-    'audio': None,
-    'audio_transcript': None
-}
-```
+The response object captures the full context of the LLM call, including metadata like token usage and timing. You can access the raw provider response via `explanation.raw` and get token usage via `explanation.usage`.
 
 Mirascope’s native Python approach removes the need for extra classes and abstractions to pass information through a chain - you simply access and use data naturally, just as Python intends.
 
@@ -657,75 +411,68 @@ We believe version control should be as effortless as possible and run in the ba
 
 In the end, prompt engineering can be seen as the optimization of non-deterministic functions (LLM calls) through structured experimentation. You need to continuously tweak parameters (in this case, prompts and function bodies) and measure their impact​, since outputs can be random and inconsistent.
 
-To keep track of all this, we developed [Lilypad](/docs/lilypad), an open source AI engineering framework that automatically versions and traces LLM calls when you simply add the `@lilypad.trace` decorator, ensuring that evaluations are systematic and reproducible:
+To keep track of all this, we developed [Mirascope Cloud](/docs/learn/ops), our AI observability platform that automatically versions and traces LLM calls when you use the `@ops.version` decorator, ensuring that evaluations are systematic and reproducible:
 
 ```python
-import lilypad
-from openai import OpenAI
- 
-lilypad.configure(auto_llm=True)
-client = OpenAI()
- 
- 
-@lilypad.trace(versioning="automatic")  # [!code highlight]
-def answer_question(question: str) -> str:
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": question}],
-    )
-    return str(completion.choices[0].message.content)
- 
+from mirascope import llm, ops
+
+ops.configure()
+ops.instrument_llm()
+
+
+@ops.version  # [!code highlight]
+@llm.call("openai/gpt-4o-mini")
+def answer_question(question: str):
+    return question
+
 
 answer = answer_question("What is the meaning of life?")
-print(answer) 
+print(answer.text())
 ```
 
-The decorator also ensures that every time `answer_question` is modified, it gets a new version automatically, making it easier to track changes and compare outputs over time. This includes:
+The `@ops.version` decorator ensures that every time `answer_question` is modified, it gets a new version automatically, making it easier to track changes and compare outputs over time. This includes:
 
-* The input question sent to the model  
-* The output response from the LLM  
+* The input question sent to the model
+* The output response from the LLM
 * Model metadata, including the number of tokens used, latency, and cost
 
-The Lilypad Playground allows non-technical users, such as domain experts, to interact with prompts without needing to alter the underlying code, effectively separating concerns and allowing software engineers to focus only on the underlying system architecture, API integrations, and data handling:
+The Mirascope Cloud Playground allows non-technical users, such as domain experts, to interact with prompts without needing to alter the underlying code, effectively separating concerns and allowing software engineers to focus only on the underlying system architecture, API integrations, and data handling:
 
-![Lilypad Editor Screenshot](/assets/blog/llm-chaining/lilypad_editor_screenshot.webp)
+![Mirascope Cloud Playground](/assets/blog/llm-chaining/lilypad_editor_screenshot.webp)
 
 ### 3. Provider-Agnostic LLM Calls
 
 Just as avoiding dependency on a framework’s update cycle - like waiting for LangChain to update when the OpenAI SDK changes - allows you to adopt improvements without delay, avoiding vendor lock-in gives you the ability to switch between LLM providers without extensive code rewriting.
 
-Mirascope’s [`llm.call` decorator](/docs/v1/learn/calls/) allows you to quickly change providers in LLM calls by specifying the provider name in the argument list. This flexibility ensures that your application remains adaptable, allowing you to switch to a different model endpoint as needed.
+Mirascope's [`@llm.call` decorator](/docs/learn/llm/calls) allows you to quickly change providers in LLM calls by specifying the provider and model in a unified format like `"openai/gpt-4o-mini"`. This flexibility ensures that your application remains adaptable, allowing you to switch to a different model endpoint as needed.
 
-Also, Mirascope's native Python interface lets you integrate models and functionality that may not yet be supported natively by Mirascope, either through provider-specific decorators or by using the provider’s SDK/API directly. This means you can seamlessly mix and match different LLMs - including the latest releases from providers like OpenAI - without being restricted by framework limitations.
+Also, Mirascope's native Python interface lets you integrate models and functionality that may not yet be supported natively by Mirascope by using `llm.register_provider()` or by using the provider's SDK/API directly. This means you can seamlessly mix and match different LLMs - including the latest releases from providers like OpenAI - without being restricted by framework limitations.
 
-Below we show an example of using `llm.call` and Mirascope’s `override_response`, which allows you to override provider settings at runtime:
+Below we show an example of using `@llm.call` and Mirascope's `llm.model()` context manager, which allows you to override provider settings at runtime:
 
 ```python
 from mirascope import llm
 
-@llm.call(provider="openai", model="gpt-4o-mini")
-def recommend_book(genre: str) -> str:
+
+@llm.call("openai/gpt-4o-mini")
+def recommend_book(genre: str):
     return f"Recommend a {genre} book"
 
+
 response = recommend_book("fantasy")
-print(response.content)
+print(response.text())
 
-override_response = llm.override(
-    recommend_book,
-    provider="anthropic",
-    model="claude-3-5-sonnet-20240620",
-    call_params={"temperature": 0.7},
-)("fantasy")
+# Override at runtime with a different model
+with llm.model("anthropic/claude-sonnet-4-20250514", temperature=0.7):
+    override_response = recommend_book("fantasy")
 
-print(override_response.content) 
+print(override_response.text())
 ```
 
-Note the provider and model arguments in `llm.call`, which allows hot switching of providers when needed. You can also override provider settings at runtime using `llm.override`, which takes a function decorated with `llm.call` and change:
+Note the `"provider/model"` format in `@llm.call`, which allows hot switching of providers when needed. You can also override provider settings at runtime using `llm.model()`, a context manager that temporarily changes:
 
-* `provider`: change the provider being called  
-* `model`: use a different model  
-* `call_params`: override call parameters like temperature  
-* `client`: use a different client instance
+* The model string (e.g., `"anthropic/claude-sonnet-4-20250514"`)
+* Call parameters like `temperature`, `max_tokens`, etc.
 
 Taken altogether, Mirascope’s provider-agnostic LLM calling allows you to:
 
@@ -744,39 +491,38 @@ Ensuring that an LLM operates on a well-defined dataset improves its ability to 
 
 This allows better integration with other systems and is essential for putting together complex AI systems that combine different tools and services.
 
-But many chaining frameworks don’t come with output validation out-of-the-box and require you to write custom boilerplate for this.
+But many chaining frameworks don't come with output validation out-of-the-box and require you to write custom boilerplate for this.
 
-Mirascope’s built-in `response_model` uses Pydantic’s Base Model class to structure and validate LLM outputs.
+Mirascope's built-in `format` parameter uses Pydantic's BaseModel class to structure and validate LLM outputs.
 
 It works by allowing you to define a Pydantic schema against which Mirascope automatically parses and validates outputs to enforce type safety.
 
-The code below shows an example of using a response model.
+The code below shows an example of using structured output.
 
-* We define `EventDetails` as a Pydantic `BaseModel` to ensure the extracted event details include a `date` and `location` with validated date types.  
-* We then include the `response_model` argument in the `llm.call` decorator.
+* We define `EventDetails` as a Pydantic `BaseModel` to ensure the extracted event details include a `date` and `location` with validated types.
+* We include the `format` parameter in the `@llm.call` decorator and call `.parse()` on the response.
 
-```python {5-7 13}
+```python {5-7 10 14}
 from pydantic import BaseModel
-from mirascope.core import llm, prompt_template
+
+from mirascope import llm
+
 
 class EventDetails(BaseModel):
     date: str
     location: str
 
-@llm.call(
-    provider="openai",
-    model="gpt-4o-mini",
-    response_model=EventDetails,
-)
-@prompt_template("Extract the event details from this text: {text}")
+
+@llm.call("openai/gpt-4o-mini", format=EventDetails)
 def extract_event(text: str):
-    ...
+    return f"Extract the event details from this text: {text}"
+
 
 response = extract_event(text="The concert is on Saturday at Madison Square Garden.")
-print(response.date)      # Output: Saturday
+event = response.parse()
+print(event.date)      # Output: Saturday
 
-print(response.location)  # Output: Madison Square Garden 
-
+print(event.location)  # Output: Madison Square Garden
 ```
 
 Pydantic’s type annotations support features like autocomplete, type hints, and linting directly in your IDE. For example, you can confirm function return types just by hovering your cursor over certain variables:
@@ -791,4 +537,4 @@ It also shows autosuggestions:
 
 Mirascope’s lightweight Python toolkit lets you build scalable AI-powered chains while giving you the freedom to use only the components you need - no rigid frameworks, just modular flexibility.
 
-You can easily get started by exploring our examples and guides on both our [documentation pages](/docs/v1/) and on [GitHub](https://github.com/mirascope/mirascope/).
+You can easily get started by exploring our examples and guides on both our [documentation pages](/docs) and on [GitHub](https://github.com/mirascope/mirascope/).
