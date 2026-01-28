@@ -1,0 +1,121 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "Please look up the
+      book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score"}]}], "inferenceConfig": {"maxTokens": 4096}, "system": [{"text": "Always
+      respond to the user''s query using the __mirascope_formatted_output_tool__ tool
+      for structured output."}], "toolConfig": {"tools": [{"toolSpec": {"name": "get_book_info",
+      "description": "Look up book information by ISBN.", "inputSchema": {"json":
+      {"properties": {"isbn": {"title": "Isbn", "type": "string"}}, "required": ["isbn"],
+      "additionalProperties": false, "type": "object"}}}}, {"toolSpec": {"name": "__mirascope_formatted_output_tool__",
+      "description": "Use this tool to extract data in BookSummary format for a final
+      response.", "inputSchema": {"json": {"properties": {"title": {"title": "Title",
+      "type": "string"}, "author": {"title": "Author", "type": "string"}, "pages":
+      {"title": "Pages", "type": "integer"}, "publication_year": {"title": "Publication
+      Year", "type": "integer"}}, "required": ["title", "author", "pages", "publication_year"],
+      "additionalProperties": false, "type": "object"}}}}], "toolChoice": {"any":
+      {}}}}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '1162'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9ELFos
+        YixuIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTI1NTA0Wg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        MzNkZWZlNjUtMTZmMC00MDRhLTkyZTEtNzc4NGMyMTA4YjYx
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse
+  response:
+    body:
+      string: '{"metrics":{"latencyMs":311},"output":{"message":{"content":[{"toolUse":{"input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","toolUseId":"tooluse_bxACNYjETEeLI-_QBmtkrA"}}],"role":"assistant"}},"stopReason":"tool_use","usage":{"inputTokens":605,"outputTokens":26,"serverToolUsage":{},"totalTokens":631}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '307'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Jan 2026 12:55:05 GMT
+      x-amzn-RequestId:
+      - c2b41934-dd4f-4c1d-abe2-e47e3f981a71
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "Please look up the
+      book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score"}]}, {"role": "assistant", "content": [{"toolUse": {"toolUseId": "tooluse_bxACNYjETEeLI-_QBmtkrA",
+      "name": "get_book_info", "input": {"isbn": "0-7653-1178-X"}}}]}, {"role": "user",
+      "content": [{"toolResult": {"toolUseId": "tooluse_bxACNYjETEeLI-_QBmtkrA", "content":
+      [{"text": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages:
+      544, Published: 2006-07-25"}]}}]}], "inferenceConfig": {"maxTokens": 4096},
+      "system": [{"text": "Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output."}], "toolConfig": {"tools": [{"toolSpec": {"name":
+      "get_book_info", "description": "Look up book information by ISBN.", "inputSchema":
+      {"json": {"properties": {"isbn": {"title": "Isbn", "type": "string"}}, "required":
+      ["isbn"], "additionalProperties": false, "type": "object"}}}}, {"toolSpec":
+      {"name": "__mirascope_formatted_output_tool__", "description": "Use this tool
+      to extract data in BookSummary format for a final response.", "inputSchema":
+      {"json": {"properties": {"title": {"title": "Title", "type": "string"}, "author":
+      {"title": "Author", "type": "string"}, "pages": {"title": "Pages", "type": "integer"},
+      "publication_year": {"title": "Publication Year", "type": "integer"}}, "required":
+      ["title", "author", "pages", "publication_year"], "additionalProperties": false,
+      "type": "object"}}}}], "toolChoice": {"any": {}}}}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '1539'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9ELFos
+        YixuIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTI1NTA1Wg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        ODkzYzg0N2MtZTBjMy00NWJiLWFkMDYtODg3N2RjYTBlZjgw
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse
+  response:
+    body:
+      string: '{"metrics":{"latencyMs":393},"output":{"message":{"content":[{"toolUse":{"input":{"publication_year":2006,"pages":544,"author":"Brandon
+        Sanderson","title":"Mistborn: The Final Empire"},"name":"mirascope_formatted_output_tool__","toolUseId":"tooluse_B4Ojq091QC6uuO3P2Cp7xw"}}],"role":"assistant"}},"stopReason":"tool_use","usage":{"inputTokens":699,"outputTokens":43,"serverToolUsage":{},"totalTokens":742}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '406'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Jan 2026 12:55:06 GMT
+      x-amzn-RequestId:
+      - 5bc27e16-bd4b-40cd-94f5-b28d2f985b41
+    status:
+      code: 200
+      message: OK
+version: 1

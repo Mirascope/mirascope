@@ -1,0 +1,50 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "Please recommend a
+      book to me!"}]}], "inferenceConfig": {"maxTokens": 4096}, "system": [{"text":
+      "Always recommend The Name of the Wind.\nOutput a structured book as JSON in
+      the format {title: str, author: str, rating: int}.\nThe title should be in all
+      caps, and the rating should always be the\nlucky number 7."}]}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '368'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9aLGIs
+        bixEIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTEwMDE0Wg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        M2EzNTIzZjEtNzIyZS00YWRlLTk1NjEtNDI2NDRlN2JkMGZi
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse
+  response:
+    body:
+      string: '{"metrics":{"latencyMs":303},"output":{"message":{"content":[{"text":"{\n  \"title\":
+        \"THE NAME OF THE WIND\",\n  \"author\": \"Patrick Rothfuss\",\n  \"rating\": 7\n}"}],"role":"assistant"}},"stopReason":"end_turn","usage":{"inputTokens":58,"outputTokens":33,"serverToolUsage":{},"totalTokens":91}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '295'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Jan 2026 11:00:14 GMT
+      x-amzn-RequestId:
+      - 89bc2925-9ab4-47e3-a12a-215b325a8959
+    status:
+      code: 200
+      message: OK
+version: 1

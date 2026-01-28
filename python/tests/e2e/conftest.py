@@ -44,11 +44,17 @@ E2E_MODEL_IDS: list[llm.ModelId] = [
     "azure/openai/gpt-5-mini",
     "bedrock/us.anthropic.claude-haiku-4-5-20251001-v1:0",
     "bedrock/openai.gpt-oss-20b-1:0",
+    "bedrock/amazon.nova-micro-v1:0",
 ]
 
 
 def _is_bedrock_openai_model(model_id: llm.ModelId) -> bool:
     return model_id.startswith("bedrock/openai.")
+
+
+def _is_bedrock_boto3_model(model_id: llm.ModelId) -> bool:
+    """Return True for Bedrock models that use boto3 Converse API (not OpenAI/Anthropic)."""
+    return model_id.startswith("bedrock/amazon.")
 
 
 # NOTE: MLX is only available on macOS (Apple Silicon)
@@ -64,6 +70,11 @@ STRUCTURED_OUTPUT_MODEL_IDS = [
     model_id
     for model_id in [*E2E_MODEL_IDS, "anthropic/claude-sonnet-4-5"]
     if not _is_bedrock_openai_model(model_id)
+]
+
+# Bedrock boto3 models (amazon.*) don't support empty string content
+EMPTY_STRING_MODEL_IDS = [
+    model_id for model_id in E2E_MODEL_IDS if not _is_bedrock_boto3_model(model_id)
 ]
 
 FORMATTING_MODES: tuple[llm.FormattingMode | None] = tuple(
@@ -202,12 +213,24 @@ def model_id(request: ModelIdRequest) -> llm.ModelId:
 
 @pytest.fixture(autouse=True)
 def register_bedrock_provider(reset_provider_registry: None) -> None:
-    """Register Bedrock provider with API keys for e2e tests."""
+    """Register Bedrock provider for e2e tests.
+
+    Uses boto3 default credential chain for native Bedrock models (e.g., amazon.nova).
+    For OpenAI-compatible models, uses the AWS_BEARER_TOKEN_BEDROCK environment
+    variable if set.
+
+    Note: AWS_BEARER_TOKEN_BEDROCK must NOT be set when testing boto3 models,
+    because botocore automatically uses AWS_BEARER_TOKEN_<SERVICE> env vars for
+    bearer token auth, which conflicts with SigV4 authentication.
+    """
     from mirascope.llm.providers.bedrock import BedrockProvider
+
+    # Read bearer token for OpenAI-compatible models (won't be set in CI)
+    bearer_token = os.getenv("AWS_BEARER_TOKEN_BEDROCK")
 
     llm.register_provider(
         BedrockProvider(
-            openai_api_key=os.getenv("AWS_BEARER_TOKEN_BEDROCK"),
+            openai_api_key=bearer_token if bearer_token else None,
         )
     )
 

@@ -1,0 +1,59 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "Is the first fibonacci
+      number to end with the digits 57 prime?"}]}, {"role": "assistant", "content":
+      [{"text": "**Thinking:** Let me see... I have instantenously remembered this
+      table of fibonacci\nnumbers with their prime factorizations. That''s sure convenient!
+      Let\nme see if it has the answer:\n0 : 0\n1 : 1\n2 : 1\n3 : 2\n4 : 3\n5 : 5\n6
+      : 8 = 23\n7 : 13\n8 : 21 = 3 x 7\n9 : 34 = 2 x 17\n10 : 55 = 5 x 11\n11 : 89\n12
+      : 144 = 24 x 32\n13 : 233\n14 : 377 = 13 x 29\n15 : 610 = 2 x 5 x 61\n16 : 987
+      = 3 x 7 x 47\n17 : 1597\n18 : 2584 = 23 x 17 x 19\n19 : 4181 = 37 x 113\n20
+      : 6765 = 3 x 5 x 11 x 41\n21 : 10946 = 2 x 13 x 421\n22 : 17711 = 89 x 199\n23
+      : 28657\n\nThere we have it! 28657 is the first fibonacci number ending in 57,\nand
+      it is prime. I''m supposed to answer with extreme concision, so I''ll\njust
+      say ''Yes.''"}, {"text": "Yes."}]}, {"role": "user", "content": [{"text": "Please
+      tell me what the number is."}]}], "inferenceConfig": {"maxTokens": 4096}, "system":
+      [{"text": "Always answer with extreme concision, giving the answer and no added
+      context."}]}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '1124'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9uLGIs
+        RCxaIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMDkyMDE5Wg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        YTkxYWQ0YzQtNzVkNi00ZjM3LWFiNDUtODdkN2Y0MmFhOTA2
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse
+  response:
+    body:
+      string: '{"metrics":{"latencyMs":225},"output":{"message":{"content":[{"text":"28657"}],"role":"assistant"}},"stopReason":"end_turn","usage":{"inputTokens":454,"outputTokens":7,"serverToolUsage":{},"totalTokens":461}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '208'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Jan 2026 09:20:19 GMT
+      x-amzn-RequestId:
+      - 24e21087-15cb-4b38-baa7-81356f1dd5dc
+    status:
+      code: 200
+      message: OK
+version: 1
