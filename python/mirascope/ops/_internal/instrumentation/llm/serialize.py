@@ -4,29 +4,32 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import Any, Protocol
 
-from .....llm.content import (
+from opentelemetry.util.types import AttributeValue
+
+from .....llm import (
+    AnyToolSchema,
+    AssistantMessage,
     Audio,
     Base64ImageSource,
     Document,
     Image,
+    Jsonable,
+    Message,
+    ProviderTool,
+    RootResponse,
+    SystemMessage,
     Text,
     Thought,
     ToolCall,
     ToolOutput,
+    Usage,
+    UserMessage,
 )
 from .....llm.content.document import Base64DocumentSource, TextDocumentSource
-from .....llm.messages import AssistantMessage, Message, SystemMessage, UserMessage
-from .....llm.responses.usage import Usage
 from ...utils import json_dumps
 from .cost import calculate_cost_async, calculate_cost_sync
-
-if TYPE_CHECKING:
-    from opentelemetry.util.types import AttributeValue
-
-    from .....llm.responses.root_response import RootResponse
-    from .....llm.types import Jsonable
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +44,7 @@ class SpanProtocol(Protocol):
 
 def _serialize_content_part(
     part: Text | ToolCall | Thought | Image | Audio | Document | ToolOutput[Jsonable],
-) -> dict[str, Any]:
+) -> dict[str, Jsonable]:
     """Serialize a single content part to a dict matching the Mirascope dataclass structure."""
     if isinstance(part, Text):
         return {"type": "text", "text": part.text}
@@ -116,7 +119,7 @@ def _serialize_content_part(
     return {"type": "unknown"}  # pragma: no cover
 
 
-def _serialize_message(message: Message) -> dict[str, Any]:
+def _serialize_message(message: Message) -> dict[str, Jsonable]:
     """Serialize a Message to a dict matching the Mirascope dataclass structure."""
     if isinstance(message, SystemMessage):
         return {
@@ -164,6 +167,27 @@ def serialize_mirascope_usage(usage: Usage | None) -> AttributeValue | None:
             "total_tokens": usage.total_tokens,
         }
     )
+
+
+def _serialize_tool(tool: AnyToolSchema | ProviderTool) -> dict[str, Jsonable]:
+    if isinstance(tool, ProviderTool):
+        return {"name": tool.name, "type": "extension"}
+    result: dict[str, Jsonable] = {
+        "name": tool.name,
+        "description": tool.description,
+        "type": "function",
+        "parameters": tool.parameters.model_dump(by_alias=True, mode="json"),
+    }
+    if tool.strict is not None:
+        result["strict"] = tool.strict
+    return result
+
+
+def serialize_tools(tools: Sequence[AnyToolSchema | ProviderTool]) -> str | None:
+    """Serialize a sequence of Mirascope tools"""
+    if not tools:
+        return None
+    return json_dumps([_serialize_tool(t) for t in tools])
 
 
 def serialize_mirascope_cost(

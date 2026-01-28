@@ -2,6 +2,7 @@
 
 from .decorator import ToolDecorator, tool
 from .protocols import AsyncContextToolFn, AsyncToolFn, ContextToolFn, ToolFn
+from .provider_tools import ProviderTool
 from .tool_schema import (
     FORMAT_TOOL_NAME,
     AnyToolFn,
@@ -49,6 +50,7 @@ __all__ = [
     "ContextToolFn",
     "ContextToolkit",
     "ContextTools",
+    "ProviderTool",
     "Tool",
     "ToolDecorator",
     "ToolFn",

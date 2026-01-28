@@ -39,7 +39,7 @@ from .....formatting import (
     resolve_format,
 )
 from .....messages import AssistantMessage, Message, UserMessage
-from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
+from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit, ProviderTool
 from ....base import _utils as _base_utils
 from ...model_id import OpenAIModelId, model_name
 from ...model_info import (
@@ -212,8 +212,14 @@ def _encode_message(
         return _encode_user_message(message)
 
 
-def _convert_tool_to_function_tool_param(tool: AnyToolSchema) -> FunctionToolParam:
+def _convert_tool_to_function_tool_param(
+    tool: AnyToolSchema | ProviderTool,
+) -> FunctionToolParam:
     """Convert a Mirascope ToolSchema to OpenAI Responses FunctionToolParam."""
+    if isinstance(tool, ProviderTool):
+        raise FeatureNotSupportedError(
+            f"Provider tool {tool.name}", provider_id="openai:responses"
+        )
     schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
     schema_dict["type"] = "object"
     _base_utils.ensure_additional_properties_false(schema_dict)

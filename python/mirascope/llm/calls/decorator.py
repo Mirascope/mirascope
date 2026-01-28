@@ -29,6 +29,7 @@ from ..tools import (
     AsyncToolkit,
     ContextTool,
     ContextToolkit,
+    ProviderTool,
     Tool,
     Toolkit,
     ToolT,
@@ -58,7 +59,7 @@ class CallDecorator(Generic[ToolT, FormattableT]):
     model: Model
     """The default model to use with this call. May be overridden."""
 
-    tools: Sequence[ToolT] | None
+    tools: Sequence[ToolT | ProviderTool] | None
     """The tools that are included in the prompt, if any."""
 
     format: (
@@ -114,7 +115,8 @@ class CallDecorator(Generic[ToolT, FormattableT]):
 
         if is_context and is_async:
             tools = cast(
-                Sequence[AsyncTool | AsyncContextTool[DepsT]] | None, self.tools
+                Sequence[AsyncTool | AsyncContextTool[DepsT] | ProviderTool] | None,
+                self.tools,
             )
             prompt = AsyncContextPrompt(
                 fn=fn,
@@ -126,7 +128,9 @@ class CallDecorator(Generic[ToolT, FormattableT]):
                 default_model=self.model,
             )
         elif is_context:
-            tools = cast(Sequence[Tool | ContextTool[DepsT]] | None, self.tools)
+            tools = cast(
+                Sequence[Tool | ContextTool[DepsT] | ProviderTool] | None, self.tools
+            )
             prompt = ContextPrompt(
                 fn=fn,
                 toolkit=ContextToolkit(tools=tools),
@@ -137,7 +141,7 @@ class CallDecorator(Generic[ToolT, FormattableT]):
                 default_model=self.model,
             )
         elif is_async:
-            tools = cast(Sequence[AsyncTool] | None, self.tools)
+            tools = cast(Sequence[AsyncTool | ProviderTool] | None, self.tools)
             prompt = AsyncPrompt(
                 fn=fn, toolkit=AsyncToolkit(tools=tools), format=self.format
             )
@@ -146,7 +150,7 @@ class CallDecorator(Generic[ToolT, FormattableT]):
                 default_model=self.model,
             )
         else:
-            tools = cast(Sequence[Tool] | None, self.tools)
+            tools = cast(Sequence[Tool | ProviderTool] | None, self.tools)
             prompt = Prompt(fn=fn, toolkit=Toolkit(tools=tools), format=self.format)
             return Call(
                 prompt=prompt,
@@ -158,7 +162,7 @@ class CallDecorator(Generic[ToolT, FormattableT]):
 def call(
     model: ModelId,
     *,
-    tools: Sequence[ToolT] | None = None,
+    tools: Sequence[ToolT | ProviderTool] | None = None,
     format: type[FormattableT]
     | Format[FormattableT]
     | OutputParser[FormattableT]
@@ -176,7 +180,7 @@ def call(
 def call(
     model: Model,
     *,
-    tools: Sequence[ToolT] | None = None,
+    tools: Sequence[ToolT | ProviderTool] | None = None,
     format: type[FormattableT]
     | Format[FormattableT]
     | OutputParser[FormattableT]
@@ -192,7 +196,7 @@ def call(
 def call(
     model: ModelId | Model,
     *,
-    tools: Sequence[ToolT] | None = None,
+    tools: Sequence[ToolT | ProviderTool] | None = None,
     format: type[FormattableT]
     | Format[FormattableT]
     | OutputParser[FormattableT]
