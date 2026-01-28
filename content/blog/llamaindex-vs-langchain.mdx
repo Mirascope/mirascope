@@ -17,9 +17,9 @@ In truth, the functionalities of both frameworks often overlap. For instance, La
 **Which framework you actually choose will depend on a lot of different factors, such as:**
 
 - What kind of application you’re building, e.g., are you building a RAG or other app requiring vectorization and storage of large amounts of data?
-  ‍
+   ‍
 - Which LLM you’re using, i.e., which framework offers better integration with the LLM you want.
-  ‍
+   ‍
 - What features you’re looking to use, e.g., LangChain offers high-level abstractions for building agents, whereas this would require more code in LlamaIndex.
 
 But even here, decisions about which framework to use can still be based mostly on subjective preferences, personal experience, or even hearsay.
@@ -116,48 +116,41 @@ When it comes to prompt versioning, LangChain offers this capability in its Lang
 
 ### Mirascope: One Prompt That Type Checks Inputs Automatically
 
-Rather than attempt to tell you how you should formulate prompts, Mirascope provides its [`prompt_template`](/docs/v1/learn/prompts) decorator so you can write prompt templates as standard Python functions.
+Rather than attempt to tell you how you should formulate prompts, Mirascope provides its [`@llm.call`](/docs/learn/llm/calls) decorator so you can write prompt templates as standard Python functions.
 
-Our `prompt_template` decorator allows you to automatically generate prompt messages simply by calling the function, which returns the list of `BaseMessageParam` instances.
+The `@llm.call` decorator bundles a model with your prompt function. Simply return a string (which becomes the user message) or a list of messages, and call the function to get a response.
 
-You can also incorporate values computed inside the function into the prompt either directly (through f-strings) or as `computed_fields` when using string templates.
+You can incorporate values computed inside the function into the prompt directly through f-strings.
 
 As a result, you can integrate complex calculations or conditional formatting directly into your output without manually updating the content each time the underlying data changes.
 
-In the example below, `list` and `list[list]` are automatically formatted with `\n` and `\n\n` separators, before being stringified:
+In the example below, lists are formatted using Python's built-in `join` method:
 
 ```python
-from mirascope.core import BaseDynamicConfig, prompt_template
+from mirascope import llm
 
-@prompt_template(
-    """
-    Recommend some books on the following topic and genre pairs:
-    {topics_x_genres:list}
-    """
-)
-def recommend_book_prompt(topics: list[str], genres: list[str]) -> BaseDynamicConfig:
+@llm.call("openai/gpt-4o-mini")
+def recommend_books(topics: list[str], genres: list[str]):
     topics_x_genres = [
         f"Topic: {topic}, Genre: {genre}" for topic in topics for genre in genres
     ]
-    return {"computed_fields": {"topics_x_genres": topics_x_genres}}
+    formatted = "\n".join(topics_x_genres)
+    return f"""Recommend some books on the following topic and genre pairs:
+{formatted}"""
 
-messages = recommend_book_prompt(["history", "science"], ["biography", "thriller"])
-print(messages)
+response = recommend_books(["history", "science"], ["biography", "thriller"])
+print(response.text())
 
-# > [BaseMessageParam(role='user', content='Recommend some books on the following topic and genre pairs:\nTopic: history, Genre: biography\nTopic: history, Genre: thriller\nTopic: science, Genre: biography\nTopic: science, Genre: thriller')]
-
-print(messages[0].content)
-
-# > Recommend some books on the following topic and genre pairs:
-
-#   Topic: history, Genre: biography
-
-#   Topic: history, Genre: thriller
-
-#   Topic: science, Genre: biography
-
-#   Topic: science, Genre: thriller
-
+# > Here are some book recommendations based on your topic and genre pairs:
+# ### History, Biography
+# - **"The Life of Samuel Johnson" by James Boswell**
+# A classic biography that captures the complexities of one of history’s most fascinating literary figures.
+# ### History, Thriller
+# - **"The 39 Clues: The Maze of Bones" by Rick Riordan**
+# Though aimed at a younger audience, this series combines historical facts with thrilling adventures and puzzles.
+# ### Science, Biography
+# - **"The Double Helix" by James D. Watson**
+# ...
 ```
 
 Because Mirascope prompt templates are written as functions, you can use Pydantic's [`validate_call`](https://docs.pydantic.dev/latest/concepts/validation_decorator/) decorator to ensure that inputs are correctly typed according to their argument type hints and handle any validation errors gracefully.
@@ -166,27 +159,23 @@ your own custom validation using Pydantic’s `AfterValidator` class. This is he
 
 ```python
 from enum import Enum
-from typing import Annotated, Type
+from typing import Annotated
 
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 from pydantic import AfterValidator, BaseModel, ValidationError
 
 class ComplianceStatus(Enum):
     COMPLIANT = "compliant"
     NON_COMPLIANT = "non_compliant"
 
-@openai.call(model="gpt-4o-mini", response_model=ComplianceStatus)
-@prompt_template(
-    """
-    Is the following data processing procedure compliant with GDPR standards?
-    {procedure_text}
-    """
-)
-def check_gdpr_compliance(procedure_text: str): ...
+@llm.call("openai/gpt-4o-mini", format=ComplianceStatus)
+def check_gdpr_compliance(procedure_text: str):
+    return f"""Is the following data processing procedure compliant with GDPR standards?
+    {procedure_text}"""
 
 def validate_compliance(procedure_text: str) -> str:
     """Check if the data processing procedure is compliant with GDPR standards."""
-    compliance_status = check_gdpr_compliance(procedure_text=procedure_text)
+    compliance_status = check_gdpr_compliance(procedure_text=procedure_text).parse()
     assert (
         compliance_status == ComplianceStatus.COMPLIANT
     ), "Procedure is not GDPR compliant."
@@ -195,17 +184,13 @@ def validate_compliance(procedure_text: str) -> str:
 class DataProcessingProcedure(BaseModel):
     text: Annotated[str, AfterValidator(validate_compliance)]
 
-@openai.call(model="gpt-4o-mini", response_model=DataProcessingProcedure)
-@prompt_template(
-    """
-    Write a detailed description of a data processing procedure.
-    It MUST be compliant with GDPR standards.
-    """
-)
-def write_procedure(): ...
+@llm.call("openai/gpt-4o-mini", format=DataProcessingProcedure)
+def write_procedure():
+    return """Write a detailed description of a data processing procedure.
+    It MUST be compliant with GDPR standards."""
 
 try:
-    print(write_procedure())
+    print(write_procedure().parse())
 except ValidationError as e:
     print(e)
     # > 1 validation error for DataProcessingProcedure
@@ -220,9 +205,9 @@ except ValidationError as e:
 
 ```
 
-Mirascope also offers an AI engineering framework called [Lilypad](/docs/lilypad), which versions and traces every LLM function call and prompt automatically. By removing the worry of manually tracking changes systematically, Lilypad provides you the headspace to rapidly iterate on and optimize prompts, ensuring that all your fine-tuning efforts are recorded and retrievable.
+Mirascope also offers [Mirascope Cloud](/docs/learn/ops), which versions and traces every LLM function call and prompt automatically. By removing the worry of manually tracking changes systematically, Mirascope Cloud provides you the headspace to rapidly iterate on and optimize prompts, ensuring that all your fine-tuning efforts are recorded and retrievable.
 
-Furthermore, Lilypad is also fully open-source and can be self-hosted.
+Furthermore, Mirascope Cloud is also fully open-source and can be self-hosted.
 
 ## Functionality for RAG Applications
 
@@ -334,17 +319,17 @@ Therefore all you need to know is vanilla Python and the Pydantic library. We al
 
 And unlike other frameworks, we believe that everything that can impact the quality of an LLM call (from model parameters to prompts) should live together with the call. The LLM call is therefore the [central organizing unit of our code](/blog/engineers-should-handle-prompting-llms) around which everything gets versioned and tested.
 
-A prime example of this is Mirascope’s use of [`call_params`](/docs/v1/learn/calls/#provider-specific-parameters), which contains all the parameters of the LLM call and typically lives inside the call:
+A prime example of this is Mirascope's support for [provider-specific parameters](/docs/learn/llm/calls), which are passed directly as keyword arguments to the call decorator:
 
 ```python
-from mirascope.core import openai
+from mirascope import llm
 
-@openai.call(model="gpt-4o-mini", call_params={"temperature": 0.6})
-def plan_travel_itinerary(destination: str) -> str:
+@llm.call("openai/gpt-4o-mini", temperature=0.6)
+def plan_travel_itinerary(destination: str):
     return f"Plan a travel itinerary that includes activities in {destination}"
 
 response = plan_travel_itinerary("Paris")
-print(response.content)  # prints the string content of the call
+print(response.text())  # prints the string content of the call
 
 ```
 
@@ -384,7 +369,7 @@ print(runnable.invoke("Convert 35 degrees Celsius to Fahrenheit"))
 
 ‍Here, `RunnablePassthrough` is passing `temperature_query` unaltered to `prompt`, while `Runnable.bind` in this instance allows users to define a stop condition at runtime when the token or text “CONVERSION_COMPLETED” is encountered. The condition sets up the model to behave in a certain way after it’s been invoked.
 
-Binding arguments to the model at runtime in such a way is the functional equivalent of Mirascope’s `call_params` (described above) and can be useful in situations where you want to take into account user interactions, in this case allowing users to mark a solution as being solved.
+Binding arguments to the model at runtime in such a way is the functional equivalent of Mirascope's direct keyword arguments (described above) and can be useful in situations where you want to take into account user interactions, in this case allowing users to mark a solution as being solved.
 
 On the other hand, such conditions need to be carefully managed in all instances of chains to avoid negative impacts on the system.
 
@@ -392,34 +377,32 @@ On the other hand, such conditions need to be carefully managed in all instances
 
 Mirascope chains multiple calls together using a more implicit approach than that of LlamaIndex and LangChain, relying on structured that already exist in Python.
 
-In the example below, chaining is implemented simply by calling each part of the chain inside of the parent function, using `computed_fields` to propagate each part of the chain up into the final response, ensuring that all input and output values along the chain will be visible from the dump of the final call.
+In the example below, chaining is implemented simply by calling each part of the chain inside of the parent function, passing intermediate results directly into the prompt:
 
 ```python
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
-@openai.call("gpt-4o-mini")
-def get_brand_expert(vehicle_type: str) -> str:
+@llm.call("openai/gpt-4o-mini")
+def get_brand_expert(vehicle_type: str):
     return f"Name a {vehicle_type} vehicle expert. Return only their name."
 
-@openai.call("gpt-4o-mini")
-@prompt_template(
-    """
-    SYSTEM:
-    Imagine that you are the expert {brand_expert}.
-    Your task is to recommend cars that you, {brand_expert}, would be excited to suggest.
-
-    USER:
-    Recommend a {vehicle_type} car that fits the following criteria: {criteria}.
-    """
-)
-def recommend_car(vehicle_type: str, criteria: str) -> openai.OpenAIDynamicConfig:
-    brand_expert = get_brand_expert(vehicle_type=vehicle_type)
-    return {"computed_fields": {"brand_expert": brand_expert}}
+@llm.call("openai/gpt-4o-mini")
+def recommend_car(vehicle_type: str, criteria: str):
+    brand_expert = get_brand_expert(vehicle_type=vehicle_type).text()
+    return [
+        llm.messages.system(
+            f"""Imagine that you are the expert {brand_expert}.
+            Your task is to recommend cars that you, {brand_expert}, would be excited to suggest."""
+        ),
+        llm.messages.user(
+            f"Recommend a {vehicle_type} car that fits the following criteria: {criteria}."
+        ),
+    ]
 
 response = recommend_car(
     vehicle_type="electric", criteria="best range and safety features"
 )
-print(response.content)
+print(response.text())
 
 # > Certainly! Here's a great electric car with the best range and safety features: ...
 
@@ -437,4 +420,4 @@ Just import the functionality you want-and nothing more-from libraries like Lang
 
 Our approach allows you to use and combine the best available open-source tools for any specific task in your LLM app development workflows.
 
-Want to learn more? You can find more Mirascope code samples on both our [docs](/docs/mirascope) and on [GitHub](https://github.com/mirascope/mirascope/).
+Want to learn more? You can find more Mirascope code samples on both our [docs](/docs) and on [GitHub](https://github.com/mirascope/mirascope/).
