@@ -117,6 +117,15 @@ describe('defineCall', () => {
 
       expect(typeof call.stream).toBe('function');
     });
+
+    it('has a call method', () => {
+      const call = defineCall<{ genre: string }>({
+        model: 'anthropic/claude-sonnet-4-20250514',
+        template: ({ genre }) => `Recommend a ${genre} book`,
+      });
+
+      expect(typeof call.call).toBe('function');
+    });
   });
 
   describe('without variables', () => {
@@ -166,6 +175,15 @@ describe('defineCall', () => {
       });
 
       expect(typeof call.stream).toBe('function');
+    });
+
+    it('has a call method', () => {
+      const call = defineCall({
+        model: 'anthropic/claude-sonnet-4-20250514',
+        template: () => 'Hello!',
+      });
+
+      expect(typeof call.call).toBe('function');
     });
   });
 });
