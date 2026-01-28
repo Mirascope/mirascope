@@ -1,0 +1,63 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"List all U.S. states."}],"model":"openai.gpt-oss-20b-1:0","max_completion_tokens":50}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '124'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"choices":[{"finish_reason":"length","index":0,"logprobs":null,"message":{"content":"<reasoning>User
+        wants a list of all US states. Provide a list. Should be accurate: 50 states.
+        Provide in alphabetical order or typical listing. Perhaps include state abbreviations.
+        No extra content? Should be concise. Provide answer.</reasoning>","refusal":null,"role":"assistant"}}],"created":1769185905,"id":"chatcmpl-9619ade6-d9f9-446f-a95d-e80f5f03c162","model":"openai.gpt-oss-20b-1:0","object":"chat.completion","service_tier":"default","usage":{"completion_tokens":50,"prompt_tokens":76,"total_tokens":126}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '600'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 16:31:46 GMT
+      X-Request-ID:
+      - ed62bf67-984a-40e8-90fd-5a1df5b03ac3
+      x-amzn-RequestId:
+      - ed62bf67-984a-40e8-90fd-5a1df5b03ac3
+    status:
+      code: 200
+      message: OK
+version: 1

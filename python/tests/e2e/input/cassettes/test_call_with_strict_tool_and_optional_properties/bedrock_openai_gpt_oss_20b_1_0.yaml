@@ -1,0 +1,69 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"What''s the weather like in San
+      Francisco?"}],"model":"openai.gpt-oss-20b-1:0","tools":[{"type":"function","function":{"name":"get_current_weather","description":"Get
+      the current weather in a given location.\n\nArgs:\n    location: The city and
+      state, e.g. San Francisco, CA\n    unit: The temperature unit to use (fahrenheit
+      or celsius)","parameters":{"properties":{"location":{"description":"The city
+      and state, e.g. San Francisco, CA","title":"Location","type":"string"},"unit":{"default":"fahrenheit","description":"The
+      temperature unit to use (fahrenheit or celsius)","title":"Unit","type":"string"}},"required":["location","unit"],"additionalProperties":false,"type":"object"},"strict":true}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '738'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"choices":[{"finish_reason":"tool_calls","index":0,"logprobs":null,"message":{"content":"<reasoning>We
+        need to call get_current_weather with location \"San Francisco, CA\" and unit
+        \"fahrenheit\" (default).</reasoning>","refusal":null,"role":"assistant","tool_calls":[{"function":{"arguments":"{\"location\":\"San
+        Francisco, CA\",\"unit\":\"fahrenheit\"}","name":"get_current_weather"},"id":"chatcmpl-tool-8f8eeaab35f80f8b","type":"function"}]}}],"created":1769185888,"id":"chatcmpl-6ce3844a-9338-44b0-8194-9841b44898f2","model":"openai.gpt-oss-20b-1:0","object":"chat.completion","service_tier":"default","usage":{"completion_tokens":57,"prompt_tokens":209,"prompt_tokens_details":{"audio_tokens":0,"cached_tokens":32},"total_tokens":266}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '741'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 16:31:28 GMT
+      X-Request-ID:
+      - 2356be0b-3daa-47c5-a2bb-f0937816b67b
+      x-amzn-RequestId:
+      - 2356be0b-3daa-47c5-a2bb-f0937816b67b
+    status:
+      code: 200
+      message: OK
+version: 1

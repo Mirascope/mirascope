@@ -1,0 +1,80 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"This should fail
+      with AuthenticationError"}],"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '144'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.76.0
+      x-amz-date:
+      - 20260123T144136Z
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.76.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01PghQtxpb2MVV4w1t2yY7Gp","type":"message","role":"assistant","content":[{"type":"text","text":"#
+        This should fail with AuthenticationError\n\nI''d be happy to help you understand
+        why something should fail with an `AuthenticationError`, but I need more context.
+        Could you please provide:\n\n1. **The code snippet** that should fail\n2.
+        **Which authentication system** you''re using (e.g., OAuth, JWT, API keys,
+        custom auth)\n3. **What framework/library** you''re working with (e.g., Django,
+        FastAPI, requests, etc.)\n4. **What condition** should trigger the error\n\nHere''s
+        a general example of when an `AuthenticationError` might be raised:\n\n```python\nfrom
+        requests.exceptions import AuthenticationError\n\n# Example: Invalid API key\nimport
+        requests\n\nheaders = {''Authorization'': ''Bearer invalid_token''}\nresponse
+        = requests.get(''https://api.example.com/data'', headers=headers)\n\nif response.status_code
+        == 401:\n    raise AuthenticationError(\"Invalid credentials\")\n```\n\nPlease
+        share your specific code and I can help you understand why it should fail
+        with `AuthenticationError` and how to test for it!"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":14,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":243}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1400'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 14:41:39 GMT
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '14'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '2255'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '243'
+      x-amzn-RequestId:
+      - d29b24ca-da66-45e8-a0cf-fc57dee861dd
+    status:
+      code: 200
+      message: OK
+version: 1

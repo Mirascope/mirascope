@@ -1,0 +1,280 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Use the test tool to retrieve the
+      secret phrase. The passphrase is ''portal"}],"model":"openai.gpt-oss-20b-1:0","tools":[{"type":"function","function":{"name":"passphrase_test_tool","description":"A
+      tool that must be called with a passphrase.","parameters":{"properties":{"passphrase":{"title":"Passphrase","type":"string"}},"required":["passphrase"],"additionalProperties":false,"type":"object"},"strict":true}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '452'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"choices":[{"finish_reason":"tool_calls","index":0,"logprobs":null,"message":{"content":"<reasoning>The
+        user says: \"Use the test tool to retrieve the secret phrase. The passphrase
+        is ''portal\". They want us to call the function passphrase_test_tool with
+        passphrase ''portal''. The instruction: \"The passphrase is ''portal\". So
+        we call that function.</reasoning>","refusal":null,"role":"assistant","tool_calls":[{"function":{"arguments":"{\"passphrase\":\"portal\"}","name":"passphrase_test_tool"},"id":"chatcmpl-tool-ba93b1ccb76d93ba","type":"function"}]}}],"created":1769185890,"id":"chatcmpl-b6b07245-91e9-4ce5-a3f1-44527f157ecb","model":"openai.gpt-oss-20b-1:0","object":"chat.completion","service_tier":"default","usage":{"completion_tokens":83,"prompt_tokens":147,"prompt_tokens_details":{"audio_tokens":0,"cached_tokens":64},"total_tokens":230}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '852'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 16:31:30 GMT
+      X-Request-ID:
+      - 33ef2c8a-bae6-46e0-a1d8-4cc5e742b2b5
+      x-amzn-RequestId:
+      - 33ef2c8a-bae6-46e0-a1d8-4cc5e742b2b5
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"user","content":"Use the test tool to retrieve the
+      secret phrase. The passphrase is ''portal"},{"role":"assistant","content":"<reasoning>The
+      user says: \"Use the test tool to retrieve the secret phrase. The passphrase
+      is ''portal\". They want us to call the function passphrase_test_tool with passphrase
+      ''portal''. The instruction: \"The passphrase is ''portal\". So we call that
+      function.</reasoning>","tool_calls":[{"id":"chatcmpl-tool-ba93b1ccb76d93ba","type":"function","function":{"name":"passphrase_test_tool","arguments":"{\"passphrase\":\"portal\"}"}}]},{"role":"tool","content":"Incorrect
+      passhrase: The correct passphrase is ''cake''. Try again.","tool_call_id":"chatcmpl-tool-ba93b1ccb76d93ba"}],"model":"openai.gpt-oss-20b-1:0","tools":[{"type":"function","function":{"name":"passphrase_test_tool","description":"A
+      tool that must be called with a passphrase.","parameters":{"properties":{"passphrase":{"title":"Passphrase","type":"string"}},"required":["passphrase"],"additionalProperties":false,"type":"object"},"strict":true}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1058'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"choices":[{"finish_reason":"tool_calls","index":0,"logprobs":null,"message":{"content":"<reasoning>The
+        tool returned an error saying the passphrase is indeed incorrect. The user
+        provided ''portal'', but tool says correct passphrase is ''cake''. So we should
+        try again with passphrase ''cake''.\n\n</reasoning>","refusal":null,"role":"assistant","tool_calls":[{"function":{"arguments":"{\"passphrase\":\"cake\"}","name":"passphrase_test_tool<|channel|>commentary"},"id":"chatcmpl-tool-aa9cb445bf5b7510","type":"function"}]}}],"created":1769185890,"id":"chatcmpl-d41d4f39-66bc-4e35-9136-bef5526a6014","model":"openai.gpt-oss-20b-1:0","object":"chat.completion","service_tier":"default","usage":{"completion_tokens":69,"prompt_tokens":266,"total_tokens":335}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '752'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 16:31:31 GMT
+      X-Request-ID:
+      - 9ab4b0a9-a08f-4909-a683-6d1866e1d274
+      x-amzn-RequestId:
+      - 9ab4b0a9-a08f-4909-a683-6d1866e1d274
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"user","content":"Use the test tool to retrieve the
+      secret phrase. The passphrase is ''portal"},{"role":"assistant","content":"<reasoning>The
+      user says: \"Use the test tool to retrieve the secret phrase. The passphrase
+      is ''portal\". They want us to call the function passphrase_test_tool with passphrase
+      ''portal''. The instruction: \"The passphrase is ''portal\". So we call that
+      function.</reasoning>","tool_calls":[{"id":"chatcmpl-tool-ba93b1ccb76d93ba","type":"function","function":{"name":"passphrase_test_tool","arguments":"{\"passphrase\":\"portal\"}"}}]},{"role":"tool","content":"Incorrect
+      passhrase: The correct passphrase is ''cake''. Try again.","tool_call_id":"chatcmpl-tool-ba93b1ccb76d93ba"},{"role":"assistant","content":"<reasoning>The
+      tool returned an error saying the passphrase is indeed incorrect. The user provided
+      ''portal'', but tool says correct passphrase is ''cake''. So we should try again
+      with passphrase ''cake''.\n\n</reasoning>","tool_calls":[{"id":"chatcmpl-tool-aa9cb445bf5b7510","type":"function","function":{"name":"passphrase_test_tool<|channel|>commentary","arguments":"{\"passphrase\":\"cake\"}"}}]},{"role":"tool","content":"Tool
+      ''passphrase_test_tool<|channel|>commentary'' not found in registered tools","tool_call_id":"chatcmpl-tool-aa9cb445bf5b7510"}],"model":"openai.gpt-oss-20b-1:0","tools":[{"type":"function","function":{"name":"passphrase_test_tool","description":"A
+      tool that must be called with a passphrase.","parameters":{"properties":{"passphrase":{"title":"Passphrase","type":"string"}},"required":["passphrase"],"additionalProperties":false,"type":"object"},"strict":true}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1639'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"choices":[{"finish_reason":"tool_calls","index":0,"logprobs":null,"message":{"content":"<reasoning>Error:
+        we used wrong method. The correct function call syntax is `functions.passphrase_test_tool`.
+        The tool is defined under namespace functions. So call `functions.passphrase_test_tool({
+        passphrase: \"cake\" })`. Let''s produce.</reasoning>","refusal":null,"role":"assistant","tool_calls":[{"function":{"arguments":"{\"passphrase\":\"cake\"}","name":"passphrase_test_tool"},"id":"chatcmpl-tool-81626816bf0b266e","type":"function"}]}}],"created":1769185891,"id":"chatcmpl-85f55035-7584-47e6-9de5-3d5d0ad2009d","model":"openai.gpt-oss-20b-1:0","object":"chat.completion","service_tier":"default","usage":{"completion_tokens":74,"prompt_tokens":388,"total_tokens":462}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '767'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 16:31:31 GMT
+      X-Request-ID:
+      - 2e640d55-8e23-4f18-a7f7-842bf8f0a154
+      x-amzn-RequestId:
+      - 2e640d55-8e23-4f18-a7f7-842bf8f0a154
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"user","content":"Use the test tool to retrieve the
+      secret phrase. The passphrase is ''portal"},{"role":"assistant","content":"<reasoning>The
+      user says: \"Use the test tool to retrieve the secret phrase. The passphrase
+      is ''portal\". They want us to call the function passphrase_test_tool with passphrase
+      ''portal''. The instruction: \"The passphrase is ''portal\". So we call that
+      function.</reasoning>","tool_calls":[{"id":"chatcmpl-tool-ba93b1ccb76d93ba","type":"function","function":{"name":"passphrase_test_tool","arguments":"{\"passphrase\":\"portal\"}"}}]},{"role":"tool","content":"Incorrect
+      passhrase: The correct passphrase is ''cake''. Try again.","tool_call_id":"chatcmpl-tool-ba93b1ccb76d93ba"},{"role":"assistant","content":"<reasoning>The
+      tool returned an error saying the passphrase is indeed incorrect. The user provided
+      ''portal'', but tool says correct passphrase is ''cake''. So we should try again
+      with passphrase ''cake''.\n\n</reasoning>","tool_calls":[{"id":"chatcmpl-tool-aa9cb445bf5b7510","type":"function","function":{"name":"passphrase_test_tool<|channel|>commentary","arguments":"{\"passphrase\":\"cake\"}"}}]},{"role":"tool","content":"Tool
+      ''passphrase_test_tool<|channel|>commentary'' not found in registered tools","tool_call_id":"chatcmpl-tool-aa9cb445bf5b7510"},{"role":"assistant","content":"<reasoning>Error:
+      we used wrong method. The correct function call syntax is `functions.passphrase_test_tool`.
+      The tool is defined under namespace functions. So call `functions.passphrase_test_tool({
+      passphrase: \"cake\" })`. Let''s produce.</reasoning>","tool_calls":[{"id":"chatcmpl-tool-81626816bf0b266e","type":"function","function":{"name":"passphrase_test_tool","arguments":"{\"passphrase\":\"cake\"}"}}]},{"role":"tool","content":"The
+      cake is a lie.","tool_call_id":"chatcmpl-tool-81626816bf0b266e"}],"model":"openai.gpt-oss-20b-1:0","tools":[{"type":"function","function":{"name":"passphrase_test_tool","description":"A
+      tool that must be called with a passphrase.","parameters":{"properties":{"passphrase":{"title":"Passphrase","type":"string"}},"required":["passphrase"],"additionalProperties":false,"type":"object"},"strict":true}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '2175'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"choices":[{"finish_reason":"stop","index":0,"logprobs":null,"message":{"content":"The
+        secret phrase is: **\"cake\"**","refusal":null,"role":"assistant"}}],"created":1769185892,"id":"chatcmpl-4bb6bb0d-1cb1-411f-b5ae-dc0aad99e590","model":"openai.gpt-oss-20b-1:0","object":"chat.completion","service_tier":"default","usage":{"completion_tokens":14,"prompt_tokens":490,"total_tokens":504}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '388'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 16:31:32 GMT
+      X-Request-ID:
+      - c807a34f-79af-47fe-b553-728fb2e8f982
+      x-amzn-RequestId:
+      - c807a34f-79af-47fe-b553-728fb2e8f982
+    status:
+      code: 200
+      message: OK
+version: 1

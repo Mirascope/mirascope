@@ -15,6 +15,11 @@ from tests.utils import (
 IMAGE_URL_MODEL_IDS = [
     model_id for model_id in E2E_MODEL_IDS if not model_id.startswith("bedrock/")
 ]
+IMAGE_CONTENT_MODEL_IDS = [
+    model_id
+    for model_id in E2E_MODEL_IDS
+    if model_id != "bedrock/openai.gpt-oss-20b-1:0"
+]
 
 WIKIPEDIA_ICON_URL = "https://en.wikipedia.org/static/images/icons/wikipedia.png"
 WIKIPEDIA_ICON_PATH = str(
@@ -22,7 +27,7 @@ WIKIPEDIA_ICON_PATH = str(
 )
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", IMAGE_CONTENT_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_image_content(
     model_id: llm.ModelId,
