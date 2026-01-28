@@ -136,7 +136,11 @@ function IndexableContent({
   mdx,
 }: Omit<MDXRendererProps, "className" | "components">) {
   return (
-    <div className="hidden" data-pagefind-body="true" aria-hidden="true">
+    <div
+      className="text-background"
+      data-pagefind-body="true"
+      aria-hidden="true"
+    >
       {mdx.content}
     </div>
   );
