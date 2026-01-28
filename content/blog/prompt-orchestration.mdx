@@ -2,6 +2,7 @@
 title: "Prompt Orchestration: Techniques, Challenges, and Best Practices"
 description: "Learn how to fine-tune your LLM prompts with proven orchestration techniques, avoid common pitfalls, and implement best practices for consistent, high-quality outputs."
 date: "2025-11-26"
+updatedAt: "2026-01-28"
 readTime: "11 min read"
 author: "William Bakst"
 ---
@@ -16,9 +17,9 @@ Prompt orchestration helps fix common problems with language models:
 * With single prompts, it’s harder to check for mistakes mid-process, so if a model gets something wrong early, an error can flow into steps that follow.  
 * Large language models are stateless but complex tasks involve remembering things across steps and even conversations, which usually requires external systems or workflows.
 
-To handle these challenges, we built [Mirascope](/docs/mirascope) and [Lilypad](/docs/lilypad) to help developers build structured, modular, and traceable LLM workflows, where each step can be validated, retried, and changed independently as part of a reliable, state-aware system.
+To handle these challenges, we built [Mirascope](/docs) and [Mirascope Cloud](/docs/learn/ops) to help developers build structured, modular, and traceable LLM workflows, where each step can be validated, retried, and changed independently as part of a reliable, state-aware system.
 
-In this article, we cover key techniques, problems, and best practices for prompt orchestration, illustrating these with examples from Mirascope and Lilypad.
+In this article, we cover key techniques, problems, and best practices for prompt orchestration, illustrating these with examples from Mirascope and Mirascope Cloud.
 
 ## Key Techniques of Prompt Orchestration
 
@@ -198,30 +199,31 @@ A key best practice is to structure your prompt around clear layers that separat
 
 You should also treat each prompt like a mini API or self-contained unit that can be reused, tested on its own, and plugged into different parts of your system. This turns prompts from fragile strings into manageable software components.	
 
-For example, in Mirascope, you define a prompt using a Python function and implement standard behaviors using separate decorators like `@llm.call`, which cleanly separate prompt logic from orchestration code.
+For example, in Mirascope, you define a prompt using a Python function and implement standard behaviors using the `@llm.call` decorator, which cleanly separates prompt logic from orchestration code.
 
 ```python{8-10}
-from mirascope import llm, prompt_template
+from mirascope import llm
 from pydantic import BaseModel
 
 class Book(BaseModel):
     title: str
     author: str
 
-@llm.call(provider="openai", model="gpt-4o-mini", response_model=Book)
-@prompt_template("Extract {text}")
-def extract_book(text: str): ...
+@llm.call("openai/gpt-4o-mini", format=Book)
+def extract_book(text: str) -> str:
+    return f"Extract {text}"
 
-book = extract_book("Pride and Prejudice by Jane Austen")
+response = extract_book("Pride and Prejudice by Jane Austen")
+book = response.parse()
 print(book)
-# Output: title='Pride and Prejudice' author='Jane Austen' 
+# Output: title='Pride and Prejudice' author='Jane Austen'
 ```
 
-In this example, the prompt content is separated from the control flow logic with the `@prompt_template` decorator defining how the prompt is written and the `@llm.call` decorator handling how the model is called, including choosing the provider, selecting the model, and managing the response.
+In this example, the prompt content is defined as a simple returned string and the `@llm.call` decorator handles how the model is called, including choosing the provider, selecting the model, and managing the response.
 
 The `extract_book` function wraps the prompt logic and is easy to reuse, test, or swap out without touching other parts of the system.
 
-The `response_model=Book` parameter of the call separates how the model’s output is interpreted so instead of writing manual parsing logic, the response is automatically validated and structured using the Pydantic `Book` class.
+The `format=Book` parameter of the call separates how the model's output is interpreted so instead of writing manual parsing logic, the response is automatically validated and structured using the Pydantic `Book` class with `response.parse()`.
 
 ### 2. Build Prompt Chains with Workflow Control
 
@@ -233,31 +235,30 @@ For tasks that can run independently, take advantage of parallel processing to i
 
 When detailed reasoning is needed, guide the model to "think aloud" using chain-of-thought prompting. This encourages the LLM to break down its logic step-by-step before producing a final answer.
 
-For example, in Mirascope we can build chains directly using computed fields in Python:
+For example, in Mirascope we can build chains directly in Python:
 
 ```py
-from mirascope.core import llm, prompt_template
+from mirascope import llm
 
-@llm.call(provider="openai", model="gpt-4o-mini")
-@prompt_template("Name an expert known for insights on {industry} trends")
-def select_expert(industry: str): ...
+@llm.call("openai/gpt-4o-mini")
+def select_expert(industry: str) -> str:
+    return f"Name an expert known for insights on {industry} trends"
 
-@llm.call(provider="openai", model="gpt-4o-mini")
-@prompt_template(
-    """
+@llm.call("openai/gpt-4o-mini")
+def identify_trend(industry: str, topic: str) -> str:
+    expert = select_expert(industry).text()
+    return f"""
     Imagine that you are {expert}, a renowned expert in {industry}.
     Provide insights on a key {industry} trend related to {topic}.
     """
-)
-def identify_trend(industry: str, topic: str) -> openai.OpenAIDynamicConfig:
-    return {"computed_fields": {"expert": select_expert(industry)}}
 
-print(identify_trend("AI", "automation")) 
+response = identify_trend("AI", "automation")
+print(response.text())
 ```
 
-In the code, we generate a B2B trend insights report starting with identifying an expert in a particular industry (`select_expert`), followed by finding insights using that person’s persona (`identify_trend`).
+In the code, we generate a B2B trend insights report starting with identifying an expert in a particular industry (`select_expert`), followed by finding insights using that person's persona (`identify_trend`).
 
-Because `select_expert` is treated as a computed field, it runs automatically before the main prompt is filled in, making the chain both dynamic and declarative. This design keeps each step focused and reusable, while letting orchestration logic happen entirely within standard Python.
+Because `select_expert` is called within `identify_trend`, it runs automatically before the main prompt is filled in, making the chain both dynamic and straightforward. This design keeps each step focused and reusable, while letting orchestration logic happen entirely within standard Python.
 
 ### 3. Manage Prompts Like Code Using Versioning, Governance, and Tooling
 
@@ -267,36 +268,31 @@ Implement rollback mechanisms using feature flags, performance monitoring, and C
 
 Also, adopt orchestration frameworks or SDKs that provide [LLM observability](/blog/llm-observability), logging, and debugging tools. These help you monitor LLM behavior across chains, detect issues early, and gain insight into how your system is actually working in production.
 
-As an example, our prompt engineering framework Lilypad lets you track prompts and monitor LLM behavior when you add the `lilypad.trace` decorator. This automatically captures changes inside a prompt function’s closure, saving a full snapshot of its state with no manual saving required.
+As an example, our prompt engineering framework Mirascope Cloud lets you track prompts and monitor LLM behavior when you add the `@ops.version` decorator. This automatically captures changes inside a prompt function's closure, saving a full snapshot of its state with no manual saving required.
 
-Below, `answer_question()` encapsulates both the prompt and model settings, and is wrapped with `@lilypad.trace` in order to capture all changes that might affect the model’s output.
+Below, `answer_question()` encapsulates both the prompt and model settings, and is wrapped with `@ops.version` in order to capture all changes that might affect the model's output.
 
 ```python{7-13}
-from google.genai import Client
-import lilypad
+from mirascope import llm, ops
 
-lilypad.configure(auto_llm=True)
-client = Client()
-    
-@lilypad.trace(versioning="automatic")
-def answer_question(question: str) -> str | None:
-    response = client.models.generate_content(
-        model="gemini-2.0-flash-001",
-        contents=f"Answer this question: {question}",
-    )
-    return response.text
-    
+ops.configure()
+ops.instrument_llm()
+
+@ops.version
+@llm.call("google/gemini-2.0-flash-001")
+def answer_question(question: str) -> str:
+    return f"Answer this question: {question}"
+
 response = answer_question("What is the capital of France?")  # automatically versioned
-print(response)
+print(response.text())
 # > The capital of France is Paris.
-
 ```
 
-Each run is preserved along with its full execution context, making it easy to revisit, compare, or re-run any version at any time. Versioned calls (both their prompts and outputs) also appear directly in the Lilypad UI (shown below), giving you a clear view into how prompts behave over time.
+Each run is preserved along with its full execution context, making it easy to revisit, compare, or re-run any version at any time. Versioned calls (both their prompts and outputs) also appear directly in the Mirascope Cloud UI (shown below), giving you a clear view into how prompts behave over time.
 
-For tracing, Lilypad instruments LLM outputs using the [OpenTelemetry GenAI specification](https://opentelemetry.io/), which records not just the output but also the surrounding context, messages, warnings, and rich metadata to give a complete picture of each interaction.
+For tracing, Mirascope Cloud instruments LLM outputs using the [OpenTelemetry GenAI specification](https://opentelemetry.io/), which records not just the output but also the surrounding context, messages, warnings, and rich metadata to give a complete picture of each interaction.
 
-![Lilypad OpenTelemetry Data](/assets/blog/prompt-orchestration/lilypad-otel-data.webp)
+![Mirascope Cloud OpenTelemetry Data](/assets/blog/prompt-orchestration/lilypad-otel-data.webp)
 
 ### 4. Implement Ongoing Quality Control, Feedback Loops, and Testing
 
@@ -308,20 +304,20 @@ Follow [prompt engineering best practices](/blog/prompt-engineering-best-practic
 * Track metrics like accuracy, clarity, coherence, and response time to understand system performance and detect issues.  
 * Automate evaluations with tools that benchmark prompts and flag issues like drift, hallucinations, or lower output quality after updates.
 
-An example of operationalizing this kind of structured, version-aware evaluation is using Lilypad’s tooling for annotating traces, comparing prompt versions, and feeding real-world feedback directly into your [prompt optimization](/blog/prompt-optimization) loop.
+An example of operationalizing this kind of structured, version-aware evaluation is using Mirascope Cloud's tooling for annotating traces, comparing prompt versions, and feeding real-world feedback directly into your [prompt optimization](/blog/prompt-optimization) loop.
 
-Instead of relying on complex scoring systems or pre-made datasets, Lilypad uses a simple pass or fail system tied to specific traces. Every time you run a prompt, Lilypad automatically records the input, output, and settings. You can then label each result as a success or failure, and add comments explaining why, which creates a running history of what works and what doesn’t.
+Instead of relying on complex scoring systems or pre-made datasets, Mirascope Cloud uses a simple pass or fail system tied to specific traces. Every time you run a prompt, Mirascope Cloud automatically records the input, output, and settings. You can then label each result as a success or failure, and add comments explaining why, which creates a running history of what works and what doesn't.
 
 Because annotations are tied to versioned traces, you can catch regressions quickly, spot improvements over time, and build a high-quality dataset from real-world examples. This also makes it easier for teammates to review changes in context, helping everyone stay on the same page.
 
-![Lilypad Annotation Queue](/assets/blog/prompt-orchestration/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/prompt-orchestration/lilypad-annotation-queue.webp)
 
-Unlike other systems that require you to create test datasets up front, Lilypad lets you evaluate as you go. You don’t need to stop everything to define your test set before you know what a “good” answer looks like. This lightweight, ongoing approach is especially helpful during early development when things are changing quickly.
+Unlike other systems that require you to create test datasets up front, Mirascope Cloud lets you evaluate as you go. You don't need to stop everything to define your test set before you know what a "good" answer looks like. This lightweight, ongoing approach is especially helpful during early development when things are changing quickly.
 
 Eventually, as your dataset of labeled traces grows, you can use it to train or validate automatic evaluators, like [LLM-as-judge](/blog/llm-as-judge). While this feature is still in progress, we recommend keeping a human in the loop, especially for tricky edge cases, to ensure your evaluations reflect real-world quality standards.
 
 ## Take Control of Your AI Workflow with Structured Orchestration
 
-Stop relying on hardcoded prompts. Mirascope and Lilypad help you rapidly iterate, test, and optimize your prompt chains with version control, [LLM evaluation](/blog/llm-evaluation) loops, and modular design patterns that let your AI system learn and evolve over time. 
+Stop relying on hardcoded prompts. Mirascope and Mirascope Cloud help you rapidly iterate, test, and optimize your prompt chains with version control, [LLM evaluation](/blog/llm-evaluation) loops, and modular design patterns that let your AI system learn and evolve over time.
 
-Want to learn more? Find Mirascope’s code samples in our [docs](/docs/mirascope) and on [GitHub](https://github.com/mirascope/mirascope). You can also find code samples for [Lilypad](/docs/lilypad) on [GitHub](https://github.com/mirascope/lilypad).
+Want to learn more? Find Mirascope's code samples in our [docs](/docs) and on [GitHub](https://github.com/mirascope/mirascope). You can also find code samples for [Mirascope Cloud](/docs/learn/ops) on [GitHub](https://github.com/mirascope/mirascope).
