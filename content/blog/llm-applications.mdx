@@ -2,6 +2,7 @@
 title: "LLM Applications - What They Are and 6 Examples"
 description: "Curious about LLM applications? Discover what they are and see 6 practical examples of how large language models are being applied across sectors."
 date: "2024-08-30"
+updatedAt: "2026-01-28"
 readTime: "18 min read"
 author: "William Bakst"
 ---
@@ -21,7 +22,7 @@ As we suggested above, the number of potential applications using large language
 
 ### 1. Text Classification
 
-You can leverage an LLM’s deep understanding of language to [accurately categorize text](/docs/v1/guides/more-advanced/text-classification/) based on its content, intent, or sentiment.
+You can leverage an LLM's deep understanding of language to [accurately categorize text](/docs/guides) based on its content, intent, or sentiment.
 
 This can be done in a wide variety of contexts like customer support, content moderation, sentiment analysis, and even more specialized domains like legal document classification or medical record categorization.
 
@@ -63,7 +64,7 @@ Output:
 
 ### 2. Text Summarization
 
-[Text summarization](/docs/v1/guides/more-advanced/text-summarization/) basically takes a longer text and distills it into a more manageable format. Unlike earlier models that merely extracted and rearranged sentences, modern LLMs “digest” and generate more useful, abstractive summaries.
+[Text summarization](/docs/guides) basically takes a longer text and distills it into a more manageable format. Unlike earlier models that merely extracted and rearranged sentences, modern LLMs “digest” and generate more useful, abstractive summaries.
 
 This means they synthesize new sentences that encapsulate the core ideas, offering a more fluid and nuanced representation of the original content.
 
@@ -120,7 +121,7 @@ Generative pre-trained transformers (GPTs) are large language models based on th
 
 ### 3. Search with Sources
 
-In [Search with Sources](/docs/v1/guides/more-advanced/search-with-sources/), the model retrieves information from verified sources through a search tool, and then supports its answers with citations from these sources. It lists these alongside its responses, ensuring the information is grounded in verifiable data.
+In [Search with Sources](/docs/guides), the model retrieves information from verified sources through a search tool, and then supports its answers with citations from these sources. It lists these alongside its responses, ensuring the information is grounded in verifiable data.
 
 Retrieving and citing information from verified sources offers better accuracy and improves the credibility of LLM answers by allowing users to easily fact check these.
 
@@ -155,7 +156,7 @@ Output:
 
 ### 4. PDF Extraction
 
-[This application](/docs/v1/guides/more-advanced/extract-from-pdf/) lets you extract specific content from PDF files - whether that’s text, images, or structured data - without the need for the labor-intensive and error-prone manual methods of the past.
+[This application](/docs/guides) lets you extract specific content from PDF files - whether that’s text, images, or structured data - without the need for the labor-intensive and error-prone manual methods of the past.
 
 Before language models, extracting data required manual effort or, at best, the use of natural language processing (NLP) tools that required configuration to correctly identify and categorize information within a document. Such tools lacked the flexibility to adapt to new or unexpected categories without manual effort.
 
@@ -206,7 +207,7 @@ Output:
 
 ### 5. Knowledge Graph Extraction
 
-You can [extract a (highly structured) knowledge graph](/docs/v1/guides/more-advanced/knowledge-graph/) from messy, unstructured data by mapping out the relationships between different entities. This kind of application is well-suited to domains where understanding complex connections is critical, like legal analysis, academic research, and fraud detection.
+You can [extract a (highly structured) knowledge graph](/docs/guides) from messy, unstructured data by mapping out the relationships between different entities. This kind of application is well-suited to domains where understanding complex connections is critical, like legal analysis, academic research, and fraud detection.
 
 NLP already makes use of knowledge graphs to identify and link entities within unstructured text. However, LLMs improve the process by more accurately recognizing entities and linking all those entities to the appropriate entries in the knowledge graph.
 
@@ -257,7 +258,7 @@ The knowledge graph contains information about the challenges of renewable energ
 
 ### 6. Generate Image Captions
 
-[Generating image captions](/docs/v1/guides/more-advanced/generating-captions/) involves creating descriptive text that accurately reflects the content of an image.
+[Generating image captions](/docs/guides) involves creating descriptive text that accurately reflects the content of an image.
 
 This task, once done only by humans, has seen considerable automation in recent years through the use of machine learning algorithms like conditional random fields (CRFs) and support vector machines (SVMs). While these methods are effective, they often require considerable time and computational resources.
 
@@ -357,7 +358,7 @@ This application sets up a chatbot that mimics Steve Jobs by referencing his spe
 from llama_index.core import SimpleDirectoryReader, VectorStoreIndex
 from llama_index.core.base.base_retriever import BaseRetriever
 
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
 # Load documents and build index
 
@@ -366,8 +367,11 @@ retriever = VectorStoreIndex.from_documents(documents).as_retriever()
 
 # Define the function to ask "Steve Jobs" a question
 
-@openai.call("gpt-4o-mini")
-@prompt_template("""
+@llm.call("openai/gpt-4o-mini")
+def ask_steve_jobs(query: str, retriever: BaseRetriever) -> str:
+    """Retrieves excerpts from Steve Jobs' speeches relevant to `query` and generates a response."""
+    excerpts = [node.get_content() for node in retriever.retrieve(query)]
+    return f"""
     SYSTEM:
     Your task is to respond to the user as though you are Steve Jobs.
 
@@ -377,28 +381,27 @@ retriever = VectorStoreIndex.from_documents(documents).as_retriever()
     <excerpts>
     {excerpts}
     </excerpts>
-    """)
-def ask_steve_jobs(query: str, retriever: BaseRetriever) -> openai.OpenAIDynamicConfig:
-    """Retrieves excerpts from Steve Jobs' speeches relevant to `query` and generates a response."""
-    excerpts = [node.get_content() for node in retriever.retrieve(query)]
-    return {"computed_fields": {"excerpts": excerpts}}
+
+    USER:
+    {query}
+    """
 
 # Get the user's query and ask "Steve Jobs"
 
 query = input("(User): ")
 response = ask_steve_jobs(query, retriever)
-print(response.content)
+print(response.text())
 ```
 
 Note that:
 
-- Llama Index’s `SimpleDirectoryReader` loads the documents (in this case, speeches by Steve Jobs) from the specified directory. Its `VectorStoreIndex` creates an index from these documents, which allows the bot to retrieve relevant excerpts based on the user's query.
-- We call an `as_retriever` method on the index from the loaded documents, turning it into a `retriever` object that retrieves relevant excerpts from Steve Jobs’ speeches.
-- We define our `ask_steve_jobs` function and add two decorators: Mirascope’s `openai.call()` decorator turns a Python function into an OpenAI call (with little boilerplate) and `prompt_template` provides the instruction for the LLM; this saves developers from having to use Python docstrings for prompt templates, as these are traditionally intended for documenting code rather than defining operational logic.‍
-- `ask_steve_jobs` retrieves excerpts relevant to the query using `retriever.retrieve(query)`. It returns a dictionary containing the `excerpts` as a computed field, which will be used by the OpenAI API to generate a response.
+- Llama Index's `SimpleDirectoryReader` loads the documents (in this case, speeches by Steve Jobs) from the specified directory. Its `VectorStoreIndex` creates an index from these documents, which allows the bot to retrieve relevant excerpts based on the user's query.
+- We call an `as_retriever` method on the index from the loaded documents, turning it into a `retriever` object that retrieves relevant excerpts from Steve Jobs' speeches.
+- We define our `ask_steve_jobs` function and add Mirascope's `@llm.call()` decorator, which turns a Python function into an OpenAI call with minimal boilerplate. The prompt is returned directly from the function body.
+- `ask_steve_jobs` retrieves excerpts relevant to the query using `retriever.retrieve(query)` and includes them in the prompt sent to the OpenAI API to generate a response.
 
 ## Start Building Your Next App with Mirascope
 
 Ready to turn your ideas into reality? Design your next LLM application with Mirascope’s Python toolkit for building LLM agents your way. Join our community of forward-thinking developers who are leveraging advanced [AI tools](/blog/llm-tools) and workflows to create innovative and scalable applications.
 
-Want to learn more? You can find more Mirascope code samples both on our [docs](/docs/mirascope) and on our [GitHub page](https://github.com/mirascope/mirascope).
+Want to learn more? You can find more Mirascope code samples both on our [docs](/docs/learn/llm) and on our [GitHub page](https://github.com/mirascope/mirascope).
