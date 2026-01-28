@@ -26,26 +26,28 @@ async function pathExists(filePath: string): Promise<boolean> {
  * Extract Python snippets from MDX content string
  */
 export function extractSnippetsFromContent(content: string): string[] {
-  // First, check for any python-* blocks that aren't our supported types
-  const pythonPrefixRegex = /```(python-[^`\n {]+)(?:\s*{[^}]+})?\n/g;
+  // First, check for any python-* or py-* blocks that aren't our supported types
+  const pythonPrefixRegex = /```((?:python|py)-[^`\n {]+)(?:\s*{[^}]+})?\n/g;
   let prefixMatch;
   while ((prefixMatch = pythonPrefixRegex.exec(content)) !== null) {
     const blockType = prefixMatch[1];
-    // Only allow python-snippet-concat and python-snippet-skip
+    // Only allow python-snippet-concat and python-snippet-skip (and py- variants)
     if (
       blockType !== "python-snippet-concat" &&
-      blockType !== "python-snippet-skip"
+      blockType !== "python-snippet-skip" &&
+      blockType !== "py-snippet-concat" &&
+      blockType !== "py-snippet-skip"
     ) {
       throw new Error(
-        `Unsupported Python block type "${blockType}". Only python, python-snippet-concat, and python-snippet-skip are allowed.`,
+        `Unsupported Python block type "${blockType}". Only python, py, python-snippet-concat, py-snippet-concat, python-snippet-skip, and py-snippet-skip are allowed.`,
       );
     }
   }
 
-  // Match Python blocks (regular), python-snippet-concat blocks, and python-snippet-skip blocks
+  // Match Python blocks (python or py), python-snippet-concat blocks, and python-snippet-skip blocks
   // Also handles meta directives like ```python{1,2} or ```python {1,2}
   const snippetRegex =
-    /```(python|python-snippet-concat|python-snippet-skip)(?:\s*{[^}]+})?\n([\s\S]*?)```/g;
+    /```(python|py|python-snippet-concat|py-snippet-concat|python-snippet-skip|py-snippet-skip)(?:\s*{[^}]+})?\n([\s\S]*?)```/g;
   const snippets: string[] = [];
 
   // Count lines up to each match
@@ -54,11 +56,18 @@ export function extractSnippetsFromContent(content: string): string[] {
     const blockType = match[1];
     const codeContent = match[2].trim();
 
-    if (blockType === "python-snippet-skip") {
+    if (
+      blockType === "python-snippet-skip" ||
+      blockType === "py-snippet-skip"
+    ) {
       continue;
     }
 
-    if (blockType === "python-snippet-concat" && snippets.length > 0) {
+    if (
+      (blockType === "python-snippet-concat" ||
+        blockType === "py-snippet-concat") &&
+      snippets.length > 0
+    ) {
       // Append to the previous snippet
       snippets[snippets.length - 1] += "\n\n" + codeContent;
     } else {
@@ -131,8 +140,13 @@ ${processedSnippet}
 
 /**
  * Process a single MDX file for a given provider
+ * @param mdxFile - Path to the MDX file to process
+ * @param contentRoot - Optional path to the content directory (defaults to cwd/content)
  */
-export async function processFile(mdxFile: string): Promise<string[]> {
+export async function processFile(
+  mdxFile: string,
+  contentRoot?: string,
+): Promise<string[]> {
   if (!(await pathExists(mdxFile))) {
     console.error(`Error: File ${mdxFile} not found`);
     return [];
@@ -149,7 +163,7 @@ export async function processFile(mdxFile: string): Promise<string[]> {
   const baseName = path.basename(mdxFile, path.extname(mdxFile));
 
   // Find the path relative to the content directory
-  const contentDirPath = path.join(process.cwd(), "content"); // Assuming content is at the root
+  const contentDirPath = contentRoot ?? path.join(process.cwd(), "content");
   let relativePath = path.relative(contentDirPath, path.dirname(mdxFile));
 
   // Handle case where the file isn't in the content directory
