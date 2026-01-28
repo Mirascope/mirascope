@@ -9,7 +9,7 @@ import type {
   ToolCall,
 } from '@/llm/content';
 import type { Message } from '@/llm/messages';
-import type { Params } from '@/llm/models';
+import type { Model, Params } from '@/llm/models';
 import type { ModelId, ProviderId } from '@/llm/providers';
 import type { FinishReason } from '@/llm/responses/finish-reason';
 import type { Usage } from '@/llm/responses/usage';
@@ -147,6 +147,30 @@ export abstract class RootResponse {
     return parts.join('\n\n');
   }
 
+  /**
+   * A Model with parameters matching this response.
+   *
+   * Creates a new Model instance with the same model ID and parameters that
+   * were used to generate this response. This is useful for resuming
+   * conversations or making follow-up calls with consistent settings.
+   *
+   * Uses dynamic import to avoid circular dependencies.
+   *
+   * @returns A Promise resolving to a Model instance configured with this response's model ID and params.
+   *
+   * @example
+   * ```typescript
+   * const response = await model.call('Hello!');
+   * const sameModel = await response.model;
+   * const followUp = await sameModel.call('Tell me more');
+   * ```
+   */
+  get model(): Promise<Model> {
+    return (async () => {
+      const { Model: ModelClass } = await import('@/llm/models/model');
+      return new ModelClass(this.modelId, this.params);
+    })();
+  }
+
   // Note: parse() method is not implemented yet as it requires Format infrastructure.
-  // Note: model property is not implemented yet as it requires Model infrastructure.
 }

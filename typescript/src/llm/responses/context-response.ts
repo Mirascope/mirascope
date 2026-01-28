@@ -3,13 +3,16 @@
  *
  * Extends BaseResponse with context-aware functionality including:
  * - executeTools(): Execute tool calls with context dependency injection
+ * - resume(): Continue the conversation with additional user content
  */
 
 import type { Context } from '@/llm/context';
+import type { UserContent } from '@/llm/messages';
 import {
   BaseResponse,
   type BaseResponseInit,
 } from '@/llm/responses/base-response';
+import type { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 
 /**
  * Initialization options for creating a ContextResponse.
@@ -21,6 +24,7 @@ export type ContextResponseInit = BaseResponseInit;
  *
  * This class provides context-aware functionality on top of the standard response:
  * - `executeTools()`: Execute all tool calls with context dependency injection
+ * - `resume()`: Continue the conversation with additional user content
  *
  * @template DepsT - The type of dependencies in the context.
  *
@@ -31,6 +35,9 @@ export type ContextResponseInit = BaseResponseInit;
  * const ctx = createContext<MyDeps>({ userId: '123' });
  * const response = await myPrompt(model, ctx);
  * console.log(response.text());
+ *
+ * // Continue the conversation
+ * const followUp = await response.resume(ctx, 'Tell me more');
  * ```
  */
 export class ContextResponse<DepsT = unknown> extends BaseResponse {
@@ -38,33 +45,63 @@ export class ContextResponse<DepsT = unknown> extends BaseResponse {
     super(init);
   }
 
-  /* v8 ignore start - tools not yet implemented */
   /**
-   * Execute and return all of the tool calls in the response.
+   * Generate a new ContextResponse using this response's messages with additional user content.
    *
-   * @param _ctx - A Context with the required deps type.
-   * @returns A sequence containing a ToolOutput for every tool call.
+   * Uses this response's tools and format type. Also uses this response's provider,
+   * model, and params.
    *
-   * @throws ToolNotFoundError if one of the response's tool calls has no matching tool.
-   * @throws Error if one of the tools throws an exception.
+   * @param ctx - A Context with the required deps type.
+   * @param content - The new user message content to append to the message history.
+   * @returns A new ContextResponse instance generated from the extended message history.
    *
    * @example
    * ```typescript
    * const response = await myPrompt(model, ctx);
-   * const outputs = response.executeTools(ctx);
-   * for (const output of outputs) {
-   *   console.log(output);
+   * console.log(response.text());
+   *
+   * // Continue the conversation
+   * const followUp = await response.resume(ctx, 'Tell me more about that');
+   * console.log(followUp.text());
+   * ```
+   */
+  async resume(
+    ctx: Context<DepsT>,
+    content: UserContent
+  ): Promise<ContextResponse<DepsT>> {
+    const model = await this.model;
+    return model.contextResume(ctx, this, content);
+  }
+
+  /**
+   * Generate a new ContextStreamResponse using this response's messages with additional user content.
+   *
+   * Uses this response's tools and format type. Also uses this response's provider,
+   * model, and params. Returns a streaming response for incremental consumption.
+   *
+   * @param ctx - A Context with the required deps type.
+   * @param content - The new user message content to append to the message history.
+   * @returns A new ContextStreamResponse instance generated from the extended message history.
+   *
+   * @example
+   * ```typescript
+   * const response = await myPrompt(model, ctx);
+   * console.log(response.text());
+   *
+   * // Continue the conversation with streaming
+   * const followUp = await response.resumeStream(ctx, 'Tell me more about that');
+   * for await (const text of followUp.textStream()) {
+   *   process.stdout.write(text);
    * }
    * ```
    */
-  executeTools(_ctx: Context<DepsT>): unknown[] {
-    // Note: Tool execution is not yet implemented.
-    // When implemented, this will:
-    // 1. Iterate through this.toolCalls
-    // 2. For each tool call, find the matching tool in the toolkit
-    // 3. Execute the tool with the context and tool call arguments
-    // 4. Return an array of ToolOutput objects
-    return [];
+  async resumeStream(
+    ctx: Context<DepsT>,
+    content: UserContent
+  ): Promise<ContextStreamResponse<DepsT>> {
+    const model = await this.model;
+    return model.contextResumeStream(ctx, this, content);
   }
-  /* v8 ignore stop */
+
+  // Note: execute_tools() method is not implemented yet as it requires Tools infrastructure.
 }
