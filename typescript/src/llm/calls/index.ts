@@ -3,3 +3,9 @@
  */
 
 export { defineCall, type Call, type CallArgs } from '@/llm/calls/call';
+
+export {
+  defineContextCall,
+  type ContextCall,
+  type ContextCallArgs,
+} from '@/llm/calls/context-call';

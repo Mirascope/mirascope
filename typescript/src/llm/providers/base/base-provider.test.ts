@@ -3,10 +3,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import { type Context } from '@/llm/context';
 import { user, type Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import type { ProviderId } from '@/llm/providers/provider-id';
 import { Response } from '@/llm/responses';
+import { ContextResponse } from '@/llm/responses/context-response';
+import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 import { StreamResponse } from '@/llm/responses/stream-response';
 import { APIError, ProviderError } from '@/llm/exceptions';
 import {
@@ -68,6 +71,30 @@ class TestProvider extends BaseProvider {
     messages: readonly Message[];
     params?: Params;
   }): Promise<StreamResponse> {
+    if (this.errorToThrow) {
+      return Promise.reject(this.errorToThrow);
+    }
+    return Promise.reject(new Error('Not implemented for tests'));
+  }
+
+  protected _contextCall<DepsT>(_args: {
+    ctx: Context<DepsT>;
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<ContextResponse<DepsT>> {
+    if (this.errorToThrow) {
+      return Promise.reject(this.errorToThrow);
+    }
+    return Promise.reject(new Error('Not implemented for tests'));
+  }
+
+  protected _contextStream<DepsT>(_args: {
+    ctx: Context<DepsT>;
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<ContextStreamResponse<DepsT>> {
     if (this.errorToThrow) {
       return Promise.reject(this.errorToThrow);
     }
@@ -142,6 +169,36 @@ describe('BaseProvider', () => {
           messages: [user('Hi')],
         })
       ).rejects.toThrow('string error');
+    });
+  });
+
+  describe('contextCall()', () => {
+    it('wraps SDK errors in Mirascope error types', async () => {
+      const provider = new TestProvider();
+      provider.setErrorToThrow(new TestSDKError('Rate limited', 429));
+
+      await expect(
+        provider.contextCall({
+          ctx: { deps: {} },
+          modelId: 'test-model',
+          messages: [user('Hi')],
+        })
+      ).rejects.toThrow(TestProviderError);
+    });
+  });
+
+  describe('contextStream()', () => {
+    it('wraps SDK errors in Mirascope error types', async () => {
+      const provider = new TestProvider();
+      provider.setErrorToThrow(new TestSDKError('Rate limited', 429));
+
+      await expect(
+        provider.contextStream({
+          ctx: { deps: {} },
+          modelId: 'test-model',
+          messages: [user('Hi')],
+        })
+      ).rejects.toThrow(TestProviderError);
     });
   });
 });

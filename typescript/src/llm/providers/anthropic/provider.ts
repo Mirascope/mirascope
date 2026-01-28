@@ -4,6 +4,7 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 
+import type { Context } from '@/llm/context';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { BaseProvider } from '@/llm/providers/base';
@@ -11,6 +12,8 @@ import { getIncludeThoughts } from '@/llm/providers/_utils';
 import type { AnthropicModelId } from '@/llm/providers/anthropic/model-id';
 import { modelName } from '@/llm/providers/anthropic/model-id';
 import { Response } from '@/llm/responses';
+import { ContextResponse } from '@/llm/responses/context-response';
+import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 import { StreamResponse } from '@/llm/responses/stream-response';
 import {
   ANTHROPIC_ERROR_MAP,
@@ -131,7 +134,7 @@ export class AnthropicProvider extends BaseProvider {
       providerId: 'anthropic',
       modelId,
       providerModelName: modelName(modelId),
-      params: args.params ?? {},
+      params: args.params ?? /* v8 ignore next 1 */ {},
       inputMessages: args.messages,
       assistantMessage,
       finishReason,
@@ -179,6 +182,119 @@ export class AnthropicProvider extends BaseProvider {
     const chunkIterator = decodeStream(stream, includeThoughts);
 
     return new StreamResponse({
+      providerId: 'anthropic',
+      modelId,
+      providerModelName: modelName(modelId),
+      params: args.params ?? /* v8 ignore next 1 */ {},
+      inputMessages: args.messages,
+      chunkIterator,
+    });
+  }
+
+  /**
+   * Execute a context-aware call to the Anthropic API.
+   *
+   * NOTE: This implementation intentionally duplicates _call() rather than delegating.
+   * When context-aware tools are implemented, this method will diverge to handle
+   * passing context to tools during execution. We keep them separate now to make
+   * that future change clearer.
+   *
+   * @param args - Call arguments including context and model
+   * @returns ContextResponse object containing the API response
+   */
+  protected async _contextCall<DepsT>(args: {
+    ctx: Context<DepsT>;
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<ContextResponse<DepsT>> {
+    const modelId = args.modelId as AnthropicModelId;
+
+    // Route to beta provider for strict mode
+    /* v8 ignore start - beta routing not yet implemented */
+    if (shouldUseBeta(modelId, args.params)) {
+      return this.betaProvider.contextCall({
+        ctx: args.ctx,
+        modelId: args.modelId,
+        messages: args.messages,
+        params: args.params,
+      });
+    }
+    /* v8 ignore stop */
+
+    const requestParams = buildRequestParams(
+      modelId,
+      args.messages,
+      args.params
+    );
+
+    const anthropicResponse = await this.client.messages.create(requestParams);
+
+    const includeThoughts = getIncludeThoughts(args.params);
+
+    const { assistantMessage, finishReason, usage } = decodeResponse(
+      anthropicResponse,
+      modelId,
+      includeThoughts
+    );
+
+    return new ContextResponse({
+      raw: anthropicResponse,
+      providerId: 'anthropic',
+      modelId,
+      providerModelName: modelName(modelId),
+      params: args.params ?? /* v8 ignore next 1 */ {},
+      inputMessages: args.messages,
+      assistantMessage,
+      finishReason,
+      usage,
+    });
+  }
+
+  /**
+   * Execute a context-aware streaming call to the Anthropic API.
+   *
+   * NOTE: This implementation intentionally duplicates _stream() rather than delegating.
+   * When context-aware tools are implemented, this method will diverge to handle
+   * passing context to tools during execution. We keep them separate now to make
+   * that future change clearer.
+   *
+   * @param args - Call arguments including context and model
+   * @returns ContextStreamResponse object for streaming consumption
+   */
+  protected async _contextStream<DepsT>(args: {
+    ctx: Context<DepsT>;
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<ContextStreamResponse<DepsT>> {
+    const modelId = args.modelId as AnthropicModelId;
+
+    // Route to beta provider for strict mode
+    /* v8 ignore start - beta routing not yet implemented */
+    if (shouldUseBeta(modelId, args.params)) {
+      return this.betaProvider.contextStream({
+        ctx: args.ctx,
+        modelId: args.modelId,
+        messages: args.messages,
+        params: args.params,
+      });
+    }
+    /* v8 ignore stop */
+
+    const requestParams = buildRequestParams(
+      modelId,
+      args.messages,
+      args.params
+    );
+
+    const includeThoughts = getIncludeThoughts(args.params);
+
+    const stream = this.client.messages.stream(requestParams);
+
+    const chunkIterator = decodeStream(stream, includeThoughts);
+
+    return new ContextStreamResponse({
       providerId: 'anthropic',
       modelId,
       providerModelName: modelName(modelId),

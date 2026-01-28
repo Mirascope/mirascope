@@ -2,11 +2,14 @@
  * Base abstract interface for provider clients.
  */
 
+import type { Context } from '@/llm/context';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import type { ProviderId } from '@/llm/providers/provider-id';
 import { Response } from '@/llm/responses';
 import type { StreamResponseChunk } from '@/llm/responses/chunks';
+import { ContextResponse } from '@/llm/responses/context-response';
+import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 import { StreamResponse } from '@/llm/responses/stream-response';
 import {
   APIError,
@@ -131,6 +134,86 @@ export abstract class BaseProvider {
     messages: readonly Message[];
     params?: Params;
   }): Promise<StreamResponse>;
+
+  /**
+   * Generate a ContextResponse by calling this provider's LLM with context.
+   *
+   * This method accepts a context for dependency injection, enabling context-aware
+   * tools and prompts.
+   *
+   * @template DepsT - The type of dependencies in the context.
+   */
+  async contextCall<DepsT>(args: {
+    ctx: Context<DepsT>;
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<ContextResponse<DepsT>> {
+    try {
+      return await this._contextCall(args);
+    } catch (e) {
+      throw this.wrapError(e);
+    }
+  }
+
+  /**
+   * Provider-specific implementation of contextCall().
+   *
+   * Subclasses implement this method to handle the actual API call with context.
+   * Currently functionally equivalent to _call() since context-aware tools are
+   * not yet implemented. When context-aware tools are added, this method will
+   * handle passing context to tools during execution.
+   */
+  protected abstract _contextCall<DepsT>(args: {
+    ctx: Context<DepsT>;
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<ContextResponse<DepsT>>;
+
+  /**
+   * Generate a ContextStreamResponse by calling this provider's LLM with context and streaming.
+   *
+   * This method accepts a context for dependency injection, enabling context-aware
+   * tools and prompts.
+   *
+   * @template DepsT - The type of dependencies in the context.
+   */
+  async contextStream<DepsT>(args: {
+    ctx: Context<DepsT>;
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<ContextStreamResponse<DepsT>> {
+    let response: ContextStreamResponse<DepsT>;
+    try {
+      response = await this._contextStream(args);
+    } catch (e) {
+      throw this.wrapError(e);
+    }
+
+    // Wrap the iterator to catch errors during iteration
+    response.wrapChunkIterator((iterator) =>
+      this._wrapIteratorErrors(iterator)
+    );
+
+    return response;
+  }
+
+  /**
+   * Provider-specific implementation of contextStream().
+   *
+   * Subclasses implement this method to handle the actual streaming API call with context.
+   * Currently functionally equivalent to _stream() since context-aware tools are
+   * not yet implemented. When context-aware tools are added, this method will
+   * handle passing context to tools during execution.
+   */
+  protected abstract _contextStream<DepsT>(args: {
+    ctx: Context<DepsT>;
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<ContextStreamResponse<DepsT>>;
 
   /**
    * Wrap a provider SDK exception in the appropriate Mirascope error type.

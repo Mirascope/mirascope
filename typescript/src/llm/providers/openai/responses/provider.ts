@@ -4,6 +4,7 @@
 
 import OpenAI from 'openai';
 
+import type { Context } from '@/llm/context';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { BaseProvider } from '@/llm/providers/base';
@@ -17,6 +18,8 @@ import {
 } from '@/llm/providers/openai/responses/_utils';
 import { decodeStream } from '@/llm/providers/openai/responses/decode-stream';
 import { Response } from '@/llm/responses';
+import { ContextResponse } from '@/llm/responses/context-response';
+import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 import { StreamResponse } from '@/llm/responses/stream-response';
 
 /**
@@ -92,7 +95,7 @@ export class OpenAIResponsesProvider extends BaseProvider {
       providerId: 'openai',
       modelId: modelIdTyped,
       providerModelName: modelName(modelIdTyped, null),
-      params: args.params ?? {},
+      params: args.params ?? /* v8 ignore next 1 */ {},
       inputMessages: args.messages,
       assistantMessage,
       finishReason,
@@ -131,6 +134,96 @@ export class OpenAIResponsesProvider extends BaseProvider {
     const chunkIterator = decodeStream(stream, includeThoughts);
 
     return new StreamResponse({
+      providerId: 'openai',
+      modelId: modelIdTyped,
+      providerModelName: modelName(modelIdTyped, null),
+      params: args.params ?? /* v8 ignore next 1 */ {},
+      inputMessages: args.messages,
+      chunkIterator,
+    });
+  }
+
+  /**
+   * Execute a context-aware call to the OpenAI Responses API.
+   *
+   * NOTE: This implementation intentionally duplicates _call() rather than delegating.
+   * When context-aware tools are implemented, this method will diverge to handle
+   * passing context to tools during execution. We keep them separate now to make
+   * that future change clearer.
+   *
+   * @param args - Call arguments including context and model
+   * @returns ContextResponse object containing the API response
+   */
+  protected async _contextCall<DepsT>(args: {
+    ctx: Context<DepsT>;
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<ContextResponse<DepsT>> {
+    const modelIdTyped = args.modelId as OpenAIModelId;
+    const requestParams = buildRequestParams(
+      modelIdTyped,
+      args.messages,
+      args.params
+    );
+
+    const openaiResponse = await this.client.responses.create(requestParams);
+
+    const includeThoughts = getIncludeThoughts(args.params);
+
+    const { assistantMessage, finishReason, usage } = decodeResponse(
+      openaiResponse,
+      modelIdTyped,
+      includeThoughts
+    );
+
+    return new ContextResponse({
+      raw: openaiResponse,
+      providerId: 'openai',
+      modelId: modelIdTyped,
+      providerModelName: modelName(modelIdTyped, null),
+      params: args.params ?? /* v8 ignore next 1 */ {},
+      inputMessages: args.messages,
+      assistantMessage,
+      finishReason,
+      usage,
+    });
+  }
+
+  /**
+   * Execute a context-aware streaming call to the OpenAI Responses API.
+   *
+   * NOTE: This implementation intentionally duplicates _stream() rather than delegating.
+   * When context-aware tools are implemented, this method will diverge to handle
+   * passing context to tools during execution. We keep them separate now to make
+   * that future change clearer.
+   *
+   * @param args - Call arguments including context and model
+   * @returns ContextStreamResponse object for streaming consumption
+   */
+  protected async _contextStream<DepsT>(args: {
+    ctx: Context<DepsT>;
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<ContextStreamResponse<DepsT>> {
+    const modelIdTyped = args.modelId as OpenAIModelId;
+    const requestParams = buildRequestParams(
+      modelIdTyped,
+      args.messages,
+      args.params
+    );
+
+    const includeThoughts = getIncludeThoughts(args.params);
+
+    const stream = await this.client.responses.create({
+      ...requestParams,
+      stream: true,
+    });
+
+    const chunkIterator = decodeStream(stream, includeThoughts);
+
+    return new ContextStreamResponse({
       providerId: 'openai',
       modelId: modelIdTyped,
       providerModelName: modelName(modelIdTyped, null),

@@ -2,6 +2,7 @@
  * The Model class - unified interface for LLM calls.
  */
 
+import type { Context } from '@/llm/context';
 import type { Message, UserContent } from '@/llm/messages';
 import { promoteToMessages } from '@/llm/messages';
 import type { Params } from '@/llm/models/params';
@@ -10,6 +11,8 @@ import type { ModelId } from '@/llm/providers/model-id';
 import type { ProviderId } from '@/llm/providers/provider-id';
 import { getProviderForModel } from '@/llm/providers/registry';
 import type { Response } from '@/llm/responses';
+import type { ContextResponse } from '@/llm/responses/context-response';
+import type { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 import type { StreamResponse } from '@/llm/responses/stream-response';
 
 /**
@@ -159,6 +162,74 @@ export class Model {
   ): Promise<StreamResponse> {
     const messages = promoteToMessages(content);
     return this.provider.stream({
+      modelId: this.modelId,
+      messages,
+      params: this.params,
+    });
+  }
+
+  /**
+   * Generate a ContextResponse by calling this model's LLM provider with context.
+   *
+   * This method accepts a context for dependency injection, enabling context-aware
+   * tools and prompts.
+   *
+   * @template DepsT - The type of dependencies in the context.
+   * @param ctx - The context containing dependencies for tools.
+   * @param content - Content to send to the LLM.
+   * @returns A ContextResponse object containing the LLM-generated content.
+   *
+   * @example
+   * ```typescript
+   * interface MyDeps { userId: string; }
+   *
+   * const ctx = createContext<MyDeps>({ userId: '123' });
+   * const response = await model.contextCall(ctx, 'Hello!');
+   * console.log(response.text());
+   * ```
+   */
+  async contextCall<DepsT>(
+    ctx: Context<DepsT>,
+    content: UserContent | readonly Message[]
+  ): Promise<ContextResponse<DepsT>> {
+    const messages = promoteToMessages(content);
+    return this.provider.contextCall({
+      ctx,
+      modelId: this.modelId,
+      messages,
+      params: this.params,
+    });
+  }
+
+  /**
+   * Generate a streaming ContextStreamResponse by calling this model's LLM provider with context.
+   *
+   * This method accepts a context for dependency injection, enabling context-aware
+   * tools and prompts.
+   *
+   * @template DepsT - The type of dependencies in the context.
+   * @param ctx - The context containing dependencies for tools.
+   * @param content - Content to send to the LLM.
+   * @returns A ContextStreamResponse object for consuming the streamed content.
+   *
+   * @example
+   * ```typescript
+   * interface MyDeps { userId: string; }
+   *
+   * const ctx = createContext<MyDeps>({ userId: '123' });
+   * const response = await model.contextStream(ctx, 'Hello!');
+   * for await (const text of response.textStream()) {
+   *   process.stdout.write(text);
+   * }
+   * ```
+   */
+  async contextStream<DepsT>(
+    ctx: Context<DepsT>,
+    content: UserContent | readonly Message[]
+  ): Promise<ContextStreamResponse<DepsT>> {
+    const messages = promoteToMessages(content);
+    return this.provider.contextStream({
+      ctx,
       modelId: this.modelId,
       messages,
       params: this.params,

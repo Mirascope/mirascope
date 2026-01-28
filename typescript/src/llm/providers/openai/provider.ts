@@ -4,6 +4,7 @@
 
 import OpenAI from 'openai';
 
+import type { Context } from '@/llm/context';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { BaseProvider } from '@/llm/providers/base';
@@ -13,6 +14,8 @@ import { OpenAIResponsesProvider } from '@/llm/providers/openai/responses/provid
 import type { ApiMode, OpenAIModelId } from '@/llm/providers/openai/model-id';
 import { OPENAI_KNOWN_MODELS } from '@/llm/providers/openai/model-info';
 import { Response } from '@/llm/responses';
+import type { ContextResponse } from '@/llm/responses/context-response';
+import type { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 import { StreamResponse } from '@/llm/responses/stream-response';
 
 /**
@@ -197,6 +200,82 @@ export class OpenAIProvider extends BaseProvider {
     }
 
     return this.completionsProvider.stream({
+      modelId: args.modelId,
+      messages: args.messages,
+      params: args.params,
+    });
+  }
+
+  /**
+   * Execute a context-aware call to the OpenAI API, routing to the appropriate API.
+   *
+   * NOTE: This implementation intentionally duplicates _call() routing logic rather
+   * than delegating. When context-aware tools are implemented, this method will
+   * diverge to handle passing context to tools during execution. We keep them
+   * separate now to make that future change clearer.
+   *
+   * @param args - Call arguments including context and model
+   * @returns ContextResponse object containing the API response
+   */
+  protected async _contextCall<DepsT>(args: {
+    ctx: Context<DepsT>;
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<ContextResponse<DepsT>> {
+    const modelId = args.modelId as OpenAIModelId;
+    const apiMode = chooseApiMode(modelId, args.messages);
+
+    if (apiMode === 'responses') {
+      // Delegate to the responses provider's context call
+      return this.responsesProvider.contextCall({
+        ctx: args.ctx,
+        modelId: args.modelId,
+        messages: args.messages,
+        params: args.params,
+      });
+    }
+
+    // Delegate to the completions provider's context call
+    return this.completionsProvider.contextCall({
+      ctx: args.ctx,
+      modelId: args.modelId,
+      messages: args.messages,
+      params: args.params,
+    });
+  }
+
+  /**
+   * Execute a context-aware streaming call to the OpenAI API, routing to the appropriate API.
+   *
+   * NOTE: This implementation intentionally duplicates _stream() routing logic rather
+   * than delegating. When context-aware tools are implemented, this method will
+   * diverge to handle passing context to tools during execution. We keep them
+   * separate now to make that future change clearer.
+   *
+   * @param args - Call arguments including context and model
+   * @returns ContextStreamResponse object for streaming consumption
+   */
+  protected async _contextStream<DepsT>(args: {
+    ctx: Context<DepsT>;
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<ContextStreamResponse<DepsT>> {
+    const modelId = args.modelId as OpenAIModelId;
+    const apiMode = chooseApiMode(modelId, args.messages);
+
+    if (apiMode === 'responses') {
+      return this.responsesProvider.contextStream({
+        ctx: args.ctx,
+        modelId: args.modelId,
+        messages: args.messages,
+        params: args.params,
+      });
+    }
+
+    return this.completionsProvider.contextStream({
+      ctx: args.ctx,
       modelId: args.modelId,
       messages: args.messages,
       params: args.params,
