@@ -81,7 +81,13 @@ export {
 } from '@/llm/exceptions';
 
 export type { Params, ThinkingConfig, ThinkingLevel } from '@/llm/models';
-export { Model, model } from '@/llm/models';
+export {
+  Model,
+  model,
+  modelFromContext,
+  useModel,
+  withModel,
+} from '@/llm/models';
 
 export {
   definePrompt,
