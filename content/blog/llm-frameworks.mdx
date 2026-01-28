@@ -2,6 +2,7 @@
 title: "Top LLM Frameworks for AI Application Development"
 description: "Learn which LLM frameworks are best suited for building robust AI applications and orchestrating complex workflows, from data retrieval to prompt engineering."
 date: "2024-11-19"
+updatedAt: "2026-01-28"
 readTime: "21 min read"
 author: "William Bakst"
 ---
@@ -60,7 +61,7 @@ Take a complex workflow like chaining, for example. When looking at how framewor
 
 Developers using LangChain often encapsulate chaining operations in [runnables and pipe moderators](https://python.langchain.com/docs/tutorials/rag/), as shown in the code snippet below for a retrieval augmented generation (RAG) pipeline:
 
-```python {45-50}
+```python-snippet-skip {45-50}
 from bs4 import SoupStrainer
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import WebBaseLoader
@@ -128,14 +129,14 @@ Below, we use Python’s computed fields in place of the runnables and pipes of 
 
 This allows you to directly manage chain execution - without needing intermediate constructs:
 
-```py
+```python-snippet-skip
 from bs4 import SoupStrainer
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
 # Load, chunk and index the contents of the blog.
 
@@ -155,27 +156,22 @@ vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings
 
 retriever = vectorstore.as_retriever()
 
-@openai.call("gpt-4o-mini", output_parser=str)
-@prompt_template(
-    """
-    Use the following pieces of information to provide a concise overview.
-    If the details are insufficient, state that clearly without making assumptions.
-    Keep your response to three sentences for conciseness.
-    End with "hope this provides clarity!" to conclude your response.
-
-    {information}
-
-    Topic: {subject}
-
-    Overview:
-    """
-)
-def overview(subject: str) -> openai.OpenAIDynamicConfig:
+@llm.call("openai/gpt-4o-mini")
+def overview(subject: str):
     information = "\n\n".join(doc.page_content for doc in retriever.invoke(subject))
-    return {"computed_fields": {"information": information}}
+    return f"""Use the following pieces of information to provide a concise overview.
+If the details are insufficient, state that clearly without making assumptions.
+Keep your response to three sentences for conciseness.
+End with "hope this provides clarity!" to conclude your response.
 
-output = overview("Describe machine learning")
-print(output)
+{information}
+
+Topic: {subject}
+
+Overview:"""
+
+response = overview("Describe machine learning")
+print(response.text())
 ```
 
 Although both code samples above aren’t especially complex, they illustrate how vanilla Python can handily replace LangChain’s custom abstractions when it comes to complex operations like chaining while providing far more control over exactly how your prompt is formatted.
@@ -186,7 +182,7 @@ The above snippet shows how you can build a RAG pipeline using [LangChain](/blog
 
 #### A Convenient Approach to LLM Calling 
 
-Mirascope’s [call decorator](/docs/v1/learn/calls/) (e.g., `@openai.call()`) converts regular Python functions into [prompts](/blog/advanced-prompt-engineering/) by turning the function signature and return statement into an API request.
+Mirascope's [call decorator](/docs/learn/llm/calls) (e.g., `@llm.call()`) converts regular Python functions into [prompts](/blog/advanced-prompt-engineering/) by turning the function signature and return statement into an API request.
 
 This automates prompt formatting, model selection, and response parsing, while ensuring type safety and smooth integration with various LLM providers.
 
@@ -200,22 +196,22 @@ This consistency lets you switch between providers with minimal code changes, as
 
 For instance, calls to OpenAI and to Anthropic are structured exactly the same:
 
-```py
-from mirascope.core import openai, anthropic
+```python-snippet-skip
+from mirascope import llm
 
-@openai.call("gpt-4o-mini")
+@llm.call("openai/gpt-4o-mini")
 def recommend_recipe(cuisine: str) -> str:
     return f"Recommend a {cuisine} recipe"
 
 response = recommend_recipe("italian")
-print(response.content)
+print(response.text())
 
-@anthropic.call("claude-3-5-sonnet-20240620")
-def recommend_recipe(genre: str) -> str:
+@llm.call("anthropic/claude-3-5-sonnet-20240620")
+def recommend_recipe(cuisine: str) -> str:
     return f"Recommend a {cuisine} recipe"
 
 response = recommend_recipe("french")
-print(response.content)
+print(response.text())
 ```
 
 You can reuse the same [prompt logic](/blog/llm-prompt/) across different model providers.
@@ -229,24 +225,28 @@ It's useful in scenarios where you need to change certain settings or change the
 The code sample below shows an example of inserting only the most relevant messages and updating temperature dynamically, enabling real time handling of user queries entirely internally to the function call:
 
 ```py
-from mirascope.core import mistral, Messages
 from typing import Literal
 
+from mirascope import llm
+from mirascope.llm import DynamicConfig, MessageParam, Messages
+
+
 def get_relevant_messages(
-    query: str, history: list[mistral.MistralMessageParam]
-) -> list[mistral.MistralMessageParam]:
+    query: str, history: list[MessageParam]
+) -> list[MessageParam]:
     # Filter the messages based on the query,
 
     # returning only the most relevant ones.
 
     ...
 
-@mistral.call("gpt-4o-mini")
+
+@llm.call("mistral/mistral-small-latest")
 def chatbot(
     query: str,
     creativity: Literal["low", "high"],
-    history: list[mistral.MistralMessageParam],
-) -> mistral.MistralDynamicConfig:
+    history: list[MessageParam],
+) -> DynamicConfig:
     messages = [
         Messages.System("You are a helpful chatbot"),
         *get_relevant_messages(query, history),
@@ -257,8 +257,9 @@ def chatbot(
         "call_params": {"temperature": 0.25 if creativity == "low" else 0.75},
     }
 
+
 response = chatbot("What is the best way to learn programming?", "low", [...])
-print(response.content)
+print(response.text())
 ```
 
 Dynamic configuration is also an important feature in Mirascope's call chaining, where the output of one model's response is injected into the prompt of another. 
@@ -273,7 +274,7 @@ By using dynamic configuration to inject the first call's response into the prom
 
 The big frameworks leave a lot of the responsibility for output validation on your shoulders, requiring you to write your own boilerplate in many instances.
 
-On the contrary, Mirascope offers its built-in **`response_model`**, allowing you to easily define, structure, and validate outputs using Pydantic’s `BaseModel`.
+On the contrary, Mirascope offers its built-in **`format`** parameter with the `.parse()` method, allowing you to easily define, structure, and validate outputs using Pydantic's `BaseModel`.
 
 With Pydantic’s type annotations, you also benefit from improved static analysis, which provides features like autocomplete, type hints, and linting directly in your IDE.
 
@@ -284,35 +285,32 @@ For example, Mirascope flags missing arguments based on type hints for function 
 It also shows autosuggestions:
 
 ![Mirascope Prompt Template Autocomplete Suggestion](/assets/blog/llm-frameworks/prompt-template-autocomplete.webp)  
-You implement response models by:
+You implement structured outputs by:
 
-1. Extending `BaseModel` to represent the desired structure of the LLM’s output.  
-2. Setting the `response_model` argument in a `@<provider>.call` decorator to the class you just defined previously. 
+1. Extending `BaseModel` to represent the desired structure of the LLM's output.
+2. Setting the `format` argument in a `@llm.call` decorator to the class you just defined previously, then calling `.parse()` on the response.
 
 An example of this is shown in the code below:
 
 ```py
-
 from pydantic import BaseModel
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
 class TaskDetails(BaseModel):
     due_date: str
     priority: str
 
-@openai.call(model="gpt-4o-mini", response_model=TaskDetails)
-@prompt_template("Extract the task details from this text: {text}")
-def extract_task(text: str):
-    ...
+@llm.call("openai/gpt-4o-mini", format=TaskDetails)
+def extract_task(text: str) -> str:
+    return f"Extract the task details from this text: {text}"
 
 response = extract_task(text="Finish the report by Friday, it's high priority")
-print(response.due_date)  # Output: Friday
-
-print(response.priority)  # Output: high 
-
+task = response.parse()
+print(task.due_date)  # Output: Friday
+print(task.priority)  # Output: high
 ```
 
-When `extract_task` is called, Mirascope uses the `TaskDetails` model to parse the LLM's output, making `due_date` and `priority` accessible as attributes of the `response` object.
+When `extract_task` is called, Mirascope uses the `TaskDetails` model to parse the LLM's output via `.parse()`, making `due_date` and `priority` accessible as attributes of the `task` object.
 
 While response models ensure that your [outputs](/blog/langchain-structured-output/) are well structured and validated, handling unexpected errors is equally important to making your code robust. 
 
@@ -322,13 +320,13 @@ One effective way of using Tenacity is to incorporate previous validation errors
 
 This approach allows the LLM to improve its accuracy based on past outputs by leveraging a form of few-shot learning. Also, by automating validation through structured response models, you ensure that outputs conform to the expected format.
 
-Below is an example of how Mirascope reinserts validation errors into follow-up prompts for more accurate outcomes: 
+Below is an example of how Mirascope reinserts validation errors into follow-up prompts for more accurate outcomes:
 
 ```python
 from typing import Annotated
 
-from mirascope.core import anthropic, prompt_template
-from mirascope.integrations.tenacity import collect_errors
+from mirascope import llm
+from mirascope.retries.tenacity import collect_errors
 from pydantic import AfterValidator, BaseModel, Field, ValidationError
 from tenacity import retry, stop_after_attempt
 
@@ -337,60 +335,52 @@ class FactCheck(BaseModel):
         description="Whether the text contains factual errors"
     )
 
-@anthropic.call(
-    model="claude-3-5-sonnet-20240620",
-    response_model=FactCheck,
-    json_mode=True,
-)
-@prompt_template(
-    """
-    Does the following text contain any factual errors? {text}
-    """
-)
-def check_for_factual_errors(text: str): ...
+@llm.call("anthropic/claude-3-5-sonnet-20240620", format=FactCheck, json_mode=True)
+def check_for_factual_errors(text: str) -> str:
+    return f"Does the following text contain any factual errors? {text}"
+
+def validate_factual_accuracy(t: str) -> str:
+    response = check_for_factual_errors(t)
+    if response.parse().has_errors:
+        raise ValueError("Text still contains factual errors")
+    return t
 
 class FactCorrection(BaseModel):
     text: Annotated[
         str,
-        AfterValidator(
-            lambda t: t
-            if not (check_for_factual_errors(t)).has_errors
-            else (_ for _ in ()).throw(ValueError("Text still contains factual errors"))
-        ),
+        AfterValidator(validate_factual_accuracy),
     ] = Field(description="The corrected text with factual accuracy")
     explanation: str = Field(description="Explanation of factual corrections made")
 
 @retry(stop=stop_after_attempt(3), after=collect_errors(ValidationError))
-@anthropic.call(
-    "claude-3-5-sonnet-20240620", response_model=FactCorrection, json_mode=True
-)
-@prompt_template(
-    """
-    {previous_errors}
-
-    Verify and correct factual information in the following text.
-    If no corrections are needed, return the original text.
-    Provide an explanation of any corrections made.
-
-    Text: {text}
-    """
-)
+@llm.call("anthropic/claude-3-5-sonnet-20240620", format=FactCorrection, json_mode=True)
 def correct_factual_errors(
     text: str, *, errors: list[ValidationError] | None = None
-) -> anthropic.AnthropicDynamicConfig:
+) -> llm.DynamicConfig:
     previous_errors = f"Previous Errors: {errors}" if errors else ""
-    return {"computed_fields": {"previous_errors": previous_errors}}
+    return {
+        "messages": [
+            llm.Messages.User(f"""{previous_errors}
+
+Verify and correct factual information in the following text.
+If no corrections are needed, return the original text.
+Provide an explanation of any corrections made.
+
+Text: {text}""")
+        ]
+    }
 
 try:
     text = "Mount Everest is the tallest mountain in the United States."
-    result = correct_factual_errors(text)
+    response = correct_factual_errors(text)
+    result = response.parse()
     print(f"Corrected text: {result.text}")
     print(f"Explanation: {result.explanation}")
 except ValidationError:
     print("Failed to correct factual errors after 3 attempts")
 ```
 
-A `FactCheck` class is first defined to validate whether text contains factual errors, using Mirascope’s `@anthropic.call` decorator to ensure responses fit the expected structure. 
+A `FactCheck` class is first defined to validate whether text contains factual errors, using Mirascope's `@llm.call` decorator to ensure responses fit the expected structure. 
 
 `FactCorrection` then refines this further by validating corrected text with an `AfterValidator`. If factual errors are still detected, it raises an exception, prompting further adjustments.
 
@@ -515,32 +505,37 @@ Below is a basic librarian chatbot example that that uses a Pydantic model to ma
 ```py
 import json
 
-from mirascope.core import BaseDynamicConfig, Messages, openai
+from mirascope import llm
+from mirascope.llm import DynamicConfig, MessageParam, Messages
 from pydantic import BaseModel
+
 
 class Book(BaseModel):
     title: str
     author: str
 
-class Librarian(BaseModel):
-    history: list[openai.OpenAIMessageParam] = []
-    library: list[Book] = [
+
+@llm.tool()
+def available_books() -> str:
+    """Returns the list of books available in the library."""
+    library = [
         Book(title="The Name of the Wind", author="Patrick Rothfuss"),
         Book(title="Mistborn: The Final Empire", author="Brandon Sanderson"),
     ]
+    return json.dumps([book.model_dump() for book in library])
 
-    def _available_books(self) -> str:
-        """Returns the list of books available in the library."""
-        return json.dumps([book.model_dump() for book in self.library])
 
-    @openai.call("gpt-4o-mini")
-    def _call(self, query: str) -> BaseDynamicConfig:
+class Librarian(BaseModel):
+    history: list[MessageParam] = []
+
+    @llm.call("openai/gpt-4o-mini", tools=[available_books])
+    def _call(self, query: str) -> DynamicConfig:
         messages = [
             Messages.System("You are a librarian"),
             *self.history,
             Messages.User(query),
         ]
-        return {"messages": messages, "tools": [self._available_books]}
+        return {"messages": messages}
 
     def _step(self, query: str) -> str:
         if query:
@@ -555,7 +550,7 @@ class Librarian(BaseModel):
             self.history += response.tool_message_params(tools_and_outputs)
             return self._step("")
         else:
-            return response.content
+            return response.text()
 
     def run(self) -> None:
         while True:
@@ -566,16 +561,17 @@ class Librarian(BaseModel):
             step_output = self._step(query)
             print(step_output)
 
+
 Librarian().run()
 ```
 
-In the code above, `Librarian` maintains conversation history using a list of `openai.OpenAIMessageParam` objects.
+In the code above, `Librarian` maintains conversation history using a list of `MessageParam` objects.
 
-The `_call` method constructs a sequence of messages for the API call `@openai.call("gpt-4o-mini")`, starting with a system message ("You are a librarian"), followed by the stored conversation history and finally by the user’s query.
+The `_call` method constructs a sequence of messages for the API call `@llm.call("openai/gpt-4o-mini")`, starting with a system message ("You are a librarian"), followed by the stored conversation history and finally by the user's query.
 
-We structure the response using Mirascope’s `Messages`, which ensures consistent and provider-agnostic message formatting.
+We structure the response using Mirascope's `Messages`, which ensures consistent and provider-agnostic message formatting.
 
-We also give the agent access to the `_available_books` tool so that it knows which books are available in the library to recommend.
+We also give the agent access to the `available_books` tool so that it knows which books are available in the library to recommend.
 
 The `run` method continuously prompts the user for input, allowing the agent to respond until the user types "exit" or "quit." For each query, it calls the `_step` method, which runs the `_call` in a loop until the agent is done calling its tools, finally printing the assistant's response and updating the conversation history when the final response is generated.
 
@@ -585,7 +581,7 @@ It does this by enabling responses to be processed in real-time as they’re gen
 
 This streaming capability is useful for applications where users benefit from incremental responses, making the interaction more dynamic and responsive without waiting for the entire output to be generated​​
 
-For examples of complex, real-world agents, we recommend checking out our [agent tutorials](/docs/v1/guides/agents/web-search-agent/). 
+For examples of complex, real-world agents, we recommend checking out our [agent tutorials](/docs/tutorials/agents/web-search-agent). 
 
 ### Microsoft Semantic Kernel
 
@@ -615,4 +611,4 @@ You can also explore AutoGen’s GitHub repo to dive into its source code and le
 
 Mirascope is a user-friendly Pythonic library premised on software development best practices, offering building blocks for developing production-grade LLM applications. By focusing on adaptability, Mirascope empowers developers to leverage the functionality of other libraries as needed to extend and improve their applications organically.
 
-Want to learn more? You can find more Mirascope code samples both on our [documentation site](/docs/mirascope) and on our [GitHub repository](https://github.com/mirascope/mirascope).  
+Want to learn more? You can find more Mirascope code samples both on our [documentation site](/docs) and on our [GitHub repository](https://github.com/mirascope/mirascope).  
