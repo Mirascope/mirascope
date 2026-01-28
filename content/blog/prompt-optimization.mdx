@@ -181,11 +181,11 @@ response = answer_question.version(7)("Who painted the Mona Lisa?")
 
 Mirascope Cloud keeps track of versions as well:
 
-![Lilypad Answer Question v7 Trace](/assets/blog/prompt-optimization/lilypad-answer-question-v7-trace.webp)
+![Lilypad Answer Question v7 Trace](/assets/blog/_shared/lilypad-trace.webp)
 
 You can also compare different versions side by side, showing all relevant metrics:
 
-![Lilypad Compare Answer Question Versions](/assets/blog/prompt-optimization/lilypad-compare-answer-question-versions.webp)
+![Lilypad Compare Answer Question Versions](/assets/blog/_shared/lilypad-compare-versions.webp)
 
 This makes it easy to isolate variables like AI prompt wording, model changes, or other slight tweaks, and see what actually led to better results.
 
@@ -199,7 +199,7 @@ That’s why an effective workflow for LLM development must support collaboratio
 
 For example, Mirascope Cloud's playground provides a shared, no-code space where subject matter experts can safely test and iterate on prompts. The playground supports markdown-style prompt editing, along with structured, type-safe input forms for things like settings of AI models (e.g., provider, temperature), prompt arguments, and configuration values.
 
-![Mirascope Cloud Playground](/assets/blog/prompt-optimization/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/_shared/lilypad-playground-v2.webp)
 
 It also displays the full output, including responses of AI models, logs, token usage, latency, and cost, all versioned automatically, without the need to redeploy.
 
@@ -219,7 +219,7 @@ In Mirascope Cloud, for instance, tracing and logging over brittle test cases is
 
 Mirascope Cloud supports evaluation metrics through annotations, which let you manually label specific runs with pass or fail judgments and freeform reasoning to improve prompt performance.
 
-![Mirascope Cloud Annotation Queue](/assets/blog/prompt-optimization/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
 
 We find that labeling outputs as “pass” or “fail” offers a better baseline for judging their real-world usefulness, compared to rating them on a numerical scale like 1 to 5, where going from, say, a 3 to a 4 can be more subjective and harder to interpret than a clear yes-or-no assessment of whether the output meets expectations.
 
