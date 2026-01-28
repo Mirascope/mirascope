@@ -2,6 +2,7 @@
 title: "Top 7 Alternatives to Langfuse for LLM Observability "
 description: "Find the right fit for your AI team with this guide to the top Langfuse alternatives, from prompt observability to model performance tracking."
 date: "2025-06-25"
+updatedAt: "2026-01-28"
 readTime: "11 min read"
 author: "William Bakst"
 ---
@@ -15,26 +16,26 @@ Even so, there are a few things that make some devs look elsewhere:
 * Some users report the interface can feel cluttered or hard to follow.  
 * It versions the prompt and some configuration parameters, but not the surrounding code context, so it might not suit workflows where prompts and logic are tightly coupled.
 
-In this article, we cover 6 top alternatives to Langfuse, including Lilypad, our open-source platform built for developers. Unlike tools that only version prompts, Lilypad versions your entire function, so you can track logic, not just text. 
+In this article, we cover 6 top alternatives to Langfuse, including Mirascope Cloud, our open-source platform built for developers. Unlike tools that only version prompts, Mirascope Cloud versions your entire function, so you can track logic, not just text.
 
 It also includes built-in OpenTelemetry for tracking cost and latency, along with easy annotations and side-by-side version comparisons.
 
 Below we take a closer look at each option and what it brings to the table.
 
-## 1. Lilypad: The Developer’s Framework for Reproducible LLM Workflows
+## 1. Mirascope Cloud: The Developer's Framework for Reproducible LLM Workflows
 
-![Lilypad Homepage](/assets/blog/langfuse-alternatives/lilypad-homepage.webp)
+![Mirascope Cloud Homepage](/assets/blog/langfuse-alternatives/lilypad-homepage.webp)
 
-[Lilypad](/docs/lilypad) is a user-friendly open source prompt engineering framework. Unlike other solutions that focus only on the prompt text, Lilypad treats every LLM call as a complete software artifact, capturing the entire context that influences the output.
+[Mirascope Cloud](/docs/learn/ops) is a user-friendly open source prompt engineering framework. Unlike other solutions that focus only on the prompt text, Mirascope Cloud treats every LLM call as a complete software artifact, capturing the entire context that influences the output.
 
-With Lilypad, you get:
+With Mirascope Cloud, you get:
 
-* Automatic capture of traces, inputs/outputs, cost, and latency for every LLM call with zero configuration.  
-* Automatic versioning of your prompts as you make changes; no manual commits needed.  
-* Full versioning of everything that influences LLM output quality, including the surrounding code, not just the text prompt.  
+* Automatic capture of traces, inputs/outputs, cost, and latency for every LLM call with zero configuration.
+* Automatic versioning of your prompts as you make changes; no manual commits needed.
+* Full versioning of everything that influences LLM output quality, including the surrounding code, not just the text prompt.
 * Easy and lightweight self-hosting options for developers wanting a fast local setup or minimal cloud deployment, avoiding the complexity of distributed storage and parallel services.
 
-Below, we explain how Lilypad works:
+Below, we explain how Mirascope Cloud works:
 
 ### Trace Everything From the First Line of Code
 
@@ -49,27 +50,29 @@ Tools that version only the raw prompt text are missing crucial context. With LL
 
 Even a minor change to model settings, input structure, or surrounding logic can alter the outcome, so if you're only versioning the prompt, you lose the ability to reproduce results, understand why something worked, or pinpoint what went wrong when it doesn't.
 
-Lilypad solves this by versioning the entire function closure, which is a full snapshot of everything that influenced the output, not just the prompt string. It treats LLM calls as proper software artifacts that are trackable, reproducible, and safe to iterate on.
+Mirascope Cloud solves this by versioning the entire function closure, which is a full snapshot of everything that influenced the output, not just the prompt string. It treats LLM calls as proper software artifacts that are trackable, reproducible, and safe to iterate on.
 
 It also encourages developers to encapsulate LLM calls in Python functions so that every aspect of the interaction, including the prompt, inputs, model settings, and any surrounding logic, can be versioned, traced, and evaluated as a single, reproducible unit.
 
-Just use `@lilypad.trace(versioning="automatic")` on your call functions to automatically capture arguments, return values, and internal changes within the function closure:
+Just use `@ops.version` on your call functions to automatically capture arguments, return values, and internal changes within the function closure:
 
-```python
-import lilypad
-from mirascope import llm
+```python-snippet-skip
+from mirascope import llm, ops
 
-@lilypad.trace(versioning="automatic")  # [!code highlight]
-@llm.call(provider="google", model="gemini-2.0-flash-001")
+ops.configure()
+ops.instrument_llm()
+
+@ops.version  # [!code highlight]
+@llm.call("google/gemini-2.0-flash-001")
 def answer_question(question: str) -> str:
     return f"Answer this question: {question}"
 
-response = answer_question("What is the capital of France?")    
-print(response)
-# > The capital of France is Paris. 
+response = answer_question("What is the capital of France?")
+print(response.text())
+# > The capital of France is Paris.
 ```
 
-The results are shown in Lilypad's Traces tab. If you're using a Mirascope LLM call, the versioned function will also be available in the playground (explained in the next section), which allows you to delegate prompt editing and evals to domain experts.
+The results are shown in Mirascope Cloud's Traces tab. If you're using a Mirascope LLM call, the versioned function will also be available in the playground (explained in the next section), which allows you to delegate prompt editing and evals to domain experts.
 
 When the code above is first run, it creates a nested trace and is logged as version 1:
 
@@ -81,7 +84,7 @@ Changing anything in the function or the prompt and then running the code again 
 
 Note that if you change a function so that it's identical to any previous version, the version isn't incremented.
 
-You can also compare function versions by clicking the “Compare” button:
+You can also compare function versions by clicking the "Compare" button:
 
 ![Answer Question Click Compare](/assets/blog/langfuse-alternatives/answer-question-click-compare.webp)
 
@@ -89,44 +92,44 @@ This toggles a second dropdown menu, where you can select another version and vi
 
 ![Answer Question Compare Versions](/assets/blog/langfuse-alternatives/answer-question-compare-versions.webp)
 
-Lilypad also supports A/B testing and rollbacks, since every function run creates a trace with metadata. 
+Mirascope Cloud also supports A/B testing and rollbacks, since every function run creates a trace with metadata. 
 
 Accessing any version using `.version(n)()`  allows you to compare it with another, you can use it in statements like:
 
-```python
-response = answer_question.version(2)("What is Saturn's largest moon?") 
+```python-snippet-skip
+response = answer_question.version(2)("What is Saturn's largest moon?")
 ```
 
 This allows you to run different versions of the same function and it makes A/B testing convenient. Just run each version for a subset of users and evaluate which one is better.
 
 ### No-Code Prompt Experimentation for SMEs
 
-Lilypad’s playground provides a no-code browser environment and safe collaboration model that gives domain experts the ability to create, change, and hot swap prompts without involvement from developers so they don't need to redeploy the code.
+Mirascope Cloud's playground provides a no-code browser environment and safe collaboration model that gives domain experts the ability to create, change, and hot swap prompts without involvement from developers so they don't need to redeploy the code.
 
 Prompt changes in the playground are sandboxed by default:
 
-* They don’t affect live code unless deliberately synced by an engineer.  
-* Running a prompt in the playground doesn't require a pull request, merge, or redeploy.  
-* Outputs are recorded and versioned, just like any code-executed trace.  
+* They don't affect live code unless deliberately synced by an engineer.
+* Running a prompt in the playground doesn't require a pull request, merge, or redeploy.
+* Outputs are recorded and versioned, just like any code-executed trace.
 * Annotations, discussions, and comparisons are linked directly to runs.
 
 The playground supports type-safe prompt templates, letting you write markdown-style prompts with embedded, typed variable placeholders.
 
- The templates:
+The templates:
 
-* Are mapped to function signatures for strong typing and reproducibility.  
-* Are backed by a Python function with type-safe arguments (the system ensures that inputs provided in the playground match the function's schema).  
+* Are mapped to function signatures for strong typing and reproducibility.
+* Are backed by a Python function with type-safe arguments (the system ensures that inputs provided in the playground match the function's schema).
 * Prevent injection bugs, missing parameters, or incorrect input formats.
 
-Lilypad keeps your prompts and code working together with no brittleness. While other [LLM tools](/blog/llm-tools) split prompts off into separate systems, Lilypad versions the whole function so that what you test in the playground is the same code you use in production. Even if Lilypad goes down, your code will still run.
+Mirascope Cloud keeps your prompts and code working together with no brittleness. While other [LLM tools](/blog/llm-tools) split prompts off into separate systems, Mirascope Cloud versions the whole function so that what you test in the playground is the same code you use in production. Even if Mirascope Cloud goes down, your code will still run.
 
-Each time an [LLM prompt](/blog/llm-prompt) is run in the playground, Lilypad captures a full trace, just like it does for production code. This trace includes all inputs, outputs, call settings, model metadata, and any annotations or labels. The result is a transparent, inspectable snapshot of that exact run.
+Each time an [LLM prompt](/blog/llm-prompt) is run in the playground, Mirascope Cloud captures a full trace, just like it does for production code. This trace includes all inputs, outputs, call settings, model metadata, and any annotations or labels. The result is a transparent, inspectable snapshot of that exact run.
 
 You can review it in the Traces tab, where each span is timestamped, costed, and ready to annotate or compare:
 
 ![Answer Question GenAI Data](/assets/blog/langfuse-alternatives/answer-question-genai-data.webp)
 
-Lilypad uses the [OpenTelemetry Gen AI spec](https://opentelemetry.io/) to trace every LLM call with standardized, structured metadata, making your runs easy to debug, visualize, and analyze across tools. Playground users can also quickly annotate traces, adding pass/fail labels, reasoning, and comments, right from the trace viewer, as we’ll see in the next section.
+Mirascope Cloud uses the [OpenTelemetry Gen AI spec](https://opentelemetry.io/) to trace every LLM call with standardized, structured metadata, making your runs easy to debug, visualize, and analyze across tools. Playground users can also quickly annotate traces, adding pass/fail labels, reasoning, and comments, right from the trace viewer, as we'll see in the next section.
 
 ### Evaluating LLM Outputs
 
@@ -134,55 +137,49 @@ LLMs’ non-determinism makes traditional unit tests a poor fit. Evaluation isn�
 
 Fuzzy metrics work best, especially pass/fail labels, which offer a clear, actionable signal. Overly granular scoring systems like one to five stars tend to reduce clarity and consistency, adding noise without increasing reliability.
 
-The Annotation Queue lets you easily annotate traces and supports quick, inline tagging as “Pass” or “Fail,” making it simple to mark whether an output is good enough. If needed, you can assign someone to handle the annotations, helping set up a repeatable QA process for [LLM integration](/blog/llm-integration).
+The Annotation Queue lets you easily annotate traces and supports quick, inline tagging as "Pass" or "Fail," making it simple to mark whether an output is good enough. If needed, you can assign someone to handle the annotations, helping set up a repeatable QA process for [LLM integration](/blog/llm-integration).
 
 Each review stays connected to the exact version of the function, the prompt, the inputs, and the model settings that were used. You can also include a reason for your decision and explain the criteria you applied; this helps others understand how you made your call, especially when judgment is involved.
 
-![Lilypad Annotation Queue](/assets/blog/langfuse-alternatives/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/langfuse-alternatives/lilypad-annotation-queue.webp)
 
-To keep things fair, Lilypad hides any existing annotations while you’re reviewing a trace so your opinion isn’t influenced.
+To keep things fair, Mirascope Cloud hides any existing annotations while you're reviewing a trace so your opinion isn't influenced.
 
-In the codebase, you can label outputs on the spot (right after a function runs) by setting `mode="wrap"` in the `@lilypad.trace` decorator. When enabled, the function's return type is transformed into a `Traced[R]` object, which includes both the original return value and methods for interacting with the trace, like `.annotate()`:
+In the codebase, you can label outputs on the spot (right after a function runs) by setting `mode="wrap"` in the `@ops.trace` decorator. When enabled, the function's return type is transformed into a `Traced[R]` object, which includes both the original return value and methods for interacting with the trace, like `.annotate()`:
 
-```python
-from google.genai import Client
-import lilypad
+```python-snippet-skip
+from mirascope import llm, ops
 
-client = Client()
-lilypad.configure()
+ops.configure()
+ops.instrument_llm()
 
-@lilypad.trace(name="Recommend Book", versioning="automatic", mode="wrap")  # [!code highlight]
-def recommend_book(genre: str) -> str | None:
-    response = client.models.generate_content(
-        model="gemini-2.0-flash-001",
-        contents=f"Recommend a good {genre} book.",
-    )
-    return response.text
-    
-trace: lilypad.Trace[str | None] = recommend_book("science fiction")  # [!code highlight]
-print(trace.response)  # original response
+@ops.trace(name="Recommend Book", mode="wrap")  # [!code highlight]
+@llm.call("google/gemini-2.0-flash-001")
+def recommend_book(genre: str) -> str:
+    return f"Recommend a good {genre} book."
+
+trace: ops.Trace[str] = recommend_book("science fiction")  # [!code highlight]
+print(trace.response.text())  # original response
 # > You should read 'Dune' by Frank Herbert.
 
-annotation = lilypad.Annotation(  # [!code highlight]
+annotation = ops.Annotation(  # [!code highlight]
     label="pass",  # [!code highlight]
     reasoning="The recommendation fits the genre and is a well-known classic.",  # [!code highlight]
-    data=None,  # [!code highlight]
-    type=None,  # [!code highlight]
 )  # [!code highlight]
 trace.annotate(annotation)  # [!code highlight]
 ```
 
 Evaluating outputs directly in the code means you don’t have to switch to the application UI, making it ideal for automated tests, scripted evaluations, integrating annotations into CI/CD workflows, or even enabling end users to annotate traces directly as they use your product.
 
-Manual reviews are just the starting point, and as you build up a solid base of annotations, you can train an [LLM\-as-a-judge](/blog/llm-as-judge) to handle much of the labeling for you. This shifts your team’s role from tagging outputs to simply verifying them, which speeds up every [prompt evaluation](/blog/prompt-evaluation) while still keeping humans in the loop for accuracy and trust.
+Manual reviews are just the starting point, and as you build up a solid base of annotations, you can train an [LLM\-as-a-judge](/blog/llm-as-judge) to handle much of the labeling for you. This shifts your team's role from tagging outputs to simply verifying them, which speeds up every [prompt evaluation](/blog/prompt-evaluation) while still keeping humans in the loop for accuracy and trust.
 
-You’ll still want to spot-check the results, though. That way, you can catch mistakes, fine-tune the judge, and keep quality high. And the more consistently you annotate, whether in the UI or directly in code, the better. Each labeled example helps build a stronger dataset for comparing versions and spotting regressions over time, which allows you turn outputs into measurable progress.
+You'll still want to spot-check the results, though. That way, you can catch mistakes, fine-tune the judge, and keep quality high. And the more consistently you annotate, whether in the UI or directly in code, the better. Each labeled example helps build a stronger dataset for comparing versions and spotting regressions over time, which allows you turn outputs into measurable progress.
 
 ### Track Every Prompt Like Code
 
-Lilypad gives you full visibility into every LLM call: prompt, parameters, and outputs. Whether you're debugging, improving, or collaborating, you get structured, versioned records for your [LLM applications](/blog/llm-applications) of exactly what ran and why.
+Mirascope Cloud gives you full visibility into every LLM call: prompt, parameters, and outputs. Whether you're debugging, improving, or collaborating, you get structured, versioned records for your [LLM applications](/blog/llm-applications) of exactly what ran and why.
 
-[Sign in with GitHub](https://lilypad.mirascope.com/) to explore the Lilypad for free, or [self-host](/docs/lilypad/getting-started/self-hosting) in minutes for local control. Lilypad plays nicely with [Mirascope](https://github.com/mirascope/mirascope) and other Python libraries, making it easy to drop into your existing stack.
+[Sign in with GitHub](https://cloud.mirascope.com/) to explore Mirascope Cloud for free, or [self-host](/docs/learn/ops/self-hosting) in minutes for local control. Mirascope Cloud plays nicely with [Mirascope](https://github.com/mirascope/mirascope) and other Python libraries, making it easy to drop into your existing stack.
 
 ## 2. LangSmith: Build, Debug, and Evaluate with LangChain’s Companion Platform
 
@@ -266,6 +263,6 @@ HoneyHive offers a free plan that supports up to 10,000 events per month for up 
 
 ## Treat Prompts Like Code
 
-Lilypad brings software development best practices to the world of LLMs. With full-function versioning, inline annotations, and a smooth path from prototype to production, you’ll never lose track of what changed, or why it matters.
+Mirascope Cloud brings software development best practices to the world of LLMs. With full-function versioning, inline annotations, and a smooth path from prototype to production, you'll never lose track of what changed, or why it matters.
 
-Want to learn more about Lilypad? Check out our code samples on our [documentation site](/docs/lilypad) or on [GitHub](https://github.com/mirascope/lilypad). Lilypad offers first-class support for [Mirascope](https://github.com/mirascope/mirascope), our lightweight toolkit for building [LLM agents](/blog/llm-agents).
+Want to learn more about Mirascope Cloud? Check out our code samples on our [documentation site](/docs/learn/ops) or on [GitHub](https://github.com/mirascope/mirascope). Mirascope Cloud offers first-class support for [Mirascope](https://github.com/mirascope/mirascope), our lightweight toolkit for building [LLM agents](/blog/llm-agents).
