@@ -12,6 +12,13 @@ from tests.utils import (
     snapshot_test,
 )
 
+PARAMS_MODEL_IDS: list[llm.ModelId] = [
+    *E2E_MODEL_IDS,
+    # Include reasoning models to verify unsupported params (temperature, top_p) are logged
+    "openai/gpt-5-mini:completions",
+    "openai/gpt-5:completions",
+]
+
 # ============= ALL PARAMS TESTS =============
 ALL_PARAMS: llm.Params = {
     "temperature": 0.7,
@@ -37,7 +44,7 @@ def test_all_params_includes_every_param() -> None:
     )
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", PARAMS_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_params(
     model_id: llm.ModelId,

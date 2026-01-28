@@ -1,0 +1,209 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"What is 4200 + 42?"}],"model":"gpt-5-mini","max_completion_tokens":500,"seed":42,"stop":["4242"]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '136'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"message\": \"Unsupported parameter: 'stop'
+        is not supported with this model.\",\n    \"type\": \"invalid_request_error\",\n
+        \   \"param\": \"stop\",\n    \"code\": \"unsupported_parameter\"\n  }\n}"
+    headers:
+      CF-RAY:
+      - 9c46523119714a26-NRT
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '196'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 27 Jan 2026 06:51:22 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=65injOoR4JMpTElnxi5QliQIqGk1VhZrTGHKGiqAIIU-1769496682-1.0.1.1-ldor9Z_JLWvispVmtc3IUMqMrVvDPkPHSrfPSvnknWgI1DFfMdAMuRa3VSA4378uDoHMXOnjOsvybZd0jssFz9VTFaJ169kPBp_fTL661w8;
+        path=/; expires=Tue, 27-Jan-26 07:21:22 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=SDNnrgb66z1Dm7SWyvt2ZRHdRKEl.rZS0tIxPM.zlt4-1769496682053-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '9'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999993'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_3855783c722245b6ab7e4e7f7b2d85ce
+    status:
+      code: 400
+      message: Bad Request
+- request:
+    body: '{"messages":[{"role":"user","content":"What is 4200 + 42?"}],"model":"gpt-5-mini","max_completion_tokens":500,"seed":42}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '120'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA4ySTU8CMRCG7/srmp5ZAwssHzcjGr148oAasqntLFS6bdPOqkj476blY5eIiZce
+        5pl5877T2SaEUCnolFC+Ysgrq9JZNp/5u37+Mhf503V9O/6+X9c35vPx2W8eaCdMmLd34HicuuKm
+        sgpQGr3H3AFDCKq9UT4ZTPJRP4+gMgJUGFtaTIdpJbVMs242TLvjtDs6DK+M5ODplLwmhBCyjW+w
+        qQV80Snpdo6VCrxnS6DTUxMh1BkVKpR5Lz0yjbTTQG40go7OB9kgayMHZe1ZcKdrpVqAaW2QhXTR
+        1OJAdicbpdTSrwoHzBsdpD0aSyPdJYQsYqz6zCm1zlQWCzRriLK94V6ONrtswd4BokGmmnqWdy6o
+        FQKQSeVba6Gc8RWIZrLZIauFNC2QtLL9NnNJe59b6uV/5BvAOVgEUVgHQvLzwE2bg3Bpf7WddhwN
+        Uw/uQ3IoUIIL/yCgZLXaHwD1G49QFaXUS3DWyXgF4auTXfIDAAD//wMAkzpzaQcDAAA=
+    headers:
+      CF-RAY:
+      - 9c4653833b318ec0-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 27 Jan 2026 06:52:17 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=CBnfoSOFcU_8xkejVVGPiJl4JSdU.PHtifDwqTUhAQc-1769496737-1.0.1.1-MwZ6CVC5RfFIPsKrW3.EU1Qpz32ek17HTK.z034tIgY09nN0rtUFnpoWzs9.uqGyN5PQZU2xc4_SA2aAOesuca3hXluRmcUcjQrKBFAClCk;
+        path=/; expires=Tue, 27-Jan-26 07:22:17 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=IM6e_JC_VgYO.Q2hOomC45u8eviGuVhxwOpoR7VY9FE-1769496737490-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1258'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999993'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_6eb7d7fc661d41df9064e70546b7ea3c
+    status:
+      code: 200
+      message: OK
+version: 1
