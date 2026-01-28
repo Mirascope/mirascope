@@ -230,6 +230,80 @@ PATTERNS = {
         "priority": "HIGH",
         "description": "Prose references old model_dump() pattern",
     },
+    # HIGH priority - Response Content Access (v1)
+    "old_response_content": {
+        "pattern": r"\.content(?![_a-zA-Z])",
+        "category": "Response API (v1)",
+        "priority": "HIGH",
+        "description": "Possible v1 response.content - v2 uses response.text()",
+    },
+    # HIGH priority - Structured Output (v1)
+    "old_response_model_param": {
+        "pattern": r"response_model\s*=",
+        "category": "Structured Output (v1)",
+        "priority": "HIGH",
+        "description": "Old response_model= parameter - v2 uses format= and .parse()",
+    },
+    # HIGH priority - Streaming (v1)
+    "old_stream_param": {
+        "pattern": r"stream\s*=\s*True",
+        "category": "Streaming (v1)",
+        "priority": "HIGH",
+        "description": "Old stream=True parameter - v2 uses .stream() method",
+    },
+    "old_chunk_content": {
+        "pattern": r"chunk\.content",
+        "category": "Streaming (v1)",
+        "priority": "HIGH",
+        "description": "Old chunk.content - v2 streams text directly via .text_stream()",
+    },
+    # HIGH priority - Call Parameters (v1)
+    "old_call_params": {
+        "pattern": r"call_params\s*=",
+        "category": "Call Parameters (v1)",
+        "priority": "HIGH",
+        "description": "Old call_params= parameter - v2 uses direct kwargs (e.g., temperature=0.7)",
+    },
+    # HIGH priority - Custom Client (v1)
+    "old_client_param": {
+        "pattern": r"client\s*=\s*\w+\(",
+        "category": "Custom Client (v1)",
+        "priority": "HIGH",
+        "description": "Old client= parameter - v2 uses llm.register_provider()",
+    },
+    # HIGH priority - Tool Patterns (v1)
+    "old_base_tool_class": {
+        "pattern": r"class\s+\w+\s*\(\s*(llm\.)?BaseTool\s*\)",
+        "category": "Tool Patterns (v1)",
+        "priority": "HIGH",
+        "description": "Old BaseTool class - v2 uses @llm.tool decorator",
+    },
+    "old_response_tool": {
+        "pattern": r"response\.tool[^_s]|if\s+tool\s*:=\s*response\.tool",
+        "category": "Tool Patterns (v1)",
+        "priority": "HIGH",
+        "description": "Old response.tool pattern - v2 uses response.tool_calls and .execute_tools()",
+    },
+    "old_tool_call_method": {
+        "pattern": r"tool\.call\(\)",
+        "category": "Tool Patterns (v1)",
+        "priority": "HIGH",
+        "description": "Old tool.call() - v2 uses response.execute_tools()",
+    },
+    # HIGH priority - prompt_template (v1)
+    "old_prompt_template": {
+        "pattern": r"prompt_template\s*=",
+        "category": "prompt_template (v1)",
+        "priority": "HIGH",
+        "description": "Old prompt_template= parameter - v2 returns string from function body",
+    },
+    # HIGH priority - Old Documentation Links
+    "old_response_models_docs": {
+        "pattern": r"/docs/learn/llm/response-models",
+        "category": "Documentation Link",
+        "priority": "HIGH",
+        "description": "Old response-models path - v2 uses /docs/learn/llm/structured-output",
+    },
 }
 
 
