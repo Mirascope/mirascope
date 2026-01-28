@@ -33,6 +33,9 @@ EXTRA_IMPORTS: dict[str, list[str]] = {
         "opentelemetry.propagators.jaeger",
         "libcst",
         "packaging",
+        "opentelemetry.instrumentation.openai_v2",
+        "opentelemetry.instrumentation.anthropic",
+        "opentelemetry.instrumentation.google_genai",
     ],
     "mlx": ["mlx_lm"],
 }
