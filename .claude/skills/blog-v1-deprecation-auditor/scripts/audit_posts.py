@@ -29,7 +29,7 @@ class PostAudit:
     filename: str
     title: str = ""
     date: str = ""
-    completed: str | None = None  # Date string if v2_migration_completed
+    completed: str | None = None  # Date string if updatedAt
     issues: list[Issue] = field(default_factory=list)
 
     @property
@@ -404,7 +404,7 @@ def audit_post(filepath: Path) -> PostAudit:
         filename=filename,
         title=frontmatter.get("title", ""),
         date=frontmatter.get("date", ""),
-        completed=frontmatter.get("v2_migration_completed"),
+        completed=frontmatter.get("updatedAt"),
     )
 
     # Check each pattern against each line
