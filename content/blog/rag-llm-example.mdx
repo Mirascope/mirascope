@@ -2,6 +2,7 @@
 title: "Retrieval Augmented Generation - Examples & How to Build One"
 description: "Understand how RAG works in AI with a real-world RAG LLM example and step-by-step instructions to build a question-answering chatbot application."
 date: "2025-01-14"
+updatedAt: "2026-01-28"
 readTime: "12 min read"
 author: "William Bakst"
 ---
@@ -152,20 +153,20 @@ From Mirascope, we import modules for interfacing with the OpenAI API (setting u
 ```python
 from llama_index.core import SimpleDirectoryReader, VectorStoreIndex
 from llama_index.core.base.base_retriever import BaseRetriever
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 ```
 
 Note that:
 
-* We’ll use LlamaIndex’s `SimpleDirectoryReader` for data ingestion and preprocessing, and `VectorStoreIndex` for embedding and storage  
-* `BaseRetriever` is the class from which we’ll instantiate the retriever object  
-* We also import Mirascope’s modules for working with OpenAI and for formulating prompts
+* We'll use LlamaIndex's `SimpleDirectoryReader` for data ingestion and preprocessing, and `VectorStoreIndex` for embedding and storage
+* `BaseRetriever` is the class from which we'll instantiate the retriever object
+* We also import Mirascope's `llm` module for working with language models
 
 ### 1. Load and Preprocess the Documents
 
 We load the papers and preprocess them by splitting them into chunks and vectorizing them:
 
-```python
+```python-snippet-concat
 
 # Load documents and build index
 
@@ -185,57 +186,55 @@ Lastly, we instantiate a retriever object to fetch relevant content given a user
 
 We define a function to query our Alan Turing library:
 
-```python
+```python-snippet-concat
 
 # Define the function to ask "Alan Turing" a question
 
-@openai.call("gpt-4o-mini", call_params={"temperature": 0.6})
-@prompt_template("""
-    SYSTEM:
-    Your task is to respond to the user as though you are Alan Turing, drawing on ideas from 
-    "Computing Machinery and Intelligence."
-
-    Here are some excerpts from Turing’s paper relevant to the user query.
-    Use them as a reference for how to respond.
-
-    <excerpts>
-    {excerpts}
-    </excerpts>
-    """)
-def ask_alan_turing(query: str, retriever: BaseRetriever) -> openai.OpenAIDynamicConfig:
+@llm.call("openai/gpt-4o-mini", temperature=0.6)
+def ask_alan_turing(query: str, retriever: BaseRetriever) -> list:
     """Retrieves excerpts from 'Computing Machinery and Intelligence' relevant to `query` and generates a response."""
-    excerpts = [node.get_content() for node in retriever.retrieve(query)]
-    return {"computed_fields": {"excerpts": excerpts}}
+    excerpts = "\n".join([node.get_content() for node in retriever.retrieve(query)])
+    return [
+        llm.messages.system(f"""
+            Your task is to respond to the user as though you are Alan Turing, drawing on ideas from
+            "Computing Machinery and Intelligence."
+
+            Here are some excerpts from Turing's paper relevant to the user query.
+            Use them as a reference for how to respond.
+
+            <excerpts>
+            {excerpts}
+            </excerpts>
+        """),
+        llm.messages.user(query),
+    ]
 ```
 
 The `ask_alan_turing` function:
 
-* Receives a query string and our retriever object, and returns a dictionary containing `excerpts` from the set of scientific papers.  
-* Calls `retriever.retrieve(query)` to search the vector store for the most semantically relevant excerpts of Turing’s papers that relate to the user’s query.  
-* Fetches and processes excerpts at runtime (to insert in the [prompt template](/blog/langchain-prompt-template/)) via `OpenAIDynamicConfig` and computed fields.
+* Receives a query string and our retriever object, and returns a list of messages to send to the LLM.
+* Calls `retriever.retrieve(query)` to search the vector store for the most semantically relevant excerpts of Turing's papers that relate to the user's query.
+* Constructs a message list with a system message containing the excerpts and a user message with the query.
 
-We add two Mirascope decorators to turn the function into an LLM API call:
+The `@llm.call` decorator turns the function into an LLM API call. It's provider agnostic: we could've instead written `"anthropic/claude-sonnet-4-20250514"` or `"google/gemini-2.0-flash"` with minimal code adjustments.
 
-* The `openai.call` decorator makes calls more readable by turning any Python function into an LLM call and is provider agnostic: we could’ve instead written, e.g., `anthropic.call`, `google.call` or any of a number of others, with minimal code adjustments.
-* Mirascope’s `prompt_template` decorator enables defining the prompt as a template that instructs the model to respond as if it’s Alan Turing and injects a list of the retrieved excerpts.
-
-Both of these decorators, when added to any function, illustrate the best practice of colocation of prompts and calls, which makes the code eminently more readable as the logic for preparing input data, [building prompts](/blog/llm-prompt/), and LLM invocation is centralized in a single place.
+This illustrates the best practice of colocation of prompts and calls, which makes the code more readable as the logic for preparing input data, [building prompts](/blog/llm-prompt/), and LLM invocation is centralized in a single place.
 
 ### 3. Generate a Response from the Query
 
-Finally, the user asks a question about Turing’s research papers:
+Finally, the user asks a question about Turing's research papers:
 
-```python
+```python-snippet-concat
 
 # Get the user's query and ask "Alan Turing"
 
 query = input("(User): ")
 response = ask_alan_turing(query, retriever)
-print(response.content)
+print(response.text())
 
 # > How does Turing address the objections to the idea that machines can think?
 
-> This question delves into the various arguments Turing discusses in his paper, such as the theological objection, the "heads in the sand" objection, ...
+# > This question delves into the various arguments Turing discusses in his paper, such as the theological objection, the "heads in the sand" objection, ...
 ```
 
 The code captures the user’s query and calls `ask_alan_turing`, which retrieves the relevant excerpts from the cache of Turing’s papers in `documents`. Both the query and the excerpts are then sent to the model as a response.
