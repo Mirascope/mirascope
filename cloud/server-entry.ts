@@ -173,6 +173,37 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (
   environment,
   context,
 ) => {
+  // Prevent search engine indexing with Basic Auth
+  if (environment.ENVIRONMENT === "staging") {
+    const authHeader = request.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Basic ")) {
+      return new Response("Unauthorized", {
+        status: 401,
+        headers: { "WWW-Authenticate": 'Basic realm="Staging"' },
+      });
+    }
+
+    try {
+      const base64Credentials = authHeader.slice(6);
+      const credentials = atob(base64Credentials);
+      const [username, password] = credentials.split(":");
+
+      // This isn't for confidentiality so keep user/pwd simple
+      if (username !== "mirascope" || password !== "mirascope") {
+        return new Response("Unauthorized", {
+          status: 401,
+          headers: { "WWW-Authenticate": 'Basic realm="Staging"' },
+        });
+      }
+    } catch {
+      // Invalid base64 encoding
+      return new Response("Unauthorized", {
+        status: 401,
+        headers: { "WWW-Authenticate": 'Basic realm="Staging"' },
+      });
+    }
+  }
+
   // Set execution context layer for route handlers
   executionContextLayer = Layer.succeed(ExecutionContext, context);
 
