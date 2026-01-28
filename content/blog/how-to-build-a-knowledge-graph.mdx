@@ -2,6 +2,7 @@
 title: "How to Build a Knowledge Graph from Unstructured Information"
 description: "Learn how to build a knowledge graph from unstructured data to efficiently extract entities and relationships from unstructured sources."
 date: "2024-11-19"
+updatedAt: "2026-01-28"
 readTime: "21 min read"
 author: "William Bakst"
 ---
@@ -166,13 +167,13 @@ We’ll also use Mirascope to [define and build](/blog/advanced-prompt-engineeri
 * NetworkX and Matplotlib for visual rendering of the graph  
 * Neo4j at the end for improving graph storage and querying
 
-Our example is based on a Mirascope tutorial on [building a knowledge graph](/docs/v1/guides/more-advanced/knowledge-graph/).
+Our example is based on a Mirascope tutorial on building a knowledge graph.
 
 ### Set Up the Environment
 
 First we install Mirascope and its dependencies, as well as the other libraries we’ll be using:
 
-```py
+```python-snippet-skip
 !pip install "mirascope[openai]"
 
 # (Optional) For visualization
@@ -224,19 +225,21 @@ Our `KnowledgeGraph` class serves as the container for all nodes and edges, and 
 
 We create a structured knowledge graph from the text of a Wikipedia article in Python:
 
-```python
+```python-snippet-skip
 import os
 from bs4 import BeautifulSoup
 import requests
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
-# Set the appropriate API key for the provider you're using 
+# Set the appropriate API key for the provider you're using
 
-@openai.call(model="gpt-4o-mini", response_model=KnowledgeGraph)
-@prompt_template(
-    """
+@llm.call("openai/gpt-4o-mini", format=KnowledgeGraph)
+def generate_knowledge_graph(url: str) -> str:
+    html = requests.get(url).text
+    text = BeautifulSoup(html, "html.parser").get_text()
+    return f"""
     SYSTEM:
     Your job is to create a knowledge graph based on the given article text.
 
@@ -248,31 +251,24 @@ os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
     USER: Generate a knowledge graph based on this article text: {text}
     """
-)
-def generate_knowledge_graph(url: str) -> openai.OpenAIDynamicConfig:
-    html = requests.get(url).text
-    text = BeautifulSoup(html, "html.parser").get_text()
-    return {"computed_fields": {"text": text}}
 
-kg = generate_knowledge_graph("https://en.wikipedia.org/wiki/Algorithmic_bias")
+response = generate_knowledge_graph("https://en.wikipedia.org/wiki/Algorithmic_bias")
+kg = response.parse()
 ```
 
 In the code sample above, we:
 
-* Read and clean the Wikipedia article’s HTML content using `requests` and `BeautifulSoup`, turning the content into plain text.  
-* Send the article text to the OpenAI model via `@openai.call(model="gpt-4o-mini",response_model=KnowledgeGraph)`; this uses Mirascope’s model-agnostic call decorator, which we can easily attach to any Python function to turn it into an LLM call while ensuring type safety and consistency across providers; it also generates a JSON representation of the knowledge graph that’s parsed and validated against the defined Pydantic schema. Remember to set the API key for your provider  
-* Specify the instructions to the language model with our `@prompt_template(...)` decorator, so that it understands the structure and requirements of the knowledge graph it’ll produce; note also the user question will guide graph generation. Finally, using decorators for our LLM call and template allows us to colocate calls with prompts, easing configuration by [keeping prompt logic and API calls together](/blog/engineers-should-handle-prompting-llms), which improves readability and maintainability.  
-* Use `computed_fields` to return cleaned text from the Wikipedia article as a prompt template variable; this text, along with the user’s question, is passed to the LLM to generate the knowledge graph.
+* Read and clean the Wikipedia article's HTML content using `requests` and `BeautifulSoup`, turning the content into plain text.
+* Send the article text to the OpenAI model via `@llm.call("openai/gpt-4o-mini", format=KnowledgeGraph)`; this uses Mirascope's model-agnostic call decorator, which we can easily attach to any Python function to turn it into an LLM call while ensuring type safety and consistency across providers; it also generates a JSON representation of the knowledge graph that's parsed and validated against the defined Pydantic schema via `.parse()`. Remember to set the API key for your provider.
+* Specify the instructions to the language model in the function body, so that it understands the structure and requirements of the knowledge graph it'll produce; note also the user question will guide graph generation. Using a decorator for our LLM call allows us to colocate calls with prompts, easing configuration by [keeping prompt logic and API calls together](/blog/engineers-should-handle-prompting-llms), which improves readability and maintainability.
 
-Note that in the `@openai.call`, we specify the type of response we want from the language model using Mirascope’s response model, which is based on Pydantic.
+Note that in the `@llm.call`, we specify the type of response we want from the language model using Mirascope's `format` parameter, which is based on Pydantic.
 
-Here, we indicate we want the LLM’s output to be formatted as a `KnowledgeGraph`. This way of structuring responses enables Mirascope’s type checking and validation features, ensuring that the output conforms to the expected `KnowledgeGraph` format and making it easier to integrate into downstream applications.
-
-Note also we use computed fields in `generate_knowledge_graph` so the function can take a URL and handle loading the text internally. You could also just pass the text in directly and load it outside the function.
+Here, we indicate we want the LLM's output to be formatted as a `KnowledgeGraph`. This way of structuring responses enables Mirascope's type checking and validation features, ensuring that the output conforms to the expected `KnowledgeGraph` format and making it easier to integrate into downstream applications.
 
 Lastly, we print the contents of our knowledge graph:
 
-```py
+```python-snippet-skip
 print(kg)
 ```
 
@@ -284,10 +280,10 @@ nodes=[Node(id='Algorithmic Bias', type='Concept', properties={}), Node(id='Data
 
 We then create a `query_kg` function to answer a question based on the knowledge graph we just created:
 
-```py
-@openai.call(model="gpt-4o-mini")
-@prompt_template(
-    """
+```python-snippet-skip
+@llm.call("openai/gpt-4o-mini")
+def query_kg(question: str, knowledge_graph: KnowledgeGraph) -> str:
+    return f"""
     SYSTEM:
     Answer the following question based on the knowledge graph.
 
@@ -297,14 +293,12 @@ We then create a `query_kg` function to answer a question based on the knowledge
     USER:
     {question}
     """
-)
-def query_kg(question: str, knowledge_graph: KnowledgeGraph): ...
 
 response = query_kg(
     "What factors contribute to algorithmic bias in data collection and selection?",
     kg,
 )
-print(response.content)
+print(response.text())
 ```
 
 ```
@@ -331,7 +325,7 @@ Addressing these factors is crucial for minimizing algorithmic bias and ensuring
 
 As a last step we use NetworkX and Matlab to draw the edges and nodes of our knowledge graph:
 
-```py
+```python-snippet-skip
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -357,7 +351,7 @@ def render_graph(kg: KnowledgeGraph):
     plt.title("Knowledge Graph Visualization", fontsize=15)
     plt.show()
 
-render_graph(kg) 
+render_graph(kg)
 ```
 
 ![Algorithmic Bias Article Knowledge Graph Diagram](/assets/blog/how-to-build-a-knowledge-graph/algorithmic-bias-kg.webp)
@@ -370,7 +364,7 @@ We created a local "KG Blog Post DBMS" database with the password "password" for
 
 Next, you'll need to install the neo4j package and connect using the Python GraphDatabase driver:
 
-```py
+```python-snippet-skip
 !pip install neo4j
 
 from neo4j import GraphDatabase, Driver
@@ -417,7 +411,7 @@ except Exception as e:
 
 load_knowledge_graph(driver, kg)
 
-@openai.call("gpt-4o-mini", output_parser=str)
+@llm.call("openai/gpt-4o-mini")
 def convert_query_to_cypher(query: str) -> str:
     return f"""Given a Neo4j knowledge graph about algorithmic bias and related concepts with the following structure:
 
@@ -471,9 +465,13 @@ Please convert this question: {query}
 
 Output only the converted Cypher query with no blocks."""
 
-@openai.call(model="gpt-4o-mini")
-@prompt_template(
-    """
+@llm.call("openai/gpt-4o-mini")
+def query_neo4j_kg(question: str, driver: Driver) -> str:
+    cypher_response = convert_query_to_cypher(question)
+    cypher_query = cypher_response.text()
+    with driver.session() as session:
+        results = list(session.run(cypher_query, {}).data())
+    return f"""
     SYSTEM:
     Answer the following question based on the knowledge graph query results.
 
@@ -482,29 +480,23 @@ Output only the converted Cypher query with no blocks."""
     USER:
     {question}
     """
-)
-def query_neo4j_kg(question: str, driver: Driver) -> openai.OpenAIDynamicConfig:
-    cypher_query = convert_query_to_cypher(question)
-    with driver.session() as session:
-        results = list(session.run(cypher_query, {}).data())
-    return {"computed_fields": {"results": results}}
 
 response = query_neo4j_kg(
     "What are the key concepts related to algorithmic bias in the knowledge graph?",
     driver,
 )
-print(response.content)
+print(response.text())
 
 driver.close()
 ```
 
 In the code sample above, we:
 
-* Implement a method `load_knowledge_graph` for loading the Pydantic knowledge graph into our Neo4j graph database.  
-* We connect to the Neo4j driver instance and verify our connection, running the load function once the connection is verified.  
-* We implement a `convert_query_to_cypher` method using Mirascope to make an LLM API call to convert the given user's query into a Cypher query for querying the graph database. Notice that we've written the prompt specifically to handle the relationships present in the graph database, which we've identified by inspecting the resulting structure from loading the knowledge graph into the Neo4j database.  
-* We update our `query_kg` method to `query_neo4j_kg` to query the Neo4j graph database first and then use dynamic configuration to insert the results into the prompt as a computed field.  
-* We run the method on our question and print the resulting response content:
+* Implement a method `load_knowledge_graph` for loading the Pydantic knowledge graph into our Neo4j graph database.
+* We connect to the Neo4j driver instance and verify our connection, running the load function once the connection is verified.
+* We implement a `convert_query_to_cypher` method using Mirascope to make an LLM API call to convert the given user's query into a Cypher query for querying the graph database. Notice that we've written the prompt specifically to handle the relationships present in the graph database, which we've identified by inspecting the resulting structure from loading the knowledge graph into the Neo4j database.
+* We update our `query_kg` method to `query_neo4j_kg` to query the Neo4j graph database first and then insert the results into the prompt.
+* We run the method on our question and print the resulting response text:
 
 ```
 The key concepts related to algorithmic bias in the knowledge graph are:
@@ -521,4 +513,4 @@ The key concepts related to algorithmic bias in the knowledge graph are:
 
 Discover new insights and connections within your data by building your knowledge graph with Mirascope. Our toolkit offers [easy prompting](/blog/prompt-engineering-examples), data validation, and effortless LLM integration so you can easily map connections, discover patterns, and make better decisions.
 
-Want to learn more about Mirascope’s structured output tools? You can find Mirascope code samples both on our [documentation site](/docs/mirascope) and the [GitHub repository](https://github.com/mirascope/mirascope).
+Want to learn more about Mirascope's structured output tools? You can find Mirascope code samples both on our [documentation site](/docs) and the [GitHub repository](https://github.com/mirascope/mirascope).
