@@ -1,9 +1,10 @@
 ---
-title: "12 LLM Tools to Help You Build LLM Applications"
-description: "Here is our short list of LLM tools for any LLM stack, including application development, model serving, chatbots, vector databases, and more."
+author: William Bakst
 date: "2024-07-15"
-readTime: "19 min read"
-author: "William Bakst"
+updatedAt: "2026-01-28"
+description: Here is our short list of LLM tools for any LLM stack, including application development, model serving, chatbots, vector databases, and more.
+readTime: 19 min read
+title: 12 LLM Tools to Help You Build LLM Applications
 ---
 
 While you can build LLM applications using just the raw model APIs - and we've done this a few times before helper libraries existed - leveraging specialized tools that are tailored for your Large Language Model (LLM) workflows can reduce complexity and the risk of errors, allowing you to focus on developing applications and their LLMs.
@@ -28,7 +29,7 @@ Tools for building language model applications allow developers to leverage the 
 
 ![Mirascope homepage: LLM abstractions that aren't obstructions](/assets/blog/llm-tools/mirascope-homepage.webp)
 
-‍[Mirascope](/docs/mirascope) is a lightweight Python toolkit for developing LLM applications that gives you building blocks rather than a framework for setting up [prompt engineering workflows](/blog/prompt-engineering-best-practices). We purposefully designed Mirascope with simplicity and reliability in mind, and developing with Mirascope feels like you're simply writing the Python code you already know.
+‍[Mirascope](/docs) is a lightweight Python toolkit for developing LLM applications that gives you building blocks rather than a framework for setting up [prompt engineering workflows](/blog/prompt-engineering-best-practices). We purposefully designed Mirascope with simplicity and reliability in mind, and developing with Mirascope feels like you're simply writing the Python code you already know.
 
 While we understand the potential of working with LLMs, **we also know firsthand the struggles of building LLM applications that are production grade.** Some modern development frameworks don’t make this any easier and make you code, for instance, in verbose and repetitive ways.
 
@@ -40,33 +41,29 @@ All this means you don't need to learn unnecessarily complex concepts or fancy s
 
 Mirascope follows Pythonic conventions. Take function call sequencing, for example. We don't make you implement directed acyclic graphs (DAGs) outright - which introduces unnecessary complexities. Instead, we code call sequences using regular Python that’s readable, lightweight, and easy to maintain.
 
-An example of this is our [`prompt_template`](/docs/v1/learn/prompts) decorator, which enables writing prompt templates as simply Python functions.
+An example of this is our [`@llm.call`](/docs/learn/llm) decorator, which enables writing prompt templates as simply Python functions.
 
-An example of our `prompt_template` decorator is below, where the prompt template provides a string for generating a prompt that requests music recommendations based on pairs of durations and genres. The computed field `durations_x_genres` constructs these pairs and integrates them into the prompt template for the final prompt output.
+An example of our `@llm.call` decorator is below, where the prompt template provides a string for generating a prompt that requests music recommendations based on pairs of durations and genres. The computed field `durations_x_genres` constructs these pairs and integrates them into the prompt template for the final prompt output.
 
 ```python
-from mirascope.core import BaseDynamicConfig, prompt_template
+from mirascope import llm
 
-@prompt_template(
-    """
-    Can you recommend some music based on these duration and genre pairs?
-    {durations_x_genres:list}
-    """
-)
-def recommend_music_prompt(
-    durations: list[str], genres: list[str]
-) -> BaseDynamicConfig:
-    durations_x_genres = [
+@llm.prompt
+def recommend_music_prompt(durations: list[str], genres: list[str]):
+    durations_x_genres = "\n".join(
         f"Duration: {duration}, Genre: {genre}"
         for duration in durations
         for genre in genres
-    ]
-    return {"computed_fields": {"durations_x_genres": durations_x_genres}}
+    )
+    return f"""
+    Can you recommend some music based on these duration and genre pairs?
+    {durations_x_genres}
+    """
 
-messages = recommend_music_prompt(["short", "long"], ["rock", "jazz"])
+messages = recommend_music_prompt.messages(["short", "long"], ["rock", "jazz"])
 print(messages)
 
-# > [BaseMessageParam(role='user', content='Can you recommend some music based on these duration and genre pairs?\nDuration: short, Genre: rock\nDuration: short, Genre: jazz\nDuration: long, Genre: rock\nDuration: long, Genre: jazz')]
+# > [UserMessage(content='Can you recommend some music based on these duration and genre pairs?\nDuration: short, Genre: rock\nDuration: short, Genre: jazz\nDuration: long, Genre: rock\nDuration: long, Genre: jazz')]
 
 print(messages[0].content)
 
@@ -82,7 +79,7 @@ print(messages[0].content)
 
 ```
 
-Although `recommend_music_prompt` in the example above treats the prompt as a a single user message for simplicity, you can add more context by incorporating roles like System, User, and Assistant to generate more relevant responses. Since Mirascope prompt templates are just Python functions, you can write them to fit any specific use case needed for your application.
+Although `recommend_music_prompt` in the example above treats the prompt as a single user message for simplicity, you can add more context by incorporating roles using `llm.messages.system()`, `llm.messages.user()`, etc. to generate more relevant responses. Since Mirascope prompt templates are just Python functions, you can write them to fit any specific use case needed for your application.
 
 #### Colocation of LLM Call Elements
 
@@ -97,26 +94,22 @@ Mirascope colocates calls and makes these the central organizing unit of the pro
 Below is an example of how we centralize and manage information for all calls:
 
 ```python
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
-@openai.call(model="gpt-4o", call_params={"temperature": 0.5})
-@prompt_template(
-    """
-    Can you recommend some music based on these duration and genre pairs?
-    {durations_x_genres:list}
-    """
-)
-def recommend_music(
-    durations: list[str], genres: list[str]
-) -> openai.OpenAIDynamicConfig:
-    durations_x_genres = [
+@llm.call("openai/gpt-4o", temperature=0.5)
+def recommend_music(durations: list[str], genres: list[str]):
+    durations_x_genres = "\n".join(
         f"Duration: {duration}, Genre: {genre}"
         for duration in durations
         for genre in genres
-    ]
-    return {"computed_fields": {"durations_x_genres": durations_x_genres}}
+    )
+    return f"""
+    Can you recommend some music based on these duration and genre pairs?
+    {durations_x_genres}
+    """
 
 response = recommend_music(durations=["short", "long"], genres=["rock", "jazz"])
+print(response.text())
 ```
 
 Above, when running the `recommend_music` method, the resulting call centralizes the `durations_x_genres` computed field, model configuration, temperature, and potentially any other call parameter you wish to use.
@@ -125,40 +118,34 @@ Above, when running the `recommend_music` method, the resulting call centralizes
 
 Although LLMs are effectively stateless, Mirascope provides a way to preserve state from one LLM call to the next, allowing you to potentially overcome context limitations where these might be an issue.
 
-In the example below, we preserve state by appending interactions to the `history` attribute of our chat, which is injected into the prompt template using the `MESSAGES` keyword. All this is passed as part of the prompt in future iterations of `run()`.
+In the example below, we preserve state by appending interactions to the `history` attribute of our chat, which is returned as part of the messages list. All this is passed as part of the prompt in future iterations of `run()`.
 
 As everything is collocated inside of a class, you can make multiple calls over multiple iterations while maintaining state inside of a call class, making it easy to define agents that require state be preserved across calls (including a history of which tools had been called, etc.).
 
 For the chat history example below, we’re obviously injecting the chat history, but **you can also manage and maintain any additional state you want** through public and private fields of the class and the addition of tools.
 
 ```python
-from mirascope.core import openai, prompt_template
-from openai.types.chat import ChatCompletionMessageParam
+from mirascope import llm
 from pydantic import BaseModel
 
 class Chat(BaseModel):
-    history: list[openai.OpenAIMessageParam] = []
+    history: list[llm.Message] = []
 
-    @openai.call(model="gpt-4o")
-    @prompt_template(
-        """
-        MESSAGES: {self.history}
-        USER: {question}
-        """
-    )
-    def _step(self, question: str): ...
+    @llm.call("openai/gpt-4o")
+    def _step(self, question: str) -> list[llm.Message]:
+        return [
+            *self.history,
+            llm.messages.user(question),
+        ]
 
-    def run(self):
+    def run(self) -> None:
         while True:
             question = input("(User): ")
             if question == "exit":
                 break
             response = self._step(question)
-            self.history += [
-                response.user_message_param,
-                response.message_param
-            ]
-           print(f"(Assistant): {response.content}")
+            self.history = list(response.messages)
+            print(f"(Assistant): {response.text()}")
 
 Chat().run()
 
@@ -172,17 +159,18 @@ Chat().run()
 
 ```
 
-**Note:** Different model providers have specific rules and limitations regarding their roles, so be sure to follow their role requirements when injecting `MESSAGES` into your prompt.
+**Note:** Different model providers have specific rules and limitations regarding their roles, so be sure to follow their role requirements when constructing message lists.
 
 #### Streamlined Function Calling (Tools)
 
-Mirascope lets you extend model capabilities [by adding tools](/docs/v1/learn/tools) (i.e., function calling) to your workflows. Tools allow LLMs to access external information, perform calculations, run code, and more, and are straightforward to set up with Mirascope’s pythonic conventions.
+Mirascope lets you extend model capabilities [by adding tools](/docs/learn/llm/tools) (i.e., function calling) to your workflows. Tools allow LLMs to access external information, perform calculations, run code, and more, and are straightforward to set up with Mirascope's pythonic conventions.
 
 One of the simplest examples of using Mirascope's tools convenience is automatically generating a tool schema and object from a function with a docstring, allowing you to pass the function directly into your calls. For example:
 
 ```python
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
+@llm.tool
 def get_stock_price(ticker: str) -> str:
    """Fetches the current stock price for the given `ticker`.
 
@@ -196,46 +184,48 @@ def get_stock_price(ticker: str) -> str:
    else:
        return f"I'm sorry, I don't have the stock price for {ticker}."
 
-@openai.call(model="gpt-4o", tools=[get_stock_price])
-@prompt_template("What's the stock price for {stock}?")
-def check_stock_price(stock: str): ...
+@llm.call("openai/gpt-4o", tools=[get_stock_price])
+def check_stock_price(stock: str):
+    return f"What's the stock price for {stock}?"
 
 response = check_stock_price("AAPL")
-if tool := response.tool:
-   print(tool.call())
+if response.tool_calls:
+    tool_results = response.execute_tools()
+    print(tool_results[0])
 
 # > The current stock price of AAPL is $150.
 
 ```
 
-A call response using Mirascope gives you a wrapper around the original response from the model, giving you access to the `call()` method. This way, you can easily invoke the function and manage its arguments.
+A call response using Mirascope gives you a wrapper around the original response from the model, giving you access to the `tool_calls` property and `execute_tools()` method. This way, you can easily invoke the function and manage its arguments.
 
-Our code uses Google-style Python docstrings, but we support other styles too, including ReST, Numpydoc, and Epydoc-style docstrings. For more code samples and use cases, please refer to our documentation on [tools (function calling)](/docs/v1/learn/tools).
+Our code uses Google-style Python docstrings, but we support other styles too, including ReST, Numpydoc, and Epydoc-style docstrings. For more code samples and use cases, please refer to our documentation on [tools (function calling)](/docs/learn/llm/tools).
 
 #### Extraction of Structured Information from Unstructured LLM Outputs
 
 Mirascope offers extraction to parse unstructured data from language model outputs, using function calls as tools for reliable extraction. This allows you to integrate LLM outputs with external systems like CRMs and databases, expanding the data’s usefulness by allowing it to be easily queried and analyzed in other workflows.
 
-To use Mirascope extraction, define a schema with a Pydantic `BaseModel` and set `response_model` to the schema in the decorator.
+To use Mirascope extraction, define a schema with a Pydantic `BaseModel` and set `format` to the schema in the decorator.
 
-In the example below, `TaskDetails` defines the structure of the data with fields for `due_date`, and `priority`. By setting `response_model=TaskExtractor` , the output of our call becomes an instance of `TaskExtractor` with the correct details inside.
+In the example below, `TaskDetails` defines the structure of the data with fields for `due_date`, and `priority`. By setting `format=TaskDetails`, we can call `.parse()` on the response to get an instance of `TaskDetails` with the correct details inside.
 
 ```python
 from typing import Literal
 
-from mirascope.core import openai
+from mirascope import llm
 from pydantic import BaseModel
 
 class TaskDetails(BaseModel):
    due_date: str
    priority: Literal["low", "normal", "high"]
 
-@openai.call(model="gpt-4o", response_model=TaskDetails)
-def get_task_details(task: str) -> str:
+@llm.call("openai/gpt-4o", format=TaskDetails)
+def get_task_details(task: str):
     return f"Extract details from this task: {task}"
 
 task = "Submit quarterly report by next Friday. Task is high priority."
-task_details = get_task_details(task)
+response = get_task_details(task)
+task_details = response.parse()
 assert isinstance(task_details, TaskDetails)
 print(task_details)
 
@@ -245,7 +235,7 @@ print(task_details)
 
 Mirascope defines the schema for extraction via Pydantic models, which are classes derived from [`Pydantic.BaseModel`](https://docs.pydantic.dev/latest/api/base_model/).
 
-Mirascope currently supports [extracting built-in types](/docs/v1/learn/response_models/#built-in-types) including: `str`, `int`, `float`, `bool`, `list`, `set`, `tuple`, and `Enum`.
+Mirascope currently supports [extracting built-in types](/docs/learn/llm/structured-output#built-in-types) including: `str`, `int`, `float`, `bool`, `list`, `set`, `tuple`, and `Enum`.
 
 ### LangChain
 
@@ -406,4 +396,4 @@ Mirascope aims to remove the complexities around your LLM engineering workflow s
 
 Users only need to know Python and the Pydantic library - there are no other unique abstractions or fancy concepts to learn. Mirascope also slots readily into existing developer workflows, making it easy to get started.
 
-‍Want to learn more? You can find more Mirascope code samples both on our [docs](/docs/mirascope) and the [GitHub repository](https://github.com/mirascope/mirascope).
+‍Want to learn more? You can find more Mirascope code samples both on our [docs](/docs) and the [GitHub repository](https://github.com/mirascope/mirascope).
