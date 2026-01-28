@@ -4,7 +4,7 @@ description: "Many prompt engineering tools neither follow developer best practi
 date: "2024-03-29"
 readTime: "20 min read"
 author: "William Bakst"
-updatedAt: "2026-01-27"
+updatedAt: "2026-01-28"
 ---
 
 We’ve seen many discussions around Large Language Model (LLM) software development allude to a workflow where prompts live apart from LLM calls and are managed by multiple stakeholders, including non-engineers. In fact, many popular LLM development frameworks and libraries are built in a way that _requires_ prompts to be managed separately from their calls.
@@ -154,7 +154,7 @@ def select_chef(food_type: str) -> str:
 @llm.call("openai/gpt-4o-mini")
 def recommend_recipe(ingredient: str, food_type: str) -> str:
     chef = select_chef(food_type)
-    return f"Imagine you are {chef.content}. Recommend a {food_type} recipe using {ingredient}"
+    return f"Imagine you are {chef.text()}. Recommend a {food_type} recipe using {ingredient}"
 
 response = recommend_recipe("apples", "japanese")
 print(response.text())
