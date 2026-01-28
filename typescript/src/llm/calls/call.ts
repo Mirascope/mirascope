@@ -62,6 +62,15 @@ export interface Call<T = NoVars> {
   (...args: keyof T extends never ? [] : [vars: T]): Promise<Response>;
 
   /**
+   * Call directly to generate a response (model is bundled).
+   * This is the method form of the callable interface.
+   *
+   * @param vars - The variables to pass to the template.
+   * @returns A promise that resolves to the LLM response.
+   */
+  call(...args: keyof T extends never ? [] : [vars: T]): Promise<Response>;
+
+  /**
    * Stream directly to generate a streaming response (model is bundled).
    *
    * @param vars - The variables to pass to the template.
@@ -176,7 +185,13 @@ export function defineCall<T>({
   const call = async (
     ...vars: keyof T extends never ? [] : [vars: T]
   ): Promise<Response> => {
-    return prompt(resolvedModel, ...vars);
+    return prompt.call(resolvedModel, ...vars);
+  };
+
+  const callable = async (
+    ...vars: keyof T extends never ? [] : [vars: T]
+  ): Promise<Response> => {
+    return call(...vars);
   };
 
   const stream = async (
@@ -185,7 +200,8 @@ export function defineCall<T>({
     return prompt.stream(resolvedModel, ...vars);
   };
 
-  return Object.assign(call, {
+  return Object.assign(callable, {
+    call,
     model: resolvedModel,
     prompt,
     stream,

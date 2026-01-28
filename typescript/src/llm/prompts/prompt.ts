@@ -74,6 +74,19 @@ export interface Prompt<T = NoVars> {
   ): Promise<Response>;
 
   /**
+   * Call the prompt with a model and variables to generate a response.
+   * This is the method form of the callable interface.
+   *
+   * @param model - The model to use, either a Model instance or model ID string.
+   * @param vars - The variables to pass to the template.
+   * @returns A promise that resolves to the LLM response.
+   */
+  call(
+    model: Model | ModelId,
+    ...args: keyof T extends never ? [] : [vars: T]
+  ): Promise<Response>;
+
+  /**
    * Stream the prompt with a model and variables to generate a streaming response.
    *
    * @param model - The model to use, either a Model instance or model ID string.
@@ -197,6 +210,13 @@ export function definePrompt<T>({ template }: PromptArgs<T>): Prompt<T> {
     return model.call(messages(vars));
   };
 
+  const callable = async (
+    modelOrId: Model | ModelId,
+    vars?: T
+  ): Promise<Response> => {
+    return call(modelOrId, vars);
+  };
+
   const stream = async (
     modelOrId: Model | ModelId,
     vars?: T
@@ -206,5 +226,10 @@ export function definePrompt<T>({ template }: PromptArgs<T>): Prompt<T> {
     return model.stream(messages(vars));
   };
 
-  return Object.assign(call, { messages, stream, template }) as Prompt<T>;
+  return Object.assign(callable, {
+    call,
+    messages,
+    stream,
+    template,
+  }) as Prompt<T>;
 }
