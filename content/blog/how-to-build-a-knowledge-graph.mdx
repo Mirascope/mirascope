@@ -195,7 +195,7 @@ Pydantic models also convert code into JSON schemas for storing, transmitting, o
 
 Below is our defined property graph:
 
-```py
+```python
 from pydantic import BaseModel, Field
 
 class Edge(BaseModel):
@@ -225,32 +225,28 @@ Our `KnowledgeGraph` class serves as the container for all nodes and edges, and 
 
 We create a structured knowledge graph from the text of a Wikipedia article in Python:
 
-```python-snippet-skip
-import os
-from bs4 import BeautifulSoup
+```python-snippet-concat
 import requests
+from bs4 import BeautifulSoup
 from mirascope import llm
 
-os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
-# Set the appropriate API key for the provider you're using
-
-@llm.call("openai/gpt-4o-mini", format=KnowledgeGraph)
-def generate_knowledge_graph(url: str) -> str:
+@llm.call("openai/gpt-4o-mini", format=llm.format(KnowledgeGraph, mode="json"))
+def generate_knowledge_graph(url: str):
     html = requests.get(url).text
     text = BeautifulSoup(html, "html.parser").get_text()
-    return f"""
-    SYSTEM:
-    Your job is to create a knowledge graph based on the given article text.
+    return [
+        llm.messages.system("""
+            Your job is to create a knowledge graph based on the given article text.
 
-    Example:
-    John and Jane Doe are siblings. Jane is 25 and 5 years younger than John.
-    Node(id="John Doe", type="Person", properties={{"age": 30}})
-    Node(id="Jane Doe", type="Person", properties={{"age": 25}})
-    Edge(source="John Doe", target="Jane Doe", relationship="Siblings")
-
-    USER: Generate a knowledge graph based on this article text: {text}
-    """
+            Example:
+            John and Jane Doe are siblings. Jane is 25 and 5 years younger than John.
+            Node(id="John Doe", type="Person", properties={"age": 30})
+            Node(id="Jane Doe", type="Person", properties={"age": 25})
+            Edge(source="John Doe", target="Jane Doe", relationship="Siblings")
+        """),
+        llm.messages.user(f"Generate a knowledge graph based on this article text: {text}"),
+    ]
 
 response = generate_knowledge_graph("https://en.wikipedia.org/wiki/Algorithmic_bias")
 kg = response.parse()
@@ -258,11 +254,11 @@ kg = response.parse()
 
 In the code sample above, we:
 
-* Read and clean the Wikipedia article's HTML content using `requests` and `BeautifulSoup`, turning the content into plain text.
-* Send the article text to the OpenAI model via `@llm.call("openai/gpt-4o-mini", format=KnowledgeGraph)`; this uses Mirascope's model-agnostic call decorator, which we can easily attach to any Python function to turn it into an LLM call while ensuring type safety and consistency across providers; it also generates a JSON representation of the knowledge graph that's parsed and validated against the defined Pydantic schema via `.parse()`. Remember to set the API key for your provider.
-* Specify the instructions to the language model in the function body, so that it understands the structure and requirements of the knowledge graph it'll produce; note also the user question will guide graph generation. Using a decorator for our LLM call allows us to colocate calls with prompts, easing configuration by [keeping prompt logic and API calls together](/blog/engineers-should-handle-prompting-llms), which improves readability and maintainability.
+- Read and clean the Wikipedia article's HTML content using `requests` and `BeautifulSoup`, turning the content into plain text.
+- Send the article text to the OpenAI model via `@llm.call("openai/gpt-4o-mini", format=llm.format(KnowledgeGraph, mode="json"))`; this uses Mirascope's model-agnostic call decorator, which we can easily attach to any Python function to turn it into an LLM call while ensuring type safety and consistency across providers. We use `mode="json"` since the `Node` model has a flexible `dict` field for properties. The response is parsed and validated against the defined Pydantic schema via `.parse()`. Remember to set the API key for your provider.
+- Structure the prompt using `llm.messages.system()` and `llm.messages.user()` to separate system instructions from the user query. This makes it clear what context the model should use versus what it should respond to.
 
-Note that in the `@llm.call`, we specify the type of response we want from the language model using Mirascope's `format` parameter, which is based on Pydantic.
+Note that in the `@llm.call`, we specify the type of response we want from the language model using Mirascope's `format` parameter with `llm.format()`.
 
 Here, we indicate we want the LLM's output to be formatted as a `KnowledgeGraph`. This way of structuring responses enables Mirascope's type checking and validation features, ensuring that the output conforms to the expected `KnowledgeGraph` format and making it easier to integrate into downstream applications.
 
@@ -272,8 +268,8 @@ Lastly, we print the contents of our knowledge graph:
 print(kg)
 ```
 
-```
-nodes=[Node(id='Algorithmic Bias', type='Concept', properties={}), Node(id='Data Collection', type='Method', properties={}), Node(id='Machine Learning Bias', type='Type', properties={}), Node(id='Pre-existing Bias', type='Type', properties={}), Node(id='Technical Bias', type='Type', properties={}), Node(id='Emergent Bias', type='Type', properties={}), Node(id='Impact', type='Effect', properties={}), Node(id='Commercial Influences', type='Impact', properties={}), Node(id='Voting Behavior', type='Impact', properties={}), Node(id='Gender Discrimination', type='Impact', properties={}), Node(id='Racial and Ethnic Discrimination', type='Impact', properties={}), Node(id='Legal Systems', type='Application', properties={}), Node(id='Online Hate Speech', type='Impact', properties={}), Node(id='Surveillance', type='Application', properties={}), Node(id='Discrimination against LGBTQ', type='Impact', properties={}), Node(id='Disability Discrimination', type='Impact', properties={}), Node(id='Google Search', type='Application', properties={}), Node(id='Obstacles to Research', type='Challenge', properties={}), Node(id='Solutions', type='Concept', properties={}), Node(id='Regulation', type='Concept', properties={}), Node(id='Europe', type='Region', properties={}), Node(id='United States', type='Region', properties={}), Node(id='India', type='Region', properties={})] edges=[Edge(source='Algorithmic Bias', target='Data Collection', relationship='Involves'), Edge(source='Algorithmic Bias', target='Machine Learning Bias', relationship='Includes'), Edge(source='Algorithmic Bias', target='Pre-existing Bias', relationship='Includes'), Edge(source='Algorithmic Bias', target='Technical Bias', relationship='Includes'), Edge(source='Algorithmic Bias', target='Emergent Bias', relationship='Includes'), Edge(source='Algorithmic Bias', target='Impact', relationship='Has'), Edge(source='Impact', target='Commercial Influences', relationship='Includes'), Edge(source='Impact', target='Voting Behavior', relationship='Includes'), Edge(source='Impact', target='Gender Discrimination', relationship='Includes'), Edge(source='Impact', target='Racial and Ethnic Discrimination', relationship='Includes'), Edge(source='Impact', target='Legal Systems', relationship='Is Seen In'), Edge(source='Impact', target='Online Hate Speech', relationship='Includes'), Edge(source='Impact', target='Surveillance', relationship='Includes'), Edge(source='Impact', target='Discrimination against LGBTQ', relationship='Includes'), Edge(source='Impact', target='Disability Discrimination', relationship='Includes'), Edge(source='Impact', target='Google Search', relationship='Includes'), Edge(source='Algorithmic Bias', target='Obstacles to Research', relationship='Presents Challenges'), Edge(source='Algorithmic Bias', target='Solutions', relationship='Requires'), Edge(source='Solutions', target='Regulation', relationship='Includes'), Edge(source='Regulation', target='Europe', relationship='Includes'), Edge(source='Regulation', target='United States', relationship='Includes'), Edge(source='Regulation', target='India', relationship='Includes')]
+```py
+nodes=[Node(id='User-Agent Policy', type='Concept', properties={'description': 'Instructions to set a user-agent and respect robotic policies'}), Node(id='Robot Policy Link', type='Link', properties={'url': 'https://w.wiki/4wJS'}), Node(id='Phabricator Task', type='Link', properties={'url': 'https://phabricator.wikimedia.org/T400119'})] edges=[Edge(source='User-Agent Policy', target='Robot Policy Link', relationship='References'), Edge(source='User-Agent Policy', target='Phabricator Task', relationship='See also')]
 ```
 
 ### 3. Query the Knowledge Graph
