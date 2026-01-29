@@ -14,8 +14,8 @@ from ....content import ContentPart, ImageMimeType
 from ....exceptions import FeatureNotSupportedError
 from ....formatting import (
     Format,
+    FormatSpec,
     FormattableT,
-    OutputParser,
     resolve_format,
 )
 from ....messages import AssistantMessage, Message, UserMessage
@@ -345,10 +345,7 @@ def encode_request(
     model_id: AnthropicModelId,
     messages: Sequence[Message],
     tools: BaseToolkit[AnyToolSchema],
-    format: type[FormattableT]
-    | Format[FormattableT]
-    | OutputParser[FormattableT]
-    | None,
+    format: FormatSpec[FormattableT] | None,
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
     """Prepares a request for the Anthropic messages.create method."""

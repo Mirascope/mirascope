@@ -1,15 +1,32 @@
 """Type for the formatting module."""
 
-from typing import Literal, Protocol, runtime_checkable
-from typing_extensions import TypeVar
+from typing import TYPE_CHECKING, Literal, Protocol, runtime_checkable
+from typing_extensions import TypeAliasType, TypeVar
 
 from pydantic import BaseModel
 
 from .primitives import PrimitiveType
 
+if TYPE_CHECKING:
+    from .format import Format
+    from .output_parser import OutputParser
+
 FormattableT = TypeVar(
     "FormattableT", bound=BaseModel | PrimitiveType | None, default=None
 )
+
+FormatSpec = TypeAliasType(
+    "FormatSpec",
+    "type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT]",
+    type_params=(FormattableT,),
+)
+"""Type alias for format parameter types.
+
+A FormatSpec can be:
+- A type (class) that represents the format schema (e.g., a Pydantic BaseModel)
+- A Format wrapper that includes mode and other metadata
+- An OutputParser for custom parsing logic
+"""
 """Type variable for structured response format types.
 
 This TypeVar represents the type of structured output format that LLM responses

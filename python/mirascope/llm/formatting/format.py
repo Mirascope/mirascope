@@ -11,7 +11,7 @@ from ..tools import FORMAT_TOOL_NAME, ToolFn, ToolParameterSchema, ToolSchema
 from ..types import NoneType
 from .output_parser import OutputParser, is_output_parser
 from .primitives import create_wrapper_model, is_primitive_type
-from .types import FormattableT, FormattingMode, HasFormattingInstructions
+from .types import FormatSpec, FormattableT, FormattingMode, HasFormattingInstructions
 
 TOOL_MODE_INSTRUCTIONS = f"""Always respond to the user's query using the {FORMAT_TOOL_NAME} tool for structured output."""
 
@@ -267,9 +267,7 @@ def format(
 
 
 def resolve_format(
-    formattable: (
-        type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT] | None
-    ),
+    formattable: FormatSpec[FormattableT] | None,
     default_mode: FormattingMode,
 ) -> Format[FormattableT] | None:
     """Resolve a `Format` (or None) from a possible `Format`, Formattable, or `OutputParser`.

@@ -9,7 +9,7 @@ from typing_extensions import Unpack
 from anthropic import Anthropic, AsyncAnthropic
 
 from ...context import Context, DepsT
-from ...formatting import Format, FormattableT, OutputParser
+from ...formatting import FormatSpec, FormattableT
 from ...messages import Message
 from ...responses import (
     AsyncContextResponse,
@@ -60,10 +60,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
         model_id: str,
         messages: Sequence[Message],
         toolkit: Toolkit,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
         """Generate an `llm.Response` using the beta Anthropic API."""
@@ -100,10 +97,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
         model_id: str,
         messages: Sequence[Message],
         toolkit: ContextToolkit[DepsT],
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` using the beta Anthropic API."""
@@ -139,10 +133,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
         model_id: str,
         messages: Sequence[Message],
         toolkit: AsyncToolkit,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` using the beta Anthropic API."""
@@ -179,10 +170,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
         model_id: str,
         messages: Sequence[Message],
         toolkit: AsyncContextToolkit[DepsT],
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` using the beta Anthropic API."""
@@ -218,10 +206,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
         model_id: str,
         messages: Sequence[Message],
         toolkit: Toolkit,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Generate an `llm.StreamResponse` using the beta Anthropic API."""
@@ -255,10 +240,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
         model_id: str,
         messages: Sequence[Message],
         toolkit: ContextToolkit[DepsT],
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextStreamResponse` using the beta Anthropic API."""
@@ -291,10 +273,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
         model_id: str,
         messages: Sequence[Message],
         toolkit: AsyncToolkit,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Generate an `llm.AsyncStreamResponse` using the beta Anthropic API."""
@@ -328,10 +307,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
         model_id: str,
         messages: Sequence[Message],
         toolkit: AsyncContextToolkit[DepsT],
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> (
         AsyncContextStreamResponse[DepsT]

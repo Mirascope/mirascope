@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from typing_extensions import Unpack
 
 from ...context import Context, DepsT
-from ...formatting import Format, FormattableT, OutputParser
+from ...formatting import FormatSpec, FormattableT
 from ...messages import Message
 from ...responses import (
     AsyncContextResponse,
@@ -153,10 +153,7 @@ class MirascopeProvider(BaseProvider[None]):
         model_id: str,
         messages: Sequence[Message],
         toolkit: Toolkit,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
         """Generate an `llm.Response` by calling through the Mirascope Router."""
@@ -176,10 +173,7 @@ class MirascopeProvider(BaseProvider[None]):
         model_id: str,
         messages: Sequence[Message],
         toolkit: ContextToolkit[DepsT],
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` by calling through the Mirascope Router."""
@@ -199,10 +193,7 @@ class MirascopeProvider(BaseProvider[None]):
         model_id: str,
         messages: Sequence[Message],
         toolkit: AsyncToolkit,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` by calling through the Mirascope Router."""
@@ -222,10 +213,7 @@ class MirascopeProvider(BaseProvider[None]):
         model_id: str,
         messages: Sequence[Message],
         toolkit: AsyncContextToolkit[DepsT],
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` by calling through the Mirascope Router."""
@@ -245,10 +233,7 @@ class MirascopeProvider(BaseProvider[None]):
         model_id: str,
         messages: Sequence[Message],
         toolkit: Toolkit,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Stream an `llm.StreamResponse` by calling through the Mirascope Router."""
@@ -268,10 +253,7 @@ class MirascopeProvider(BaseProvider[None]):
         model_id: str,
         messages: Sequence[Message],
         toolkit: ContextToolkit[DepsT],
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> (
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
@@ -293,10 +275,7 @@ class MirascopeProvider(BaseProvider[None]):
         model_id: str,
         messages: Sequence[Message],
         toolkit: AsyncToolkit,
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Stream an `llm.AsyncStreamResponse` by calling through the Mirascope Router."""
@@ -316,10 +295,7 @@ class MirascopeProvider(BaseProvider[None]):
         model_id: str,
         messages: Sequence[Message],
         toolkit: AsyncContextToolkit[DepsT],
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None = None,
+        format: FormatSpec[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> (
         AsyncContextStreamResponse[DepsT, None]

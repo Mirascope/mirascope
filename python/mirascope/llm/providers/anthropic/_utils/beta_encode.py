@@ -20,8 +20,8 @@ from ....content import ContentPart
 from ....exceptions import FeatureNotSupportedError
 from ....formatting import (
     Format,
+    FormatSpec,
     FormattableT,
-    OutputParser,
     resolve_format,
 )
 from ....messages import AssistantMessage, Message, UserMessage
@@ -168,10 +168,7 @@ def beta_encode_request(
     model_id: str,
     messages: Sequence[Message],
     tools: BaseToolkit[AnyToolSchema],
-    format: type[FormattableT]
-    | Format[FormattableT]
-    | OutputParser[FormattableT]
-    | None,
+    format: FormatSpec[FormattableT] | None,
     params: "Params",
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, BetaParseKwargs]:
     """Prepares a request for the Anthropic beta.messages.parse method."""

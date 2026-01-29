@@ -6,7 +6,7 @@ from typing import TypeAlias
 
 from mlx_lm.generate import GenerationResponse
 
-from ....formatting import Format, FormattableT, OutputParser
+from ....formatting import Format, FormatSpec, FormattableT
 from ....messages import AssistantContent, Message
 from ....responses import ChunkIterator
 from ....tools import AnyToolSchema, BaseToolkit
@@ -22,10 +22,7 @@ class BaseEncoder(abc.ABC):
         self,
         messages: Sequence[Message],
         tools: BaseToolkit[AnyToolSchema],
-        format: type[FormattableT]
-        | Format[FormattableT]
-        | OutputParser[FormattableT]
-        | None,
+        format: FormatSpec[FormattableT] | None,
     ) -> tuple[Sequence[Message], Format[FormattableT] | None, TokenIds]:
         """Encode the request messages into a format suitable for the model.
 

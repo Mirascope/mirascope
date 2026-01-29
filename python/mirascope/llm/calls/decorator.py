@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Generic, cast, overload
 from typing_extensions import Unpack
 
 from ..context import DepsT
-from ..formatting import Format, FormattableT, OutputParser
+from ..formatting import FormatSpec, FormattableT
 from ..models import Model
 from ..prompts import (
     AsyncContextMessageTemplate,
@@ -62,9 +62,7 @@ class CallDecorator(Generic[ToolT, FormattableT]):
     tools: Sequence[ToolT | ProviderTool] | None
     """The tools that are included in the prompt, if any."""
 
-    format: (
-        type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT] | None
-    )
+    format: FormatSpec[FormattableT] | None
     """The structured output format off the prompt, if any."""
 
     @overload
@@ -163,10 +161,7 @@ def call(
     model: ModelId,
     *,
     tools: Sequence[ToolT | ProviderTool] | None = None,
-    format: type[FormattableT]
-    | Format[FormattableT]
-    | OutputParser[FormattableT]
-    | None = None,
+    format: FormatSpec[FormattableT] | None = None,
     **params: Unpack[Params],
 ) -> CallDecorator[ToolT, FormattableT]:
     """Decorator for converting prompt functions into LLM calls.
@@ -181,10 +176,7 @@ def call(
     model: Model,
     *,
     tools: Sequence[ToolT | ProviderTool] | None = None,
-    format: type[FormattableT]
-    | Format[FormattableT]
-    | OutputParser[FormattableT]
-    | None = None,
+    format: FormatSpec[FormattableT] | None = None,
 ) -> CallDecorator[ToolT, FormattableT]:
     """Decorator for converting prompt functions into LLM calls.
 
@@ -197,10 +189,7 @@ def call(
     model: ModelId | Model,
     *,
     tools: Sequence[ToolT | ProviderTool] | None = None,
-    format: type[FormattableT]
-    | Format[FormattableT]
-    | OutputParser[FormattableT]
-    | None = None,
+    format: FormatSpec[FormattableT] | None = None,
     **params: Unpack[Params],
 ) -> CallDecorator[ToolT, FormattableT]:
     """Decorates a `MessageTemplate` to create a `Call` that can be invoked directly.

@@ -28,10 +28,10 @@ from .....llm import (
     ContextStreamResponse,
     ContextTools,
     DepsT,
+    FormatSpec,
     FormattableT,
     Message,
     Model,
-    OutputParser,
     Response,
     RootResponse,
     StreamResponse,
@@ -114,7 +114,7 @@ def _instrumented_model_call(
     content: UserContent | Sequence[Message],
     *,
     tools: Tools | None = None,
-    format: type[FormattableT] | FormatParam,
+    format: FormatSpec[FormattableT],
 ) -> Response[FormattableT]: ...
 
 
@@ -124,7 +124,7 @@ def _instrumented_model_call(
     content: UserContent | Sequence[Message],
     *,
     tools: Tools | None = None,
-    format: type[FormattableT] | FormatParam | OutputParser[FormattableT] | None = None,
+    format: FormatSpec[FormattableT] | None = None,
 ) -> Response | Response[FormattableT]: ...
 
 
@@ -199,7 +199,7 @@ async def _instrumented_model_call_async(
     content: UserContent | Sequence[Message],
     *,
     tools: AsyncTools | None = None,
-    format: type[FormattableT] | FormatParam,
+    format: FormatSpec[FormattableT],
 ) -> AsyncResponse[FormattableT]: ...
 
 
@@ -209,7 +209,7 @@ async def _instrumented_model_call_async(
     content: UserContent | Sequence[Message],
     *,
     tools: AsyncTools | None = None,
-    format: type[FormattableT] | FormatParam | OutputParser[FormattableT] | None = None,
+    format: FormatSpec[FormattableT] | None = None,
 ) -> AsyncResponse | AsyncResponse[FormattableT]: ...
 
 
@@ -287,7 +287,7 @@ def _instrumented_model_context_call(
     *,
     ctx: Context[DepsT],
     tools: ContextTools[DepsT] | None = None,
-    format: type[FormattableT] | FormatParam,
+    format: FormatSpec[FormattableT],
 ) -> ContextResponse[DepsT, FormattableT]: ...
 
 
@@ -298,7 +298,7 @@ def _instrumented_model_context_call(
     *,
     ctx: Context[DepsT],
     tools: ContextTools[DepsT] | None = None,
-    format: type[FormattableT] | FormatParam | OutputParser[FormattableT] | None = None,
+    format: FormatSpec[FormattableT] | None = None,
 ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]: ...
 
 
@@ -378,7 +378,7 @@ async def _instrumented_model_context_call_async(
     *,
     ctx: Context[DepsT],
     tools: AsyncContextTools[DepsT] | None = None,
-    format: type[FormattableT] | FormatParam,
+    format: FormatSpec[FormattableT],
 ) -> AsyncContextResponse[DepsT, FormattableT]: ...
 
 
@@ -389,7 +389,7 @@ async def _instrumented_model_context_call_async(
     *,
     ctx: Context[DepsT],
     tools: AsyncContextTools[DepsT] | None = None,
-    format: type[FormattableT] | FormatParam | OutputParser[FormattableT] | None = None,
+    format: FormatSpec[FormattableT] | None = None,
 ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]: ...
 
 
@@ -565,7 +565,7 @@ def _instrumented_model_stream(
     content: UserContent | Sequence[Message],
     *,
     tools: Tools | None = None,
-    format: type[FormattableT] | FormatParam,
+    format: FormatSpec[FormattableT],
 ) -> StreamResponse[FormattableT]: ...
 
 
@@ -575,7 +575,7 @@ def _instrumented_model_stream(
     content: UserContent | Sequence[Message],
     *,
     tools: Tools | None = None,
-    format: type[FormattableT] | FormatParam | OutputParser[FormattableT] | None = None,
+    format: FormatSpec[FormattableT] | None = None,
 ) -> StreamResponse | StreamResponse[FormattableT]: ...
 
 
@@ -674,7 +674,7 @@ async def _instrumented_model_stream_async(
     content: UserContent | Sequence[Message],
     *,
     tools: AsyncTools | None = None,
-    format: type[FormattableT] | FormatParam,
+    format: FormatSpec[FormattableT],
 ) -> AsyncStreamResponse[FormattableT]: ...
 
 
@@ -684,7 +684,7 @@ async def _instrumented_model_stream_async(
     content: UserContent | Sequence[Message],
     *,
     tools: AsyncTools | None = None,
-    format: type[FormattableT] | FormatParam | OutputParser[FormattableT] | None = None,
+    format: FormatSpec[FormattableT] | None = None,
 ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]: ...
 
 
@@ -787,7 +787,7 @@ def _instrumented_model_context_stream(
     *,
     ctx: Context[DepsT],
     tools: ContextTools[DepsT] | None = None,
-    format: type[FormattableT] | FormatParam,
+    format: FormatSpec[FormattableT],
 ) -> ContextStreamResponse[DepsT, FormattableT]: ...
 
 
@@ -798,7 +798,7 @@ def _instrumented_model_context_stream(
     *,
     ctx: Context[DepsT],
     tools: ContextTools[DepsT] | None = None,
-    format: type[FormattableT] | FormatParam | OutputParser[FormattableT] | None = None,
+    format: FormatSpec[FormattableT] | None = None,
 ) -> (
     ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
 ): ...
@@ -904,7 +904,7 @@ async def _instrumented_model_context_stream_async(
     *,
     ctx: Context[DepsT],
     tools: AsyncContextTools[DepsT] | None = None,
-    format: type[FormattableT] | FormatParam,
+    format: FormatSpec[FormattableT],
 ) -> AsyncContextStreamResponse[DepsT, FormattableT]: ...
 
 
@@ -915,7 +915,7 @@ async def _instrumented_model_context_stream_async(
     *,
     ctx: Context[DepsT],
     tools: AsyncContextTools[DepsT] | None = None,
-    format: type[FormattableT] | FormatParam | OutputParser[FormattableT] | None = None,
+    format: FormatSpec[FormattableT] | None = None,
 ) -> (
     AsyncContextStreamResponse[DepsT, None]
     | AsyncContextStreamResponse[DepsT, FormattableT]
