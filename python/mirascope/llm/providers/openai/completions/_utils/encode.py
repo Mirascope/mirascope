@@ -22,6 +22,7 @@ from ...model_info import (
     MODELS_WITHOUT_JSON_SCHEMA_SUPPORT,
     NON_REASONING_MODELS,
 )
+from .constants import SKIP_MODEL_FEATURES, SkipModelFeaturesType
 
 if TYPE_CHECKING:
     from .....models import Params
@@ -52,6 +53,7 @@ class ChatCompletionCreateKwargs(TypedDict, total=False):
 def _encode_user_message(
     message: UserMessage,
     model_id: OpenAIModelId,
+    model_features_name: str | SkipModelFeaturesType,
 ) -> list[openai_types.ChatCompletionMessageParam]:
     """Convert Mirascope `UserMessage` to a list of OpenAI `ChatCompletionMessageParam`.
 
@@ -100,8 +102,10 @@ def _encode_user_message(
             )
             current_content.append(content)
         elif part.type == "audio":
-            base_model_name = model_name(model_id, None)
-            if base_model_name in MODELS_WITHOUT_AUDIO_SUPPORT:
+            if (
+                model_features_name is not SKIP_MODEL_FEATURES
+                and model_features_name in MODELS_WITHOUT_AUDIO_SUPPORT
+            ):
                 raise FeatureNotSupportedError(
                     feature="Audio inputs",
                     provider_id="openai",
@@ -202,18 +206,12 @@ def _encode_assistant_message(
 
 
 def _encode_message(
-    message: Message, model_id: OpenAIModelId, encode_thoughts_as_text: bool
+    message: Message,
+    model_id: OpenAIModelId,
+    encode_thoughts_as_text: bool,
+    model_features_name: str | SkipModelFeaturesType,
 ) -> list[openai_types.ChatCompletionMessageParam]:
-    """Convert a Mirascope `Message` to OpenAI `ChatCompletionMessageParam` format.
-
-    Args:
-        message: A Mirascope message (system, user, or assistant)
-        model_id: The model ID being used
-        encode_thoughts: Whether to encode thoughts as text
-
-    Returns:
-        A list of OpenAI `ChatCompletionMessageParam` (may be multiple for tool outputs)
-    """
+    """Convert a Mirascope `Message` to OpenAI `ChatCompletionMessageParam` format."""
     if message.role == "system":
         return [
             openai_types.ChatCompletionSystemMessageParam(
@@ -221,7 +219,7 @@ def _encode_message(
             )
         ]
     elif message.role == "user":
-        return _encode_user_message(message, model_id)
+        return _encode_user_message(message, model_id, model_features_name)
     elif message.role == "assistant":
         return [_encode_assistant_message(message, model_id, encode_thoughts_as_text)]
     else:
@@ -292,6 +290,7 @@ def encode_request(
     | OutputParser[FormattableT]
     | None,
     params: Params,
+    model_features_name: str | SkipModelFeaturesType | None = None,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ChatCompletionCreateKwargs]:
     """Prepares a request for the `OpenAI.chat.completions.create` method."""
     if model_id.endswith(":responses"):
@@ -303,7 +302,23 @@ def encode_request(
         )
     base_model_name = model_name(model_id, None)
 
-    is_reasoning_model = base_model_name not in NON_REASONING_MODELS
+    effective_features_name: str | SkipModelFeaturesType
+    if model_features_name is SKIP_MODEL_FEATURES:
+        effective_features_name = SKIP_MODEL_FEATURES
+        is_reasoning_model = False
+        model_supports_strict = False
+    elif model_features_name is not None:
+        effective_features_name = model_features_name
+        is_reasoning_model = model_features_name not in NON_REASONING_MODELS
+        model_supports_strict = (
+            model_features_name not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
+        )
+    else:
+        effective_features_name = base_model_name
+        is_reasoning_model = base_model_name not in NON_REASONING_MODELS
+        model_supports_strict = (
+            base_model_name not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
+        )
     kwargs: ChatCompletionCreateKwargs = ChatCompletionCreateKwargs(
         {"model": base_model_name}
     )
@@ -338,7 +353,6 @@ def encode_request(
 
     openai_tools = [_convert_tool_to_tool_param(tool) for tool in tools.tools]
 
-    model_supports_strict = base_model_name not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
     default_mode = "strict" if model_supports_strict else "tool"
     format = resolve_format(format, default_mode=default_mode)
     if format is not None:
@@ -363,7 +377,8 @@ def encode_request(
             openai_tools.append(_convert_tool_to_tool_param(format_tool_schema))
         elif (
             format.mode == "json"
-            and base_model_name not in MODELS_WITHOUT_JSON_OBJECT_SUPPORT
+            and effective_features_name is not SKIP_MODEL_FEATURES
+            and effective_features_name not in MODELS_WITHOUT_JSON_OBJECT_SUPPORT
         ):
             kwargs["response_format"] = {"type": "json_object"}
 
@@ -378,7 +393,9 @@ def encode_request(
     encoded_messages: list[openai_types.ChatCompletionMessageParam] = []
     for message in messages:
         encoded_messages.extend(
-            _encode_message(message, model_id, encode_thoughts_as_text)
+            _encode_message(
+                message, model_id, encode_thoughts_as_text, effective_features_name
+            )
         )
     kwargs["messages"] = encoded_messages
 

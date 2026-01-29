@@ -1,6 +1,7 @@
-"""End-to-end tests for OpenAI-compatible providers (together, ollama, etc.)."""
+"""End-to-end tests for OpenAI-compatible providers (together, ollama, openrouter)."""
 
 import os
+from collections.abc import Generator
 
 import pytest
 
@@ -9,6 +10,125 @@ from tests.utils import (
     Snapshot,
     snapshot_test,
 )
+
+# --- OpenRouter tests ---
+
+OPENROUTER_OPENAI_MODEL: llm.ModelId = "openrouter/openai/gpt-4o"
+OPENROUTER_REASONING_MODEL: llm.ModelId = "openrouter/openai/o1"
+OPENROUTER_ANTHROPIC_MODEL: llm.ModelId = (
+    "openrouter/anthropic/claude-3-5-sonnet-20241022"
+)
+
+
+@pytest.fixture
+def register_openrouter(reset_provider_registry: None) -> Generator[None, None, None]:
+    """Register OpenRouter provider for tests.
+
+    Depends on reset_provider_registry to ensure clean state.
+    """
+    _ = reset_provider_registry  # Ensure dependency is resolved
+    llm.register_provider("openrouter", scope="openrouter/")
+    yield
+
+
+@pytest.mark.parametrize(
+    "model_id", [OPENROUTER_OPENAI_MODEL, OPENROUTER_ANTHROPIC_MODEL]
+)
+@pytest.mark.vcr
+def test_openrouter_sync(
+    model_id: llm.ModelId,
+    register_openrouter: None,
+    snapshot: Snapshot,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test OpenRouter sync call with different model types."""
+
+    @llm.call(model_id)
+    def simple_call() -> str:
+        return "Say hello in one word"
+
+    with snapshot_test(snapshot, caplog) as snap:
+        response = simple_call()
+        snap.set_response(response)
+
+
+@pytest.mark.parametrize(
+    "model_id", [OPENROUTER_OPENAI_MODEL, OPENROUTER_ANTHROPIC_MODEL]
+)
+@pytest.mark.vcr
+def test_openrouter_stream(
+    model_id: llm.ModelId,
+    register_openrouter: None,
+    snapshot: Snapshot,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test OpenRouter streaming with different model types."""
+
+    @llm.call(model_id)
+    def simple_call() -> str:
+        return "Say hello in one word"
+
+    with snapshot_test(snapshot, caplog) as snap:
+        stream = simple_call.stream()
+        stream.finish()
+        snap.set_response(stream)
+
+
+@pytest.mark.parametrize(
+    "model_id", [OPENROUTER_OPENAI_MODEL, OPENROUTER_ANTHROPIC_MODEL]
+)
+@pytest.mark.vcr
+def test_openrouter_with_temperature(
+    model_id: llm.ModelId,
+    register_openrouter: None,
+    snapshot: Snapshot,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test that temperature param is accepted for non-reasoning models.
+
+    Both openai/gpt-4o (non-reasoning OpenAI model) and anthropic/claude-3-5-sonnet
+    (via SKIP_MODEL_FEATURES) should accept temperature without warnings.
+    """
+
+    @llm.call(model_id, temperature=0.5)
+    def simple_call() -> str:
+        return "Say hello"
+
+    with snapshot_test(snapshot, caplog) as snap:
+        response = simple_call()
+        snap.set_response(response)
+
+    # Verify no "Skipping unsupported parameter" warning was logged
+    assert "Skipping unsupported parameter: temperature" not in caplog.text
+
+
+@pytest.mark.parametrize("model_id", [OPENROUTER_REASONING_MODEL])
+@pytest.mark.vcr
+def test_openrouter_reasoning_model_skips_temperature(
+    model_id: llm.ModelId,
+    register_openrouter: None,
+    snapshot: Snapshot,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test that reasoning models via OpenRouter skip temperature with warning.
+
+    o1 is not in NON_REASONING_MODELS, so it's treated as a reasoning model.
+    Temperature should be skipped with a warning logged.
+    """
+
+    @llm.call(model_id, temperature=0.5)
+    def simple_call() -> str:
+        return "What is 2+2?"
+
+    with snapshot_test(snapshot, caplog) as snap:
+        response = simple_call()
+        snap.set_response(response)
+
+    # Verify warning was logged about skipping temperature
+    assert "Skipping unsupported parameter: temperature" in caplog.text
+
+
+# --- Together tests ---
 
 TOGETHER_MODEL_IDS = [
     "meta-llama/Llama-3.3-70B-Instruct-Turbo",

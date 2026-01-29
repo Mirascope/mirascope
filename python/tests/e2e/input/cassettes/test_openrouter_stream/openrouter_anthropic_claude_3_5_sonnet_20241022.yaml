@@ -1,0 +1,100 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Say hello in one word"}],"model":"anthropic/claude-3-5-sonnet-20241022","stream":true,"stream_options":{"include_usage":true}}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '165'
+      Content-Type:
+      - application/json
+      Host:
+      - openrouter.ai
+      User-Agent:
+      - OpenAI/Python 2.15.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.15.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.13.3
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://openrouter.ai/api/v1/chat/completions
+  response:
+    body:
+      string: ': OPENROUTER PROCESSING
+
+
+        : OPENROUTER PROCESSING
+
+
+        data: {"id":"gen-1769672442-2UupkRyKgMiWvqgfBb8k","provider":"Amazon Bedrock","model":"anthropic/claude-3.5-sonnet","object":"chat.completion.chunk","created":1769672443,"choices":[{"index":0,"delta":{"role":"assistant","content":""},"finish_reason":null,"native_finish_reason":null,"logprobs":null}]}
+
+
+        data: {"id":"gen-1769672442-2UupkRyKgMiWvqgfBb8k","provider":"Amazon Bedrock","model":"anthropic/claude-3.5-sonnet","object":"chat.completion.chunk","created":1769672443,"choices":[{"index":0,"delta":{"role":"assistant","content":""},"finish_reason":null,"native_finish_reason":null,"logprobs":null}]}
+
+
+        data: {"id":"gen-1769672442-2UupkRyKgMiWvqgfBb8k","provider":"Amazon Bedrock","model":"anthropic/claude-3.5-sonnet","object":"chat.completion.chunk","created":1769672443,"choices":[{"index":0,"delta":{"role":"assistant","content":"Hello!"},"finish_reason":null,"native_finish_reason":null,"logprobs":null}]}
+
+
+        data: {"id":"gen-1769672442-2UupkRyKgMiWvqgfBb8k","provider":"Amazon Bedrock","model":"anthropic/claude-3.5-sonnet","object":"chat.completion.chunk","created":1769672443,"choices":[{"index":0,"delta":{"role":"assistant","content":""},"finish_reason":null,"native_finish_reason":null,"logprobs":null}]}
+
+
+        data: {"id":"gen-1769672442-2UupkRyKgMiWvqgfBb8k","provider":"Amazon Bedrock","model":"anthropic/claude-3.5-sonnet","object":"chat.completion.chunk","created":1769672443,"choices":[{"index":0,"delta":{"role":"assistant","content":""},"finish_reason":"stop","native_finish_reason":"stop","logprobs":null}]}
+
+
+        data: {"id":"gen-1769672442-2UupkRyKgMiWvqgfBb8k","provider":"Amazon Bedrock","model":"anthropic/claude-3.5-sonnet","object":"chat.completion.chunk","created":1769672443,"choices":[{"index":0,"delta":{"role":"assistant","content":""},"finish_reason":null,"native_finish_reason":null,"logprobs":null}],"usage":{"prompt_tokens":12,"completion_tokens":5,"total_tokens":17,"cost":0.000222,"is_byok":false,"prompt_tokens_details":{"cached_tokens":0,"cache_write_tokens":0},"cost_details":{"upstream_inference_cost":0.000222,"upstream_inference_prompt_cost":0.000072,"upstream_inference_completions_cost":0.00015},"completion_tokens_details":{"reasoning_tokens":0}}}
+
+
+        data: [DONE]
+
+
+        '
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-RAY:
+      - 9c57154009968be0-NRT
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Thu, 29 Jan 2026 07:40:44 GMT
+      Permissions-Policy:
+      - payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com"
+        "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")
+      Referrer-Policy:
+      - no-referrer, strict-origin-when-cross-origin
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1
