@@ -278,10 +278,9 @@ Mirascope’s response model uses `Eval` to validate and structure LLM responses
 
 ### 2. Create an Evaluation Prompt
 
-We use a Mirascope prompt decorator to define a [reusable, parameterized template](/blog/langchain-prompt-template/) for evaluating the helpfulness of a given text:
+We define a [reusable, parameterized template](/blog/langchain-prompt-template/) for evaluating the helpfulness of a given text:
 
 ```python-snippet-concat
-@llm.prompt()
 def evaluate_helpfulness(text: str) -> str:
     return inspect.cleandoc(
         f"""
@@ -321,7 +320,7 @@ evaluations: list[Eval] = []
 for model in models:
     @llm.call(model, format=Eval)
     def evaluate(text: str) -> str:
-        return evaluate_helpfulness(text).text()
+        return evaluate_helpfulness(text)
 
     response = evaluate(text_to_evaluate)
     evaluations.append(response.parse())
