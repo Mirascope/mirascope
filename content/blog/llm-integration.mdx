@@ -2,6 +2,7 @@
 title: "LLM Integration - Key Tools and Techniques"
 description: "A complete guide to LLM integration-explore technologies, frameworks, best practices, and examples for seamless implementations of language models in your applications."
 date: "2025-03-03"
+updatedAt: "2026-01-28"
 readTime: "17 min read"
 author: "William Bakst"
 ---
@@ -22,7 +23,7 @@ But calling an API isn’t the end of the story - **the software must be designe
 * Model vendor lock-in requires flexible and open design.  
 * Experimenting with different prompts requires version control and observability.
 
-That’s why we created [Mirascope](https://github.com/mirascope/mirascope/), a user-friendly toolkit for integrating LLMs into applications, and [Lilypad](/docs/lilypad), our prompt management and observability platform.
+That's why we created [Mirascope](https://github.com/mirascope/mirascope/), a user-friendly toolkit for integrating LLMs into applications, and [Mirascope Cloud](/docs/learn/ops), our prompt management and observability platform.
 
 Below, we dive into real-world examples of LLM integrations and then explain the different ways you can set this up.
 
@@ -152,9 +153,9 @@ These are built on top of APIs and provide out-of-the-box functions and authenti
 
 All the major model providers offer SDKs for interacting with their products, while libraries (also known as frameworks) like LangChain and LlamaIndex extend functionality by adding features like prompt management, retrieval augmented generation, and workflow orchestration.
 
-While frameworks provide pre-built abstractions that help integrate LLMs, they also have certain downsides **that we built Mirascope and Lilypad to address**.
+While frameworks provide pre-built abstractions that help integrate LLMs, they also have certain downsides **that we built Mirascope and Mirascope Cloud to address**.
 
-Below, we present a few of these challenges and explain how we designed Mirascope and Lilypad to overcome them.
+Below, we present a few of these challenges and explain how we designed Mirascope and Mirascope Cloud to overcome them.
 
 #### Dependencies as Bottlenecks
 
@@ -191,9 +192,9 @@ from langchain_core.prompts import PromptTemplate
 
 loader = WebBaseLoader(
     web_paths=("https://en.wikipedia.org/wiki/Quantum_computing",),
-    bs_kwargs=dict(
-        parse_only=SoupStrainer(class_=("post-content", "post-title", "post-header"))
-    ),
+    bs_kwargs={
+        "parse_only": SoupStrainer(class_=("post-content", "post-title", "post-header"))
+    },
 )
 docs = loader.load()
 
@@ -250,15 +251,15 @@ from langchain_community.document_loaders import WebBaseLoader
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
 # Load, chunk and index the contents of the blog.
 
 loader = WebBaseLoader(
     web_paths=("https://en.wikipedia.org/wiki/Quantum_computing",),
-    bs_kwargs=dict(
-        parse_only=SoupStrainer(class_=("post-content", "post-title", "post-header"))
-    ),
+    bs_kwargs={
+        "parse_only": SoupStrainer(class_=("post-content", "post-title", "post-header"))
+    },
 )
 docs = loader.load()
 
@@ -270,9 +271,10 @@ vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings
 
 retriever = vectorstore.as_retriever()
 
-@llm.call(provider="openai", model="gpt-4o-mini", output_parser=str)
-@prompt_template(
-    """
+@llm.call("openai/gpt-4o-mini")
+def overview(subject: str) -> str:
+    information = "\n\n".join(doc.page_content for doc in retriever.invoke(subject))
+    return f"""
     Use the following pieces of information to provide a concise overview.
     If the details are insufficient, state that clearly without making assumptions.
     Keep your response to three sentences for conciseness.
@@ -284,19 +286,14 @@ retriever = vectorstore.as_retriever()
 
     Overview:
     """
-)
-def overview(subject: str) -> openai.OpenAIDynamicConfig:
-    information = "\n\n".join(doc.page_content for doc in retriever.invoke(subject))
-    return {"computed_fields": {"information": information}}
 
-output = overview("Describe quantum computing")
-print(output)
+response = overview("Describe quantum computing")
+print(response.text())
 ```
 
-* We replace LangChain’s `PromptTemplate` object with Mirascope’s `@prompt_template` decorator, which directly applies the prompt format to a function, removing the need for explicit template construction and chaining.  
-* Instead of `RunnablePassthrough()`, we use Python native arguments as there’s no explicit need for a passthrough.  
-* A manual LLM call and parsing (`ChatOpenAI()` and `StrOutputParser` respectively) are replaced by a single decorator  
-* `@llm.call(provider="openai", model="gpt-4o-mini", output_parser=str)`  
+* We replace LangChain's `PromptTemplate` object with a simple f-string returned from the function, removing the need for explicit template construction and chaining.
+* Instead of `RunnablePassthrough()`, we use Python native arguments as there's no explicit need for a passthrough.
+* A manual LLM call and parsing (`ChatOpenAI()` and `StrOutputParser` respectively) are replaced by a single decorator `@llm.call("openai/gpt-4o-mini")`.
 * We replace the separate `format_docs()` function with inline string formatting.
 
 This results in cleaner, more transparent code, making it easier to debug, extend, and maintain.
@@ -307,32 +304,27 @@ Frameworks provide convenient ways to make API calls but often don’t enforce d
 
 **Keeping prompts and calls together makes the code more readable and maintainable, and reduces the risk of errors and drift**.
 
-Mirascope’s call decorator - e.g., `@llm.call()` - simplifies model invocation by binding a function to an LLM call and turning that function into a prompt.
+Mirascope's call decorator - e.g., `@llm.call()` - simplifies model invocation by binding a function to an LLM call and turning that function into a prompt.
 
-When used with `@prompt_template()`, the call decorator injects function arguments into the formatted prompt, removing the need for manually formatting or passing inputs into the LLM call.
+The call decorator injects function arguments into the formatted prompt, removing the need for manually formatting or passing inputs into the LLM call.
 
 It also automates response parsing and its interface lets you hot switch model providers when needed - our growing list includes OpenAI, Anthropic, Mistral, Google Gemini, Groq, Cohere, LiteLLM, Azure AI, and Bedrock.
 
-An example of this is shown below. To switch from OpenAI to Anthropic, you can use `llm_override` to override provider settings at runtime to specify a different model.
+An example of this is shown below. To switch from OpenAI to Anthropic, you can use `llm.model()` to override provider settings at runtime to specify a different model.
 
 ```python {4 12-17}
 from mirascope import llm
 
-@llm.call(provider="openai", model="gpt-4o-mini") # Calls GPT-4o-mini and parses output as a string
-
+@llm.call("openai/gpt-4o-mini") # Calls GPT-4o-mini
 def explain(topic: str) -> str:
     return f"Explain the concept of {topic} in two sentences."
 
-output = explain("quantum computing")
-print(output)
+response = explain("quantum computing")
+print(response.text())
 
-override_output = llm.override(
-    recommend_book,
-    provider="anthropic",
-    model="claude-3-5-sonnet-20240620",
-    call_params={"temperature": 0.7},
-)("quantum computing")
-print(override_output)
+with llm.model("anthropic/claude-sonnet-4-20250514", temperature=0.7):
+    response = explain("quantum computing")
+    print(response.text())
 ```
 
 #### Not Validating Model Outputs
@@ -349,11 +341,11 @@ Instead, we’re talking about:
 
 To get these benefits with the big frameworks, **you usually have to write your own boilerplate**.
 
-Mirascope offers its Pydantic-based `response_model`, allowing you to easily define, structure, and validate outputs using Pydantic’s `BaseModel`.
+Mirascope offers its Pydantic-based `format` parameter, allowing you to easily define, structure, and validate outputs using Pydantic's `BaseModel`.
 
-Pydantic enforces the schema you define and automatically converts, validates, and constraints model outputs to ensure they’re well-formed, type-safe, and free from common parsing errors - without requiring extra manual checks.
+Pydantic enforces the schema you define and automatically converts, validates, and constraints model outputs to ensure they're well-formed, type-safe, and free from common parsing errors - without requiring extra manual checks.
 
-An example of this is shown below, where we specify the model’s outputs should be checked against the Pydantic object `WeatherResponse` and automatically parsed into a structured, type-safe Python object:
+An example of this is shown below, where we specify the model's outputs should be checked against the Pydantic object `WeatherResponse` and automatically parsed into a structured, type-safe Python object:
 
 ```python {5-7 13}
 from mirascope import llm
@@ -363,17 +355,13 @@ class WeatherResponse(BaseModel):
     temperature: float
     condition: str
 
-@llm.call(
-    provider="openai",
-    model="gpt-4o",
-    response_model=WeatherResponse,
-)
+@llm.call("openai/gpt-4o", format=WeatherResponse)
 def get_weather(location: str) -> str:
     return f"What's the weather in {location}"
 
 response = get_weather("Paris")
-print(response.temperature, response.condition)  # Fully structured, type-safe output! 
-
+weather = response.parse()
+print(weather.temperature, weather.condition)  # Fully structured, type-safe output!
 ```
 
 A major benefit of Mirascope’s response models is they’re also fully integrated into your IDE, instantly showing you expected return types of LLM outputs:
@@ -394,38 +382,32 @@ It got so bad that at one point, one of our developers forbade anyone from touch
 
 That’s why having a structured system for tracking, versioning, and iterating on prompts is important - not just for maintaining consistency, but for ensuring that past optimizations aren’t lost and for making improvements with confidence.
 
-[Lilypad](/docs/lilypad/) versions and traces your LLM code automatically with every change you make.
+[Mirascope Cloud](/docs/learn/ops) versions and traces your LLM code automatically with every change you make.
 
-You just add a Lilypad decorator `@lilypad.trace` to any function to start automatically versioning any changes that occur:
+You just add the `@ops.version` decorator to any function to start automatically versioning any changes that occur:
 
 ```python
-import lilypad
-from openai import OpenAI
- 
-lilypad.configure(auto_llm=True)  # [!code highlight]
-client = OpenAI()
+from mirascope import llm, ops
 
+ops.configure()
+ops.instrument_llm()  # [!code highlight]
 
-@lilypad.trace(versioning="automatic")  # [!code highlight]
+@ops.version  # [!code highlight]
+@llm.call("openai/gpt-4o-mini")
 def answer_question(question: str) -> str:
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": question}],
-    )
-    return str(completion.choices[0].message.content)
+    return question
 
-
-answer = answer_question("What's the famous question that's answered by '42'?")
-print(answer)
+response = answer_question("What's the famous question that's answered by '42'?")
+print(response.text())
 ```
 
-Lilypad versions LLM generations using their function closure, so even changes to functions or classes used within the generation are automatically versioned (as long as they’re user defined).
+Mirascope Cloud versions LLM generations using their function closure, so even changes to functions or classes used within the generation are automatically versioned (as long as they're user defined).
 
-By adding `lilypad.configure()` to the application (see code above), you also automatically trace all calls made by any function decorated with `@lilypad.trace`. This means every call to an LLM is traced against the version of the code that generated it.
+By adding `ops.configure()` and `ops.instrument_llm()` to the application (see code above), you also automatically trace all calls made by any function decorated with `@ops.version`. This means every call to an LLM is traced against the version of the code that generated it.
 
-![Lilypad Trace Details Screenshot](/assets/blog/llm-integration/lilypad_generation_details_screenshot.webp)
+![Mirascope Cloud Trace Details Screenshot](/assets/blog/llm-integration/lilypad_generation_details_screenshot.webp)
 
-Lilypad shows traces in real time as LLM calls are made, providing real-time summaries of every call so you can evaluate and improve prompts more quickly.
+Mirascope Cloud shows traces in real time as LLM calls are made, providing real-time summaries of every call so you can evaluate and improve prompts more quickly.
 
 ### Writing Your Own Code
 
@@ -451,6 +433,6 @@ Future-proof your AI workflows and applications with our toolkit’s pythonic ap
 
 It offers the right level of abstraction for simplifying development and experimentation with large language models, while not boxing you in, and ensuring scalability for projects of any size.
 
-Want to learn more about Mirascope’s tools for building generative AI agents? You can find Mirascope code samples both in our [documentation](/docs/v1/) and our [GitHub repository](https://github.com/mirascope/mirascope).
+Want to learn more about Mirascope's tools for building generative AI agents? You can find Mirascope code samples both in our [documentation](/docs) and our [GitHub repository](https://github.com/mirascope/mirascope).
 
-Lilypad code samples can also be found in our [documentation](/docs/lilypad). These resources can help you incorporate automation into your LLM integration workflow, speeding up deployment and reducing manual tasks.
+Mirascope Cloud code samples can also be found in our [documentation](/docs/learn/ops). These resources can help you incorporate automation into your LLM integration workflow, speeding up deployment and reducing manual tasks.
