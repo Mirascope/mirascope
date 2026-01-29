@@ -12,6 +12,9 @@ import {
   textStart,
   textChunk,
   textEnd,
+  toolCallStartChunk,
+  toolCallChunk,
+  toolCallEndChunk,
   finishReasonChunk,
   usageDeltaChunk,
   rawStreamEventChunk,
@@ -22,10 +25,17 @@ import type { Jsonable } from '@/llm/types/jsonable';
 
 /**
  * State tracking for stream decoding.
+ * Matches Python SDK's _OpenAIChunkProcessor state.
  */
 interface DecodeState {
-  /** Whether we're in a text block */
-  inTextBlock: boolean;
+  /** Current content type being streamed */
+  currentContentType: 'text' | 'tool_call' | null;
+  /** Index of the current tool call being streamed */
+  currentToolIndex: number | null;
+  /** ID of the current tool call being streamed */
+  currentToolId: string | null;
+  /** Whether a refusal was encountered */
+  refusalEncountered: boolean;
 }
 
 /**
@@ -33,7 +43,10 @@ interface DecodeState {
  */
 export function createDecodeState(): DecodeState {
   return {
-    inTextBlock: false,
+    currentContentType: null,
+    currentToolIndex: null,
+    currentToolId: null,
+    refusalEncountered: false,
   };
 }
 
@@ -56,43 +69,6 @@ export function decodeStreamEvent(
   // Emit raw message chunk
   chunks.push(rawMessageChunk(chunk as unknown as Jsonable));
 
-  const choice = chunk.choices[0];
-
-  if (choice?.delta) {
-    const delta = choice.delta;
-
-    if (delta.content) {
-      if (!state.inTextBlock) {
-        chunks.push(textStart());
-        state.inTextBlock = true;
-      }
-      chunks.push(textChunk(delta.content));
-    }
-
-    /* v8 ignore start - refusal is a rare edge case */
-    if (delta.refusal) {
-      if (!state.inTextBlock) {
-        chunks.push(textStart());
-        state.inTextBlock = true;
-      }
-      chunks.push(textChunk(delta.refusal));
-    }
-    /* v8 ignore stop */
-  }
-
-  if (choice?.finish_reason) {
-    // Close any open text block
-    if (state.inTextBlock) {
-      chunks.push(textEnd());
-      state.inTextBlock = false;
-    }
-
-    const finishReason = decodeFinishReason(choice.finish_reason);
-    if (finishReason) {
-      chunks.push(finishReasonChunk(finishReason));
-    }
-  }
-
   // Handle usage (typically in the last chunk when stream_options.include_usage is true)
   if (chunk.usage) {
     chunks.push(
@@ -106,6 +82,119 @@ export function decodeStreamEvent(
         /* v8 ignore stop */
       })
     );
+  }
+
+  const choice = chunk.choices[0];
+  if (!choice) {
+    return chunks;
+  }
+
+  const delta = choice.delta;
+
+  // Handle text content (including refusal as text)
+  const content = delta?.content ?? delta?.refusal;
+  /* v8 ignore start - refusal is a rare edge case */
+  if (delta?.refusal) {
+    state.refusalEncountered = true;
+  }
+  /* v8 ignore stop */
+  if (content !== undefined && content !== null) {
+    if (state.currentContentType === null) {
+      chunks.push(textStart());
+      state.currentContentType = 'text';
+    }
+    chunks.push(textChunk(content));
+  }
+
+  // Handle tool calls
+  if (delta?.tool_calls) {
+    /* v8 ignore start - rare to have text and tool calls in same chunk */
+    if (state.currentContentType === 'text') {
+      chunks.push(textEnd());
+    }
+    /* v8 ignore stop */
+    state.currentContentType = 'tool_call';
+
+    for (const toolCallDelta of delta.tool_calls) {
+      const index = toolCallDelta.index;
+
+      // Check for out-of-order tool call data
+      /* v8 ignore start - defensive check for malformed streams */
+      if (state.currentToolIndex !== null && state.currentToolIndex > index) {
+        throw new Error(
+          `Received tool data for already-finished tool at index ${index}`
+        );
+      }
+      /* v8 ignore stop */
+
+      // If we're moving to a new tool (higher index), close the previous one
+      if (state.currentToolIndex !== null && state.currentToolIndex < index) {
+        /* v8 ignore start - defensive check */
+        if (state.currentToolId === null) {
+          throw new Error('No current_tool_id for ToolCallEndChunk');
+        }
+        /* v8 ignore stop */
+        chunks.push(toolCallEndChunk(state.currentToolId));
+        state.currentToolIndex = null;
+      }
+
+      // Start a new tool call if we don't have one at this index
+      if (state.currentToolIndex === null) {
+        const name = toolCallDelta.function?.name;
+        const toolId = toolCallDelta.id;
+        /* v8 ignore start - defensive check for malformed streams */
+        if (!name) {
+          throw new Error(`Missing name for tool call at index ${index}`);
+        }
+        if (!toolId) {
+          throw new Error(`Missing id for tool call at index ${index}`);
+        }
+        /* v8 ignore stop */
+
+        state.currentToolIndex = index;
+        state.currentToolId = toolId;
+        chunks.push(toolCallStartChunk(toolId, name));
+      }
+
+      // Emit tool call argument chunk if present
+      if (toolCallDelta.function?.arguments) {
+        /* v8 ignore start - defensive check */
+        if (state.currentToolId === null) {
+          throw new Error('No current_tool_id for ToolCallChunk');
+        }
+        /* v8 ignore stop */
+        chunks.push(
+          toolCallChunk(state.currentToolId, toolCallDelta.function.arguments)
+        );
+      }
+    }
+  }
+
+  // Handle finish reason
+  if (choice.finish_reason) {
+    if (state.currentContentType === 'text') {
+      chunks.push(textEnd());
+    } else if (state.currentContentType === 'tool_call') {
+      /* v8 ignore start - defensive check */
+      if (state.currentToolId === null) {
+        throw new Error('No current_tool_id for ToolCallEndChunk');
+      }
+      /* v8 ignore stop */
+      chunks.push(toolCallEndChunk(state.currentToolId));
+      /* v8 ignore start - defensive check for unknown content types */
+    } else if (state.currentContentType !== null) {
+      throw new Error('Unexpected content type');
+    }
+    /* v8 ignore stop */
+
+    // Emit finish reason if applicable
+    /* v8 ignore next 2 - refusal is a rare edge case */
+    const finishReason = state.refusalEncountered
+      ? FinishReason.REFUSAL
+      : decodeFinishReason(choice.finish_reason);
+    if (finishReason !== null) {
+      chunks.push(finishReasonChunk(finishReason));
+    }
   }
 
   return chunks;
