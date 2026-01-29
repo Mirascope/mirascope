@@ -2,6 +2,7 @@
 title: "Langfuse Prompt Management: How It Works (+ A Flexible Alternative to Consider)"
 description: "Langfuse prompt management explained: Understand its features, limitations, and how it compares to a more developer-friendly alternative."
 date: "2025-07-23"
+updatedAt: "2026-01-28"
 readTime: "12 min read"
 author: "William Bakst"
 ---
@@ -17,11 +18,11 @@ It lets you:
 
 Still, the experience isn’t without its tradeoffs. For example, self-hosting can be difficult to set up and maintain, with multiple infrastructure dependencies and a UI that some devs find unintuitive. Even after setup, debugging missing traces often means digging through logs and storage layers.
 
-We built [Lilypad](/docs/lilypad) to version not only the prompt text but the entire context in which the prompt is called. This includes the logic, model settings, parameters, and structured return types, so you can iterate and debug with less guesswork when your outputs vary.  
+We built [Mirascope Cloud](/docs/learn/ops) to version not only the prompt text but the entire context in which the prompt is called. This includes the logic, model settings, parameters, and structured return types, so you can iterate and debug with less guesswork when your outputs vary.
 
-It also includes a fully type-safe, no-code playground that mirrors production behavior, so what functions in testing work exactly the same in production.  
+It also includes a fully type-safe, no-code playground that mirrors production behavior, so what functions in testing work exactly the same in production.
 
-In this article, we’ll show how prompt management works in Langfuse, then contrast it with how Lilypad achieves the same goals in a simpler, more complete way. 
+In this article, we'll show how prompt management works in Langfuse, then contrast it with how Mirascope Cloud achieves the same goals in a simpler, more complete way. 
 
 ## How Prompt Management Works in Langfuse
 
@@ -88,27 +89,27 @@ langfuse.create_prompt(
 
 This call creates a prompt named movie-critic. If a prompt with that name already exists, Langfuse automatically logs a new version. You can also attach one or more labels like \["production"\] to route runtime calls to this version by default. Labels in Langfuse work as version pointers. 
 
-At runtime or elsewhere in code, you can retrieve a prompt and fill in its variables. For example: 
+At runtime or elsewhere in code, you can retrieve a prompt and fill in its variables. For example:
 
-```python
+```python-snippet-skip
 prompt_obj = langfuse.get_prompt("movie-critic")
 final_text = prompt_obj.compile(criticlevel="expert", movie="Dune 2")
 print(final_text)
-# -> "As an expert movie critic, do you like Dune 2?" 
+# -> "As an expert movie critic, do you like Dune 2?"
 ```
 
 Here, `get_prompt("movie-critic")` fetches the latest version tagged with the `“production”` label. The prompt_obj contains a template with placeholders like `{{criticlevel}}` and `{{movie}}`. When you call `prompt_obj.compile(...)`, those placeholders get populated with your variables. 
 
 By default, the SDK caches prompts after the first fetch to minimize latency on future requests. You can also fetch a prompt by specific label or version, depending on your needs. For example:
 
-```python
+```python-snippet-skip
 # Get version 1 explicitly
 old_prompt = langfuse.get_prompt("movie-critic", version=1)
-# Or fetch the prompt currently labeled “staging”
+# Or fetch the prompt currently labeled "staging"
 staging_prompt = langfuse.get_prompt("movie-critic", label="staging")
 ```
 
-**Note**: Langfuse’s prompt retrievals aren’t type-safe (unlike Lilypad’s) and so there’s no automatic check to make sure the `get_prompt` method receives the correct template arguments.
+**Note**: Langfuse's prompt retrievals aren't type-safe (unlike Mirascope Cloud's) and so there's no automatic check to make sure the `get_prompt` method receives the correct template arguments.
 
 Using labels like "latest" (which always point to the most recent version), you can build workflows to promote versions, like creating a new prompt version in code, tagging it as staging, testing it, then updating the production label to promote it.
 
@@ -152,45 +153,41 @@ Feedback can be explicit (ratings, votes) or implicit (did the user accept the s
 
 Later, you can filter traces by feedback score or plot average feedback per prompt version.
 
-## How Prompt Management Works in Lilypad
+## How Prompt Management Works in Mirascope Cloud
 
-Lilypad is an open-source prompt engineering framework that treats prompts not just as text to be managed separately, but as an integral part of your codebase.  
+Mirascope Cloud is an open-source prompt engineering framework that treats prompts not just as text to be managed separately, but as an integral part of your codebase.
 
-It encourages embedding prompts directly within plain Python functions in order to keep the prompt and the logic it uses all in one place, making your code easier to manage, version, and debug as you iterate. 
+It encourages embedding prompts directly within plain Python functions in order to keep the prompt and the logic it uses all in one place, making your code easier to manage, version, and debug as you iterate.
 
-Then, with a simple `@lilypad.trace(versioning="automatic")` decorator, that function (and everything that influences its output) is versioned automatically.   
+Then, with a simple `@ops.version` decorator, that function (and everything that influences its output) is versioned automatically.
 
-This keeps prompts close to the code that uses them, while Lilypad takes care of versioning and tracing behind the scenes. It also works with tools like Pydantic to help catch errors and keep things consistent.
+This keeps prompts close to the code that uses them, while Mirascope Cloud takes care of versioning and tracing behind the scenes. It also works with tools like Pydantic to help catch errors and keep things consistent.
 
-### Why Reproducibility Needs More Than Prompt Text  
+### Why Reproducibility Needs More Than Prompt Text
 
 In real-world LLM applications, the prompt text is only part of the picture. The result also depends on things like the function's code, the inputs, model settings, and how the response is handled afterward.
 
-Versioning only the [LLM prompt](/blog/llm-prompt) (as we’ve seen other tools do) makes debugging fragile, because outputs can still vary even when the prompt stays the same. To reliably repeat or improve a result, you need the full context.
+Versioning only the [LLM prompt](/blog/llm-prompt) (as we've seen other tools do) makes debugging fragile, because outputs can still vary even when the prompt stays the same. To reliably repeat or improve a result, you need the full context.
 
-Lilypad captures the full context by treating the entire function call as a traceable unit. It takes a complete snapshot, including the prompt, code, inputs, and outputs, so you can replay it exactly as it ran, or change a part to see another result.
+Mirascope Cloud captures the full context by treating the entire function call as a traceable unit. It takes a complete snapshot, including the prompt, code, inputs, and outputs, so you can replay it exactly as it ran, or change a part to see another result.
 
 ```python
-import lilypad
-from openai import OpenAI
+from mirascope import llm, ops
 
-client = OpenAI()
+ops.configure()
+ops.instrument_llm()
 
-@lilypad.trace(versioning="automatic")  # [!code highlight]
+@ops.version  # [!code highlight]
+@llm.call("openai/gpt-4o-mini")
 def answer_question(question: str) -> str:
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": f"Answer this question: {question}"}]
-
-    )
-    return str(completion.choices[0].message.content)
+    return f"Answer this question: {question}"
 
 response = answer_question("What is the capital of France?")
-print(response)
-# > Paris 
+print(response.text())
+# > Paris
 ```
 
-Each time we run the function using the decorator with `versioning=”automatic”` enabled, Lilypad creates a new version (except if the function hasn’t changed between runs). 
+Each time we run the function using the `@ops.version` decorator, Mirascope Cloud creates a new version (except if the function hasn't changed between runs). 
 
 Clicking the “Compare” button allows you to see and compare changes between versions:  
 
@@ -198,9 +195,9 @@ Clicking the “Compare” button allows you to see and compare changes between 
 
 You then select different versions to view the differences side-by-side. 
 
-![Lilypad Compare Versions](/assets/blog/langfuse-prompt-management/lilypad-compare-versions.webp)
+![Mirascope Cloud Compare Versions](/assets/blog/langfuse-prompt-management/lilypad-compare-versions.webp)
 
-Lilypad instruments everything using the [OpenTelemetry GenAI spec](https://opentelemetry.io/) for deep observability.
+Mirascope Cloud instruments everything using the [OpenTelemetry GenAI spec](https://opentelemetry.io/) for deep observability.
 
 Each trace captures the full context: what was asked, how it was asked, and what the model returned. You also get detailed metadata like inputs, outputs, model and provider info, token usage, latency, and cost.  
 
@@ -210,7 +207,7 @@ This level of visibility lets you easily measure improvements and iterate withou
 
 ### How Non-Technical Users Can Safely Edit and Ship Prompts
 
-Lilypad provides a no-code, browser-based playground that makes prompt management accessible to non-technical team members.
+Mirascope Cloud provides a no-code, browser-based playground that makes prompt management accessible to non-technical team members.
 
 SMEs can edit, test, and ship prompt updates without requiring direct developer intervention for every iteration. This separation of concerns lets devs focus on system architecture, while SMEs handle prompt logic and evaluation.
 
@@ -234,9 +231,9 @@ In traditional software, tests can check for exact results because the code alwa
 
 This makes [prompt evaluation](/blog/prompt-evaluation) an ongoing process, not a one-time test you automate and forget. You need to continuously observe outputs, especially as new edge cases evolve.  
 
-This also doesn't work well for traditional methods or tools (like LangSmith) that rely solely on predefined datasets and fixed expected outputs, because LLM systems aren’t static. Prompts get tweaked, logic evolves, and outputs can vary. 
+This also doesn't work well for traditional methods or tools (like LangSmith) that rely solely on predefined datasets and fixed expected outputs, because LLM systems aren't static. Prompts get tweaked, logic evolves, and outputs can vary.
 
-Lilypad tackles these challenges with a trace-first approach to evaluation. Instead of requiring predefined datasets and fixed expected outputs, it automatically logs every prompt execution as a full, versioned trace. 
+Mirascope Cloud tackles these challenges with a trace-first approach to evaluation. Instead of requiring predefined datasets and fixed expected outputs, it automatically logs every prompt execution as a full, versioned trace. 
 
 These traces act as real-world evaluation data, giving you a complete snapshot of what happened (input and outputs, call settings, logic, etc.), and you don’t have to manually curate anything upfront.
 
@@ -256,8 +253,8 @@ The long-term goal with [advanced prompt engineering](/blog/advanced-prompt-engi
 
 That said, we still recommend keeping a human in the loop to ensure the LLM judge’s evaluations remain aligned with those of human annotators.. 
 
-## Manage Your Prompts with Lilypad 
+## Manage Your Prompts with Mirascope Cloud
 
-For full reproducibility and control, Lilypad versions your entire [LLM integration](/blog/llm-integration), including the prompt text, the code that calls the model, the input parameters, and any logic around it, so you can see exactly what was run, every time.
+For full reproducibility and control, Mirascope Cloud versions your entire [LLM integration](/blog/llm-integration), including the prompt text, the code that calls the model, the input parameters, and any logic around it, so you can see exactly what was run, every time.
 
-You can start for free using your [GitHub](https://github.com/mirascope/lilypad) credentials (no credit card required), with paid plans for growing teams. Lilypad also supports [Mirascope](/docs/mirascope), our lightweight toolkit for building [LLM agents](/blog/llm-agents).
+You can start for free using your [GitHub](https://github.com/mirascope/mirascope) credentials (no credit card required), with paid plans for growing teams. Mirascope Cloud also supports [Mirascope](/docs/learn/), our lightweight toolkit for building [LLM agents](/blog/llm-agents).
