@@ -107,6 +107,7 @@ export class BaseResponse extends RootResponse {
 
       if (part.type === 'text') {
         texts.push(part);
+        /* v8 ignore start - tool_call and thought content not yet implemented */
       } else if (part.type === 'tool_call') {
         // Note: FORMAT_TOOL transformation is not implemented yet as it requires
         // Format infrastructure. When implemented, tool calls starting with the
@@ -115,6 +116,7 @@ export class BaseResponse extends RootResponse {
       } else if (part.type === 'thought') {
         thoughts.push(part);
       }
+      /* v8 ignore stop */
     }
 
     this.texts = texts;

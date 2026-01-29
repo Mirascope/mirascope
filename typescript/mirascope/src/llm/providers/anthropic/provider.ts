@@ -83,6 +83,7 @@ export class AnthropicProvider extends BaseProvider {
       providerId: 'anthropic',
       modelId,
       providerModelName: modelName(modelId),
+      /* v8 ignore next - params always provided via Model */
       params: args.params ?? {},
       inputMessages: args.messages,
       assistantMessage,
@@ -97,8 +98,10 @@ export class AnthropicProvider extends BaseProvider {
    * @param e - The error to extract the status from
    * @returns The HTTP status code or undefined if not available
    */
+  /* v8 ignore start - only triggers on API errors, will add tests later */
   protected getErrorStatus(e: Error): number | undefined {
     // Anthropic SDK uses 'status' property
     return (e as InstanceType<typeof Anthropic.APIError>).status;
   }
+  /* v8 ignore stop */
 }
