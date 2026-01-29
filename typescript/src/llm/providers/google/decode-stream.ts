@@ -19,6 +19,9 @@ import {
   thoughtStart,
   thoughtChunk,
   thoughtEnd,
+  toolCallStartChunk,
+  toolCallChunk,
+  toolCallEndChunk,
   finishReasonChunk,
   usageDeltaChunk,
   rawStreamEventChunk,
@@ -26,6 +29,12 @@ import {
 } from '@/llm/responses/chunks';
 import { FinishReason } from '@/llm/responses/finish-reason';
 import type { Jsonable } from '@/llm/types/jsonable';
+
+/**
+ * Default tool ID for Google function calls when no ID is provided.
+ * Google doesn't always provide tool IDs, so we use this as a fallback.
+ */
+const UNKNOWN_TOOL_ID = 'google_unknown_tool_id';
 
 /**
  * State tracking for stream decoding.
@@ -109,8 +118,42 @@ export function decodeStreamEvent(
         state.inTextBlock = true;
       }
       chunks.push(textChunk(part.text));
+    } else if (part.functionCall) {
+      const functionCall = part.functionCall;
+      const toolId = functionCall.id ?? UNKNOWN_TOOL_ID;
+      const toolName = functionCall.name;
+
+      /* v8 ignore start - defensive check for malformed Google API response */
+      if (!toolName) {
+        throw new Error('Required name missing on Google function call');
+      }
+      /* v8 ignore stop */
+
+      // Close any open blocks before emitting tool call
+      /* v8 ignore start - Google doesn't send text and function calls together */
+      if (state.inTextBlock) {
+        chunks.push(textEnd());
+        state.inTextBlock = false;
+      }
+      /* v8 ignore stop */
+      /* v8 ignore start - edge case when thought block open at function call */
+      if (state.inThoughtBlock) {
+        chunks.push(thoughtEnd());
+        state.inThoughtBlock = false;
+      }
+      /* v8 ignore stop */
+
+      // Google sends complete function calls, so we emit start/chunk/end together
+      chunks.push(toolCallStartChunk(toolId, toolName));
+      chunks.push(
+        toolCallChunk(
+          toolId,
+          /* v8 ignore next 1 - empty args branch */
+          functionCall.args ? JSON.stringify(functionCall.args) : '{}'
+        )
+      );
+      chunks.push(toolCallEndChunk(toolId));
     }
-    // Note: functionCall parts not yet supported
   }
 
   if (candidate?.finishReason) {

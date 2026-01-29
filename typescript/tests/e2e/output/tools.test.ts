@@ -84,11 +84,7 @@ describe('tool usage', () => {
   );
 });
 
-// TODO: Enable once streaming tool support is implemented in provider decoders.
-// Currently, the provider decoders (anthropic, openai, google) don't emit
-// tool_call chunks during streaming - they only handle text content.
-// See: decode-stream.ts in each provider directory.
-describe.skip('tool usage with streaming', () => {
+describe('tool usage with streaming', () => {
   it.record.each(PROVIDERS_FOR_TOOLS_TESTS)(
     'streams tool calls and resumes with results',
     async ({ model }) => {
