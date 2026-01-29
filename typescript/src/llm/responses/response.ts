@@ -9,7 +9,6 @@ import {
   BaseResponse,
   type BaseResponseInit,
 } from '@/llm/responses/base-response';
-import type { StreamResponse } from '@/llm/responses/stream-response';
 import { Toolkit, type Tools } from '@/llm/tools';
 
 /**
@@ -96,31 +95,5 @@ export class Response extends BaseResponse {
   async resume(content: UserContent): Promise<Response> {
     const model = await this.model;
     return model.resume(this, content);
-  }
-
-  /**
-   * Generate a new StreamResponse using this response's messages with additional user content.
-   *
-   * Uses this response's tools and format type. Also uses this response's provider,
-   * model, and params. Returns a streaming response for incremental consumption.
-   *
-   * @param content - The new user message content to append to the message history.
-   * @returns A new StreamResponse instance generated from the extended message history.
-   *
-   * @example
-   * ```typescript
-   * const response = await model.call('Hello!');
-   * console.log(response.text());
-   *
-   * // Continue the conversation with streaming
-   * const followUp = await response.resumeStream('Tell me more about that');
-   * for await (const text of followUp.textStream()) {
-   *   process.stdout.write(text);
-   * }
-   * ```
-   */
-  async resumeStream(content: UserContent): Promise<StreamResponse> {
-    const model = await this.model;
-    return model.resumeStream(this, content);
   }
 }
