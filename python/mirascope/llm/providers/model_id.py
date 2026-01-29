@@ -3,6 +3,9 @@ from typing import TypeAlias
 from .anthropic import (
     AnthropicModelId,
 )
+from .azure import (
+    AzureModelId,
+)
 from .google import (
     GoogleModelId,
 )
@@ -13,4 +16,6 @@ from .openai import (
     OpenAIModelId,
 )
 
-ModelId: TypeAlias = AnthropicModelId | GoogleModelId | OpenAIModelId | MLXModelId | str
+ModelId: TypeAlias = (
+    AnthropicModelId | AzureModelId | GoogleModelId | OpenAIModelId | MLXModelId | str
+)

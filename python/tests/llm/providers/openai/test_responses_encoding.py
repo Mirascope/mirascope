@@ -23,6 +23,7 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
     ]
     _, _, kwargs = encode_request(
         model_id="openai/gpt-4o",
+        model_name="gpt-4o",
         messages=messages,
         format=None,
         tools=Toolkit(None),
@@ -50,6 +51,7 @@ def test_prepare_message_multiple_system_messages() -> None:
     ]
     _, _, kwargs = encode_request(
         model_id="openai/gpt-4o",
+        model_name="gpt-4o",
         messages=messages,
         format=None,
         tools=Toolkit(None),
