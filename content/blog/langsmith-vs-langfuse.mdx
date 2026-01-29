@@ -194,25 +194,25 @@ When you decorate a function that wraps an LLM call with `@ops.version`, it beco
 
 The prompt remains part of the underlying function (type safe and versioned) which avoids the brittleness common in systems that separate prompts from the codebase.
 
-![Mirascope Cloud Traces View](/assets/blog/langsmith-vs-langfuse/lilypad-traces-view.webp)
+![Mirascope Cloud Traces View](/assets/blog/_lilypad/lilypad-traces-view-v2.webp)
 
 By using the `@ops.version` decorator, you ensure all changes made within the scope of the function closure are automatically versioned.
 
 The Mirascope Cloud UI allows you to directly compare different versions by selecting any two versions and clicking the "Compare" button:
 
-![Mirascope Cloud Click Compare](/assets/blog/langsmith-vs-langfuse/lilypad-click-compare.webp)
+![Mirascope Cloud Click Compare](/assets/blog/_lilypad/lilypad-click-compare.webp)
 
 You then view the outputs and metadata for each version side by side:
 
-![Mirascope Cloud Compare Traces](/assets/blog/langsmith-vs-langfuse/lilypad-compare-traces.webp)
+![Mirascope Cloud Compare Traces](/assets/blog/_lilypad/lilypad-compare-traces.webp)
 
 You can also view detailed trace data (like latency, cost, token usage, inputs, etc.) about any LLM call in real-time. Mirascope Cloud uses the [OpenTelemetry GenAI spec](https://opentelemetry.io/) to produce a full record of a model's execution path.
 
-![Mirascope Cloud GenAI Trace Data](/assets/blog/langsmith-vs-langfuse/lilypad-genai-trace-data.webp)
+![Mirascope Cloud GenAI Trace Data](/assets/blog/_lilypad/lilypad-genai-trace-data.webp)
 
 Non-technical team members (like SMEs and domain experts) can use the playground to create and edit markdown-based prompt templates using typed variable placeholders for inputs. Prompt optimization tasks, like rewriting a sentence or changing a model setting will generate new versions of the underlying function behind the scenes.
 
-![Mirascope Cloud Playground](/assets/blog/langsmith-vs-langfuse/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/_lilypad/lilypad-playground.webp)
 
 All prompt edits are sandboxed by default, so changes stay isolated until a developer explicitly integrates the approved version, with nothing going live without review.
 
@@ -324,7 +324,7 @@ Mirascope Cloud also takes a trace-first approach to evaluation. Instead of requ
 
 That means any trace can be opened and labeled with a Pass or Fail tag, along with an optional explanation that captures your reasoning.
 
-![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v5.webp)
 
 The Mirascope Cloud UI also offers collaborative features for evaluations, such as the ability to discuss specific traces with team members and assign evaluation tasks to them.
 

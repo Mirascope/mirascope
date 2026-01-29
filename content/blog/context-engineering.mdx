@@ -124,17 +124,17 @@ Lilyad also uses the [OpenTelemetry Gen AI spec](https://opentelemetry.io/) to i
 
 You view all this in the Lilypad UI:
 
-![Lilypad GenAI Trace Data](/assets/blog/_shared/lilypad-genai-trace-data.webp)
+![Lilypad GenAI Trace Data](/assets/blog/_lilypad/lilypad-genai-trace-data-v2.webp)
 
 Mirascope Cloud traces both at the level of the API and at the level of each function decorated by `@ops.version`. The latter gives you a full snapshot of the entire context influencing an LLM call's outcome, which contrasts with other tools often focusing solely on prompt changes.
 
 The Lilypad UI also shows the outputs of every call, as well as any changes made to the prompt or its context:
 
-![Lilypad Traces View](/assets/blog/_shared/lilypad-traces-view.webp)
+![Lilypad Traces View](/assets/blog/_lilypad/lilypad-traces-view-v3.webp)
 
 This offers a picture of the impact of any changes to the code or prompt, which you can also compare with previous calls or versions:
 
-![Lilypad Compare Versions](/assets/blog/_shared/lilypad-compare-versions.webp)
+![Lilypad Compare Versions](/assets/blog/_lilypad/lilypad-compare-versions.webp)
 
 ### Refine Model Behavior Through Collaborative Prompting
 
@@ -148,7 +148,7 @@ Lilypad provides a playground featuring markdown-supported prompt templates, all
 * Change call settings, like provider, model, and temperature.  
 * Specify prompt arguments, variables, and values based on Lilypad’s type-safe function signatures.
 
-![Lilypad Playground](/assets/blog/_shared/lilypad-playground-v2.webp)
+![Lilypad Playground](/assets/blog/_lilypad/lilypad-playground-v2-v2.webp)
 
 Prompts are attached to a versioned function, and every time it runs, it’s automatically versioned and traced against that function. SMEs can develop and run code independently of developers, who can access prompts and context via methods like `.version` that return type-safe signatures matching the expected arguments for that version:
 
@@ -166,7 +166,7 @@ Systematically evaluating outputs creates a feedback loop that guides how you re
 
 Lilypad also provides features letting you select an output or trace to annotate with “Pass” or “Fail” to quickly capture whether a particular context setup led to a successful result. You can also add an optional reason for your decision, which helps teams pinpoint patterns in failures and understand where context adjustments are needed:
 
-![Lilypad Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
+![Lilypad Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v5.webp)
 
 We find that in real-world evaluations, you’re often optimizing just for correctness and so a simple pass/fail assessment is a good-enough metric to measure success, rather than a complex scoring system.
 

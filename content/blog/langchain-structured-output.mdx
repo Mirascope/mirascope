@@ -484,11 +484,11 @@ That's why Mirascope Cloud snapshots the entire function, prompt logic, model se
 
 Below is an example of a traced function displayed in the playground as V6:
 
-![Answer Question v6 Trace](/assets/blog/_shared/lilypad-answer-question-v6-trace.webp)
+![Answer Question v6 Trace](/assets/blog/_lilypad/lilypad-answer-question-v6-trace.webp)
 
 After updating the function to switch the model type gpt-4o-mini, Mirascope Cloud detects the change and increments the version automatically. The playground now reflects this as version V7:
 
-![Answer Question v7 Trace](/assets/blog/_shared/lilypad-answer-question-v7-trace.webp)
+![Answer Question v7 Trace](/assets/blog/_lilypad/lilypad-answer-question-v7-trace.webp)
 
 This automatic versioning removes the need to track these changes manually and lets you roll back or compare versions as needed.
 
@@ -496,7 +496,7 @@ And if your changes are functionally identical to a previous version, Mirascope 
 
 Domain experts can define prompt templates with input variables, and Mirascope Cloud automatically generates type-safe function signatures to keep everything structured, as shown below:
 
-![Playground](/assets/blog/_shared/lilypad-playground.webp)
+![Playground](/assets/blog/_lilypad/lilypad-playground-v4.webp)
 
 The Playground's no-code dashboard gives full visibility into each step of your prompt engineering workflow. Everything is versioned, traceable, and easy to review.
 
@@ -509,7 +509,7 @@ The playground shows:
 
 Mirascope Cloud also uses the [OpenTelemetry Gen AI spec](https://opentelemetry.io/) to trace every call made by a generation. This is important for debugging and improving complex workflows, as you can get to see precisely what was asked, how it was asked, and what was returned:
 
-![OpenTelemetry GenAI Data](/assets/blog/_shared/lilypad-otel-genai-data.webp)
+![OpenTelemetry GenAI Data](/assets/blog/_lilypad/lilypad-otel-genai-data.webp)
 
 
 ### Evaluation of LLM Outputs by (Non-Technical) Domain Experts
@@ -518,7 +518,7 @@ Once your outputs are versioned and traceable, the next step is evaluation. In M
 
 Instead of [rating quality](/blog/llm-evaluation/) with vague 1–5 scores or subjective rubrics, Mirascope Cloud encourages reviewers to ask one question: *Is this output good enough for production use?* If yes, it's a pass. If not, it's a fail, with optional feedback explaining why:
 
-![Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue-v3.webp)
+![Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v3.webp)
 
 We recommend manually labeling outputs as much as possible early in a project. And since each label is tied to a specific versioned output, you get clean, reliable training data for automating future evaluations.
 

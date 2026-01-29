@@ -47,7 +47,7 @@ We dive into tools offering these capabilities.
 
 ## 1. Mirascope Cloud: Understanding What Happened, and Why
 
-![Mirascope Cloud Homepage](/assets/blog/_shared/lilypad-homepage.webp)
+![Mirascope Cloud Homepage](/assets/blog/_lilypad/lilypad-homepage.webp)
 
 [Mirascope Cloud](/docs/learn/ops) is an open-source tool built for observing non-deterministic [LLM agents](/blog/llm-agents), where the same prompt doesn't always give the same result. It's designed to help you understand why something happened, not just what happened.
 
@@ -96,7 +96,7 @@ Mirascope Cloud works with your actual code and automatically tracks changes at 
 
 Once you've added the lines of code mentioned above, you can view the changes in the Mirascope Cloud UI, which automatically increments the version number for any change (e.g., changing the temperature or the prompt itself) you make within the function's closure:
 
-![Mirascope Cloud Answer Question v7 Trace](/assets/blog/_shared/lilypad-trace.webp)
+![Mirascope Cloud Answer Question v7 Trace](/assets/blog/_lilypad/lilypad-trace.webp)
 
 It even logs and tracks changes to user-defined functions or classes outside the main prompt function (as long as they’re within scope).
 
@@ -106,15 +106,15 @@ While other tools might offer the user experience of logging the prompt and mayb
 
 In the playground, the “Compare” button allows you to compare different versions of the code:
 
-![Mirascope Cloud Answer Question Click Compare](/assets/blog/_shared/answer-question-click-compare.webp)
+![Mirascope Cloud Answer Question Click Compare](/assets/blog/_lilypad/answer-question-click-compare.webp)
 
 This shows a second dropdown menu, where you can select another version and view the differences side-by-side:
 
-![Mirascope Cloud Answer Question Compare Versions](/assets/blog/_shared/lilypad-compare-versions.webp)
+![Mirascope Cloud Answer Question Compare Versions](/assets/blog/_lilypad/lilypad-compare-versions.webp)
 
 You can inspect trace data for any LLM call that’s wrapped in a function by selecting that function. This lets you see the full picture of what happened during the call, including inputs, logic, prompt changes, and model settings:
 
-![Mirascope Cloud Answer Question Trace Data](/assets/blog/_shared/lilypad-trace-genai-data.webp)
+![Mirascope Cloud Answer Question Trace Data](/assets/blog/_lilypad/lilypad-trace-genai-data.webp)
 
 The `.version` method lets you access specific versions downstream and re-run their exact code to compare outputs, track changes, or reproduce earlier results.
 
@@ -130,7 +130,7 @@ You can also use `.version` to run different versions of the same function, e.g.
 
 Mirascope Cloud offers a visual, interactive interface that brings together traces, versioning, and annotations all in one place, allowing non-technical users to collaborate. This no-code environment is designed for domain experts who want to improve how LLMs behave and test different prompt wordings, tweak parameters, and observe how the model responds, all without needing to touch the underlying code or ask engineers for help.
 
-![Mirascope Cloud Playground](/assets/blog/_shared/lilypad-playground-v2.webp)
+![Mirascope Cloud Playground](/assets/blog/_lilypad/lilypad-playground-v2-v2.webp)
 
 The Mirascope Cloud playground allows users to write prompts in markdown with typed variable placeholders. When someone edits a prompt, like changing the wording or adjusting a setting, Mirascope Cloud automatically creates a new version of the Python function behind the scenes. This has the same effect as editing and rerunning the function directly in code.
 
@@ -146,13 +146,13 @@ Mirascope Cloud's playground also visualizes the full trace of each run, includi
 
 Mirascope Cloud makes this possible by treating annotations as a key part of its observability system. An annotation is tied directly to a single span, which means it's connected to the exact function version, inputs, prompt, and model settings that produced the output. This grounds feedback in its full context.
 
-![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v5.webp)
 
 You can assign reviewers to specific outputs and organize them into [prompt evaluation](/blog/prompt-evaluation) queues. Human reviewers define what “good enough” really means, and label outputs as pass or fail, adding optional notes to explain their reasoning. This turns gut checks into structured, searchable data.
 
 These annotations are saved alongside traces and function versions, creating a feedback trail that's easy to review and reproduce. To keep reviews unbiased, Mirascope Cloud hides existing annotations when someone is evaluating a trace.
 
-![Mirascope Cloud Answer Question Annotations](/assets/blog/_shared/lilypad-annotations.webp)
+![Mirascope Cloud Answer Question Annotations](/assets/blog/_lilypad/lilypad-annotations.webp)
 
 Developers can also add annotations directly in code, right after a function runs. By using the `@ops.trace` decorator, the function's return value becomes a special object that still includes the output, but also lets you add annotations with `.annotate()`.
 
