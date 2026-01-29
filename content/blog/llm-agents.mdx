@@ -153,8 +153,9 @@ def city_population(city: str):
 
 response = city_population("New York City")
 if response.tool_calls:
-    tool_results = response.execute_tools()
-    print(tool_results[0])
+    tool_output = response.execute_tools()
+    answer = response.resume(tool_output)
+    print(answer.pretty())
 
 # > The current population of New York City is approximately 8.8 million.
 ```
@@ -505,18 +506,12 @@ Finally, we define a chatbot class called **OnboardingBot** that uses the local 
 from mirascope import llm
 from pydantic import BaseModel
 
-# Register ollama provider for local LLM
-llm.register_provider(
-    name="ollama",
-    base_url="http://localhost:11434/v1",
-    api_key="ollama",
-)
 
 class OnboardingBot(BaseModel):
     def _call(self, question: str):
         context = get_documents(question)
 
-        @llm.call("ollama/llama3.1")
+        @llm.call("ollama/llama3.2")
         def call_llm():
             return [
                 llm.messages.system(f"""You are a helpful AI that is an expert at answering questions
