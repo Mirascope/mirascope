@@ -2,8 +2,15 @@
  * OpenAI provider implementation.
  */
 
+// Provider exports
+export { OpenAIProvider } from '@/llm/providers/openai/provider';
+export { OpenAICompletionsProvider } from '@/llm/providers/openai/completions/provider';
+
+// Model ID exports
 export type { OpenAIModelId, ApiMode } from '@/llm/providers/openai/model-id';
 export { modelName } from '@/llm/providers/openai/model-id';
+
+// Model info exports
 export type { OpenAIKnownModels } from '@/llm/providers/openai/model-info';
 export {
   MODELS_WITHOUT_AUDIO_SUPPORT,
