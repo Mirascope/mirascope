@@ -49,10 +49,13 @@ export {
   defineTool,
   defineContextTool,
   isZodLike,
+  isContextTool,
   Toolkit,
   ContextToolkit,
   createToolkit,
   createContextToolkit,
+  TOOL_TYPE,
+  CONTEXT_TOOL_TYPE,
 } from '@/llm/tools';
 
 export type {
@@ -68,6 +71,9 @@ export type {
   Tool,
   ContextTool,
   AnyTool,
+  AnyContextTool,
+  Tools,
+  ContextTools,
 } from '@/llm/tools';
 
 export type {

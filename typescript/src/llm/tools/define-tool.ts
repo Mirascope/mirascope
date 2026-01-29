@@ -11,11 +11,13 @@ import type { ToolCall } from '@/llm/content/tool-call';
 import { ToolOutput } from '@/llm/content/tool-output';
 import type { Jsonable } from '@/llm/types/jsonable';
 import type { ToolParameterSchema } from '@/llm/tools/tool-schema';
-import type {
-  FieldDefinition,
-  ZodLike,
-  Tool,
-  ContextTool,
+import {
+  TOOL_TYPE,
+  CONTEXT_TOOL_TYPE,
+  type FieldDefinition,
+  type ZodLike,
+  type Tool,
+  type ContextTool,
 } from '@/llm/tools/tools';
 
 /**
@@ -257,6 +259,7 @@ export function defineTool<T extends Record<string, unknown>>(
   // Note: We need to use defineProperty for 'name' since Function.name is read-only
   Object.defineProperty(callable, 'name', { value: name, writable: false });
   return Object.assign(callable, {
+    __toolType: TOOL_TYPE,
     description,
     parameters,
     strict,
@@ -331,6 +334,7 @@ export function defineContextTool<
   // Note: We need to use defineProperty for 'name' since Function.name is read-only
   Object.defineProperty(callable, 'name', { value: name, writable: false });
   return Object.assign(callable, {
+    __toolType: CONTEXT_TOOL_TYPE,
     description,
     parameters,
     strict,
