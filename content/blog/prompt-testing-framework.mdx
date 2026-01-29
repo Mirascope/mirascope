@@ -75,7 +75,7 @@ client = Client()
 @ops.version  # [!code highlight]
 def answer_question(question: str) -> str | None:
     response = client.models.generate_content(
-        model="gemini-2.0-flash-001",
+        model="gemini-2.5-flash",
         contents=f"Answer this question: {question}",
     )
     return response.text
@@ -165,7 +165,7 @@ ops.configure()
 @ops.version  # [!code highlight]
 def answer_question(question: str) -> str | None:
     response = client.models.generate_content(
-        model="gemini-2.0-flash-001",
+        model="gemini-2.5-flash",
         contents=f"Answer this question: {question}",
     )
     return response.text
