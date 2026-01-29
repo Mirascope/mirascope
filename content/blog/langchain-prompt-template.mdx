@@ -136,29 +136,29 @@ LangChain lets you build prompt templates, but the process can feel a bit clunky
 
 If you’ve ever thought, “Why can’t I use a function for this?”, you’re not alone. That’s why third parties built tools like [`langchain-decorators`](https://pypi.org/project/langchain-decorators/), which layer a decorator-based syntax on top of LangChain. These offer a more pythonic way to write prompt templates, **but they’re still third-party, and come with some limitations**.
 
-Mirascope, on the other hand, takes the decorator approach seriously, and builds prompt templates around decorators from the ground up, allowing you to write clean, composable, and structured prompts as plain functions. But what really sets it apart is not just the decorator syntax. It’s the flexibility you get with constructs like `BaseMessageParam`, the return value of Mirascope’s prompt template decorator.
+Mirascope, on the other hand, takes the decorator approach seriously, and builds prompt templates around decorators from the ground up, allowing you to write clean, composable, and structured prompts as plain functions. But what really sets it apart is not just the decorator syntax. It's the flexibility you get with structured message types like `UserMessage` and `SystemMessage`, the return values of Mirascope's prompt decorator.
 
 Unlike `langchain-decorators`, which ultimately flatten your messages into strings, Mirascope treats prompts as structured data. Each message maintains its role (user, system, assistant), supports multi-modal content (text, images, audio, documents), and integrates with downstream LLM workflows.
 
 This approach ensures compatibility across providers and unlocks tool use, [prompt chaining](/blog/prompt-chaining/), and dynamic configuration for [LLM integration](/blog/llm-integration/).
 
-At its simplest, you can add a Mirascope `@prompt_template` decorator to any Python function to turn it into a structured prompt that returns a list of role-tagged messages ready for an LLM:
+At its simplest, you can add a Mirascope `@llm.prompt` decorator to any Python function to turn it into a structured prompt that returns a list of role-tagged messages ready for an LLM:
 
 ```python
-from mirascope import prompt_template
+from mirascope import llm
 
-@prompt_template("Recommend a {genre} movie")  # [!code highlight]
-def recommend_movie_prompt(genre: str): ...  # [!code highlight]
+@llm.prompt  # [!code highlight]
+def recommend_movie_prompt(genre: str):  # [!code highlight]
+    return f"Recommend a {genre} movie"  # [!code highlight]
 
-print(recommend_movie_prompt("comedy"))
-# Output: [BaseMessageParam(role='user', content='Recommend a comedy movie')] 
+messages = recommend_movie_prompt.messages("comedy")
+print(messages)
+# > [UserMessage(role='user', content=[Text(type='text', text='Recommend a comedy movie')], name=None)]
 ```
 
-Note that the `recommend_movie_prompt` method’s signature defines the prompt’s template variables. `BaseMessageParam`  turns those variables into role-aware messages that Mirascope can pass to any provider.
+Note that the `recommend_movie_prompt` method's signature defines the prompt's template variables. The `@llm.prompt` decorator turns those variables into role-aware messages that Mirascope can pass to any provider.
 
-`@prompt_template` works in tandem with our `@llm.call` decorator, which turns Python functions into structured API calls with minimal boilerplate.
-
-hl\_lines \= "3-5"
+`@llm.prompt` works in tandem with our `@llm.call` decorator, which turns Python functions into structured API calls with minimal boilerplate.
 
 ```python
 from mirascope import llm
@@ -170,16 +170,16 @@ def recommend_movie_prompt(genre: str):
 response = recommend_movie_prompt("comedy")
 print(response.text())
 
-#> You should watch The Grand Budapest Hotel, a witty and visually stunning comedy.
+# > You should watch The Grand Budapest Hotel, a witty and visually stunning comedy.
 ```
 
 The `@llm.call` decorator turns the function into a structured API call. When `genre="comedy"` is passed, Mirascope transforms the returned string into a structured message:
 
-```
-BaseMessageParam(role='user', content='Recommend a comedy movie')
+```sh
+UserMessage(role='user', content=[Text(type='text', text='Recommend a comedy movie')])
 ```
 
-The model-agnostic [`llm.call` decorator](/docs/learn/llm) sends this structured message to the model and the return value is a response object that includes generated content, a full list of input messages, model parameters, usage metrics, and any tool or modality-specific metadata.
+The model-agnostic [`llm.call` decorator](/docs/learn/llm/calls) sends this structured message to the model and the return value is a response object that includes generated content, a full list of input messages, model parameters, usage metrics, and any tool or modality-specific metadata.
 
 The response object is useful because whether you're calling OpenAI, Anthropic, Google, or another provider, the shape of the response remains the same. That means you can build [LLM tools](/blog/llm-tools/), logging, analytics, or debugging features once and reuse them everywhere.
 
@@ -216,7 +216,7 @@ In contrast, the example with Mirascope below shows how `storyline` is defined a
 ```python
 from mirascope import llm
 
-@llm.prompt()
+@llm.prompt  # [!code highlight]
 def editor_prompt(storyline: str):
     return [
         llm.messages.system("You are a top class manga editor"),
@@ -224,13 +224,13 @@ def editor_prompt(storyline: str):
     ]
 
 storyline = "Two friends go off on an adventure, and ..."
-messages = editor_prompt(storyline)  # [!code highlight]
+messages = editor_prompt.messages(storyline)  # [!code highlight]
 
 print(messages)
-# > [
-#     BaseMessageParam(role='system', content='You are a top class manga editor'),
-#     BaseMessageParam(role='user', content='What do you think of this storyline I'm working on? Two friends go off on an adventure, and ...')
-#   ]
+# [
+#     SystemMessage(content=[Text(text='You are a top class manga editor')]),
+#     UserMessage(content=[Text(text="What do you think of this storyline I'm working on? Two friends go off on an adventure, and ...")])
+# ]
 ```
 
 In our IDE, trying to pass in a non-string generates an error:
