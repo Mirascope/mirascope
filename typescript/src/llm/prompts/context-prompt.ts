@@ -12,7 +12,7 @@ import { Model, useModel } from '@/llm/models';
 import type { ModelId } from '@/llm/providers/model-id';
 import type { ContextResponse } from '@/llm/responses/context-response';
 import type { ContextStreamResponse } from '@/llm/responses/context-stream-response';
-import type { ToolSchema } from '@/llm/tools';
+import type { ContextTools } from '@/llm/tools';
 import type { NoVars } from '@/llm/types';
 
 /**
@@ -50,7 +50,7 @@ export type ContextTemplateFunc<T, DepsT> = (
  */
 export interface ContextPromptArgs<T = NoVars, DepsT = unknown> {
   /** Optional tools to make available to the model. */
-  tools?: readonly ToolSchema[];
+  tools?: ContextTools<DepsT>;
   /** A function that generates message content from context (and optionally variables). */
   template: ContextTemplateFunc<T, DepsT>;
 }
@@ -155,7 +155,7 @@ export interface ContextPrompt<T = NoVars, DepsT = unknown> {
   /**
    * The tools available to this prompt.
    */
-  readonly tools: readonly ToolSchema[] | undefined;
+  readonly tools: ContextTools<DepsT> | undefined;
 
   /**
    * The underlying template function.

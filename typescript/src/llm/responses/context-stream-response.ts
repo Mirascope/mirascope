@@ -7,17 +7,36 @@
  */
 
 import type { Context } from '@/llm/context';
+import type { ToolOutput } from '@/llm/content/tool-output';
+import type { Jsonable } from '@/llm/types/jsonable';
 import type { UserContent } from '@/llm/messages';
 import type { ContextResponse } from '@/llm/responses/context-response';
 import {
   BaseStreamResponse,
   type BaseStreamResponseInit,
 } from '@/llm/responses/base-stream-response';
+import { ContextToolkit, type ContextTools } from '@/llm/tools';
 
 /**
  * Arguments for constructing a ContextStreamResponse.
+ *
+ * Accepts `tools` as either a ContextToolkit or a list of tools, which gets
+ * converted to a ContextToolkit before passing to BaseStreamResponse.
+ *
+ * Supports both regular tools (BaseTool) and context tools (BaseContextTool),
+ * matching Python's `ContextTools[DepsT]` pattern.
+ *
+ * @template DepsT - The type of dependencies in the context.
  */
-export type ContextStreamResponseInit = BaseStreamResponseInit;
+export interface ContextStreamResponseInit<DepsT = unknown>
+  extends Omit<BaseStreamResponseInit, 'toolkit'> {
+  /**
+   * The tools available for this response.
+   * Can be a ContextToolkit instance or an array of tools.
+   * Accepts both regular tools and context tools.
+   */
+  tools?: ContextTools<DepsT> | ContextToolkit<DepsT>;
+}
 
 /**
  * A streaming response from a context-based LLM call.
@@ -44,9 +63,55 @@ export type ContextStreamResponseInit = BaseStreamResponseInit;
  * ```
  */
 export class ContextStreamResponse<DepsT = unknown> extends BaseStreamResponse {
-  constructor(args: ContextStreamResponseInit) {
-    super(args);
+  /**
+   * The context toolkit containing tools that can receive context.
+   */
+  readonly contextToolkit: ContextToolkit<DepsT>;
+
+  constructor(args: ContextStreamResponseInit<DepsT>) {
+    // Convert tools to context toolkit (matching Python's pattern)
+    const contextToolkit =
+      args.tools instanceof ContextToolkit
+        ? args.tools
+        : new ContextToolkit(args.tools ?? []);
+
+    super({ ...args, toolkit: contextToolkit });
+
+    this.contextToolkit = contextToolkit;
   }
+
+  // ===== Tool Execution =====
+
+  /**
+   * Execute all tool calls in this response using the registered context tools.
+   *
+   * Note: The stream must be consumed before calling executeTools() to ensure
+   * all tool calls have been received.
+   *
+   * @param ctx - The context containing dependencies to pass to tools.
+   * @returns An array of ToolOutput objects, one for each tool call.
+   *
+   * @example
+   * ```typescript
+   * const response = await myPrompt.stream(model, ctx, [searchTool]);
+   *
+   * // Consume the stream first
+   * for await (const text of response.textStream()) {
+   *   process.stdout.write(text);
+   * }
+   *
+   * // Then execute tools
+   * if (response.toolCalls.length > 0) {
+   *   const outputs = await response.executeTools(ctx);
+   *   const followUp = await response.resume(ctx, outputs);
+   * }
+   * ```
+   */
+  async executeTools(ctx: Context<DepsT>): Promise<ToolOutput<Jsonable>[]> {
+    return this.contextToolkit.executeAll(ctx, this.toolCalls);
+  }
+
+  // ===== Resume Methods =====
 
   /**
    * Generate a new ContextResponse using this response's messages with additional user content.
@@ -119,6 +184,4 @@ export class ContextStreamResponse<DepsT = unknown> extends BaseStreamResponse {
     const model = await this.model;
     return model.contextResumeStream(ctx, this, content);
   }
-
-  // Note: execute_tools() method is not implemented yet as it requires Tools infrastructure.
 }

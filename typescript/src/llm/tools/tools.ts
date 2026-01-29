@@ -39,6 +39,18 @@ export interface ZodLike {
 }
 
 /**
+ * Type discriminator for regular tools.
+ * Used at runtime to distinguish from context tools.
+ */
+export const TOOL_TYPE = 'tool' as const;
+
+/**
+ * Type discriminator for context tools.
+ * Used at runtime to distinguish from regular tools.
+ */
+export const CONTEXT_TOOL_TYPE = 'context_tool' as const;
+
+/**
  * Base interface for tools without the callable signature.
  *
  * This is used by Toolkit to store tools without variance issues.
@@ -46,6 +58,12 @@ export interface ZodLike {
  * when storing tools with different argument types in a collection.
  */
 export interface BaseTool extends ToolSchema {
+  /**
+   * Type discriminator - always 'tool' for regular tools.
+   * Used at runtime to distinguish from context tools.
+   */
+  readonly __toolType: typeof TOOL_TYPE;
+
   /**
    * Execute the tool from a ToolCall.
    *
@@ -89,6 +107,12 @@ export interface Tool<
  * @template DepsT - The type of dependencies in the context.
  */
 export interface BaseContextTool<DepsT = unknown> extends ToolSchema {
+  /**
+   * Type discriminator - always 'context_tool' for context tools.
+   * Used at runtime to distinguish from regular tools.
+   */
+  readonly __toolType: typeof CONTEXT_TOOL_TYPE;
+
   /**
    * Execute the tool from a ToolCall with context.
    *
@@ -134,3 +158,56 @@ export interface ContextTool<
  * Union type for any tool (regular or context).
  */
 export type AnyTool = Tool | ContextTool;
+
+/**
+ * Union type for tools that can be used in context paths.
+ *
+ * Context paths accept BOTH regular tools AND context tools,
+ * matching Python's `ContextTools[DepsT] = Tool | ContextTool[DepsT]`.
+ *
+ * @template DepsT - The type of dependencies in the context.
+ */
+export type AnyContextTool<DepsT = unknown> = BaseTool | BaseContextTool<DepsT>;
+
+/**
+ * Type alias for any tool schema.
+ *
+ * This is used as a type bound in generic toolkit storage.
+ * Matches Python's `AnyToolSchema = ToolSchema[AnyToolFn]`.
+ */
+export type AnyToolSchema = BaseTool | BaseContextTool;
+
+// =============================================================================
+// Array Type Aliases (matching Python's Sequence types)
+// =============================================================================
+
+/**
+ * Type alias for an array of regular tools.
+ * Matches Python's `Tools = Sequence[Tool]`.
+ */
+export type Tools = readonly BaseTool[];
+
+/**
+ * Type alias for an array of tools usable in context paths.
+ * Accepts both regular tools AND context tools.
+ * Matches Python's `ContextTools[DepsT] = Sequence[Tool | ContextTool[DepsT]]`.
+ *
+ * @template DepsT - The type of dependencies in the context.
+ */
+export type ContextTools<DepsT = unknown> = readonly AnyContextTool<DepsT>[];
+
+// =============================================================================
+// Type Guards
+// =============================================================================
+
+/**
+ * Type guard to check if a tool is a context tool.
+ *
+ * @param tool - The tool to check.
+ * @returns True if the tool is a context tool.
+ */
+export function isContextTool<DepsT = unknown>(
+  tool: AnyContextTool<DepsT>
+): tool is BaseContextTool<DepsT> {
+  return tool.__toolType === CONTEXT_TOOL_TYPE;
+}

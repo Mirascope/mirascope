@@ -49,3 +49,17 @@ export const PROVIDERS_FOR_THINKING_TESTS: ProviderConfig[] = [
   { providerId: 'google', model: 'google/gemini-2.5-flash' },
   { providerId: 'openai:responses', model: 'openai/o4-mini:responses' },
 ];
+
+/**
+ * Providers for tool usage tests.
+ *
+ * Note: OpenAI Responses API is excluded because gpt-4o-mini keeps making
+ * additional tool calls instead of responding with text after receiving
+ * tool outputs. This appears to be model-specific behavior that requires
+ * further investigation.
+ */
+export const PROVIDERS_FOR_TOOLS_TESTS: ProviderConfig[] = [
+  { providerId: 'anthropic', model: 'anthropic/claude-haiku-4-5' },
+  { providerId: 'google', model: 'google/gemini-2.5-flash' },
+  { providerId: 'openai:completions', model: 'openai/gpt-4o-mini:completions' },
+];
