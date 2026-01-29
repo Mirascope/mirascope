@@ -9,12 +9,15 @@ import { describe, it, expect } from 'vitest';
 import type { ChatCompletion } from 'openai/resources/chat/completions';
 import { assistant, user } from '@/llm/messages';
 import type { Thought } from '@/llm/content';
+import { Audio } from '@/llm/content';
+import { FeatureNotSupportedError } from '@/llm/exceptions';
 import { FinishReason } from '@/llm/responses/finish-reason';
 import {
   encodeMessages,
   decodeResponse,
   buildRequestParams,
 } from '@/llm/providers/openai/completions/_utils';
+import type { AudioMimeType } from '@/llm/content';
 
 describe('encodeMessages edge cases', () => {
   it('encodes user message with name', () => {
@@ -65,8 +68,15 @@ describe('buildRequestParams thinking config', () => {
       thinking: { level: 'medium', encodeThoughtsAsText: true },
     });
 
+    // Multiple text parts are kept as a list (thought encoded as text + result)
     expect(params.messages).toEqual([
-      { role: 'assistant', content: '**Thinking:** Reasoning...Result' },
+      {
+        role: 'assistant',
+        content: [
+          { type: 'text', text: '**Thinking:** Reasoning...' },
+          { type: 'text', text: 'Result' },
+        ],
+      },
     ]);
   });
 
@@ -83,6 +93,7 @@ describe('buildRequestParams thinking config', () => {
       thinking: { level: 'medium' },
     });
 
+    // Single text part is simplified to string
     expect(params.messages).toEqual([{ role: 'assistant', content: 'Result' }]);
   });
 });
@@ -223,5 +234,54 @@ describe('decodeResponse', () => {
     const decoded = decodeResponse(response, 'openai/gpt-4o');
 
     expect(decoded.usage).toBeNull();
+  });
+});
+
+describe('audio encoding', () => {
+  it('throws FeatureNotSupportedError for unsupported audio format', () => {
+    // Create audio with unsupported format (ogg)
+    const oggAudio = {
+      type: 'audio' as const,
+      source: {
+        type: 'base64_audio_source' as const,
+        data: 'dGVzdA==', // base64 for 'test'
+        mimeType: 'audio/ogg' as AudioMimeType,
+      },
+    };
+    const messages = [user(['Listen to this', oggAudio])];
+
+    expect(() =>
+      buildRequestParams(
+        'openai/gpt-4o-audio-preview:completions',
+        messages,
+        {}
+      )
+    ).toThrow(FeatureNotSupportedError);
+  });
+
+  it('throws FeatureNotSupportedError for models without audio support', () => {
+    // Create valid WAV audio with proper magic bytes (RIFF....WAVE)
+    const wavAudio = Audio.fromBytes(
+      new Uint8Array([
+        0x52,
+        0x49,
+        0x46,
+        0x46, // 'RIFF'
+        0x00,
+        0x00,
+        0x00,
+        0x00, // file size (placeholder)
+        0x57,
+        0x41,
+        0x56,
+        0x45, // 'WAVE'
+      ])
+    );
+    const messages = [user(['Listen to this', wavAudio])];
+
+    // gpt-4o-mini doesn't support audio
+    expect(() =>
+      buildRequestParams('openai/gpt-4o-mini:completions', messages, {})
+    ).toThrow(FeatureNotSupportedError);
   });
 });

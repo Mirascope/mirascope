@@ -3,6 +3,7 @@
  */
 
 import type {
+  Blob as GoogleBlob,
   Content,
   ContentUnion,
   GenerateContentConfig,
@@ -20,6 +21,8 @@ import {
 
 import type {
   AssistantContentPart,
+  Audio,
+  Image,
   Text,
   Thought,
   UserContentPart,
@@ -85,6 +88,39 @@ export function mapGoogleErrorByStatus(status: number): typeof APIError {
 // ============================================================================
 
 /**
+ * Encode an Image content part to Google's Part format.
+ * Google requires inline data (base64), not URL references.
+ *
+ * @throws FeatureNotSupportedError if the image uses a URL source
+ */
+function encodeImage(image: Image): Part {
+  if (image.source.type === 'url_image_source') {
+    throw new FeatureNotSupportedError(
+      'url_image_source',
+      'google',
+      null,
+      'Google does not support URL-referenced images. Try `Image.download(...)` instead.'
+    );
+  }
+  const inlineData: GoogleBlob = {
+    data: image.source.data,
+    mimeType: image.source.mimeType,
+  };
+  return { inlineData };
+}
+
+/**
+ * Encode an Audio content part to Google's Part format.
+ */
+function encodeAudio(audio: Audio): Part {
+  const inlineData: GoogleBlob = {
+    data: audio.source.data,
+    mimeType: audio.source.mimeType,
+  };
+  return { inlineData };
+}
+
+/**
  * Process content parts from either user or assistant messages.
  * Converts to Google's Part format.
  */
@@ -99,23 +135,15 @@ function processContentParts(
         parts.push({ text: part.text });
         break;
 
-      /* v8 ignore start - content types not yet implemented */
       case 'image':
-        throw new FeatureNotSupportedError(
-          'image content encoding',
-          'google',
-          null,
-          'Image content is not yet implemented'
-        );
+        parts.push(encodeImage(part));
+        break;
 
       case 'audio':
-        throw new FeatureNotSupportedError(
-          'audio content encoding',
-          'google',
-          null,
-          'Audio content is not yet implemented'
-        );
+        parts.push(encodeAudio(part));
+        break;
 
+      /* v8 ignore start - content types not yet implemented */
       case 'document':
         throw new FeatureNotSupportedError(
           'document content encoding',
