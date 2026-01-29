@@ -16,6 +16,7 @@ from .ollama import OllamaProvider
 from .openai import OpenAIProvider
 from .openai.completions.provider import OpenAICompletionsProvider
 from .openai.responses.provider import OpenAIResponsesProvider
+from .openrouter import OpenRouterProvider
 from .provider_id import ProviderId
 from .together import TogetherProvider
 
@@ -71,6 +72,9 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, Sequence[ProviderDefault]] = {
     "mlx-community/": [
         ProviderDefault("mlx", None),  # No API key required
     ],
+    "openrouter/": [
+        ProviderDefault("openrouter", "OPENROUTER_API_KEY"),
+    ],
 }
 
 
@@ -122,6 +126,8 @@ def provider_singleton(
             return OpenAICompletionsProvider(api_key=api_key, base_url=base_url)
         case "openai:responses":
             return OpenAIResponsesProvider(api_key=api_key, base_url=base_url)
+        case "openrouter":
+            return OpenRouterProvider(api_key=api_key, base_url=base_url)
         case "together":
             return TogetherProvider(api_key=api_key, base_url=base_url)
         case _:  # pragma: no cover

@@ -1,0 +1,91 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Say hello in one word"}],"model":"openai/gpt-4o","stream":true,"stream_options":{"include_usage":true}}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '142'
+      Content-Type:
+      - application/json
+      Host:
+      - openrouter.ai
+      User-Agent:
+      - OpenAI/Python 2.15.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.15.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.13.3
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://openrouter.ai/api/v1/chat/completions
+  response:
+    body:
+      string: 'data: {"id":"gen-1769672442-Z2w3cx2qa1PhMrNBv0Bm","provider":"OpenAI","model":"openai/gpt-4o","object":"chat.completion.chunk","created":1769672442,"choices":[{"index":0,"delta":{"role":"assistant","content":""},"finish_reason":null,"native_finish_reason":null,"logprobs":null}],"system_fingerprint":"fp_deacdd5f6f"}
+
+
+        data: {"id":"gen-1769672442-Z2w3cx2qa1PhMrNBv0Bm","provider":"OpenAI","model":"openai/gpt-4o","object":"chat.completion.chunk","created":1769672442,"choices":[{"index":0,"delta":{"role":"assistant","content":"Hello"},"finish_reason":null,"native_finish_reason":null,"logprobs":null}],"system_fingerprint":"fp_deacdd5f6f"}
+
+
+        data: {"id":"gen-1769672442-Z2w3cx2qa1PhMrNBv0Bm","provider":"OpenAI","model":"openai/gpt-4o","object":"chat.completion.chunk","created":1769672442,"choices":[{"index":0,"delta":{"role":"assistant","content":"!"},"finish_reason":null,"native_finish_reason":null,"logprobs":null}],"system_fingerprint":"fp_deacdd5f6f"}
+
+
+        data: {"id":"gen-1769672442-Z2w3cx2qa1PhMrNBv0Bm","provider":"OpenAI","model":"openai/gpt-4o","object":"chat.completion.chunk","created":1769672442,"choices":[{"index":0,"delta":{"role":"assistant","content":""},"finish_reason":"stop","native_finish_reason":"stop","logprobs":null}],"system_fingerprint":"fp_deacdd5f6f"}
+
+
+        data: {"id":"gen-1769672442-Z2w3cx2qa1PhMrNBv0Bm","provider":"OpenAI","model":"openai/gpt-4o","object":"chat.completion.chunk","created":1769672442,"choices":[{"index":0,"delta":{"role":"assistant","content":""},"finish_reason":null,"native_finish_reason":null,"logprobs":null}],"usage":{"prompt_tokens":12,"completion_tokens":2,"total_tokens":14,"cost":0.00005,"is_byok":false,"prompt_tokens_details":{"cached_tokens":0,"audio_tokens":0},"cost_details":{"upstream_inference_cost":0.00005,"upstream_inference_prompt_cost":0.00003,"upstream_inference_completions_cost":0.00002},"completion_tokens_details":{"reasoning_tokens":0,"audio_tokens":0}}}
+
+
+        data: [DONE]
+
+
+        '
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-RAY:
+      - 9c57153c1b9ee381-NRT
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Thu, 29 Jan 2026 07:40:42 GMT
+      Permissions-Policy:
+      - payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com"
+        "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")
+      Referrer-Policy:
+      - no-referrer, strict-origin-when-cross-origin
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1
