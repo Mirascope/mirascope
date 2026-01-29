@@ -405,15 +405,12 @@ class Chatbot(BaseModel):
 
             stream = self._call(question)
 
-            print(f"(User): {question}", flush=True)
      # Begin streaming the LLM's response in real-time
-
             print("(Bot): ", end="", flush=True)
             for chunk in stream.text_stream():
                 print(chunk, end="", flush=True)
             print("")
-            self.history.append(llm.messages.user(question))
-            self.history.append(llm.messages.assistant(stream.text()))
+            self.history.extend(stream.messages)
 
 Chatbot().run()
 ```
@@ -558,14 +555,12 @@ provide as much information to the writer as possible without overwhelming them.
         for chunk in stream.text_stream():
             print(chunk, end="", flush=True)
 
-        if question:
-            self.history.append(llm.messages.user(question))
-        self.history.append(llm.messages.assistant(stream.text()))
+        self.history.extend(stream.messages)
 
         if stream.tool_calls:
             tool_outputs = stream.execute_tools()
-            # Add tool outputs as user message content for the next turn
-            self.history.append(llm.messages.user(content=tool_outputs))
+            # Add tool outputs as tool message params for the next turn
+            self.history.extend(stream.tool_message_params(tool_outputs))
             return self._step()
         return stream.text()
 
