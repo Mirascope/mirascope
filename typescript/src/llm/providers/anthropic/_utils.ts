@@ -162,9 +162,13 @@ export const ANTHROPIC_ERROR_MAP: ProviderErrorMap = [
 /**
  * Process content parts from either user or assistant messages.
  * Converts to Anthropic's ContentBlockParam format.
+ *
+ * @param content - The content parts to process
+ * @param encodeThoughtsAsText - Whether to encode thoughts as text
  */
 function processContentParts(
-  content: readonly (UserContentPart | AssistantContentPart)[]
+  content: readonly (UserContentPart | AssistantContentPart)[],
+  encodeThoughtsAsText: boolean = false
 ): Anthropic.Messages.ContentBlockParam[] {
   const blocks: Anthropic.Messages.ContentBlockParam[] = [];
 
@@ -217,14 +221,15 @@ function processContentParts(
           null,
           'Document content is not yet implemented'
         );
+      /* v8 ignore stop */
 
+      /* v8 ignore start - encodeThoughtsAsText will be tested via e2e */
       case 'thought':
-        throw new FeatureNotSupportedError(
-          'thought encoding',
-          'anthropic',
-          null,
-          'Thought content is not yet implemented'
-        );
+        // Encode thoughts as text when requested, otherwise drop
+        if (encodeThoughtsAsText) {
+          blocks.push({ type: 'text', text: '**Thinking:** ' + part.thought });
+        }
+        break;
       /* v8 ignore stop */
     }
   }
@@ -255,8 +260,16 @@ function simplifyContent(
 
 /**
  * Encode Mirascope messages to Anthropic API format.
+ *
+ * @param messages - The messages to encode
+ * @param modelId - The model ID for the request (used to check if raw message can be reused)
+ * @param encodeThoughtsAsText - Whether to encode thoughts as text in assistant messages
  */
-export function encodeMessages(messages: readonly Message[]): {
+export function encodeMessages(
+  messages: readonly Message[],
+  modelId: AnthropicModelId,
+  encodeThoughtsAsText: boolean = false
+): {
   system: string | undefined;
   messages: MessageCreateParamsNonStreaming['messages'];
 } {
@@ -273,11 +286,28 @@ export function encodeMessages(messages: readonly Message[]): {
         content: simplifyContent(blocks),
       });
     } else if (message.role === 'assistant') {
-      const blocks = processContentParts(message.content);
-      anthropicMessages.push({
-        role: 'assistant',
-        content: simplifyContent(blocks),
-      });
+      // Check if we can reuse the raw message (from same provider/model)
+      if (
+        message.providerId === 'anthropic' &&
+        message.modelId === modelId &&
+        message.rawMessage &&
+        !encodeThoughtsAsText
+      ) {
+        // Reuse the serialized message directly
+        anthropicMessages.push(
+          message.rawMessage as unknown as Anthropic.Messages.MessageParam
+        );
+      } else {
+        // Otherwise, encode from content parts
+        const blocks = processContentParts(
+          message.content,
+          encodeThoughtsAsText
+        );
+        anthropicMessages.push({
+          role: 'assistant',
+          content: simplifyContent(blocks),
+        });
+      }
     }
   }
 
@@ -334,9 +364,16 @@ export function buildRequestParams(
   tools?: readonly ToolSchema[],
   params: Params = {}
 ): MessageCreateParamsNonStreaming {
-  const { system, messages: anthropicMessages } = encodeMessages(messages);
-
   return ParamHandler.with(params, 'anthropic', modelId, (p) => {
+    const thinkingConfig = p.get('thinking');
+    const encodeThoughtsAsText = thinkingConfig?.encodeThoughtsAsText ?? false;
+
+    const { system, messages: anthropicMessages } = encodeMessages(
+      messages,
+      modelId,
+      encodeThoughtsAsText
+    );
+
     const maxTokens = p.getOrDefault('maxTokens', DEFAULT_MAX_TOKENS);
     const requestParams: MessageCreateParamsNonStreaming = {
       model: modelName(modelId),
@@ -388,7 +425,6 @@ export function buildRequestParams(
     // Anthropic doesn't support seed
     p.warnUnsupported('seed', 'Anthropic does not support the seed parameter');
 
-    const thinkingConfig = p.get('thinking');
     if (thinkingConfig) {
       const budget = computeThinkingBudget(thinkingConfig.level, maxTokens);
       if (budget === 0) {
@@ -400,6 +436,26 @@ export function buildRequestParams(
     }
 
     return requestParams;
+  });
+}
+
+/**
+ * Serialize content blocks for storage in rawMessage.
+ *
+ * This mirrors Python's `part.model_dump()` pattern for round-tripping.
+ */
+function serializeContentBlocks(
+  content: ContentBlock[]
+): Record<string, unknown>[] {
+  return content.map((block) => {
+    // Copy all non-undefined properties from the block
+    const serialized: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(block)) {
+      if (value !== undefined) {
+        serialized[key] = value;
+      }
+    }
+    return serialized;
   });
 }
 
@@ -421,14 +477,22 @@ export function decodeResponse(
 } {
   const content = decodeContent(response.content, includeThoughts);
 
+  // Store serialized message for round-tripping in resume operations.
+  // This format matches what Anthropic expects as MessageParam.
+  const serializedRawMessage = {
+    role: response.role,
+    content: serializeContentBlocks(response.content),
+  };
+
   const assistantMessage: AssistantMessage = {
     role: 'assistant',
     content,
     name: null,
     providerId: 'anthropic',
     modelId,
-    providerModelName: response.model,
-    rawMessage: response as unknown as AssistantMessage['rawMessage'],
+    providerModelName: modelName(modelId),
+    rawMessage:
+      serializedRawMessage as unknown as AssistantMessage['rawMessage'],
   };
 
   const finishReason = decodeStopReason(response.stop_reason);

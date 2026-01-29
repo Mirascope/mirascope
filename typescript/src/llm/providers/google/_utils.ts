@@ -125,9 +125,13 @@ function encodeAudio(audio: Audio): Part {
 /**
  * Process content parts from either user or assistant messages.
  * Converts to Google's Part format.
+ *
+ * @param content - The content parts to process
+ * @param encodeThoughtsAsText - Whether to encode thoughts as text
  */
 function processContentParts(
-  content: readonly (UserContentPart | AssistantContentPart)[]
+  content: readonly (UserContentPart | AssistantContentPart)[],
+  encodeThoughtsAsText: boolean = false
 ): Part[] {
   const parts: Part[] = [];
 
@@ -179,14 +183,14 @@ function processContentParts(
           null,
           'Document content is not yet implemented'
         );
+      /* v8 ignore start - thought encoding will be tested via e2e */
 
       case 'thought':
-        throw new FeatureNotSupportedError(
-          'thought encoding',
-          'google',
-          null,
-          'Thought content is not yet implemented'
-        );
+        // Encode thoughts as text when requested, otherwise drop
+        if (encodeThoughtsAsText) {
+          parts.push({ text: '**Thinking:** ' + part.thought });
+        }
+        break;
       /* v8 ignore stop */
     }
   }
@@ -342,8 +346,16 @@ export function encodeTools(
  * Converts the unified Mirascope message format to Google's Content array format.
  * System messages are extracted separately as Google uses `systemInstruction`.
  * Assistant messages are mapped to the 'model' role.
+ *
+ * @param messages - The messages to encode
+ * @param modelId - The model ID for the request (used to check if raw message can be reused)
+ * @param encodeThoughtsAsText - Whether to encode thoughts as text in assistant messages
  */
-export function encodeMessages(messages: readonly Message[]): {
+export function encodeMessages(
+  messages: readonly Message[],
+  modelId: GoogleModelId,
+  encodeThoughtsAsText: boolean = false
+): {
   systemInstruction: ContentUnion | undefined;
   contents: Content[];
 } {
@@ -359,10 +371,22 @@ export function encodeMessages(messages: readonly Message[]): {
         parts: processContentParts(message.content),
       });
     } else if (message.role === 'assistant') {
-      contents.push({
-        role: 'model',
-        parts: processContentParts(message.content),
-      });
+      // Check if we can reuse the raw message (from same provider/model)
+      if (
+        message.providerId === 'google' &&
+        message.modelId === modelId &&
+        message.rawMessage &&
+        !encodeThoughtsAsText
+      ) {
+        // Reuse the serialized content directly
+        contents.push(message.rawMessage as Content);
+      } else {
+        // Otherwise, encode from content parts
+        contents.push({
+          role: 'model',
+          parts: processContentParts(message.content, encodeThoughtsAsText),
+        });
+      }
     }
   }
 
@@ -386,9 +410,16 @@ export function buildRequestParams(
   tools?: readonly ToolSchema[],
   params: Params = {}
 ): GenerateContentParameters {
-  const { systemInstruction, contents } = encodeMessages(messages);
-
   return ParamHandler.with(params, 'google', modelId, (p) => {
+    const thinkingConfig = p.get('thinking');
+    const encodeThoughtsAsText = thinkingConfig?.encodeThoughtsAsText ?? false;
+
+    const { systemInstruction, contents } = encodeMessages(
+      messages,
+      modelId,
+      encodeThoughtsAsText
+    );
+
     const maxTokens = p.getOrDefault('maxTokens', DEFAULT_MAX_TOKENS);
     const config: GenerateContentConfig = {
       maxOutputTokens: maxTokens,
@@ -429,7 +460,6 @@ export function buildRequestParams(
       config.seed = seed;
     }
 
-    const thinkingConfig = p.get('thinking');
     if (thinkingConfig) {
       config.thinkingConfig = computeGoogleThinkingConfig(
         thinkingConfig,
@@ -444,6 +474,29 @@ export function buildRequestParams(
       config,
     };
   });
+}
+
+/**
+ * Serialize a Content object for storage in rawMessage.
+ *
+ * This mirrors Python's `content.model_dump()` pattern for round-tripping.
+ */
+function serializeContent(
+  content: Content | undefined
+): Record<string, unknown> {
+  /* v8 ignore start - defensive fallback for missing content */
+  if (!content) {
+    return { role: 'model', parts: [] };
+  }
+  /* v8 ignore stop */
+  // Copy all non-undefined properties
+  const serialized: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(content)) {
+    if (value !== undefined) {
+      serialized[key] = value;
+    }
+  }
+  return serialized;
 }
 
 /**
@@ -471,15 +524,19 @@ export function decodeResponse(
   const content = candidate?.content?.parts ?? [];
   const decodedContent = decodeContent(content, includeThoughts);
 
+  // Store serialized candidate content for round-tripping in resume operations.
+  // This format matches what Google expects as Content.
+  const serializedRawMessage = serializeContent(candidate?.content);
+
   const assistantMessage: AssistantMessage = {
     role: 'assistant',
     content: decodedContent,
     name: null,
     providerId: 'google',
     modelId,
-    /* v8 ignore next - modelVersion always present in practice */
-    providerModelName: response.modelVersion ?? modelName(modelId),
-    rawMessage: response as unknown as AssistantMessage['rawMessage'],
+    providerModelName: modelName(modelId),
+    rawMessage:
+      serializedRawMessage as unknown as AssistantMessage['rawMessage'],
   };
 
   const finishReason = decodeFinishReason(candidate?.finishReason);

@@ -7,6 +7,7 @@
 
 import type { MessageStreamEvent } from '@anthropic-ai/sdk/resources/messages';
 
+import type { Jsonable } from '@/llm/types/jsonable';
 import type { StreamResponseChunk } from '@/llm/responses/chunks';
 import {
   textStart,
@@ -15,13 +16,29 @@ import {
   thoughtStart,
   thoughtChunk,
   thoughtEnd,
+  toolCallStartChunk,
+  toolCallChunk,
+  toolCallEndChunk,
   finishReasonChunk,
   usageDeltaChunk,
   rawStreamEventChunk,
   rawMessageChunk,
 } from '@/llm/responses/chunks';
 import { FinishReason } from '@/llm/responses/finish-reason';
-import type { Jsonable } from '@/llm/types/jsonable';
+
+/**
+ * Accumulated content block for raw message persistence.
+ */
+type AccumulatedBlock =
+  | { type: 'text'; text: string }
+  | {
+      type: 'tool_use';
+      id: string;
+      name: string;
+      input: Record<string, unknown>;
+    }
+  | { type: 'thinking'; thinking: string; signature: string }
+  | { type: 'redacted_thinking'; data: string };
 
 /**
  * State tracking for stream decoding.
@@ -30,9 +47,20 @@ interface DecodeState {
   /** Index of current content block being streamed */
   currentBlockIndex: number;
   /** Type of current content block */
-  currentBlockType: 'text' | 'thinking' | null;
+  currentBlockType:
+    | 'text'
+    | 'thinking'
+    | 'tool_use'
+    | 'redacted_thinking'
+    | null;
   /** Whether to include thoughts in output */
   includeThoughts: boolean;
+  /** Current block being accumulated */
+  currentBlock: AccumulatedBlock | null;
+  /** Accumulated tool JSON for current tool_use block */
+  accumulatedToolJson: string;
+  /** All accumulated blocks for raw message */
+  accumulatedBlocks: AccumulatedBlock[];
 }
 
 /**
@@ -43,6 +71,9 @@ export function createDecodeState(includeThoughts: boolean): DecodeState {
     currentBlockIndex: -1,
     currentBlockType: null,
     includeThoughts,
+    currentBlock: null,
+    accumulatedToolJson: '',
+    accumulatedBlocks: [],
   };
 }
 
@@ -64,8 +95,6 @@ export function decodeStreamEvent(
 
   switch (event.type) {
     case 'message_start':
-      // Emit raw message chunk with initial message data
-      chunks.push(rawMessageChunk(event.message as unknown as Jsonable));
       // Emit initial usage if available
       if (event.message.usage) {
         chunks.push(
@@ -81,6 +110,7 @@ export function decodeStreamEvent(
       state.currentBlockIndex = event.index;
       if (event.content_block.type === 'text') {
         state.currentBlockType = 'text';
+        state.currentBlock = { type: 'text', text: event.content_block.text };
         chunks.push(textStart());
         // If there's initial text, emit it
         /* v8 ignore start - initial text in start event is rare */
@@ -90,6 +120,7 @@ export function decodeStreamEvent(
         /* v8 ignore stop */
       } else if (event.content_block.type === 'thinking') {
         state.currentBlockType = 'thinking';
+        state.currentBlock = { type: 'thinking', thinking: '', signature: '' };
         if (state.includeThoughts) {
           chunks.push(thoughtStart());
           // If there's initial thinking text, emit it
@@ -99,31 +130,112 @@ export function decodeStreamEvent(
           }
           /* v8 ignore stop */
         }
+        /* v8 ignore start - tool streaming will be tested via e2e */
+      } else if (event.content_block.type === 'tool_use') {
+        state.currentBlockType = 'tool_use';
+        state.currentBlock = {
+          type: 'tool_use',
+          id: event.content_block.id,
+          name: event.content_block.name,
+          input: {},
+        };
+        state.accumulatedToolJson = '';
+        chunks.push(
+          toolCallStartChunk(event.content_block.id, event.content_block.name)
+        );
+      } else if (event.content_block.type === 'redacted_thinking') {
+        state.currentBlockType = 'redacted_thinking';
+        state.currentBlock = {
+          type: 'redacted_thinking',
+          data: event.content_block.data,
+        };
+      } else if (
+        event.content_block.type === 'server_tool_use' ||
+        event.content_block.type === 'web_search_tool_result'
+      ) {
+        // Skip server-side tool content - preserved in raw_message via rawStreamEventChunk
+        state.currentBlockType = null;
+        state.currentBlock = null;
       }
-      // Note: tool_use and redacted_thinking blocks not yet supported
+      /* v8 ignore stop */
       break;
 
     case 'content_block_delta':
+      /* v8 ignore start - server tool skip will be tested via e2e */
+      // Skip deltas for server-side tool content
+      if (state.currentBlock === null) {
+        break;
+      }
+      /* v8 ignore stop */
+
       if (event.delta.type === 'text_delta') {
+        if (state.currentBlock?.type === 'text') {
+          state.currentBlock.text += event.delta.text;
+        }
         chunks.push(textChunk(event.delta.text));
       } else if (event.delta.type === 'thinking_delta') {
+        if (state.currentBlock?.type === 'thinking') {
+          state.currentBlock.thinking += event.delta.thinking;
+        }
         if (state.includeThoughts) {
           chunks.push(thoughtChunk(event.delta.thinking));
         }
+      } else if (event.delta.type === 'signature_delta') {
+        // Accumulate signature for round-tripping
+        if (state.currentBlock?.type === 'thinking') {
+          state.currentBlock.signature += event.delta.signature;
+        }
+        /* v8 ignore start - tool streaming will be tested via e2e */
+      } else if (event.delta.type === 'input_json_delta') {
+        state.accumulatedToolJson += event.delta.partial_json;
+        if (state.currentBlock?.type === 'tool_use') {
+          chunks.push(
+            toolCallChunk(state.currentBlock.id, event.delta.partial_json)
+          );
+        }
+      } else if (event.delta.type === 'citations_delta') {
+        // Skip citations delta - preserved in raw_message via rawStreamEventChunk
       }
-      // Note: input_json_delta for tools not yet supported
+      /* v8 ignore stop */
       break;
 
     case 'content_block_stop':
+      /* v8 ignore start - server tool skip will be tested via e2e */
+      // Skip stop for server-side tool content
+      if (state.currentBlock === null) {
+        break;
+      }
+      /* v8 ignore stop */
+
       if (state.currentBlockType === 'text') {
         chunks.push(textEnd());
+        /* v8 ignore start - tool streaming will be tested via e2e */
+      } else if (state.currentBlockType === 'tool_use') {
+        // Parse accumulated JSON and store in block
+        if (state.currentBlock?.type === 'tool_use') {
+          try {
+            state.currentBlock.input = state.accumulatedToolJson
+              ? (JSON.parse(state.accumulatedToolJson) as Record<
+                  string,
+                  unknown
+                >)
+              : {};
+          } catch {
+            state.currentBlock.input = {};
+          }
+          chunks.push(toolCallEndChunk(state.currentBlock.id));
+        }
       } else if (
+        /* v8 ignore stop */
         state.currentBlockType === 'thinking' &&
         state.includeThoughts
       ) {
         chunks.push(thoughtEnd());
       }
+      // Save accumulated block for raw message
+      state.accumulatedBlocks.push(state.currentBlock);
       state.currentBlockType = null;
+      state.currentBlock = null;
       break;
 
     case 'message_delta':
@@ -200,4 +312,10 @@ export async function* decodeStream(
       yield chunk;
     }
   }
+
+  // Emit raw message chunk with accumulated blocks for round-tripping
+  yield rawMessageChunk({
+    role: 'assistant',
+    content: state.accumulatedBlocks,
+  } as unknown as Jsonable);
 }
