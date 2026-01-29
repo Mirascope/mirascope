@@ -117,22 +117,41 @@ def test_azure_provider_openai_import_error_raises(
 ) -> None:
     """Test AzureProvider raises ImportError when OpenAI provider cannot import."""
     import builtins
+    import importlib
     from types import ModuleType
     from typing import Any
 
-    sys.modules.pop("mirascope.llm.providers.azure.openai.provider", None)
-    sys.modules.pop("mirascope.llm.providers.azure.openai", None)
+    modules_to_remove = [
+        "mirascope.llm.providers.azure.provider",
+        "mirascope.llm.providers.azure.openai.provider",
+        "mirascope.llm.providers.azure.openai",
+        "mirascope.llm.providers.azure",
+    ]
+    original_modules = {name: sys.modules.get(name) for name in modules_to_remove}
+    for name in modules_to_remove:
+        sys.modules.pop(name, None)
     original_import = builtins.__import__
 
     def mock_import(name: str, *args: Any, **kwargs: Any) -> ModuleType:  # noqa: ANN401
-        if name in {"openai.provider", "mirascope.llm.providers.azure.openai.provider"}:
-            raise ImportError("boom")
+        level = args[3] if len(args) > 3 else 0
+        if level == 0 and (name == "openai" or name.startswith("openai.")):
+            raise ImportError(f"No module named '{name}'")
         return original_import(name, *args, **kwargs)
 
     monkeypatch.setattr(builtins, "__import__", mock_import)
 
-    with pytest.raises(ImportError, match="openai"):
-        AzureProvider(api_key="test-key", base_url="https://example.openai.azure.com")
+    try:
+        azure_module = importlib.import_module("mirascope.llm.providers.azure")
+        with pytest.raises(ImportError, match="openai"):
+            azure_module.AzureProvider(
+                api_key="test-key", base_url="https://example.openai.azure.com"
+            )
+    finally:
+        for name, module in original_modules.items():
+            if module is None:
+                sys.modules.pop(name, None)
+            else:
+                sys.modules[name] = module
 
 
 def test_azure_model_id_preserved_in_error_messages() -> None:
