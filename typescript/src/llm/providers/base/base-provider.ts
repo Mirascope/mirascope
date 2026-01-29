@@ -7,6 +7,7 @@ import type { Message, UserContent } from '@/llm/messages';
 import { user } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import type { ProviderId } from '@/llm/providers/provider-id';
+import type { ToolSchema } from '@/llm/tools';
 import { Response } from '@/llm/responses';
 import type { StreamResponseChunk } from '@/llm/responses/chunks';
 import { ContextResponse } from '@/llm/responses/context-response';
@@ -61,6 +62,7 @@ export abstract class BaseProvider {
   async call(args: {
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<Response> {
     try {
@@ -78,6 +80,7 @@ export abstract class BaseProvider {
   protected abstract _call(args: {
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<Response>;
 
@@ -91,6 +94,7 @@ export abstract class BaseProvider {
   async stream(args: {
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<StreamResponse> {
     let response: StreamResponse;
@@ -134,6 +138,7 @@ export abstract class BaseProvider {
   protected abstract _stream(args: {
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<StreamResponse>;
 
@@ -149,6 +154,7 @@ export abstract class BaseProvider {
     ctx: Context<DepsT>;
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<ContextResponse<DepsT>> {
     try {
@@ -170,6 +176,7 @@ export abstract class BaseProvider {
     ctx: Context<DepsT>;
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<ContextResponse<DepsT>>;
 
@@ -185,6 +192,7 @@ export abstract class BaseProvider {
     ctx: Context<DepsT>;
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<ContextStreamResponse<DepsT>> {
     let response: ContextStreamResponse<DepsT>;
@@ -214,6 +222,7 @@ export abstract class BaseProvider {
     ctx: Context<DepsT>;
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<ContextStreamResponse<DepsT>>;
 
@@ -228,6 +237,7 @@ export abstract class BaseProvider {
    * @param args.modelId - The model ID to use.
    * @param args.response - The previous response to extend.
    * @param args.content - The new user content to append.
+   * @param args.tools - Optional tools to make available to the model.
    * @param args.params - Optional parameters for the request.
    * @returns A new Response containing the extended conversation.
    */
@@ -235,6 +245,7 @@ export abstract class BaseProvider {
     modelId: string;
     response: RootResponse;
     content: UserContent;
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<Response> {
     const messages = [...args.response.messages, user(args.content)];
@@ -242,6 +253,7 @@ export abstract class BaseProvider {
       modelId: args.modelId,
       messages,
       params: args.params,
+      tools: args.tools,
     });
   }
 
@@ -254,6 +266,7 @@ export abstract class BaseProvider {
    * @param args.modelId - The model ID to use.
    * @param args.response - The previous response to extend.
    * @param args.content - The new user content to append.
+   * @param args.tools - Optional tools to make available to the model.
    * @param args.params - Optional parameters for the request.
    * @returns A new StreamResponse for consuming the extended conversation.
    */
@@ -261,12 +274,14 @@ export abstract class BaseProvider {
     modelId: string;
     response: RootResponse;
     content: UserContent;
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<StreamResponse> {
     const messages = [...args.response.messages, user(args.content)];
     return this.stream({
       modelId: args.modelId,
       messages,
+      tools: args.tools,
       params: args.params,
     });
   }
@@ -282,6 +297,7 @@ export abstract class BaseProvider {
    * @param args.modelId - The model ID to use.
    * @param args.response - The previous response to extend.
    * @param args.content - The new user content to append.
+   * @param args.tools - Optional tools to make available to the model.
    * @param args.params - Optional parameters for the request.
    * @returns A new ContextResponse containing the extended conversation.
    */
@@ -290,6 +306,7 @@ export abstract class BaseProvider {
     modelId: string;
     response: RootResponse;
     content: UserContent;
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<ContextResponse<DepsT>> {
     const messages = [...args.response.messages, user(args.content)];
@@ -297,6 +314,7 @@ export abstract class BaseProvider {
       ctx: args.ctx,
       modelId: args.modelId,
       messages,
+      tools: args.tools,
       params: args.params,
     });
   }
@@ -312,6 +330,7 @@ export abstract class BaseProvider {
    * @param args.modelId - The model ID to use.
    * @param args.response - The previous response to extend.
    * @param args.content - The new user content to append.
+   * @param args.tools - Optional tools to make available to the model.
    * @param args.params - Optional parameters for the request.
    * @returns A new ContextStreamResponse for consuming the extended conversation.
    */
@@ -320,6 +339,7 @@ export abstract class BaseProvider {
     modelId: string;
     response: RootResponse;
     content: UserContent;
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<ContextStreamResponse<DepsT>> {
     const messages = [...args.response.messages, user(args.content)];
@@ -327,6 +347,7 @@ export abstract class BaseProvider {
       ctx: args.ctx,
       modelId: args.modelId,
       messages,
+      tools: args.tools,
       params: args.params,
     });
   }

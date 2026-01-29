@@ -25,8 +25,10 @@ import type {
   Image,
   Text,
   Thought,
+  ToolCall,
   UserContentPart,
 } from '@/llm/content';
+import type { ToolSchema } from '@/llm/tools';
 import {
   APIError,
   AuthenticationError,
@@ -143,6 +145,32 @@ function processContentParts(
         parts.push(encodeAudio(part));
         break;
 
+      /* v8 ignore start - tool encoding will be tested via e2e */
+      case 'tool_call':
+        parts.push({
+          functionCall: {
+            name: part.name,
+            args: JSON.parse(part.args) as Record<string, unknown>,
+          },
+        });
+        break;
+
+      case 'tool_output': {
+        // Google expects the result to be an object
+        const response =
+          typeof part.result === 'string'
+            ? { result: part.result }
+            : (part.result as Record<string, unknown>);
+        parts.push({
+          functionResponse: {
+            name: part.name,
+            response,
+          },
+        });
+        break;
+      }
+      /* v8 ignore stop */
+
       /* v8 ignore start - content types not yet implemented */
       case 'document':
         throw new FeatureNotSupportedError(
@@ -150,22 +178,6 @@ function processContentParts(
           'google',
           null,
           'Document content is not yet implemented'
-        );
-
-      case 'tool_output':
-        throw new FeatureNotSupportedError(
-          'tool output encoding',
-          'google',
-          null,
-          'Tool outputs are not yet implemented'
-        );
-
-      case 'tool_call':
-        throw new FeatureNotSupportedError(
-          'tool call encoding',
-          'google',
-          null,
-          'Tool calls are not yet implemented'
         );
 
       case 'thought':
@@ -284,6 +296,46 @@ export function computeGoogleThinkingConfig(
   return result;
 }
 
+// ============================================================================
+// Tool Encoding
+// ============================================================================
+
+/* v8 ignore start - tool encoding will be tested via e2e */
+/**
+ * Convert a ToolSchema to Google's FunctionDeclaration format.
+ */
+export function encodeToolSchema(tool: ToolSchema): {
+  name: string;
+  description: string;
+  parametersJsonSchema: unknown;
+} {
+  return {
+    name: tool.name,
+    description: tool.description,
+    // Use parametersJsonSchema for raw JSON schema compatibility
+    parametersJsonSchema: {
+      type: 'object',
+      properties: tool.parameters.properties,
+      required: tool.parameters.required,
+    },
+  };
+}
+
+/**
+ * Encode an array of tool schemas to Google's format.
+ * Google wraps all function declarations in a single Tool object.
+ */
+export function encodeTools(
+  tools: readonly ToolSchema[]
+): NonNullable<GenerateContentConfig['tools']> {
+  return [
+    {
+      functionDeclarations: tools.map(encodeToolSchema),
+    },
+  ];
+}
+/* v8 ignore stop */
+
 /**
  * Encode Mirascope messages to Google API format.
  *
@@ -322,10 +374,16 @@ export function encodeMessages(messages: readonly Message[]): {
  *
  * This function performs strict param checking - any unhandled params will
  * cause an error to ensure we don't silently ignore user configuration.
+ *
+ * @param modelId - The model ID to use
+ * @param messages - The messages to send
+ * @param params - Optional parameters (temperature, maxTokens, etc.)
+ * @param tools - Optional tools to make available to the model
  */
 export function buildRequestParams(
   modelId: GoogleModelId,
   messages: readonly Message[],
+  tools?: readonly ToolSchema[],
   params: Params = {}
 ): GenerateContentParameters {
   const { systemInstruction, contents } = encodeMessages(messages);
@@ -339,6 +397,12 @@ export function buildRequestParams(
     if (systemInstruction) {
       config.systemInstruction = systemInstruction;
     }
+
+    /* v8 ignore start - tool encoding will be tested via e2e */
+    if (tools !== undefined && tools.length > 0) {
+      config.tools = encodeTools(tools);
+    }
+    /* v8 ignore stop */
 
     const temperature = p.get('temperature');
     if (temperature !== undefined) {
@@ -447,14 +511,19 @@ function decodeContent(
     } else if (part.text !== undefined) {
       const text: Text = { type: 'text', text: part.text };
       content.push(text);
-      /* v8 ignore start - content types not yet implemented */
+      /* v8 ignore start - tool decoding will be tested via e2e */
     } else if (part.functionCall) {
-      throw new FeatureNotSupportedError(
-        'function call decoding',
-        'google',
-        null,
-        'Function call blocks in responses are not yet implemented'
-      );
+      // Google doesn't provide IDs for function calls, so we generate one
+      const name = part.functionCall.name ?? '';
+      const toolCall: ToolCall = {
+        type: 'tool_call',
+        id: `google_${name}_${Date.now()}`,
+        name,
+        args: JSON.stringify(part.functionCall.args ?? {}),
+      };
+      content.push(toolCall);
+      /* v8 ignore stop */
+      /* v8 ignore start - defensive unknown part handling */
     } else {
       // Unknown part type - be strict so we know what we're missing
       const partKeys = Object.keys(part).filter(

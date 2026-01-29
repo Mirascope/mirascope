@@ -152,10 +152,15 @@ describe('buildRequestParams thinking config', () => {
   it('sets thinkingConfig when thinking is specified', () => {
     const messages = [user('Hello')];
 
-    const params = buildRequestParams('google/gemini-2.5-flash', messages, {
-      thinking: { level: 'medium' },
-      maxTokens: 10000,
-    });
+    const params = buildRequestParams(
+      'google/gemini-2.5-flash',
+      messages,
+      undefined,
+      {
+        thinking: { level: 'medium' },
+        maxTokens: 10000,
+      }
+    );
 
     expect(params.config?.thinkingConfig).toEqual({
       thinkingBudget: 4000, // medium = 0.4 multiplier
@@ -169,7 +174,7 @@ describe('image encoding', () => {
     const messages = [user(['Check this image', urlImage])];
 
     expect(() =>
-      buildRequestParams('google/gemini-2.5-flash', messages, {})
+      buildRequestParams('google/gemini-2.5-flash', messages, undefined, {})
     ).toThrow(FeatureNotSupportedError);
   });
 });

@@ -56,7 +56,7 @@ describe('buildRequestParams', () => {
     const messages = [user('Hello')];
 
     expect(() =>
-      buildRequestParams('anthropic/claude-haiku-4-5', messages, {
+      buildRequestParams('anthropic/claude-haiku-4-5', messages, undefined, {
         temperature: 0.7,
         topP: 0.9,
       })
@@ -70,6 +70,7 @@ describe('buildRequestParams', () => {
       const params = buildRequestParams(
         'anthropic/claude-haiku-4-5',
         messages,
+        undefined,
         {
           thinking: { level: 'none' },
         }
@@ -84,6 +85,7 @@ describe('buildRequestParams', () => {
       const params = buildRequestParams(
         'anthropic/claude-haiku-4-5',
         messages,
+        undefined,
         {
           thinking: { level: 'medium' },
           maxTokens: 10000,
@@ -103,6 +105,7 @@ describe('buildRequestParams', () => {
       const params = buildRequestParams(
         'anthropic/claude-haiku-4-5',
         messages,
+        undefined,
         {
           thinking: { level: 'default' },
         }
@@ -124,7 +127,12 @@ describe('buildRequestParams', () => {
       const messages = [user(['Check this image', heicImage])];
 
       expect(() =>
-        buildRequestParams('anthropic/claude-haiku-4-5', messages, {})
+        buildRequestParams(
+          'anthropic/claude-haiku-4-5',
+          messages,
+          undefined,
+          {}
+        )
       ).toThrow(FeatureNotSupportedError);
     });
 
@@ -137,7 +145,12 @@ describe('buildRequestParams', () => {
       const messages = [user(['Check this image', heifImage])];
 
       expect(() =>
-        buildRequestParams('anthropic/claude-haiku-4-5', messages, {})
+        buildRequestParams(
+          'anthropic/claude-haiku-4-5',
+          messages,
+          undefined,
+          {}
+        )
       ).toThrow(FeatureNotSupportedError);
     });
   });
@@ -163,7 +176,12 @@ describe('buildRequestParams', () => {
       const messages = [user(['Transcribe this', audio])];
 
       expect(() =>
-        buildRequestParams('anthropic/claude-haiku-4-5', messages, {})
+        buildRequestParams(
+          'anthropic/claude-haiku-4-5',
+          messages,
+          undefined,
+          {}
+        )
       ).toThrow(FeatureNotSupportedError);
     });
   });
