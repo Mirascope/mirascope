@@ -368,23 +368,20 @@ retriever = VectorStoreIndex.from_documents(documents).as_retriever()
 # Define the function to ask "Steve Jobs" a question
 
 @llm.call("openai/gpt-4o-mini")
-def ask_steve_jobs(query: str, retriever: BaseRetriever) -> str:
+def ask_steve_jobs(query: str, retriever: BaseRetriever):
     """Retrieves excerpts from Steve Jobs' speeches relevant to `query` and generates a response."""
     excerpts = [node.get_content() for node in retriever.retrieve(query)]
-    return f"""
-    SYSTEM:
-    Your task is to respond to the user as though you are Steve Jobs.
+    return [
+        llm.messages.system(f"""Your task is to respond to the user as though you are Steve Jobs.
 
-    Here are some excerpts from Steve Jobs' speeches relevant to the user query.
-    Use them as a reference for how to respond.
+Here are some excerpts from Steve Jobs' speeches relevant to the user query.
+Use them as a reference for how to respond.
 
-    <excerpts>
-    {excerpts}
-    </excerpts>
-
-    USER:
-    {query}
-    """
+<excerpts>
+{excerpts}
+</excerpts>"""),
+        llm.messages.user(query),
+    ]
 
 # Get the user's query and ask "Steve Jobs"
 
