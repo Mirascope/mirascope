@@ -36,6 +36,8 @@ import { createUsage } from '@/llm/responses/usage';
 
 /**
  * Error mapping from Anthropic SDK exceptions to Mirascope error types.
+ * Note: More specific error classes must come before their parent classes
+ * since the error map is checked with instanceof in order.
  */
 export const ANTHROPIC_ERROR_MAP: ProviderErrorMap = [
   [Anthropic.AuthenticationError, AuthenticationError],
@@ -44,8 +46,8 @@ export const ANTHROPIC_ERROR_MAP: ProviderErrorMap = [
   [Anthropic.NotFoundError, NotFoundError],
   [Anthropic.RateLimitError, RateLimitError],
   [Anthropic.InternalServerError, ServerError],
-  [Anthropic.APIError, APIError],
   [Anthropic.APIConnectionError, ConnectionError],
+  [Anthropic.APIError, APIError],
 ];
 
 // ============================================================================
