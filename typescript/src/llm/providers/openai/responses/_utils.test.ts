@@ -52,9 +52,14 @@ describe('buildRequestParams thinking config', () => {
   it('sets reasoning when thinking is specified', () => {
     const messages = [user('Hello')];
 
-    const params = buildRequestParams('openai/o4-mini:responses', messages, {
-      thinking: { level: 'medium' },
-    });
+    const params = buildRequestParams(
+      'openai/o4-mini:responses',
+      messages,
+      undefined,
+      {
+        thinking: { level: 'medium' },
+      }
+    );
 
     expect(params.reasoning).toEqual({ effort: 'medium' });
   });
@@ -62,9 +67,14 @@ describe('buildRequestParams thinking config', () => {
   it('sets reasoning with summary when includeThoughts is true', () => {
     const messages = [user('Hello')];
 
-    const params = buildRequestParams('openai/o4-mini:responses', messages, {
-      thinking: { level: 'high', includeThoughts: true },
-    });
+    const params = buildRequestParams(
+      'openai/o4-mini:responses',
+      messages,
+      undefined,
+      {
+        thinking: { level: 'high', includeThoughts: true },
+      }
+    );
 
     expect(params.reasoning).toEqual({ effort: 'high', summary: 'auto' });
   });
@@ -75,7 +85,12 @@ describe('image encoding', () => {
     const urlImage = Image.fromUrl('https://example.com/image.png');
     const messages = [user(['Describe this', urlImage])];
 
-    const params = buildRequestParams('openai/gpt-4o:responses', messages, {});
+    const params = buildRequestParams(
+      'openai/gpt-4o:responses',
+      messages,
+      undefined,
+      {}
+    );
 
     // Check that the URL is passed through correctly
     expect(params.input).toContainEqual({
@@ -114,7 +129,7 @@ describe('audio encoding', () => {
     const messages = [user(['Listen to this', wavAudio])];
 
     expect(() =>
-      buildRequestParams('openai/gpt-4o:responses', messages, {})
+      buildRequestParams('openai/gpt-4o:responses', messages, undefined, {})
     ).toThrow(FeatureNotSupportedError);
   });
 });
