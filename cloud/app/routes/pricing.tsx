@@ -1,20 +1,23 @@
 import type React from "react";
+
 import { createFileRoute } from "@tanstack/react-router";
+import { Loader2 } from "lucide-react";
+
+import type { PlanTier } from "@/payments/plans";
+
+import { useOrganizationMembers } from "@/app/api/organization-memberships";
+import { useSubscription } from "@/app/api/organizations";
+import { useProjects } from "@/app/api/projects";
 import { PricingPage, type UsageData } from "@/app/components/pricing-page";
-import { ButtonLink } from "@/app/components/ui/button-link";
 import { Button } from "@/app/components/ui/button";
-import { createStaticRouteHead } from "@/app/lib/seo/static-route-head";
+import { ButtonLink } from "@/app/components/ui/button-link";
 import { useAuth } from "@/app/contexts/auth";
 import {
   OrganizationProvider,
   useOrganization,
 } from "@/app/contexts/organization";
-import { useSubscription } from "@/app/api/organizations";
-import { useProjects } from "@/app/api/projects";
-import { useOrganizationMembers } from "@/app/api/organization-memberships";
-import type { PlanTier } from "@/payments/plans";
 import { isUpgrade } from "@/app/lib/billing-utils";
-import { Loader2 } from "lucide-react";
+import { createStaticRouteHead } from "@/app/lib/seo/static-route-head";
 
 function getTierButton(tier: PlanTier, currentPlan: PlanTier): React.ReactNode {
   if (tier === currentPlan) {

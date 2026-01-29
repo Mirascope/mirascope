@@ -5,15 +5,18 @@
  * Uses runSync from @mdx-js/mdx to evaluate the compiled JSX code string.
  */
 
+import type { MDXComponents } from "mdx/types";
+
+import { runSync } from "@mdx-js/mdx";
 import { ClientOnly } from "@tanstack/react-router";
 import React, { useMemo } from "react";
-import { runSync } from "@mdx-js/mdx";
-import { isDevelopment } from "@/app/lib/site";
-import * as jsxRuntime from "react/jsx-runtime";
 import * as jsxDevRuntime from "react/jsx-dev-runtime";
+import * as jsxRuntime from "react/jsx-runtime";
+
 import type { CompiledMDX } from "@/app/lib/mdx/types";
-import type { MDXComponents } from "mdx/types";
+
 import componentRegistry from "@/app/components/mdx/component-registry";
+import { isDevelopment } from "@/app/lib/site";
 
 interface MDXRendererProps {
   /** Compiled MDX content with code string */

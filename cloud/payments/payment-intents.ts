@@ -6,8 +6,9 @@
  */
 
 import { Effect } from "effect";
-import { Stripe } from "@/payments/client";
+
 import { StripeError } from "@/errors";
+import { Stripe } from "@/payments/client";
 
 /**
  * Parameters for creating a router credit purchase PaymentIntent.

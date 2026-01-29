@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { Button } from "@/app/components/ui/button";
 import { Clipboard, Check } from "lucide-react";
+import { useState } from "react";
+
+import { Button } from "@/app/components/ui/button";
 import { useAnalytics } from "@/app/contexts/analytics";
 
 interface CopyMarkdownButtonProps {

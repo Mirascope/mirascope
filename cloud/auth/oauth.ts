@@ -12,19 +12,7 @@
  * tested via integration tests rather than unit tests.
  */
 import { Effect, Schema, Layer } from "effect";
-import { Database } from "@/db/database";
-import { DEFAULT_SESSION_DURATION } from "@/db";
-import { NotFoundError, AlreadyExistsError, DatabaseError } from "@/errors";
-import { Settings, type SettingsConfig } from "@/settings";
-import { Emails } from "@/emails";
-import { renderEmailTemplate } from "@/emails/render";
-import { WelcomeEmail } from "@/emails/templates";
-import { ExecutionContext } from "@/server-entry";
-import {
-  OAuthError,
-  InvalidStateError,
-  AuthenticationFailedError,
-} from "@/auth/errors";
+
 import type {
   AuthenticatedUserInfo,
   OAuthProviderConfig,
@@ -33,6 +21,12 @@ import type {
   GoogleUser,
   TokenData,
 } from "@/auth/types";
+
+import {
+  OAuthError,
+  InvalidStateError,
+  AuthenticationFailedError,
+} from "@/auth/errors";
 import {
   TokenDataSchema,
   GitHubUserSchema,
@@ -45,6 +39,14 @@ import {
   setSessionCookie,
   setOAuthStateCookie,
 } from "@/auth/utils";
+import { DEFAULT_SESSION_DURATION } from "@/db";
+import { Database } from "@/db/database";
+import { Emails } from "@/emails";
+import { renderEmailTemplate } from "@/emails/render";
+import { WelcomeEmail } from "@/emails/templates";
+import { NotFoundError, AlreadyExistsError, DatabaseError } from "@/errors";
+import { ExecutionContext } from "@/server-entry";
+import { Settings, type SettingsConfig } from "@/settings";
 
 // =============================================================================
 // User Data Mappers

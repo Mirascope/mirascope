@@ -1,8 +1,9 @@
-import { describe, it, expect } from "@/tests/db";
 import { Effect, Layer, Context } from "effect";
+
 import { StripeError } from "@/errors";
 import { Stripe } from "@/payments/client";
 import { Payments } from "@/payments/service";
+import { describe, it, expect } from "@/tests/db";
 import { DefaultMockPayments } from "@/tests/payments";
 
 describe("customers", () => {

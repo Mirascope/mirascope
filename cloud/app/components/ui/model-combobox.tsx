@@ -1,3 +1,13 @@
+import type {
+  Control,
+  FieldPath,
+  FieldValues,
+  PathValue,
+} from "react-hook-form";
+
+import { Check, ChevronsUpDown } from "lucide-react";
+import { useEffect, useState } from "react";
+
 import { Button } from "@/app/components/ui/button";
 import {
   Command,
@@ -20,14 +30,6 @@ import {
   PopoverTrigger,
 } from "@/app/components/ui/popover";
 import { cn } from "@/app/lib/utils";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { useEffect, useState } from "react";
-import type {
-  Control,
-  FieldPath,
-  FieldValues,
-  PathValue,
-} from "react-hook-form";
 
 type Option = {
   value: string;

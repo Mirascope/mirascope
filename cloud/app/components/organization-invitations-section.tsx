@@ -1,13 +1,14 @@
+import type { OrganizationRole } from "@/db/schema";
+
+import { useOrganizationInvitations } from "@/app/api/organization-invitations";
+import { OrganizationInvitationDialog } from "@/app/components/organization-invitation-dialog";
+import { OrganizationInvitationsTable } from "@/app/components/organization-invitations-table";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
 } from "@/app/components/ui/card";
-import { OrganizationInvitationDialog } from "@/app/components/organization-invitation-dialog";
-import { OrganizationInvitationsTable } from "@/app/components/organization-invitations-table";
-import { useOrganizationInvitations } from "@/app/api/organization-invitations";
-import type { OrganizationRole } from "@/db/schema";
 
 interface OrganizationInvitationsSectionProps {
   organizationId: string | null;

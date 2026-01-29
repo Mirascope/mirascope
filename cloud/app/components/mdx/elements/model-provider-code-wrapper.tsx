@@ -1,9 +1,9 @@
+import { CodeBlock } from "@/app/components/blocks/code-block/code-block";
 // No need to import React with JSX transform
 import {
   useProvider,
   replaceProviderVariables,
 } from "@/app/components/mdx/elements/model-provider-provider";
-import { CodeBlock } from "@/app/components/blocks/code-block/code-block";
 
 /**
  * A wrapper component for code blocks that handles provider-specific substitutions.

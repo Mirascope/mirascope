@@ -7,8 +7,9 @@
  */
 
 import { Effect } from "effect";
-import { Stripe } from "@/payments/client";
+
 import { StripeError } from "@/errors";
+import { Stripe } from "@/payments/client";
 import { Subscriptions } from "@/payments/subscriptions";
 
 /**

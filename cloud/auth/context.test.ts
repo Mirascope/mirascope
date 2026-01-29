@@ -1,8 +1,10 @@
 import { Effect, Layer } from "effect";
 import { describe, it, expect } from "vitest";
+
+import type { PublicUser, ApiKeyInfo } from "@/db/schema";
+
 import { Authentication, type AuthResult } from "@/auth/context";
 import { UnauthorizedError } from "@/errors";
-import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 
 describe("Authentication", () => {
   const mockUser: PublicUser = {

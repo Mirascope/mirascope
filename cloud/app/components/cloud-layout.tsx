@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+
 import { Sidebar } from "@/app/components/sidebar";
 
 type CloudLayoutProps = {

@@ -5,8 +5,9 @@
  * route changes. Includes user attribution if the user is logged in.
  */
 
-import { useEffect } from "react";
 import { useLocation } from "@tanstack/react-router";
+import { useEffect } from "react";
+
 import { useAnalytics } from "@/app/contexts/analytics";
 import { useAuth } from "@/app/contexts/auth";
 

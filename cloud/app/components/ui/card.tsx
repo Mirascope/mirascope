@@ -1,6 +1,7 @@
 import * as React from "react";
-import { cn } from "@/app/lib/utils";
 import { forwardRef } from "react";
+
+import { cn } from "@/app/lib/utils";
 
 type CardVariant = "default" | "primary";
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {

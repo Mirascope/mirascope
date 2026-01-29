@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Effect } from "effect";
-import { ApiClient, eq } from "@/app/api/client";
+
 import type { CreateInvitationRequest } from "@/api/organization-invitations.schemas";
+
+import { ApiClient, eq } from "@/app/api/client";
 
 export const useOrganizationInvitations = (organizationId: string) => {
   return useQuery({

@@ -2,9 +2,20 @@
  * @fileoverview Tests for span ingest queue consumer.
  */
 
-import { describe, expect, it } from "@/tests/db";
 import { Effect, Layer } from "effect";
 import { afterEach, vi } from "vitest";
+
+import { ClickHouse } from "@/db/clickhouse/client";
+import { DrizzleORM } from "@/db/client";
+import { Payments } from "@/payments";
+import { describe, expect, it } from "@/tests/db";
+import { buildSpansIngestMessage } from "@/tests/db/clickhouse/fixtures";
+import { createMockEnv } from "@/tests/settings";
+import {
+  createMockQueueBatch,
+  createMockQueueMessage,
+} from "@/tests/workers/fixtures";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
 
 import spanIngestQueue, {
   SpansIngestQueue,
@@ -12,16 +23,6 @@ import spanIngestQueue, {
   spansIngestQueueLayer,
   setSpansIngestQueueLayer,
 } from "./spanIngestQueue";
-import { ClickHouse } from "@/db/clickhouse/client";
-import { RealtimeSpans } from "@/workers/realtimeSpans";
-import { DrizzleORM } from "@/db/client";
-import { Payments } from "@/payments";
-import { buildSpansIngestMessage } from "@/tests/db/clickhouse/fixtures";
-import {
-  createMockQueueBatch,
-  createMockQueueMessage,
-} from "@/tests/workers/fixtures";
-import { createMockEnv } from "@/tests/settings";
 
 /** Alias for shared fixture builder to match local naming convention. */
 const createTestMessage = buildSpansIngestMessage;

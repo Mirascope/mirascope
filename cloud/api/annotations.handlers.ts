@@ -1,11 +1,13 @@
 import { Effect } from "effect";
-import { Database } from "@/db/database";
-import { Authentication } from "@/auth";
-import type { PublicAnnotation } from "@/db/schema/annotations";
+
 import type {
   CreateAnnotationRequest,
   UpdateAnnotationRequest,
 } from "@/api/annotations.schemas";
+import type { PublicAnnotation } from "@/db/schema/annotations";
+
+import { Authentication } from "@/auth";
+import { Database } from "@/db/database";
 
 export * from "@/api/annotations.schemas";
 

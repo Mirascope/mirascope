@@ -1,3 +1,4 @@
+import { Effect, Either } from "effect";
 import {
   describe,
   it,
@@ -7,13 +8,13 @@ import {
   afterEach,
   assert,
 } from "vitest";
-import { Effect, Either } from "effect";
+
+import { SettingsValidationError } from "@/errors";
 import {
   validateSettings,
   validateSettingsFromEnvironment,
   type CloudflareEnvironment,
 } from "@/settings";
-import { SettingsValidationError } from "@/errors";
 import { createMockEnv } from "@/tests/settings";
 
 describe("settings", () => {

@@ -1,12 +1,13 @@
+import { AlertTriangle } from "lucide-react";
 import { Component, type ReactNode, type ErrorInfo } from "react";
+
+import { Button } from "@/app/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
 } from "@/app/components/ui/card";
-import { Button } from "@/app/components/ui/button";
-import { AlertTriangle } from "lucide-react";
 
 interface Props {
   children: ReactNode;

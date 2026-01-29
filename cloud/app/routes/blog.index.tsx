@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getAllBlogMeta } from "@/app/lib/content/virtual-module";
+
 import { BlogPage } from "@/app/components/blog-page";
+import { getAllBlogMeta } from "@/app/lib/content/virtual-module";
 import { createStaticRouteHead } from "@/app/lib/seo/static-route-head";
 
 export const Route = createFileRoute("/blog/")({

@@ -1,5 +1,6 @@
-import { describe, it, expect, MockDrizzleORM } from "@/tests/db";
 import { Effect } from "effect";
+
+import { Database } from "@/db/database";
 import { type PublicSession } from "@/db/schema";
 import { type PublicUser } from "@/db/schema/users";
 import {
@@ -8,7 +9,7 @@ import {
   InvalidSessionError,
   NotFoundError,
 } from "@/errors";
-import { Database } from "@/db/database";
+import { describe, it, expect, MockDrizzleORM } from "@/tests/db";
 
 describe("Sessions", () => {
   // ===========================================================================

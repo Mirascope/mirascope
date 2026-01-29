@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+
 import { handleRedirect } from "./redirects";
 
 const createRequest = (path: string): Request =>

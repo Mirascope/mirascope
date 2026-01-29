@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Effect } from "effect";
-import { ApiClient, eq } from "@/app/api/client";
+
 import type { UpdateMemberRoleRequest } from "@/api/organization-memberships.schemas";
+
+import { ApiClient, eq } from "@/app/api/client";
 
 export const useOrganizationMembers = (organizationId: string | null) => {
   return useQuery({

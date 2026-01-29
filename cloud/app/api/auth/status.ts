@@ -1,12 +1,14 @@
-import { Effect } from "effect";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
-import { authenticate } from "@/auth";
-import { runEffect } from "@/app/lib/effect";
+import { Effect } from "effect";
+
 import type { Result } from "@/app/lib/types";
 import type { PublicUser } from "@/db/schema";
+
+import { runEffect } from "@/app/lib/effect";
+import { authenticate } from "@/auth";
 
 const AUTH_STALE_TIME = 5 * 60 * 1000; // 5 minutes
 

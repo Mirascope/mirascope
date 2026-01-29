@@ -1,6 +1,7 @@
-import * as React from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Building2 } from "lucide-react";
+import * as React from "react";
+
 import { useOrganization } from "@/app/contexts/organization";
 import { cn } from "@/app/lib/utils";
 

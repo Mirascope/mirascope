@@ -38,8 +38,9 @@
  * ```
  */
 
-import { Effect } from "effect";
 import { and, eq, desc, inArray } from "drizzle-orm";
+import { Effect } from "effect";
+
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
@@ -47,18 +48,18 @@ import {
 import { DrizzleORM } from "@/db/client";
 import { ProjectMemberships } from "@/db/project-memberships";
 import {
-  AlreadyExistsError,
-  DatabaseError,
-  NotFoundError,
-  PermissionDeniedError,
-} from "@/errors";
-import { isUniqueConstraintError } from "@/db/utils";
-import {
   tags,
   type NewTag,
   type PublicTag,
   type ProjectRole,
 } from "@/db/schema";
+import { isUniqueConstraintError } from "@/db/utils";
+import {
+  AlreadyExistsError,
+  DatabaseError,
+  NotFoundError,
+  PermissionDeniedError,
+} from "@/errors";
 
 /**
  * Public fields to select from the project_tags table.

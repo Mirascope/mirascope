@@ -17,9 +17,10 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { Effect, Layer } from "effect";
+
 import { Analytics } from "@/analytics";
-import { Settings } from "@/settings";
 import { settingsLayer } from "@/server-entry";
+import { Settings } from "@/settings";
 
 /**
  * Analytics event request payload from the frontend.

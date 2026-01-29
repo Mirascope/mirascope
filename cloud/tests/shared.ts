@@ -1,6 +1,6 @@
-import { Effect, Option } from "effect";
-import { it as vitestIt } from "@effect/vitest";
 import { SqlClient } from "@effect/sql";
+import { it as vitestIt } from "@effect/vitest";
+import { Effect, Option } from "effect";
 
 type EffectTestFn<TServices> = <A, E, R extends TServices = TServices>(
   name: string,

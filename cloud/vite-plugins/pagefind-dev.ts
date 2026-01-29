@@ -1,6 +1,6 @@
-import { type Plugin } from "vite";
 import fs from "fs";
 import path from "path";
+import { type Plugin } from "vite";
 
 /**
  * Vite plugin for Vite's dev server only: serves the Pagefind index from dist/_pagefind.

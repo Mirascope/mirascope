@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
 import { Schema } from "effect";
+import { describe, it, expect } from "vitest";
+
 import { generateSlug, isValidSlug, createSlugSchema } from "@/db/slug";
 
 describe("generateSlug", () => {

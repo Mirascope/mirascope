@@ -1,11 +1,13 @@
 import { Effect } from "effect";
-import { Database } from "@/db/database";
-import { AuthenticatedUser } from "@/auth";
-import { Analytics } from "@/analytics";
+
 import type {
   CreateProjectRequest,
   UpdateProjectRequest,
 } from "@/api/projects.schemas";
+
+import { Analytics } from "@/analytics";
+import { AuthenticatedUser } from "@/auth";
+import { Database } from "@/db/database";
 
 export * from "@/api/projects.schemas";
 

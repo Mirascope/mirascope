@@ -25,19 +25,20 @@
  * cache for realtime UI display.
  */
 
-import { Context, Effect, Layer } from "effect";
 import type {
   DurableObjectNamespace,
   DurableObjectStub,
   RequestInit,
 } from "@cloudflare/workers-types";
+
+import { Context, Effect, Layer } from "effect";
+
 import type {
   SpanSearchInput,
   SearchResponse,
   TraceDetailInput,
   TraceDetailResponse,
 } from "@/db/clickhouse/search";
-
 import type { SpansBatchRequest } from "@/db/clickhouse/types";
 
 // =============================================================================

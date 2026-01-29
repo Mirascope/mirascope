@@ -1,10 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Effect } from "effect";
-import { ApiClient, eq } from "@/app/api/client";
+
 import type {
   AddProjectMemberRequest,
   UpdateProjectMemberRoleRequest,
 } from "@/api/project-memberships.schemas";
+
+import { ApiClient, eq } from "@/app/api/client";
 
 export const useProjectMembers = (
   organizationId: string | null,

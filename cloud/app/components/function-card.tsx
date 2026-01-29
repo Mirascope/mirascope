@@ -1,4 +1,8 @@
 import { Link } from "@tanstack/react-router";
+
+import type { FunctionResponse } from "@/api/functions.schemas";
+
+import { Badge } from "@/app/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -6,8 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
-import type { FunctionResponse } from "@/api/functions.schemas";
 
 interface FunctionCardProps {
   fn: FunctionResponse;

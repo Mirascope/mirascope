@@ -1,4 +1,16 @@
+import { MoreHorizontal, Trash2, Loader2 } from "lucide-react";
 import { useState } from "react";
+
+import type { ApiKeyWithContext } from "@/api/api-keys.schemas";
+
+import { DeleteApiKeyModal } from "@/app/components/delete-api-key-modal";
+import { Button } from "@/app/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/app/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -7,16 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/components/ui/table";
-import { Button } from "@/app/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
-import { MoreHorizontal, Trash2, Loader2 } from "lucide-react";
-import { DeleteApiKeyModal } from "@/app/components/delete-api-key-modal";
-import type { ApiKeyWithContext } from "@/api/api-keys.schemas";
 
 interface ApiKeysTableProps {
   apiKeys: readonly ApiKeyWithContext[];

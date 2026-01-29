@@ -1,9 +1,11 @@
-import { FileDiff } from "@pierre/diffs/react";
-import { parseDiffFromFile } from "@pierre/diffs";
 import type { FileContents, SupportedLanguages } from "@pierre/diffs";
-import { Button } from "@/app/components/ui/button";
-import { useMemo, useState } from "react";
+
+import { parseDiffFromFile } from "@pierre/diffs";
+import { FileDiff } from "@pierre/diffs/react";
 import { useTheme } from "next-themes";
+import { useMemo, useState } from "react";
+
+import { Button } from "@/app/components/ui/button";
 
 interface DiffToolProps {
   baseCode: string;

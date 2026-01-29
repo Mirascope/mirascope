@@ -1,4 +1,5 @@
 import { describe, test, expect } from "vitest";
+
 import { parseFrontmatter } from "./frontmatter";
 
 describe("Frontmatter Parser", () => {

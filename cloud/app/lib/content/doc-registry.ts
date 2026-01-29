@@ -5,9 +5,11 @@
  * Note: Cannot use import aliases in this file.
  */
 
-import type { FullDocsSpec, DocInfo } from "./spec";
-import { getDocsFromSpec } from "./spec";
 import { docsSpec } from "@/../content/docs/_meta";
+
+import type { FullDocsSpec, DocInfo } from "./spec";
+
+import { getDocsFromSpec } from "./spec";
 
 /**
  * DocRegistry service - Singleton for efficient document information management

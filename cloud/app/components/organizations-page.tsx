@@ -1,4 +1,13 @@
+import { Link } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
+
+import type { PublicOrganizationWithMembership } from "@/db/schema/organization-memberships";
+
+import {
+  useOrganizations,
+  useCreateOrganization,
+  useDeleteOrganization,
+} from "@/app/api/organizations";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -6,14 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import {
-  useOrganizations,
-  useCreateOrganization,
-  useDeleteOrganization,
-} from "@/app/api/organizations";
 import { getErrorMessage } from "@/app/lib/errors";
-import type { PublicOrganizationWithMembership } from "@/db/schema/organization-memberships";
-import { Link } from "@tanstack/react-router";
 import { generateSlug } from "@/db/slug";
 
 function CreateOrganizationForm({ onClose }: { onClose: () => void }) {

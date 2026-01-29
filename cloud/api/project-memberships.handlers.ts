@@ -1,10 +1,12 @@
 import { Effect } from "effect";
-import { Database } from "@/db/database";
-import { AuthenticatedUser } from "@/auth";
+
 import type {
   AddProjectMemberRequest,
   UpdateProjectMemberRoleRequest,
 } from "@/api/project-memberships.schemas";
+
+import { AuthenticatedUser } from "@/auth";
+import { Database } from "@/db/database";
 
 export * from "@/api/project-memberships.schemas";
 

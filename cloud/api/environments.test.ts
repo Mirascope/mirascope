@@ -1,8 +1,10 @@
 import { Effect, Schema } from "effect";
-import { describe, it, expect, TestApiContext } from "@/tests/api";
-import { CreateEnvironmentRequestSchema } from "@/api/environments.schemas";
-import type { PublicEnvironment, PublicProject } from "@/db/schema";
 import { ParseError } from "effect/ParseResult";
+
+import type { PublicEnvironment, PublicProject } from "@/db/schema";
+
+import { CreateEnvironmentRequestSchema } from "@/api/environments.schemas";
+import { describe, it, expect, TestApiContext } from "@/tests/api";
 
 describe("CreateEnvironmentRequestSchema validation", () => {
   it("rejects empty name", () => {

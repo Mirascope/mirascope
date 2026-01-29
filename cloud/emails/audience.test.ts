@@ -1,7 +1,8 @@
-import { describe, it, expect } from "vitest";
 import { Effect, Layer } from "effect";
-import { ResendError } from "@/errors";
+import { describe, it, expect } from "vitest";
+
 import { Emails } from "@/emails/service";
+import { ResendError } from "@/errors";
 import {
   TestAudienceAddParamsFixture,
   TestAudienceAddResponseFixture,

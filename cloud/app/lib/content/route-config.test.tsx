@@ -1,4 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
+import type {
+  BlogContent,
+  Content,
+  ContentMeta,
+  DocContent,
+} from "@/app/lib/content/types";
+import type { PreprocessedMDX } from "@/app/lib/mdx/types";
+import type { FileRouteTypes } from "@/app/routeTree.gen";
+
+import {
+  createContentRouteConfig,
+  type ContentRouteConfig,
+} from "@/app/lib/content/route-config";
 import {
   BLOG_MODULE_MAP,
   DOCS_MODULE_MAP,
@@ -8,18 +22,6 @@ import {
   getAllPolicyMeta,
   type VirtualModuleExport,
 } from "@/app/lib/content/virtual-module";
-import {
-  createContentRouteConfig,
-  type ContentRouteConfig,
-} from "@/app/lib/content/route-config";
-import type { FileRouteTypes } from "@/app/routeTree.gen";
-import type { PreprocessedMDX } from "@/app/lib/mdx/types";
-import type {
-  BlogContent,
-  Content,
-  ContentMeta,
-  DocContent,
-} from "@/app/lib/content/types";
 
 // Mock TanStack Router
 vi.mock("@tanstack/react-router", () => ({

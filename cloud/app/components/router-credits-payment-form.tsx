@@ -1,12 +1,13 @@
-import { useState, type FormEvent } from "react";
 import {
   Elements,
   PaymentElement,
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import { getStripe, stripeAppearance } from "@/app/lib/stripe";
+import { useState, type FormEvent } from "react";
+
 import { Button } from "@/app/components/ui/button";
+import { getStripe, stripeAppearance } from "@/app/lib/stripe";
 
 interface PaymentFormProps {
   clientSecret: string;

@@ -1,5 +1,7 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
+
+import { createSlugSchema } from "@/db/slug";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -8,7 +10,6 @@ import {
   PlanLimitExceededError,
   StripeError,
 } from "@/errors";
-import { createSlugSchema } from "@/db/slug";
 
 export const ProjectSchema = Schema.Struct({
   id: Schema.String,

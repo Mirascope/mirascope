@@ -1,18 +1,20 @@
 import { HttpApiBuilder, HttpServer } from "@effect/platform";
 import { Context, Effect, Layer } from "effect";
-import { ApiLive } from "@/api/router";
-import { HandlerError } from "@/errors";
-import { Settings, type SettingsConfig } from "@/settings";
-import { Database } from "@/db/database";
-import { DrizzleORM } from "@/db/client";
-import { Payments } from "@/payments";
-import { Analytics } from "@/analytics";
-import { Emails } from "@/emails";
-import { ClickHouseSearch } from "@/db/clickhouse/search";
-import { RealtimeSpans } from "@/workers/realtimeSpans";
-import { AuthenticatedUser, Authentication } from "@/auth";
-import { SpansIngestQueue } from "@/workers/spanIngestQueue";
+
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
+
+import { Analytics } from "@/analytics";
+import { ApiLive } from "@/api/router";
+import { AuthenticatedUser, Authentication } from "@/auth";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
+import { DrizzleORM } from "@/db/client";
+import { Database } from "@/db/database";
+import { Emails } from "@/emails";
+import { HandlerError } from "@/errors";
+import { Payments } from "@/payments";
+import { Settings, type SettingsConfig } from "@/settings";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
+import { SpansIngestQueue } from "@/workers/spanIngestQueue";
 
 export type HandleRequestOptions = {
   prefix?: string;

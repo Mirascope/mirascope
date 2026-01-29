@@ -1,7 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { cn } from "@/app/lib/utils";
-import { docsSpec } from "@/../content/docs/_meta";
+
 import type { SectionSpec } from "@/app/lib/content/spec";
+
+import { docsSpec } from "@/../content/docs/_meta";
+import { cn } from "@/app/lib/utils";
 
 /**
  * Check if a section is active based on the current path

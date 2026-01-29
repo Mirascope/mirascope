@@ -1,10 +1,11 @@
-import { describe, it, expect, MockDrizzleORM } from "@/tests/db";
+import { eq } from "drizzle-orm";
 import { Effect } from "effect";
-import { type PublicUser, users } from "@/db/schema";
-import { AlreadyExistsError, DatabaseError, NotFoundError } from "@/errors";
+
 import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
-import { eq } from "drizzle-orm";
+import { type PublicUser, users } from "@/db/schema";
+import { AlreadyExistsError, DatabaseError, NotFoundError } from "@/errors";
+import { describe, it, expect, MockDrizzleORM } from "@/tests/db";
 
 describe("Users", () => {
   // ===========================================================================

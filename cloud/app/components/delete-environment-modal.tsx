@@ -1,6 +1,10 @@
-import { useState, type FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle } from "lucide-react";
+import { useState, type FormEvent } from "react";
+
+import type { PublicEnvironment } from "@/db/schema";
+
+import { useDeleteEnvironment } from "@/app/api/environments";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -12,12 +16,10 @@ import {
 } from "@/app/components/ui/dialog";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import { useEnvironment } from "@/app/contexts/environment";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
-import { useEnvironment } from "@/app/contexts/environment";
-import { useDeleteEnvironment } from "@/app/api/environments";
 import { getErrorMessage } from "@/app/lib/errors";
-import type { PublicEnvironment } from "@/db/schema";
 
 export function DeleteEnvironmentModal({
   open,

@@ -1,13 +1,8 @@
 "use client";
 
-import { Badge } from "@/app/components/ui/badge";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/app/components/ui/collapsible";
-import { cn } from "@/app/lib/utils";
 import type { ToolUIPart } from "ai";
+import type { ComponentProps, ReactNode } from "react";
+
 import {
   CheckCircleIcon,
   ChevronDownIcon,
@@ -16,8 +11,16 @@ import {
   WrenchIcon,
   XCircleIcon,
 } from "lucide-react";
-import type { ComponentProps, ReactNode } from "react";
 import { isValidElement } from "react";
+
+import { Badge } from "@/app/components/ui/badge";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/app/components/ui/collapsible";
+import { cn } from "@/app/lib/utils";
+
 import { CodeBlock } from "./code-block";
 
 export type ToolProps = ComponentProps<typeof Collapsible>;

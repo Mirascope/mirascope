@@ -1,5 +1,7 @@
 import { Effect, Schema } from "effect";
-import { describe, it, expect, TestApiContext } from "@/tests/api";
+
+import type { PublicProject } from "@/db/schema";
+
 import {
   ProjectRoleSchema,
   ProjectMemberWithUserSchema,
@@ -7,7 +9,7 @@ import {
   UpdateProjectMemberRoleRequestSchema,
   ProjectMembershipResponseSchema,
 } from "@/api/project-memberships.schemas";
-import type { PublicProject } from "@/db/schema";
+import { describe, it, expect, TestApiContext } from "@/tests/api";
 
 describe("ProjectRoleSchema validation", () => {
   it("accepts ADMIN role", () => {

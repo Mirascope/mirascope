@@ -15,9 +15,10 @@ import {
   Hr,
   Tailwind,
 } from "@react-email/components";
-import { Logo } from "@/emails/templates/components/logo";
+
 import { Button } from "@/emails/templates/components/button";
 import { Footer } from "@/emails/templates/components/footer";
+import { Logo } from "@/emails/templates/components/logo";
 
 interface InvitationEmailProps {
   senderName: string;

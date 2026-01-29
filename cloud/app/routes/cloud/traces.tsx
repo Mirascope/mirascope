@@ -1,23 +1,25 @@
-import { useState, useMemo, useEffect } from "react";
 import { DragHandleDots2Icon } from "@radix-ui/react-icons";
-import { RefreshCw } from "lucide-react";
-import { CloudLayout } from "@/app/components/cloud-layout";
 import { createFileRoute } from "@tanstack/react-router";
-import { Protected } from "@/app/components/protected";
-import { useOrganization } from "@/app/contexts/organization";
-import { useProject } from "@/app/contexts/project";
-import { useEnvironment } from "@/app/contexts/environment";
-import { useTracesSearch, useTraceDetail } from "@/app/api/traces";
+import { RefreshCw } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+
+import type { SpanDetail, SpanSearchResult } from "@/api/traces-search.schemas";
+
 import { useFunctionDetail } from "@/app/api/functions";
-import { TracesTable } from "@/app/components/traces/traces-table";
+import { useTracesSearch, useTraceDetail } from "@/app/api/traces";
+import { CloudLayout } from "@/app/components/cloud-layout";
+import { Protected } from "@/app/components/protected";
 import { SpanDetailPanel } from "@/app/components/traces/span-detail-panel";
+import { TracesTable } from "@/app/components/traces/traces-table";
 import { Button } from "@/app/components/ui/button";
 import {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
 } from "@/app/components/ui/resizable";
-import type { SpanDetail, SpanSearchResult } from "@/api/traces-search.schemas";
+import { useEnvironment } from "@/app/contexts/environment";
+import { useOrganization } from "@/app/contexts/organization";
+import { useProject } from "@/app/contexts/project";
 
 /** Type guard to check if span has detailed data (attributes field) */
 function isSpanDetail(span: SpanDetail | SpanSearchResult): span is SpanDetail {

@@ -2,13 +2,16 @@
  * @fileoverview Tests for router metering queue consumer.
  */
 
-import { describe, expect, it, TEST_DATABASE_URL } from "@/tests/db";
+import type { Message, MessageBatch } from "@cloudflare/workers-types";
+
 import { Effect, Layer } from "effect";
+import { vi, afterEach } from "vitest";
+
+import type { WorkerEnv } from "@/workers/config";
+
 import { Database } from "@/db/database";
 import { Payments } from "@/payments";
-import type { Message, MessageBatch } from "@cloudflare/workers-types";
-import type { WorkerEnv } from "@/workers/config";
-import { vi, afterEach } from "vitest";
+import { describe, expect, it, TEST_DATABASE_URL } from "@/tests/db";
 import { createMockEnv } from "@/tests/settings";
 
 // Import the queue handler and types

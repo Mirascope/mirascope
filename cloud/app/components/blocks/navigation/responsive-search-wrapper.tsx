@@ -1,13 +1,15 @@
-import { useState } from "react";
 import { Search as SearchIcon, X } from "lucide-react";
-import { useIsMobile } from "@/app/hooks/is-mobile";
-// import SearchBar from "@/app/components/blocks/navigation/search-bar";
-import { SEARCH_BAR_STYLES } from "./styles";
+import { useState } from "react";
+
 import {
   useIsLandingPage,
   useIsRouterWaitlistPage,
 } from "@/app/components/blocks/theme-provider";
+import { useIsMobile } from "@/app/hooks/is-mobile";
+
 import { SearchBar } from "./search-bar";
+// import SearchBar from "@/app/components/blocks/navigation/search-bar";
+import { SEARCH_BAR_STYLES } from "./styles";
 
 /**
  * Props for search wrappers

@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from "react";
+
 import { useOrganizations } from "@/app/api/organizations";
 
 const STORAGE_KEY = "mirascope:onboardingComplete";

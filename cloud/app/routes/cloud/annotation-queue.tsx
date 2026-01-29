@@ -1,6 +1,7 @@
+import { createFileRoute } from "@tanstack/react-router";
+
 import { CodeBlock } from "@/app/components/blocks/code-block/code-block";
 import { CloudLayout } from "@/app/components/cloud-layout";
-import { createFileRoute } from "@tanstack/react-router";
 import { Protected } from "@/app/components/protected";
 
 const CODE_EXAMPLE = `import marimo as mo

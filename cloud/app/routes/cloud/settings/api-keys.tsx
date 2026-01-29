@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useOrganization } from "@/app/contexts/organization";
-import { ApiKeysSection } from "@/app/components/api-keys-section";
+
 import { useGetProjectMember } from "@/app/api/project-memberships";
-import { useProject } from "@/app/contexts/project";
+import { ApiKeysSection } from "@/app/components/api-keys-section";
 import { useAuth } from "@/app/contexts/auth";
+import { useOrganization } from "@/app/contexts/organization";
+import { useProject } from "@/app/contexts/project";
 
 function ApiKeysSettingsPage() {
   const { user } = useAuth();

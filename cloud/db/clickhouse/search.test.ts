@@ -1,3 +1,8 @@
+import { Effect, Layer } from "effect";
+import { beforeAll, afterAll } from "vitest";
+
+import { ClickHouse } from "@/db/clickhouse/client";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
 import {
   describe,
   it,
@@ -5,12 +10,8 @@ import {
   TestClickHouse,
   clickHouseAvailable,
 } from "@/tests/clickhouse";
-import { getSearchMigrationStatements } from "@/tests/db/clickhouse/migrations";
 import { createSearchAnalyticsRow } from "@/tests/db/clickhouse/fixtures";
-import { Effect, Layer } from "effect";
-import { ClickHouse } from "@/db/clickhouse/client";
-import { ClickHouseSearch } from "@/db/clickhouse/search";
-import { beforeAll, afterAll } from "vitest";
+import { getSearchMigrationStatements } from "@/tests/db/clickhouse/migrations";
 
 // Test data IDs
 const TEST_ENVIRONMENT_ID = "00000000-0000-0000-0000-000000000001";

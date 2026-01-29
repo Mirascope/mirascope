@@ -37,11 +37,12 @@
  * ```
  */
 
-import { Context, Effect, Layer } from "effect";
 import {
   createClient,
   type ClickHouseClient as WebClickHouseClient,
 } from "@clickhouse/client-web";
+import { Context, Effect, Layer } from "effect";
+
 import { ClickHouseError } from "@/errors";
 import { Settings, type ClickHouseConfig } from "@/settings";
 

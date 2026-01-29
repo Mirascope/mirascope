@@ -1,6 +1,7 @@
 import { Effect } from "effect";
-import { Settings } from "@/settings";
+
 import { type CheckHealthResponse } from "@/api/health.schemas";
+import { Settings } from "@/settings";
 
 export * from "@/api/health.schemas";
 

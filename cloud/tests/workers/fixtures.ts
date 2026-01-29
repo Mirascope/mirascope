@@ -3,6 +3,7 @@
  */
 
 import type { Message, MessageBatch } from "@cloudflare/workers-types";
+
 import { vi } from "vitest";
 
 export type RetryTrackingMessage<T> = Message<T> & {

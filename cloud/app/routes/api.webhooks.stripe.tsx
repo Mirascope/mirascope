@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Effect, Layer } from "effect";
-import { Payments } from "@/payments";
+import Stripe from "stripe";
+
 import { DrizzleORM } from "@/db/client";
 import { StripeError } from "@/errors";
-import { Settings } from "@/settings";
+import { Payments } from "@/payments";
 import { settingsLayer } from "@/server-entry";
-import Stripe from "stripe";
+import { Settings } from "@/settings";
 
 /**
  * Stripe webhook handler for processing payment events.

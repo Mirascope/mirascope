@@ -1,14 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
-import ProductLogo from "@/app/components/blocks/branding/mirascope-logo";
-import { cn } from "@/app/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+
+import ProductLogo from "@/app/components/blocks/branding/mirascope-logo";
 import {
   useProvider,
   type Provider,
   providers,
   providerDefaults,
 } from "@/app/components/mdx/elements/model-provider-provider";
+import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
+import { cn } from "@/app/lib/utils";
 
 /**
  * A tabbed section component that creates tabs for each model provider

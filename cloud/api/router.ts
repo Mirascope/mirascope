@@ -1,25 +1,38 @@
 import { HttpApiBuilder } from "@effect/platform";
 import { Effect, Layer } from "effect";
-import { Authentication } from "@/auth";
-import { checkHealthHandler } from "@/api/health.handlers";
+
 import {
-  createTraceHandler,
-  listByFunctionHashHandler,
-} from "@/api/traces.handlers";
+  listAnnotationsHandler,
+  createAnnotationHandler,
+  getAnnotationHandler,
+  updateAnnotationHandler,
+  deleteAnnotationHandler,
+} from "@/api/annotations.handlers";
+import { MirascopeCloudApi } from "@/api/api";
+import {
+  listAllApiKeysHandler,
+  listApiKeysHandler,
+  createApiKeyHandler,
+  getApiKeyHandler,
+  deleteApiKeyHandler,
+} from "@/api/api-keys.handlers";
 import { getOpenApiSpecHandler } from "@/api/docs.handlers";
 import {
-  listOrganizationsHandler,
-  createOrganizationHandler,
-  getOrganizationHandler,
-  updateOrganizationHandler,
-  deleteOrganizationHandler,
-  getOrganizationRouterBalanceHandler,
-  createPaymentIntentHandler,
-  getSubscriptionHandler,
-  previewSubscriptionChangeHandler,
-  updateSubscriptionHandler,
-  cancelScheduledDowngradeHandler,
-} from "@/api/organizations.handlers";
+  listEnvironmentsHandler,
+  createEnvironmentHandler,
+  getEnvironmentHandler,
+  updateEnvironmentHandler,
+  deleteEnvironmentHandler,
+  getEnvironmentAnalyticsHandler,
+} from "@/api/environments.handlers";
+import {
+  listFunctionsHandler,
+  createFunctionHandler,
+  getFunctionHandler,
+  findByHashHandler,
+  deleteFunctionHandler,
+} from "@/api/functions.handlers";
+import { checkHealthHandler } from "@/api/health.handlers";
 import {
   listInvitationsHandler,
   createInvitationHandler,
@@ -34,12 +47,18 @@ import {
   removeMemberHandler,
 } from "@/api/organization-memberships.handlers";
 import {
-  listProjectsHandler,
-  createProjectHandler,
-  getProjectHandler,
-  updateProjectHandler,
-  deleteProjectHandler,
-} from "@/api/projects.handlers";
+  listOrganizationsHandler,
+  createOrganizationHandler,
+  getOrganizationHandler,
+  updateOrganizationHandler,
+  deleteOrganizationHandler,
+  getOrganizationRouterBalanceHandler,
+  createPaymentIntentHandler,
+  getSubscriptionHandler,
+  previewSubscriptionChangeHandler,
+  updateSubscriptionHandler,
+  cancelScheduledDowngradeHandler,
+} from "@/api/organizations.handlers";
 import {
   listProjectMembersHandler,
   addProjectMemberHandler,
@@ -48,34 +67,12 @@ import {
   getProjectMembershipHandler,
 } from "@/api/project-memberships.handlers";
 import {
-  listEnvironmentsHandler,
-  createEnvironmentHandler,
-  getEnvironmentHandler,
-  updateEnvironmentHandler,
-  deleteEnvironmentHandler,
-  getEnvironmentAnalyticsHandler,
-} from "@/api/environments.handlers";
-import {
-  listAllApiKeysHandler,
-  listApiKeysHandler,
-  createApiKeyHandler,
-  getApiKeyHandler,
-  deleteApiKeyHandler,
-} from "@/api/api-keys.handlers";
-import {
-  listFunctionsHandler,
-  createFunctionHandler,
-  getFunctionHandler,
-  findByHashHandler,
-  deleteFunctionHandler,
-} from "@/api/functions.handlers";
-import {
-  listAnnotationsHandler,
-  createAnnotationHandler,
-  getAnnotationHandler,
-  updateAnnotationHandler,
-  deleteAnnotationHandler,
-} from "@/api/annotations.handlers";
+  listProjectsHandler,
+  createProjectHandler,
+  getProjectHandler,
+  updateProjectHandler,
+  deleteProjectHandler,
+} from "@/api/projects.handlers";
 import {
   listTagsHandler,
   createTagHandler,
@@ -83,13 +80,17 @@ import {
   updateTagHandler,
   deleteTagHandler,
 } from "@/api/tags.handlers";
+import { tokenCostHandler } from "@/api/token-cost.handlers";
 import {
   searchHandler,
   getTraceDetailHandler,
   getAnalyticsSummaryHandler,
 } from "@/api/traces-search.handlers";
-import { tokenCostHandler } from "@/api/token-cost.handlers";
-import { MirascopeCloudApi } from "@/api/api";
+import {
+  createTraceHandler,
+  listByFunctionHashHandler,
+} from "@/api/traces.handlers";
+import { Authentication } from "@/auth";
 
 export { MirascopeCloudApi };
 

@@ -1,6 +1,7 @@
-import { Effect } from "effect";
 import { render } from "@react-email/render";
+import { Effect } from "effect";
 import * as React from "react";
+
 import { EmailRenderError } from "@/errors";
 
 /**

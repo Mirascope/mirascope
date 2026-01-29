@@ -1,8 +1,9 @@
 import { relations } from "drizzle-orm";
 import { pgEnum, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
+
+import { organizationRoleEnum } from "./organization-memberships";
 import { organizations } from "./organizations";
 import { users } from "./users";
-import { organizationRoleEnum } from "./organization-memberships";
 
 export const auditActionEnum = pgEnum("audit_action", [
   "GRANT", // New membership created

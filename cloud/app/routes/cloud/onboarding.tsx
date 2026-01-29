@@ -1,11 +1,14 @@
-import { useState, useEffect, type FormEvent } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Check, Loader2 } from "lucide-react";
+import { useState, useEffect, type FormEvent } from "react";
+
+import {
+  useCompleteOnboarding,
+  type OnboardingResponse,
+} from "@/app/api/onboarding";
 import { CodeBlock } from "@/app/components/blocks/code-block/code-block";
 import { Protected } from "@/app/components/protected";
 import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
 import {
   Card,
   CardContent,
@@ -13,19 +16,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { generateSlug } from "@/db/slug";
-import {
-  useCompleteOnboarding,
-  type OnboardingResponse,
-} from "@/app/api/onboarding";
+import { Input } from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
+import { useEnvironment } from "@/app/contexts/environment";
+import { useOrganization } from "@/app/contexts/organization";
+import { useProject } from "@/app/contexts/project";
 import {
   useOnboarding,
   generateDefaultOrgName,
 } from "@/app/hooks/use-onboarding";
-import { useOrganization } from "@/app/contexts/organization";
-import { useProject } from "@/app/contexts/project";
-import { useEnvironment } from "@/app/contexts/environment";
 import { getErrorMessage } from "@/app/lib/errors";
+import { generateSlug } from "@/db/slug";
 
 type Step = "setup" | "success";
 

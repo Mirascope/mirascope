@@ -1,3 +1,10 @@
+import { ChevronDown } from "lucide-react";
+
+import {
+  useProvider,
+  providers,
+  providerDefaults,
+} from "@/app/components/mdx/elements/model-provider-provider";
 import { Button } from "@/app/components/ui/button";
 import {
   DropdownMenu,
@@ -5,12 +12,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
-import {
-  useProvider,
-  providers,
-  providerDefaults,
-} from "@/app/components/mdx/elements/model-provider-provider";
 import { cn } from "@/app/lib/utils";
 
 interface ProviderDropdownProps {

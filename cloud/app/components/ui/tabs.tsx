@@ -1,8 +1,9 @@
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import * as React from "react";
-import { buttonVariants } from "./button";
 
 import { cn } from "@/app/lib/utils";
+
+import { buttonVariants } from "./button";
 
 function Tabs({
   className,

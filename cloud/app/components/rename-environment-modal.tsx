@@ -1,4 +1,8 @@
 import { useState, useEffect, type FormEvent } from "react";
+
+import type { PublicEnvironment } from "@/db/schema";
+
+import { useUpdateEnvironment } from "@/app/api/environments";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -12,10 +16,8 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
-import { useUpdateEnvironment } from "@/app/api/environments";
 import { getErrorMessage } from "@/app/lib/errors";
 import { generateSlug } from "@/db/slug";
-import type { PublicEnvironment } from "@/db/schema";
 
 export function RenameEnvironmentModal({
   open,

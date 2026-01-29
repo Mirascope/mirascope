@@ -11,14 +11,17 @@
  * 3. **DLQ Fallback**: Failed messages go to dead letter queue after max retries
  */
 
-import { Effect, Context, Layer } from "effect";
 import type { MessageBatch, Message } from "@cloudflare/workers-types";
+
+import { Effect, Context, Layer } from "effect";
+
+import type { TokenUsage } from "@/api/router/pricing";
+import type { RouterRequestIdentifiers } from "@/api/router/utils";
+
 import { Database } from "@/db/database";
 import { Payments } from "@/payments";
 import { Settings } from "@/settings";
 import { type WorkerEnv } from "@/workers/config";
-import type { TokenUsage } from "@/api/router/pricing";
-import type { RouterRequestIdentifiers } from "@/api/router/utils";
 
 // =============================================================================
 // Types

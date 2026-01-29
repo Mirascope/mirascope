@@ -1,12 +1,10 @@
+import { MoreHorizontal, Pencil, Trash2, Loader2 } from "lucide-react";
 import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/app/components/ui/table";
+
+import type { PublicEnvironment } from "@/db/schema";
+
+import { DeleteEnvironmentModal } from "@/app/components/delete-environment-modal";
+import { RenameEnvironmentModal } from "@/app/components/rename-environment-modal";
 import { Button } from "@/app/components/ui/button";
 import {
   DropdownMenu,
@@ -15,10 +13,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
-import { MoreHorizontal, Pencil, Trash2, Loader2 } from "lucide-react";
-import { RenameEnvironmentModal } from "@/app/components/rename-environment-modal";
-import { DeleteEnvironmentModal } from "@/app/components/delete-environment-modal";
-import type { PublicEnvironment } from "@/db/schema";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/app/components/ui/table";
 
 interface EnvironmentsTableProps {
   environments: readonly PublicEnvironment[];

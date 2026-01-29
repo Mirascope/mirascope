@@ -1,23 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Effect, Layer } from "effect";
-import { Database } from "@/db/database";
-import { handleErrors, handleDefects } from "@/api/utils";
+
+import { handleNonStreamingResponse } from "@/api/router/non-streaming";
 import { PROVIDER_CONFIGS, getProviderApiKey } from "@/api/router/providers";
 import { proxyToProvider } from "@/api/router/proxy";
+import { handleStreamingResponse } from "@/api/router/streaming";
 import {
   validateRouterRequest,
   createPendingRouterRequest,
   reserveRouterFunds,
   handleRouterRequestFailure,
 } from "@/api/router/utils";
-import { handleStreamingResponse } from "@/api/router/streaming";
-import { handleNonStreamingResponse } from "@/api/router/non-streaming";
+import { handleErrors, handleDefects } from "@/api/utils";
+import { Database } from "@/db/database";
+import { RateLimiter } from "@/rate-limiting";
 import {
   routerMeteringQueueLayer,
   rateLimiterLayer,
   settingsLayer,
 } from "@/server-entry";
-import { RateLimiter } from "@/rate-limiting";
 import { Settings } from "@/settings";
 
 /**

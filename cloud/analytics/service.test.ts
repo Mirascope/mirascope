@@ -2,11 +2,12 @@
  * @fileoverview Tests for Analytics aggregator service.
  */
 
-import { describe, it, expect, vi } from "vitest";
 import { Effect, Layer } from "effect";
-import { Analytics } from "@/analytics/service";
+import { describe, it, expect, vi } from "vitest";
+
 import { GoogleAnalytics } from "@/analytics/google-client";
 import { PostHog } from "@/analytics/posthog-client";
+import { Analytics } from "@/analytics/service";
 import { MockGoogleAnalytics, MockPostHog } from "@/tests/analytics";
 
 describe("Analytics", () => {

@@ -52,11 +52,13 @@
  * ```
  */
 
-import { Effect, Layer, Config, Context } from "effect";
 import type { PgRemoteDatabase } from "drizzle-orm/pg-proxy";
+
+import { SqlClient, type SqlError } from "@effect/sql";
 import * as Pg from "@effect/sql-drizzle/Pg";
 import { PgClient } from "@effect/sql-pg";
-import { SqlClient, type SqlError } from "@effect/sql";
+import { Effect, Layer, Config, Context } from "effect";
+
 import * as schema from "@/db/schema";
 import { DatabaseError } from "@/errors";
 

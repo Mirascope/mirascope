@@ -2,15 +2,11 @@
  * @fileoverview Tests for RealtimeSpansDurableObject realtime cache behavior.
  */
 
-import { afterEach, describe, expect, it } from "vitest";
 import { Effect, Layer } from "effect";
-import { RealtimeSpansDurableObjectBase as RealtimeSpansDurableObject } from "@/workers/realtimeSpans/durableObject";
-import {
-  RealtimeSpans,
-  realtimeSpansLayer,
-  setRealtimeSpansLayer,
-} from "@/workers/realtimeSpans";
+import { afterEach, describe, expect, it } from "vitest";
+
 import type { SpansBatchRequest } from "@/db/clickhouse/types";
+
 import {
   parseJson,
   createState,
@@ -27,6 +23,12 @@ import {
   DEFAULT_SERVICE_NAME,
   DEFAULT_SERVICE_VERSION,
 } from "@/tests/workers/realtimeSpans";
+import {
+  RealtimeSpans,
+  realtimeSpansLayer,
+  setRealtimeSpansLayer,
+} from "@/workers/realtimeSpans";
+import { RealtimeSpansDurableObjectBase as RealtimeSpansDurableObject } from "@/workers/realtimeSpans/durableObject";
 
 describe("RealtimeSpansDurableObject", () => {
   it("upserts spans and checks existence", async () => {

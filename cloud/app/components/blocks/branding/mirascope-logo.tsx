@@ -1,8 +1,10 @@
 import React from "react";
-import { cn } from "@/app/lib/utils";
-import { logoSizeMap } from "@/app/components/blocks/branding/logo-utils";
+
 import type { BaseLogoProps } from "@/app/components/blocks/branding/logo-utils";
+
+import { logoSizeMap } from "@/app/components/blocks/branding/logo-utils";
 import { MIRASCOPE } from "@/app/lib/site";
+import { cn } from "@/app/lib/utils";
 
 interface MirascopeLogoProps extends BaseLogoProps {
   /** Use white text color (for landing page) */

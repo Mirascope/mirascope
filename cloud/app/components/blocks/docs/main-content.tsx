@@ -1,4 +1,5 @@
 import React from "react";
+
 import LoadingContent from "@/app/components/blocks/loading-content";
 import { MDXRenderer } from "@/app/components/mdx/renderer";
 import { type DocContent } from "@/app/lib/content/types";

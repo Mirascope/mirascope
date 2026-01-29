@@ -1,8 +1,9 @@
-import { describe, it, expect } from "@/tests/clickhouse";
 import { Effect, Layer } from "effect";
+
 import { ClickHouse } from "@/db/clickhouse/client";
-import { type ClickHouseConfig } from "@/settings";
 import { ClickHouseError } from "@/errors";
+import { type ClickHouseConfig } from "@/settings";
+import { describe, it, expect } from "@/tests/clickhouse";
 
 describe("ClickHouse", () => {
   describe("ClickHouse.Default", () => {

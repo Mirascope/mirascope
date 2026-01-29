@@ -1,5 +1,4 @@
-/// <reference types="vite/client" />
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
   createRootRoute,
@@ -7,19 +6,21 @@ import {
   Scripts,
   useRouterState,
 } from "@tanstack/react-router";
-import { AuthProvider } from "@/app/contexts/auth";
-import { AnalyticsProvider } from "@/app/contexts/analytics";
-import { QueryClientProvider } from "@tanstack/react-query";
+/// <reference types="vite/client" />
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+
 import { queryClient } from "@/app/api/client";
-import globalsCss from "@/app/styles/globals.css?url";
+import Footer from "@/app/components/blocks/navigation/footer";
+import Header from "@/app/components/blocks/navigation/header";
 import {
   ThemeProvider,
   useIsLandingPage,
 } from "@/app/components/blocks/theme-provider";
-import Header from "@/app/components/blocks/navigation/header";
-import Footer from "@/app/components/blocks/navigation/footer";
-import { usePageView } from "@/app/hooks/use-page-view";
 import { Toaster } from "@/app/components/ui/sonner";
+import { AnalyticsProvider } from "@/app/contexts/analytics";
+import { AuthProvider } from "@/app/contexts/auth";
+import { usePageView } from "@/app/hooks/use-page-view";
+import globalsCss from "@/app/styles/globals.css?url";
 
 export const Route = createRootRoute({
   head: () => ({
