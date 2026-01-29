@@ -2,7 +2,7 @@
  * Unit tests for Google provider utilities.
  *
  * Note: Most encoding/decoding tests are covered by e2e tests in tests/e2e/.
- * These tests focus on error mapping that can't be tested via successful API calls.
+ * These tests focus on error mapping and thinking config encoding.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -15,7 +15,12 @@ import {
   ServerError,
   APIError,
 } from '@/llm/exceptions';
-import { mapGoogleErrorByStatus } from './_utils';
+import { user } from '@/llm/messages';
+import {
+  mapGoogleErrorByStatus,
+  computeGoogleThinkingConfig,
+  buildRequestParams,
+} from './_utils';
 
 describe('mapGoogleErrorByStatus', () => {
   it('maps 401 to AuthenticationError', () => {
@@ -51,5 +56,107 @@ describe('mapGoogleErrorByStatus', () => {
   it('maps unknown status codes to APIError', () => {
     expect(mapGoogleErrorByStatus(418)).toBe(APIError);
     expect(mapGoogleErrorByStatus(499)).toBe(APIError);
+  });
+});
+
+describe('computeGoogleThinkingConfig', () => {
+  describe('Gemini 2.5 models (budget-based)', () => {
+    const modelId = 'google/gemini-2.5-flash';
+
+    it('returns dynamic budget (-1) for default level', () => {
+      const config = computeGoogleThinkingConfig(
+        { level: 'default' },
+        8192,
+        modelId
+      );
+      expect(config.thinkingBudget).toBe(-1);
+    });
+
+    it('returns 0 budget for none level', () => {
+      const config = computeGoogleThinkingConfig(
+        { level: 'none' },
+        8192,
+        modelId
+      );
+      expect(config.thinkingBudget).toBe(0);
+    });
+
+    it('computes budget based on multiplier for medium level', () => {
+      // medium has multiplier 0.4
+      const config = computeGoogleThinkingConfig(
+        { level: 'medium' },
+        10000,
+        modelId
+      );
+      expect(config.thinkingBudget).toBe(4000);
+    });
+
+    it('sets includeThoughts when specified', () => {
+      const config = computeGoogleThinkingConfig(
+        { level: 'medium', includeThoughts: true },
+        8192,
+        modelId
+      );
+      expect(config.includeThoughts).toBe(true);
+    });
+  });
+
+  describe('Gemini 3 Flash models (level-based)', () => {
+    const modelId = 'google/gemini-3-flash';
+
+    it('returns MINIMAL for minimal level', () => {
+      const config = computeGoogleThinkingConfig(
+        { level: 'minimal' },
+        8192,
+        modelId
+      );
+      expect(config.thinkingLevel).toBe('MINIMAL');
+    });
+
+    it('returns MEDIUM for medium level', () => {
+      const config = computeGoogleThinkingConfig(
+        { level: 'medium' },
+        8192,
+        modelId
+      );
+      expect(config.thinkingLevel).toBe('MEDIUM');
+    });
+  });
+
+  describe('Gemini 3 Pro models (level-based, LOW/HIGH only)', () => {
+    const modelId = 'google/gemini-3-pro';
+
+    it('returns LOW for low level', () => {
+      const config = computeGoogleThinkingConfig(
+        { level: 'low' },
+        8192,
+        modelId
+      );
+      expect(config.thinkingLevel).toBe('LOW');
+    });
+
+    it('returns HIGH for high level', () => {
+      const config = computeGoogleThinkingConfig(
+        { level: 'high' },
+        8192,
+        modelId
+      );
+      expect(config.thinkingLevel).toBe('HIGH');
+    });
+  });
+});
+
+describe('buildRequestParams thinking config', () => {
+  it('sets thinkingConfig when thinking is specified', () => {
+    const messages = [user('Hello')];
+
+    const params = buildRequestParams('google/gemini-2.5-flash', messages, {
+      thinking: { level: 'medium' },
+      maxTokens: 10000,
+    });
+
+    expect(params.config?.thinkingConfig).toEqual({
+      thinkingBudget: 4000, // medium = 0.4 multiplier
+    });
   });
 });

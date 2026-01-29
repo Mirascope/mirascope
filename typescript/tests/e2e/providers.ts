@@ -38,3 +38,14 @@ export const PROVIDERS_FOR_PARAM_TESTS: ProviderConfig[] = [
   { providerId: 'openai:completions', model: 'openai/gpt-4o-mini:completions' },
   { providerId: 'openai:responses', model: 'openai/gpt-4o-mini:responses' },
 ];
+
+/**
+ * Providers for thinking/reasoning tests.
+ *
+ * These models support extended thinking/reasoning capabilities.
+ */
+export const PROVIDERS_FOR_THINKING_TESTS: ProviderConfig[] = [
+  { providerId: 'anthropic', model: 'anthropic/claude-sonnet-4-20250514' },
+  { providerId: 'google', model: 'google/gemini-2.5-flash' },
+  { providerId: 'openai:responses', model: 'openai/o4-mini:responses' },
+];
