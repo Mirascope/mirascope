@@ -36,7 +36,7 @@ describe('call output', () => {
     async ({ model }) => {
       const call = defineCall({
         model,
-        maxTokens: 5, // Very low to force truncation
+        maxTokens: 50, // Low enough to truncate but above Responses API minimum
         template: () => 'Write a long story about a dragon.',
       });
 
