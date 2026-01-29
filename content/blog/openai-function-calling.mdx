@@ -123,9 +123,9 @@ def get_current_stock_price(company: str) -> str:
     Args:
         company: The name of the company, e.g., Apple Inc.
     """
-    if company == "Apple, Inc.":
+    if "apple" in company.lower():
         return f"The current stock price of {company} is $200."
-    elif company == "Google LLC":
+    elif "google" in company.lower():
         return f"The current stock price of {company} is $180."
     else:
         return f"I'm sorry, I don't have the stock price for {company}."
@@ -135,11 +135,13 @@ def stock_price(company: str) -> str:
     return f"What's the stock price of {company}"
 
 response = stock_price("Apple, Inc.")
-if response.tool_calls:
-    tool_results = response.execute_tools()
-    print(tool_results[0])
 
-# > The current stock price of Apple Inc. is $200.
+while response.tool_calls:
+    tool_results = response.execute_tools()
+    response = response.resume(tool_results)
+
+print(response.text())
+# > The current stock price of Apple, Inc. is $200.
 ```
 
 ### Using the @llm.tool Decorator
@@ -153,9 +155,9 @@ from typing import Annotated
 
 def get_current_stock_price_impl(company: str) -> str:
     # Assume this function does not have a docstring
-    if company == "Apple, Inc.":
+    if "apple" in company.lower():
         return f"The current stock price of {company} is $200."
-    elif company == "Google LLC":
+    elif "google" in company.lower():
         return f"The current stock price of {company} is $180."
     else:
         return f"I'm sorry, I don't have the stock price for {company}."
@@ -172,10 +174,12 @@ def stock_price(company: str) -> str:
     return f"What's the stock price of {company}"
 
 response = stock_price("Apple, Inc.")
-if response.tool_calls:
-    tool_results = response.execute_tools()
-    print(tool_results[0])
 
+while response.tool_calls:
+    tool_results = response.execute_tools()
+    response = response.resume(tool_results)
+
+print(response.text())
 # > The current stock price of Apple, Inc. is $200.
 ```
 
@@ -234,7 +238,7 @@ response = check_stock_price("What's the stock price of Apple Inc?")
 while response.tool_calls:
     tool_results = response.execute_tools()
     print("Tool results:", tool_results)
-    # > ['The current stock price of Apple Inc is 200 USD']
+    # > [ToolOutput(type='tool_output', id='call_O72apX4x5i8QTqPx6pb0XM8B', name='get_current_stock_price', result='The current stock price of Apple Inc is 200 USD', error=None)]
     response = response.resume(tool_results)
 
 print("Final Response:", response.text())
@@ -256,9 +260,9 @@ Looking at our earlier example, here’s how Mirascope would define a function c
 def get_current_stock_price(company: str) -> str:
     # Assume this function does not have a docstring
 
-    if company == "Apple Inc.":
+    if "apple" in company.lower():
         return f"The current stock price of {company} is $200."
-    elif company == "Google LLC":
+    elif "google" in company.lower():
         return f"The current stock price of {company} is $180."
     else:
         return f"I'm sorry, I don't have the stock price for {company}."
