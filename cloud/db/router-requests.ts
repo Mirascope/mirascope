@@ -111,7 +111,10 @@ const publicFields = {
   cacheReadTokens: routerRequests.cacheReadTokens,
   cacheWriteTokens: routerRequests.cacheWriteTokens,
   cacheWriteBreakdown: routerRequests.cacheWriteBreakdown,
+  toolUsage: routerRequests.toolUsage,
   costCenticents: routerRequests.costCenticents,
+  tokenCostCenticents: routerRequests.tokenCostCenticents,
+  toolCostCenticents: routerRequests.toolCostCenticents,
   status: routerRequests.status,
   errorMessage: routerRequests.errorMessage,
   organizationId: routerRequests.organizationId,
@@ -153,7 +156,10 @@ export type UpdateRouterRequest = Partial<
     | "cacheReadTokens"
     | "cacheWriteTokens"
     | "cacheWriteBreakdown"
+    | "toolUsage"
     | "costCenticents"
+    | "tokenCostCenticents"
+    | "toolCostCenticents"
     | "errorMessage"
     | "completedAt"
   >

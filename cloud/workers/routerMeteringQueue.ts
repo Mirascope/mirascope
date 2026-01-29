@@ -15,6 +15,7 @@ import type { MessageBatch, Message } from "@cloudflare/workers-types";
 
 import { Effect, Context, Layer } from "effect";
 
+import type { MeteringCostBreakdown } from "@/api/router/cost-utils";
 import type { TokenUsage } from "@/api/router/pricing";
 import type { RouterRequestIdentifiers } from "@/api/router/utils";
 
@@ -29,13 +30,22 @@ import { type WorkerEnv } from "@/workers/config";
 
 /**
  * Message payload for router metering queue.
+ *
+ * NOTE: we have `*Centicents: number` for serialization purposes.
+ * These translate to their `MeteringCostBreakdown` equivalents, which
+ * are properly typed with `CostInCenticents`.
  */
 export interface RouterMeteringMessage {
   routerRequestId: string;
   reservationId: string;
   request: RouterRequestIdentifiers;
   usage: TokenUsage;
+  /** Total cost in centi-cents (1 = $0.0001 USD) - sum of token and tool costs */
   costCenticents: number;
+  /** Token cost in centi-cents (1 = $0.0001 USD) */
+  tokenCostCenticents: number;
+  /** Tool cost in centi-cents (1 = $0.0001 USD) */
+  toolCostCenticents?: number;
   timestamp: number;
 }
 
@@ -119,11 +129,11 @@ export const setRouterMeteringQueueLayer = (
  * Exported for testing purposes.
  *
  * @param data - Metering message data
- * @param costAsBigInt - Cost as bigint
+ * @param costs - Cost breakdown with token, tool, and total costs
  */
 export function updateAndSettleRouterRequest(
   data: RouterMeteringMessage,
-  costAsBigInt: bigint,
+  costs: MeteringCostBreakdown,
 ): Effect.Effect<void, Error, Database | Payments> {
   return Effect.gen(function* () {
     const db = yield* Database;
@@ -152,7 +162,10 @@ export function updateAndSettleRouterRequest(
             ? BigInt(data.usage.cacheWriteTokens)
             : null,
           cacheWriteBreakdown: data.usage.cacheWriteBreakdown || null,
-          costCenticents: costAsBigInt,
+          toolUsage: data.usage.toolUsage || null,
+          costCenticents: costs.totalCost,
+          tokenCostCenticents: costs.tokenCost,
+          toolCostCenticents: costs.toolCost ?? null,
           status: "success",
           completedAt: new Date(),
         },
@@ -162,7 +175,7 @@ export function updateAndSettleRouterRequest(
     // Settle funds (release reservation and charge meter)
     yield* payments.products.router.settleFunds(
       data.reservationId,
-      costAsBigInt,
+      costs.totalCost,
     );
   });
 }
@@ -191,11 +204,24 @@ async function processMessage(
     return;
   }
 
-  // Convert cost to bigint for database and payments
-  const costAsBigInt =
-    typeof data.costCenticents === "bigint"
-      ? data.costCenticents
-      : BigInt(data.costCenticents);
+  // Build cost breakdown (converting to bigint for database and payments)
+  const costs: MeteringCostBreakdown = {
+    tokenCost:
+      typeof data.tokenCostCenticents === "bigint"
+        ? data.tokenCostCenticents
+        : BigInt(data.tokenCostCenticents),
+    // Use != null to handle 0 correctly
+    toolCost:
+      data.toolCostCenticents != null
+        ? typeof data.toolCostCenticents === "bigint"
+          ? data.toolCostCenticents
+          : BigInt(data.toolCostCenticents)
+        : undefined,
+    totalCost:
+      typeof data.costCenticents === "bigint"
+        ? data.costCenticents
+        : BigInt(data.costCenticents),
+  };
 
   // Build the program using Settings for validated configuration
   const program = Effect.gen(function* () {
@@ -208,7 +234,7 @@ async function processMessage(
     });
 
     // Update router request and settle funds
-    yield* updateAndSettleRouterRequest(data, costAsBigInt).pipe(
+    yield* updateAndSettleRouterRequest(data, costs).pipe(
       Effect.provide(layer),
     );
   });

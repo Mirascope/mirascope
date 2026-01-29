@@ -9,13 +9,16 @@
 
 import { Effect } from "effect";
 
+import type { CostInCenticents } from "@/api/router/cost-utils";
 import type { ProviderName } from "@/api/router/providers";
 
 import {
   getModelPricing,
   type TokenUsage,
   type CostBreakdown,
+  type NativeToolUsage,
 } from "@/api/router/pricing";
+import { calculateToolCost, type ToolType } from "@/api/router/tool-pricing";
 
 /**
  * Base cost calculator that handles shared logic for all providers.
@@ -78,6 +81,38 @@ export abstract class BaseCostCalculator {
   ): TokenUsage | null;
 
   /**
+   * Extracts native tool usage from a provider response.
+   *
+   * Identifies usage of server-side tools that have separate pricing
+   * (e.g., web search, code execution).
+   *
+   * Must be implemented by each provider-specific calculator.
+   *
+   * @param body - The parsed provider response body
+   * @returns Array of tool usage data, or empty array if none
+   */
+  public abstract extractToolUsage(body: unknown): NativeToolUsage[];
+
+  /**
+   * Adjusts tool usage based on model-specific pricing rules.
+   *
+   * Override this method in provider-specific calculators to handle
+   * model-specific pricing variations (e.g., Gemini 2.5 vs 3+ pricing).
+   *
+   * @param modelId - The model ID
+   * @param toolUsage - The original tool usage array
+   * @returns Adjusted tool usage array
+   */
+  protected adjustToolUsageForModel(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _modelId: string,
+    toolUsage: NativeToolUsage[],
+  ): NativeToolUsage[] {
+    // Default: no adjustment
+    return toolUsage;
+  }
+
+  /**
    * Calculates cost from TokenUsage using models.dev pricing data.
    *
    * @param modelId - The model ID
@@ -116,17 +151,56 @@ export abstract class BaseCostCalculator {
           pricing.cache_write || 0n,
         );
 
-        const totalCost =
+        // Calculate tool costs
+        let toolCost: CostInCenticents | undefined;
+        let toolCostBreakdown: Record<string, CostInCenticents> | undefined;
+
+        if (usage.toolUsage && usage.toolUsage.length > 0) {
+          // Apply model-specific adjustments to tool usage
+          const adjustedToolUsage = this.adjustToolUsageForModel(
+            modelId,
+            usage.toolUsage,
+          );
+
+          toolCostBreakdown = {};
+          let totalToolCost = 0n;
+
+          for (const tool of adjustedToolUsage) {
+            const cost = calculateToolCost(
+              tool.toolType as ToolType,
+              tool.callCount,
+              tool.durationSeconds,
+            );
+            if (cost && cost > 0n) {
+              toolCostBreakdown[tool.toolType] = cost;
+              totalToolCost += cost;
+            }
+          }
+
+          if (totalToolCost > 0n) {
+            toolCost = totalToolCost;
+          } else {
+            toolCostBreakdown = undefined;
+          }
+        }
+
+        // Token cost is sum of input, output, and cache costs (excludes tool costs)
+        const tokenCost =
           inputCost +
           outputCost +
           (cacheReadCost || 0n) +
           (cacheWriteCost || 0n);
+
+        const totalCost = tokenCost + (toolCost || 0n);
 
         return {
           inputCost,
           outputCost,
           cacheReadCost,
           cacheWriteCost,
+          tokenCost,
+          toolCost,
+          toolCostBreakdown,
           totalCost,
         };
       }).pipe(Effect.orElseSucceed(() => null));
@@ -154,33 +228,42 @@ export class OpenAICostCalculator extends BaseCostCalculator {
 
     if (!usage) return null;
 
+    let tokenUsage: TokenUsage | null = null;
+
     // Check for Responses API format (input_tokens/output_tokens)
     if ("input_tokens" in usage && "output_tokens" in usage) {
       const inputTokensDetails = usage.input_tokens_details as
         | { cached_tokens?: number }
         | undefined;
 
-      return {
+      tokenUsage = {
         inputTokens: usage.input_tokens as number,
         outputTokens: usage.output_tokens as number,
         cacheReadTokens: inputTokensDetails?.cached_tokens,
       };
     }
-
     // Fall back to Completions API format (prompt_tokens/completion_tokens)
-    if ("prompt_tokens" in usage && "completion_tokens" in usage) {
+    else if ("prompt_tokens" in usage && "completion_tokens" in usage) {
       const promptTokensDetails = usage.prompt_tokens_details as
         | { cached_tokens?: number }
         | undefined;
 
-      return {
+      tokenUsage = {
         inputTokens: usage.prompt_tokens as number,
         outputTokens: usage.completion_tokens as number,
         cacheReadTokens: promptTokensDetails?.cached_tokens,
       };
     }
 
-    return null;
+    if (!tokenUsage) return null;
+
+    // Extract tool usage and include in the result
+    const toolUsage = this.extractToolUsage(body);
+    if (toolUsage.length > 0) {
+      tokenUsage.toolUsage = toolUsage;
+    }
+
+    return tokenUsage;
   }
 
   /**
@@ -205,6 +288,62 @@ export class OpenAICostCalculator extends BaseCostCalculator {
 
     // Fall back to standard extraction (handles Completions API)
     return this.extractUsage(chunk);
+  }
+
+  /**
+   * Extracts native tool usage from OpenAI responses.
+   *
+   * OpenAI Responses API reports web search calls in the output array:
+   * { output: [{ type: "web_search_call", ... }, ...] }
+   */
+  public extractToolUsage(body: unknown): NativeToolUsage[] {
+    if (typeof body !== "object" || body === null) return [];
+
+    const bodyObj = body as Record<string, unknown>;
+    const tools: NativeToolUsage[] = [];
+
+    // Check for Responses API format - count web_search_call items in output
+    if (Array.isArray(bodyObj.output)) {
+      const output = bodyObj.output as Array<{ type?: string }>;
+      const webSearchCalls = output.filter(
+        (item) => item.type === "web_search_call",
+      ).length;
+
+      if (webSearchCalls > 0) {
+        tools.push({
+          toolType: "openai_web_search",
+          callCount: webSearchCalls,
+        });
+      }
+
+      // Count code_interpreter_call items
+      const codeInterpreterCalls = output.filter(
+        (item) => item.type === "code_interpreter_call",
+      ).length;
+
+      if (codeInterpreterCalls > 0) {
+        // Use minimum billing increment (1 hour per container session)
+        tools.push({
+          toolType: "openai_code_interpreter",
+          callCount: codeInterpreterCalls,
+          durationSeconds: 3600, // 1 hour minimum
+        });
+      }
+
+      // Count file_search_call items
+      const fileSearchCalls = output.filter(
+        (item) => item.type === "file_search_call",
+      ).length;
+
+      if (fileSearchCalls > 0) {
+        tools.push({
+          toolType: "openai_file_search",
+          callCount: fileSearchCalls,
+        });
+      }
+    }
+
+    return tools;
   }
 }
 
@@ -268,13 +407,21 @@ export class AnthropicCostCalculator extends BaseCostCalculator {
         ? { ephemeral5m, ephemeral1h }
         : undefined;
 
-    return {
+    const tokenUsage: TokenUsage = {
       inputTokens: usage.input_tokens,
       outputTokens: usage.output_tokens,
       cacheReadTokens: cacheReadTokens > 0 ? cacheReadTokens : undefined,
       cacheWriteTokens: cacheWriteTokens > 0 ? cacheWriteTokens : undefined,
       cacheWriteBreakdown,
     };
+
+    // Extract tool usage and include in the result
+    const toolUsage = this.extractToolUsage(body);
+    if (toolUsage.length > 0) {
+      tokenUsage.toolUsage = toolUsage;
+    }
+
+    return tokenUsage;
   }
 
   protected override calculateCacheWriteCost(
@@ -322,6 +469,47 @@ export class AnthropicCostCalculator extends BaseCostCalculator {
     // Delegate to standard extraction - Anthropic format is the same for streaming
     return this.extractUsage(chunk);
   }
+
+  /**
+   * Extracts native tool usage from Anthropic responses.
+   *
+   * Anthropic reports server tool usage in the usage object:
+   * { usage: { server_tool_use: { web_search_requests: N } } }
+   */
+  public extractToolUsage(body: unknown): NativeToolUsage[] {
+    if (typeof body !== "object" || body === null) return [];
+
+    const usage = (
+      body as {
+        usage?: {
+          server_tool_use?: {
+            web_search_requests?: number;
+          };
+        };
+      }
+    ).usage;
+
+    if (!usage?.server_tool_use) return [];
+
+    const tools: NativeToolUsage[] = [];
+    const serverToolUse = usage.server_tool_use;
+
+    // Web search
+    if (
+      serverToolUse.web_search_requests &&
+      serverToolUse.web_search_requests > 0
+    ) {
+      tools.push({
+        toolType: "anthropic_web_search",
+        callCount: serverToolUse.web_search_requests,
+      });
+    }
+
+    // Note: Code execution duration is not currently reported in Anthropic's usage object.
+    // When it becomes available, we can extract it here and use the 5 minute minimum.
+
+    return tools;
+  }
 }
 
 /**
@@ -358,11 +546,19 @@ export class GoogleCostCalculator extends BaseCostCalculator {
       return null;
     }
 
-    return {
+    const tokenUsage: TokenUsage = {
       inputTokens: metadata.promptTokenCount,
       outputTokens: metadata.candidatesTokenCount,
       cacheReadTokens: metadata.cachedContentTokenCount,
     };
+
+    // Extract tool usage and include in the result
+    const toolUsage = this.extractToolUsage(body);
+    if (toolUsage.length > 0) {
+      tokenUsage.toolUsage = toolUsage;
+    }
+
+    return tokenUsage;
   }
 
   /**
@@ -373,5 +569,80 @@ export class GoogleCostCalculator extends BaseCostCalculator {
   public extractUsageFromStreamChunk(chunk: unknown): TokenUsage | null {
     // Delegate to standard extraction - Google format is the same for streaming
     return this.extractUsage(chunk);
+  }
+
+  /**
+   * Adjusts tool usage for Gemini 2.5 models.
+   *
+   * Gemini 2.5 charges $35/1000 prompts for grounding, while Gemini 3+ charges
+   * $14/1000 queries. To handle this without changing the pricing interface,
+   * we detect 2.5 models and set callCount to 2.5 (since $14 * 2.5 = $35).
+   *
+   * This effectively charges $0.035 per prompt for 2.5 models instead of
+   * per-query pricing.
+   */
+  protected override adjustToolUsageForModel(
+    modelId: string,
+    toolUsage: NativeToolUsage[],
+  ): NativeToolUsage[] {
+    // Check if this is a Gemini 2.5 model (e.g., "gemini-2.5-pro", "gemini-2.5-flash")
+    if (!modelId.includes("2.5")) {
+      return toolUsage;
+    }
+
+    // For 2.5 models, adjust google_grounding_search callCount to 2.5
+    // This makes the cost calculation work out: $14/1000 * 2.5 = $35/1000
+    return toolUsage.map((tool) => {
+      if (tool.toolType === "google_grounding_search") {
+        return {
+          ...tool,
+          callCount: 2.5,
+        };
+      }
+      return tool;
+    });
+  }
+
+  /**
+   * Extracts native tool usage from Google Gemini responses.
+   *
+   * Google reports grounding with Google Search usage in groundingMetadata:
+   * { groundingMetadata: { webSearchQueries: [...], groundingSupports: [...] } }
+   *
+   * Only charges when grounding results are actually returned (groundingSupports present).
+   */
+  public extractToolUsage(body: unknown): NativeToolUsage[] {
+    if (typeof body !== "object" || body === null) return [];
+
+    const bodyObj = body as Record<string, unknown>;
+    const groundingMetadata = bodyObj.groundingMetadata as
+      | {
+          webSearchQueries?: string[];
+          groundingSupports?: unknown[];
+        }
+      | undefined;
+
+    if (!groundingMetadata) return [];
+
+    const tools: NativeToolUsage[] = [];
+
+    // Google Search grounding - only charged when grounding supports are present
+    // (meaning the search actually returned results used in the response)
+    if (
+      groundingMetadata.webSearchQueries &&
+      groundingMetadata.webSearchQueries.length > 0 &&
+      groundingMetadata.groundingSupports &&
+      groundingMetadata.groundingSupports.length > 0
+    ) {
+      tools.push({
+        toolType: "google_grounding_search",
+        callCount: groundingMetadata.webSearchQueries.length,
+        metadata: {
+          queries: groundingMetadata.webSearchQueries,
+        },
+      });
+    }
+
+    return tools;
   }
 }

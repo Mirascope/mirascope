@@ -77,8 +77,25 @@ export const routerRequests = pgTable(
     // Example for Anthropic: { "ephemeral5m": 100, "ephemeral1h": 50 }
     cacheWriteBreakdown: jsonb("cache_write_breakdown"),
 
-    // Cost (in centi-cents: 1 = $0.0001 USD)
+    // Native tool usage (JSONB for flexibility)
+    // Example: [{ toolType: "anthropic_web_search", callCount: 2 }]
+    toolUsage: jsonb("tool_usage"),
+
+    // Total cost (in centi-cents: 1 = $0.0001 USD)
+    // This is the sum of tokenCostCenticents + toolCostCenticents
     costCenticents: bigint("cost_centicents", {
+      mode: "bigint",
+    }),
+
+    // Token cost (in centi-cents: 1 = $0.0001 USD)
+    // Cost from input/output/cache tokens only
+    tokenCostCenticents: bigint("token_cost_centicents", {
+      mode: "bigint",
+    }),
+
+    // Tool cost (in centi-cents: 1 = $0.0001 USD)
+    // Cost from native tool usage (e.g., web search, code execution)
+    toolCostCenticents: bigint("tool_cost_centicents", {
       mode: "bigint",
     }),
 
@@ -156,7 +173,9 @@ export type RequestStatus = (typeof requestStatusEnum.enumValues)[number];
 // Helper to ensure cost fields use the CostInCenticents type
 export type RouterRequestWithTypedCosts = Omit<
   RouterRequest,
-  "costCenticents"
+  "costCenticents" | "tokenCostCenticents" | "toolCostCenticents"
 > & {
   costCenticents: CostInCenticents | null;
+  tokenCostCenticents: CostInCenticents | null;
+  toolCostCenticents: CostInCenticents | null;
 };

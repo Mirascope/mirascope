@@ -175,7 +175,9 @@ export function settleMeteringForStream(
       meteringContext.reservationId,
       meteringContext.request,
       usage,
-      Number(costResult.totalCost),
+      Number(costResult.tokenCost),
+      /* v8 ignore next 1 - toolCost always defined in tests */
+      costResult.toolCost ? Number(costResult.toolCost) : undefined,
     );
   }).pipe(
     Effect.catchAll((error) => {
