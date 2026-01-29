@@ -272,14 +272,14 @@ As an example, our prompt engineering framework Mirascope Cloud lets you track p
 
 Below, `answer_question()` encapsulates both the prompt and model settings, and is wrapped with `@ops.version` in order to capture all changes that might affect the model's output.
 
-```python{7-13}
+```python { 7-13= }
 from mirascope import llm, ops
 
 ops.configure()
 ops.instrument_llm()
 
 @ops.version
-@llm.call("google/gemini-2.0-flash-001")
+@llm.call("google/gemini-2.5-pro")
 def answer_question(question: str) -> str:
     return f"Answer this question: {question}"
 
