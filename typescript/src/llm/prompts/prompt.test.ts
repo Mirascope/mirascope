@@ -33,6 +33,14 @@ describe('definePrompt', () => {
       expect(typeof prompt.stream).toBe('function');
     });
 
+    it('has a call method', () => {
+      const prompt = definePrompt<{ genre: string }>({
+        template: ({ genre }) => `Recommend a ${genre} book`,
+      });
+
+      expect(typeof prompt.call).toBe('function');
+    });
+
     it('supports message arrays', () => {
       const chatBot = definePrompt<{ question: string }>({
         template: ({ question }) => [
@@ -102,6 +110,14 @@ describe('definePrompt', () => {
       });
 
       expect(typeof prompt.stream).toBe('function');
+    });
+
+    it('has a call method', () => {
+      const prompt = definePrompt({
+        template: () => 'Hello!',
+      });
+
+      expect(typeof prompt.call).toBe('function');
     });
   });
 });
