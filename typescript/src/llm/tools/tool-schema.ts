@@ -6,18 +6,29 @@
  */
 
 /**
+ * Reserved tool name for formatted output tools.
+ *
+ * This is used internally to convert formatted output tool calls to textual output.
+ * It should not be used for regular tool definitions.
+ */
+export const FORMAT_TOOL_NAME = '__mirascope_formatted_output_tool__' as const;
+
+/**
  * JSON Schema property definition for a single tool parameter.
  */
 export interface JsonSchemaProperty {
   type?: string;
   description?: string;
-  enum?: readonly string[];
+  enum?: readonly (string | number | boolean)[];
   items?: JsonSchemaProperty;
   properties?: Record<string, JsonSchemaProperty>;
   required?: readonly string[];
   additionalProperties?: boolean;
   default?: unknown;
   $ref?: string;
+  oneOf?: readonly JsonSchemaProperty[];
+  allOf?: readonly JsonSchemaProperty[];
+  anyOf?: readonly JsonSchemaProperty[];
 }
 
 /**

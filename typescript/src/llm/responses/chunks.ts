@@ -225,6 +225,21 @@ export function thoughtEnd(): ThoughtEndChunk {
   return { type: 'thought_end_chunk', contentType: 'thought' };
 }
 
+/** Create a ToolCallStartChunk */
+export function toolCallStart(id: string, name: string): ToolCallStartChunk {
+  return { type: 'tool_call_start_chunk', contentType: 'tool_call', id, name };
+}
+
+/** Create a ToolCallChunk */
+export function toolCallChunk(id: string, delta: string): ToolCallChunk {
+  return { type: 'tool_call_chunk', contentType: 'tool_call', id, delta };
+}
+
+/** Create a ToolCallEndChunk */
+export function toolCallEnd(id: string): ToolCallEndChunk {
+  return { type: 'tool_call_end_chunk', contentType: 'tool_call', id };
+}
+
 /** Create a FinishReasonChunk */
 export function finishReasonChunk(
   finishReason: FinishReason

@@ -307,10 +307,11 @@ function encodeAssistantMessage(
     if (part.type === 'tool_call') {
       const toolCallItem: ResponseFunctionToolCall = {
         type: 'function_call',
-        id: part.id, // Used as the item id
+        id: part.id,
         call_id: part.id, // Used to match with function_call_output
         name: part.name,
         arguments: part.args,
+        status: 'completed', // Required for model to recognize tool was executed
       };
       result.push(toolCallItem);
     }

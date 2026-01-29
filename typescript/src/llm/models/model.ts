@@ -15,7 +15,7 @@ import type { Response } from '@/llm/responses';
 import type { ContextResponse } from '@/llm/responses/context-response';
 import type { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 import type { StreamResponse } from '@/llm/responses/stream-response';
-import type { ToolSchema } from '@/llm/tools';
+import type { Tools, ContextTools } from '@/llm/tools';
 
 /**
  * The unified LLM interface that delegates to provider-specific clients.
@@ -120,7 +120,7 @@ export class Model {
    */
   async call(
     content: UserContent | readonly Message[],
-    tools?: readonly ToolSchema[]
+    tools?: Tools
   ): Promise<Response> {
     const messages = promoteToMessages(content);
     return this.provider.call({
@@ -167,7 +167,7 @@ export class Model {
    */
   async stream(
     content: UserContent | readonly Message[],
-    tools?: readonly ToolSchema[]
+    tools?: Tools
   ): Promise<StreamResponse> {
     const messages = promoteToMessages(content);
     return this.provider.stream({
@@ -202,7 +202,7 @@ export class Model {
   async contextCall<DepsT>(
     ctx: Context<DepsT>,
     content: UserContent | readonly Message[],
-    tools?: readonly ToolSchema[]
+    tools?: ContextTools<DepsT>
   ): Promise<ContextResponse<DepsT>> {
     const messages = promoteToMessages(content);
     return this.provider.contextCall({
@@ -240,7 +240,7 @@ export class Model {
   async contextStream<DepsT>(
     ctx: Context<DepsT>,
     content: UserContent | readonly Message[],
-    tools?: readonly ToolSchema[]
+    tools?: ContextTools<DepsT>
   ): Promise<ContextStreamResponse<DepsT>> {
     const messages = promoteToMessages(content);
     return this.provider.contextStream({
