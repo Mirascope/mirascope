@@ -396,7 +396,7 @@ def multi_turn_chat():
             break
         response = respond(query, history)
         print(f"Assistant: {response.text()}")
-        history += [response.user_message_param, response.message_param]
+        history.extend(response.messages[-2:])
 
 multi_turn_chat()
 
@@ -407,7 +407,7 @@ Here, we're doing essentially the same thing as with the previous code for the O
 
 * We use the decorator `@llm.call` to define the API call function, making the code more concise and encapsulated than OpenAI's above, which defines the API call within its `while` loop. You can also easily use another model provider beyond OpenAI just by changing the model string (e.g., `"anthropic/claude-sonnet-4-20250514"`) without having to change anything else.
 * We use `llm.messages` helpers to construct the message list, which simplifies the construction process. OpenAI, on the other hand, constructs the `messages` list manually within its loop.
-* We use attributes of the response object (`response.text()`, `response.user_message_param`, `response.message_param`) to handle the response and update the history. This abstracts away the complexity involved in parsing and handling the response, whereas OpenAI requires manually accessing and parsing response elements, which can lead to more verbose code.
+* We use attributes of the response object (`response.text()`, `response.messages`) to handle the response and update the history. This abstracts away the complexity involved in parsing and handling the response, whereas OpenAI requires manually accessing and parsing response elements, which can lead to more verbose code.
 
 Overall, we abstract away repetitive tasks like constructing message lists as much as possible, reducing the amount of boilerplate code and improving readability.
 
