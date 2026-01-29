@@ -2,6 +2,7 @@
 title: "Comparing Prompt Engineering vs Fine-Tuning"
 description: "Learn when to use prompt engineering, fine-tuning, or RAG for tasks ranging from simple queries to specialized applications."
 date: "2024-11-11"
+updatedAt: "2026-01-28"
 readTime: "12 min read"
 author: "William Bakst"
 ---
@@ -139,9 +140,9 @@ Following best practices promises to keep the whole process running smoothly, an
 Below are listed _some_ of our own core [best practices](/blog/prompt-engineering-best-practices) for advanced prompt engineering:
 
 1. __Write prompts in as clear and contextually rich a way as possible__. Vague prompts are ambiguous and often lack the context necessary to show the direction you want the model to take in its responses.  
-2. [__Colocate everything__](/blog/engineers-should-handle-prompting-llms) __that affects the quality of an LLM call with the call itself__. This means grouping model type, temperature, and other parameters altogether (along with placing the prompt in the near vicinity), as opposed to scattering these around the codebase. This was actually a big sticking point for us when first using the OpenAI SDK and [LangChain](/blog/langchain-sucks), which didn’t seem to care about keeping everything together, and was one of the reasons we designed [Mirascope](/docs/mirascope).  
-3. Following on from the previous point, [__version and manage__](/blog/prompt-versioning) __everything that you’ve colocated together, as a single unit__. We can’t stress this enough - this makes it easy to track changes and roll back to previous versions. We even have a [dedicated tool for automatically versioning and tracing](/docs/lilypad) for easier prompt management.  
-4. Prioritize validating LLM outputs and __use advanced retry mechanisms to handle errors effectively__. Apply tools like [Tenacity](https://tenacity.readthedocs.io/en/latest/) to automate retries, reinserting errors into subsequent prompts, allowing the model to refine its output with each attempt. [Mirascope provides utilities](/docs/v1/learn/retries/#error-reinsertion) to ease this process by collecting validation errors and reusing them contextually in calls that follow, improving model performance without you needing to make manual adjustments.
+2. [__Colocate everything__](/blog/engineers-should-handle-prompting-llms) __that affects the quality of an LLM call with the call itself__. This means grouping model type, temperature, and other parameters altogether (along with placing the prompt in the near vicinity), as opposed to scattering these around the codebase. This was actually a big sticking point for us when first using the OpenAI SDK and [LangChain](/blog/langchain-sucks), which didn't seem to care about keeping everything together, and was one of the reasons we designed [Mirascope](/docs/learn/).
+3. Following on from the previous point, [__version and manage__](/blog/prompt-versioning) __everything that you've colocated together, as a single unit__. We can't stress this enough - this makes it easy to track changes and roll back to previous versions. We even have a [dedicated tool for automatically versioning and tracing](/docs/learn/ops) for easier prompt management.
+4. Prioritize validating LLM outputs and __use advanced retry mechanisms to handle errors effectively__. Apply tools like [Tenacity](https://tenacity.readthedocs.io/en/latest/) to automate retries, reinserting errors into subsequent prompts, allowing the model to refine its output with each attempt. [Mirascope provides utilities](/docs/learn/llm/retries/#error-reinsertion) to ease this process by collecting validation errors and reusing them contextually in calls that follow, improving model performance without you needing to make manual adjustments.
 
 ### Guidelines for Fine-Tuning
 
@@ -181,4 +182,4 @@ Mirascope empowers developers to create, manage, and scale sophisticated prompts
 
 Our lightweight toolkit lets users experiment, iterate, and deploy [effective prompts](/blog/llm-prompt) using the Python they already know, and slots readily into existing developer workflows, making it easy to get started.
 
-Want to learn more? You can find in-depth Mirascope code samples on both our [docs](/docs/mirascope) and on [GitHub](https://github.com/mirascope/mirascope/).
+Want to learn more? You can find in-depth Mirascope code samples on both our [docs](/docs/learn/) and on [GitHub](https://github.com/mirascope/mirascope/).
