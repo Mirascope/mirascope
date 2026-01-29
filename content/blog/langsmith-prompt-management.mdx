@@ -91,7 +91,7 @@ This setup feels more at home in traditional ML pipelines. But real-world prompt
 
 Mirascope Cloud is an open source prompt engineering framework that supports [LLM integration](/blog/llm-integration) and treats prompts as code (specifically, as typed, versioned Python functions) rather than as files in a content management system.
 
-![Mirascope Cloud Answer Question Function](/assets/blog/langsmith-prompt-management/lilypad-answer-question-function.webp)
+![Mirascope Cloud Answer Question Function](/assets/blog/_lilypad/lilypad-answer-question-function.webp)
 
 This isn't just a style choice. It's because Mirascope Cloud was built for software engineers who expect their prompts to behave like the rest of their application: composable, testable, and traceable. Rather than managing prompts as disconnected assets in a UI, Mirascope Cloud keeps them tightly woven into your codebase.
 
@@ -129,19 +129,19 @@ Now every time the function changes, Mirascope Cloud creates a new version. That
 
 The output of the code is shown in the Mirascope Cloud traces tab:
 
-![Mirascope Cloud Answer Question v1 Trace](/assets/blog/_shared/lilypad-answer-question-v1-trace.webp)
+![Mirascope Cloud Answer Question v1 Trace](/assets/blog/_lilypad/lilypad-answer-question-v1-trace.webp)
 
 Our platform also shows the version you're running (V1, V2, V3) alongside detailed trace data like latency, cost, and output.
 
 Changing the model used in our function from `gpt-4o-mini` to `gpt-4o`, for instance, increments the version:
 
-![Mirascope Cloud Answer Question v2 Trace](/assets/blog/_shared/lilypad-traces-view.webp)
+![Mirascope Cloud Answer Question v2 Trace](/assets/blog/_lilypad/lilypad-traces-view-v3.webp)
 
 (It also doesn't duplicate versions if nothing meaningful has changed.)
 
 This also allows us to easily compare different versions:
 
-![Mirascope Cloud Answer Question Comparison](/assets/blog/_shared/lilypad-answer-question-comparison.webp)
+![Mirascope Cloud Answer Question Comparison](/assets/blog/_lilypad/lilypad-answer-question-comparison.webp)
 
 Even changes to user-defined functions or classes outside the main prompt function are logged and tracked automatically (as long as they're within scope).
 
@@ -170,11 +170,11 @@ print(answer)
 
 This means changes to the return type will now be logged and traced as a new version:
 
-![Mirascope Cloud Answer Question v3 Trace](/assets/blog/_shared/lilypad-answer-question-v3-trace.webp)
+![Mirascope Cloud Answer Question v3 Trace](/assets/blog/_lilypad/lilypad-answer-question-v3-trace.webp)
 
 Using `ops.instrument_llm()` ensures every LLM call is traced using the [OpenTelemetry Gen AI spec](https://opentelemetry.io/), which gives you a precise snapshot of each call:
 
-![Mirascope Cloud Answer Question GenAI Data](/assets/blog/_shared/lilypad-genai-trace-data.webp)
+![Mirascope Cloud Answer Question GenAI Data](/assets/blog/_lilypad/lilypad-genai-trace-data-v2.webp)
 
 Large language model calls become a nested span within the overall trace, so you always know where and how it was triggered.
 
@@ -198,7 +198,7 @@ In Mirascope Cloud, prompts are real functions. And in the playground, non-techn
 * Fill in inputs using forms auto-generated from the function's type-safe signature
 * See prompt arguments validated live at runtime, just like in production
 
-![Mirascope Cloud Playground](/assets/blog/_shared/lilypad-playground-v2.webp)
+![Mirascope Cloud Playground](/assets/blog/_lilypad/lilypad-playground-v2-v2.webp)
 
 All prompt edits in the playground are sandboxed by default, so nothing touches production until it's explicitly published. The playground itself offers a minimal interface showing the essentials: prompt logic, call settings, temperature, inputs, outputs, traces, and usage stats.
 
@@ -220,7 +220,7 @@ That's why we recommend skipping numeric scores and instead tagging outputs as P
 
 Mirascope Cloud supports this approach. Every trace can be opened, reviewed, and labeled with a simple Pass or Fail tag, along with an optional explanation to capture your reasoning:
 
-![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v5.webp)
 
 You can also leave comments in the discussion panel of each trace. Use it to share what you noticed, add context, or flag something for your team.
 

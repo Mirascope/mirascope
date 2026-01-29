@@ -191,17 +191,17 @@ Each time we run the function using the `@ops.version` decorator, Mirascope Clou
 
 Clicking the “Compare” button allows you to see and compare changes between versions:  
 
-![Lilypad Click Compare](/assets/blog/_shared/answer-question-click-compare.webp)
+![Lilypad Click Compare](/assets/blog/_lilypad/answer-question-click-compare.webp)
 
 You then select different versions to view the differences side-by-side. 
 
-![Mirascope Cloud Compare Versions](/assets/blog/_shared/lilypad-compare-versions.webp)
+![Mirascope Cloud Compare Versions](/assets/blog/_lilypad/lilypad-compare-versions.webp)
 
 Mirascope Cloud instruments everything using the [OpenTelemetry GenAI spec](https://opentelemetry.io/) for deep observability.
 
 Each trace captures the full context: what was asked, how it was asked, and what the model returned. You also get detailed metadata like inputs, outputs, model and provider info, token usage, latency, and cost.  
 
-![Lilypad OTel GenAI Data](/assets/blog/_shared/lilypad-otel-genai-data-v2.webp)
+![Lilypad OTel GenAI Data](/assets/blog/_lilypad/lilypad-otel-genai-data-v2.webp)
 
 This level of visibility lets you easily measure improvements and iterate without guessing what was different between runs.
 
@@ -211,7 +211,7 @@ Mirascope Cloud provides a no-code, browser-based playground that makes prompt m
 
 SMEs can edit, test, and ship prompt updates without requiring direct developer intervention for every iteration. This separation of concerns lets devs focus on system architecture, while SMEs handle prompt logic and evaluation.
 
-![Lilypad Playground](/assets/blog/_shared/lilypad-playground-v5.webp)
+![Lilypad Playground](/assets/blog/_lilypad/lilypad-playground-v5.webp)
 
 In the playground, non-technical users can:  
 
@@ -241,11 +241,11 @@ In the playground, both developers and non-technical users can review captured t
 
 You can optionally provide reasoning for your pass/fail decision to help others understand the criteria applied.
 
-![Lilypad Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue-v4.webp)
+![Lilypad Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v4.webp)
 
 A discussion section is also available for adding comments or context to traces: 
 
-![Lilypad Trace Comment](/assets/blog/langfuse-prompt-management/lilypad-trace-comment.webp)
+![Lilypad Trace Comment](/assets/blog/_lilypad/lilypad-trace-comment.webp)
 
 We encourage users to start by manually labeling outputs, especially in the early stages of a project. Each label is tied to a specific, versioned trace, which gradually forms a high-quality, human-annotated dataset that becomes the foundation for training automated evaluation systems, such as [LLM-as-a-judge](/blog/llm-as-judge), for which we’re actively building support.
 

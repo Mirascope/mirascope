@@ -70,7 +70,7 @@ Advanced systems also let users collaboratively evaluate prompts against predefi
 
 ### 1. Lilypad: Full-Context Prompt Management for LLM Workflows
 
-![Lilypad Landing Page](/assets/blog/_shared/lilypad-homepage.webp)
+![Lilypad Landing Page](/assets/blog/_lilypad/lilypad-homepage.webp)
 
 [Lilypad](/docs/lilypad) approaches prompt engineering as an optimization problem, applying proven software engineering practices to LLM application development. It allows users to version, trace, and optimize workflows by capturing the full context of every LLM interaction.
 
@@ -115,21 +115,21 @@ print(answer)
 
 All this offers a complete audit trail of what changed and why (not only in the prompt but in the prompt’s context). Incremented versions are shown in the Lilypad UI:
 
-![Lilypad Trace View](/assets/blog/_shared/lilypad-trace.webp)
+![Lilypad Trace View](/assets/blog/_lilypad/lilypad-trace.webp)
 
 It even logs and tracks changes to user-defined functions or classes outside the main prompt function as long as these are within the decorated function’s scope.
 
 The “Compare” button in the Lilypad UI allows you to see the differences between various versions of the code:
 
-![Lilypad Click Compare](/assets/blog/_shared/lilypad-click-compare.webp)
+![Lilypad Click Compare](/assets/blog/_lilypad/lilypad-click-compare-v3.webp)
 
 Clicking this displays a second dropdown menu, where you can select another version and view the differences side-by-side:
 
-![Lilypad Compare Versions](/assets/blog/_shared/lilypad-compare-versions-v2.webp)
+![Lilypad Compare Versions](/assets/blog/_lilypad/lilypad-compare-versions-v2.webp)
 
 The UI also lets you inspect trace data for any LLM call in a function in order to see the full picture of what happened during the run, including any changes to inputs, logic, prompt changes, and model settings: 
 
-![Lilypad Trace Data](/assets/blog/_shared/lilypad-trace-genai-data.webp)
+![Lilypad Trace Data](/assets/blog/_lilypad/lilypad-trace-genai-data.webp)
 
 Downstream, you can use the `.version` method to compare outputs, track changes, or reproduce earlier results.
 
@@ -151,7 +151,7 @@ The Lilypad playground supports markdown-based editing with typed variable place
 
 Users can also directly adjust model settings like temperature or `top_p`. Together, these features ensure all prompt edits remain consistent, traceable, and fully integrated into the application’s codebase.
 
-![Lilypad Playground](/assets/blog/_shared/lilypad-playground-v3.webp)
+![Lilypad Playground](/assets/blog/_lilypad/lilypad-playground-v3-v2.webp)
 
 #### Building Reliable Evaluation Pipelines
 
@@ -167,7 +167,7 @@ Because of this subjectivity, evaluation tools need a structured way to capture 
 
 The outputs to evaluate appear in structured queues, where reviewers can label them as pass or fail and add reasoning notes. To reduce bias, existing annotations remain hidden until the review is complete.
 
-![Lilypad Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
+![Lilypad Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v5.webp)
 
 The result is a body of searchable evaluation data stored alongside trace details and version history, making reviews easy to audit and reproduce.
 

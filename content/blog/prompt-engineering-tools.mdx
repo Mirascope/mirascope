@@ -28,7 +28,7 @@ In our list, we highlight the approach and strengths of each tool:
 
 ## Mirascope Cloud — Collaborative Prompt Engineering for Business Users and Software Developers
 
-![Mirascope Cloud Homepage](/assets/blog/_shared/lilypad-homepage.webp)
+![Mirascope Cloud Homepage](/assets/blog/_lilypad/lilypad-homepage.webp)
 
 [Mirascope Cloud](https://mirascope.com/) is built on the understanding that LLM calls are non-deterministic, and so every change to the prompt, along with other crucial artifacts like their callables and parameters, needs to be recorded, as even a small adjustment can have an unpredictable effect on the result. 
 
@@ -75,11 +75,11 @@ print(response.text())
 
 We see this data in the Mirascope Cloud dashboard (which we introduce further below), where the run (`answer_question`) is indicated as V1:
 
-![Answer Question V1 Trace](/assets/blog/prompt-engineering-tools/answer_question_v1.webp)
+![Answer Question V1 Trace](/assets/blog/_lilypad/answer_question_v1.webp)
 
 Mirascope Cloud automatically creates a nested trace whenever the function is executed, basing its tracking on the function's closure.
 
-![Answer Question V1 Data](/assets/blog/prompt-engineering-tools/answer_question_v1_data.webp)  
+![Answer Question V1 Data](/assets/blog/_lilypad/answer_question_v1_data.webp)  
 
 This creates a snapshot of the exact state of the code that produced a given output, and any change made inside the function automatically produces a new version, which you can roll back when needed.
 
@@ -99,7 +99,7 @@ Mirascope Cloud offers managed prompts through its versioned functions and an in
 
 Domain experts can define prompt templates with input variables, and the system automatically generates type-safe function signatures to keep everything structured, as shown below:
 
-![Mirascope Cloud Answer Question Playground](/assets/blog/prompt-engineering-tools/answer_question_playground.webp)
+![Mirascope Cloud Answer Question Playground](/assets/blog/_lilypad/answer_question_playground.webp)
 
 The playground’s no-code dashboards provide full visibility on the prompt engineering process and offer:
 
@@ -133,11 +133,11 @@ And for many tasks, pass/fail labels with reasoning are simple enough to scale, 
 
 The playground allows you to easily choose any output to annotate:
 
-![Assign Answer Question Trace](/assets/blog/prompt-engineering-tools/answer_question_assign_trace.webp)
+![Assign Answer Question Trace](/assets/blog/_lilypad/answer_question_assign_trace.webp)
 
 Here we simply mark an output as "Pass" or "Fail":
 
-![Annotate Answer Question Trace](/assets/blog/_shared/lilypad-annotation-queue-v3.webp)
+![Annotate Answer Question Trace](/assets/blog/_lilypad/lilypad-annotation-queue-v3.webp)
 
 We encourage users to manually label outputs in this way as much as possible at the beginning of a project with the end goal of eventually automating the process using [LLM-as-a-judge](/blog/llm-as-judge/).
 

@@ -32,7 +32,7 @@ In this article, we cover nine alternatives to LangSmith, starting with [Mirasco
 
 ## 1. Mirascope Cloud: Full-Code Snapshot Versioning for Reproducible LLM Development
 
-![Mirascope Cloud Homepage](/assets/blog/_shared/lilypad-homepage.webp)
+![Mirascope Cloud Homepage](/assets/blog/_lilypad/lilypad-homepage.webp)
 
 [Mirascope Cloud](/docs/learn/ops) is built for software developers and lets them run their LLM workflows with the same structure and reliability as real code. It approaches prompt engineering as an optimization problem, recognizing that LLM calls are inherently non-deterministic and that even small adjustments can have unpredictable effects on the output.
 
@@ -70,25 +70,25 @@ print(response.text())
 
 This creates a nested trace and logs that function execution as version 1 in the Mirascope Cloud playground:
 
-![Answer Question Version 1 Trace](/assets/blog/_shared/answer-question-v1-trace.webp)
+![Answer Question Version 1 Trace](/assets/blog/_lilypad/answer-question-v1-trace.webp)
 
 If you update the function (even slightly), Mirascope Cloud automatically creates version 2 and logs it.
 
-![Answer Question Version 2](/assets/blog/_shared/answer-question-v2-trace.webp)
+![Answer Question Version 2](/assets/blog/_lilypad/answer-question-v2-trace.webp)
 
 You can also compare function versions by clicking the “Compare” button:  
 
-![Answer Question Click Compare](/assets/blog/_shared/answer-question-click-compare.webp)
+![Answer Question Click Compare](/assets/blog/_lilypad/answer-question-click-compare.webp)
 
 This toggles a second dropdown menu, where you can select another version and view the differences side-by-side.  
 
-![Answer Question Compare Versions](/assets/blog/_shared/lilypad-compare-versions.webp)
+![Answer Question Compare Versions](/assets/blog/_lilypad/lilypad-compare-versions.webp)
 
 For better observability, Mirascope Cloud instruments everything using the [OpenTelemetry Gen AI spec](https://opentelemetry.io/).
 
 Each trace breaks down the full story: what was asked, how it was asked, and what came back. It’s perfect for debugging and improving tricky workflows. You also get all the key details: inputs, outputs, model and provider info, token usage, latency, and cost.
 
-![Answer Question GenAI OTel Trace Data](/assets/blog/_shared/lilypad-otel-genai-data-v2.webp)
+![Answer Question GenAI OTel Trace Data](/assets/blog/_lilypad/lilypad-otel-genai-data-v2.webp)
 
 This kind of automatic tracing and version control lets you easily measure improvements and iterate without guessing what was different between runs.
 
@@ -102,7 +102,7 @@ This lets non-developers interact with and tweak prompts directly, without touch
 
 It also separates concerns, allowing software engineers to focus on system architecture while SMEs handle prompt logic and evaluation. 
 
-![Answer Question Playground](/assets/blog/_shared/lilypad-playground-v5.webp)
+![Answer Question Playground](/assets/blog/_lilypad/lilypad-playground-v5.webp)
 
 The dashboard provides Markdown-supported prompt templates with type-safe variables, along with their associated Python functions, so you can see both the prompt and the exact code it ties into. 
 
@@ -112,7 +112,7 @@ It also shows:
 * Call settings, such as provider, model, temperature, and other configuration details.  
 * Metadata, including cost, token usage, and latency, to help monitor efficiency and performance. 
 
-![Answer Question Playground Trace](/assets/blog/langsmith-alternatives/answer-question-playground-trace.webp)
+![Answer Question Playground Trace](/assets/blog/_lilypad/answer-question-playground-trace-v2.webp)
 
 ### Evaluating LLM Outputs
 
@@ -128,11 +128,11 @@ Secondly, because "correctness" often involves subjective judgment or fuzzy crit
 
 The playground also lets you easily select any output for annotation: 
 
-![Answer Question Assign Annotation](/assets/blog/_shared/lilypad-answer-question-assign-annotation.webp)  
+![Answer Question Assign Annotation](/assets/blog/_lilypad/lilypad-answer-question-assign-annotation.webp)  
 
 From there, just click the “Pass” or “Fail” label, add any context or reasoning if you want, and click “submit annotation.”   
 
-![Answer Question Submit Annotation](/assets/blog/_shared/lilypad-annotation-queue-v4.webp)
+![Answer Question Submit Annotation](/assets/blog/_lilypad/lilypad-annotation-queue-v4.webp)
 
 We encourage users to manually label outputs, especially early in a project. Because each label is tied to a specific versioned output, it helps build high-quality, human-annotated datasets that can later be used to train automated evaluation systems, such as LLM judges, which we plan to launch soon.    
 

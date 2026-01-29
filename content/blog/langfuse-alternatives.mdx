@@ -24,7 +24,7 @@ Below we take a closer look at each option and what it brings to the table.
 
 ## 1. Mirascope Cloud: The Developer's Framework for Reproducible LLM Workflows
 
-![Mirascope Cloud Homepage](/assets/blog/_shared/lilypad-homepage.webp)
+![Mirascope Cloud Homepage](/assets/blog/_lilypad/lilypad-homepage.webp)
 
 [Mirascope Cloud](/docs/learn/ops) is a user-friendly open source prompt engineering framework. Unlike other solutions that focus only on the prompt text, Mirascope Cloud treats every LLM call as a complete software artifact, capturing the entire context that influences the output.
 
@@ -76,21 +76,21 @@ The results are shown in Mirascope Cloud's Traces tab. If you're using a Mirasco
 
 When the code above is first run, it creates a nested trace and is logged as version 1:
 
-![Answer Question V1 Trace](/assets/blog/_shared/answer-question-v1-trace.webp)
+![Answer Question V1 Trace](/assets/blog/_lilypad/answer-question-v1-trace.webp)
 
 Changing anything in the function or the prompt and then running the code again automatically produces version 2:
 
-![Answer Question V2 Trace](/assets/blog/_shared/answer-question-v2-trace.webp)
+![Answer Question V2 Trace](/assets/blog/_lilypad/answer-question-v2-trace.webp)
 
 Note that if you change a function so that it's identical to any previous version, the version isn't incremented.
 
 You can also compare function versions by clicking the "Compare" button:
 
-![Answer Question Click Compare](/assets/blog/_shared/answer-question-click-compare.webp)
+![Answer Question Click Compare](/assets/blog/_lilypad/answer-question-click-compare.webp)
 
 This toggles a second dropdown menu, where you can select another version and view the differences side-by-side.
 
-![Answer Question Compare Versions](/assets/blog/_shared/lilypad-compare-versions.webp)
+![Answer Question Compare Versions](/assets/blog/_lilypad/lilypad-compare-versions.webp)
 
 Mirascope Cloud also supports A/B testing and rollbacks, since every function run creates a trace with metadata. 
 
@@ -127,7 +127,7 @@ Each time an [LLM prompt](/blog/llm-prompt) is run in the playground, Mirascope 
 
 You can review it in the Traces tab, where each span is timestamped, costed, and ready to annotate or compare:
 
-![Answer Question GenAI Data](/assets/blog/_shared/lilypad-genai-trace-data.webp)
+![Answer Question GenAI Data](/assets/blog/_lilypad/lilypad-genai-trace-data-v2.webp)
 
 Mirascope Cloud uses the [OpenTelemetry Gen AI spec](https://opentelemetry.io/) to trace every LLM call with standardized, structured metadata, making your runs easy to debug, visualize, and analyze across tools. Playground users can also quickly annotate traces, adding pass/fail labels, reasoning, and comments, right from the trace viewer, as we'll see in the next section.
 
@@ -141,7 +141,7 @@ The Annotation Queue lets you easily annotate traces and supports quick, inline 
 
 Each review stays connected to the exact version of the function, the prompt, the inputs, and the model settings that were used. You can also include a reason for your decision and explain the criteria you applied; this helps others understand how you made your call, especially when judgment is involved.
 
-![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v5.webp)
 
 To keep things fair, Mirascope Cloud hides any existing annotations while you're reviewing a trace so your opinion isn't influenced.
 

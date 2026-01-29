@@ -74,7 +74,7 @@ It's also important that the platform offer strong evaluation systems to measure
 
 ### 1. Mirascope Cloud
 
-![Mirascope Cloud Landing Page](/assets/blog/_shared/lilypad-homepage.webp)
+![Mirascope Cloud Landing Page](/assets/blog/_lilypad/lilypad-homepage.webp)
 
 [Mirascope Cloud](/docs/learn/ops) is an open source context engineering framework that treats LLM interactions like an optimization problem, recognizing that reliable outputs depend on the entire context, not just the prompt.
 
@@ -124,7 +124,7 @@ This decorator also provides an interface for [tool calling](/docs/learn/llm/too
 
 You can work with prompts and their associated code within the Mirascope Cloud UI, a no-code environment that lets non-technical users test, edit, and evaluate prompts while keeping them tied to the exact versioned code that runs in production.
 
-![Mirascope Cloud Trace GenAI Data](/assets/blog/_shared/lilypad-trace-genai-data.webp)
+![Mirascope Cloud Trace GenAI Data](/assets/blog/_lilypad/lilypad-trace-genai-data.webp)
 
 Mirascope Cloud uses the [OpenTelemetry Gen AI spec](https://opentelemetry.io/) to instrument calls and their surrounding code, capturing metadata like costs, token usage, latency, messages, warnings, and others.
 
@@ -132,15 +132,15 @@ Mirascope Cloud traces LLM calls not only at the level of the API to tell you wh
 
 The Mirascope Cloud UI also shows the output of every call, as well as any changes made to the prompt or its context:
 
-![Mirascope Cloud Trace](/assets/blog/_shared/lilypad-trace.webp)
+![Mirascope Cloud Trace](/assets/blog/_lilypad/lilypad-trace.webp)
 
 The UI also lets you easily compare the outputs of different versions:
 
-![Mirascope Cloud Click Compare](/assets/blog/_shared/lilypad-click-compare.webp)
+![Mirascope Cloud Click Compare](/assets/blog/_lilypad/lilypad-click-compare-v3.webp)
 
 You can select another version and view the differences side-by-side:
 
-![Mirascope Cloud Compare Versions](/assets/blog/_shared/lilypad-compare-versions-v2.webp)
+![Mirascope Cloud Compare Versions](/assets/blog/_lilypad/lilypad-compare-versions-v2.webp)
 
 Alongside each call, the UI also shows detailed metadata, like latency, cost, and inputs, giving you full visibility into what happened and what influenced the result.
 
@@ -150,7 +150,7 @@ Mirascope Cloud's playground is a [prompt management tool](/blog/prompt-manageme
 
 It features Markdown-supported prompt templates with type-safe input variables to ensure that inputs provided in the playground match the associated function's schema (here we're referring to the Python functions we described in the last section, which also contain the prompt) preventing injection bugs, missing parameters, or incorrect input formats.
 
-![Mirascope Cloud Playground](/assets/blog/_shared/lilypad-playground-v3.webp)
+![Mirascope Cloud Playground](/assets/blog/_lilypad/lilypad-playground-v3-v2.webp)
 
 Prompt templates are mapped to Python function signatures for strong typing and reproducibility, and allow users to define call settings like the LLM provider, model, and temperature.
 
@@ -172,7 +172,7 @@ These allow users to evaluate runs using a pass or fail labeling system, which p
 
 For example, instead of asking evaluators to score a response on a scale of 1 to 5 for relevance or style, which often leads to inconsistent judgments, they can simply decide whether the output is acceptable or not (i.e., Pass or Fail).
 
-![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v5.webp)
 
 Mirascope Cloud also offers features allowing teams to collaborate on evaluations and discuss results, as well as to assign tasks to other users.
 
