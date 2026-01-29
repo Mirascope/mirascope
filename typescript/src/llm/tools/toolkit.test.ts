@@ -10,22 +10,8 @@ import {
 import { defineTool, defineContextTool } from '@/llm/tools/define-tool';
 import type { ToolCall } from '@/llm/content/tool-call';
 import type { Context } from '@/llm/context';
-import type { ToolParameterSchema } from '@/llm/tools/tool-schema';
 import { FORMAT_TOOL_NAME } from '@/llm/tools/tool-schema';
 import { ToolNotFoundError } from '@/llm/exceptions';
-
-// Helper to create a mock schema
-function createMockSchema(
-  properties: Record<string, { type: string }>,
-  required: string[] = []
-): ToolParameterSchema {
-  return {
-    type: 'object',
-    properties,
-    required,
-    additionalProperties: false,
-  };
-}
 
 // Helper to create a mock ToolCall
 function createToolCall(name: string, args: Record<string, unknown>): ToolCall {
@@ -38,25 +24,16 @@ function createToolCall(name: string, args: Record<string, unknown>): ToolCall {
 }
 
 describe('Toolkit', () => {
-  const weatherSchema = createMockSchema({ city: { type: 'string' } }, [
-    'city',
-  ]);
-  const searchSchema = createMockSchema({ query: { type: 'string' } }, [
-    'query',
-  ]);
-
   const getWeather = defineTool<{ city: string }>({
     name: 'get_weather',
     description: 'Get weather',
     tool: ({ city }) => ({ temp: 72, city }),
-    __schema: weatherSchema,
   });
 
   const searchWeb = defineTool<{ query: string }>({
     name: 'search_web',
     description: 'Search the web',
     tool: ({ query }) => [`Result for: ${query}`],
-    __schema: searchSchema,
   });
 
   it('creates toolkit with tools', () => {
@@ -126,23 +103,16 @@ describe('ContextToolkit', () => {
     api: { fetch: (url: string) => Promise<string> };
   }
 
-  const searchSchema = createMockSchema({ query: { type: 'string' } }, [
-    'query',
-  ]);
-  const fetchSchema = createMockSchema({ url: { type: 'string' } }, ['url']);
-
   const searchDb = defineContextTool<{ query: string }, TestDeps>({
     name: 'search_db',
     description: 'Search database',
     tool: (ctx, { query }) => ctx.deps.db.search(query),
-    __schema: searchSchema,
   });
 
   const fetchUrl = defineContextTool<{ url: string }, TestDeps>({
     name: 'fetch_url',
     description: 'Fetch URL',
     tool: async (ctx, { url }) => ctx.deps.api.fetch(url),
-    __schema: fetchSchema,
   });
 
   const createMockContext = (): Context<TestDeps> => ({
@@ -219,12 +189,10 @@ describe('ContextToolkit', () => {
 
 describe('createToolkit', () => {
   it('creates toolkit from tools array', () => {
-    const schema = createMockSchema({ x: { type: 'string' } });
     const tool = defineTool<{ x: string }>({
       name: 'test',
       description: 'Test',
       tool: () => null,
-      __schema: schema,
     });
 
     const toolkit = createToolkit([tool]);
@@ -239,12 +207,10 @@ describe('createContextToolkit', () => {
     interface Deps {
       value: number;
     }
-    const schema = createMockSchema({ x: { type: 'string' } });
     const tool = defineContextTool<{ x: string }, Deps>({
       name: 'test',
       description: 'Test',
       tool: (ctx) => ctx.deps.value,
-      __schema: schema,
     });
 
     const toolkit = createContextToolkit<Deps>([tool]);
@@ -259,20 +225,11 @@ describe('ContextToolkit with mixed tools', () => {
     multiplier: number;
   }
 
-  const addSchema = createMockSchema(
-    { a: { type: 'number' }, b: { type: 'number' } },
-    ['a', 'b']
-  );
-  const multiplySchema = createMockSchema({ value: { type: 'number' } }, [
-    'value',
-  ]);
-
   // Regular tool - no context needed
   const addNumbers = defineTool<{ a: number; b: number }>({
     name: 'add_numbers',
     description: 'Add two numbers',
     tool: ({ a, b }) => a + b,
-    __schema: addSchema,
   });
 
   // Context tool - needs context for multiplier
@@ -280,7 +237,6 @@ describe('ContextToolkit with mixed tools', () => {
     name: 'multiply_with_context',
     description: 'Multiply by context multiplier',
     tool: (ctx, { value }) => value * ctx.deps.multiplier,
-    __schema: multiplySchema,
   });
 
   const createMockContext = (multiplier: number): Context<TestDeps> => ({
@@ -380,20 +336,16 @@ describe('FORMAT_TOOL_NAME', () => {
 });
 
 describe('Duplicate name validation', () => {
-  const schema = createMockSchema({ x: { type: 'string' } });
-
   it('Toolkit throws on duplicate tool names', () => {
     const tool1 = defineTool<{ x: string }>({
       name: 'duplicate_name',
       description: 'First tool',
       tool: () => 'first',
-      __schema: schema,
     });
     const tool2 = defineTool<{ x: string }>({
       name: 'duplicate_name',
       description: 'Second tool',
       tool: () => 'second',
-      __schema: schema,
     });
 
     expect(() => new Toolkit([tool1, tool2])).toThrow(
@@ -409,13 +361,11 @@ describe('Duplicate name validation', () => {
       name: 'duplicate_name',
       description: 'First tool',
       tool: () => 'first',
-      __schema: schema,
     });
     const tool2 = defineContextTool<{ x: string }, Deps>({
       name: 'duplicate_name',
       description: 'Second tool',
       tool: () => 'second',
-      __schema: schema,
     });
 
     expect(() => new ContextToolkit<Deps>([tool1, tool2])).toThrow(
@@ -457,12 +407,10 @@ describe('ContextToolkit with null/undefined', () => {
 });
 
 describe('normalizeTools', () => {
-  const schema = createMockSchema({ x: { type: 'string' } });
   const tool = defineTool<{ x: string }>({
     name: 'test_tool',
     description: 'Test',
     tool: () => 'result',
-    __schema: schema,
   });
 
   it('returns empty toolkit for null', () => {
@@ -501,12 +449,10 @@ describe('normalizeContextTools', () => {
     value: number;
   }
 
-  const schema = createMockSchema({ x: { type: 'string' } });
   const tool = defineContextTool<{ x: string }, TestDeps>({
     name: 'test_context_tool',
     description: 'Test',
     tool: (ctx) => ctx.deps.value,
-    __schema: schema,
   });
 
   it('returns empty ContextToolkit for null', () => {

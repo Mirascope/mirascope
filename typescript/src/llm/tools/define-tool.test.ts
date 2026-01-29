@@ -7,21 +7,7 @@ import {
   isZodLike,
 } from '@/llm/tools/define-tool';
 import type { ZodLike } from '@/llm/tools/tools';
-import type { ToolParameterSchema } from '@/llm/tools/tool-schema';
 import { ToolExecutionError } from '@/llm/exceptions';
-
-// Helper to create a mock schema
-function createMockSchema(
-  properties: Record<string, { type: string; description?: string }>,
-  required: string[] = []
-): ToolParameterSchema {
-  return {
-    type: 'object',
-    properties,
-    required,
-    additionalProperties: false,
-  };
-}
 
 // Helper to create a mock ToolCall
 function createToolCall(name: string, args: Record<string, unknown>): ToolCall {
@@ -68,14 +54,6 @@ describe('isZodLike', () => {
 });
 
 describe('defineTool', () => {
-  const mockSchema = createMockSchema(
-    {
-      city: { type: 'string' },
-      units: { type: 'string' },
-    },
-    ['city']
-  );
-
   it('creates a tool with correct properties', () => {
     const tool = defineTool<{ city: string; units?: string }>({
       name: 'get_weather',
@@ -85,7 +63,6 @@ describe('defineTool', () => {
         units: 'Temperature units',
       },
       tool: ({ city }) => ({ temp: 72, city }),
-      __schema: mockSchema,
     });
 
     expect(tool.name).toBe('get_weather');
@@ -96,14 +73,20 @@ describe('defineTool', () => {
     );
   });
 
-  it('throws error when __schema is missing', () => {
-    expect(() =>
-      defineTool<{ city: string }>({
-        name: 'test_tool',
-        description: 'Test',
-        tool: () => null,
-      })
-    ).toThrow("Tool 'test_tool' is missing __schema");
+  it('auto-generates schema from type parameter', () => {
+    // This test verifies the transformer is working correctly
+    const tool = defineTool<{ city: string; count?: number }>({
+      name: 'test_tool',
+      description: 'Test',
+      tool: ({ city }) => city,
+    });
+
+    // Schema should be auto-generated with correct types
+    expect(tool.parameters.type).toBe('object');
+    expect(tool.parameters.properties.city?.type).toBe('string');
+    expect(tool.parameters.properties.count?.type).toBe('number');
+    expect(tool.parameters.required).toContain('city');
+    expect(tool.parameters.required).not.toContain('count');
   });
 
   it('is callable with args (sync tool)', async () => {
@@ -111,7 +94,6 @@ describe('defineTool', () => {
       name: 'get_weather',
       description: 'Get weather',
       tool: ({ city }) => ({ temp: 72, city }),
-      __schema: mockSchema,
     });
 
     const result = await tool({ city: 'NYC' });
@@ -126,7 +108,6 @@ describe('defineTool', () => {
         await Promise.resolve();
         return { temp: 72, city };
       },
-      __schema: mockSchema,
     });
 
     const result = await tool({ city: 'NYC' });
@@ -138,7 +119,6 @@ describe('defineTool', () => {
       name: 'get_weather',
       description: 'Get weather',
       tool: ({ city }) => ({ temp: 72, city }),
-      __schema: mockSchema,
     });
 
     const toolCall = createToolCall('get_weather', { city: 'NYC' });
@@ -158,7 +138,6 @@ describe('defineTool', () => {
       tool: () => {
         throw new Error('API failed');
       },
-      __schema: mockSchema,
     });
 
     const toolCall = createToolCall('get_weather', { city: 'NYC' });
@@ -176,7 +155,6 @@ describe('defineTool', () => {
         // eslint-disable-next-line @typescript-eslint/only-throw-error
         throw 'string error';
       },
-      __schema: mockSchema,
     });
 
     const toolCall = createToolCall('get_weather', { city: 'NYC' });
@@ -203,7 +181,6 @@ describe('defineTool', () => {
         city: zodSchema,
       },
       tool: ({ city }) => ({ city }),
-      __schema: mockSchema,
     });
 
     await tool({ city: 'NYC' });
@@ -226,7 +203,6 @@ describe('defineTool', () => {
         city: zodSchema,
       },
       tool: ({ city }) => ({ city }),
-      __schema: mockSchema,
     });
 
     const toolCall = createToolCall('get_weather', { city: '' });
@@ -245,7 +221,6 @@ describe('defineTool', () => {
         city: zodSchema,
       },
       tool: ({ city }) => ({ city }),
-      __schema: mockSchema,
     });
 
     expect(tool.parameters.properties.city?.description).toBe('City from Zod');
@@ -256,7 +231,6 @@ describe('defineTool', () => {
       name: 'get_weather',
       description: 'Get weather',
       tool: ({ city }) => ({ city }),
-      __schema: mockSchema,
     });
 
     expect(tool.fieldDefinitions).toBeUndefined();
@@ -275,7 +249,6 @@ describe('defineTool', () => {
         city: { notZod: true } as unknown as string,
       },
       tool: ({ city }) => ({ city }),
-      __schema: mockSchema,
     });
 
     // Description should not be added since the field definition is invalid
@@ -288,7 +261,6 @@ describe('defineTool', () => {
       description: 'Get weather',
       tool: ({ city }) => ({ city }),
       strict: true,
-      __schema: mockSchema,
     });
 
     expect(tool.strict).toBe(true);
@@ -296,13 +268,6 @@ describe('defineTool', () => {
 });
 
 describe('defineContextTool', () => {
-  const mockSchema = createMockSchema(
-    {
-      query: { type: 'string' },
-    },
-    ['query']
-  );
-
   interface TestDeps {
     db: { search: (q: string) => string[] };
   }
@@ -321,7 +286,6 @@ describe('defineContextTool', () => {
         query: 'The search query',
       },
       tool: (ctx, { query }) => ctx.deps.db.search(query),
-      __schema: mockSchema,
     });
 
     expect(tool.name).toBe('search_db');
@@ -331,14 +295,22 @@ describe('defineContextTool', () => {
     );
   });
 
-  it('throws error when __schema is missing', () => {
-    expect(() =>
-      defineContextTool<{ query: string }, TestDeps>({
+  it('auto-generates schema from type parameter', () => {
+    // This test verifies the transformer is working correctly
+    const tool = defineContextTool<{ query: string; limit?: number }, TestDeps>(
+      {
         name: 'test_tool',
         description: 'Test',
-        tool: () => null,
-      })
-    ).toThrow("Tool 'test_tool' is missing __schema");
+        tool: (ctx, { query }) => ctx.deps.db.search(query),
+      }
+    );
+
+    // Schema should be auto-generated with correct types
+    expect(tool.parameters.type).toBe('object');
+    expect(tool.parameters.properties.query?.type).toBe('string');
+    expect(tool.parameters.properties.limit?.type).toBe('number');
+    expect(tool.parameters.required).toContain('query');
+    expect(tool.parameters.required).not.toContain('limit');
   });
 
   it('is callable with context and args', async () => {
@@ -348,7 +320,6 @@ describe('defineContextTool', () => {
       name: 'search_db',
       description: 'Search',
       tool: (ctx, { query }) => ctx.deps.db.search(query),
-      __schema: mockSchema,
     });
 
     const result = await tool(ctx, { query: 'test' });
@@ -363,7 +334,6 @@ describe('defineContextTool', () => {
       name: 'search_db',
       description: 'Search',
       tool: (ctx, { query }) => ctx.deps.db.search(query),
-      __schema: mockSchema,
     });
 
     const toolCall = createToolCall('search_db', { query: 'hello' });
@@ -382,7 +352,6 @@ describe('defineContextTool', () => {
       tool: () => {
         throw new Error('DB connection failed');
       },
-      __schema: mockSchema,
     });
 
     const toolCall = createToolCall('search_db', { query: 'test' });
@@ -402,7 +371,6 @@ describe('defineContextTool', () => {
         // eslint-disable-next-line @typescript-eslint/only-throw-error
         throw 'context error string';
       },
-      __schema: mockSchema,
     });
 
     const toolCall = createToolCall('search_db', { query: 'test' });
@@ -422,7 +390,6 @@ describe('defineContextTool', () => {
         await Promise.resolve();
         return ctx.deps.db.search(query);
       },
-      __schema: mockSchema,
     });
 
     const result = await tool(ctx, { query: 'async test' });
