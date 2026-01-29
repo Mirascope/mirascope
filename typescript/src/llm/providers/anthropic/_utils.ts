@@ -9,7 +9,11 @@ import type {
   MessageCreateParamsNonStreaming,
 } from '@anthropic-ai/sdk/resources/messages';
 
-import type { AssistantContentPart, Text } from '@/llm/content';
+import type {
+  AssistantContentPart,
+  Text,
+  UserContentPart,
+} from '@/llm/content';
 import {
   APIError,
   AuthenticationError,
@@ -21,7 +25,7 @@ import {
   RateLimitError,
   ServerError,
 } from '@/llm/exceptions';
-import type { AssistantMessage, Message, SystemMessage } from '@/llm/messages';
+import type { AssistantMessage, Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { ParamHandler, type ProviderErrorMap } from '@/llm/providers/base';
 import type { AnthropicModelId } from '@/llm/providers/anthropic/model-id';
@@ -44,6 +48,101 @@ export const ANTHROPIC_ERROR_MAP: ProviderErrorMap = [
   [Anthropic.APIConnectionError, ConnectionError],
 ];
 
+// ============================================================================
+// Content Part Processing
+// ============================================================================
+
+/**
+ * Process content parts from either user or assistant messages.
+ * Converts to Anthropic's ContentBlockParam format.
+ */
+function processContentParts(
+  content: readonly (UserContentPart | AssistantContentPart)[]
+): Anthropic.Messages.ContentBlockParam[] {
+  const blocks: Anthropic.Messages.ContentBlockParam[] = [];
+
+  for (const part of content) {
+    switch (part.type) {
+      case 'text':
+        blocks.push({ type: 'text', text: part.text });
+        break;
+
+      /* v8 ignore start - content types not yet implemented */
+      case 'image':
+        throw new FeatureNotSupportedError(
+          'image content encoding',
+          'anthropic',
+          null,
+          'Image content is not yet implemented'
+        );
+
+      case 'audio':
+        throw new FeatureNotSupportedError(
+          'audio content encoding',
+          'anthropic',
+          null,
+          'Audio content is not yet implemented'
+        );
+
+      case 'document':
+        throw new FeatureNotSupportedError(
+          'document content encoding',
+          'anthropic',
+          null,
+          'Document content is not yet implemented'
+        );
+
+      case 'tool_output':
+        throw new FeatureNotSupportedError(
+          'tool output encoding',
+          'anthropic',
+          null,
+          'Tool outputs are not yet implemented'
+        );
+
+      case 'tool_call':
+        throw new FeatureNotSupportedError(
+          'tool call encoding',
+          'anthropic',
+          null,
+          'Tool calls are not yet implemented'
+        );
+
+      case 'thought':
+        throw new FeatureNotSupportedError(
+          'thought encoding',
+          'anthropic',
+          null,
+          'Thought content is not yet implemented'
+        );
+      /* v8 ignore stop */
+    }
+  }
+
+  return blocks;
+}
+
+// ============================================================================
+// Content Simplification
+// ============================================================================
+
+/**
+ * Simplify user content to string if only a single text part.
+ * Anthropic accepts string for simple user messages.
+ */
+function simplifyUserContent(
+  blocks: Anthropic.Messages.ContentBlockParam[]
+): string | Anthropic.Messages.ContentBlockParam[] {
+  if (blocks.length === 1 && blocks[0] && blocks[0].type === 'text') {
+    return blocks[0].text;
+  }
+  return blocks;
+}
+
+// ============================================================================
+// Message Encoding
+// ============================================================================
+
 /**
  * Encode Mirascope messages to Anthropic API format.
  */
@@ -56,104 +155,22 @@ export function encodeMessages(messages: readonly Message[]): {
 
   for (const message of messages) {
     if (message.role === 'system') {
-      system = encodeSystemMessage(message);
+      system = message.content.text;
     } else if (message.role === 'user') {
+      const blocks = processContentParts(message.content);
       anthropicMessages.push({
         role: 'user',
-        content: encodeUserContent(message.content),
+        content: simplifyUserContent(blocks),
       });
     } else if (message.role === 'assistant') {
       anthropicMessages.push({
         role: 'assistant',
-        content: encodeAssistantContent(message.content),
+        content: processContentParts(message.content),
       });
     }
   }
 
   return { system, messages: anthropicMessages };
-}
-
-function encodeSystemMessage(message: SystemMessage): string {
-  return message.content.text;
-}
-
-function encodeUserContent(
-  content: readonly { type: string; text?: string }[]
-): string | Anthropic.Messages.ContentBlockParam[] {
-  // If single text part, return as string for simplicity
-  const first = content[0];
-  if (content.length === 1 && first && first.type === 'text' && first.text) {
-    return first.text;
-  }
-
-  // Handle array content
-  const blocks: Anthropic.Messages.ContentBlockParam[] = [];
-
-  for (const part of content) {
-    if (part.type === 'text' && part.text) {
-      blocks.push({ type: 'text', text: part.text });
-      /* v8 ignore start - content types not yet implemented */
-    } else if (part.type === 'image') {
-      throw new FeatureNotSupportedError(
-        'image content encoding',
-        'anthropic',
-        null,
-        'Image content in user messages is not yet implemented'
-      );
-    } else if (part.type === 'audio') {
-      throw new FeatureNotSupportedError(
-        'audio content encoding',
-        'anthropic',
-        null,
-        'Audio content in user messages is not yet implemented'
-      );
-    } else if (part.type === 'document') {
-      throw new FeatureNotSupportedError(
-        'document content encoding',
-        'anthropic',
-        null,
-        'Document content in user messages is not yet implemented'
-      );
-    }
-    /* v8 ignore stop */
-  }
-
-  return blocks;
-}
-
-function encodeAssistantContent(
-  content: readonly AssistantContentPart[]
-): Anthropic.Messages.ContentBlockParam[] {
-  return content.map((part) => {
-    if (part.type === 'text') {
-      return { type: 'text' as const, text: part.text };
-      /* v8 ignore start - content types not yet implemented */
-    }
-    if (part.type === 'tool_call') {
-      throw new FeatureNotSupportedError(
-        'tool call encoding',
-        'anthropic',
-        null,
-        'Tool calls in assistant messages are not yet implemented'
-      );
-    }
-    if (part.type === 'thought') {
-      throw new FeatureNotSupportedError(
-        'thought encoding',
-        'anthropic',
-        null,
-        'Thought content in assistant messages is not yet implemented'
-      );
-    }
-    // Unknown content type
-    throw new FeatureNotSupportedError(
-      `unknown content type: ${(part as { type: string }).type}`,
-      'anthropic',
-      null,
-      `Unknown assistant content type: ${(part as { type: string }).type}`
-    );
-    /* v8 ignore stop */
-  });
 }
 
 /**
