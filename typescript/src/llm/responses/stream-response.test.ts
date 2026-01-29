@@ -1,8 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import type { ToolCall } from '@/llm/content/tool-call';
 import { StreamResponse } from '@/llm/responses/stream-response';
 import type { StreamResponseChunk } from '@/llm/responses/chunks';
 import { FinishReason } from '@/llm/responses/finish-reason';
 import type { UserMessage } from '@/llm/messages';
+import { defineTool, Toolkit } from '@/llm/tools';
+import type { ToolParameterSchema } from '@/llm/tools/tool-schema';
 
 /**
  * Helper to create async iterator from array
@@ -479,6 +482,315 @@ describe('StreamResponse', () => {
       expect(response.content[1]?.type).toBe('text');
       expect(response.thought()).toBe('thinking');
       expect(response.text()).toBe('answer');
+    });
+  });
+
+  describe('toolkit and tools', () => {
+    // Helper to create a mock schema
+    function createMockSchema(
+      properties: Record<string, { type: string }>,
+      required: string[] = []
+    ): ToolParameterSchema {
+      return {
+        type: 'object',
+        properties,
+        required,
+        additionalProperties: false,
+      };
+    }
+
+    it('accepts Toolkit directly', () => {
+      const schema = createMockSchema({ value: { type: 'string' } }, ['value']);
+      const tool = defineTool<{ value: string }>({
+        name: 'test_tool',
+        description: 'Test tool',
+        tool: ({ value }) => `result: ${value}`,
+        __schema: schema,
+      });
+      const toolkit = new Toolkit([tool]);
+
+      const chunks: StreamResponseChunk[] = [
+        { type: 'text_start_chunk', contentType: 'text' },
+        { type: 'text_chunk', contentType: 'text', delta: 'Hello!' },
+        { type: 'text_end_chunk', contentType: 'text' },
+      ];
+
+      const iterator = arrayToAsyncIterator(chunks);
+      const response = new StreamResponse({
+        providerId: 'anthropic',
+        modelId: 'anthropic/claude-sonnet-4-20250514',
+        providerModelName: 'claude-sonnet-4-20250514',
+        params: {},
+        inputMessages: [],
+        chunkIterator: iterator,
+        tools: toolkit,
+      });
+
+      // The toolkit should be the same instance
+      expect(response.toolkit).toBe(toolkit);
+    });
+
+    it('executeTools executes tool calls after stream is consumed', async () => {
+      const toolFn = vi.fn(
+        ({ query }: { query: string }) => `searched: ${query}`
+      );
+      const searchTool = defineTool<{ query: string }>({
+        name: 'search',
+        description: 'Search',
+        tool: toolFn,
+        __schema: createMockSchema({ query: { type: 'string' } }, ['query']),
+      });
+
+      const toolCall: ToolCall = {
+        type: 'tool_call',
+        id: 'call-1',
+        name: 'search',
+        args: JSON.stringify({ query: 'test' }),
+      };
+
+      const chunks: StreamResponseChunk[] = [
+        { type: 'text_start_chunk', contentType: 'text' },
+        { type: 'text_chunk', contentType: 'text', delta: 'Let me search.' },
+        { type: 'text_end_chunk', contentType: 'text' },
+        {
+          type: 'tool_call_start_chunk',
+          contentType: 'tool_call',
+          id: toolCall.id,
+          name: toolCall.name,
+        },
+        {
+          type: 'tool_call_chunk',
+          contentType: 'tool_call',
+          id: toolCall.id,
+          delta: toolCall.args,
+        },
+        {
+          type: 'tool_call_end_chunk',
+          contentType: 'tool_call',
+          id: toolCall.id,
+        },
+      ];
+
+      const iterator = arrayToAsyncIterator(chunks);
+      const response = new StreamResponse({
+        providerId: 'anthropic',
+        modelId: 'anthropic/claude-sonnet-4-20250514',
+        providerModelName: 'claude-sonnet-4-20250514',
+        params: {},
+        inputMessages: [],
+        chunkIterator: iterator,
+        tools: [searchTool],
+      });
+
+      // Consume stream first
+      await response.consume();
+
+      // Then execute tools
+      const outputs = await response.executeTools();
+
+      expect(outputs).toHaveLength(1);
+      expect(outputs[0]?.result).toBe('searched: test');
+      expect(outputs[0]?.error).toBeNull();
+      expect(toolFn).toHaveBeenCalledWith({ query: 'test' });
+    });
+
+    it('executeTools handles multiple tool calls', async () => {
+      const addFn = vi.fn(({ a, b }: { a: number; b: number }) => a + b);
+      const multiplyFn = vi.fn(({ a, b }: { a: number; b: number }) => a * b);
+
+      const addTool = defineTool<{ a: number; b: number }>({
+        name: 'add',
+        description: 'Add',
+        tool: addFn,
+        __schema: createMockSchema(
+          { a: { type: 'number' }, b: { type: 'number' } },
+          ['a', 'b']
+        ),
+      });
+
+      const multiplyTool = defineTool<{ a: number; b: number }>({
+        name: 'multiply',
+        description: 'Multiply',
+        tool: multiplyFn,
+        __schema: createMockSchema(
+          { a: { type: 'number' }, b: { type: 'number' } },
+          ['a', 'b']
+        ),
+      });
+
+      const chunks: StreamResponseChunk[] = [
+        {
+          type: 'tool_call_start_chunk',
+          contentType: 'tool_call',
+          id: 'call-1',
+          name: 'add',
+        },
+        {
+          type: 'tool_call_chunk',
+          contentType: 'tool_call',
+          id: 'call-1',
+          delta: JSON.stringify({ a: 5, b: 3 }),
+        },
+        { type: 'tool_call_end_chunk', contentType: 'tool_call', id: 'call-1' },
+        {
+          type: 'tool_call_start_chunk',
+          contentType: 'tool_call',
+          id: 'call-2',
+          name: 'multiply',
+        },
+        {
+          type: 'tool_call_chunk',
+          contentType: 'tool_call',
+          id: 'call-2',
+          delta: JSON.stringify({ a: 4, b: 6 }),
+        },
+        { type: 'tool_call_end_chunk', contentType: 'tool_call', id: 'call-2' },
+      ];
+
+      const iterator = arrayToAsyncIterator(chunks);
+      const response = new StreamResponse({
+        providerId: 'anthropic',
+        modelId: 'anthropic/claude-sonnet-4-20250514',
+        providerModelName: 'claude-sonnet-4-20250514',
+        params: {},
+        inputMessages: [],
+        chunkIterator: iterator,
+        tools: [addTool, multiplyTool],
+      });
+
+      await response.consume();
+      const outputs = await response.executeTools();
+
+      expect(outputs).toHaveLength(2);
+      expect(outputs[0]?.result).toBe(8); // 5 + 3
+      expect(outputs[1]?.result).toBe(24); // 4 * 6
+    });
+
+    it('defaults args to {} when no tool_call_chunk provided', async () => {
+      const noArgsFn = vi.fn(() => 'no args result');
+      const noArgsTool = defineTool({
+        name: 'no_args',
+        description: 'Tool with no args',
+        tool: noArgsFn,
+        __schema: {
+          type: 'object',
+          properties: {},
+          required: [],
+          additionalProperties: false,
+        },
+      });
+
+      const chunks: StreamResponseChunk[] = [
+        {
+          type: 'tool_call_start_chunk',
+          contentType: 'tool_call',
+          id: 'call-1',
+          name: 'no_args',
+        },
+        // No tool_call_chunk - args should default to {}
+        { type: 'tool_call_end_chunk', contentType: 'tool_call', id: 'call-1' },
+      ];
+
+      const iterator = arrayToAsyncIterator(chunks);
+      const response = new StreamResponse({
+        providerId: 'anthropic',
+        modelId: 'anthropic/claude-sonnet-4-20250514',
+        providerModelName: 'claude-sonnet-4-20250514',
+        params: {},
+        inputMessages: [],
+        chunkIterator: iterator,
+        tools: [noArgsTool],
+      });
+
+      await response.consume();
+      expect(response.toolCalls[0]?.args).toBe('{}');
+
+      const outputs = await response.executeTools();
+      expect(outputs).toHaveLength(1);
+      expect(outputs[0]?.result).toBe('no args result');
+    });
+
+    it('throws error for tool_call_end_chunk with unknown id', async () => {
+      const chunks: StreamResponseChunk[] = [
+        {
+          type: 'tool_call_end_chunk',
+          contentType: 'tool_call',
+          id: 'unknown-id',
+        },
+      ];
+
+      const iterator = arrayToAsyncIterator(chunks);
+      const response = new StreamResponse({
+        providerId: 'anthropic',
+        modelId: 'anthropic/claude-sonnet-4-20250514',
+        providerModelName: 'claude-sonnet-4-20250514',
+        params: {},
+        inputMessages: [],
+        chunkIterator: iterator,
+        tools: [],
+      });
+
+      await expect(response.consume()).rejects.toThrow(
+        'Received tool_call_end_chunk for unknown tool call ID: unknown-id'
+      );
+    });
+
+    it('throws error for tool_call_chunk with unknown id', async () => {
+      const chunks: StreamResponseChunk[] = [
+        {
+          type: 'tool_call_chunk',
+          contentType: 'tool_call',
+          id: 'unknown-id',
+          delta: '{}',
+        },
+      ];
+
+      const iterator = arrayToAsyncIterator(chunks);
+      const response = new StreamResponse({
+        providerId: 'anthropic',
+        modelId: 'anthropic/claude-sonnet-4-20250514',
+        providerModelName: 'claude-sonnet-4-20250514',
+        params: {},
+        inputMessages: [],
+        chunkIterator: iterator,
+        tools: [],
+      });
+
+      await expect(response.consume()).rejects.toThrow(
+        'Received tool_call_chunk for unknown tool call ID: unknown-id'
+      );
+    });
+
+    it('throws error for duplicate tool_call_start_chunk id', async () => {
+      const chunks: StreamResponseChunk[] = [
+        {
+          type: 'tool_call_start_chunk',
+          contentType: 'tool_call',
+          id: 'call-1',
+          name: 'test',
+        },
+        {
+          type: 'tool_call_start_chunk',
+          contentType: 'tool_call',
+          id: 'call-1',
+          name: 'test',
+        },
+      ];
+
+      const iterator = arrayToAsyncIterator(chunks);
+      const response = new StreamResponse({
+        providerId: 'anthropic',
+        modelId: 'anthropic/claude-sonnet-4-20250514',
+        providerModelName: 'claude-sonnet-4-20250514',
+        params: {},
+        inputMessages: [],
+        chunkIterator: iterator,
+        tools: [],
+      });
+
+      await expect(response.consume()).rejects.toThrow(
+        'Received tool_call_start_chunk with duplicate id: call-1'
+      );
     });
   });
 });

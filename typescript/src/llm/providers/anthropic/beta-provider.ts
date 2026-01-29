@@ -11,7 +11,7 @@ import type { Context } from '@/llm/context';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { BaseProvider } from '@/llm/providers/base';
-import type { ToolSchema } from '@/llm/tools';
+import type { Tools, ContextTools } from '@/llm/tools';
 import { getIncludeThoughts } from '@/llm/providers/_utils';
 import type { AnthropicModelId } from '@/llm/providers/anthropic/model-id';
 import { modelName } from '@/llm/providers/anthropic/model-id';
@@ -77,8 +77,8 @@ export class AnthropicBetaProvider extends BaseProvider {
   protected async _call(args: {
     modelId: string;
     messages: readonly Message[];
+    tools?: Tools;
     params?: Params;
-    tools?: readonly ToolSchema[];
   }): Promise<Response> {
     const modelId = args.modelId as AnthropicModelId;
     const requestParams = buildRequestParams(
@@ -127,8 +127,8 @@ export class AnthropicBetaProvider extends BaseProvider {
   protected _stream(args: {
     modelId: string;
     messages: readonly Message[];
+    tools?: Tools;
     params?: Params;
-    tools?: readonly ToolSchema[];
   }): Promise<StreamResponse> {
     const modelId = args.modelId as AnthropicModelId;
     const requestParams = buildRequestParams(
@@ -151,6 +151,7 @@ export class AnthropicBetaProvider extends BaseProvider {
         modelId,
         providerModelName: modelName(modelId),
         params: args.params ?? /* v8 ignore next 1 */ {},
+        tools: args.tools,
         inputMessages: args.messages,
         chunkIterator,
       })
@@ -178,7 +179,7 @@ export class AnthropicBetaProvider extends BaseProvider {
     ctx: Context<DepsT>;
     modelId: string;
     messages: readonly Message[];
-    tools?: readonly ToolSchema[];
+    tools?: ContextTools<DepsT>;
     params?: Params;
   }): Promise<ContextResponse<DepsT>> {
     const modelId = args.modelId as AnthropicModelId;
@@ -235,8 +236,8 @@ export class AnthropicBetaProvider extends BaseProvider {
     ctx: Context<DepsT>;
     modelId: string;
     messages: readonly Message[];
+    tools?: ContextTools<DepsT>;
     params?: Params;
-    tools?: readonly ToolSchema[];
   }): Promise<ContextStreamResponse<DepsT>> {
     const modelId = args.modelId as AnthropicModelId;
     const requestParams = buildRequestParams(
@@ -259,6 +260,7 @@ export class AnthropicBetaProvider extends BaseProvider {
         modelId,
         providerModelName: modelName(modelId),
         params: args.params ?? /* v8 ignore next 1 */ {},
+        tools: args.tools,
         inputMessages: args.messages,
         chunkIterator,
       })

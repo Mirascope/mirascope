@@ -5,7 +5,8 @@
  * including schema generation, validation, and execution.
  */
 
-// Schema types
+// Schema types and constants
+export { FORMAT_TOOL_NAME } from '@/llm/tools/tool-schema';
 export type {
   JsonSchemaProperty,
   ToolParameterSchema,
@@ -13,6 +14,7 @@ export type {
 } from '@/llm/tools/tool-schema';
 
 // Tools
+export { TOOL_TYPE, CONTEXT_TOOL_TYPE, isContextTool } from '@/llm/tools/tools';
 export type {
   FieldDefinition,
   ZodLike,
@@ -21,6 +23,11 @@ export type {
   Tool,
   ContextTool,
   AnyTool,
+  AnyContextTool,
+  AnyToolSchema,
+  // Array type aliases (matching Python's Sequence types)
+  Tools,
+  ContextTools,
 } from '@/llm/tools/tools';
 
 // Tool definition
@@ -32,9 +39,16 @@ export {
 export type { ToolArgs, ContextToolArgs } from '@/llm/tools/define-tool';
 
 // Toolkit
+export type {
+  BaseToolkit,
+  AnyTools,
+  AnyContextTools,
+} from '@/llm/tools/toolkit';
 export {
   Toolkit,
   ContextToolkit,
   createToolkit,
   createContextToolkit,
-} from './toolkit';
+  normalizeTools,
+  normalizeContextTools,
+} from '@/llm/tools/toolkit';

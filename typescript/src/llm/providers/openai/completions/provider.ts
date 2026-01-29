@@ -8,7 +8,7 @@ import type { Context } from '@/llm/context';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { BaseProvider } from '@/llm/providers/base';
-import type { ToolSchema } from '@/llm/tools';
+import type { Tools, ContextTools } from '@/llm/tools';
 import { OPENAI_ERROR_MAP } from '@/llm/providers/openai/_utils/errors';
 import type { OpenAIModelId } from '@/llm/providers/openai/model-id';
 import { modelName } from '@/llm/providers/openai/model-id';
@@ -72,7 +72,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
   protected async _call(args: {
     modelId: string;
     messages: readonly Message[];
-    tools?: readonly ToolSchema[];
+    tools?: Tools;
     params?: Params;
   }): Promise<Response> {
     const modelIdTyped = args.modelId as OpenAIModelId;
@@ -97,6 +97,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
       modelId: modelIdTyped,
       providerModelName: modelName(modelIdTyped, 'completions'),
       params: args.params ?? /* v8 ignore next 1 */ {},
+      tools: args.tools,
       inputMessages: args.messages,
       assistantMessage,
       finishReason,
@@ -117,7 +118,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
   protected async _stream(args: {
     modelId: string;
     messages: readonly Message[];
-    tools?: readonly ToolSchema[];
+    tools?: Tools;
     params?: Params;
   }): Promise<StreamResponse> {
     const modelIdTyped = args.modelId as OpenAIModelId;
@@ -141,6 +142,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
       modelId: modelIdTyped,
       providerModelName: modelName(modelIdTyped, 'completions'),
       params: args.params ?? /* v8 ignore next 1 */ {},
+      tools: args.tools,
       inputMessages: args.messages,
       chunkIterator,
     });
@@ -165,7 +167,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
     ctx: Context<DepsT>;
     modelId: string;
     messages: readonly Message[];
-    tools?: readonly ToolSchema[];
+    tools?: ContextTools<DepsT>;
     params?: Params;
   }): Promise<ContextResponse<DepsT>> {
     const modelIdTyped = args.modelId as OpenAIModelId;
@@ -190,6 +192,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
       modelId: modelIdTyped,
       providerModelName: modelName(modelIdTyped, 'completions'),
       params: args.params ?? /* v8 ignore next 1 */ {},
+      tools: args.tools,
       inputMessages: args.messages,
       assistantMessage,
       finishReason,
@@ -216,7 +219,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
     ctx: Context<DepsT>;
     modelId: string;
     messages: readonly Message[];
-    tools?: readonly ToolSchema[];
+    tools?: ContextTools<DepsT>;
     params?: Params;
   }): Promise<ContextStreamResponse<DepsT>> {
     const modelIdTyped = args.modelId as OpenAIModelId;
@@ -240,6 +243,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
       modelId: modelIdTyped,
       providerModelName: modelName(modelIdTyped, 'completions'),
       params: args.params ?? /* v8 ignore next 1 */ {},
+      tools: args.tools,
       inputMessages: args.messages,
       chunkIterator,
     });
