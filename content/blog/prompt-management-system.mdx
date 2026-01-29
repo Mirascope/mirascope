@@ -164,57 +164,44 @@ Successive annotations build up a human-reviewed dataset over time, which is use
 
 Mirascope Cloud also allows you to annotate traces directly within code, allowing labels and reasoning to be submitted as part of a script or pipeline:
 
-```python-snippet-skip
-import os
+```python
+from mirascope import api
 
-from mirascope import ops
-
-client = ops.Client()
+client = api.Mirascope()
 
 client.annotations.create(
-    project_uuid=os.environ["MIRASCOPE_PROJECT_ID"],
-    body=[
-        {
-            "span_uuid": "...",
-            "project_uuid": os.environ["MIRASCOPE_PROJECT_ID"],
-            "function_uuid": "...",
-            "label": "pass",
-            "reasoning": "this is a pass because...",
-            "type": "manual",
-            "data": {},
-            "assigned_to": ["..."],
-            "assignee_email": ["e@mail.com"],
-        }
-    ],
+    otel_trace_id="abc123...",
+    otel_span_id="def456...",
+    label="pass",  # or "fail"
+    reasoning="Response was accurate and helpful",
+    tags=["reviewed", "production"],
+    metadata={"reviewer": "human", "score": 0.95},
 )
 ```
 
-Using `mode="wrap"` in the `@ops.trace` decorator converts the function's return value into a `Traced[R]` object, which makes it easy to log feedback directly in code.
+Using the `.wrapped()` method on a traced function returns an `ops.Trace` object containing both the result and span metadata, which makes it easy to log feedback directly in code.
 
 This allows both developers and downstream users to annotate traces inline as they interact with outputs, without needing to manually look up or manage trace metadata.
 
-```python-snippet-skip
+```python
 from mirascope import llm, ops
 
 ops.configure()
 ops.instrument_llm()
 
-@ops.trace(name="Answer Question", mode="wrap")
+@ops.trace
 @llm.call("google/gemini-2.0-flash")
 def answer_question(question: str) -> str:
     return f"Answer this question: {question}"
 
-trace: ops.Trace[str] = answer_question("What is the capital of France?")
-print(trace.response.text())  # original response
+trace = answer_question.wrapped("What is the capital of France?")
+print(trace.result.content)  # original response
 # > The capital of France is Paris.
 
-annotation = ops.Annotation(
+trace.annotate(
     label="pass",
     reasoning="The answer was correct",
-    data=None,
-    type=None,
 )
-trace.annotate(annotation)
 ```
 
 We generally recommend starting with human-labeled outputs that set a reliable baseline before moving to automated methods like [LLM-as-judge](/blog/llm-as-judge). As those datasets grow, tools like LLM-as-a-judge can handle more of the heavy lifting.
