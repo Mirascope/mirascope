@@ -10,7 +10,6 @@ import type { Context } from '@/llm/context';
 import type { ToolOutput } from '@/llm/content/tool-output';
 import type { Jsonable } from '@/llm/types/jsonable';
 import type { UserContent } from '@/llm/messages';
-import type { ContextResponse } from '@/llm/responses/context-response';
 import {
   BaseStreamResponse,
   type BaseStreamResponseInit,
@@ -114,47 +113,12 @@ export class ContextStreamResponse<DepsT = unknown> extends BaseStreamResponse {
   // ===== Resume Methods =====
 
   /**
-   * Generate a new ContextResponse using this response's messages with additional user content.
+   * Generate a new ContextStreamResponse using this response's messages with additional user content.
    *
    * Uses this response's tools and format type. Also uses this response's provider,
    * model, and params.
    *
    * Note: The stream must be consumed before calling resume() to ensure
-   * the assistant message is complete.
-   *
-   * @param ctx - A Context with the required deps type.
-   * @param content - The new user message content to append to the message history.
-   * @returns A new ContextResponse instance generated from the extended message history.
-   *
-   * @example
-   * ```typescript
-   * const response = await myPrompt.stream(model, ctx);
-   *
-   * // Consume the stream first
-   * for await (const text of response.textStream()) {
-   *   process.stdout.write(text);
-   * }
-   *
-   * // Then resume with a non-streaming response
-   * const followUp = await response.resume(ctx, 'Tell me more about that');
-   * console.log(followUp.text());
-   * ```
-   */
-  async resume(
-    ctx: Context<DepsT>,
-    content: UserContent
-  ): Promise<ContextResponse<DepsT>> {
-    const model = await this.model;
-    return model.contextResume(ctx, this, content);
-  }
-
-  /**
-   * Generate a new ContextStreamResponse using this response's messages with additional user content.
-   *
-   * Uses this response's tools and format type. Also uses this response's provider,
-   * model, and params. Returns a streaming response for incremental consumption.
-   *
-   * Note: The current stream must be consumed before calling resumeStream() to ensure
    * the assistant message is complete.
    *
    * @param ctx - A Context with the required deps type.
@@ -171,13 +135,13 @@ export class ContextStreamResponse<DepsT = unknown> extends BaseStreamResponse {
    * }
    *
    * // Then resume with streaming
-   * const followUp = await response.resumeStream(ctx, 'Tell me more about that');
+   * const followUp = await response.resume(ctx, 'Tell me more about that');
    * for await (const text of followUp.textStream()) {
    *   process.stdout.write(text);
    * }
    * ```
    */
-  async resumeStream(
+  async resume(
     ctx: Context<DepsT>,
     content: UserContent
   ): Promise<ContextStreamResponse<DepsT>> {
