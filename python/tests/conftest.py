@@ -24,6 +24,7 @@ def load_api_keys() -> None:
     os.environ.setdefault("GOOGLE_API_KEY", "dummy-google-key")
     os.environ.setdefault("MIRASCOPE_API_KEY", "dummy-mirascope-key")
     os.environ.setdefault("OPENAI_API_KEY", "dummy-openai-key")
+    os.environ.setdefault("OPENROUTER_API_KEY", "dummy-openrouter-key")
     os.environ.setdefault("TOGETHER_API_KEY", "dummy-together-key")
 
 

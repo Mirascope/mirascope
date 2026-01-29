@@ -28,6 +28,8 @@ SENSITIVE_HEADERS = [
     "x-goog-api-key",  # Google/Gemini API keys
     "anthropic-organization-id",  # Anthropic org identifiers
     "cookie",  # Session cookies
+    "http-referer",  # OpenRouter optional header
+    "x-title",  # OpenRouter optional header
 ]
 
 

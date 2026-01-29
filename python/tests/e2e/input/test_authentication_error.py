@@ -22,6 +22,9 @@ def register_providers_with_invalid_keys() -> Generator[None, None, None]:
     anthropic_provider = llm.register_provider("anthropic", api_key="invalid-key-12345")
     llm.register_provider("openai", api_key="invalid-key-12345")
     llm.register_provider("google", api_key="invalid-key-12345")
+    llm.register_provider(
+        "openrouter", scope="openrouter/", api_key="invalid-key-12345"
+    )
 
     assert isinstance(anthropic_provider, llm.providers.AnthropicProvider)
     beta_provider = anthropic_provider._beta_provider  # pyright: ignore[reportPrivateUsage]
