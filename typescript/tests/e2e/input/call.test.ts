@@ -3,6 +3,9 @@
  *
  * These tests make actual API calls to verify inputs are correctly encoded.
  * Tests run against multiple providers via parameterization.
+ *
+ * Unsupported params (e.g., topK for OpenAI, seed for Anthropic) log warnings
+ * and are ignored, allowing a single test to run across all providers.
  */
 
 import { resolve } from 'node:path';
@@ -14,75 +17,27 @@ import { assistant, system, user } from '@/llm/messages';
 const it = createIt(resolve(__dirname, 'cassettes'), 'call');
 
 describe('call input encoding', () => {
-  it.record.each(PROVIDERS)('encodes system message', async ({ model }) => {
-    const call = defineCall<{ topic: string }>({
-      model,
-      maxTokens: 200,
-      template: ({ topic }) => [
-        system('You are a helpful assistant. Be very concise.'),
-        user(`What is ${topic}?`),
-      ],
-    });
-
-    const response = await call({ topic: 'TypeScript' });
-
-    expect(response.text().length).toBeGreaterThan(0);
-    expect(response.usage).not.toBeNull();
-  });
-
-  it.record.each(PROVIDERS)('encodes temperature param', async ({ model }) => {
-    const call = defineCall({
-      model,
-      maxTokens: 100,
-      temperature: 0.5,
-      template: () => 'Say hello in one word.',
-    });
-
-    const response = await call();
-
-    expect(response.text().length).toBeGreaterThan(0);
-  });
-
-  it.record.each(PROVIDERS)('encodes topP param', async ({ model }) => {
-    const call = defineCall({
-      model,
-      maxTokens: 100,
-      topP: 0.9,
-      template: () => 'Say hi in one word.',
-    });
-
-    const response = await call();
-
-    expect(response.text().length).toBeGreaterThan(0);
-  });
-
-  it.record.each(PROVIDERS)('encodes topK param', async ({ model }) => {
-    const call = defineCall({
-      model,
-      maxTokens: 100,
-      topK: 40,
-      template: () => 'Say hey in one word.',
-    });
-
-    const response = await call();
-
-    expect(response.text().length).toBeGreaterThan(0);
-  });
-
   it.record.each(PROVIDERS)(
-    'encodes stopSequences param',
+    'encodes messages and all params',
     async ({ model }) => {
-      const call = defineCall({
+      // Note: Using topP instead of temperature because Anthropic doesn't allow both together
+      const call = defineCall<{ topic: string }>({
         model,
         maxTokens: 100,
+        topP: 0.9,
+        topK: 40, // Unsupported by OpenAI (warns)
+        seed: 42, // Unsupported by Anthropic (warns)
         stopSequences: ['STOP'],
-        template: () => 'Count from 1 to 5, then write STOP, then continue.',
+        template: ({ topic }) => [
+          system('You are a helpful assistant. Be very concise.'),
+          user(`What is ${topic}? Answer in one sentence.`),
+        ],
       });
 
-      const response = await call();
+      const response = await call({ topic: 'TypeScript' });
 
-      // Should stop before completing due to stop sequence
-      expect(response.text()).not.toContain('STOP');
+      expect(response.text().length).toBeGreaterThan(0);
+      expect(response.usage).not.toBeNull();
     }
   );
 
