@@ -10,6 +10,7 @@ import {
 } from '@/llm/exceptions';
 import type { BaseProvider } from '@/llm/providers/base';
 import { AnthropicProvider } from '@/llm/providers/anthropic';
+import { GoogleProvider } from '@/llm/providers/google';
 import type { ProviderId } from '@/llm/providers/provider-id';
 
 /**
@@ -42,9 +43,9 @@ const DEFAULT_AUTO_REGISTER_SCOPES: Record<string, ProviderDefault[]> = {
   'anthropic/': [
     { providerId: 'anthropic', apiKeyEnvVar: 'ANTHROPIC_API_KEY' },
   ],
+  'google/': [{ providerId: 'google', apiKeyEnvVar: 'GOOGLE_API_KEY' }],
   // TODO: Add other providers as they're implemented
   // 'openai/': [{ providerId: 'openai', apiKeyEnvVar: 'OPENAI_API_KEY' }],
-  // 'google/': [{ providerId: 'google', apiKeyEnvVar: 'GOOGLE_API_KEY' }],
 };
 
 /**
@@ -85,9 +86,14 @@ function getProviderSingleton(
         baseURL: options?.baseURL,
       });
       break;
+    case 'google':
+      provider = new GoogleProvider({
+        apiKey: options?.apiKey,
+        baseURL: options?.baseURL,
+      });
+      break;
     // TODO: Add other providers as they're implemented
     // case 'openai':
-    // case 'google':
     default:
       throw new Error(`Unknown provider: '${providerId}'`);
   }

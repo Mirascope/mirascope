@@ -17,8 +17,8 @@ import {
 describe('provider registry', () => {
   beforeEach(() => {
     resetProviderRegistry();
-    // Set up default API key for tests
     vi.stubEnv('ANTHROPIC_API_KEY', 'test-key');
+    vi.stubEnv('GOOGLE_API_KEY', 'test-google-key');
   });
 
   describe('registerProvider', () => {
@@ -88,6 +88,19 @@ describe('provider registry', () => {
       expect(() => registerProvider('unknown' as 'anthropic')).toThrow(
         "Unknown provider: 'unknown'"
       );
+    });
+
+    it('registers google provider by ID', () => {
+      const provider = registerProvider('google');
+      expect(provider.id).toBe('google');
+    });
+
+    it('registers google provider by ID with options', () => {
+      const provider = registerProvider('google', {
+        apiKey: 'custom-key',
+        baseURL: 'https://custom.google.api.com',
+      });
+      expect(provider.id).toBe('google');
     });
   });
 
