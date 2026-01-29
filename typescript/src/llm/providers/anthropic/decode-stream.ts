@@ -18,10 +18,8 @@ import {
   finishReasonChunk,
   usageDeltaChunk,
   rawStreamEventChunk,
-  rawMessageChunk,
 } from '@/llm/responses/chunks';
 import { FinishReason } from '@/llm/responses/finish-reason';
-import type { Jsonable } from '@/llm/types/jsonable';
 
 /**
  * State tracking for stream decoding.
@@ -64,8 +62,10 @@ export function decodeStreamEvent(
 
   switch (event.type) {
     case 'message_start':
-      // Emit raw message chunk with initial message data
-      chunks.push(rawMessageChunk(event.message as unknown as Jsonable));
+      // Note: We don't emit rawMessageChunk here because event.message contains
+      // fields like 'model' and 'id' that aren't valid in resume requests.
+      // For streaming, we let rawMessage remain null - the encodeMessages function
+      // will encode from content parts instead.
       // Emit initial usage if available
       if (event.message.usage) {
         chunks.push(

@@ -255,13 +255,20 @@ function simplifyContent(
 
 /**
  * Encode Mirascope messages to Anthropic API format.
+ *
+ * @param messages - The messages to encode
+ * @param modelId - The model ID for the request (used to check if raw message can be reused)
  */
-export function encodeMessages(messages: readonly Message[]): {
+export function encodeMessages(
+  messages: readonly Message[],
+  modelId: AnthropicModelId
+): {
   system: string | undefined;
   messages: MessageCreateParamsNonStreaming['messages'];
 } {
   let system: string | undefined;
   const anthropicMessages: MessageCreateParamsNonStreaming['messages'] = [];
+  const expectedProviderModelName = modelName(modelId);
 
   for (const message of messages) {
     if (message.role === 'system') {
@@ -273,11 +280,28 @@ export function encodeMessages(messages: readonly Message[]): {
         content: simplifyContent(blocks),
       });
     } else if (message.role === 'assistant') {
-      const blocks = processContentParts(message.content);
-      anthropicMessages.push({
-        role: 'assistant',
-        content: simplifyContent(blocks),
-      });
+      // Check if we can reuse the raw message (from same provider/model)
+      if (
+        message.providerId === 'anthropic' &&
+        message.modelId === modelId &&
+        message.providerModelName === expectedProviderModelName &&
+        message.rawMessage &&
+        typeof message.rawMessage === 'object' &&
+        'role' in message.rawMessage &&
+        'content' in message.rawMessage
+      ) {
+        // Reuse the serialized message directly
+        anthropicMessages.push(
+          message.rawMessage as unknown as Anthropic.Messages.MessageParam
+        );
+      } else {
+        // Otherwise, encode from content parts
+        const blocks = processContentParts(message.content);
+        anthropicMessages.push({
+          role: 'assistant',
+          content: simplifyContent(blocks),
+        });
+      }
     }
   }
 
@@ -334,7 +358,10 @@ export function buildRequestParams(
   tools?: readonly ToolSchema[],
   params: Params = {}
 ): MessageCreateParamsNonStreaming {
-  const { system, messages: anthropicMessages } = encodeMessages(messages);
+  const { system, messages: anthropicMessages } = encodeMessages(
+    messages,
+    modelId
+  );
 
   return ParamHandler.with(params, 'anthropic', modelId, (p) => {
     const maxTokens = p.getOrDefault('maxTokens', DEFAULT_MAX_TOKENS);
@@ -404,6 +431,26 @@ export function buildRequestParams(
 }
 
 /**
+ * Serialize content blocks for storage in rawMessage.
+ *
+ * This mirrors Python's `part.model_dump()` pattern for round-tripping.
+ */
+function serializeContentBlocks(
+  content: ContentBlock[]
+): Record<string, unknown>[] {
+  return content.map((block) => {
+    // Copy all non-undefined properties from the block
+    const serialized: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(block)) {
+      if (value !== undefined) {
+        serialized[key] = value;
+      }
+    }
+    return serialized;
+  });
+}
+
+/**
  * Decode Anthropic response to Mirascope types.
  *
  * @param response - The raw Anthropic API response
@@ -421,14 +468,22 @@ export function decodeResponse(
 } {
   const content = decodeContent(response.content, includeThoughts);
 
+  // Store serialized message for round-tripping in resume operations.
+  // This format matches what Anthropic expects as MessageParam.
+  const serializedRawMessage = {
+    role: response.role,
+    content: serializeContentBlocks(response.content),
+  };
+
   const assistantMessage: AssistantMessage = {
     role: 'assistant',
     content,
     name: null,
     providerId: 'anthropic',
     modelId,
-    providerModelName: response.model,
-    rawMessage: response as unknown as AssistantMessage['rawMessage'],
+    providerModelName: modelName(modelId),
+    rawMessage:
+      serializedRawMessage as unknown as AssistantMessage['rawMessage'],
   };
 
   const finishReason = decodeStopReason(response.stop_reason);
