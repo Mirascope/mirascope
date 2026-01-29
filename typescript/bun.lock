@@ -4,10 +4,8 @@
   "workspaces": {
     "": {
       "name": "mirascope-typescript",
-      "dependencies": {
-        "yaml": "^2.7.0",
-      },
       "devDependencies": {
+        "@anthropic-ai/sdk": "^0.71.2",
         "@eslint/js": "^9.37.0",
         "@pollyjs/adapter-fetch": "^6.0.7",
         "@pollyjs/core": "^6.0.6",
@@ -15,6 +13,7 @@
         "@types/bun": "latest",
         "@typescript-eslint/eslint-plugin": "^8.35.0",
         "@typescript-eslint/parser": "^8.35.0",
+        "@vitest/coverage-v8": "^3.0.0",
         "dotenv": "^17.2.3",
         "eslint": "^9.29.0",
         "eslint-config-prettier": "^10.1.5",
@@ -22,23 +21,8 @@
         "jiti": "^2.4.2",
         "prettier": "^3.6.0",
         "typescript": "^5",
-      },
-    },
-    "examples": {
-      "name": "mirascope-examples",
-      "version": "0.0.1",
-    },
-    "mirascope": {
-      "name": "mirascope",
-      "version": "2.0.0-alpha.0",
-      "devDependencies": {
-        "@anthropic-ai/sdk": "^0.71.2",
-        "@pollyjs/adapter-fetch": "^6.0.7",
-        "@pollyjs/core": "^6.0.6",
-        "@pollyjs/persister": "^6.0.6",
-        "@vitest/coverage-v8": "^3.0.0",
-        "dotenv": "^17.2.3",
         "vitest": "^3.0.0",
+        "yaml": "^2.7.0",
       },
       "peerDependencies": {
         "@anthropic-ai/sdk": ">=0.71.0",
@@ -46,6 +30,13 @@
       "optionalPeers": [
         "@anthropic-ai/sdk",
       ],
+    },
+    "examples": {
+      "name": "mirascope-examples",
+      "version": "0.0.1",
+      "dependencies": {
+        "mirascope": "file:..",
+      },
     },
   },
   "packages": {
@@ -497,7 +488,7 @@
 
     "minipass": ["minipass@7.1.2", "", {}, "sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw=="],
 
-    "mirascope": ["mirascope@workspace:mirascope"],
+    "mirascope": ["mirascope-typescript@root:", {}],
 
     "mirascope-examples": ["mirascope-examples@workspace:examples"],
 
