@@ -87,6 +87,14 @@ export type { Params, ThinkingConfig, ThinkingLevel } from '@/llm/models';
 export { Model, model } from '@/llm/models';
 
 export {
+  definePrompt,
+  type MessageTemplate,
+  type Prompt,
+  type PromptArgs,
+  type TemplateFunc,
+} from '@/llm/prompts';
+
+export {
   getProviderForModel,
   registerProvider,
   resetProviderRegistry,
