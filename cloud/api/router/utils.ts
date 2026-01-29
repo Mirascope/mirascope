@@ -300,7 +300,8 @@ export function handleRouterRequestFailure(
  * @param reservationId - Reservation ID for fund settlement
  * @param request - Router request identifiers
  * @param usage - Token usage data
- * @param costCenticents - Calculated cost in centicents
+ * @param costCenticents - Token cost in centicents
+ * @param toolCostCenticents - Tool cost in centicents (optional)
  * @returns Effect that completes when message is enqueued
  */
 export function enqueueRouterMetering(
@@ -309,6 +310,7 @@ export function enqueueRouterMetering(
   request: RouterRequestIdentifiers,
   usage: TokenUsage,
   costCenticents: number,
+  toolCostCenticents?: number,
 ): Effect.Effect<void, Error, RouterMeteringQueueService> {
   return Effect.gen(function* () {
     const queue = yield* RouterMeteringQueueService;
@@ -319,6 +321,7 @@ export function enqueueRouterMetering(
       request,
       usage,
       costCenticents,
+      toolCostCenticents,
       timestamp: Date.now(),
     };
 

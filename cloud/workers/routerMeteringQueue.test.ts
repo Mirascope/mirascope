@@ -721,6 +721,69 @@ describe("routerMeteringQueue", () => {
       expect(message.retryCalled).toBe(true);
     });
 
+    it("processes message with toolCostCenticents as bigint", async () => {
+      // Test with toolCostCenticents as bigint to cover that branch
+      const meteringMessage = createTestMessage({
+        usage: {
+          inputTokens: 100,
+          outputTokens: 50,
+          toolUsage: [{ toolType: "openai_web_search", callCount: 2 }],
+        },
+        costCenticents: 150,
+        toolCostCenticents: 200,
+      });
+
+      // Override toolCostCenticents to be a bigint
+      (
+        meteringMessage as unknown as { toolCostCenticents: bigint }
+      ).toolCostCenticents = 200n;
+
+      const message = createMockMessage(meteringMessage);
+      const batch = createMockBatch([message]);
+
+      // Include HYPERDRIVE to pass settings validation and reach the bigint branch
+      const env = {
+        ...createMockEnv(),
+        HYPERDRIVE: {
+          connectionString: TEST_DATABASE_URL,
+        },
+      } as unknown as WorkerEnv;
+
+      await routerMeteringQueue.queue(batch, env);
+
+      // Will retry due to missing data in worker's separate DB connection
+      expect(message.retryCalled).toBe(true);
+    });
+
+    it("processes message with toolCostCenticents as number", async () => {
+      // Test with toolCostCenticents as number to cover the BigInt conversion branch
+      const meteringMessage = createTestMessage({
+        usage: {
+          inputTokens: 100,
+          outputTokens: 50,
+          toolUsage: [{ toolType: "openai_web_search", callCount: 2 }],
+        },
+        costCenticents: 150,
+        toolCostCenticents: 200,
+      });
+
+      const message = createMockMessage(meteringMessage);
+      const batch = createMockBatch([message]);
+
+      // Include HYPERDRIVE to pass settings validation
+      const env = {
+        ...createMockEnv(),
+        HYPERDRIVE: {
+          connectionString: TEST_DATABASE_URL,
+        },
+      } as unknown as WorkerEnv;
+
+      await routerMeteringQueue.queue(batch, env);
+
+      // Will retry due to missing data in worker's separate DB connection
+      expect(message.retryCalled).toBe(true);
+    });
+
     it("processes message with null token fields", async () => {
       // Test with minimal token fields to cover null branches
       const meteringMessage = createTestMessage({
