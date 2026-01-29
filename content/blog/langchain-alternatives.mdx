@@ -24,7 +24,7 @@ We'll also show you Mirascope, our lightweight toolkit that makes building AI ap
 
 ## 1. Mirascope Cloud: Refine LLM Outputs Through Structured Experimentation
 
-![Mirascope Cloud Screenshot](/assets/blog/langchain-alternatives/lilypad-screenshot.webp)
+![Mirascope Cloud Screenshot](/assets/blog/_lilypad/lilypad-screenshot.webp)
 
 [Mirascope Cloud](https://cloud.mirascope.com/) is an open source prompt engineering framework made for software developers. It captures every LLM call as a snapshot of your code in action, **committed and versioned automatically so you always know what changed, when, and why**.
 
@@ -66,11 +66,11 @@ This turns your prompt experiments into something closer to software engineering
 
 As an example of this, below we show a code sample that's similarly wrapped in `@ops.version` after it first appears in Mirascope Cloud playground as V6:
 
-![Answer Question v6 Trace](/assets/blog/_shared/lilypad-answer-question-v6-trace.webp)
+![Answer Question v6 Trace](/assets/blog/_lilypad/lilypad-answer-question-v6-trace.webp)
 
 As soon as we change any part of the function, e.g., edit the model type to be `gpt-4o-mini`, Mirascope Cloud automatically increments the version to V7:
 
-![Answer Question v7 Trace](/assets/blog/_shared/lilypad-answer-question-v7-trace.webp)
+![Answer Question v7 Trace](/assets/blog/_lilypad/lilypad-answer-question-v7-trace.webp)
 
 If Mirascope Cloud detects that nothing has changed when you run the code, or a change is identical to a previous version, the version won't be updated.
 
@@ -78,7 +78,7 @@ Mirascope Cloud versions functions using their function closure, which means any
 
 Mirascope Cloud uses the [OpenTelemetry Gen AI spec](https://opentelemetry.io/) to trace every call made by a generation.
 
-![Mirascope Cloud OpenTelemetry GenAI Data](/assets/blog/_shared/lilypad-otel-genai-data.webp)
+![Mirascope Cloud OpenTelemetry GenAI Data](/assets/blog/_lilypad/lilypad-otel-genai-data.webp)
 
 Each generation's output can be annotated with pass/fail labels and reasoning, enabling systematic evaluation of whether prompt changes improve output quality (as described later).
 
@@ -96,7 +96,7 @@ Engineers still control what runs in production, **but prompts can be hot swappe
 
 Mirascope Cloud's markdown prompt templates support variables backed by type-safe function signatures, which hold prompt arguments and values:
 
-![Mirascope Cloud Playground](/assets/blog/_shared/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/_lilypad/lilypad-playground-v4.webp)
 
 ### Evaluating LLM Outputs with Easy Annotations
 
@@ -110,7 +110,7 @@ The goal is to ultimately ship useful, reliable features, not perfect ones. Pass
 
 Mirascope Cloud allows non-technical teams to easily annotate prompts with pass/fail labels by simply selecting an output in the playground:
 
-![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v5.webp)
 
 A simple pass/fail label, backed by a short explanation, is one of the best ways to start automating your evaluations. By consistently tagging outputs as pass/fail and explaining why, you can train an LLM judge to take over that job. Instead of spending all your time labeling, you shift the work to verifying, which is faster and more efficient.
 

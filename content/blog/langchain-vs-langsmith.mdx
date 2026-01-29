@@ -280,23 +280,23 @@ When you use the `@ops.version` decorator, Mirascope Cloud versions all changes 
 
 It also allows you to compare different versions by clicking the "Compare" button in the Mirascope Cloud UI:
 
-![Click Compare](/assets/blog/langchain-vs-langsmith/lilypad-click-compare.webp)
+![Click Compare](/assets/blog/_lilypad/lilypad-click-compare-v4.webp)
 
 This toggles a second dropdown menu, where you can select another version and view the differences side-by-side.
 
-![Compare Versions](/assets/blog/langchain-vs-langsmith/lilypad-compare-versions.webp)
+![Compare Versions](/assets/blog/_lilypad/lilypad-compare-versions-v4.webp)
 
 Under the hood, Mirascope Cloud uses the [OpenTelemetry GenAI spec](https://opentelemetry.io/) to structure each trace to quantify what was asked, how it was asked, and what came back.
 
 It also shows all the metadata: inputs, outputs, details of AI models, token usage, latency, and cost, making it easy to debug, monitor, and optimize AI workflows.
 
-![GenAI Trace Data](/assets/blog/langchain-vs-langsmith/lilypad-genai-trace-data.webp)
+![GenAI Trace Data](/assets/blog/_lilypad/lilypad-genai-trace-data-v3.webp)
 
 ### Prompt Management and Collaboration
 
 Mirascope Cloud's UI isn't just for viewing version history; it's also a live prompt editor and collaboration space. Engineers and non-technical teammates, like product managers, domain experts, or content leads, can create, edit, and test prompt changes in the playground:
 
-![Playground](/assets/blog/langchain-vs-langsmith/lilypad-playground.webp)
+![Playground](/assets/blog/_lilypad/lilypad-playground-v6.webp)
 
 This includes leaving comments, suggested edits, or reviews of outputs without needing to touch the codebase or wait on an engineer to redeploy every change.
 
@@ -312,7 +312,7 @@ Also, changes made in the playground are sandboxed by default and won't affect p
 
 Inside the playground, users can edit markdown-supported prompt templates with type-safe variables and edit prompt metadata. Mirascope Cloud automatically generates type-safe function signatures, so the inputs you test always match the function's schema, reducing the risk of injection bugs or mismatched formats.
 
-![Playground Template Variables](/assets/blog/langchain-vs-langsmith/lilypad-playground-template-vars.webp)
+![Playground Template Variables](/assets/blog/_lilypad/lilypad-playground-template-vars.webp)
 
 Because prompts are part of the function logic, what you see in the playground is exactly what runs in dev, staging, or production. There's no risk of a config file drifting out of sync or some prompt variant behaving differently in production. 
 
@@ -326,11 +326,11 @@ Unlike LangSmith, which requires predefined datasets to use its full functionali
 
 To begin, simply choose the trace you want to evaluate:
 
-![Assign Trace](/assets/blog/langchain-vs-langsmith/lilypad-assign-trace.webp)
+![Assign Trace](/assets/blog/_lilypad/lilypad-assign-trace.webp)
 
 And mark it with "Pass" or "Fail":
 
-![Annotation Queue](/assets/blog/langchain-vs-langsmith/lilypad-annotation-queue.webp)
+![Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v6.webp)
 
 Reviewers need just answer the practical question: "Is this good enough to deploy?" They can also add a quick explanation to explain why something failed, like "missed a key detail" or "hallucinated fact." These quick notes help build a picture of what good and bad look like over time.
 

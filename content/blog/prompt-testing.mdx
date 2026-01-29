@@ -58,11 +58,11 @@ Mirascope Cloud displays all versions and traces in its UI (described below), wh
 
 For example, all versioned iterations appear in the UI:
 
-![Mirascope Cloud Traces](/assets/blog/_shared/lilypad-answer-question-trace.webp)
+![Mirascope Cloud Traces](/assets/blog/_lilypad/lilypad-answer-question-trace.webp)
 
 Mirascope Cloud also provides a playground that's a no-code [prompt editor](/blog/prompt-editor) where domain experts can interact with prompt templates using Markdown-based templates that generate type-safe function signatures for input variables based on the underlying Python function.
 
-![Mirascope Cloud Playground](/assets/blog/prompt-testing/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/_lilypad/lilypad-playground-v2.webp)
 
 ### 2. Implement Trace-First Observability
 
@@ -76,7 +76,7 @@ Adding the `@ops.version` decorator to a function (that we described earlier) al
 
 This provides the full story into the code that was run, what inputs it used, and what output it returned.
 
-![Mirascope Cloud OpenTelemetry Data](/assets/blog/prompt-testing/lilypad-otel-data.webp)
+![Mirascope Cloud OpenTelemetry Data](/assets/blog/_lilypad/lilypad-otel-data.webp)
 
 ### 3. A/B Test Prompts
 
@@ -84,11 +84,11 @@ A/B testing involves setting up test cases to compare the results of different v
 
 For instance, testing platforms like Mirascope Cloud offer functionality for comparing the outputs of different versions of prompts. Mirascope Cloud's UI lets you easily compare different spans by clicking "Compare" to view the underlying code and outputs side-by-side:
 
-![Mirascope Cloud Click Compare](/assets/blog/prompt-testing/lilypad-click-compare.webp)
+![Mirascope Cloud Click Compare](/assets/blog/_lilypad/lilypad-click-compare-v2.webp)
 
 Clicking displays a comparison view to see the differences in spans side-by-side:
 
-![Mirascope Cloud Compare Traces](/assets/blog/prompt-testing/lilypad-compare-traces.webp)
+![Mirascope Cloud Compare Traces](/assets/blog/_lilypad/lilypad-compare-traces-v2.webp)
 
 Downstream, developers can also set up test cases for A/B testing different versions using the `.version(n)` method:
 
@@ -122,7 +122,7 @@ In Mirascope Cloud, teams can use the UI to assign outputs to specific reviewers
 
 (To reduce bias, existing annotations remain hidden until the review is complete.)
 
-![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue-v2.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v2.webp)
 
 This manual labeling process helps build a high-quality, human-annotated dataset with metrics that strengthen [LLM observability](/blog/llm-observability).
 
@@ -164,7 +164,7 @@ This approach is typically faster and helps maintain consistency and quality. We
 
 ### 1. Mirascope Cloud
 
-![Mirascope Cloud Website](/assets/blog/_shared/lilypad-landing-page.webp)
+![Mirascope Cloud Website](/assets/blog/_lilypad/lilypad-landing-page.webp)
 
 [Mirascope Cloud](/docs/learn/ops) is a prompt engineering platform built for software developers that treats prompt engineering as an optimization problem rather than trial-and-error.
 

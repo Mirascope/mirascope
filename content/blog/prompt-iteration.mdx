@@ -297,7 +297,7 @@ print(response.text())
 
 By decorating the function with `@ops.version`, you also see it inside the Mirascope Cloud UI. Every versioned function produces trace data, and in the next section, we'll dig into how that tracing gives you full visibility into each run.
 
-![Mirascope Cloud Traces](/assets/blog/prompt-iteration/lilypad-traces.webp)
+![Mirascope Cloud Traces](/assets/blog/_lilypad/lilypad-traces.webp)
 
 Automatic versioning saves time and ensures every change is recorded, so you don’t forget anything and can always see what changed and why. You can also revisit or re-run any previous version directly in code. 
 
@@ -311,7 +311,7 @@ In Mirascope Cloud, using `@ops.version` as we describe above also automatically
 
 Each log entry becomes a "trace" that's viewable in Mirascope Cloud's dashboard, so you can explore what happened without manually instrumenting code. For example, you can inspect a past trace to see how a model responded under different temperature settings, or compare multiple traces from the same prompt version to spot performance drift.
 
-![Mirascope Cloud OpenTelemetry Data](/assets/blog/prompt-iteration/lilypad-otel-data.webp)
+![Mirascope Cloud OpenTelemetry Data](/assets/blog/_lilypad/lilypad-otel-data-v2.webp)
 
 Every time this function runs, Lilypad captures a complete record, creating a searchable timeline of runs, parameters, and results. These logs are built on the [OpenTelemetry JSON spec](https://opentelemetry.io/), so they include nested spans, meaning you can trace how one function triggered another and measure how each part performed. 
 
@@ -329,7 +329,7 @@ You structure this process around three principles:
 
 For instance, Mirascope Cloud provides a no-code playground where teams can safely experiment, edit, and test prompts in Markdown-based [prompt editor](/blog/prompt-editor).
 
-![Mirascope Cloud Playground](/assets/blog/prompt-iteration/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/_lilypad/lilypad-playground-v3.webp)
 
 Every edit is versioned automatically, so developers and non-developers can collaborate without overwriting each other’s work. 
 
@@ -355,7 +355,7 @@ To make this process meaningful:
 
 For example, Mirascope Cloud lets you attach evaluations directly to prompt traces. Each trace captures the input, output, and environment, while users can mark whether the result "passed" or "failed" according to your team's standards.
 
-![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue-v2.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v2.webp)
 
 Every annotation in Mirascope Cloud is tied to a specific trace, so you get a full context of how and when a prompt was run, including its inputs, outputs, and environment. You can also assign annotations to teammates, so it's easy to review and discuss results collaboratively.
 

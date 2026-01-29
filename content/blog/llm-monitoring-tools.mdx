@@ -46,7 +46,7 @@ To help you monitor and improve large language models with the clarity needed, b
 
 ### 1. Mirascope Cloud: Captures the Why Behind LLM Outputs
 
-![Mirascope Cloud Landing Page](/assets/blog/_shared/lilypad-landing-page.webp)
+![Mirascope Cloud Landing Page](/assets/blog/_lilypad/lilypad-landing-page.webp)
 
 [Mirascope Cloud](/docs/learn/ops) is an open source framework built for tracking, debugging, and optimizing [LLM applications](/blog/llm-applications), letting developers run their LLM workflows with the same insight, traceability, and reliability they're used to when working with traditional software.
 
@@ -75,7 +75,7 @@ print(response.text())
 # > The capital of France is Paris.
 ```
 
-![Mirascope Cloud LLM Span](/assets/blog/llm-monitoring-tools/lilypad-llm-span.webp)
+![Mirascope Cloud LLM Span](/assets/blog/_lilypad/lilypad-llm-span.webp)
 
 But system-level metrics only tell part of the story. To truly understand why an LLM produced a certain response (or behaved unexpectedly) you need to trace what happened inside the call itself, not just around it.
 
@@ -111,15 +111,15 @@ print(answer.text())
 
 This makes LLM interactions reproducible, debuggable, and easy to compare, so you can quickly identify the root cause of any unexpected behavior. You can roll back to a previous version, run A/B tests, and track performance over time without losing the thread of what changed or why. Mirascope Cloud avoids creating duplicate versions if nothing inside the function has changed, so your version history stays clean.
 
-![Mirascope Cloud Trace](/assets/blog/_shared/lilypad-trace.webp)
+![Mirascope Cloud Trace](/assets/blog/_lilypad/lilypad-trace.webp)
 
 Inside the Mirascope Cloud UI, you can view side-by-side comparisons of spans and function versions and can click the "Compare" button to see exactly what was different between two runs:
 
-![Mirascope Cloud Click Compare](/assets/blog/_shared/lilypad-click-compare.webp)
+![Mirascope Cloud Click Compare](/assets/blog/_lilypad/lilypad-click-compare-v3.webp)
 
 You can select another version and view the differences side-by-side:
 
-![Mirascope Cloud Compare Versions](/assets/blog/_shared/lilypad-compare-versions-v2.webp)
+![Mirascope Cloud Compare Versions](/assets/blog/_lilypad/lilypad-compare-versions-v2.webp)
 
 Alongside each call, the UI also shows detailed metadata, like latency, cost, and inputs,  giving you full visibility into what happened and what influenced the result.
 
@@ -141,7 +141,7 @@ The playground allows users to write prompt templates in markdown using typed va
 
 Each time the function runs, users can monitor not only the response but also metadata like the response time, the full Python code that wrapped the LLM call, the function signature and return types, and the exact message payload that was sent to the model.
 
-![Mirascope Cloud Playground Trace](/assets/blog/llm-monitoring-tools/lilypad-playground-trace.webp)
+![Mirascope Cloud Playground Trace](/assets/blog/_lilypad/lilypad-playground-trace.webp)
 
 This lets you see if a change in the LLM's response was caused by a code update, a prompt adjustment, or a different set of input arguments. Outputs aren't just "prompt in, text out"; they're part of a full audit trail that ties each result back to the logic that produced it.
 
@@ -157,13 +157,13 @@ Mirascope Cloud's framework simplifies the evaluation process by using a pass/fa
 
 In granular scoring, for instance, evaluation metrics might include rating scale from 1 to 5. But objectively rating the difference between a 3 and 4 for any given output could be challenging. A simple binary system of "pass" or "fail" can make it easier for teams to align on what counts as "good enough" in the real world.
 
-![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v5.webp)
 
 This kind of binary labeling makes it easier for domain experts to annotate outputs directly in Mirascope Cloud traces or in the playground interface, helping create a continuous feedback loop.
 
 Each annotation is saved alongside the trace and the exact version of the function that produced it. To keep evaluations fair, Mirascope Cloud hides existing annotations when someone is reviewing a trace. That way, each reviewer gives feedback without being influenced by what others said.
 
-![Mirascope Cloud Annotations](/assets/blog/_shared/lilypad-annotations.webp)
+![Mirascope Cloud Annotations](/assets/blog/_lilypad/lilypad-annotations.webp)
 
 Mirascope Cloud encourages manual labeling early in a project to build a strong, high-quality dataset of human-reviewed results. These labeled examples can later be used to train automated evaluators like [LLM-as-a-judge](/blog/llm-as-judge). Even with automation, though, Mirascope Cloud recommends keeping humans in the loop to verify final results.
 

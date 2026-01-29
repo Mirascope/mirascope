@@ -48,7 +48,7 @@ Many [LLM frameworks](/blog/llm-frameworks) for testing prompts handle the basic
 
 ### 1. Mirascope Cloud: Full-Context Prompt Testing, Versioning, and Collaboration
 
-![Mirascope Cloud Landing Page](/assets/blog/_shared/lilypad-landing-page.webp)
+![Mirascope Cloud Landing Page](/assets/blog/_lilypad/lilypad-landing-page.webp)
 
 [Mirascope Cloud](/docs/learn/ops) is built around the idea that prompt quality isn't only about the instruction, but everything that affects it, including the code, the model you're using, `temperature`, `top_p`, and others.
 
@@ -89,7 +89,7 @@ Each trace is directly tied to the exact code that produced it, so you can alway
 
 Every function is captured as a full snapshot of its inputs, outputs, model details, token usage, latency, and cost, instrumented via the OpenTelemetry GenAI spec, which also records surrounding context like messages, warnings, and other useful metadata.
 
-![Mirascope Cloud GenAI Trace Data](/assets/blog/_shared/lilypad-otel-data.webp)
+![Mirascope Cloud GenAI Trace Data](/assets/blog/_lilypad/lilypad-otel-data-v3.webp)
 
 This guarantees you can reproduce any test run exactly, even months later, making it significantly easier to investigate regressions or failures. 
 
@@ -109,7 +109,7 @@ Mirascope Cloud's visual no-code playground allows engineers and non-technical c
 
 This lets engineers, in turn, focus on infrastructure and the logic of AI applications.
 
-![Mirascope Cloud Playground](/assets/blog/_shared/lilypad-playground-v4.webp)
+![Mirascope Cloud Playground](/assets/blog/_lilypad/lilypad-playground-v4-v2.webp)
 
 The functional separation of concerns doesn't change how prompts are stored or deployed. In Mirascope Cloud, everything stays in one place, and your prompts are a part of your code and not pulled in from an external system.
 
@@ -119,7 +119,7 @@ This contrasts with other platforms like Langsmith (which works together with La
 
 In the playground, you can also edit markdown-supported prompt templates and prompt metadata. Mirascope Cloud then automatically generates type-safe function signatures so test inputs always match the function schema, reducing the risk of injection bugs or mismatched formats.
 
-![Mirascope Cloud Playground Trace](/assets/blog/prompt-testing-framework/lilypad-playground-trace.webp)
+![Mirascope Cloud Playground Trace](/assets/blog/_lilypad/lilypad-playground-trace-v2.webp)
 
 All changes in the playground are sandboxed by default, so they won’t touch production until they’re reviewed and explicitly synced by an engineer.
 
@@ -141,17 +141,17 @@ You don’t have to stop and formalize your test set before you learn what “go
 
 To keep your tests meaningful, the Mirascope Cloud UI also lets you leave comments explaining why a test passed or failed.  
 
-![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue-v2.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v2.webp)
 
 Each annotation is tied to a specific trace, so every time you test a prompt, you also capture the full context of how it ran. That way, teammates can review the run in detail and discuss improvements with all the necessary information at hand. 
 
 You can also compare different versions by clicking the “Compare” button: 
 
-![Mirascope Cloud Click Compare](/assets/blog/_shared/lilypad-click-compare-v2.webp)
+![Mirascope Cloud Click Compare](/assets/blog/_lilypad/lilypad-click-compare-v2-v2.webp)
 
 This toggles a second dropdown menu, where you can select another version and view the differences side-by-side. 
 
-![Mirascope Cloud Compare Versions](/assets/blog/_shared/lilypad-compare-versions-v3.webp)
+![Mirascope Cloud Compare Versions](/assets/blog/_lilypad/lilypad-compare-versions-v3.webp)
 
 Developers can also add annotations directly in code by using the `.wrapped()` method on traced functions. This returns a `Trace` object that includes both the result and methods for adding annotations.
 

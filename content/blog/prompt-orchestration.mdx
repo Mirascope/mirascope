@@ -292,7 +292,7 @@ Each run is preserved along with its full execution context, making it easy to r
 
 For tracing, Mirascope Cloud instruments LLM outputs using the [OpenTelemetry GenAI specification](https://opentelemetry.io/), which records not just the output but also the surrounding context, messages, warnings, and rich metadata to give a complete picture of each interaction.
 
-![Mirascope Cloud OpenTelemetry Data](/assets/blog/_shared/lilypad-otel-data.webp)
+![Mirascope Cloud OpenTelemetry Data](/assets/blog/_lilypad/lilypad-otel-data-v3.webp)
 
 ### 4. Implement Ongoing Quality Control, Feedback Loops, and Testing
 
@@ -310,7 +310,7 @@ Instead of relying on complex scoring systems or pre-made datasets, Mirascope Cl
 
 Because annotations are tied to versioned traces, you can catch regressions quickly, spot improvements over time, and build a high-quality dataset from real-world examples. This also makes it easier for teammates to review changes in context, helping everyone stay on the same page.
 
-![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue-v2.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v2.webp)
 
 Unlike other systems that require you to create test datasets up front, Mirascope Cloud lets you evaluate as you go. You don't need to stop everything to define your test set before you know what a "good" answer looks like. This lightweight, ongoing approach is especially helpful during early development when things are changing quickly.
 

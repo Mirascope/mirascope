@@ -71,7 +71,7 @@ Advanced systems also let users collaboratively evaluate prompts against predefi
 
 ### 1. Mirascope Cloud: Full-Context Prompt Management for LLM Workflows
 
-![Mirascope Cloud Landing Page](/assets/blog/_shared/lilypad-homepage.webp)
+![Mirascope Cloud Landing Page](/assets/blog/_lilypad/lilypad-homepage.webp)
 
 [Mirascope Cloud](/docs/mirascope-cloud) approaches prompt engineering as an optimization problem, applying proven software engineering practices to LLM application development. It allows users to version, trace, and optimize workflows by capturing the full context of every LLM interaction.
 
@@ -117,21 +117,21 @@ print(answer)
 
 All this offers a complete audit trail of what changed and why (not only in the prompt but in the prompt's context). Incremented versions are shown in the Mirascope Cloud UI:
 
-![Mirascope Cloud Trace View](/assets/blog/_shared/lilypad-trace.webp)
+![Mirascope Cloud Trace View](/assets/blog/_lilypad/lilypad-trace.webp)
 
 It even logs and tracks changes to user-defined functions or classes outside the main prompt function as long as these are within the decorated function's scope.
 
 The "Compare" button in the Mirascope Cloud UI allows you to see the differences between various versions of the code:
 
-![Mirascope Cloud Click Compare](/assets/blog/_shared/lilypad-click-compare.webp)
+![Mirascope Cloud Click Compare](/assets/blog/_lilypad/lilypad-click-compare-v3.webp)
 
 Clicking this displays a second dropdown menu, where you can select another version and view the differences side-by-side:
 
-![Mirascope Cloud Compare Versions](/assets/blog/_shared/lilypad-compare-versions-v2.webp)
+![Mirascope Cloud Compare Versions](/assets/blog/_lilypad/lilypad-compare-versions-v2.webp)
 
 The UI also lets you inspect trace data for any LLM call in a function in order to see the full picture of what happened during the run, including any changes to inputs, logic, prompt changes, and model settings:
 
-![Mirascope Cloud Trace Data](/assets/blog/_shared/lilypad-trace-genai-data.webp)
+![Mirascope Cloud Trace Data](/assets/blog/_lilypad/lilypad-trace-genai-data.webp)
 
 Downstream, you can use the `.version` method to compare outputs, track changes, or reproduce earlier results.
 
@@ -153,7 +153,7 @@ The Mirascope Cloud playground supports markdown-based editing with typed variab
 
 Users can also directly adjust model settings like temperature or `top_p`. Together, these features ensure all prompt edits remain consistent, traceable, and fully integrated into the application's codebase.
 
-![Mirascope Cloud Playground](/assets/blog/_shared/lilypad-playground-v3.webp)
+![Mirascope Cloud Playground](/assets/blog/_lilypad/lilypad-playground-v3-v2.webp)
 
 #### Building Reliable Evaluation Pipelines
 
@@ -169,7 +169,7 @@ Because of this subjectivity, evaluation tools need a structured way to capture 
 
 The outputs to evaluate appear in structured queues, where reviewers can label them as pass or fail and add reasoning notes. To reduce bias, existing annotations remain hidden until the review is complete.
 
-![Mirascope Cloud Annotation Queue](/assets/blog/_shared/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/_lilypad/lilypad-annotation-queue-v5.webp)
 
 The result is a body of searchable evaluation data stored alongside trace details and version history, making reviews easy to audit and reproduce.
 
