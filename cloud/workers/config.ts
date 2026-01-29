@@ -48,9 +48,17 @@ export interface BillingCronTriggerEnv extends CronTriggerEnv {
 }
 
 /**
+ * Cloudflare static assets binding interface.
+ */
+export interface AssetsBinding {
+  fetch: (request: Request) => Promise<Response>;
+}
+
+/**
  * Complete Worker environment with all bindings.
  */
 export interface WorkerEnv extends BillingCronTriggerEnv {
+  readonly ASSETS: AssetsBinding;
   readonly ROUTER_METERING_QUEUE: {
     send: (message: RouterMeteringMessage) => Promise<void>;
   };
