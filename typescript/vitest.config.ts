@@ -1,11 +1,13 @@
 import { config } from 'dotenv';
 import { resolve } from 'path';
 import { defineConfig } from 'vitest/config';
+import { mirascope } from './src/transform/plugins/vite';
 
 // Load .env for e2e tests (no-op if file doesn't exist)
 config({ path: resolve(__dirname, '.env') });
 
 export default defineConfig({
+  plugins: [mirascope()],
   test: {
     globals: false,
     environment: 'node',
@@ -14,7 +16,16 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],
-      exclude: ['src/**/*.test.ts', 'src/**/index.ts'],
+      exclude: [
+        'src/**/*.test.ts',
+        'src/**/index.ts',
+        'src/bun.ts',
+        // type files with nothing to cover
+        'src/transform/plugins/types.ts',
+        'src/llm/models/params.ts',
+        'src/llm/models/thinking-config.ts',
+        'src/llm/providers/model-id.ts',
+      ],
       thresholds: {
         lines: 100,
         functions: 100,
