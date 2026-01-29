@@ -370,21 +370,28 @@ Below are a few of the most useful settings available for structured output:
 
 #### **Returning Outputs in Valid JSON**
 
-Setting `json_mode=True` in the call decorator will apply [JSON mode](/docs/learn/llm/json_mode/), if it's supported by your LLM, rendering the outputs as valid JSON:
+Use `llm.format()` with `mode="json"` to request JSON output from the LLM:
 
 ```python
-import json
 from mirascope import llm
+from pydantic import BaseModel
 
 
-@llm.call("openai/gpt-4o-mini", json_mode=True)  # [!code highlight]
+class MovieInfo(BaseModel):
+    director: str
+    release_year: str
+    main_genre: str
+
+
+@llm.call("openai/gpt-4o-mini", format=llm.format(MovieInfo, mode="json"))  # [!code highlight]
 def get_movie_info(movie_title: str) -> str:
     return f"Provide the director, release year, and main genre for {movie_title}"
 
 
 response = get_movie_info("Inception")
-print(json.loads(response.text()))  # [!code highlight]
-# > {"director": "Christopher Nolan", "release_year": "2010", "main_genre": "Science Fiction"}
+movie_info = response.parse()  # [!code highlight]
+print(movie_info)
+# > director='Christopher Nolan' release_year='2010' main_genre='Science Fiction'
 ```
 
 #### **Adding Few-Shot Examples to Structured Output**
