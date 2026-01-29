@@ -18,8 +18,10 @@ import type {
   ImageMimeType,
   Text,
   Thought,
+  ToolCall,
   UserContentPart,
 } from '@/llm/content';
+import type { ToolSchema } from '@/llm/tools';
 import {
   APIError,
   AuthenticationError,
@@ -184,6 +186,29 @@ function processContentParts(
           'Anthropic does not support audio inputs.'
         );
 
+      /* v8 ignore start - tool encoding will be tested via e2e */
+      case 'tool_call':
+        blocks.push({
+          type: 'tool_use',
+          id: part.id,
+          name: part.name,
+          input: JSON.parse(part.args) as Record<string, unknown>,
+        });
+        break;
+
+      case 'tool_output':
+        blocks.push({
+          type: 'tool_result',
+          tool_use_id: part.id,
+          content:
+            typeof part.result === 'string'
+              ? part.result
+              : JSON.stringify(part.result),
+          is_error: part.error !== null,
+        });
+        break;
+      /* v8 ignore stop */
+
       /* v8 ignore start - content types not yet implemented */
       case 'document':
         throw new FeatureNotSupportedError(
@@ -191,22 +216,6 @@ function processContentParts(
           'anthropic',
           null,
           'Document content is not yet implemented'
-        );
-
-      case 'tool_output':
-        throw new FeatureNotSupportedError(
-          'tool output encoding',
-          'anthropic',
-          null,
-          'Tool outputs are not yet implemented'
-        );
-
-      case 'tool_call':
-        throw new FeatureNotSupportedError(
-          'tool call encoding',
-          'anthropic',
-          null,
-          'Tool calls are not yet implemented'
         );
 
       case 'thought':
@@ -275,15 +284,54 @@ export function encodeMessages(messages: readonly Message[]): {
   return { system, messages: anthropicMessages };
 }
 
+// ============================================================================
+// Tool Encoding
+// ============================================================================
+
+/* v8 ignore start - tool encoding will be tested via e2e */
+/**
+ * Convert a ToolSchema to Anthropic's Tool format.
+ */
+export function encodeToolSchema(tool: ToolSchema): Anthropic.Messages.Tool {
+  return {
+    name: tool.name,
+    description: tool.description,
+    input_schema: {
+      type: 'object',
+      properties: tool.parameters.properties as Record<
+        string,
+        Anthropic.Messages.Tool.InputSchema
+      >,
+      required: tool.parameters.required as string[],
+    },
+  };
+}
+
+/**
+ * Encode an array of tool schemas to Anthropic's format.
+ */
+export function encodeTools(
+  tools: readonly ToolSchema[]
+): Anthropic.Messages.Tool[] {
+  return tools.map(encodeToolSchema);
+}
+/* v8 ignore stop */
+
 /**
  * Build the request parameters for the Anthropic API.
  *
  * This function performs strict param checking - any unhandled params will
  * cause an error to ensure we don't silently ignore user configuration.
+ *
+ * @param modelId - The model ID to use
+ * @param messages - The messages to send
+ * @param params - Optional parameters (temperature, maxTokens, etc.)
+ * @param tools - Optional tools to make available to the model
  */
 export function buildRequestParams(
   modelId: AnthropicModelId,
   messages: readonly Message[],
+  tools?: readonly ToolSchema[],
   params: Params = {}
 ): MessageCreateParamsNonStreaming {
   const { system, messages: anthropicMessages } = encodeMessages(messages);
@@ -299,6 +347,12 @@ export function buildRequestParams(
     if (system) {
       requestParams.system = system;
     }
+
+    /* v8 ignore start - tool encoding will be tested via e2e */
+    if (tools !== undefined && tools.length > 0) {
+      requestParams.tools = encodeTools(tools);
+    }
+    /* v8 ignore stop */
 
     const temperature = p.get('temperature');
     const topP = p.get('topP');
@@ -404,14 +458,17 @@ function decodeContent(
       // that cannot be decoded
       continue;
       /* v8 ignore stop */
-      /* v8 ignore start - content types not yet implemented */
+      /* v8 ignore start - tool decoding will be tested via e2e */
     } else if (block.type === 'tool_use') {
-      throw new FeatureNotSupportedError(
-        'tool use decoding',
-        'anthropic',
-        null,
-        'Tool use blocks in responses are not yet implemented'
-      );
+      const toolCall: ToolCall = {
+        type: 'tool_call',
+        id: block.id,
+        name: block.name,
+        args: JSON.stringify(block.input),
+      };
+      parts.push(toolCall);
+      /* v8 ignore stop */
+      /* v8 ignore start - defensive unknown block handling */
     } else {
       // Unknown block type - be strict so we know what we're missing
       throw new FeatureNotSupportedError(

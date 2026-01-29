@@ -8,6 +8,7 @@ import type { Context } from '@/llm/context';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { BaseProvider } from '@/llm/providers/base';
+import type { ToolSchema } from '@/llm/tools';
 import { getIncludeThoughts } from '@/llm/providers/_utils';
 import type { GoogleModelId } from '@/llm/providers/google/model-id';
 import { modelName } from '@/llm/providers/google/model-id';
@@ -63,18 +64,21 @@ export class GoogleProvider extends BaseProvider {
    * @param args - Call arguments
    * @param args.modelId - The Google model ID to use
    * @param args.messages - Array of messages to send
+   * @param args.tools - Optional tools to make available to the model
    * @param args.params - Optional additional parameters
    * @returns Response object containing the API response
    */
   protected async _call(args: {
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<Response> {
     const modelId = args.modelId as GoogleModelId;
     const requestParams = buildRequestParams(
       modelId,
       args.messages,
+      args.tools,
       args.params
     );
 
@@ -108,6 +112,7 @@ export class GoogleProvider extends BaseProvider {
    * @param args - Call arguments
    * @param args.modelId - The Google model ID to use
    * @param args.messages - Array of messages to send
+   * @param args.tools - Optional tools to make available to the model
    * @param args.params - Optional additional parameters
    * @returns StreamResponse object for streaming consumption
    */
@@ -115,11 +120,13 @@ export class GoogleProvider extends BaseProvider {
     modelId: string;
     messages: readonly Message[];
     params?: Params;
+    tools?: readonly ToolSchema[];
   }): Promise<StreamResponse> {
     const modelId = args.modelId as GoogleModelId;
     const requestParams = buildRequestParams(
       modelId,
       args.messages,
+      args.tools,
       args.params
     );
 
@@ -149,18 +156,24 @@ export class GoogleProvider extends BaseProvider {
    * that future change clearer.
    *
    * @param args - Call arguments including context and model
+   * @param args.modelId - The Google model ID to use
+   * @param args.messages - Array of messages to send
+   * @param args.tools - Optional tools to make available to the model
+   * @param args.params - Optional additional parameters
    * @returns ContextResponse object containing the API response
    */
   protected async _contextCall<DepsT>(args: {
     ctx: Context<DepsT>;
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<ContextResponse<DepsT>> {
     const modelId = args.modelId as GoogleModelId;
     const requestParams = buildRequestParams(
       modelId,
       args.messages,
+      args.tools,
       args.params
     );
 
@@ -197,18 +210,24 @@ export class GoogleProvider extends BaseProvider {
    * that future change clearer.
    *
    * @param args - Call arguments including context and model
+   * @param args.modelId - The Google model ID to use
+   * @param args.messages - Array of messages to send
+   * @param args.tools - Optional tools to make available to the model
+   * @param args.params - Optional additional parameters
    * @returns ContextStreamResponse object for streaming consumption
    */
   protected async _contextStream<DepsT>(args: {
     ctx: Context<DepsT>;
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<ContextStreamResponse<DepsT>> {
     const modelId = args.modelId as GoogleModelId;
     const requestParams = buildRequestParams(
       modelId,
       args.messages,
+      args.tools,
       args.params
     );
 

@@ -10,6 +10,7 @@ import type {
   ChatCompletionContentPartText,
   ChatCompletionCreateParamsNonStreaming,
   ChatCompletionMessageParam,
+  ChatCompletionToolMessageParam,
 } from 'openai/resources/chat/completions';
 
 import type {
@@ -18,7 +19,9 @@ import type {
   AudioMimeType,
   Image,
   Text,
+  ToolCall,
 } from '@/llm/content';
+import type { ToolSchema } from '@/llm/tools';
 import { FeatureNotSupportedError } from '@/llm/exceptions';
 import type { AssistantMessage, Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
@@ -115,6 +118,46 @@ function encodeAudio(
 }
 
 // ============================================================================
+// Tool Encoding
+// ============================================================================
+
+/* v8 ignore start - tool encoding will be tested via e2e */
+/**
+ * Convert a ToolSchema to OpenAI's ChatCompletionTool format.
+ */
+export function encodeToolSchema(
+  tool: ToolSchema
+): ChatCompletionCreateParamsNonStreaming['tools'] extends
+  | (infer T)[]
+  | undefined
+  ? T
+  : never {
+  return {
+    type: 'function',
+    function: {
+      name: tool.name,
+      description: tool.description,
+      parameters: {
+        type: 'object',
+        properties: tool.parameters.properties,
+        required: tool.parameters.required,
+      },
+      strict: tool.strict,
+    },
+  };
+}
+
+/**
+ * Encode an array of tool schemas to OpenAI's format.
+ */
+export function encodeTools(
+  tools: readonly ToolSchema[]
+): NonNullable<ChatCompletionCreateParamsNonStreaming['tools']> {
+  return tools.map(encodeToolSchema);
+}
+/* v8 ignore stop */
+
+// ============================================================================
 // Message Encoding
 // ============================================================================
 
@@ -139,7 +182,17 @@ export function encodeMessages(
         content: message.content.text,
       });
     } else if (message.role === 'user') {
-      openaiMessages.push(encodeUserMessage(message, modelId));
+      /* v8 ignore start - tool encoding will be tested via e2e */
+      // First add any tool output messages (OpenAI uses separate "tool" role)
+      const toolMessages = encodeToolOutputs(message);
+      openaiMessages.push(...toolMessages);
+      /* v8 ignore stop */
+
+      // Then add the user message if it has non-tool content
+      const userMessage = encodeUserMessage(message, modelId);
+      if (userMessage) {
+        openaiMessages.push(userMessage);
+      }
     } else if (message.role === 'assistant') {
       openaiMessages.push(
         encodeAssistantMessage(message, encodeThoughtsAsText)
@@ -155,11 +208,12 @@ export function encodeMessages(
  *
  * Iterates over content parts and builds the appropriate content structure.
  * Single text part is simplified to string, multiple parts become an array.
+ * Returns null if the message only contains tool outputs (which are handled separately).
  */
 function encodeUserMessage(
   message: Extract<Message, { role: 'user' }>,
   modelId?: OpenAIModelId
-): ChatCompletionMessageParam {
+): ChatCompletionMessageParam | null {
   const contentParts: UserContentPartOpenAI[] = [];
 
   for (const part of message.content) {
@@ -184,17 +238,23 @@ function encodeUserMessage(
           null,
           'Document content is not yet implemented'
         );
+      /* v8 ignore stop */
 
+      /* v8 ignore start - tool encoding will be tested via e2e */
       case 'tool_output':
-        throw new FeatureNotSupportedError(
-          'tool output encoding',
-          'openai',
-          null,
-          'Tool outputs are not yet implemented'
-        );
+        // tool_output is handled separately in encodeMessages
+        // by creating tool role messages
+        break;
       /* v8 ignore stop */
     }
   }
+
+  /* v8 ignore start - tool encoding will be tested via e2e */
+  // If no content parts (only tool_outputs), return null
+  if (contentParts.length === 0) {
+    return null;
+  }
+  /* v8 ignore stop */
 
   // Simplify to string if only a single text part
   let content: string | UserContentPartOpenAI[] = contentParts;
@@ -209,17 +269,45 @@ function encodeUserMessage(
   };
 }
 
+/* v8 ignore start - tool encoding will be tested via e2e */
+/**
+ * Extract tool outputs from a user message and encode as tool role messages.
+ */
+function encodeToolOutputs(
+  message: Extract<Message, { role: 'user' }>
+): ChatCompletionToolMessageParam[] {
+  const toolMessages: ChatCompletionToolMessageParam[] = [];
+
+  for (const part of message.content) {
+    if (part.type === 'tool_output') {
+      toolMessages.push({
+        role: 'tool',
+        tool_call_id: part.id,
+        content:
+          typeof part.result === 'string'
+            ? part.result
+            : JSON.stringify(part.result),
+      });
+    }
+  }
+
+  return toolMessages;
+}
+/* v8 ignore stop */
+
 /**
  * Encode a Mirascope assistant message to OpenAI format.
  *
  * Iterates over content parts and builds text content.
  * Single text part is simplified to string, multiple parts become an array.
+ * Tool calls are encoded as a separate array on the message.
  */
 function encodeAssistantMessage(
   message: AssistantMessage,
   encodeThoughtsAsText: boolean
 ): ChatCompletionAssistantMessageParam {
   const textParts: ChatCompletionContentPartText[] = [];
+  const toolCalls: ChatCompletionAssistantMessageParam['tool_calls'] = [];
 
   for (const part of message.content) {
     switch (part.type) {
@@ -237,14 +325,18 @@ function encodeAssistantMessage(
         }
         break;
 
-      /* v8 ignore start - content types not yet implemented */
-      case 'tool_call':
-        throw new FeatureNotSupportedError(
-          'tool call encoding',
-          'openai',
-          null,
-          'Tool calls are not yet implemented'
-        );
+      /* v8 ignore start - tool encoding will be tested via e2e */
+      case 'tool_call': {
+        toolCalls.push({
+          id: part.id,
+          type: 'function',
+          function: {
+            name: part.name,
+            arguments: part.args,
+          },
+        });
+        break;
+      }
       /* v8 ignore stop */
     }
   }
@@ -258,11 +350,19 @@ function encodeAssistantMessage(
     content = textParts;
   }
 
-  return {
+  const result: ChatCompletionAssistantMessageParam = {
     role: 'assistant',
     content,
     ...(message.name && { name: message.name }),
   };
+
+  /* v8 ignore start - tool encoding will be tested via e2e */
+  if (toolCalls.length > 0) {
+    result.tool_calls = toolCalls;
+  }
+  /* v8 ignore stop */
+
+  return result;
 }
 
 /**
@@ -270,10 +370,16 @@ function encodeAssistantMessage(
  *
  * This function performs strict param checking - any unhandled params will
  * cause an error to ensure we don't silently ignore user configuration.
+ *
+ * @param modelId - The model ID to use
+ * @param messages - The messages to send
+ * @param tools - Optional tools to make available to the model
+ * @param params - Optional parameters (temperature, maxTokens, etc.)
  */
 export function buildRequestParams(
   modelId: OpenAIModelId,
   messages: readonly Message[],
+  tools?: readonly ToolSchema[],
   params: Params = {}
 ): ChatCompletionCreateParamsNonStreaming {
   return ParamHandler.with(params, 'openai', modelId, (p) => {
@@ -290,6 +396,12 @@ export function buildRequestParams(
       model: modelName(modelId, null),
       messages: openaiMessages,
     };
+
+    /* v8 ignore start - tool encoding will be tested via e2e */
+    if (tools !== undefined && tools.length > 0) {
+      requestParams.tools = encodeTools(tools);
+    }
+    /* v8 ignore stop */
 
     const maxTokens = p.get('maxTokens');
     if (maxTokens !== undefined) {
@@ -381,15 +493,21 @@ function decodeContent(
   }
   /* v8 ignore end */
 
-  /* v8 ignore start - tool calls not yet implemented */
+  /* v8 ignore start - tool decoding will be tested via e2e */
   // Handle tool calls
   if (message.tool_calls && message.tool_calls.length > 0) {
-    throw new FeatureNotSupportedError(
-      'tool call decoding',
-      'openai',
-      null,
-      'Tool calls in responses are not yet implemented'
-    );
+    for (const tc of message.tool_calls) {
+      // Only handle function type tool calls
+      if (tc.type === 'function') {
+        const toolCall: ToolCall = {
+          type: 'tool_call',
+          id: tc.id,
+          name: tc.function.name,
+          args: tc.function.arguments,
+        };
+        parts.push(toolCall);
+      }
+    }
   }
   /* v8 ignore stop */
 

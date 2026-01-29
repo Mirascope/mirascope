@@ -8,6 +8,7 @@ import type { Context } from '@/llm/context';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { BaseProvider } from '@/llm/providers/base';
+import type { ToolSchema } from '@/llm/tools';
 import { OPENAI_ERROR_MAP } from '@/llm/providers/openai/_utils/errors';
 import { OpenAICompletionsProvider } from '@/llm/providers/openai/completions/provider';
 import { OpenAIResponsesProvider } from '@/llm/providers/openai/responses/provider';
@@ -146,12 +147,14 @@ export class OpenAIProvider extends BaseProvider {
    * @param args - Call arguments
    * @param args.modelId - The OpenAI model ID to use (optionally with :completions or :responses suffix)
    * @param args.messages - Array of messages to send
+   * @param args.tools - Optional tools to make available to the model
    * @param args.params - Optional additional parameters
    * @returns Response object containing the API response
    */
   protected async _call(args: {
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<Response> {
     const modelId = args.modelId as OpenAIModelId;
@@ -162,6 +165,7 @@ export class OpenAIProvider extends BaseProvider {
       return this.responsesProvider.call({
         modelId: args.modelId,
         messages: args.messages,
+        tools: args.tools,
         params: args.params,
       });
     }
@@ -170,6 +174,7 @@ export class OpenAIProvider extends BaseProvider {
     return this.completionsProvider.call({
       modelId: args.modelId,
       messages: args.messages,
+      tools: args.tools,
       params: args.params,
     });
   }
@@ -180,12 +185,14 @@ export class OpenAIProvider extends BaseProvider {
    * @param args - Call arguments
    * @param args.modelId - The OpenAI model ID to use (optionally with :completions or :responses suffix)
    * @param args.messages - Array of messages to send
+   * @param args.tools - Optional tools to make available to the model
    * @param args.params - Optional additional parameters
    * @returns StreamResponse object for streaming consumption
    */
   protected async _stream(args: {
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<StreamResponse> {
     const modelId = args.modelId as OpenAIModelId;
@@ -195,6 +202,7 @@ export class OpenAIProvider extends BaseProvider {
       return this.responsesProvider.stream({
         modelId: args.modelId,
         messages: args.messages,
+        tools: args.tools,
         params: args.params,
       });
     }
@@ -202,6 +210,7 @@ export class OpenAIProvider extends BaseProvider {
     return this.completionsProvider.stream({
       modelId: args.modelId,
       messages: args.messages,
+      tools: args.tools,
       params: args.params,
     });
   }
@@ -215,12 +224,17 @@ export class OpenAIProvider extends BaseProvider {
    * separate now to make that future change clearer.
    *
    * @param args - Call arguments including context and model
+   * @param args.modelId - The OpenAI model ID to use (optionally with :completions or :responses suffix)
+   * @param args.messages - Array of messages to send
+   * @param args.tools - Optional tools to make available to the model
+   * @param args.params - Optional additional parameters
    * @returns ContextResponse object containing the API response
    */
   protected async _contextCall<DepsT>(args: {
     ctx: Context<DepsT>;
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<ContextResponse<DepsT>> {
     const modelId = args.modelId as OpenAIModelId;
@@ -232,6 +246,7 @@ export class OpenAIProvider extends BaseProvider {
         ctx: args.ctx,
         modelId: args.modelId,
         messages: args.messages,
+        tools: args.tools,
         params: args.params,
       });
     }
@@ -241,6 +256,7 @@ export class OpenAIProvider extends BaseProvider {
       ctx: args.ctx,
       modelId: args.modelId,
       messages: args.messages,
+      tools: args.tools,
       params: args.params,
     });
   }
@@ -254,12 +270,17 @@ export class OpenAIProvider extends BaseProvider {
    * separate now to make that future change clearer.
    *
    * @param args - Call arguments including context and model
+   * @param args.modelId - The OpenAI model ID to use (optionally with :completions or :responses suffix)
+   * @param args.messages - Array of messages to send
+   * @param args.tools - Optional tools to make available to the model
+   * @param args.params - Optional additional parameters
    * @returns ContextStreamResponse object for streaming consumption
    */
   protected async _contextStream<DepsT>(args: {
     ctx: Context<DepsT>;
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<ContextStreamResponse<DepsT>> {
     const modelId = args.modelId as OpenAIModelId;
@@ -270,6 +291,7 @@ export class OpenAIProvider extends BaseProvider {
         ctx: args.ctx,
         modelId: args.modelId,
         messages: args.messages,
+        tools: args.tools,
         params: args.params,
       });
     }
@@ -278,6 +300,7 @@ export class OpenAIProvider extends BaseProvider {
       ctx: args.ctx,
       modelId: args.modelId,
       messages: args.messages,
+      tools: args.tools,
       params: args.params,
     });
   }

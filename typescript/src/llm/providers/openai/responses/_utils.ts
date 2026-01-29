@@ -5,12 +5,23 @@
 import type OpenAI from 'openai';
 import type {
   Response as OpenAIResponse,
+  ResponseCreateParamsNonStreaming,
+  FunctionTool,
+  ResponseFunctionToolCall,
   ResponseInputContent,
   ResponseInputImage,
+  ResponseInputItem,
 } from 'openai/resources/responses/responses';
 import type { Reasoning, ReasoningEffort } from 'openai/resources/shared';
 
-import type { AssistantContentPart, Image, Text, Thought } from '@/llm/content';
+import type {
+  AssistantContentPart,
+  Image,
+  Text,
+  Thought,
+  ToolCall,
+} from '@/llm/content';
+import type { ToolSchema } from '@/llm/tools';
 import { FeatureNotSupportedError } from '@/llm/exceptions';
 import type { AssistantMessage, Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
@@ -59,12 +70,9 @@ export function computeReasoning(
 }
 
 /**
- * Input item type for OpenAI Responses API.
- *
- * The Responses API uses EasyInputMessage for simple message format,
- * which supports 'user', 'assistant', and 'developer' (system) roles.
+ * Simple message type for easy input (user, assistant, developer roles).
  */
-type ResponseInputItem = OpenAI.Responses.EasyInputMessage;
+type EasyInputMessage = OpenAI.Responses.EasyInputMessage;
 
 // ============================================================================
 // Content Part Encoding
@@ -84,6 +92,36 @@ function encodeImage(image: Image): ResponseInputImage {
 }
 
 // ============================================================================
+// Tool Encoding
+// ============================================================================
+
+/* v8 ignore start - tool encoding will be tested via e2e */
+/**
+ * Encode a tool schema to OpenAI Responses API tool format.
+ */
+export function encodeToolSchema(tool: ToolSchema): FunctionTool {
+  return {
+    type: 'function',
+    name: tool.name,
+    description: tool.description,
+    parameters: {
+      type: 'object',
+      properties: tool.parameters.properties as Record<string, unknown>,
+      required: tool.parameters.required as string[] | undefined,
+    },
+    strict: tool.strict ?? null,
+  };
+}
+
+/**
+ * Encode multiple tool schemas for OpenAI Responses API.
+ */
+export function encodeTools(tools: readonly ToolSchema[]): FunctionTool[] {
+  return tools.map(encodeToolSchema);
+}
+/* v8 ignore stop */
+
+// ============================================================================
 // Message Encoding
 // ============================================================================
 
@@ -95,6 +133,7 @@ function encodeImage(image: Image): ResponseInputImage {
  * - Uses EasyInputMessageParam for simple message format
  * - Returns flat array of input items (not nested messages)
  * - Assistant messages with multiple text parts are encoded as separate messages
+ * - Tool outputs are encoded as function_call_output items
  */
 export function encodeMessages(
   messages: readonly Message[]
@@ -108,9 +147,20 @@ export function encodeMessages(
         content: message.content.text,
       });
     } else if (message.role === 'user') {
-      inputItems.push(encodeUserMessage(message));
+      // Check for tool outputs first
+      const toolOutputs = encodeToolOutputs(message);
+      /* v8 ignore start - tool encoding will be tested via e2e */
+      if (toolOutputs.length > 0) {
+        inputItems.push(...toolOutputs);
+      }
+      /* v8 ignore stop */
+      // Then encode any non-tool content as a user message
+      const userMessage = encodeUserMessage(message);
+      if (userMessage !== null) {
+        inputItems.push(userMessage);
+      }
     } else if (message.role === 'assistant') {
-      // Assistant messages may produce multiple items (one per text part)
+      // Assistant messages may produce multiple items (one per text/tool_call part)
       inputItems.push(...encodeAssistantMessage(message));
     }
   }
@@ -118,15 +168,42 @@ export function encodeMessages(
   return inputItems;
 }
 
+/* v8 ignore start - tool encoding will be tested via e2e */
+/**
+ * Encode tool outputs from a user message to function_call_output items.
+ */
+function encodeToolOutputs(
+  message: Extract<Message, { role: 'user' }>
+): ResponseInputItem.FunctionCallOutput[] {
+  const outputs: ResponseInputItem.FunctionCallOutput[] = [];
+
+  for (const part of message.content) {
+    if (part.type === 'tool_output') {
+      outputs.push({
+        type: 'function_call_output',
+        call_id: part.id,
+        output:
+          typeof part.result === 'string'
+            ? part.result
+            : JSON.stringify(part.result),
+      });
+    }
+  }
+
+  return outputs;
+}
+/* v8 ignore stop */
+
 /**
  * Encode a Mirascope user message to OpenAI Responses API format.
  *
  * - Single text part: string content (simplified)
  * - Multiple parts or non-text content: array of content items
+ * - Returns null if message contains only tool outputs (handled separately)
  */
 function encodeUserMessage(
   message: Extract<Message, { role: 'user' }>
-): ResponseInputItem {
+): EasyInputMessage | null {
   const contentItems: ResponseInputContent[] = [];
 
   for (const part of message.content) {
@@ -147,7 +224,7 @@ function encodeUserMessage(
           'OpenAI Responses API does not support audio inputs. Try appending ":completions" to your model ID instead.'
         );
 
-      /* v8 ignore start - content types not yet implemented */
+      /* v8 ignore start - content types not yet fully implemented */
       case 'document':
         throw new FeatureNotSupportedError(
           'document content encoding',
@@ -157,15 +234,19 @@ function encodeUserMessage(
         );
 
       case 'tool_output':
-        throw new FeatureNotSupportedError(
-          'tool output encoding',
-          'openai',
-          null,
-          'Tool outputs are not yet implemented'
-        );
+        // Tool outputs in Responses API are handled separately as function_call_output items
+        // Skip here - they're processed in encodeMessages
+        break;
       /* v8 ignore stop */
     }
   }
+
+  // No content (only tool outputs) - return null
+  /* v8 ignore start - tool encoding will be tested via e2e */
+  if (contentItems.length === 0) {
+    return null;
+  }
+  /* v8 ignore stop */
 
   // Single text part: simplify to string
   if (contentItems.length === 1 && contentItems[0]?.type === 'input_text') {
@@ -189,7 +270,7 @@ function encodeUserMessage(
  * text as adjacent content within the same Message. Rather than generating fake fields,
  * we encode each text part as a separate EasyInputMessage.
  *
- * @returns Array of input items (one per text part)
+ * @returns Array of input items (text messages and function calls)
  */
 function encodeAssistantMessage(
   message: AssistantMessage
@@ -203,22 +284,22 @@ function encodeAssistantMessage(
         content: part.text,
       });
     }
-    // Note: tool_call and thought are not yet implemented
+    /* v8 ignore start - tool encoding will be tested via e2e */
+    if (part.type === 'tool_call') {
+      const toolCallItem: ResponseFunctionToolCall = {
+        type: 'function_call',
+        id: part.id, // Used as the item id
+        call_id: part.id, // Used to match with function_call_output
+        name: part.name,
+        arguments: part.args,
+      };
+      result.push(toolCallItem);
+    }
+    /* v8 ignore stop */
+    // Note: thought encoding is not yet implemented
   }
 
   return result;
-}
-
-/**
- * Request parameters for the OpenAI Responses API.
- */
-export interface ResponsesRequestParams {
-  model: string;
-  input: ResponseInputItem[];
-  max_output_tokens?: number;
-  temperature?: number;
-  top_p?: number;
-  reasoning?: Reasoning;
 }
 
 /**
@@ -226,19 +307,31 @@ export interface ResponsesRequestParams {
  *
  * This function performs strict param checking - any unhandled params will
  * cause an error to ensure we don't silently ignore user configuration.
+ *
+ * @param modelId - The model ID to use
+ * @param messages - The messages to send
+ * @param tools - Optional tools to make available to the model
+ * @param params - Optional parameters (temperature, maxTokens, etc.)
  */
 export function buildRequestParams(
   modelId: OpenAIModelId,
   messages: readonly Message[],
+  tools?: readonly ToolSchema[],
   params: Params = {}
-): ResponsesRequestParams {
+): ResponseCreateParamsNonStreaming {
   const inputItems = encodeMessages(messages);
 
   return ParamHandler.with(params, 'openai', modelId, (p) => {
-    const requestParams: ResponsesRequestParams = {
+    const requestParams: ResponseCreateParamsNonStreaming = {
       model: modelName(modelId, null),
       input: inputItems,
     };
+
+    /* v8 ignore start - tool encoding will be tested via e2e */
+    if (tools && tools.length > 0) {
+      requestParams.tools = encodeTools(tools);
+    }
+    /* v8 ignore stop */
 
     const maxTokens = p.get('maxTokens');
     if (maxTokens !== undefined) {
@@ -339,14 +432,15 @@ function decodeContent(
         }
         /* v8 ignore stop */
       }
-      /* v8 ignore start - content types not yet implemented */
+      /* v8 ignore start - tool decoding will be tested via e2e */
     } else if (item.type === 'function_call') {
-      throw new FeatureNotSupportedError(
-        'function call decoding',
-        'openai',
-        null,
-        'Function calls in responses are not yet implemented'
-      );
+      const toolCall: ToolCall = {
+        type: 'tool_call',
+        id: item.call_id,
+        name: item.name,
+        args: item.arguments,
+      };
+      parts.push(toolCall);
       /* v8 ignore stop */
     } else if (item.type === 'reasoning') {
       if (includeThoughts) {

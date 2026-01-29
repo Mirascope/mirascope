@@ -64,9 +64,14 @@ describe('buildRequestParams thinking config', () => {
       }),
     ];
 
-    const params = buildRequestParams('openai/gpt-4o:completions', messages, {
-      thinking: { level: 'medium', encodeThoughtsAsText: true },
-    });
+    const params = buildRequestParams(
+      'openai/gpt-4o:completions',
+      messages,
+      undefined,
+      {
+        thinking: { level: 'medium', encodeThoughtsAsText: true },
+      }
+    );
 
     // Multiple text parts are kept as a list (thought encoded as text + result)
     expect(params.messages).toEqual([
@@ -89,9 +94,14 @@ describe('buildRequestParams thinking config', () => {
       }),
     ];
 
-    const params = buildRequestParams('openai/gpt-4o:completions', messages, {
-      thinking: { level: 'medium' },
-    });
+    const params = buildRequestParams(
+      'openai/gpt-4o:completions',
+      messages,
+      undefined,
+      {
+        thinking: { level: 'medium' },
+      }
+    );
 
     // Single text part is simplified to string
     expect(params.messages).toEqual([{ role: 'assistant', content: 'Result' }]);
@@ -111,7 +121,7 @@ describe('buildRequestParams', () => {
 
   it('includes maxTokens when provided', () => {
     const messages = [user('Hello')];
-    const params = buildRequestParams('openai/gpt-4o', messages, {
+    const params = buildRequestParams('openai/gpt-4o', messages, undefined, {
       maxTokens: 100,
     });
 
@@ -120,7 +130,7 @@ describe('buildRequestParams', () => {
 
   it('includes temperature when provided', () => {
     const messages = [user('Hello')];
-    const params = buildRequestParams('openai/gpt-4o', messages, {
+    const params = buildRequestParams('openai/gpt-4o', messages, undefined, {
       temperature: 0.7,
     });
 
@@ -129,7 +139,7 @@ describe('buildRequestParams', () => {
 
   it('includes topP when provided', () => {
     const messages = [user('Hello')];
-    const params = buildRequestParams('openai/gpt-4o', messages, {
+    const params = buildRequestParams('openai/gpt-4o', messages, undefined, {
       topP: 0.9,
     });
 
@@ -138,7 +148,7 @@ describe('buildRequestParams', () => {
 
   it('includes seed when provided', () => {
     const messages = [user('Hello')];
-    const params = buildRequestParams('openai/gpt-4o', messages, {
+    const params = buildRequestParams('openai/gpt-4o', messages, undefined, {
       seed: 42,
     });
 
@@ -147,7 +157,7 @@ describe('buildRequestParams', () => {
 
   it('includes stopSequences when provided', () => {
     const messages = [user('Hello')];
-    const params = buildRequestParams('openai/gpt-4o', messages, {
+    const params = buildRequestParams('openai/gpt-4o', messages, undefined, {
       stopSequences: ['END', 'STOP'],
     });
 
@@ -251,11 +261,7 @@ describe('audio encoding', () => {
     const messages = [user(['Listen to this', oggAudio])];
 
     expect(() =>
-      buildRequestParams(
-        'openai/gpt-4o-audio-preview:completions',
-        messages,
-        {}
-      )
+      buildRequestParams('openai/gpt-4o-audio-preview:completions', messages)
     ).toThrow(FeatureNotSupportedError);
   });
 
@@ -281,7 +287,7 @@ describe('audio encoding', () => {
 
     // gpt-4o-mini doesn't support audio
     expect(() =>
-      buildRequestParams('openai/gpt-4o-mini:completions', messages, {})
+      buildRequestParams('openai/gpt-4o-mini:completions', messages)
     ).toThrow(FeatureNotSupportedError);
   });
 });

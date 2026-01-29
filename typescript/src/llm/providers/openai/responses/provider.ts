@@ -8,6 +8,7 @@ import type { Context } from '@/llm/context';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { BaseProvider } from '@/llm/providers/base';
+import type { ToolSchema } from '@/llm/tools';
 import { getIncludeThoughts } from '@/llm/providers/_utils';
 import { OPENAI_ERROR_MAP } from '@/llm/providers/openai/_utils/errors';
 import type { OpenAIModelId } from '@/llm/providers/openai/model-id';
@@ -65,18 +66,21 @@ export class OpenAIResponsesProvider extends BaseProvider {
    * @param args - Call arguments
    * @param args.modelId - The OpenAI model ID to use
    * @param args.messages - Array of messages to send
+   * @param args.tools - Optional tools to make available to the model
    * @param args.params - Optional additional parameters
    * @returns Response object containing the API response
    */
   protected async _call(args: {
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<Response> {
     const modelIdTyped = args.modelId as OpenAIModelId;
     const requestParams = buildRequestParams(
       modelIdTyped,
       args.messages,
+      args.tools,
       args.params
     );
 
@@ -109,18 +113,21 @@ export class OpenAIResponsesProvider extends BaseProvider {
    * @param args - Call arguments
    * @param args.modelId - The OpenAI model ID to use
    * @param args.messages - Array of messages to send
+   * @param args.tools - Optional tools to make available to the model
    * @param args.params - Optional additional parameters
    * @returns StreamResponse object for streaming consumption
    */
   protected async _stream(args: {
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<StreamResponse> {
     const modelIdTyped = args.modelId as OpenAIModelId;
     const requestParams = buildRequestParams(
       modelIdTyped,
       args.messages,
+      args.tools,
       args.params
     );
 
@@ -152,18 +159,24 @@ export class OpenAIResponsesProvider extends BaseProvider {
    * that future change clearer.
    *
    * @param args - Call arguments including context and model
+   * @param args.modelId - The OpenAI model ID to use
+   * @param args.messages - Array of messages to send
+   * @param args.tools - Optional tools to make available to the model
+   * @param args.params - Optional additional parameters
    * @returns ContextResponse object containing the API response
    */
   protected async _contextCall<DepsT>(args: {
     ctx: Context<DepsT>;
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<ContextResponse<DepsT>> {
     const modelIdTyped = args.modelId as OpenAIModelId;
     const requestParams = buildRequestParams(
       modelIdTyped,
       args.messages,
+      args.tools,
       args.params
     );
 
@@ -199,18 +212,24 @@ export class OpenAIResponsesProvider extends BaseProvider {
    * that future change clearer.
    *
    * @param args - Call arguments including context and model
+   * @param args.modelId - The OpenAI model ID to use
+   * @param args.messages - Array of messages to send
+   * @param args.tools - Optional tools to make available to the model
+   * @param args.params - Optional additional parameters
    * @returns ContextStreamResponse object for streaming consumption
    */
   protected async _contextStream<DepsT>(args: {
     ctx: Context<DepsT>;
     modelId: string;
     messages: readonly Message[];
+    tools?: readonly ToolSchema[];
     params?: Params;
   }): Promise<ContextStreamResponse<DepsT>> {
     const modelIdTyped = args.modelId as OpenAIModelId;
     const requestParams = buildRequestParams(
       modelIdTyped,
       args.messages,
+      args.tools,
       args.params
     );
 
