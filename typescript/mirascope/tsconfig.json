@@ -12,9 +12,11 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
+      "@/tests/*": ["tests/*"],
       "@/*": ["src/*"]
-    }
+    },
+    "types": ["node"]
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
   "exclude": ["node_modules"]
 }
