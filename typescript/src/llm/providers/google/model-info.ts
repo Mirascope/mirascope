@@ -6,38 +6,52 @@
  */
 
 /**
+ * Array of all known Google model IDs.
+ * This is the source of truth - the type and Set are derived from it.
+ */
+const GOOGLE_KNOWN_MODELS_ARRAY = [
+  'google/gemini-2.0-flash',
+  'google/gemini-2.0-flash-001',
+  'google/gemini-2.0-flash-exp',
+  'google/gemini-2.0-flash-exp-image-generation',
+  'google/gemini-2.0-flash-lite',
+  'google/gemini-2.0-flash-lite-001',
+  'google/gemini-2.0-flash-lite-preview',
+  'google/gemini-2.0-flash-lite-preview-02-05',
+  'google/gemini-2.5-flash',
+  'google/gemini-2.5-flash-image',
+  'google/gemini-2.5-flash-image-preview',
+  'google/gemini-2.5-flash-lite',
+  'google/gemini-2.5-flash-lite-preview-09-2025',
+  'google/gemini-2.5-flash-preview-09-2025',
+  'google/gemini-2.5-pro',
+  'google/gemini-3-flash-preview',
+  'google/gemini-3-pro-image-preview',
+  'google/gemini-3-pro-preview',
+  'google/gemini-flash-latest',
+  'google/gemini-flash-lite-latest',
+  'google/gemini-pro-latest',
+  'google/gemini-robotics-er-1.5-preview',
+  'google/gemma-3-12b-it',
+  'google/gemma-3-1b-it',
+  'google/gemma-3-27b-it',
+  'google/gemma-3-4b-it',
+  'google/gemma-3n-e2b-it',
+  'google/gemma-3n-e4b-it',
+  'google/nano-banana-pro-preview',
+] as const;
+
+/**
  * Valid Google model IDs.
  */
-export type GoogleKnownModels =
-  | 'google/gemini-2.0-flash'
-  | 'google/gemini-2.0-flash-001'
-  | 'google/gemini-2.0-flash-exp'
-  | 'google/gemini-2.0-flash-exp-image-generation'
-  | 'google/gemini-2.0-flash-lite'
-  | 'google/gemini-2.0-flash-lite-001'
-  | 'google/gemini-2.0-flash-lite-preview'
-  | 'google/gemini-2.0-flash-lite-preview-02-05'
-  | 'google/gemini-2.5-flash'
-  | 'google/gemini-2.5-flash-image'
-  | 'google/gemini-2.5-flash-image-preview'
-  | 'google/gemini-2.5-flash-lite'
-  | 'google/gemini-2.5-flash-lite-preview-09-2025'
-  | 'google/gemini-2.5-flash-preview-09-2025'
-  | 'google/gemini-2.5-pro'
-  | 'google/gemini-3-flash-preview'
-  | 'google/gemini-3-pro-image-preview'
-  | 'google/gemini-3-pro-preview'
-  | 'google/gemini-flash-latest'
-  | 'google/gemini-flash-lite-latest'
-  | 'google/gemini-pro-latest'
-  | 'google/gemini-robotics-er-1.5-preview'
-  | 'google/gemma-3-12b-it'
-  | 'google/gemma-3-1b-it'
-  | 'google/gemma-3-27b-it'
-  | 'google/gemma-3-4b-it'
-  | 'google/gemma-3n-e2b-it'
-  | 'google/gemma-3n-e4b-it'
-  | 'google/nano-banana-pro-preview';
+export type GoogleKnownModels = (typeof GOOGLE_KNOWN_MODELS_ARRAY)[number];
+
+/**
+ * Set of all known Google model IDs.
+ */
+export const GOOGLE_KNOWN_MODELS: ReadonlySet<string> = new Set(
+  GOOGLE_KNOWN_MODELS_ARRAY
+);
 
 /**
  * Models that do not support structured outputs when tools are present.
