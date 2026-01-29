@@ -2,19 +2,11 @@
  * Tests for ContextStreamResponse.
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { createContext } from '@/llm/context';
+import { describe, it, expect } from 'vitest';
 import { user } from '@/llm/messages';
 import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 import { textStart, textChunk, textEnd } from '@/llm/responses/chunks';
 import type { StreamResponseChunk } from '@/llm/responses/chunks';
-
-// Mock the provider registry to return our mock provider
-vi.mock('@/llm/providers/registry', () => ({
-  getProviderForModel: vi.fn(),
-}));
-
-import { getProviderForModel } from '@/llm/providers/registry';
 
 describe('ContextStreamResponse', () => {
   interface TestDeps {
@@ -49,11 +41,6 @@ describe('ContextStreamResponse', () => {
 
   describe('constructor', () => {
     it('inherits properties from StreamResponse', async () => {
-      const mockProvider = {
-        contextStream: vi.fn(),
-      };
-      vi.mocked(getProviderForModel).mockReturnValue(mockProvider as never);
-
       const response = createTestStreamResponse();
 
       expect(response.providerId).toBe('anthropic');
@@ -62,23 +49,6 @@ describe('ContextStreamResponse', () => {
       // Consume stream to get text
       await response.consume();
       expect(response.text()).toBe('Hello!');
-    });
-  });
-
-  describe('executeTools()', () => {
-    it('returns empty array (tools not yet implemented)', async () => {
-      const mockProvider = {
-        contextStream: vi.fn(),
-      };
-      vi.mocked(getProviderForModel).mockReturnValue(mockProvider as never);
-
-      const response = createTestStreamResponse();
-      await response.consume();
-      const ctx = createContext<TestDeps>({ userId: '123' });
-
-      const outputs = response.executeTools(ctx);
-
-      expect(outputs).toEqual([]);
     });
   });
 });

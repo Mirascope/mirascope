@@ -2,18 +2,10 @@
  * Tests for ContextResponse.
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { createContext } from '@/llm/context';
+import { describe, it, expect } from 'vitest';
 import { user, assistant } from '@/llm/messages';
 import { ContextResponse } from '@/llm/responses/context-response';
 import { createUsage } from '@/llm/responses/usage';
-
-// Mock the provider registry to return our mock provider
-vi.mock('@/llm/providers/registry', () => ({
-  getProviderForModel: vi.fn(),
-}));
-
-import { getProviderForModel } from '@/llm/providers/registry';
 
 describe('ContextResponse', () => {
   interface TestDeps {
@@ -50,11 +42,6 @@ describe('ContextResponse', () => {
 
   describe('constructor', () => {
     it('inherits properties from BaseResponse', () => {
-      const mockProvider = {
-        contextCall: vi.fn(),
-      };
-      vi.mocked(getProviderForModel).mockReturnValue(mockProvider as never);
-
       const response = createTestResponse();
 
       expect(response.providerId).toBe('anthropic');
@@ -62,22 +49,6 @@ describe('ContextResponse', () => {
       expect(response.text()).toBe('Hello!');
       expect(response.finishReason).toBeNull();
       expect(response.usage).toBe(mockUsage);
-    });
-  });
-
-  describe('executeTools()', () => {
-    it('returns empty array (tools not yet implemented)', () => {
-      const mockProvider = {
-        contextCall: vi.fn(),
-      };
-      vi.mocked(getProviderForModel).mockReturnValue(mockProvider as never);
-
-      const response = createTestResponse();
-      const ctx = createContext<TestDeps>({ userId: '123' });
-
-      const outputs = response.executeTools(ctx);
-
-      expect(outputs).toEqual([]);
     });
   });
 });

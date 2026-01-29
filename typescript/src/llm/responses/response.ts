@@ -2,10 +2,12 @@
  * Response class for LLM calls.
  */
 
+import type { UserContent } from '@/llm/messages';
 import {
   BaseResponse,
   type BaseResponseInit,
 } from '@/llm/responses/base-response';
+import type { StreamResponse } from '@/llm/responses/stream-response';
 
 /**
  * Initialization options for creating a Response.
@@ -34,6 +36,55 @@ export class Response extends BaseResponse {
     // this.toolkit = tools instanceof Toolkit ? tools : new Toolkit(tools);
   }
 
+  /**
+   * Generate a new Response using this response's messages with additional user content.
+   *
+   * Uses this response's tools and format type. Also uses this response's provider,
+   * model, and params.
+   *
+   * @param content - The new user message content to append to the message history.
+   * @returns A new Response instance generated from the extended message history.
+   *
+   * @example
+   * ```typescript
+   * const response = await model.call('Hello!');
+   * console.log(response.text());
+   *
+   * // Continue the conversation
+   * const followUp = await response.resume('Tell me more about that');
+   * console.log(followUp.text());
+   * ```
+   */
+  async resume(content: UserContent): Promise<Response> {
+    const model = await this.model;
+    return model.resume(this, content);
+  }
+
+  /**
+   * Generate a new StreamResponse using this response's messages with additional user content.
+   *
+   * Uses this response's tools and format type. Also uses this response's provider,
+   * model, and params. Returns a streaming response for incremental consumption.
+   *
+   * @param content - The new user message content to append to the message history.
+   * @returns A new StreamResponse instance generated from the extended message history.
+   *
+   * @example
+   * ```typescript
+   * const response = await model.call('Hello!');
+   * console.log(response.text());
+   *
+   * // Continue the conversation with streaming
+   * const followUp = await response.resumeStream('Tell me more about that');
+   * for await (const text of followUp.textStream()) {
+   *   process.stdout.write(text);
+   * }
+   * ```
+   */
+  async resumeStream(content: UserContent): Promise<StreamResponse> {
+    const model = await this.model;
+    return model.resumeStream(this, content);
+  }
+
   // Note: execute_tools() method is not implemented yet as it requires Tools infrastructure.
-  // Note: resume() method is not implemented yet as it requires Model infrastructure.
 }
