@@ -10,12 +10,12 @@ try {
 
   // Run formatter on specific files
   if (files.length > 0) {
-    await $`bunx prettier --write ${files}`.cwd("./cloud");
+    await $`bunx oxfmt --ignore-path .oxfmtignore ${files}`.cwd("./cloud");
   }
 
-  // Run ESLint with fix on specific files
+  // Run oxlint with fix on specific files
   if (files.length > 0) {
-    await $`bunx eslint --fix ${files}`.cwd("./cloud");
+    await $`bunx oxlint --fix ${files}`.cwd("./cloud");
   }
 
   process.exit(0);

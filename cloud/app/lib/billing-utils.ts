@@ -1,4 +1,5 @@
 import type { SubscriptionDetails } from "@/api/organizations.schemas";
+
 import { cloudHostedDetails } from "@/app/components/pricing-page";
 import { PLAN_TIER_ORDER, type PlanTier } from "@/payments/plans";
 

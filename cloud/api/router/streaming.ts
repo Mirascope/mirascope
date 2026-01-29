@@ -6,16 +6,18 @@
  */
 
 import { Effect, Stream, pipe, Ref } from "effect";
-import { ProxyError } from "@/errors";
-import { getCostCalculator, type ProviderName } from "@/api/router/providers";
+
 import type { TokenUsage } from "@/api/router/pricing";
 import type { ProxyResult } from "@/api/router/proxy";
+
+import { getCostCalculator, type ProviderName } from "@/api/router/providers";
 import {
   type RouterRequestIdentifiers,
   type RouterRequestContext,
   type ValidatedRouterRequest,
   enqueueRouterMetering,
 } from "@/api/router/utils";
+import { ProxyError } from "@/errors";
 import { RouterMeteringQueueService } from "@/workers/routerMeteringQueue";
 
 /**

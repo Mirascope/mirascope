@@ -1,13 +1,11 @@
-import {
-  describe,
-  expect,
-  it,
-  TestApiKeyFixture,
-  MockDrizzleORM,
-} from "@/tests/db";
 import { Effect, Layer } from "effect";
-import { Database } from "@/db/database";
-import { Payments } from "@/payments";
+import { vi } from "vitest";
+
+import type { ProxyResult } from "@/api/router/proxy";
+import type { ResponseMetadata } from "@/api/router/streaming";
+
+import { handleNonStreamingResponse } from "@/api/router/non-streaming";
+import { handleStreamingResponse } from "@/api/router/streaming";
 import {
   validateRouterRequest,
   createPendingRouterRequest,
@@ -18,14 +16,18 @@ import {
   type RouterRequestContext,
   type RouterRequestIdentifiers,
 } from "@/api/router/utils";
-import { handleStreamingResponse } from "@/api/router/streaming";
-import { handleNonStreamingResponse } from "@/api/router/non-streaming";
-import { RouterMeteringQueueService } from "@/workers/routerMeteringQueue";
-import { DefaultMockPayments, MockPayments } from "@/tests/payments";
+import { Database } from "@/db/database";
 import { InternalError, UnauthorizedError, DatabaseError } from "@/errors";
-import type { ProxyResult } from "@/api/router/proxy";
-import type { ResponseMetadata } from "@/api/router/streaming";
-import { vi } from "vitest";
+import { Payments } from "@/payments";
+import {
+  describe,
+  expect,
+  it,
+  TestApiKeyFixture,
+  MockDrizzleORM,
+} from "@/tests/db";
+import { DefaultMockPayments, MockPayments } from "@/tests/payments";
+import { RouterMeteringQueueService } from "@/workers/routerMeteringQueue";
 
 describe("Route Handlers", () => {
   describe("validateRouterRequest", () => {

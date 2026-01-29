@@ -1,8 +1,9 @@
-import React from "react";
-import { cn } from "@/app/lib/utils";
-import { ButtonLink } from "@/app/components/ui/button-link";
-import { Badge } from "@/app/components/ui/badge";
 import { Check, X } from "lucide-react";
+import React from "react";
+
+import { Badge } from "@/app/components/ui/badge";
+import { ButtonLink } from "@/app/components/ui/button-link";
+import { cn } from "@/app/lib/utils";
 import { PLAN_LIMITS, type PlanTier } from "@/payments/plans";
 
 interface PlanDetailsRowProps {

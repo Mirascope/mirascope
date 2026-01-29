@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { Html, Body } from "@react-email/components";
 import { Effect } from "effect";
 import * as React from "react";
-import { Html, Body } from "@react-email/components";
-import { Button } from "@/emails/templates/components/button";
+import { describe, it, expect } from "vitest";
+
 import { renderReactElement } from "@/emails/render";
+import { Button } from "@/emails/templates/components/button";
 
 describe("Button", () => {
   it("renders button with href and text", () => {

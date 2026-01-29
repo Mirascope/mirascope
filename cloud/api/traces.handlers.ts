@@ -1,13 +1,15 @@
 import { Effect } from "effect";
-import { Database } from "@/db/database";
-import { Authentication } from "@/auth";
+
 import type {
   CreateTraceRequest,
   CreateTraceResponse,
   ListByFunctionHashResponse,
 } from "@/api/traces.schemas";
 import type { PublicTrace } from "@/db/clickhouse/traces";
+
+import { Authentication } from "@/auth";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
+import { Database } from "@/db/database";
 
 export * from "@/api/traces.schemas";
 

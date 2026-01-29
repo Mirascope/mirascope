@@ -1,9 +1,10 @@
+import { describe, it, expect } from "@effect/vitest";
+
 import {
   stripHighlightMarkers,
   highlightCode,
   fallbackHighlighter,
 } from "./code-highlight";
-import { describe, it, expect } from "@effect/vitest";
 
 // Test cases for different comment styles and highlighting patterns
 describe("stripHighlightMarkers", () => {

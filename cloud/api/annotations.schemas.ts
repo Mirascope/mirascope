@@ -1,5 +1,7 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
+
+import { TagNameSchema } from "@/api/tags.schemas";
 import {
   NotFoundError,
   AlreadyExistsError,
@@ -7,7 +9,6 @@ import {
   PermissionDeniedError,
   UnauthorizedError,
 } from "@/errors";
-import { TagNameSchema } from "@/api/tags.schemas";
 
 const LabelSchema = Schema.Literal("pass", "fail");
 

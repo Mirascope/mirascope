@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
-import { useOrganization } from "@/app/contexts/organization";
-import { useAuth } from "@/app/contexts/auth";
+
 import { BatchInviteSection } from "@/app/components/batch-invite-section";
 import { TeamMembersSection } from "@/app/components/team-members-section";
+import { useAuth } from "@/app/contexts/auth";
+import { useOrganization } from "@/app/contexts/organization";
 
 function TeamSettingsPage() {
   const { selectedOrganization, isLoading } = useOrganization();

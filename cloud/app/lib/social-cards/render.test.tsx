@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+
 import { loadAssets, renderSocialCard, clearAssetCache } from "./render";
 
 describe("render", () => {

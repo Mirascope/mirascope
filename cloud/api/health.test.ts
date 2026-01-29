@@ -1,5 +1,6 @@
 import { describe, it, expect } from "@effect/vitest";
 import { Effect } from "effect";
+
 import { TestApiClient, TestClient } from "@/tests/api";
 
 describe("Health API", () => {

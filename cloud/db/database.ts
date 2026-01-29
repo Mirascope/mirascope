@@ -38,24 +38,26 @@
  */
 
 import { Context, Layer, Effect } from "effect";
-import { type Ready, dependencyProvider } from "@/utils";
-import { DrizzleORM, type DrizzleORMConfig } from "@/db/client";
+
 import type { StripeConfig } from "@/settings";
-import { Users } from "@/db/users";
-import { Sessions } from "@/db/sessions";
-import { Organizations } from "@/db/organizations";
-import { OrganizationMemberships } from "@/db/organization-memberships";
-import { OrganizationInvitations } from "@/db/organization-invitations";
-import { Projects } from "@/db/projects";
-import { ProjectMemberships } from "@/db/project-memberships";
-import { Environments } from "@/db/environments";
+
+import { Annotations } from "@/db/annotations";
 import { ApiKeys } from "@/db/api-keys";
 import { Traces } from "@/db/clickhouse/traces";
+import { DrizzleORM, type DrizzleORMConfig } from "@/db/client";
+import { Environments } from "@/db/environments";
 import { Functions } from "@/db/functions";
-import { Annotations } from "@/db/annotations";
-import { Tags } from "@/db/tags";
+import { OrganizationInvitations } from "@/db/organization-invitations";
+import { OrganizationMemberships } from "@/db/organization-memberships";
+import { Organizations } from "@/db/organizations";
+import { ProjectMemberships } from "@/db/project-memberships";
+import { Projects } from "@/db/projects";
 import { RouterRequests } from "@/db/router-requests";
+import { Sessions } from "@/db/sessions";
+import { Tags } from "@/db/tags";
+import { Users } from "@/db/users";
 import { Payments } from "@/payments";
+import { type Ready, dependencyProvider } from "@/utils";
 
 /**
  * Type definition for the traces service with nested annotations.

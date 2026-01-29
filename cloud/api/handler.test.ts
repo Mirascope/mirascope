@@ -1,19 +1,21 @@
 import { Effect, Layer } from "effect";
-import { describe, it, expect } from "@/tests/api";
-import { handleRequest } from "@/api/handler";
+
 import type { PublicUser } from "@/db/schema";
-import { HandlerError } from "@/errors";
+
+import { Analytics } from "@/analytics";
+import { handleRequest } from "@/api/handler";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { DrizzleORM } from "@/db/client";
-import { Analytics } from "@/analytics";
 import { Emails } from "@/emails";
-import { RealtimeSpans } from "@/workers/realtimeSpans";
-import { SpansIngestQueue } from "@/workers/spanIngestQueue";
+import { HandlerError } from "@/errors";
 import { Settings, type SettingsConfig } from "@/settings";
-import { createMockSettings } from "@/tests/settings";
+import { describe, it, expect } from "@/tests/api";
 import { getTestClickHouseConfig } from "@/tests/global-setup";
 import { MockDrizzleORMLayer } from "@/tests/mock-drizzle";
+import { createMockSettings } from "@/tests/settings";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
+import { SpansIngestQueue } from "@/workers/spanIngestQueue";
 
 const mockUser: PublicUser = {
   id: "test-user-id",

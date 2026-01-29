@@ -1,4 +1,8 @@
 import { Effect, Layer } from "effect";
+
+import type { PublicProject, PublicEnvironment } from "@/db/schema";
+
+import { toAnnotation } from "@/api/annotations.handlers";
 import {
   describe,
   it,
@@ -6,8 +10,6 @@ import {
   TestApiContext,
   createApiClient,
 } from "@/tests/api";
-import type { PublicProject, PublicEnvironment } from "@/db/schema";
-import { toAnnotation } from "@/api/annotations.handlers";
 import { TEST_DATABASE_URL } from "@/tests/db";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
 

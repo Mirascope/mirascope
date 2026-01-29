@@ -32,6 +32,7 @@
  */
 
 import { Context, Effect, Layer } from "effect";
+
 import { SettingsValidationError } from "@/errors";
 
 // =============================================================================

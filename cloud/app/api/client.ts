@@ -1,12 +1,13 @@
-import { QueryClient } from "@tanstack/react-query";
-import { createEffectQuery } from "effect-query";
 import {
   HttpClient,
   HttpApiClient,
   HttpClientRequest,
   HttpClientResponse,
 } from "@effect/platform";
+import { QueryClient } from "@tanstack/react-query";
 import { Effect, Layer, Option } from "effect";
+import { createEffectQuery } from "effect-query";
+
 import { MirascopeCloudApi } from "@/api/api";
 
 export const queryClient = new QueryClient({

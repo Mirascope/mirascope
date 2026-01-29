@@ -1,11 +1,11 @@
-import React from "react";
 import { Link, useRouterState, type LinkProps } from "@tanstack/react-router";
-import { cn } from "@/app/lib/utils";
-import { ChevronDown, ChevronRight } from "lucide-react";
-
-import { useEffect, useRef, useState } from "react";
 import { useRouter } from "@tanstack/react-router";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import React from "react";
+import { useEffect, useRef, useState } from "react";
+
 import { useSidebarContext } from "@/app/components/content-layout";
+import { cn } from "@/app/lib/utils";
 
 // Breakpoint definitions - matching Tailwind's defaults
 export const BREAKPOINTS = {

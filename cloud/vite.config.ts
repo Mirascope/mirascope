@@ -3,14 +3,15 @@ import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import path from "path";
-import { viteMDX } from "./vite-plugins/mdx";
+import { defineConfig } from "vite";
+
+import ContentProcessor from "./app/lib/content/content-processor";
 import { viteContent } from "./vite-plugins/content";
 import { viteImages } from "./vite-plugins/images";
+import { viteMDX } from "./vite-plugins/mdx";
+import { pagefindDev } from "./vite-plugins/pagefind-dev";
 import { viteRobots } from "./vite-plugins/robots";
 import { viteSocialCards } from "./vite-plugins/social-cards";
-import { pagefindDev } from "./vite-plugins/pagefind-dev";
-import { defineConfig } from "vite";
-import ContentProcessor from "./app/lib/content/content-processor";
 
 // Init shared content processor instance
 const processor = new ContentProcessor({

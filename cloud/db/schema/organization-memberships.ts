@@ -6,6 +6,7 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
+
 import { organizations, type PublicOrganization } from "./organizations";
 import { users } from "./users";
 

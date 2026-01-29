@@ -49,13 +49,16 @@
  * ```
  */
 
+import type { CreateEmailOptions, CreateEmailResponseSuccess } from "resend";
+
 import { Context, Layer, Effect, Schedule } from "effect";
-import { Resend } from "@/emails/resend-client";
+
 import type { ResendConfig } from "@/settings";
+
+import { Audience } from "@/emails/audience";
+import { Resend } from "@/emails/resend-client";
 import { ResendError } from "@/errors";
 import { dependencyProvider, type Ready } from "@/utils";
-import { Audience } from "@/emails/audience";
-import type { CreateEmailOptions, CreateEmailResponseSuccess } from "resend";
 
 /**
  * Email service for sending transactional emails.

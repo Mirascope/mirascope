@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { ChevronDown, Wrench } from "lucide-react";
-import { CodeBlock } from "@/app/components/blocks/code-block/code-block";
-import MirascopeLogo from "@/app/components/blocks/branding/mirascope-logo";
-import { cn } from "@/app/lib/utils";
+import { useState } from "react";
+
 import {
   Message,
   MessageContent,
@@ -13,6 +11,9 @@ import {
   ReasoningTrigger,
   ReasoningContent,
 } from "@/app/components/ai-elements/reasoning";
+import MirascopeLogo from "@/app/components/blocks/branding/mirascope-logo";
+import { CodeBlock } from "@/app/components/blocks/code-block/code-block";
+import { cn } from "@/app/lib/utils";
 
 // Types
 type ProviderId = "openai" | "anthropic" | "google";

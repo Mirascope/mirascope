@@ -1,11 +1,13 @@
 import { Effect, Schema } from "effect";
 import { ParseError } from "effect/ParseResult";
-import { describe, it, expect, TestApiContext } from "@/tests/api";
+
+import type { PublicOrganizationWithMembership } from "@/db/schema";
+
 import {
   CreateOrganizationRequestSchema,
   CreatePaymentIntentRequestSchema,
 } from "@/api/organizations.schemas";
-import type { PublicOrganizationWithMembership } from "@/db/schema";
+import { describe, it, expect, TestApiContext } from "@/tests/api";
 
 describe("CreateOrganizationRequestSchema validation", () => {
   it("rejects empty name", () => {

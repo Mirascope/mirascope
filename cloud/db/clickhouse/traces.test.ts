@@ -1,16 +1,10 @@
-import {
-  describe,
-  it,
-  expect,
-  TestEnvironmentFixture,
-  MockDrizzleORM,
-  TestDrizzleORM,
-} from "@/tests/db";
-import { Effect, Layer } from "effect";
 import { eq } from "drizzle-orm";
-import { Database } from "@/db/database";
+import { Effect, Layer } from "effect";
+import { vi, afterAll } from "vitest";
+
+import { ClickHouse } from "@/db/clickhouse/client";
 import { DrizzleORM } from "@/db/client";
-import { TestSubscriptionWithRealDatabaseFixture } from "@/tests/payments";
+import { Database } from "@/db/database";
 import { organizations } from "@/db/schema/organizations";
 import {
   DatabaseError,
@@ -19,14 +13,21 @@ import {
   ImmutableResourceError,
   PlanLimitExceededError,
 } from "@/errors";
+import { TestClickHouse } from "@/tests/clickhouse";
+import {
+  describe,
+  it,
+  expect,
+  TestEnvironmentFixture,
+  MockDrizzleORM,
+  TestDrizzleORM,
+} from "@/tests/db";
+import { getTestClickHouseConfig } from "@/tests/global-setup";
+import { TestSubscriptionWithRealDatabaseFixture } from "@/tests/payments";
 import {
   SpansIngestQueue,
   type SpansIngestMessage,
 } from "@/workers/spanIngestQueue";
-import { vi, afterAll } from "vitest";
-import { ClickHouse } from "@/db/clickhouse/client";
-import { TestClickHouse } from "@/tests/clickhouse";
-import { getTestClickHouseConfig } from "@/tests/global-setup";
 
 const clickhouseConfig = getTestClickHouseConfig();
 

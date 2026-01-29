@@ -6,10 +6,18 @@
  */
 
 import { Effect } from "effect";
+
+import type { TokenUsage } from "@/api/router/pricing";
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
+
+import { estimateCost } from "@/api/router/cost-estimator";
+import {
+  isValidProvider,
+  extractModelId,
+  type ProviderName,
+} from "@/api/router/providers";
 import { authenticate } from "@/auth";
 import { Database } from "@/db/database";
-import { Payments } from "@/payments";
 import {
   InternalError,
   UnauthorizedError,
@@ -17,13 +25,7 @@ import {
   NotFoundError,
   PermissionDeniedError,
 } from "@/errors";
-import {
-  isValidProvider,
-  extractModelId,
-  type ProviderName,
-} from "@/api/router/providers";
-import { estimateCost } from "@/api/router/cost-estimator";
-import type { TokenUsage } from "@/api/router/pricing";
+import { Payments } from "@/payments";
 import {
   RouterMeteringQueueService,
   type RouterMeteringMessage,

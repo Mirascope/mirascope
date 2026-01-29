@@ -1,3 +1,15 @@
+import { Effect, Layer } from "effect";
+
+import type { PublicProject } from "@/db/schema";
+
+import { Database } from "@/db/database";
+import {
+  AlreadyExistsError,
+  DatabaseError,
+  NotFoundError,
+  PermissionDeniedError,
+  PlanLimitExceededError,
+} from "@/errors";
 import {
   describe,
   it,
@@ -8,16 +20,6 @@ import {
   TestDrizzleORM,
 } from "@/tests/db";
 import { TestSubscriptionWithRealDatabaseFixture } from "@/tests/payments";
-import { Effect, Layer } from "effect";
-import { Database } from "@/db/database";
-import {
-  AlreadyExistsError,
-  DatabaseError,
-  NotFoundError,
-  PermissionDeniedError,
-  PlanLimitExceededError,
-} from "@/errors";
-import type { PublicProject } from "@/db/schema";
 
 describe("Projects", () => {
   // ===========================================================================

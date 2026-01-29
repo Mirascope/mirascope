@@ -1,7 +1,9 @@
-import { useProvider } from "@/app/components/mdx/elements/model-provider-provider";
 import type { Provider } from "@/app/components/mdx/elements/model-provider-provider";
+
 import { CodeBlock } from "@/app/components/blocks/code-block/code-block";
+import { useProvider } from "@/app/components/mdx/elements/model-provider-provider";
 import { cn } from "@/app/lib/utils";
+
 import { TabbedSection, Tab } from "./tabbed-section";
 
 // Define available operating systems

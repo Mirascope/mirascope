@@ -2,8 +2,9 @@
  * @fileoverview Tests for PostHog Effect-native service.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { Effect } from "effect";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+
 import { PostHog } from "@/analytics/posthog-client";
 
 describe("PostHog", () => {

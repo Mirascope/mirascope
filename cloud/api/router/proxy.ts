@@ -7,8 +7,10 @@
  */
 
 import { Effect } from "effect";
-import { ProxyError } from "@/errors";
+
 import type { ProxyConfig, ProviderName } from "@/api/router/providers";
+
+import { ProxyError } from "@/errors";
 
 /**
  * Extracts the path suffix after the provider prefix.

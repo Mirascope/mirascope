@@ -46,8 +46,10 @@
 
 import { Effect, Layer, Context } from "effect";
 import StripeAPI from "stripe";
-import { StripeError } from "@/errors";
+
 import type { StripeConfig } from "@/settings";
+
+import { StripeError } from "@/errors";
 
 /**
  * Type helper to convert a single Stripe resource method to an Effect-returning method.

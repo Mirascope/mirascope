@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "@/app/contexts/auth";
+
 import {
   Card,
   CardContent,
@@ -10,6 +10,7 @@ import {
 } from "@/app/components/ui/card";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import { useAuth } from "@/app/contexts/auth";
 
 function MyDetailsSettingsPage() {
   const { user, isLoading } = useAuth();

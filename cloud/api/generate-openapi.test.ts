@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest";
-import { generateOpenApiSpec } from "@/api/generate-openapi";
 import { execSync } from "child_process";
 import { readFileSync, unlinkSync, mkdtempSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
+import { describe, it, expect } from "vitest";
+
+import { generateOpenApiSpec } from "@/api/generate-openapi";
 
 describe("generateOpenApiSpec", () => {
   it("should generate OpenAPI spec with correct structure", () => {

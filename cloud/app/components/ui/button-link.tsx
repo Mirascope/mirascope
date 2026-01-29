@@ -1,9 +1,13 @@
-import * as React from "react";
-import { Link } from "@tanstack/react-router";
 import type { LinkProps } from "@tanstack/react-router";
-import { buttonVariants } from "./button";
+
+import { Link } from "@tanstack/react-router";
+import * as React from "react";
+
 import { cn } from "@/app/lib/utils";
+
 import type { ButtonProps } from "./button";
+
+import { buttonVariants } from "./button";
 
 export interface ButtonLinkProps {
   href: string;

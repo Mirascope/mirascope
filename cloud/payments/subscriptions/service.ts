@@ -5,17 +5,19 @@
  * This service handles subscription retrieval, updates, previews, and cancellations.
  */
 
-import { Effect } from "effect";
 import type StripeAPI from "stripe";
-import { DrizzleORM } from "@/db/client";
-import { organizations } from "@/db/schema/organizations";
-import { organizationMemberships } from "@/db/schema/organization-memberships";
-import { organizationInvitations } from "@/db/schema/organization-invitations";
-import { projects } from "@/db/schema/projects";
+
 import { sql, eq, and } from "drizzle-orm";
-import { Stripe as StripeService } from "@/payments/client";
+import { Effect } from "effect";
+
 import type { StripeConfig } from "@/settings";
+
+import { DrizzleORM } from "@/db/client";
 import { mapSqlError } from "@/db/client";
+import { organizationInvitations } from "@/db/schema/organization-invitations";
+import { organizationMemberships } from "@/db/schema/organization-memberships";
+import { organizations } from "@/db/schema/organizations";
+import { projects } from "@/db/schema/projects";
 import {
   DatabaseError,
   NotFoundError,
@@ -23,6 +25,7 @@ import {
   SubscriptionPastDueError,
   PlanLimitExceededError,
 } from "@/errors";
+import { Stripe as StripeService } from "@/payments/client";
 import {
   type PlanTier,
   PLAN_TIER_ORDER,

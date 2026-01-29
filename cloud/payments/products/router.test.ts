@@ -1,19 +1,22 @@
+import type StripeSDK from "stripe";
+
 import { describe, it, expect, vi, beforeEach } from "@effect/vitest";
-import { assert } from "@/tests/db";
 import { Context, Effect, Layer } from "effect";
-import { Stripe } from "@/payments/client";
-import { Payments } from "@/payments/service";
+
+import type { ProviderName } from "@/api/router/providers";
+
+import { clearPricingCache } from "@/api/router/pricing";
+import { DrizzleORM } from "@/db/client";
 import {
   DatabaseError,
   InsufficientFundsError,
   ReservationStateError,
   StripeError,
 } from "@/errors";
+import { Stripe } from "@/payments/client";
+import { Payments } from "@/payments/service";
+import { assert } from "@/tests/db";
 import { MockDrizzleORMLayer } from "@/tests/mock-drizzle";
-import { DrizzleORM } from "@/db/client";
-import { clearPricingCache } from "@/api/router/pricing";
-import type { ProviderName } from "@/api/router/providers";
-import type StripeSDK from "stripe";
 
 describe("Router Product", () => {
   describe("getUsageMeterBalance", () => {

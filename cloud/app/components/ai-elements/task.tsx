@@ -1,13 +1,15 @@
 "use client";
 
+import type { ComponentProps } from "react";
+
+import { ChevronDownIcon, SearchIcon } from "lucide-react";
+
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/app/components/ui/collapsible";
 import { cn } from "@/app/lib/utils";
-import { ChevronDownIcon, SearchIcon } from "lucide-react";
-import type { ComponentProps } from "react";
 
 export type TaskItemFileProps = ComponentProps<"div">;
 

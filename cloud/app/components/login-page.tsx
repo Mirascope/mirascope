@@ -1,3 +1,7 @@
+import type { ReactNode } from "react";
+
+import { useNavigate } from "@tanstack/react-router";
+
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -5,9 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/app/contexts/auth";
-import type { ReactNode } from "react";
 
 interface GithubButtonProps {
   iconSize?: number;

@@ -1,28 +1,30 @@
+import { eq } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { ParseError } from "effect/ParseResult";
-import { describe, it, expect, assert, TestApiContext } from "@/tests/api";
 import { vi } from "vitest";
-import { TestOrganizationFixture } from "@/tests/db";
-import {
-  CreateInvitationRequestSchema,
-  AcceptInvitationRequestSchema,
-} from "@/api/organization-invitations.schemas";
+
 import type { PublicOrganizationInvitation } from "@/db/schema";
-import { Database } from "@/db/database";
-import { DrizzleORM } from "@/db/client";
-import { organizationInvitations } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import {
-  AlreadyExistsError,
-  ImmutableResourceError,
-  NotFoundError,
-} from "@/errors";
-import { AuthenticatedUser } from "@/auth";
+
 import {
   resendInvitationHandler,
   acceptInvitationHandler,
   createInvitationHandler,
 } from "@/api/organization-invitations.handlers";
+import {
+  CreateInvitationRequestSchema,
+  AcceptInvitationRequestSchema,
+} from "@/api/organization-invitations.schemas";
+import { AuthenticatedUser } from "@/auth";
+import { DrizzleORM } from "@/db/client";
+import { Database } from "@/db/database";
+import { organizationInvitations } from "@/db/schema";
+import {
+  AlreadyExistsError,
+  ImmutableResourceError,
+  NotFoundError,
+} from "@/errors";
+import { describe, it, expect, assert, TestApiContext } from "@/tests/api";
+import { TestOrganizationFixture } from "@/tests/db";
 
 describe("CreateInvitationRequestSchema validation", () => {
   it("rejects invalid email format", () => {

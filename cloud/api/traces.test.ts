@@ -1,4 +1,16 @@
 import { Effect, Layer } from "effect";
+
+import type { PublicProject, PublicEnvironment } from "@/db/schema";
+
+import {
+  toTrace,
+  DEFAULT_LIST_LIMIT,
+  DEFAULT_LIST_OFFSET,
+  listByFunctionHashHandler,
+} from "@/api/traces.handlers";
+import { Authentication } from "@/auth";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
+import { Database } from "@/db/database";
 import {
   describe,
   expect,
@@ -6,17 +18,7 @@ import {
   TestApiContext,
   createApiClient,
 } from "@/tests/api";
-import type { PublicProject, PublicEnvironment } from "@/db/schema";
 import { TEST_DATABASE_URL } from "@/tests/db";
-import {
-  toTrace,
-  DEFAULT_LIST_LIMIT,
-  DEFAULT_LIST_OFFSET,
-  listByFunctionHashHandler,
-} from "@/api/traces.handlers";
-import { Database } from "@/db/database";
-import { Authentication } from "@/auth";
-import { ClickHouseSearch } from "@/db/clickhouse/search";
 
 describe("traces.handlers constants", () => {
   it("DEFAULT_LIST_LIMIT is 100", () => {

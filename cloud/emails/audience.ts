@@ -7,6 +7,7 @@
  */
 
 import { Effect } from "effect";
+
 import { Resend } from "@/emails/resend-client";
 import { ResendError } from "@/errors";
 

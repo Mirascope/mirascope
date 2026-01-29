@@ -1,4 +1,10 @@
 import { Effect, Layer, Context } from "effect";
+
+import { DrizzleORM } from "@/db/client";
+import { organizationMemberships } from "@/db/schema/organization-memberships";
+import { organizations } from "@/db/schema/organizations";
+import { projects } from "@/db/schema/projects";
+import { users } from "@/db/schema/users";
 import {
   NotFoundError,
   StripeError,
@@ -8,11 +14,7 @@ import {
 } from "@/errors";
 import { Payments } from "@/payments/service";
 import { Subscriptions } from "@/payments/subscriptions/service";
-import { DrizzleORM } from "@/db/client";
-import { organizations } from "@/db/schema/organizations";
-import { organizationMemberships } from "@/db/schema/organization-memberships";
-import { projects } from "@/db/schema/projects";
-import { users } from "@/db/schema/users";
+import { TestDrizzleORM } from "@/tests/db";
 import {
   describe,
   it,
@@ -30,7 +32,6 @@ import {
   TestCancelScheduleFixture,
   TestCancelSubscriptionsFixture,
 } from "@/tests/payments";
-import { TestDrizzleORM } from "@/tests/db";
 
 describe("subscriptions", () => {
   describe("getSubscription", () => {

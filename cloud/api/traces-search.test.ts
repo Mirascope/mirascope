@@ -1,5 +1,27 @@
 import { Effect, Layer } from "effect";
 import { it as vitestIt } from "vitest";
+
+import type {
+  SearchRequest,
+  SearchResponse,
+  TraceDetailResponse,
+  AnalyticsSummaryResponse,
+} from "@/api/traces-search.schemas";
+import type {
+  ApiKeyInfo,
+  PublicEnvironment,
+  PublicProject,
+  PublicUser,
+} from "@/db/schema";
+
+import {
+  searchHandler,
+  getTraceDetailHandler,
+} from "@/api/traces-search.handlers";
+import { Authentication } from "@/auth";
+import { ClickHouse } from "@/db/clickhouse/client";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
+import { Settings, type SettingsConfig } from "@/settings";
 import {
   describe,
   it,
@@ -7,12 +29,6 @@ import {
   TestApiContext,
   createApiClient,
 } from "@/tests/api";
-import type {
-  ApiKeyInfo,
-  PublicEnvironment,
-  PublicProject,
-  PublicUser,
-} from "@/db/schema";
 import { TEST_DATABASE_URL } from "@/tests/db";
 import {
   createAnalyticsSummaryResponse,
@@ -23,22 +39,8 @@ import {
   buildSearchSpan,
   buildTraceDetailSpan,
 } from "@/tests/db/clickhouse/fixtures";
-import { Authentication } from "@/auth";
-import { ClickHouseSearch } from "@/db/clickhouse/search";
-import { ClickHouse } from "@/db/clickhouse/client";
-import { Settings, type SettingsConfig } from "@/settings";
-import { createMockSettings } from "@/tests/settings";
-import {
-  searchHandler,
-  getTraceDetailHandler,
-} from "@/api/traces-search.handlers";
 import { getTestClickHouseConfig } from "@/tests/global-setup";
-import type {
-  SearchRequest,
-  SearchResponse,
-  TraceDetailResponse,
-  AnalyticsSummaryResponse,
-} from "@/api/traces-search.schemas";
+import { createMockSettings } from "@/tests/settings";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
 
 describe.sequential("Search API", (it) => {

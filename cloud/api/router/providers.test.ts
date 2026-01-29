@@ -1,4 +1,10 @@
 import { describe, it, expect } from "vitest";
+
+import {
+  OpenAICostCalculator,
+  AnthropicCostCalculator,
+  GoogleCostCalculator,
+} from "@/api/router/cost-calculator";
 import {
   getSupportedProviders,
   isValidProvider,
@@ -8,11 +14,6 @@ import {
   getCostCalculator,
   extractModelId,
 } from "@/api/router/providers";
-import {
-  OpenAICostCalculator,
-  AnthropicCostCalculator,
-  GoogleCostCalculator,
-} from "@/api/router/cost-calculator";
 import { createMockSettings } from "@/tests/settings";
 
 describe("Providers", () => {

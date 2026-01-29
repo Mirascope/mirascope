@@ -1,5 +1,5 @@
-import { cn } from "@/app/lib/utils";
 import { DISCORD_INVITE_URL } from "@/app/lib/site";
+import { cn } from "@/app/lib/utils";
 
 interface DiscordLinkProps {
   className?: string;

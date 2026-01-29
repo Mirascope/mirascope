@@ -1,4 +1,10 @@
+import { Loader2, AlertTriangle, Copy, Check } from "lucide-react";
 import { useState, type FormEvent } from "react";
+
+import { useCreateApiKey } from "@/app/api/api-keys";
+import { useEnvironments } from "@/app/api/environments";
+import { useProjects } from "@/app/api/projects";
+import { Alert, AlertDescription } from "@/app/components/ui/alert";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -17,11 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
-import { Alert, AlertDescription } from "@/app/components/ui/alert";
-import { Loader2, AlertTriangle, Copy, Check } from "lucide-react";
-import { useProjects } from "@/app/api/projects";
-import { useEnvironments } from "@/app/api/environments";
-import { useCreateApiKey } from "@/app/api/api-keys";
 import { getErrorMessage } from "@/app/lib/errors";
 
 interface CreateApiKeyModalProps {

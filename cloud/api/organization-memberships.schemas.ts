@@ -1,7 +1,8 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
-import { DatabaseError, NotFoundError, PermissionDeniedError } from "@/errors";
+
 import { OrganizationRoleSchema } from "@/api/organizations.schemas";
+import { DatabaseError, NotFoundError, PermissionDeniedError } from "@/errors";
 
 // Re-export OrganizationRole for convenience
 export type OrganizationRole = typeof OrganizationRoleSchema.Type;

@@ -1,9 +1,16 @@
-import React from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Link as LinkIcon } from "lucide-react";
-// MDX components
-import { InstallSnippet } from "@/app/components/mdx/elements/install-snippet";
-import ProviderCodeBlock from "@/app/components/mdx/elements/code-block-provider";
+import React from "react";
+
+import MirascopeLogo from "@/app/components/blocks/branding/mirascope-logo";
+import ProductLogo from "@/app/components/blocks/branding/mirascope-logo";
+import ApiSignature from "@/app/components/blocks/docs/api-signature";
+// API documentation components
+import ApiType from "@/app/components/blocks/docs/api-type";
+import AttributesTable from "@/app/components/blocks/docs/attributes-table";
+import ParametersTable from "@/app/components/blocks/docs/parameters-table";
+import ReturnTable from "@/app/components/blocks/docs/return-table";
+import { TypeLink } from "@/app/components/blocks/docs/type-link";
 import {
   Callout,
   Note,
@@ -11,31 +18,25 @@ import {
   Info,
   Success,
 } from "@/app/components/mdx/elements/callout";
+import ProviderCodeBlock from "@/app/components/mdx/elements/code-block-provider";
+import Icon from "@/app/components/mdx/elements/icon-wrapper";
+// MDX components
+import { InstallSnippet } from "@/app/components/mdx/elements/install-snippet";
+import MermaidDiagram from "@/app/components/mdx/elements/mermaid-diagram";
+import { ModelProviderCodeWrapper } from "@/app/components/mdx/elements/model-provider-code-wrapper";
+import { ResponsiveImage } from "@/app/components/mdx/elements/responsive-image";
 import {
   TabbedSection,
   Tab,
 } from "@/app/components/mdx/elements/tabbed-section";
-import MermaidDiagram from "@/app/components/mdx/elements/mermaid-diagram";
-import Icon from "@/app/components/mdx/elements/icon-wrapper";
-// API documentation components
-import ApiType from "@/app/components/blocks/docs/api-type";
-import ApiSignature from "@/app/components/blocks/docs/api-signature";
-import ParametersTable from "@/app/components/blocks/docs/parameters-table";
-import ReturnTable from "@/app/components/blocks/docs/return-table";
-import AttributesTable from "@/app/components/blocks/docs/attributes-table";
-import { TypeLink } from "@/app/components/blocks/docs/type-link";
+import { Button } from "@/app/components/ui/button";
+import { ButtonLink } from "@/app/components/ui/button-link";
 import {
   Tabs,
   TabsList,
   TabsTrigger,
   TabsContent,
 } from "@/app/components/ui/tabs";
-import { Button } from "@/app/components/ui/button";
-import { ButtonLink } from "@/app/components/ui/button-link";
-import MirascopeLogo from "@/app/components/blocks/branding/mirascope-logo";
-import ProductLogo from "@/app/components/blocks/branding/mirascope-logo";
-import { ModelProviderCodeWrapper } from "@/app/components/mdx/elements/model-provider-code-wrapper";
-import { ResponsiveImage } from "@/app/components/mdx/elements/responsive-image";
 // import { devComponents } from "@/app/components/mdx/elements/DevComponents";
 import { idSlugFromChildren } from "@/app/lib/mdx/heading-utils";
 

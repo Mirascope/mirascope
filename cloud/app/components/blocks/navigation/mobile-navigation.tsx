@@ -1,6 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { MOBILE_NAV_STYLES, NAV_LINK_STYLES } from "./styles";
+
 import { cn } from "@/app/lib/utils";
+
+import { MOBILE_NAV_STYLES, NAV_LINK_STYLES } from "./styles";
 
 interface MobileNavigationProps {
   /**

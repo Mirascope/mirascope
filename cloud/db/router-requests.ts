@@ -81,21 +81,22 @@
  * ```
  */
 
-import { Effect } from "effect";
 import { eq, and, desc } from "drizzle-orm";
+import { Effect } from "effect";
+
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
 } from "@/db/base";
 import { DrizzleORM } from "@/db/client";
 import { ProjectMemberships } from "@/db/project-memberships";
-import { DatabaseError, NotFoundError, PermissionDeniedError } from "@/errors";
 import {
   routerRequests,
   type NewRouterRequest,
   type RouterRequest,
   type ProjectRole,
 } from "@/db/schema";
+import { DatabaseError, NotFoundError, PermissionDeniedError } from "@/errors";
 
 /**
  * Public fields to select from the router_requests table.

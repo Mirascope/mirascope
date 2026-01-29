@@ -1,8 +1,9 @@
-import { describe, it, expect } from "vitest";
 import { Effect, Layer } from "effect";
+import { describe, it, expect } from "vitest";
+
 import { Payments } from "@/payments/service";
-import { MockStripe } from "@/tests/payments";
 import { MockDrizzleORMLayer } from "@/tests/mock-drizzle";
+import { MockStripe } from "@/tests/payments";
 
 describe("Payments", () => {
   describe("Default layer", () => {

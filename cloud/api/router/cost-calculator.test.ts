@@ -1,13 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "@effect/vitest";
 import { Effect } from "effect";
 import assert from "node:assert";
+
 import {
   OpenAICostCalculator,
   AnthropicCostCalculator,
   GoogleCostCalculator,
 } from "@/api/router/cost-calculator";
-import { getCostCalculator } from "@/api/router/providers";
 import { clearPricingCache } from "@/api/router/pricing";
+import { getCostCalculator } from "@/api/router/providers";
 
 describe("CostCalculator", () => {
   beforeEach(() => {

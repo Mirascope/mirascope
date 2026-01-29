@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
 import {
   AlertCircle,
   ChevronRight,
@@ -7,26 +7,22 @@ import {
   Maximize2,
   X,
 } from "lucide-react";
-import { Link } from "@tanstack/react-router";
-import { Alert, AlertDescription, AlertTitle } from "@/app/components/ui/alert";
-import { Button } from "@/app/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/app/components/ui/collapsible";
-import { JsonView } from "@/app/components/json-view";
-import { CodeBlock } from "@/app/components/ai-elements/code-block";
-import { safeParseJSON } from "@/app/lib/utils";
-import { formatDuration, formatTimestamp } from "@/app/lib/traces/formatting";
-import { KNOWN_LEVELS, getLevelStyles } from "@/app/lib/traces/event-styles";
-import type { SpanDetail, SpanSearchResult } from "@/api/traces-search.schemas";
+import { useState, type ReactNode } from "react";
+
 import type { FunctionResponse } from "@/api/functions.schemas";
+import type { SpanDetail, SpanSearchResult } from "@/api/traces-search.schemas";
+
+import { CodeBlock } from "@/app/components/ai-elements/code-block";
 import {
   Message,
   MessageContent,
   MessageResponse,
 } from "@/app/components/ai-elements/message";
+import {
+  Reasoning,
+  ReasoningTrigger,
+  ReasoningContent,
+} from "@/app/components/ai-elements/reasoning";
 import {
   Tool,
   ToolHeader,
@@ -34,11 +30,17 @@ import {
   ToolInput,
   ToolOutput,
 } from "@/app/components/ai-elements/tool";
+import { JsonView } from "@/app/components/json-view";
+import { Alert, AlertDescription, AlertTitle } from "@/app/components/ui/alert";
+import { Button } from "@/app/components/ui/button";
 import {
-  Reasoning,
-  ReasoningTrigger,
-  ReasoningContent,
-} from "@/app/components/ai-elements/reasoning";
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/app/components/ui/collapsible";
+import { KNOWN_LEVELS, getLevelStyles } from "@/app/lib/traces/event-styles";
+import { formatDuration, formatTimestamp } from "@/app/lib/traces/formatting";
+import { safeParseJSON } from "@/app/lib/utils";
 
 interface SpanDetailPanelProps {
   span: SpanDetail | SpanSearchResult | null;

@@ -1,11 +1,11 @@
 import { type ContentMeta } from "@/app/lib/content/types";
-import { isDevelopment } from "@/app/lib/site";
+import { getAllContentMeta } from "@/app/lib/content/virtual-module";
 import {
   SearchScorer,
   type RawSearchResult,
   type SearchResultItem,
 } from "@/app/lib/search/scoring";
-import { getAllContentMeta } from "@/app/lib/content/virtual-module";
+import { isDevelopment } from "@/app/lib/site";
 
 // Define Pagefind types
 interface PagefindResult {

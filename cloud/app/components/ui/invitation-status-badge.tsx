@@ -1,5 +1,6 @@
-import { Badge, type BadgeProps } from "@/app/components/ui/badge";
 import type { InvitationStatus } from "@/api/organization-invitations.schemas";
+
+import { Badge, type BadgeProps } from "@/app/components/ui/badge";
 
 const statusVariants: Record<InvitationStatus, string> = {
   pending:

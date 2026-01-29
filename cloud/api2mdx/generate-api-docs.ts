@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
-import { resolve } from "path";
 import { spawnSync } from "child_process";
+import { resolve } from "path";
 
 function run(command: string, args: string[], cwd?: string): void {
   const result = spawnSync(command, args, {

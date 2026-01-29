@@ -53,30 +53,32 @@
  * ```
  */
 
-import { Effect } from "effect";
 import { and, eq, desc } from "drizzle-orm";
+import { Effect } from "effect";
+
+import type { ProjectRole } from "@/db/schema";
+
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
 } from "@/db/base";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { DrizzleORM } from "@/db/client";
 import { ProjectMemberships } from "@/db/project-memberships";
+import {
+  annotations,
+  type NewAnnotation,
+  type PublicAnnotation,
+} from "@/db/schema/annotations";
 import { Tags } from "@/db/tags";
-import { ClickHouseSearch } from "@/db/clickhouse/search";
-import { RealtimeSpans } from "@/workers/realtimeSpans";
+import { isUniqueConstraintError } from "@/db/utils";
 import {
   AlreadyExistsError,
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
 } from "@/errors";
-import {
-  annotations,
-  type NewAnnotation,
-  type PublicAnnotation,
-} from "@/db/schema/annotations";
-import type { ProjectRole } from "@/db/schema";
-import { isUniqueConstraintError } from "@/db/utils";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
 
 // =============================================================================
 // Types

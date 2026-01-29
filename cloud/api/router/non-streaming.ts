@@ -6,8 +6,10 @@
  */
 
 import { Effect } from "effect";
-import { getCostCalculator } from "@/api/router/providers";
+
 import type { ProxyResult } from "@/api/router/proxy";
+
+import { getCostCalculator } from "@/api/router/providers";
 import {
   type RouterRequestContext,
   type ValidatedRouterRequest,

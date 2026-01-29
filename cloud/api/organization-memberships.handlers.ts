@@ -1,7 +1,9 @@
 import { Effect } from "effect";
-import { Database } from "@/db/database";
-import { AuthenticatedUser } from "@/auth";
+
 import type { UpdateMemberRoleRequest } from "@/api/organization-memberships.schemas";
+
+import { AuthenticatedUser } from "@/auth";
+import { Database } from "@/db/database";
 
 export * from "@/api/organization-memberships.schemas";
 

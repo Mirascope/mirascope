@@ -5,7 +5,9 @@ import {
   useEffect,
   type ReactNode,
 } from "react";
+
 import type { PublicProject } from "@/db/schema";
+
 import { useProjects } from "@/app/api/projects";
 import { useOrganization } from "@/app/contexts/organization";
 

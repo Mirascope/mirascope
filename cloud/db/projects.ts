@@ -45,8 +45,9 @@
  * ```
  */
 
-import { Effect } from "effect";
 import { and, eq, sql } from "drizzle-orm";
+import { Effect } from "effect";
+
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
@@ -55,6 +56,14 @@ import { DrizzleORM } from "@/db/client";
 import { OrganizationMemberships } from "@/db/organization-memberships";
 import { ProjectMemberships } from "@/db/project-memberships";
 import {
+  projects,
+  projectMemberships,
+  type NewProject,
+  type PublicProject,
+  type ProjectRole,
+} from "@/db/schema";
+import { isUniqueConstraintError } from "@/db/utils";
+import {
   AlreadyExistsError,
   DatabaseError,
   NotFoundError,
@@ -62,15 +71,7 @@ import {
   PlanLimitExceededError,
   StripeError,
 } from "@/errors";
-import { isUniqueConstraintError } from "@/db/utils";
 import { Payments } from "@/payments";
-import {
-  projects,
-  projectMemberships,
-  type NewProject,
-  type PublicProject,
-  type ProjectRole,
-} from "@/db/schema";
 
 /**
  * Public fields to select from the projects table.

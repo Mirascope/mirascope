@@ -1,13 +1,12 @@
+import { RefreshCw, X, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
+import type { OrganizationInvitation } from "@/api/organization-invitations.schemas";
+
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/app/components/ui/table";
-import { Button } from "@/app/components/ui/button";
-import { InvitationStatusBadge } from "@/app/components/ui/invitation-status-badge";
+  useResendInvitation,
+  useRevokeInvitation,
+} from "@/app/api/organization-invitations";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,19 +18,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
+import { Button } from "@/app/components/ui/button";
+import { InvitationStatusBadge } from "@/app/components/ui/invitation-status-badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/app/components/ui/table";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
-import { RefreshCw, X, Loader2 } from "lucide-react";
-import type { OrganizationInvitation } from "@/api/organization-invitations.schemas";
-import {
-  useResendInvitation,
-  useRevokeInvitation,
-} from "@/app/api/organization-invitations";
-import { toast } from "sonner";
 
 interface OrganizationInvitationsTableProps {
   invitations: readonly OrganizationInvitation[];

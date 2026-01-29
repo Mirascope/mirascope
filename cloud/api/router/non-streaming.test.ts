@@ -1,13 +1,15 @@
-import { describe, it, expect, vi } from "vitest";
 import { Effect, Layer } from "effect";
-import { handleNonStreamingResponse } from "@/api/router/non-streaming";
-import { RouterMeteringQueueService } from "@/workers/routerMeteringQueue";
+import { describe, it, expect, vi } from "vitest";
+
 import type { ProxyResult } from "@/api/router/proxy";
 import type {
   RouterRequestContext,
   ValidatedRouterRequest,
 } from "@/api/router/utils";
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
+
+import { handleNonStreamingResponse } from "@/api/router/non-streaming";
+import { RouterMeteringQueueService } from "@/workers/routerMeteringQueue";
 
 describe("Non-Streaming", () => {
   // Mock queue service for tests

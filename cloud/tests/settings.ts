@@ -6,6 +6,7 @@
  */
 
 import { Layer } from "effect";
+
 import { Settings, type SettingsConfig } from "@/settings";
 
 /**

@@ -1,15 +1,17 @@
-import React, { useState, useRef, useEffect } from "react";
+import { Link } from "@tanstack/react-router";
 import DOMPurify from "dompurify";
 import { Search as SearchIcon } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import React, { useState, useRef, useEffect } from "react";
+
+import { useIsLandingPage } from "@/app/components/blocks/theme-provider";
+import { useIsMobile } from "@/app/hooks/is-mobile";
 import {
   getSearchService,
   type SearchResultItem,
 } from "@/app/lib/search/service";
-import { useIsLandingPage } from "@/app/components/blocks/theme-provider";
-import { SEARCH_BAR_STYLES, ANIMATION_TIMING } from "./styles";
-import { useIsMobile } from "@/app/hooks/is-mobile";
 import { isDevelopment } from "@/app/lib/site";
+
+import { SEARCH_BAR_STYLES, ANIMATION_TIMING } from "./styles";
 
 /**
  * Sanitizes search excerpt HTML to prevent XSS attacks.

@@ -1,8 +1,10 @@
 import { Effect, Schema } from "effect";
-import { describe, it, expect, TestApiContext } from "@/tests/api";
-import { CreateProjectRequestSchema } from "@/api/projects.schemas";
-import type { PublicProject } from "@/db/schema";
 import { ParseError } from "effect/ParseResult";
+
+import type { PublicProject } from "@/db/schema";
+
+import { CreateProjectRequestSchema } from "@/api/projects.schemas";
+import { describe, it, expect, TestApiContext } from "@/tests/api";
 
 describe("CreateProjectRequestSchema validation", () => {
   it("rejects empty name", () => {

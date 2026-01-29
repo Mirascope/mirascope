@@ -49,21 +49,16 @@
  * ```
  */
 
-import { Effect } from "effect";
+import * as crypto from "crypto";
 import { and, eq, inArray, isNull, or } from "drizzle-orm";
+import { Effect } from "effect";
+
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
 } from "@/db/base";
 import { DrizzleORM } from "@/db/client";
 import { ProjectMemberships } from "@/db/project-memberships";
-import {
-  AlreadyExistsError,
-  DatabaseError,
-  NotFoundError,
-  PermissionDeniedError,
-} from "@/errors";
-import { isUniqueConstraintError } from "@/db/utils";
 import {
   apiKeys,
   users,
@@ -78,7 +73,13 @@ import {
   type ApiKeyWithContext,
   type ProjectRole,
 } from "@/db/schema";
-import * as crypto from "crypto";
+import { isUniqueConstraintError } from "@/db/utils";
+import {
+  AlreadyExistsError,
+  DatabaseError,
+  NotFoundError,
+  PermissionDeniedError,
+} from "@/errors";
 
 // =============================================================================
 // API Key Utilities

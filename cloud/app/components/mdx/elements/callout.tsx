@@ -1,5 +1,3 @@
-import React, { useState } from "react";
-import { cn } from "@/app/lib/utils";
 import {
   AlertCircle,
   Info as InfoIcon,
@@ -8,6 +6,9 @@ import {
   ChevronDown,
   Terminal,
 } from "lucide-react";
+import React, { useState } from "react";
+
+import { cn } from "@/app/lib/utils";
 
 type CalloutType = "note" | "warning" | "info" | "success" | "api";
 

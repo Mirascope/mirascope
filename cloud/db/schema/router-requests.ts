@@ -9,13 +9,15 @@ import {
   jsonb,
   index,
 } from "drizzle-orm/pg-core";
+
+import type { CostInCenticents } from "@/api/router/cost-utils";
+
+import { apiKeys } from "@/db/schema/api-keys";
+import { creditReservations } from "@/db/schema/credit-reservations";
+import { environments } from "@/db/schema/environments";
 import { organizations } from "@/db/schema/organizations";
 import { projects } from "@/db/schema/projects";
-import { environments } from "@/db/schema/environments";
-import { apiKeys } from "@/db/schema/api-keys";
 import { users } from "@/db/schema/users";
-import { creditReservations } from "@/db/schema/credit-reservations";
-import type { CostInCenticents } from "@/api/router/cost-utils";
 
 /**
  * Request status enum for tracking request lifecycle.

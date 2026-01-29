@@ -1,21 +1,16 @@
+import { MoreHorizontal, UserMinus, Shield, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+
+import type {
+  ProjectMemberWithUser,
+  ProjectRole,
+} from "@/api/project-memberships.schemas";
+
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/app/components/ui/table";
-import { Badge } from "@/app/components/ui/badge";
-import { Button } from "@/app/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
+  useUpdateProjectMemberRole,
+  useRemoveProjectMember,
+} from "@/app/api/project-memberships";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,16 +21,23 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/app/components/ui/alert-dialog";
-import { MoreHorizontal, UserMinus, Shield, Loader2 } from "lucide-react";
+import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/app/components/ui/button";
 import {
-  useUpdateProjectMemberRole,
-  useRemoveProjectMember,
-} from "@/app/api/project-memberships";
-import { toast } from "sonner";
-import type {
-  ProjectMemberWithUser,
-  ProjectRole,
-} from "@/api/project-memberships.schemas";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/app/components/ui/dropdown-menu";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/app/components/ui/table";
 
 interface ProjectMembersTableProps {
   members: readonly ProjectMemberWithUser[];

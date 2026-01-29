@@ -2,8 +2,9 @@
  * @fileoverview Shared configuration and types for Cloudflare Workers.
  */
 
-import type { CloudflareEnvironment } from "@/settings";
 import type { DurableObjectNamespace } from "@cloudflare/workers-types";
+
+import type { CloudflareEnvironment } from "@/settings";
 import type { RouterMeteringMessage } from "@/workers/routerMeteringQueue";
 import type { SpansIngestMessage } from "@/workers/spanIngestQueue";
 

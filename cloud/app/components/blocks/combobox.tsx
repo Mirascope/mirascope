@@ -1,4 +1,14 @@
+import type { Emoji } from "frimousse";
+
+import { CheckIcon } from "@radix-ui/react-icons";
+import { SmileIcon } from "lucide-react";
 import * as React from "react";
+import { useState } from "react";
+
+import {
+  EmojiPicker,
+  EmojiPickerContent,
+} from "@/app/components/blocks/emoji-picker";
 import { Button } from "@/app/components/ui/button";
 import {
   Command,
@@ -9,19 +19,11 @@ import {
   CommandList,
 } from "@/app/components/ui/command";
 import {
-  EmojiPicker,
-  EmojiPickerContent,
-} from "@/app/components/blocks/emoji-picker";
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/app/components/ui/popover";
 import { cn } from "@/app/lib/utils";
-import { CheckIcon } from "@radix-ui/react-icons";
-import type { Emoji } from "frimousse";
-import { SmileIcon } from "lucide-react";
-import { useState } from "react";
 
 // You can use this generic type to customize the item type
 export interface ComboboxItem {

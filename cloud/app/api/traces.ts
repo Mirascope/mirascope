@@ -1,7 +1,9 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Effect } from "effect";
-import { ApiClient, eq } from "@/app/api/client";
+
 import type { SearchRequest } from "@/api/traces-search.schemas";
+
+import { ApiClient, eq } from "@/app/api/client";
 
 export const useTracesSearch = (
   organizationId: string | null,

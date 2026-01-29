@@ -1,3 +1,8 @@
+import type { OrganizationRole } from "@/api/organization-memberships.schemas";
+
+import { useOrganizationInvitations } from "@/app/api/organization-invitations";
+import { useOrganizationMembers } from "@/app/api/organization-memberships";
+import { TeamMembersTable } from "@/app/components/team-members-table";
 import {
   Card,
   CardContent,
@@ -5,10 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { TeamMembersTable } from "@/app/components/team-members-table";
-import { useOrganizationMembers } from "@/app/api/organization-memberships";
-import { useOrganizationInvitations } from "@/app/api/organization-invitations";
-import type { OrganizationRole } from "@/api/organization-memberships.schemas";
 
 interface TeamMembersSectionProps {
   organizationId: string;

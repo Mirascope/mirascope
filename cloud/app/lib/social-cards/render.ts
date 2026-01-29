@@ -7,11 +7,11 @@
  * 3. Sharp - PNG to WebP
  */
 
-import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
-import sharp from "sharp";
 import fs from "node:fs/promises";
 import path from "node:path";
+import satori from "satori";
+import sharp from "sharp";
 
 /** Open Graph recommended dimensions (1200x630) */
 export const CARD_WIDTH = 1200;

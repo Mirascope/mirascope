@@ -35,25 +35,14 @@
  * ```
  */
 
-import { Effect } from "effect";
 import { and, eq, isNull, sql } from "drizzle-orm";
+import { Effect } from "effect";
+
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
 } from "@/db/base";
 import { DrizzleORM } from "@/db/client";
-import { Payments } from "@/payments";
-import { PLAN_LIMITS } from "@/payments/plans";
-import {
-  AlreadyExistsError,
-  DatabaseError,
-  NotFoundError,
-  PermissionDeniedError,
-  PlanLimitExceededError,
-  StripeError,
-} from "@/errors";
-import { isUniqueConstraintError } from "@/db/utils";
-
 import {
   organizationMemberships,
   organizationMembershipAudit,
@@ -63,6 +52,17 @@ import {
   type PublicOrganizationMembershipAudit,
   type OrganizationRole,
 } from "@/db/schema";
+import { isUniqueConstraintError } from "@/db/utils";
+import {
+  AlreadyExistsError,
+  DatabaseError,
+  NotFoundError,
+  PermissionDeniedError,
+  PlanLimitExceededError,
+  StripeError,
+} from "@/errors";
+import { Payments } from "@/payments";
+import { PLAN_LIMITS } from "@/payments/plans";
 
 /**
  * Public fields to select from the organization_memberships table.

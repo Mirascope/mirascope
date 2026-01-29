@@ -1,5 +1,7 @@
-import { useOrganizationRouterBalance } from "@/app/api/organizations";
+import { Loader2 } from "lucide-react";
+
 import { centicentsToDollars } from "@/api/router/cost-utils";
+import { useOrganizationRouterBalance } from "@/app/api/organizations";
 import { PurchaseRouterCreditsDialog } from "@/app/components/purchase-router-credits-dialog";
 import {
   Card,
@@ -7,7 +9,6 @@ import {
   CardTitle,
   CardContent,
 } from "@/app/components/ui/card";
-import { Loader2 } from "lucide-react";
 
 interface RouterCreditsSettingsProps {
   organizationId: string;

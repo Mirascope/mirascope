@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach, assert } from "vitest";
 import { Effect, Layer } from "effect";
+import { Resend as ResendAPI } from "resend";
+import { describe, it, expect, vi, beforeEach, assert } from "vitest";
+
 import { Resend, wrapResendClient } from "@/emails/resend-client";
 import { ResendError } from "@/errors";
-import { Resend as ResendAPI } from "resend";
 import {
   TestSendRequestFixture,
   TestEmailResponseFixture,

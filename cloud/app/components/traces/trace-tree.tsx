@@ -1,9 +1,11 @@
-import { useState, useMemo } from "react";
 import { ChevronRight, ChevronDown, AlertCircle } from "lucide-react";
-import { cn } from "@/app/lib/utils";
+import { useState, useMemo } from "react";
+
+import type { SpanDetail } from "@/api/traces-search.schemas";
+
 import { formatDuration } from "@/app/lib/traces/formatting";
 import { buildSpanTree, type SpanNode } from "@/app/lib/traces/types";
-import type { SpanDetail } from "@/api/traces-search.schemas";
+import { cn } from "@/app/lib/utils";
 
 interface TraceTreeProps {
   spans: readonly SpanDetail[];

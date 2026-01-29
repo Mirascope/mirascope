@@ -1,12 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Effect } from "effect";
-import { ApiClient, eq } from "@/app/api/client";
+
 import type {
   CreateOrganizationRequest,
   CreatePaymentIntentRequest,
   PreviewSubscriptionChangeRequest,
   UpdateSubscriptionRequest,
 } from "@/api/organizations.schemas";
+
+import { ApiClient, eq } from "@/app/api/client";
 
 export const useOrganizations = () => {
   return useQuery(

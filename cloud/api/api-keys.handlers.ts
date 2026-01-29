@@ -1,13 +1,15 @@
 import { Effect } from "effect";
-import { Database } from "@/db/database";
-import { AuthenticatedUser } from "@/auth";
-import { Analytics } from "@/analytics";
+
 import type { CreateApiKeyRequest } from "@/api/api-keys.schemas";
 import type {
   PublicApiKey,
   ApiKeyCreateResponse,
   ApiKeyWithContext,
 } from "@/db/schema";
+
+import { Analytics } from "@/analytics";
+import { AuthenticatedUser } from "@/auth";
+import { Database } from "@/db/database";
 
 export * from "@/api/api-keys.schemas";
 

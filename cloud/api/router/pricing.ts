@@ -9,14 +9,15 @@
  */
 
 import { Effect } from "effect";
-import {
-  getModelsDotDevProviderIds,
-  type ProviderName,
-} from "@/api/router/providers";
+
 import {
   type CostInCenticents,
   dollarsToCenticents,
 } from "@/api/router/cost-utils";
+import {
+  getModelsDotDevProviderIds,
+  type ProviderName,
+} from "@/api/router/providers";
 
 /**
  * Pricing information for a model (fetched from models.dev in dollars).

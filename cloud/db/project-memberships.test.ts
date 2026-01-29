@@ -1,11 +1,10 @@
-import {
-  describe,
-  it,
-  expect,
-  MockDrizzleORM,
-  TestProjectFixture,
-} from "@/tests/db";
 import { Effect } from "effect";
+
+import type {
+  PublicProjectMembership,
+  PublicProjectMembershipAudit,
+} from "@/db/schema";
+
 import { Database } from "@/db/database";
 import {
   AlreadyExistsError,
@@ -13,10 +12,13 @@ import {
   NotFoundError,
   PermissionDeniedError,
 } from "@/errors";
-import type {
-  PublicProjectMembership,
-  PublicProjectMembershipAudit,
-} from "@/db/schema";
+import {
+  describe,
+  it,
+  expect,
+  MockDrizzleORM,
+  TestProjectFixture,
+} from "@/tests/db";
 
 describe("ProjectMemberships", () => {
   // ===========================================================================

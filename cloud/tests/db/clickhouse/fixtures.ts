@@ -6,11 +6,7 @@
  */
 
 import { Effect } from "effect";
-import type { SpanTransformInput } from "@/db/clickhouse/transform";
-import type {
-  CompletedSpanInput,
-  CompletedSpansBatchRequest,
-} from "@/db/clickhouse/types";
+
 import type {
   AnalyticsSummaryResponse,
   SpanDetail,
@@ -18,6 +14,11 @@ import type {
   SpanSearchResult,
   TraceDetailResponse,
 } from "@/db/clickhouse/search";
+import type { SpanTransformInput } from "@/db/clickhouse/transform";
+import type {
+  CompletedSpanInput,
+  CompletedSpansBatchRequest,
+} from "@/db/clickhouse/types";
 
 // =============================================================================
 // Span Fixtures

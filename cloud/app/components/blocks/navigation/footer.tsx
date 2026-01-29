@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { cn } from "@/app/lib/utils";
+
 import { useIsLandingPage } from "@/app/components/blocks/theme-provider";
+import { cn } from "@/app/lib/utils";
 
 export default function Footer() {
   const isLandingPage = useIsLandingPage();

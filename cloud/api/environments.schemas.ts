@@ -1,5 +1,7 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
+
+import { createSlugSchema } from "@/db/slug";
 import {
   AlreadyExistsError,
   ClickHouseError,
@@ -7,7 +9,6 @@ import {
   NotFoundError,
   PermissionDeniedError,
 } from "@/errors";
-import { createSlugSchema } from "@/db/slug";
 
 export const EnvironmentSchema = Schema.Struct({
   id: Schema.String,

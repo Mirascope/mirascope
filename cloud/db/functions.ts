@@ -65,8 +65,11 @@
  * ```
  */
 
-import { Effect } from "effect";
 import { and, eq, desc } from "drizzle-orm";
+import { Effect } from "effect";
+
+import type { ProjectRole } from "@/db/schema";
+
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
@@ -74,20 +77,19 @@ import {
 import { DrizzleORM } from "@/db/client";
 import { ProjectMemberships } from "@/db/project-memberships";
 import {
+  functions,
+  type NewFunction,
+  type PublicFunction,
+  type DependencyInfo,
+} from "@/db/schema/functions";
+import { isUniqueConstraintError } from "@/db/utils";
+import {
   AlreadyExistsError,
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
   ImmutableResourceError,
 } from "@/errors";
-import { isUniqueConstraintError } from "@/db/utils";
-import {
-  functions,
-  type NewFunction,
-  type PublicFunction,
-  type DependencyInfo,
-} from "@/db/schema/functions";
-import type { ProjectRole } from "@/db/schema";
 
 export type { PublicFunction, DependencyInfo };
 

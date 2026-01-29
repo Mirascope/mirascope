@@ -1,4 +1,8 @@
 import { Effect } from "effect";
+
+import type { PublicProject, PublicEnvironment } from "@/db/schema";
+
+import { toTag } from "@/api/tags.handlers";
 import {
   describe,
   it,
@@ -6,8 +10,6 @@ import {
   TestApiContext,
   createApiClient,
 } from "@/tests/api";
-import type { PublicProject, PublicEnvironment } from "@/db/schema";
-import { toTag } from "@/api/tags.handlers";
 import { TEST_DATABASE_URL } from "@/tests/db";
 
 describe("toTag", () => {

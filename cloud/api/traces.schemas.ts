@@ -1,5 +1,13 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
+
+import {
+  AnalyticsSummaryRequestSchema,
+  AnalyticsSummaryResponseSchema,
+  SearchRequestSchema,
+  SearchResponseSchema,
+  TraceDetailResponseSchema,
+} from "@/api/traces-search.schemas";
 import {
   NotFoundError,
   PermissionDeniedError,
@@ -10,13 +18,6 @@ import {
   PlanLimitExceededError,
   StripeError,
 } from "@/errors";
-import {
-  AnalyticsSummaryRequestSchema,
-  AnalyticsSummaryResponseSchema,
-  SearchRequestSchema,
-  SearchResponseSchema,
-  TraceDetailResponseSchema,
-} from "@/api/traces-search.schemas";
 
 export const KeyValueSchema = Schema.Struct({
   key: Schema.String,
