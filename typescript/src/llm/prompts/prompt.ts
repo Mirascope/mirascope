@@ -8,7 +8,7 @@ import { Model, useModel } from '@/llm/models';
 import type { ModelId } from '@/llm/providers/model-id';
 import type { Response } from '@/llm/responses';
 import type { StreamResponse } from '@/llm/responses/stream-response';
-import type { ToolSchema } from '@/llm/tools';
+import type { Tools } from '@/llm/tools';
 import type { NoVars } from '@/llm/types';
 
 /**
@@ -32,7 +32,7 @@ export type TemplateFunc<T> =
  */
 export interface PromptArgs<T = NoVars> {
   /** Optional tools to make available to the model. */
-  tools?: readonly ToolSchema[];
+  tools?: Tools;
   /** A function that generates message content (optionally from variables). */
   template: TemplateFunc<T>;
 }
@@ -120,7 +120,7 @@ export interface Prompt<T = NoVars> {
   /**
    * The tools available to this prompt.
    */
-  readonly tools: readonly ToolSchema[] | undefined;
+  readonly tools: Tools | undefined;
 
   /**
    * The underlying template function.

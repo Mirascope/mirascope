@@ -33,6 +33,7 @@ import type {
   StreamResponseChunk,
 } from '@/llm/responses/chunks';
 import type { Jsonable } from '@/llm/types/jsonable';
+import type { BaseToolkit } from '@/llm/tools';
 
 /**
  * Arguments for constructing a BaseStreamResponse.
@@ -49,6 +50,9 @@ export interface BaseStreamResponseInit {
 
   /** Parameters used for the request */
   params: Params;
+
+  /** The toolkit containing all tools available for this response */
+  toolkit: BaseToolkit;
 
   /** Input messages sent in the request */
   inputMessages: readonly Message[];
@@ -79,6 +83,7 @@ export class BaseStreamResponse extends RootResponse {
   readonly modelId: ModelId;
   readonly providerModelName: string;
   readonly params: Params;
+  readonly toolkit: BaseToolkit;
 
   /** Input messages sent in the request */
   readonly inputMessages: readonly Message[];
@@ -133,6 +138,11 @@ export class BaseStreamResponse extends RootResponse {
     | (Text & { text: string })
     | (Thought & { thought: string })
     | null = null;
+  /** In-progress tool calls tracked by ID (for interleaved streaming) */
+  private readonly _currentToolCalls = new Map<
+    string,
+    ToolCall & { args: string }
+  >();
   /** Whether the iterator has been fully consumed */
   private _consumed = false;
 
@@ -149,6 +159,7 @@ export class BaseStreamResponse extends RootResponse {
     this.modelId = args.modelId;
     this.providerModelName = args.providerModelName;
     this.params = args.params;
+    this.toolkit = args.toolkit;
     this.inputMessages = args.inputMessages;
     this._chunkIterator = args.chunkIterator;
   }
@@ -310,12 +321,10 @@ export class BaseStreamResponse extends RootResponse {
       case 'thought_end_chunk':
         return this._handleThoughtChunk(chunk);
 
-      /* v8 ignore start - TODO: tool calls not yet implemented */
       case 'tool_call_start_chunk':
       case 'tool_call_chunk':
       case 'tool_call_end_chunk':
-        return null;
-      /* v8 ignore stop */
+        return this._handleToolCallChunk(chunk);
     }
   }
 
@@ -375,6 +384,74 @@ export class BaseStreamResponse extends RootResponse {
     } else if (chunk.type === 'thought_end_chunk') {
       // Mark thought as complete
       this._currentContent = null;
+    }
+
+    // Cache and return the chunk
+    this._chunks.push(chunk);
+    return chunk;
+  }
+
+  /**
+   * Handle tool call chunks, accumulating content.
+   *
+   * Unlike text/thought which are added immediately to content,
+   * tool calls are only added once the end chunk is received.
+   * Multiple tool calls can be in progress simultaneously (interleaved).
+   */
+  private _handleToolCallChunk(
+    chunk:
+      | {
+          type: 'tool_call_start_chunk';
+          contentType: 'tool_call';
+          id: string;
+          name: string;
+        }
+      | {
+          type: 'tool_call_chunk';
+          contentType: 'tool_call';
+          id: string;
+          delta: string;
+        }
+      | { type: 'tool_call_end_chunk'; contentType: 'tool_call'; id: string }
+  ): AssistantContentChunk {
+    if (chunk.type === 'tool_call_start_chunk') {
+      // Create new ToolCall and track by ID
+      if (this._currentToolCalls.has(chunk.id)) {
+        throw new Error(
+          `Received tool_call_start_chunk with duplicate id: ${chunk.id}`
+        );
+      }
+      const toolCall: ToolCall & { args: string } = {
+        type: 'tool_call',
+        id: chunk.id,
+        name: chunk.name,
+        args: '',
+      };
+      this._currentToolCalls.set(chunk.id, toolCall);
+    } else if (chunk.type === 'tool_call_chunk') {
+      // Append delta to existing tool call's args
+      const toolCall = this._currentToolCalls.get(chunk.id);
+      if (!toolCall) {
+        throw new Error(
+          `Received tool_call_chunk for unknown tool call ID: ${chunk.id}`
+        );
+      }
+      toolCall.args += chunk.delta;
+    } else if (chunk.type === 'tool_call_end_chunk') {
+      // Finalize tool call and add to content
+      const toolCall = this._currentToolCalls.get(chunk.id);
+      if (!toolCall) {
+        throw new Error(
+          `Received tool_call_end_chunk for unknown tool call ID: ${chunk.id}`
+        );
+      }
+      // Default empty args to empty object (matches Python behavior)
+      if (!toolCall.args) {
+        toolCall.args = '{}';
+      }
+      this._content.push(toolCall);
+      this._toolCalls.push(toolCall);
+      this._currentToolCalls.delete(chunk.id);
     }
 
     // Cache and return the chunk
