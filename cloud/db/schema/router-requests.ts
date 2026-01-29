@@ -75,8 +75,18 @@ export const routerRequests = pgTable(
     // Example for Anthropic: { "ephemeral5m": 100, "ephemeral1h": 50 }
     cacheWriteBreakdown: jsonb("cache_write_breakdown"),
 
+    // Native tool usage (JSONB for flexibility)
+    // Example: [{ toolType: "anthropic_web_search", callCount: 2 }]
+    toolUsage: jsonb("tool_usage"),
+
     // Cost (in centi-cents: 1 = $0.0001 USD)
     costCenticents: bigint("cost_centicents", {
+      mode: "bigint",
+    }),
+
+    // Tool cost (in centi-cents: 1 = $0.0001 USD)
+    // Separate from costCenticents which is for token costs
+    toolCostCenticents: bigint("tool_cost_centicents", {
       mode: "bigint",
     }),
 

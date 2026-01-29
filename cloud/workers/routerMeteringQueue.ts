@@ -32,7 +32,10 @@ export interface RouterMeteringMessage {
   reservationId: string;
   request: RouterRequestIdentifiers;
   usage: TokenUsage;
+  /** Token cost in centi-cents (1 = $0.0001 USD) */
   costCenticents: number;
+  /** Tool cost in centi-cents (1 = $0.0001 USD) */
+  toolCostCenticents?: number;
   timestamp: number;
 }
 
@@ -116,11 +119,13 @@ export const setRouterMeteringQueueLayer = (
  * Exported for testing purposes.
  *
  * @param data - Metering message data
- * @param costAsBigInt - Cost as bigint
+ * @param costAsBigInt - Token cost as bigint
+ * @param toolCostAsBigInt - Tool cost as bigint (optional)
  */
 export function updateAndSettleRouterRequest(
   data: RouterMeteringMessage,
   costAsBigInt: bigint,
+  toolCostAsBigInt?: bigint,
 ): Effect.Effect<void, Error, Database | Payments> {
   return Effect.gen(function* () {
     const db = yield* Database;
@@ -149,18 +154,20 @@ export function updateAndSettleRouterRequest(
             ? BigInt(data.usage.cacheWriteTokens)
             : null,
           cacheWriteBreakdown: data.usage.cacheWriteBreakdown || null,
+          toolUsage: data.usage.toolUsage || null,
           costCenticents: costAsBigInt,
+          toolCostCenticents: toolCostAsBigInt || null,
           status: "success",
           completedAt: new Date(),
         },
       },
     );
 
+    // Total cost includes both token and tool costs
+    const totalCost = costAsBigInt + (toolCostAsBigInt || 0n);
+
     // Settle funds (release reservation and charge meter)
-    yield* payments.products.router.settleFunds(
-      data.reservationId,
-      costAsBigInt,
-    );
+    yield* payments.products.router.settleFunds(data.reservationId, totalCost);
   });
 }
 
@@ -194,6 +201,13 @@ async function processMessage(
       ? data.costCenticents
       : BigInt(data.costCenticents);
 
+  // Convert tool cost to bigint if present
+  const toolCostAsBigInt = data.toolCostCenticents
+    ? typeof data.toolCostCenticents === "bigint"
+      ? data.toolCostCenticents
+      : BigInt(data.toolCostCenticents)
+    : undefined;
+
   // Build the program using Settings for validated configuration
   const program = Effect.gen(function* () {
     const settings = yield* Settings;
@@ -205,9 +219,11 @@ async function processMessage(
     });
 
     // Update router request and settle funds
-    yield* updateAndSettleRouterRequest(data, costAsBigInt).pipe(
-      Effect.provide(layer),
-    );
+    yield* updateAndSettleRouterRequest(
+      data,
+      costAsBigInt,
+      toolCostAsBigInt,
+    ).pipe(Effect.provide(layer));
   });
 
   // Run with Settings layer from environment
