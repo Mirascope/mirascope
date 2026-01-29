@@ -166,7 +166,7 @@ export function encodeTools(
  *
  * @param messages - The messages to encode
  * @param encodeThoughtsAsText - Whether to encode thoughts as text in assistant messages
- * @param modelId - The model ID (used for checking audio support)
+ * @param modelId - The model ID (used for checking audio support and raw message reuse)
  */
 export function encodeMessages(
   messages: readonly Message[],
@@ -174,6 +174,9 @@ export function encodeMessages(
   modelId?: OpenAIModelId
 ): ChatCompletionMessageParam[] {
   const openaiMessages: ChatCompletionMessageParam[] = [];
+  const expectedProviderModelName = modelId
+    ? modelName(modelId, 'completions')
+    : null;
 
   for (const message of messages) {
     if (message.role === 'system') {
@@ -194,9 +197,26 @@ export function encodeMessages(
         openaiMessages.push(userMessage);
       }
     } else if (message.role === 'assistant') {
-      openaiMessages.push(
-        encodeAssistantMessage(message, encodeThoughtsAsText)
-      );
+      // Check if we can reuse the raw message (from same provider/model)
+      if (
+        message.providerId === 'openai' &&
+        expectedProviderModelName &&
+        message.providerModelName === expectedProviderModelName &&
+        message.rawMessage &&
+        typeof message.rawMessage === 'object' &&
+        'role' in message.rawMessage &&
+        !encodeThoughtsAsText
+      ) {
+        // Reuse the serialized message directly
+        openaiMessages.push(
+          message.rawMessage as unknown as ChatCompletionAssistantMessageParam
+        );
+      } else {
+        // Otherwise, encode from content parts
+        openaiMessages.push(
+          encodeAssistantMessage(message, encodeThoughtsAsText)
+        );
+      }
     }
   }
 
@@ -437,6 +457,23 @@ export function buildRequestParams(
 }
 
 /**
+ * Serialize a message object for storage in rawMessage.
+ *
+ * This mirrors Python's `message.model_dump(exclude_none=True)` pattern.
+ */
+function serializeMessage(
+  message: ChatCompletion.Choice['message']
+): Record<string, unknown> {
+  const serialized: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(message)) {
+    if (value !== undefined && value !== null) {
+      serialized[key] = value;
+    }
+  }
+  return serialized;
+}
+
+/**
  * Decode OpenAI Chat Completions response to Mirascope types.
  */
 export function decodeResponse(
@@ -456,14 +493,19 @@ export function decodeResponse(
 
   const content = decodeContent(choice.message);
 
+  // Store serialized message for round-tripping in resume operations.
+  // This format matches what OpenAI expects as ChatCompletionAssistantMessageParam.
+  const serializedRawMessage = serializeMessage(choice.message);
+
   const assistantMessage: AssistantMessage = {
     role: 'assistant',
     content,
     name: null,
     providerId: 'openai',
     modelId,
-    providerModelName: response.model,
-    rawMessage: response as unknown as AssistantMessage['rawMessage'],
+    providerModelName: modelName(modelId, 'completions'),
+    rawMessage:
+      serializedRawMessage as unknown as AssistantMessage['rawMessage'],
   };
 
   const finishReason = decodeFinishReason(choice.finish_reason);

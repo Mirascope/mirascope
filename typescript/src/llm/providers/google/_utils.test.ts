@@ -6,6 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import type { GenerateContentResponse } from '@google/genai';
 import {
   AuthenticationError,
   PermissionError,
@@ -18,10 +19,13 @@ import {
 } from '@/llm/exceptions';
 import { Image } from '@/llm/content';
 import { user } from '@/llm/messages';
+import type { AssistantMessage } from '@/llm/messages';
 import {
   mapGoogleErrorByStatus,
   computeGoogleThinkingConfig,
   buildRequestParams,
+  decodeResponse,
+  encodeMessages,
 } from './_utils';
 
 describe('mapGoogleErrorByStatus', () => {
@@ -176,5 +180,172 @@ describe('image encoding', () => {
     expect(() =>
       buildRequestParams('google/gemini-2.5-flash', messages, undefined, {})
     ).toThrow(FeatureNotSupportedError);
+  });
+});
+
+describe('raw message round-tripping', () => {
+  // Mock response for testing
+  const mockGoogleResponse = {
+    candidates: [
+      {
+        content: {
+          role: 'model',
+          parts: [{ text: 'Hello!' }],
+        },
+        finishReason: 'STOP',
+      },
+    ],
+    usageMetadata: {
+      promptTokenCount: 10,
+      candidatesTokenCount: 5,
+      totalTokenCount: 15,
+    },
+    modelVersion: 'gemini-2.5-flash',
+  } as unknown as GenerateContentResponse;
+
+  it('decodeResponse stores serialized content in rawMessage', () => {
+    const { assistantMessage } = decodeResponse(
+      mockGoogleResponse,
+      'google/gemini-2.5-flash'
+    );
+
+    // rawMessage should be an object with role and parts
+    expect(typeof assistantMessage.rawMessage).toBe('object');
+
+    const rawMessage = assistantMessage.rawMessage as unknown as {
+      role: string;
+      parts: Array<Record<string, unknown>>;
+    };
+    expect(rawMessage.role).toBe('model');
+    expect(Array.isArray(rawMessage.parts)).toBe(true);
+    expect(rawMessage.parts[0]).toHaveProperty('text', 'Hello!');
+  });
+
+  it('decodeResponse sets providerModelName from modelName', () => {
+    const { assistantMessage } = decodeResponse(
+      mockGoogleResponse,
+      'google/gemini-2.5-flash'
+    );
+
+    // Should be the base model name (without provider prefix)
+    expect(assistantMessage.providerModelName).toBe('gemini-2.5-flash');
+  });
+
+  it('encodeMessages reuses rawMessage for matching assistant messages', () => {
+    // Create an assistant message that would have come from decodeResponse
+    const assistantMsg: AssistantMessage = {
+      role: 'assistant',
+      content: [{ type: 'text', text: 'Hello!' }],
+      name: null,
+      providerId: 'google',
+      modelId: 'google/gemini-2.5-flash',
+      providerModelName: 'gemini-2.5-flash',
+      rawMessage: {
+        role: 'model',
+        parts: [{ text: 'Hello!' }],
+      } as unknown as AssistantMessage['rawMessage'],
+    };
+
+    const messages = [user('Hi'), assistantMsg, user('How are you?')];
+    const { contents } = encodeMessages(messages, 'google/gemini-2.5-flash');
+
+    // Should have: user message, raw assistant message, user message
+    expect(contents).toHaveLength(3);
+
+    // First is user message
+    expect(contents[0]).toEqual({
+      role: 'user',
+      parts: [{ text: 'Hi' }],
+    });
+
+    // Second should be the raw message reused directly
+    expect(contents[1]).toHaveProperty('role', 'model');
+    expect(contents[1]).toHaveProperty('parts');
+    expect((contents[1] as { parts: unknown[] }).parts[0]).toHaveProperty(
+      'text',
+      'Hello!'
+    );
+
+    // Third is user message
+    expect(contents[2]).toEqual({
+      role: 'user',
+      parts: [{ text: 'How are you?' }],
+    });
+  });
+
+  it('encodeMessages does NOT reuse rawMessage for different provider', () => {
+    // Create an assistant message from a different provider
+    const assistantMsg: AssistantMessage = {
+      role: 'assistant',
+      content: [{ type: 'text', text: 'Hello!' }],
+      name: null,
+      providerId: 'anthropic', // Different provider
+      modelId: 'anthropic/claude-haiku-4-5',
+      providerModelName: 'claude-haiku-4-5',
+      rawMessage: {
+        role: 'assistant',
+        content: [{ type: 'text', text: 'Hello!' }],
+      } as unknown as AssistantMessage['rawMessage'],
+    };
+
+    const messages = [user('Hi'), assistantMsg];
+    const { contents } = encodeMessages(messages, 'google/gemini-2.5-flash');
+
+    // Should encode from content, not raw message
+    expect(contents).toHaveLength(2);
+    expect(contents[1]).toEqual({
+      role: 'model',
+      parts: [{ text: 'Hello!' }],
+    });
+  });
+
+  it('encodeMessages does NOT reuse rawMessage for different model', () => {
+    // Create an assistant message from a different model
+    const assistantMsg: AssistantMessage = {
+      role: 'assistant',
+      content: [{ type: 'text', text: 'Hello!' }],
+      name: null,
+      providerId: 'google',
+      modelId: 'google/gemini-2.5-pro', // Different model
+      providerModelName: 'gemini-2.5-pro',
+      rawMessage: {
+        role: 'model',
+        parts: [{ text: 'Hello!' }],
+      } as unknown as AssistantMessage['rawMessage'],
+    };
+
+    const messages = [user('Hi'), assistantMsg];
+    // Request is for flash, but message is from pro
+    const { contents } = encodeMessages(messages, 'google/gemini-2.5-flash');
+
+    // Should encode from content, not raw message
+    expect(contents).toHaveLength(2);
+    expect(contents[1]).toEqual({
+      role: 'model',
+      parts: [{ text: 'Hello!' }],
+    });
+  });
+
+  it('encodeMessages reuses rawMessage without structure validation', () => {
+    // Create an assistant message with non-standard rawMessage
+    const assistantMsg: AssistantMessage = {
+      role: 'assistant',
+      content: [{ type: 'text', text: 'Hello!' }],
+      name: null,
+      providerId: 'google',
+      modelId: 'google/gemini-2.5-flash',
+      providerModelName: 'gemini-2.5-flash',
+      rawMessage: {
+        // Even without proper 'role' and 'parts' structure
+        text: 'Hello!',
+      } as unknown as AssistantMessage['rawMessage'],
+    };
+
+    const messages = [user('Hi'), assistantMsg];
+    const { contents } = encodeMessages(messages, 'google/gemini-2.5-flash');
+
+    // rawMessage IS reused
+    expect(contents).toHaveLength(2);
+    expect(contents[1]).toEqual({ text: 'Hello!' });
   });
 });
