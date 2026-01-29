@@ -11,6 +11,7 @@ import { definePrompt, type Prompt, type TemplateFunc } from '@/llm/prompts';
 import type { ModelId } from '@/llm/providers/model-id';
 import type { Response } from '@/llm/responses';
 import type { StreamResponse } from '@/llm/responses/stream-response';
+import type { ToolSchema } from '@/llm/tools';
 import type { NoVars } from '@/llm/types';
 
 /**
@@ -21,6 +22,8 @@ import type { NoVars } from '@/llm/types';
 export interface CallArgs<T = NoVars> extends Params {
   /** The model to use, either a Model instance or model ID string. */
   model: Model | ModelId;
+  /** Optional tools to make available to the model. */
+  tools?: readonly ToolSchema[];
   /** A function that generates message content (optionally from variables). */
   template: TemplateFunc<T>;
 }
@@ -101,6 +104,11 @@ export interface Call<T = NoVars> {
   readonly defaultModel: Model;
 
   /**
+   * The tools available to this call.
+   */
+  readonly tools: readonly ToolSchema[] | undefined;
+
+  /**
    * The underlying prompt.
    */
   readonly prompt: Prompt<T>;
@@ -175,6 +183,7 @@ export function defineCall<T extends Record<string, unknown>>(
 // Implementation
 export function defineCall<T>({
   model,
+  tools,
   template,
   ...params
 }: CallArgs<T>): Call<T> {
@@ -188,7 +197,7 @@ export function defineCall<T>({
   const defaultModel: Model =
     typeof model === 'string' ? new Model(model, params) : model;
 
-  const prompt = definePrompt<T>({ template });
+  const prompt = definePrompt<T>({ tools, template });
 
   const call = async (
     ...vars: keyof T extends never ? [] : [vars: T]
@@ -209,10 +218,11 @@ export function defineCall<T>({
   };
 
   const definedCall = Object.assign(callable, {
-    call,
     defaultModel,
-    prompt,
+    call,
     stream,
+    tools,
+    prompt,
     template,
   });
 
