@@ -56,14 +56,14 @@ It also encourages developers to encapsulate LLM calls in Python functions so th
 
 Just use `@ops.version` on your call functions to automatically capture arguments, return values, and internal changes within the function closure:
 
-```python-snippet-skip
+```python
 from mirascope import llm, ops
 
 ops.configure()
 ops.instrument_llm()
 
 @ops.version  # [!code highlight]
-@llm.call("google/gemini-2.0-flash-001")
+@llm.call("google/gemini-2.5-flash")
 def answer_question(question: str) -> str:
     return f"Answer this question: {question}"
 
@@ -145,28 +145,27 @@ Each review stays connected to the exact version of the function, the prompt, th
 
 To keep things fair, Mirascope Cloud hides any existing annotations while you're reviewing a trace so your opinion isn't influenced.
 
-In the codebase, you can label outputs on the spot (right after a function runs) by setting `mode="wrap"` in the `@ops.trace` decorator. When enabled, the function's return type is transformed into a `Traced[R]` object, which includes both the original return value and methods for interacting with the trace, like `.annotate()`:
+In the codebase, you can label outputs on the spot (right after a function runs) by using the `.wrapped()` method on a traced function. This returns an `ops.Trace` object containing both the original return value and methods for interacting with the trace, like `.annotate()`:
 
-```python-snippet-skip
+```python
 from mirascope import llm, ops
 
 ops.configure()
 ops.instrument_llm()
 
-@ops.trace(name="Recommend Book", mode="wrap")  # [!code highlight]
-@llm.call("google/gemini-2.0-flash-001")
+@ops.trace  # [!code highlight]
+@llm.call("google/gemini-2.5-flash")
 def recommend_book(genre: str) -> str:
     return f"Recommend a good {genre} book."
 
-trace: ops.Trace[str] = recommend_book("science fiction")  # [!code highlight]
-print(trace.response.text())  # original response
+trace = recommend_book.wrapped("science fiction")  # [!code highlight]
+print(trace.result.content)  # original response
 # > You should read 'Dune' by Frank Herbert.
 
-annotation = ops.Annotation(  # [!code highlight]
+trace.annotate(  # [!code highlight]
     label="pass",  # [!code highlight]
     reasoning="The recommendation fits the genre and is a well-known classic.",  # [!code highlight]
 )  # [!code highlight]
-trace.annotate(annotation)  # [!code highlight]
 ```
 
 Evaluating outputs directly in the code means you don’t have to switch to the application UI, making it ideal for automated tests, scripted evaluations, integrating annotations into CI/CD workflows, or even enabling end users to annotate traces directly as they use your product.
