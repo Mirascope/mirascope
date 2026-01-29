@@ -149,6 +149,22 @@ The examples above use `@llm.call`. You can also pass tools to `@llm.prompt` or 
 
 All three approaches work the same way: you provide tools and handle tool calls identically regardless of how you make the call.
 
+## Provider Native Tools
+
+Some providers offer native tool support, which are tools that the provider executes on your behalf, server-side. The classic example is a web search tool, which allows the LLM to search the web and retrieve up-to-date information on your behalf.
+
+### Web Search
+
+Use the web search tool by passing `llm.WebSearchTool()` into the `tools` array like any other tool:
+
+<CodeExample file="python/examples/tools/web_search.py" />
+
+The provider handles the web search automatically and returns the results as part of the response. Unlike regular tools where you execute the function and resume the conversation, native tools are executed server-side by the provider.
+
+<Note>
+Web search is currently supported by OpenAI (Responses API), Anthropic, and Google.
+</Note>
+
 ## Next Steps
 
 - [Structured Output](/docs/learn/llm/structured-output) — Parse responses into typed objects

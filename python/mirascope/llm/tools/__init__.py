@@ -31,6 +31,7 @@ from .types import (
     normalize_context_tools,
     normalize_tools,
 )
+from .web_search_tool import WebSearchTool
 
 __all__ = [
     "FORMAT_TOOL_NAME",
@@ -61,6 +62,7 @@ __all__ = [
     "Toolkit",
     "ToolkitT",
     "Tools",
+    "WebSearchTool",
     "normalize_async_context_tools",
     "normalize_async_tools",
     "normalize_context_tools",

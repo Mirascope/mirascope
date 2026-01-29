@@ -43,7 +43,7 @@ ANTHROPIC_FINISH_REASON_MAP = {
 
 def _decode_assistant_content(
     content: anthropic_types.ContentBlock,
-) -> AssistantContentPart:
+) -> AssistantContentPart | None:
     """Convert Anthropic content block to mirascope AssistantContentPart."""
     if content.type == "text":
         return Text(text=content.text)
@@ -55,6 +55,8 @@ def _decode_assistant_content(
         )
     elif content.type == "thinking":
         return Thought(thought=content.thinking)
+    elif content.type in ("server_tool_use", "web_search_tool_result"):
+        return None  # Skip server-side tool content, preserved in raw_message
     else:
         raise NotImplementedError(
             f"Support for content type `{content.type}` is not yet implemented."
@@ -87,7 +89,11 @@ def decode_response(
     include_thoughts: bool,
 ) -> tuple[AssistantMessage, FinishReason | None, Usage]:
     """Convert Anthropic message to mirascope AssistantMessage and usage."""
-    content = [_decode_assistant_content(part) for part in response.content]
+    content = [
+        part
+        for part in (_decode_assistant_content(block) for block in response.content)
+        if part is not None
+    ]
     if not include_thoughts:
         content = [part for part in content if part.type != "thought"]
     assistant_message = AssistantMessage(
@@ -166,12 +172,14 @@ class _AnthropicChunkProcessor:
                     "type": "redacted_thinking",
                     "data": content_block.data,
                 }
+            elif content_block.type in ("server_tool_use", "web_search_tool_result"):
+                pass  # Skip server-side tool content
             else:
                 raise NotImplementedError
 
         elif event.type == "content_block_delta":
-            if self.current_block_param is None:  # pragma: no cover
-                raise RuntimeError("Received delta without a current block")
+            if self.current_block_param is None:
+                return  # Skip deltas for server-side tool content
 
             delta = event.delta
             if delta.type == "text_delta":
@@ -204,14 +212,16 @@ class _AnthropicChunkProcessor:
                         f"Received signature_delta for {self.current_block_param['type']} block"
                     )
                 self.current_block_param["signature"] += delta.signature
+            elif delta.type == "citations_delta":
+                pass  # Skip citations delta, preserved in raw_message
             else:
                 raise RuntimeError(
                     f"Received unsupported delta type: {delta.type}"
                 )  # pragma: no cover
 
         elif event.type == "content_block_stop":
-            if self.current_block_param is None:  # pragma: no cover
-                raise RuntimeError("Received stop without a current block")
+            if self.current_block_param is None:
+                return  # Skip stop for server-side tool content
 
             block_type = self.current_block_param["type"]
 

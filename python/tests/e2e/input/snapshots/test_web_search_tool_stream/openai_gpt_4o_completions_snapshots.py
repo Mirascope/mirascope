@@ -4,8 +4,8 @@ test_snapshot = snapshot(
     {
         "exception": {
             "type": "FeatureNotSupportedError",
-            "args": "(\"Feature 'Provider tool Unsupported Test Tool' is not supported by provider 'openai:completions'\",)",
-            "feature": "Provider tool Unsupported Test Tool",
+            "args": "(\"Web search is only available in the OpenAI Responses API. Use a model with :responses suffix (e.g., 'openai/gpt-4o:responses').\",)",
+            "feature": "WebSearchTool",
             "model_id": "None",
             "provider_id": "openai:completions",
         }
