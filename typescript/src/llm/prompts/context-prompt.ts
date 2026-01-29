@@ -8,10 +8,11 @@
 import type { Context } from '@/llm/context';
 import type { Message, UserContent } from '@/llm/messages';
 import { promoteToMessages } from '@/llm/messages';
-import { Model } from '@/llm/models';
+import { Model, useModel } from '@/llm/models';
 import type { ModelId } from '@/llm/providers/model-id';
 import type { ContextResponse } from '@/llm/responses/context-response';
 import type { ContextStreamResponse } from '@/llm/responses/context-stream-response';
+import type { ToolSchema } from '@/llm/tools';
 import type { NoVars } from '@/llm/types';
 
 /**
@@ -48,6 +49,8 @@ export type ContextTemplateFunc<T, DepsT> = (
  * @template DepsT - The type of dependencies in the context.
  */
 export interface ContextPromptArgs<T = NoVars, DepsT = unknown> {
+  /** Optional tools to make available to the model. */
+  tools?: readonly ToolSchema[];
   /** A function that generates message content from context (and optionally variables). */
   template: ContextTemplateFunc<T, DepsT>;
 }
@@ -150,6 +153,11 @@ export interface ContextPrompt<T = NoVars, DepsT = unknown> {
   ): readonly Message[];
 
   /**
+   * The tools available to this prompt.
+   */
+  readonly tools: readonly ToolSchema[] | undefined;
+
+  /**
    * The underlying template function.
    */
   readonly template: ContextTemplateFunc<T, DepsT>;
@@ -235,6 +243,7 @@ export function defineContextPrompt<T, DepsT>(
 
 // Implementation
 export function defineContextPrompt<T, DepsT>({
+  tools,
   template,
 }: ContextPromptArgs<T, DepsT>): ContextPrompt<T, DepsT> {
   const messages = (ctx: Context<DepsT>, vars?: T): readonly Message[] => {
@@ -247,9 +256,7 @@ export function defineContextPrompt<T, DepsT>({
     ctx: Context<DepsT>,
     vars?: T
   ): Promise<ContextResponse<DepsT>> => {
-    const model =
-      typeof modelOrId === 'string' ? new Model(modelOrId) : modelOrId;
-    return model.contextCall(ctx, messages(ctx, vars));
+    return useModel(modelOrId).contextCall(ctx, messages(ctx, vars), tools);
   };
 
   const callable = async (
@@ -265,15 +272,14 @@ export function defineContextPrompt<T, DepsT>({
     ctx: Context<DepsT>,
     vars?: T
   ): Promise<ContextStreamResponse<DepsT>> => {
-    const model =
-      typeof modelOrId === 'string' ? new Model(modelOrId) : modelOrId;
-    return model.contextStream(ctx, messages(ctx, vars));
+    return useModel(modelOrId).contextStream(ctx, messages(ctx, vars), tools);
   };
 
   return Object.assign(callable, {
     call,
-    messages,
     stream,
+    messages,
+    tools,
     template,
   }) as ContextPrompt<T, DepsT>;
 }

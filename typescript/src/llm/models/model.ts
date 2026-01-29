@@ -15,6 +15,7 @@ import type { Response } from '@/llm/responses';
 import type { ContextResponse } from '@/llm/responses/context-response';
 import type { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 import type { StreamResponse } from '@/llm/responses/stream-response';
+import type { ToolSchema } from '@/llm/tools';
 
 /**
  * The unified LLM interface that delegates to provider-specific clients.
@@ -98,6 +99,7 @@ export class Model {
    * @param content - Content to send to the LLM. Can be a string (converted to user
    *   message), UserContent, a sequence of UserContent, or a sequence of Messages
    *   for full control.
+   * @param tools - Optional tools to make available to the model.
    * @returns A Response object containing the LLM-generated content.
    *
    * @example Simple string input
@@ -116,11 +118,15 @@ export class Model {
    * ]);
    * ```
    */
-  async call(content: UserContent | readonly Message[]): Promise<Response> {
+  async call(
+    content: UserContent | readonly Message[],
+    tools?: readonly ToolSchema[]
+  ): Promise<Response> {
     const messages = promoteToMessages(content);
     return this.provider.call({
       modelId: this.modelId,
       messages,
+      tools,
       params: this.params,
     });
   }
@@ -131,6 +137,7 @@ export class Model {
    * @param content - Content to send to the LLM. Can be a string (converted to user
    *   message), UserContent, a sequence of UserContent, or a sequence of Messages
    *   for full control.
+   * @param tools - Optional tools to make available to the model.
    * @returns A StreamResponse object for consuming the streamed content.
    *
    * @example Simple string input
@@ -159,12 +166,14 @@ export class Model {
    * ```
    */
   async stream(
-    content: UserContent | readonly Message[]
+    content: UserContent | readonly Message[],
+    tools?: readonly ToolSchema[]
   ): Promise<StreamResponse> {
     const messages = promoteToMessages(content);
     return this.provider.stream({
       modelId: this.modelId,
       messages,
+      tools,
       params: this.params,
     });
   }
@@ -178,6 +187,7 @@ export class Model {
    * @template DepsT - The type of dependencies in the context.
    * @param ctx - The context containing dependencies for tools.
    * @param content - Content to send to the LLM.
+   * @param tools - Optional tools to make available to the model.
    * @returns A ContextResponse object containing the LLM-generated content.
    *
    * @example
@@ -191,13 +201,15 @@ export class Model {
    */
   async contextCall<DepsT>(
     ctx: Context<DepsT>,
-    content: UserContent | readonly Message[]
+    content: UserContent | readonly Message[],
+    tools?: readonly ToolSchema[]
   ): Promise<ContextResponse<DepsT>> {
     const messages = promoteToMessages(content);
     return this.provider.contextCall({
       ctx,
       modelId: this.modelId,
       messages,
+      tools,
       params: this.params,
     });
   }
@@ -211,6 +223,7 @@ export class Model {
    * @template DepsT - The type of dependencies in the context.
    * @param ctx - The context containing dependencies for tools.
    * @param content - Content to send to the LLM.
+   * @param tools - Optional tools to make available to the model.
    * @returns A ContextStreamResponse object for consuming the streamed content.
    *
    * @example
@@ -226,13 +239,15 @@ export class Model {
    */
   async contextStream<DepsT>(
     ctx: Context<DepsT>,
-    content: UserContent | readonly Message[]
+    content: UserContent | readonly Message[],
+    tools?: readonly ToolSchema[]
   ): Promise<ContextStreamResponse<DepsT>> {
     const messages = promoteToMessages(content);
     return this.provider.contextStream({
       ctx,
       modelId: this.modelId,
       messages,
+      tools,
       params: this.params,
     });
   }

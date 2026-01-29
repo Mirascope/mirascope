@@ -8,6 +8,7 @@ import { Model, useModel } from '@/llm/models';
 import type { ModelId } from '@/llm/providers/model-id';
 import type { Response } from '@/llm/responses';
 import type { StreamResponse } from '@/llm/responses/stream-response';
+import type { ToolSchema } from '@/llm/tools';
 import type { NoVars } from '@/llm/types';
 
 /**
@@ -30,6 +31,8 @@ export type TemplateFunc<T> =
  * @template T - The type of variables the template accepts. Defaults to NoVars.
  */
 export interface PromptArgs<T = NoVars> {
+  /** Optional tools to make available to the model. */
+  tools?: readonly ToolSchema[];
   /** A function that generates message content (optionally from variables). */
   template: TemplateFunc<T>;
 }
@@ -115,6 +118,11 @@ export interface Prompt<T = NoVars> {
   messages(...args: keyof T extends never ? [] : [vars: T]): readonly Message[];
 
   /**
+   * The tools available to this prompt.
+   */
+  readonly tools: readonly ToolSchema[] | undefined;
+
+  /**
    * The underlying template function.
    */
   readonly template: TemplateFunc<T>;
@@ -190,7 +198,7 @@ export function definePrompt<T extends Record<string, unknown>>(
 export function definePrompt<T>(args: PromptArgs<T>): Prompt<T>;
 
 // Implementation
-export function definePrompt<T>({ template }: PromptArgs<T>): Prompt<T> {
+export function definePrompt<T>({ tools, template }: PromptArgs<T>): Prompt<T> {
   const messages = (vars?: T): readonly Message[] => {
     const content =
       template.length === 0
@@ -202,7 +210,7 @@ export function definePrompt<T>({ template }: PromptArgs<T>): Prompt<T> {
   };
 
   const call = async (model: Model | ModelId, vars?: T): Promise<Response> => {
-    return useModel(model).call(messages(vars));
+    return useModel(model).call(messages(vars), tools);
   };
 
   const callable = async (
@@ -216,13 +224,14 @@ export function definePrompt<T>({ template }: PromptArgs<T>): Prompt<T> {
     model: Model | ModelId,
     vars?: T
   ): Promise<StreamResponse> => {
-    return useModel(model).stream(messages(vars));
+    return useModel(model).stream(messages(vars), tools);
   };
 
   return Object.assign(callable, {
     call,
-    messages,
     stream,
+    messages,
+    tools,
     template,
   }) as Prompt<T>;
 }

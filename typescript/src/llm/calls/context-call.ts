@@ -6,7 +6,7 @@
  */
 
 import type { Context } from '@/llm/context';
-import { Model } from '@/llm/models';
+import { Model, useModel } from '@/llm/models';
 import type { Params } from '@/llm/models/params';
 import {
   defineContextPrompt,
@@ -16,6 +16,7 @@ import {
 import type { ModelId } from '@/llm/providers/model-id';
 import type { ContextResponse } from '@/llm/responses/context-response';
 import type { ContextStreamResponse } from '@/llm/responses/context-stream-response';
+import type { ToolSchema } from '@/llm/tools';
 import type { NoVars } from '@/llm/types';
 
 /**
@@ -27,6 +28,8 @@ import type { NoVars } from '@/llm/types';
 export interface ContextCallArgs<T = NoVars, DepsT = unknown> extends Params {
   /** The model to use, either a Model instance or model ID string. */
   model: Model | ModelId;
+  /** Optional tools to make available to the model. */
+  tools?: readonly ToolSchema[];
   /** A function that generates message content from context (and optionally variables). */
   template: ContextTemplateFunc<T, DepsT>;
 }
@@ -113,9 +116,21 @@ export interface ContextCall<T = NoVars, DepsT = unknown> {
   ): Promise<ContextStreamResponse<DepsT>>;
 
   /**
-   * The bundled model.
+   * The model used for generating responses.
+   * Returns the context model if one is set via `withModel`, otherwise returns `defaultModel`.
    */
   readonly model: Model;
+
+  /**
+   * The default model configured when defining this call.
+   * Use `model` to get the effective model (which respects context).
+   */
+  readonly defaultModel: Model;
+
+  /**
+   * The tools available to this call.
+   */
+  readonly tools: readonly ToolSchema[] | undefined;
 
   /**
    * The underlying context prompt.
@@ -208,6 +223,7 @@ export function defineContextCall<
 // Implementation
 export function defineContextCall<T, DepsT>({
   model,
+  tools,
   template,
   ...params
 }: ContextCallArgs<T, DepsT>): ContextCall<T, DepsT> {
@@ -217,16 +233,17 @@ export function defineContextCall<T, DepsT>({
     );
   }
 
-  const resolvedModel: Model =
+  // Resolve the default model at definition time (bakes in params)
+  const defaultModel: Model =
     typeof model === 'string' ? new Model(model, params) : model;
 
-  const prompt = defineContextPrompt<T, DepsT>({ template });
+  const prompt = defineContextPrompt<T, DepsT>({ tools, template });
 
   const call = async (
     ctx: Context<DepsT>,
     ...vars: keyof T extends never ? [] : [vars: T]
   ): Promise<ContextResponse<DepsT>> => {
-    return prompt.call(resolvedModel, ctx, ...vars);
+    return prompt.call(useModel(defaultModel), ctx, ...vars);
   };
 
   const callable = async (
@@ -240,14 +257,22 @@ export function defineContextCall<T, DepsT>({
     ctx: Context<DepsT>,
     ...vars: keyof T extends never ? [] : [vars: T]
   ): Promise<ContextStreamResponse<DepsT>> => {
-    return prompt.stream(resolvedModel, ctx, ...vars);
+    return prompt.stream(useModel(defaultModel), ctx, ...vars);
   };
 
-  return Object.assign(callable, {
+  const definedCall = Object.assign(callable, {
+    defaultModel,
     call,
-    model: resolvedModel,
-    prompt,
     stream,
+    tools,
+    prompt,
     template,
-  }) as ContextCall<T, DepsT>;
+  });
+
+  Object.defineProperty(definedCall, 'model', {
+    get: () => useModel(defaultModel),
+    enumerable: true,
+  });
+
+  return definedCall as ContextCall<T, DepsT>;
 }
