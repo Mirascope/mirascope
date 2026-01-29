@@ -342,13 +342,20 @@ export function encodeTools(
  * Converts the unified Mirascope message format to Google's Content array format.
  * System messages are extracted separately as Google uses `systemInstruction`.
  * Assistant messages are mapped to the 'model' role.
+ *
+ * @param messages - The messages to encode
+ * @param modelId - The model ID for the request (used to check if raw message can be reused)
  */
-export function encodeMessages(messages: readonly Message[]): {
+export function encodeMessages(
+  messages: readonly Message[],
+  modelId: GoogleModelId
+): {
   systemInstruction: ContentUnion | undefined;
   contents: Content[];
 } {
   let systemInstruction: ContentUnion | undefined;
   const contents: Content[] = [];
+  const expectedProviderModelName = modelName(modelId);
 
   for (const message of messages) {
     if (message.role === 'system') {
@@ -359,10 +366,25 @@ export function encodeMessages(messages: readonly Message[]): {
         parts: processContentParts(message.content),
       });
     } else if (message.role === 'assistant') {
-      contents.push({
-        role: 'model',
-        parts: processContentParts(message.content),
-      });
+      // Check if we can reuse the raw message (from same provider/model)
+      if (
+        message.providerId === 'google' &&
+        message.modelId === modelId &&
+        message.providerModelName === expectedProviderModelName &&
+        message.rawMessage &&
+        typeof message.rawMessage === 'object' &&
+        'role' in message.rawMessage &&
+        'parts' in message.rawMessage
+      ) {
+        // Reuse the serialized content directly
+        contents.push(message.rawMessage as Content);
+      } else {
+        // Otherwise, encode from content parts
+        contents.push({
+          role: 'model',
+          parts: processContentParts(message.content),
+        });
+      }
     }
   }
 
@@ -386,7 +408,7 @@ export function buildRequestParams(
   tools?: readonly ToolSchema[],
   params: Params = {}
 ): GenerateContentParameters {
-  const { systemInstruction, contents } = encodeMessages(messages);
+  const { systemInstruction, contents } = encodeMessages(messages, modelId);
 
   return ParamHandler.with(params, 'google', modelId, (p) => {
     const maxTokens = p.getOrDefault('maxTokens', DEFAULT_MAX_TOKENS);
@@ -447,6 +469,29 @@ export function buildRequestParams(
 }
 
 /**
+ * Serialize a Content object for storage in rawMessage.
+ *
+ * This mirrors Python's `content.model_dump()` pattern for round-tripping.
+ */
+function serializeContent(
+  content: Content | undefined
+): Record<string, unknown> {
+  /* v8 ignore start - defensive fallback for missing content */
+  if (!content) {
+    return { role: 'model', parts: [] };
+  }
+  /* v8 ignore stop */
+  // Copy all non-undefined properties
+  const serialized: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(content)) {
+    if (value !== undefined) {
+      serialized[key] = value;
+    }
+  }
+  return serialized;
+}
+
+/**
  * Decode Google API response to Mirascope types.
  *
  * Extracts the assistant message content, finish reason, and usage information
@@ -471,15 +516,19 @@ export function decodeResponse(
   const content = candidate?.content?.parts ?? [];
   const decodedContent = decodeContent(content, includeThoughts);
 
+  // Store serialized candidate content for round-tripping in resume operations.
+  // This format matches what Google expects as Content.
+  const serializedRawMessage = serializeContent(candidate?.content);
+
   const assistantMessage: AssistantMessage = {
     role: 'assistant',
     content: decodedContent,
     name: null,
     providerId: 'google',
     modelId,
-    /* v8 ignore next - modelVersion always present in practice */
-    providerModelName: response.modelVersion ?? modelName(modelId),
-    rawMessage: response as unknown as AssistantMessage['rawMessage'],
+    providerModelName: modelName(modelId),
+    rawMessage:
+      serializedRawMessage as unknown as AssistantMessage['rawMessage'],
   };
 
   const finishReason = decodeFinishReason(candidate?.finishReason);
