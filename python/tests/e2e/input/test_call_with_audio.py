@@ -34,6 +34,11 @@ def test_call_with_audio(
             llm.Audio.from_file(audio_path),
         ]
 
-    with snapshot_test(snapshot, caplog) as snap:
+    # OpenRouter returns NotFoundError for unsupported audio input
+    extra_exceptions: list[type[Exception]] = []
+    if model_id.startswith("openrouter/"):
+        extra_exceptions.append(llm.NotFoundError)
+
+    with snapshot_test(snapshot, caplog, extra_exceptions=extra_exceptions) as snap:
         response = transcribe_audio(HELLO_AUDIO_PATH)
         snap.set_response(response)

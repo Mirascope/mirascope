@@ -47,6 +47,16 @@ def test_get_register_provider_mlx() -> None:
     assert provider is provider2
 
 
+def test_register_provider_openrouter() -> None:
+    """Test that register_provider('openrouter') returns same instance on multiple calls."""
+    provider = llm.register_provider("openrouter", scope=["openai/"])
+    provider2 = llm.register_provider("openrouter", scope=["openai/"])
+
+    assert isinstance(provider, llm.providers.OpenRouterProvider)
+    assert provider is provider2
+    assert provider.client.api_key == os.getenv("OPENROUTER_API_KEY")
+
+
 def test_register_provider_unknown_provider() -> None:
     """Test that register_provider raises ValueError for unknown providers."""
     with pytest.raises(ValueError, match="Unknown provider: 'unknown'"):

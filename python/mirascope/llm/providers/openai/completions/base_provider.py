@@ -30,6 +30,7 @@ from . import _utils
 
 if TYPE_CHECKING:
     from ....models import Params
+    from ._utils import SkipModelFeaturesType
 
 
 class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
@@ -83,6 +84,14 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         """Extract the model name to send to the API."""
         return openai_model_name(model_id, None)
 
+    def _model_features_name(self, model_id: str) -> str | SkipModelFeaturesType | None:
+        """Get the model name for OpenAI feature detection.
+
+        Override to return SKIP_MODEL_FEATURES for non-OpenAI models,
+        or a different name for feature detection than what _model_name returns.
+        """
+        return self._model_name(model_id)
+
     def _provider_model_name(self, model_id: str) -> str:
         """Get the model name for tracking in Response."""
         return self._model_name(model_id)
@@ -117,6 +126,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             tools=toolkit,
             format=format,
             params=params,
+            model_features_name=self._model_features_name(model_id),
         )
         kwargs["model"] = self._model_name(model_id)
         openai_response = self.client.chat.completions.create(**kwargs)
@@ -174,6 +184,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             tools=toolkit,
             format=format,
             params=params,
+            model_features_name=self._model_features_name(model_id),
         )
         kwargs["model"] = self._model_name(model_id)
         openai_response = self.client.chat.completions.create(**kwargs)
@@ -229,6 +240,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             messages=messages,
             tools=toolkit,
             format=format,
+            model_features_name=self._model_features_name(model_id),
         )
         kwargs["model"] = self._model_name(model_id)
         openai_response = await self.async_client.chat.completions.create(**kwargs)
@@ -286,6 +298,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             messages=messages,
             tools=toolkit,
             format=format,
+            model_features_name=self._model_features_name(model_id),
         )
         kwargs["model"] = self._model_name(model_id)
         openai_response = await self.async_client.chat.completions.create(**kwargs)
@@ -341,6 +354,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             tools=toolkit,
             format=format,
             params=params,
+            model_features_name=self._model_features_name(model_id),
         )
         kwargs["model"] = self._model_name(model_id)
         openai_stream = self.client.chat.completions.create(
@@ -394,6 +408,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             tools=toolkit,
             format=format,
             params=params,
+            model_features_name=self._model_features_name(model_id),
         )
         kwargs["model"] = self._model_name(model_id)
 
@@ -446,6 +461,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             tools=toolkit,
             format=format,
             params=params,
+            model_features_name=self._model_features_name(model_id),
         )
         kwargs["model"] = self._model_name(model_id)
         openai_stream = await self.async_client.chat.completions.create(
@@ -502,6 +518,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             tools=toolkit,
             format=format,
             params=params,
+            model_features_name=self._model_features_name(model_id),
         )
         kwargs["model"] = self._model_name(model_id)
 
