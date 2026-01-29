@@ -118,36 +118,27 @@ Above, when running the `recommend_music` method, the resulting call centralizes
 
 Although LLMs are effectively stateless, Mirascope provides a way to preserve state from one LLM call to the next, allowing you to potentially overcome context limitations where these might be an issue.
 
-In the example below, we preserve state by appending interactions to the `history` attribute of our chat, which is returned as part of the messages list. All this is passed as part of the prompt in future iterations of `run()`.
-
-As everything is collocated inside of a class, you can make multiple calls over multiple iterations while maintaining state inside of a call class, making it easy to define agents that require state be preserved across calls (including a history of which tools had been called, etc.).
-
-For the chat history example below, we’re obviously injecting the chat history, but **you can also manage and maintain any additional state you want** through public and private fields of the class and the addition of tools.
+In the example below, we preserve state using `response.resume()`, which automatically maintains the full conversation history internally. Each call to `resume()` includes all previous messages, making it easy to build multi-turn conversations.
 
 ```python
 from mirascope import llm
-from pydantic import BaseModel
 
-class Chat(BaseModel):
-    history: list[llm.Message] = []
+model = llm.model("openai/gpt-4o")
 
-    @llm.call("openai/gpt-4o")
-    def _step(self, question: str) -> list[llm.Message]:
-        return [
-            *self.history,
-            llm.messages.user(question),
-        ]
 
-    def run(self) -> None:
-        while True:
-            question = input("(User): ")
-            if question == "exit":
-                break
-            response = self._step(question)
-            self.history = list(response.messages)
-            print(f"(Assistant): {response.text()}")
+def chat():
+    response = model.call(input("(User): "))
+    print(f"(Assistant): {response.text()}")
 
-Chat().run()
+    while True:
+        question = input("(User): ")
+        if question == "exit":
+            break
+        response = response.resume(question)
+        print(f"(Assistant): {response.text()}")
+
+
+chat()
 
 # > (User): Hi! Who are you?
 
@@ -159,7 +150,7 @@ Chat().run()
 
 ```
 
-**Note:** Different model providers have specific rules and limitations regarding their roles, so be sure to follow their role requirements when constructing message lists.
+For more complex agents that require additional state beyond conversation history (like tracking tool calls, maintaining context, etc.), you can wrap this pattern in a class and add any additional state management you need.
 
 #### Streamlined Function Calling (Tools)
 
