@@ -1,0 +1,61 @@
+# Mirascope Documentation - Markdown Access
+
+This document explains how to access Mirascope documentation in markdown format.
+
+## Markdown Files
+
+All documentation pages have a corresponding markdown file available. To access the markdown version of any page, append `.md` to the URL path.
+
+### URL Pattern
+
+```
+HTML:     https://mirascope.com/docs/learn/llm/calls
+Markdown: https://mirascope.com/docs/learn/llm/calls.md
+```
+
+### Example
+
+```bash
+# Fetch markdown directly
+curl https://mirascope.com/docs/learn/llm/calls.md
+```
+
+## Sitemap
+
+The complete list of all pages is available at:
+https://mirascope.com/sitemap.xml
+
+To get markdown URLs from the sitemap, append `.md` to each page URL.
+
+## Content Structure
+
+- `/docs/` - SDK Documentation
+  - `/docs/learn/` - Learning guides and tutorials
+  - `/docs/api/` - API reference
+- `/blog/` - Blog posts and announcements
+
+## Markdown Format
+
+Each markdown file includes:
+- YAML frontmatter with title, description, and canonical URL
+- Full content with code examples expanded
+- Absolute URLs for all links and images
+
+## Recommended Approach for Programmatic Access
+
+1. Fetch the sitemap to discover all available pages
+2. Filter for pages under `/docs/` for documentation
+3. Append `/index.md` to each URL to get the markdown version
+4. Fetch each markdown file
+
+## Rate Limiting
+
+Please be respectful of our servers. We recommend:
+- Adding a small delay between requests (100-500ms)
+- Caching responses where appropriate
+- Using conditional requests (If-Modified-Since) when possible
+
+## About Mirascope
+
+Mirascope is a Python toolkit for building AI-powered applications with LLMs.
+Learn more at https://mirascope.com
