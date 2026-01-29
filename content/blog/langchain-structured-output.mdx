@@ -2,6 +2,7 @@
 title: "LangChain Structured Outputs: A Guide to Tools and Methods"
 description: "Learn the best methods for working with LangChain structured outputs in real-world applications, from parsing to validation."
 date: "2025-06-30"
+updatedAt: "2026-01-28"
 readTime: "10 min read"
 author: "William Bakst"
 ---
@@ -20,7 +21,7 @@ For this reason, we built [Mirascope](https://github.com/mirascope/mirascope), o
 
 But generating structured outputs is only part of the picture. You also need visibility into how those outputs are parsed and tracked across iterations and how prompt or logic changes affect results over time. 
 
-That’s where our other tool, an open source LLM engineering platform, [Lilypad](https://github.com/mirascope/lilypad), comes in: it handles prompt management, code versioning, and evaluation so you can iterate confidently and treat prompt engineering like the optimization problem it really is. 
+That's where our other tool, an open source LLM engineering platform, [Mirascope Cloud](https://mirascope.com/), comes in: it handles prompt management, code versioning, and evaluation so you can iterate confidently and treat prompt engineering like the optimization problem it really is. 
 
 ## How to Get Structured Outputs in LangChain
 
@@ -30,9 +31,9 @@ This class method lets you define a schema (like a JSON object) to guide the mod
 
 It only works with LLMs that support structured output natively, such as OpenAI (via JSON mode or tool calling), Anthropic, Cohere, and similar providers. If the model doesn’t support this feature, you’ll need to use an output parser instead.
 
-Use `.with_structured_output()` to specify a particular format you want the LLM to use in its response, passing this format as schema into the prompt: 
+Use `.with_structured_output()` to specify a particular format you want the LLM to use in its response, passing this format as schema into the prompt:
 
-```python
+```python-snippet-skip
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -91,9 +92,9 @@ This parser is particularly useful where type safety matters. It ensures that th
 
 Like `.with_structured_output()`, PydanticOutputParser is also a runnable, which means you can compose it with other LangChain components in a chain.
 
-Below, we use PydanticOutputParser to specify a Book schema to ensure the title in the LLM’s output is a string and the number of pages is an integer: ‍
+Below, we use PydanticOutputParser to specify a Book schema to ensure the title in the LLM's output is a string and the number of pages is an integer: ‍
 
-```python
+```python-snippet-skip
 from typing import List
 
 from langchain_core.output_parsers import PydanticOutputParser
@@ -172,9 +173,9 @@ the object {"foo": ["bar", "baz"]} is a well-formatted instance of the schema. T
 Human: Please provide details about the books 'The Great Gatsby' with 208 pages and 'To Kill a Mockingbird' with 384 pages. 
 ```
 
-Next, we invoke the chain: 
+Next, we invoke the chain:
 
-```python
+```python-snippet-skip
 from langchain_openai import ChatOpenAI
 
 llm = ChatOpenAI(temperature=0)
@@ -213,9 +214,9 @@ Each `ResponseSchema` represents a key-value pair and has the following fields:
 
 In the example below, we ask the model to return a recipe and ingredients list for *Spaghetti Bolognese*. 
 
-We first define two `ResponseSchema` objects, one for `recipe` and the other for `ingredients`, both expected to be strings. 
+We first define two `ResponseSchema` objects, one for `recipe` and the other for `ingredients`, both expected to be strings.
 
-```python
+```python-snippet-skip
 from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
@@ -288,7 +289,7 @@ Like LangChain, Mirascope supports OpenAI’s JSON mode and structured outputs u
 The example below shows a custom output parser that extracts structured data into a Movie object, with a decorator that sends the prompt to Anthropic.
 
 ```python
-from mirascope.core import anthropic, prompt_template
+from mirascope import llm
 from pydantic import BaseModel
 
 
@@ -297,28 +298,22 @@ class Movie(BaseModel):
     director: str
 
 
-def parse_movie_recommendation(response: anthropic.AnthropicCallResponse) -> Movie:  # [!code highlight]
-    title, director = response.content.split(" directed by ")  # [!code highlight]
+def parse_movie_recommendation(response: llm.CallResponse) -> Movie:  # [!code highlight]
+    title, director = response.text().split(" directed by ")  # [!code highlight]
     return Movie(title=title, director=director)  # [!code highlight]
 
 
-@llm.call(
-    model="claude-3-5-sonnet-20240620", output_parser=parse_movie_recommendation  # [!code highlight]
-)
-@prompt_template("Recommend a {genre} movie in the format Title directed by Director")
+@llm.call("anthropic/claude-sonnet-4-20250514", output_parser=parse_movie_recommendation)  # [!code highlight]
 def recommend_movie(genre: str):
-    ...
+    return f"Recommend a {genre} movie in the format Title directed by Director"
 
 
 movie = recommend_movie("thriller")
 print(f"Title: {movie.title}")
 print(f"Director: {movie.director}")
-
 ```
 
-Note that we pass `output_parser` to the call decorator to change the return type of the decorated function to match the parser’s output. While you could run the parser manually, adding it to the decorator ensures it runs automatically with every call, which is useful since the parser and prompt are often tightly coupled.
-
-Notice that we also separate prompt instructions from the function itself by using the `@prompt_template` decorator. This makes it easier to keep prompts consistent across multiple calls and tweak them independently of other logic.
+Note that we pass `output_parser` to the call decorator to change the return type of the decorated function to match the parser's output. While you could run the parser manually, adding it to the decorator ensures it runs automatically with every call, which is useful since the parser and prompt are often tightly coupled.
 
 Separating prompt logic from output parsing improves code reuse and makes functions easier to maintain, which is especially helpful in [advanced prompt engineering](/blog/advanced-prompt-engineering/), where keeping logic modular improves reusability and traceability.
 
@@ -338,16 +333,16 @@ We also offer auto suggestions:
 
 This makes it easy to catch mistakes before running your code and reflects Mirascope’s promotion of [best coding practices](/blog/engineers-should-handle-prompting-llms). 
 
-### Specifying Language Model Outputs with Response Models
+### Specifying Language Model Outputs with Structured Output
 
-Mirascope’s `response_model` lets you define the type of output you expect from the LLM using a Pydantic class, like `Recipe` in the example below. 
+Mirascope's `format` parameter lets you define the type of output you expect from the LLM using a Pydantic class, like `Recipe` in the example below.
 
 The benefit is that it allows you to catch schema mismatch or validation issues before runtime. This is a notable improvement in developer experience compared to LangChain, which (at least out of the box) only surfaces such errors during runtime.
 
-Once you’ve defined the model against which to extract the output, you insert the model name into the argument of the call decorator as `response_model` in order to specify the LLM’s return type: ‍
+Once you've defined the model against which to extract the output, you insert the model name into the argument of the call decorator as `format` in order to specify the LLM's return type:
 
 ```python
-from mirascope.core import openai
+from mirascope import llm
 from pydantic import BaseModel
 
 
@@ -356,49 +351,55 @@ class Recipe(BaseModel):  # [!code highlight]
     chef: str  # [!code highlight]
 
 
-@llm.call(model="gpt-4o-mini", response_model=Recipe)  # [!code highlight]
+@llm.call("openai/gpt-4o-mini", format=Recipe)  # [!code highlight]
 def recommend_dish(cuisine: str) -> str:
     return f"Recommend a {cuisine} dish"
 
-dish = recommend_dish("Italian")
-assert isinstance(dish, Recipe)  # [!code highlight]
+response = recommend_dish("Italian")
+dish = response.parse()  # [!code highlight]
+assert isinstance(dish, Recipe)
 print(f"Dish: {dish.dish}")
-print(f"Chef: {dish.chef}") 
+print(f"Chef: {dish.chef}")
 ```
 
-This automatically validates and structures the LLM’s output according to your predefined model, making the output easier to integrate into your application logic. 
+This automatically validates and structures the LLM's output according to your predefined model, making the output easier to integrate into your application logic.
 
-Like LangChain’s `.with_structured_output()`, Mirascope passes your Pydantic model and config to the LLM to steer the response into the expected format.
+Like LangChain's `.with_structured_output()`, Mirascope passes your Pydantic model and config to the LLM to steer the response into the expected format.
 
-Below are a few of the most useful settings available for response models: 
+Below are a few of the most useful settings available for structured output:
 
 #### **Returning Outputs in Valid JSON**
 
-Setting `json_mode=True` in the call decorator will apply [JSON mode](/docs/v1/learn/json_mode/), if it’s supported by your LLM, rendering the outputs as valid JSON: 
+Use `llm.format()` with `mode="json"` to request JSON output from the LLM:
 
 ```python
-import json
-from mirascope.core import openai
+from mirascope import llm
+from pydantic import BaseModel
 
 
-@llm.call(model="gpt-4o-mini", json_mode=True)  # [!code highlight]
+class MovieInfo(BaseModel):
+    director: str
+    release_year: str
+    main_genre: str
+
+
+@llm.call("openai/gpt-4o-mini", format=llm.format(MovieInfo, mode="json"))  # [!code highlight]
 def get_movie_info(movie_title: str) -> str:
     return f"Provide the director, release year, and main genre for {movie_title}"
 
 
 response = get_movie_info("Inception")
-print(json.loads(response.content))  # [!code highlight]
-# > {"director": "Christopher Nolan", "release_year": "2010", "main_genre": "Science Fiction"}
+movie_info = response.parse()  # [!code highlight]
+print(movie_info)
+# > director='Christopher Nolan' release_year='2010' main_genre='Science Fiction'
 ```
 
-## 
+#### **Adding Few-Shot Examples to Structured Output**
 
-#### **Adding Few-Shot Examples to Response Models** 
-
-Mirascope response models also let you add few-shot examples as shown below, where we add `examples` arguments in the fields of Destination: ‍  
+Mirascope structured output also lets you add few-shot examples as shown below, where we add `examples` arguments in the fields of Destination:
 
 ```python
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -411,132 +412,124 @@ class Destination(BaseModel):
     )
 
 
-@llm.call("gpt-4o-mini", response_model=Destination, json_mode=True)
-@prompt_template(
-    """
+@llm.call("openai/gpt-4o-mini", format=Destination, json_mode=True)
+def recommend_destination(travel_type: str):
+    return f"""
     Recommend a {travel_type} travel destination.
     Match example format EXCLUDING 'examples' key.
     """
-)
-def recommend_destination(travel_type: str): ...
 
 
-destination = recommend_destination("cultural")
+response = recommend_destination("cultural")
+destination = response.parse()
 print(destination)
-# > name='PARIS' country='France' 
+# > name='PARIS' country='France'
 ```
 
-You can learn more about Mirascope’s response model [here](/docs/v1/learn/response_models). 
+You can learn more about Mirascope's structured output [here](/docs/learn/llm/structured-output). 
 
-## Versioning and Observability in LangChain (And How Lilypad Does It Better)
+## Versioning and Observability in LangChain (And How Mirascope Cloud Does It Better)
 
-Structured outputs aren’t just easier to work with, they’re important for observability. When your outputs follow a predictable format (like JSON), it becomes practically feasible to reliably trace, evaluate, and monitor model behavior over time, which lays the groundwork for better [LLM evaluation](/blog/llm-evaluation/) and performance tracking.
+Structured outputs aren't just easier to work with, they're important for observability. When your outputs follow a predictable format (like JSON), it becomes practically feasible to reliably trace, evaluate, and monitor model behavior over time, which lays the groundwork for better [LLM evaluation](/blog/llm-evaluation/) and performance tracking.
 
 But most observability tools split this workflow across multiple platforms. You edit prompts in one place, trace runs in another, and evaluate results in a third. That disconnect makes it hard to tell whether a change was actually helpful, especially since LLMs are inherently non-deterministic and can return slightly different results across runs, even with the same input.
 
-We built Lilypad to unify that workflow. It automatically versions your LLM function logic, tracks every input and output, and ties [LLM prompt](/blog/llm-prompt/) updates, model settings, and structured outputs into one continuous, reviewable loop, making it especially useful when building [LLM agents](/blog/llm-agents/) that require observability across multiple calls.   
+We built Mirascope Cloud to unify that workflow. It automatically versions your LLM function logic, tracks every input and output, and ties [LLM prompt](/blog/llm-prompt/) updates, model settings, and structured outputs into one continuous, reviewable loop, making it especially useful when building [LLM agents](/blog/llm-agents/) that require observability across multiple calls.
 
 ### Automatic Output Versioning System
 
-LangSmith (and LangChain Hub) offers Git‑style prompt history, commits, tags, downloads, but linking any given output back to the exact prompt version requires you to push each revision to the prompt hub, tag it (e.g., “v2” or a hash), then explicitly pull that identifier in your code or look it up in the UI.
+LangSmith (and LangChain Hub) offers Git‑style prompt history, commits, tags, downloads, but linking any given output back to the exact prompt version requires you to push each revision to the prompt hub, tag it (e.g., "v2" or a hash), then explicitly pull that identifier in your code or look it up in the UI.
 
-Because the mapping isn’t automatic, you often end up hard‑coding tags or hashes (like 3b452769) or trawling the LangSmith dashboard to discover which prompt produced a specific result.
+Because the mapping isn't automatic, you often end up hard‑coding tags or hashes (like 3b452769) or trawling the LangSmith dashboard to discover which prompt produced a specific result.
 
-Lilypad solves this by automatically versioning not just the prompt but the entire function that calls the LLM, including model settings, input parameters, helper functions, and even the logic used to process the output into a structured format. 
+Mirascope Cloud solves this by automatically versioning not just the prompt but the entire function that calls the LLM, including model settings, input parameters, helper functions, and even the logic used to process the output into a structured format.
 
-Any change to this function is automatically tracked as a new version, giving you a complete snapshot of what generated each output. 
+Any change to this function is automatically tracked as a new version, giving you a complete snapshot of what generated each output.
 
-To enable automatic tracking and versioning, you simply decorate your LLM-calling function with `@lilypad.trace(versioning="automatic")`:
+To enable automatic tracking and versioning, you simply decorate your LLM-calling function with `@ops.version`:
 
 ```python
-import lilypad
-import os
-from openai import OpenAI
+from mirascope import llm, ops
 
-lilypad.configure()
+ops.configure()
+ops.instrument_llm()
 
-client = OpenAI()
-
-@lilypad.trace(versioning="automatic")  # [!code highlight]
+@ops.version  # [!code highlight]
+@llm.call("openai/gpt-4o")
 def answer_question(question: str) -> str:
-    completion = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": question}],
-    )
-    return str(completion.choices[0].message.content) 
+    return question
 
-response = answer_question("Who is a jack of all trades?")    
-print(response)
-
+response = answer_question("Who is a jack of all trades?")
+print(response.text())
 ```
 
-Structuring your calls in this way gives room for effective optimization. Every time a structured output is generated, you know exactly what changed, when it changed, and why.  
+Structuring your calls in this way gives room for effective optimization. Every time a structured output is generated, you know exactly what changed, when it changed, and why.
 
-Lilypad is also tool-agnostic and supports any other prompt engineering library you might be using. 
+Mirascope Cloud is also tool-agnostic and supports any other prompt engineering library you might be using. 
 
 
-### Playground to Manage Versions, Inputs, and Code Logic 
+### Playground to Manage Versions, Inputs, and Code Logic
 
-When domain experts like product, marketing or legal teams want to tweak a prompt, they often need developers to make the change, test it, and redeploy the app, even for small updates.   
+When domain experts like product, marketing or legal teams want to tweak a prompt, they often need developers to make the change, test it, and redeploy the app, even for small updates.
 
-Lilypad solves this with managed prompts and a playground UI that lets non-technical users edit and test prompts without touching the underlying code. This separates concerns: domain experts handle prompt logic, while engineers focus on the system architecture.
+Mirascope Cloud solves this with managed prompts and a playground UI that lets non-technical users edit and test prompts without touching the underlying code. This separates concerns: domain experts handle prompt logic, while engineers focus on the system architecture.
 
-This separation only happens in the user interface. Behind the scenes, the prompts are still part of the versioned code: they aren’t stored in some separate system. With Lilypad, every prompt you test in the playground connects directly to the exact version of the function it’s part of. 
+This separation only happens in the user interface. Behind the scenes, the prompts are still part of the versioned code: they aren't stored in some separate system. With Mirascope Cloud, every prompt you test in the playground connects directly to the exact version of the function it's part of.
 
-This makes it easy to track changes, fix bugs, and improve your app over time. Other tools treat prompts as their own thing, separate from the rest of the code. We think that’s a mistake, because it breaks the link between how the prompt works and how the app actually behaves.
+This makes it easy to track changes, fix bugs, and improve your app over time. Other tools treat prompts as their own thing, separate from the rest of the code. We think that's a mistake, because it breaks the link between how the prompt works and how the app actually behaves.
 
 We believe keeping prompts tied to code is essential for reliability and iteration.
 
-That’s why Lilypad snapshots the entire function, prompt logic, model settings, inputs, and outputs, each time you decorate it with `@lilypad.trace`. Any change creates a new version that shows up in the playground, ready to test.
+That's why Mirascope Cloud snapshots the entire function, prompt logic, model settings, inputs, and outputs, each time you decorate it with `@ops.version`. Any change creates a new version that shows up in the playground, ready to test.
 
-Below is an example of a traced function displayed in the playground as V6: 
+Below is an example of a traced function displayed in the playground as V6:
 
-![Lilypad Answer Question v6 Trace](/assets/blog/langchain-structured-output/lilypad-answer-question-v6-trace.webp)
+![Answer Question v6 Trace](/assets/blog/langchain-structured-output/lilypad-answer-question-v6-trace.webp)
 
-After updating the function to switch the model type gpt-4o-mini, Lilypad detects the change and increments the version automatically. The playground now reflects this as version V7: 
+After updating the function to switch the model type gpt-4o-mini, Mirascope Cloud detects the change and increments the version automatically. The playground now reflects this as version V7:
 
-![Lilypad Answer Question v7 Trace](/assets/blog/langchain-structured-output/lilypad-answer-question-v7-trace.webp)
+![Answer Question v7 Trace](/assets/blog/langchain-structured-output/lilypad-answer-question-v7-trace.webp)
 
-This automatic versioning removes the need to track these changes manually and lets you roll back or compare versions as needed.  
+This automatic versioning removes the need to track these changes manually and lets you roll back or compare versions as needed.
 
-And if your changes are functionally identical to a previous version, Lilypad won’t increment the version. This prevents duplication and keeps the version history clean and meaningful.  
+And if your changes are functionally identical to a previous version, Mirascope Cloud won't increment the version. This prevents duplication and keeps the version history clean and meaningful.
 
-Domain experts can define prompt templates with input variables, and Lilypad automatically generates type-safe function signatures to keep everything structured, as shown below: 
+Domain experts can define prompt templates with input variables, and Mirascope Cloud automatically generates type-safe function signatures to keep everything structured, as shown below:
 
-![Lilypad Playground](/assets/blog/langchain-structured-output/lilypad-playground.webp)
+![Playground](/assets/blog/langchain-structured-output/lilypad-playground.webp)
 
-The Playground’s no-code dashboard gives full visibility into each step of your prompt engineering workflow. Everything is versioned, traceable, and easy to review. 
+The Playground's no-code dashboard gives full visibility into each step of your prompt engineering workflow. Everything is versioned, traceable, and easy to review.
 
-The playground shows: 
+The playground shows:
 
-* Prompt templates (in markdown), alongside their corresponding Python functions  
-* LLM outputs, paired with full trace data  
-* Call settings like provider, model, and temperature    
+* Prompt templates (in markdown), alongside their corresponding Python functions
+* LLM outputs, paired with full trace data
+* Call settings like provider, model, and temperature
 * Metadata such as cost, token usage, and latency
 
-Lilypad also uses the [OpenTelemetry Gen AI spec](https://opentelemetry.io/) to trace every call made by a generation. This is important for debugging and improving complex workflows, as you can get to see precisely what was asked, how it was asked, and what was returned: 
+Mirascope Cloud also uses the [OpenTelemetry Gen AI spec](https://opentelemetry.io/) to trace every call made by a generation. This is important for debugging and improving complex workflows, as you can get to see precisely what was asked, how it was asked, and what was returned:
 
-![Lilypad OpenTelemetry GenAI Data](/assets/blog/langchain-structured-output/lilypad-otel-genai-data.webp)
+![OpenTelemetry GenAI Data](/assets/blog/langchain-structured-output/lilypad-otel-genai-data.webp)
 
 
 ### Evaluation of LLM Outputs by (Non-Technical) Domain Experts
 
-Once your outputs are versioned and traceable, the next step is evaluation. In Lilypad, domain experts can review structured outputs directly in the playground using a simple pass/fail system. 
+Once your outputs are versioned and traceable, the next step is evaluation. In Mirascope Cloud, domain experts can review structured outputs directly in the playground using a simple pass/fail system.
 
-Instead of [rating quality](/blog/llm-evaluation/) with vague 1–5 scores or subjective rubrics, Lilypad encourages reviewers to ask one question: *Is this output good enough for production use?* If yes, it’s a pass. If not, it’s a fail, with optional feedback explaining why:  
+Instead of [rating quality](/blog/llm-evaluation/) with vague 1–5 scores or subjective rubrics, Mirascope Cloud encourages reviewers to ask one question: *Is this output good enough for production use?* If yes, it's a pass. If not, it's a fail, with optional feedback explaining why:
 
-![Lilypad Annotation Queue](/assets/blog/langchain-structured-output/lilypad-annotation-queue.webp)
+![Annotation Queue](/assets/blog/langchain-structured-output/lilypad-annotation-queue.webp)
 
-We recommend manually labeling outputs as much as possible early in a project. And since each label is tied to a specific versioned output, you get clean, reliable training data for automating future evaluations. 
+We recommend manually labeling outputs as much as possible early in a project. And since each label is tied to a specific versioned output, you get clean, reliable training data for automating future evaluations.
 
-When using [LLM-as-a-judge](/blog/llm-as-judge/) (a feature we intend to launch in the near future), we still recommend keeping a human in the loop for final verification, as judges can sometimes struggle with or lack confidence in certain tasks. 
+When using [LLM-as-a-judge](/blog/llm-as-judge/), we still recommend keeping a human in the loop for final verification, as judges can sometimes struggle with or lack confidence in certain tasks.
 
-To get started with Lilypad, sign up for the [playground](https://app.lilypad.so/) using your GitHub account. From there, you can start tracing and versioning your LLM functions with just a few lines of code.     
+To get started with Mirascope Cloud, sign up at [mirascope.com](https://mirascope.com/) using your GitHub account. From there, you can start tracing and versioning your LLM functions with just a few lines of code.
 
 ## Generate Structured Outputs with Ease and Consistency
 
-Mirascope’s integration with Pydantic and its use of Pythonic conventions make it easy to define structured outputs, and simplifies [LLM integration](/blog/llm-integration/) without requiring new abstractions or complex frameworks.
+Mirascope's integration with Pydantic and its use of Pythonic conventions make it easy to define structured outputs, and simplifies [LLM integration](/blog/llm-integration/) without requiring new abstractions or complex frameworks.
 
-Paired with Lilypad, you get automatic versioning, better [prompt evaluation](/blog/prompt-evaluation/) workflows, and traceable outputs across iterations.  
+Paired with Mirascope Cloud, you get automatic versioning, better [prompt evaluation](/blog/prompt-evaluation/) workflows, and traceable outputs across iterations.
 
-Want to learn more? You can find Lilypad’s code samples on both our [documentation site](/docs/lilypad) and on [GitHub](https://github.com/mirascope/lilypad). Lilypad also supports [Mirascope](https://github.com/mirascope/mirascope/), our lightweight toolkit for building AI agents.   
+Want to learn more? You can find code samples on both our [documentation site](/docs/learn/ops) and on [GitHub](https://github.com/mirascope/mirascope). Mirascope Cloud also supports [Mirascope](https://github.com/mirascope/mirascope/), our lightweight toolkit for building AI agents.   
