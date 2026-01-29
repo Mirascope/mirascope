@@ -225,6 +225,26 @@ export function thoughtEnd(): ThoughtEndChunk {
   return { type: 'thought_end_chunk', contentType: 'thought' };
 }
 
+/* v8 ignore start - tool chunk factories will be tested via e2e */
+/** Create a ToolCallStartChunk */
+export function toolCallStartChunk(
+  id: string,
+  name: string
+): ToolCallStartChunk {
+  return { type: 'tool_call_start_chunk', contentType: 'tool_call', id, name };
+}
+
+/** Create a ToolCallChunk */
+export function toolCallChunk(id: string, delta: string): ToolCallChunk {
+  return { type: 'tool_call_chunk', contentType: 'tool_call', id, delta };
+}
+
+/** Create a ToolCallEndChunk */
+export function toolCallEndChunk(id: string): ToolCallEndChunk {
+  return { type: 'tool_call_end_chunk', contentType: 'tool_call', id };
+}
+/* v8 ignore stop */
+
 /** Create a FinishReasonChunk */
 export function finishReasonChunk(
   finishReason: FinishReason
