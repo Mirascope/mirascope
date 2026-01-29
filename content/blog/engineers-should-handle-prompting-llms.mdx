@@ -94,7 +94,7 @@ print(response.text())
 
 ```
 
-Mirascope will automatically structure the prompt as a list of `BaseMessageParam` message objects that work across all supported providers.
+Mirascope will automatically structure the prompt as a list of `llm.Message` objects that work across all supported providers.
 
 The `@llm.call` decorator turns prompt templates into actual calls to an LLM API. This reduces the boilerplate needed to write LLM-powered functions:
 
