@@ -30,4 +30,24 @@ describe('prompt output', () => {
       expect(response.usage).not.toBeNull();
     }
   );
+
+  it.record.each(PROVIDERS)(
+    'streams model with string model id',
+    async ({ model }) => {
+      const addNumbers = definePrompt<{ a: number; b: number }>({
+        template: ({ a, b }) => `What is ${a} + ${b}?`,
+      });
+
+      // Call prompt directly with string model ID (not a Model instance)
+      const response = await addNumbers.stream(model, {
+        a: 4200,
+        b: 42,
+      });
+
+      await response.consume();
+
+      expect(response.text()).toContain('4242');
+      expect(response.usage).not.toBeNull();
+    }
+  );
 });

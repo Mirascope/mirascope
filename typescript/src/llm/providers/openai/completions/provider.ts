@@ -14,7 +14,9 @@ import {
   buildRequestParams,
   decodeResponse,
 } from '@/llm/providers/openai/completions/_utils';
+import { decodeStream } from '@/llm/providers/openai/completions/decode-stream';
 import { Response } from '@/llm/responses';
+import { StreamResponse } from '@/llm/responses/stream-response';
 
 /**
  * Provider for the OpenAI Chat Completions API.
@@ -92,6 +94,45 @@ export class OpenAICompletionsProvider extends BaseProvider {
       assistantMessage,
       finishReason,
       usage,
+    });
+  }
+
+  /**
+   * Execute a streaming call to the OpenAI Chat Completions API.
+   *
+   * @param args - Call arguments
+   * @param args.modelId - The OpenAI model ID to use
+   * @param args.messages - Array of messages to send
+   * @param args.params - Optional additional parameters
+   * @returns StreamResponse object for streaming consumption
+   */
+  protected async _stream(args: {
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<StreamResponse> {
+    const modelIdTyped = args.modelId as OpenAIModelId;
+    const requestParams = buildRequestParams(
+      modelIdTyped,
+      args.messages,
+      args.params
+    );
+
+    const stream = await this.client.chat.completions.create({
+      ...requestParams,
+      stream: true,
+      stream_options: { include_usage: true },
+    });
+
+    const chunkIterator = decodeStream(stream);
+
+    return new StreamResponse({
+      providerId: 'openai',
+      modelId: modelIdTyped,
+      providerModelName: modelName(modelIdTyped, null),
+      params: args.params ?? /* v8 ignore next 1 */ {},
+      inputMessages: args.messages,
+      chunkIterator,
     });
   }
 

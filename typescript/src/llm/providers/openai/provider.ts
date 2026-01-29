@@ -13,6 +13,7 @@ import { OpenAIResponsesProvider } from '@/llm/providers/openai/responses/provid
 import type { ApiMode, OpenAIModelId } from '@/llm/providers/openai/model-id';
 import { OPENAI_KNOWN_MODELS } from '@/llm/providers/openai/model-info';
 import { Response } from '@/llm/responses';
+import { StreamResponse } from '@/llm/responses/stream-response';
 
 /**
  * Check if messages contain any audio content.
@@ -164,6 +165,38 @@ export class OpenAIProvider extends BaseProvider {
 
     // Delegate to the completions provider
     return this.completionsProvider.call({
+      modelId: args.modelId,
+      messages: args.messages,
+      params: args.params,
+    });
+  }
+
+  /**
+   * Execute a streaming call to the OpenAI API, routing to the appropriate API based on model ID.
+   *
+   * @param args - Call arguments
+   * @param args.modelId - The OpenAI model ID to use (optionally with :completions or :responses suffix)
+   * @param args.messages - Array of messages to send
+   * @param args.params - Optional additional parameters
+   * @returns StreamResponse object for streaming consumption
+   */
+  protected async _stream(args: {
+    modelId: string;
+    messages: readonly Message[];
+    params?: Params;
+  }): Promise<StreamResponse> {
+    const modelId = args.modelId as OpenAIModelId;
+    const apiMode = chooseApiMode(modelId, args.messages);
+
+    if (apiMode === 'responses') {
+      return this.responsesProvider.stream({
+        modelId: args.modelId,
+        messages: args.messages,
+        params: args.params,
+      });
+    }
+
+    return this.completionsProvider.stream({
       modelId: args.modelId,
       messages: args.messages,
       params: args.params,
