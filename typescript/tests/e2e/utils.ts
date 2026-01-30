@@ -278,3 +278,79 @@ export function createIt(cassettesDir: string, namespace: string) {
     },
   }) as typeof vitestIt & { record: RecordIt };
 }
+
+// =============================================================================
+// Snapshot Testing Utilities
+// =============================================================================
+
+export {
+  SnapshotDict,
+  responseSnapshotDict,
+  streamResponseSnapshotDict,
+  usageSnapshot,
+  toolSnapshot,
+  formatSnapshot,
+  exceptionSnapshotDict,
+} from "@/tests/e2e/snapshot-utils";
+
+import { FeatureNotSupportedError } from "@/llm/exceptions";
+import { SnapshotDict } from "@/tests/e2e/snapshot-utils";
+
+/**
+ * Options for the snapshotTest helper.
+ */
+export interface SnapshotTestOptions {
+  /**
+   * Additional exception types to catch and add to snapshot.
+   * By default, catches NotImplementedError and FeatureNotSupportedError.
+   */
+  extraExceptions?: Array<new (...args: unknown[]) => Error>;
+}
+
+/**
+ * Helper for exception-safe snapshot testing.
+ *
+ * Executes the test function, catching expected exceptions and adding them
+ * to the snapshot. This matches Python's `snapshot_test` context manager pattern.
+ *
+ * @param testFn - The test function that receives a SnapshotDict.
+ * @param options - Optional configuration.
+ * @returns The snapshot dict for assertion.
+ *
+ * @example
+ * ```typescript
+ * const snap = await snapshotTest(async (snap) => {
+ *   const response = await call();
+ *   snap.setResponse(response);
+ *   expect(response.text()).toContain("expected");
+ * });
+ * expect(snap.toObject()).toMatchInlineSnapshot();
+ * ```
+ */
+export async function snapshotTest(
+  testFn: (snap: SnapshotDict) => Promise<void>,
+  options: SnapshotTestOptions = {},
+): Promise<SnapshotDict> {
+  const snap = new SnapshotDict();
+
+  const { extraExceptions = [] } = options;
+
+  try {
+    await testFn(snap);
+  } catch (e) {
+    // Check if this is an expected exception type
+    const isExpected =
+      (e instanceof Error && e.name === "NotImplementedError") ||
+      e instanceof FeatureNotSupportedError ||
+      extraExceptions.some((ExType) => e instanceof ExType);
+
+    if (isExpected && e instanceof Error) {
+      snap.setException(e);
+    } else {
+      // Re-throw unexpected exceptions
+      throw e;
+    }
+  }
+
+  return snap;
+}
