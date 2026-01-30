@@ -5,7 +5,6 @@
  * including base types for toolkit storage and callable types
  * for direct invocation.
  */
-
 import type { ToolCall } from "@/llm/content/tool-call";
 import type { ToolOutput } from "@/llm/content/tool-output";
 import type { Context } from "@/llm/context";

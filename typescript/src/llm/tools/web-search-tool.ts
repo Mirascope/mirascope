@@ -2,7 +2,7 @@
  * Web search tool for provider-native web search capabilities.
  */
 
-import { ProviderTool } from "./provider-tool";
+import { ProviderTool } from "@/llm/tools/provider-tool";
 
 /**
  * Web search tool that allows the model to search the internet.
