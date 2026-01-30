@@ -1,6 +1,6 @@
 """Mock Provider for testing retry logic."""
 
-from collections.abc import Sequence
+from collections.abc import AsyncIterator, Iterator, Sequence
 from typing import Any, ClassVar
 from typing_extensions import Unpack
 
@@ -25,8 +25,10 @@ from mirascope.llm import (
     StreamResponse,
     Toolkit,
 )
+from mirascope.llm.content import TextChunk, TextEndChunk, TextStartChunk
 from mirascope.llm.providers import BaseProvider
 from mirascope.llm.providers.base import ProviderErrorMap
+from mirascope.llm.responses.base_stream_response import StreamResponseChunk
 
 
 class MockProvider(BaseProvider[None]):
@@ -48,12 +50,20 @@ class MockProvider(BaseProvider[None]):
         """Initialize the MockProvider."""
         self.client = None
         self._exceptions: list[BaseException] = []
+        self._stream_exceptions: list[BaseException] = []
         self._call_count = 0
+        self._stream_count = 0
+        self._stream_text: str | None = None  # Custom text for streaming
 
     @property
     def call_count(self) -> int:
         """The number of times _call() has been invoked."""
         return self._call_count
+
+    @property
+    def stream_count(self) -> int:
+        """The number of times _stream() has been invoked."""
+        return self._stream_count
 
     def set_exceptions(self, exceptions: Sequence[BaseException]) -> None:
         """Set exceptions to raise before returning a successful response.
@@ -63,6 +73,24 @@ class MockProvider(BaseProvider[None]):
                 subsequent calls will return the mock response.
         """
         self._exceptions = list(exceptions)
+
+    def set_stream_exceptions(self, exceptions: Sequence[BaseException]) -> None:
+        """Set exceptions to raise during stream iteration.
+
+        Args:
+            exceptions: A list of exceptions to raise mid-stream. Each exception
+                is raised once during iteration. Once exhausted, subsequent streams
+                will complete successfully.
+        """
+        self._stream_exceptions = list(exceptions)
+
+    def set_stream_text(self, text: str) -> None:
+        """Set custom text to stream instead of default 'mock response'.
+
+        Args:
+            text: The text to stream in chunks.
+        """
+        self._stream_text = text
 
     def _make_response(
         self, model_id: str, messages: Sequence[llm.messages.Message]
@@ -174,6 +202,52 @@ class MockProvider(BaseProvider[None]):
         """Not implemented for mock."""
         raise NotImplementedError
 
+    def _make_chunk_iterator(self) -> Iterator[StreamResponseChunk]:
+        """Create a chunk iterator that yields mock text chunks.
+
+        If stream exceptions are configured, raises the next one mid-stream.
+        """
+        yield TextStartChunk()
+        if self._stream_text is not None:
+            # Use custom text, split into chunks
+            text = self._stream_text
+            mid = len(text) // 2
+            yield TextChunk(delta=text[:mid])
+            # Raise exception mid-stream if configured
+            if self._stream_exceptions:
+                raise self._stream_exceptions.pop(0)
+            yield TextChunk(delta=text[mid:])
+        else:
+            yield TextChunk(delta="mock ")
+            # Raise exception mid-stream if configured
+            if self._stream_exceptions:
+                raise self._stream_exceptions.pop(0)
+            yield TextChunk(delta="response")
+        yield TextEndChunk()
+
+    async def _make_async_chunk_iterator(self) -> AsyncIterator[StreamResponseChunk]:
+        """Create an async chunk iterator that yields mock text chunks.
+
+        If stream exceptions are configured, raises the next one mid-stream.
+        """
+        yield TextStartChunk()
+        if self._stream_text is not None:
+            # Use custom text, split into chunks
+            text = self._stream_text
+            mid = len(text) // 2
+            yield TextChunk(delta=text[:mid])
+            # Raise exception mid-stream if configured
+            if self._stream_exceptions:
+                raise self._stream_exceptions.pop(0)
+            yield TextChunk(delta=text[mid:])
+        else:
+            yield TextChunk(delta="mock ")
+            # Raise exception mid-stream if configured
+            if self._stream_exceptions:
+                raise self._stream_exceptions.pop(0)
+            yield TextChunk(delta="response")
+        yield TextEndChunk()
+
     def _stream(
         self,
         *,
@@ -186,8 +260,27 @@ class MockProvider(BaseProvider[None]):
         | None = None,
         **params: Unpack[Params],
     ) -> StreamResponse[Any]:
-        """Not implemented for mock."""
-        raise NotImplementedError
+        """Return a StreamResponse with configurable mid-stream exceptions."""
+        self._stream_count += 1
+        # Convert format to Format if it's a type
+        resolved_format: Format[Any] | None = None
+        if format is not None:
+            if isinstance(format, Format):
+                resolved_format = format
+            elif isinstance(format, OutputParser):
+                resolved_format = llm.format(format, mode="parser")
+            else:
+                resolved_format = llm.format(format, mode="json")
+        return StreamResponse(
+            provider_id="mock",
+            model_id=model_id,
+            provider_model_name="test-model",
+            params={},
+            tools=None,
+            format=resolved_format,
+            input_messages=list(messages),
+            chunk_iterator=self._make_chunk_iterator(),
+        )
 
     async def _stream_async(
         self,
@@ -201,8 +294,27 @@ class MockProvider(BaseProvider[None]):
         | None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse[Any]:
-        """Not implemented for mock."""
-        raise NotImplementedError
+        """Return an AsyncStreamResponse with configurable mid-stream exceptions."""
+        self._stream_count += 1
+        # Convert format to Format if it's a type
+        resolved_format: Format[Any] | None = None
+        if format is not None:
+            if isinstance(format, Format):
+                resolved_format = format
+            elif isinstance(format, OutputParser):
+                resolved_format = llm.format(format, mode="parser")
+            else:
+                resolved_format = llm.format(format, mode="json")
+        return AsyncStreamResponse(
+            provider_id="mock",
+            model_id=model_id,
+            provider_model_name="test-model",
+            params={},
+            tools=None,
+            format=resolved_format,
+            input_messages=list(messages),
+            chunk_iterator=self._make_async_chunk_iterator(),
+        )
 
     def _context_stream(
         self,
