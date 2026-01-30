@@ -18,6 +18,9 @@ export { AnthropicProvider } from '@/llm/providers/anthropic';
 // Google provider
 export { GoogleProvider } from '@/llm/providers/google';
 
+// Mirascope provider
+export { MirascopeProvider } from '@/llm/providers/mirascope';
+
 // OpenAI provider
 export {
   OpenAIProvider,
@@ -27,6 +30,7 @@ export {
 // Provider registry
 export {
   getProviderForModel,
+  getProviderSingleton,
   registerProvider,
   resetProviderRegistry,
 } from '@/llm/providers/registry';

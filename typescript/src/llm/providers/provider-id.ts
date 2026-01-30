@@ -5,7 +5,12 @@
 /**
  * Array of known provider IDs for runtime checks.
  */
-export const KNOWN_PROVIDER_IDS = ['anthropic', 'google', 'openai'] as const;
+export const KNOWN_PROVIDER_IDS = [
+  'anthropic',
+  'google',
+  'mirascope',
+  'openai',
+] as const;
 
 /**
  * Known provider identifiers.
