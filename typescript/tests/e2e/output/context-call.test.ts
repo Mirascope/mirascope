@@ -9,8 +9,8 @@
 import { resolve } from 'node:path';
 import { createIt, describe, expect } from '@/tests/e2e/utils';
 import { PROVIDERS } from '@/tests/e2e/providers';
-import { defineContextCall } from '@/llm/calls';
-import { createContext } from '@/llm/context';
+import { defineCall } from '@/llm/calls';
+import { createContext, type Context } from '@/llm/context';
 
 const it = createIt(resolve(__dirname, 'cassettes'), 'context-call');
 
@@ -22,7 +22,7 @@ describe('context call output', () => {
   it.record.each(PROVIDERS)(
     'decodes text response with context',
     async ({ model }) => {
-      const call = defineContextCall<{ value: number }, TestDeps>({
+      const call = defineCall<{ ctx: Context<TestDeps>; value: number }>({
         model,
         maxTokens: 100,
         template: ({ ctx, value }) =>
@@ -42,7 +42,7 @@ describe('context call output', () => {
   it.record.each(PROVIDERS)(
     'streams response with context',
     async ({ model }) => {
-      const call = defineContextCall<{ value: number }, TestDeps>({
+      const call = defineCall<{ ctx: Context<TestDeps>; value: number }>({
         model,
         maxTokens: 100,
         template: ({ ctx, value }) =>

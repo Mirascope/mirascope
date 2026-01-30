@@ -9,7 +9,7 @@ import {
 } from '@/llm/tools/toolkit';
 import { defineTool, defineContextTool } from '@/llm/tools/define-tool';
 import type { ToolCall } from '@/llm/content/tool-call';
-import type { Context } from '@/llm/context';
+import { createContext, type Context } from '@/llm/context';
 import { FORMAT_TOOL_NAME } from '@/llm/tools/tool-schema';
 import { ToolNotFoundError } from '@/llm/exceptions';
 
@@ -115,14 +115,13 @@ describe('ContextToolkit', () => {
     tool: async (ctx, { url }) => ctx.deps.api.fetch(url),
   });
 
-  const createMockContext = (): Context<TestDeps> => ({
-    deps: {
+  const createMockContext = (): Context<TestDeps> =>
+    createContext<TestDeps>({
       db: { search: vi.fn((q: string) => [`db: ${q}`]) },
       api: {
         fetch: vi.fn((url: string) => Promise.resolve(`fetched: ${url}`)),
       },
-    },
-  });
+    });
 
   it('creates context toolkit with tools', () => {
     const toolkit = new ContextToolkit<TestDeps>([searchDb, fetchUrl]);
@@ -239,9 +238,8 @@ describe('ContextToolkit with mixed tools', () => {
     tool: (ctx, { value }) => value * ctx.deps.multiplier,
   });
 
-  const createMockContext = (multiplier: number): Context<TestDeps> => ({
-    deps: { multiplier },
-  });
+  const createMockContext = (multiplier: number): Context<TestDeps> =>
+    createContext<TestDeps>({ multiplier });
 
   it('accepts both regular and context tools', () => {
     // This is the key Python-like pattern: ContextToolkit accepts Tool | ContextTool

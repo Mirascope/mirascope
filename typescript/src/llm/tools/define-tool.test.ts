@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { ToolCall } from '@/llm/content/tool-call';
-import type { Context } from '@/llm/context';
+import { createContext, type Context } from '@/llm/context';
 import {
   defineTool,
   defineContextTool,
@@ -272,11 +272,10 @@ describe('defineContextTool', () => {
     db: { search: (q: string) => string[] };
   }
 
-  const createMockContext = (): Context<TestDeps> => ({
-    deps: {
+  const createMockContext = (): Context<TestDeps> =>
+    createContext<TestDeps>({
       db: { search: vi.fn((q: string) => [`result for ${q}`]) },
-    },
-  });
+    });
 
   it('creates a context tool with correct properties', () => {
     const tool = defineContextTool<{ query: string }, TestDeps>({

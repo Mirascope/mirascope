@@ -8,8 +8,8 @@
 import { resolve } from 'node:path';
 import { createIt, describe, expect } from '@/tests/e2e/utils';
 import { PROVIDERS } from '@/tests/e2e/providers';
-import { defineCall, defineContextCall } from '@/llm/calls';
-import { createContext } from '@/llm/context';
+import { defineCall } from '@/llm/calls';
+import { createContext, type Context } from '@/llm/context';
 
 const it = createIt(resolve(__dirname, 'cassettes'), 'resume');
 
@@ -81,7 +81,7 @@ describe('context resume from call', () => {
   it.record.each(PROVIDERS)(
     'resumes context conversation with new content',
     async ({ model }) => {
-      const call = defineContextCall<TestDeps>({
+      const call = defineCall<{ ctx: Context<TestDeps> }>({
         model,
         maxTokens: 500,
         template: ({ ctx }) => `Say exactly: "${ctx.deps.greeting}"`,
@@ -104,7 +104,7 @@ describe('context resume from stream', () => {
   it.record.each(PROVIDERS)(
     'resumes context conversation after streaming',
     async ({ model }) => {
-      const call = defineContextCall<TestDeps>({
+      const call = defineCall<{ ctx: Context<TestDeps> }>({
         model,
         maxTokens: 500,
         template: ({ ctx }) => `Say exactly: "${ctx.deps.greeting}"`,
