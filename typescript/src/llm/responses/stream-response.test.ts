@@ -6,6 +6,12 @@ import { FinishReason } from '@/llm/responses/finish-reason';
 import type { UserMessage } from '@/llm/messages';
 import { defineTool, Toolkit } from '@/llm/tools';
 import type { ToolParameterSchema } from '@/llm/tools/tool-schema';
+import {
+  FORMAT_TOOL_NAME,
+  defineFormat,
+  defineOutputParser,
+  resolveFormat,
+} from '@/llm/formatting';
 
 /**
  * Helper to create async iterator from array
@@ -791,6 +797,241 @@ describe('StreamResponse', () => {
       await expect(response.consume()).rejects.toThrow(
         'Received tool_call_start_chunk with duplicate id: call-1'
       );
+    });
+  });
+
+  describe('structuredStream', () => {
+    it('throws error when format is not set', async () => {
+      const chunks: StreamResponseChunk[] = [
+        { type: 'text_start_chunk', contentType: 'text' },
+        { type: 'text_chunk', contentType: 'text', delta: 'hello' },
+        { type: 'text_end_chunk', contentType: 'text' },
+      ];
+
+      const response = createTestStreamResponse(chunks);
+
+      await expect(async () => {
+        for await (const _ of response.structuredStream()) {
+          // Should throw before yielding
+        }
+      }).rejects.toThrow('structuredStream() requires format parameter');
+    });
+
+    it('throws error when format uses OutputParser', async () => {
+      const outputParser = defineOutputParser({
+        formattingInstructions: 'Return XML',
+        parser: () => ({ value: 'test' }),
+      });
+
+      // Resolve OutputParser to a Format (this is what providers do internally)
+      const format = resolveFormat(outputParser, 'tool');
+
+      const chunks: StreamResponseChunk[] = [
+        { type: 'text_start_chunk', contentType: 'text' },
+        { type: 'text_chunk', contentType: 'text', delta: 'hello' },
+        { type: 'text_end_chunk', contentType: 'text' },
+      ];
+
+      const iterator = arrayToAsyncIterator(chunks);
+      const response = new StreamResponse({
+        providerId: 'anthropic',
+        modelId: 'anthropic/claude-sonnet-4-20250514',
+        providerModelName: 'claude-sonnet-4-20250514',
+        params: {},
+        inputMessages: [],
+        chunkIterator: iterator,
+        format,
+      });
+
+      await expect(async () => {
+        for await (const _ of response.structuredStream()) {
+          // Should throw before yielding
+        }
+      }).rejects.toThrow(
+        'structuredStream() is not supported for OutputParser'
+      );
+    });
+
+    it('yields partial parsed objects as stream progresses', async () => {
+      interface Book {
+        title: string;
+        author: string;
+      }
+
+      const bookSchema: ToolParameterSchema = {
+        type: 'object',
+        properties: {
+          title: { type: 'string' },
+          author: { type: 'string' },
+        },
+        required: ['title', 'author'],
+        additionalProperties: false,
+      };
+
+      const bookFormat = defineFormat<Book>({
+        mode: 'tool',
+        __schema: bookSchema,
+      });
+
+      const chunks: StreamResponseChunk[] = [
+        { type: 'text_start_chunk', contentType: 'text' },
+        { type: 'text_chunk', contentType: 'text', delta: '{"title": "Dune"' },
+        {
+          type: 'text_chunk',
+          contentType: 'text',
+          delta: ', "author": "Frank Herbert"}',
+        },
+        { type: 'text_end_chunk', contentType: 'text' },
+      ];
+
+      const iterator = arrayToAsyncIterator(chunks);
+      const response = new StreamResponse({
+        providerId: 'anthropic',
+        modelId: 'anthropic/claude-sonnet-4-20250514',
+        providerModelName: 'claude-sonnet-4-20250514',
+        params: {},
+        inputMessages: [],
+        chunkIterator: iterator,
+        format: bookFormat,
+      });
+
+      const partials: unknown[] = [];
+      for await (const partial of response.structuredStream()) {
+        partials.push(partial);
+      }
+
+      // Should have yielded at least one partial
+      expect(partials.length).toBeGreaterThan(0);
+      // Final partial should have both fields
+      const finalPartial = partials[partials.length - 1] as Book;
+      expect(finalPartial.title).toBe('Dune');
+      expect(finalPartial.author).toBe('Frank Herbert');
+    });
+
+    it('handles chunks that do not produce valid partial JSON', async () => {
+      interface Data {
+        value: number;
+      }
+
+      const dataSchema: ToolParameterSchema = {
+        type: 'object',
+        properties: {
+          value: { type: 'number' },
+        },
+        required: ['value'],
+        additionalProperties: false,
+      };
+
+      const dataFormat = defineFormat<Data>({
+        mode: 'tool',
+        __schema: dataSchema,
+      });
+
+      const chunks: StreamResponseChunk[] = [
+        { type: 'text_start_chunk', contentType: 'text' },
+        // Invalid JSON that can't be parsed
+        { type: 'text_chunk', contentType: 'text', delta: 'not json at all' },
+        { type: 'text_end_chunk', contentType: 'text' },
+      ];
+
+      const iterator = arrayToAsyncIterator(chunks);
+      const response = new StreamResponse({
+        providerId: 'anthropic',
+        modelId: 'anthropic/claude-sonnet-4-20250514',
+        providerModelName: 'claude-sonnet-4-20250514',
+        params: {},
+        inputMessages: [],
+        chunkIterator: iterator,
+        format: dataFormat,
+      });
+
+      const partials: unknown[] = [];
+      for await (const partial of response.structuredStream()) {
+        partials.push(partial);
+      }
+
+      // Should yield nothing since JSON couldn't be parsed
+      expect(partials.length).toBe(0);
+    });
+  });
+
+  describe('FORMAT_TOOL transformation', () => {
+    it('transforms FORMAT_TOOL tool_call chunks to text chunks', async () => {
+      const chunks: StreamResponseChunk[] = [
+        {
+          type: 'tool_call_start_chunk',
+          contentType: 'tool_call',
+          id: 'call-format',
+          name: FORMAT_TOOL_NAME,
+        },
+        {
+          type: 'tool_call_chunk',
+          contentType: 'tool_call',
+          id: 'call-format',
+          delta: '{"title": "Test Book",',
+        },
+        {
+          type: 'tool_call_chunk',
+          contentType: 'tool_call',
+          id: 'call-format',
+          delta: ' "author": "Test Author"}',
+        },
+        {
+          type: 'tool_call_end_chunk',
+          contentType: 'tool_call',
+          id: 'call-format',
+        },
+      ];
+
+      const response = createTestStreamResponse(chunks);
+      await response.consume();
+
+      // The FORMAT_TOOL chunks should be transformed to text
+      // so text() should return the JSON content
+      expect(response.text()).toBe(
+        '{"title": "Test Book", "author": "Test Author"}'
+      );
+      // And no tool calls should be accumulated
+      expect(response.toolCalls).toHaveLength(0);
+    });
+
+    it('handles FORMAT_TOOL mixed with regular text', async () => {
+      const chunks: StreamResponseChunk[] = [
+        // Regular text before
+        { type: 'text_start_chunk', contentType: 'text' },
+        {
+          type: 'text_chunk',
+          contentType: 'text',
+          delta: 'Here is your data: ',
+        },
+        { type: 'text_end_chunk', contentType: 'text' },
+        // FORMAT_TOOL
+        {
+          type: 'tool_call_start_chunk',
+          contentType: 'tool_call',
+          id: 'call-format',
+          name: FORMAT_TOOL_NAME,
+        },
+        {
+          type: 'tool_call_chunk',
+          contentType: 'tool_call',
+          id: 'call-format',
+          delta: '{"value": 42}',
+        },
+        {
+          type: 'tool_call_end_chunk',
+          contentType: 'tool_call',
+          id: 'call-format',
+        },
+      ];
+
+      const response = createTestStreamResponse(chunks);
+      await response.consume();
+
+      // Both text segments should be captured
+      expect(response.texts).toHaveLength(2);
+      expect(response.texts[0]?.text).toBe('Here is your data: ');
+      expect(response.texts[1]?.text).toBe('{"value": 42}');
     });
   });
 });

@@ -6,6 +6,7 @@
  */
 
 import type { Context } from '@/llm/context';
+import type { Format, FormatSpec, OutputParser } from '@/llm/formatting';
 import { Model, useModel } from '@/llm/models';
 import type { Params } from '@/llm/models/params';
 import {
@@ -16,7 +17,7 @@ import {
 import type { ModelId } from '@/llm/providers/model-id';
 import type { ContextResponse } from '@/llm/responses/context-response';
 import type { ContextStreamResponse } from '@/llm/responses/context-stream-response';
-import type { ContextTools } from '@/llm/tools';
+import type { ContextTools, ZodLike } from '@/llm/tools';
 import type { NoVars } from '@/llm/types';
 
 /**
@@ -24,12 +25,19 @@ import type { NoVars } from '@/llm/types';
  *
  * @template T - The type of variables the template accepts. Defaults to NoVars.
  * @template DepsT - The type of dependencies in the context.
+ * @template F - The type of the formatted output when using structured outputs.
  */
-export interface ContextCallArgs<T = NoVars, DepsT = unknown> extends Params {
+export interface ContextCallArgs<T = NoVars, DepsT = unknown, F = unknown>
+  extends Params {
   /** The model to use, either a Model instance or model ID string. */
   model: Model | ModelId;
   /** Optional tools to make available to the model. */
   tools?: ContextTools<DepsT>;
+  /**
+   * Optional format specification for structured output.
+   * Can be a Zod schema, Format, FormatSpec, or OutputParser.
+   */
+  format?: Format<F> | FormatSpec<F> | ZodLike | OutputParser<F> | null;
   /** A function that generates message content from context (and optionally variables). */
   template: ContextTemplateFunc<T, DepsT>;
 }
@@ -42,6 +50,7 @@ export interface ContextCallArgs<T = NoVars, DepsT = unknown> extends Params {
  *
  * @template T - The type of variables the call accepts. Defaults to empty object.
  * @template DepsT - The type of dependencies in the context.
+ * @template F - The type of the formatted output when using structured outputs.
  *
  * @example With variables
  * ```typescript
@@ -69,7 +78,7 @@ export interface ContextCallArgs<T = NoVars, DepsT = unknown> extends Params {
  * const response = await sayHello(ctx);
  * ```
  */
-export interface ContextCall<T = NoVars, DepsT = unknown> {
+export interface ContextCall<T = NoVars, DepsT = unknown, F = unknown> {
   /**
    * Call directly with context to generate a response (model is bundled).
    *
@@ -80,7 +89,7 @@ export interface ContextCall<T = NoVars, DepsT = unknown> {
   (
     ctx: Context<DepsT>,
     ...args: keyof T extends never ? [] : [vars: T]
-  ): Promise<ContextResponse<DepsT>>;
+  ): Promise<ContextResponse<DepsT, F>>;
 
   /**
    * Call directly with context to generate a response (model is bundled).
@@ -93,7 +102,7 @@ export interface ContextCall<T = NoVars, DepsT = unknown> {
   call(
     ctx: Context<DepsT>,
     ...args: keyof T extends never ? [] : [vars: T]
-  ): Promise<ContextResponse<DepsT>>;
+  ): Promise<ContextResponse<DepsT, F>>;
 
   /**
    * Stream directly with context to generate a streaming response (model is bundled).
@@ -113,7 +122,7 @@ export interface ContextCall<T = NoVars, DepsT = unknown> {
   stream(
     ctx: Context<DepsT>,
     ...args: keyof T extends never ? [] : [vars: T]
-  ): Promise<ContextStreamResponse<DepsT>>;
+  ): Promise<ContextStreamResponse<DepsT, F>>;
 
   /**
    * The model used for generating responses.
@@ -133,9 +142,20 @@ export interface ContextCall<T = NoVars, DepsT = unknown> {
   readonly tools: ContextTools<DepsT> | undefined;
 
   /**
+   * The format specification for structured output, if any.
+   */
+  readonly format:
+    | Format<F>
+    | FormatSpec<F>
+    | ZodLike
+    | OutputParser<F>
+    | null
+    | undefined;
+
+  /**
    * The underlying context prompt.
    */
-  readonly prompt: ContextPrompt<T, DepsT>;
+  readonly prompt: ContextPrompt<T, DepsT, F>;
 
   /**
    * The underlying template function.
@@ -154,7 +174,7 @@ export interface ContextCall<T = NoVars, DepsT = unknown> {
  * ```typescript
  * interface MyDeps { userId: string; }
  *
- * const sayHello = defineContextCall<NoVars, MyDeps>({
+ * const sayHello = defineContextCall<MyDeps>({
  *   model: 'anthropic/claude-sonnet-4-20250514',
  *   template: ({ ctx }) => `Hello, user ${ctx.deps.userId}!`,
  * });
@@ -172,6 +192,7 @@ export function defineContextCall<DepsT>(
  *
  * @template T - The type of variables the template accepts.
  * @template DepsT - The type of dependencies in the context.
+ * @template F - The type of the formatted output when using structured outputs.
  * @param args - The call arguments including model, template, and optional parameters.
  * @returns A callable that can be invoked directly with a context and variables.
  *
@@ -218,15 +239,17 @@ export function defineContextCall<DepsT>(
 export function defineContextCall<
   T extends Record<string, unknown>,
   DepsT = unknown,
->(args: ContextCallArgs<T, DepsT>): ContextCall<T, DepsT>;
+  F = unknown,
+>(args: ContextCallArgs<T, DepsT, F>): ContextCall<T, DepsT, F>;
 
 // Implementation
-export function defineContextCall<T, DepsT>({
+export function defineContextCall<T, DepsT, F>({
   model,
   tools,
+  format,
   template,
   ...params
-}: ContextCallArgs<T, DepsT>): ContextCall<T, DepsT> {
+}: ContextCallArgs<T, DepsT, F>): ContextCall<T, DepsT, F> {
   if (typeof model !== 'string' && Object.keys(params).length > 0) {
     throw new Error(
       'Cannot pass params when model is a Model instance. Use new Model(id, params) instead.'
@@ -237,26 +260,26 @@ export function defineContextCall<T, DepsT>({
   const defaultModel: Model =
     typeof model === 'string' ? new Model(model, params) : model;
 
-  const prompt = defineContextPrompt<T, DepsT>({ tools, template });
+  const prompt = defineContextPrompt<T, DepsT, F>({ tools, format, template });
 
   const call = async (
     ctx: Context<DepsT>,
     ...vars: keyof T extends never ? [] : [vars: T]
-  ): Promise<ContextResponse<DepsT>> => {
+  ): Promise<ContextResponse<DepsT, F>> => {
     return prompt.call(useModel(defaultModel), ctx, ...vars);
   };
 
   const callable = async (
     ctx: Context<DepsT>,
     ...vars: keyof T extends never ? [] : [vars: T]
-  ): Promise<ContextResponse<DepsT>> => {
+  ): Promise<ContextResponse<DepsT, F>> => {
     return call(ctx, ...vars);
   };
 
   const stream = async (
     ctx: Context<DepsT>,
     ...vars: keyof T extends never ? [] : [vars: T]
-  ): Promise<ContextStreamResponse<DepsT>> => {
+  ): Promise<ContextStreamResponse<DepsT, F>> => {
     return prompt.stream(useModel(defaultModel), ctx, ...vars);
   };
 
@@ -265,6 +288,7 @@ export function defineContextCall<T, DepsT>({
     call,
     stream,
     tools,
+    format,
     prompt,
     template,
   });
@@ -274,5 +298,5 @@ export function defineContextCall<T, DepsT>({
     enumerable: true,
   });
 
-  return definedCall as ContextCall<T, DepsT>;
+  return definedCall as ContextCall<T, DepsT, F>;
 }

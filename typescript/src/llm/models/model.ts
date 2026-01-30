@@ -3,6 +3,7 @@
  */
 
 import type { Context } from '@/llm/context';
+import type { Format } from '@/llm/formatting';
 import type { Message, UserContent } from '@/llm/messages';
 import { promoteToMessages } from '@/llm/messages';
 import type { RootResponse } from '@/llm/responses/root-response';
@@ -99,7 +100,9 @@ export class Model {
    * @param content - Content to send to the LLM. Can be a string (converted to user
    *   message), UserContent, a sequence of UserContent, or a sequence of Messages
    *   for full control.
-   * @param tools - Optional tools to make available to the model.
+   * @param options - Optional configuration for the call.
+   * @param options.tools - Optional tools to make available to the model.
+   * @param options.format - Optional format for structured output.
    * @returns A Response object containing the LLM-generated content.
    *
    * @example Simple string input
@@ -117,16 +120,28 @@ export class Model {
    *   user('What is the capital of France?'),
    * ]);
    * ```
+   *
+   * @example With structured output format
+   * ```typescript
+   * import { defineFormat } from 'mirascope/llm';
+   *
+   * interface Book { title: string; author: string; }
+   * const bookFormat = defineFormat<Book>({ mode: 'tool' });
+   *
+   * const response = await model.call('Recommend a book', { format: bookFormat });
+   * const book = response.parse<Book>();
+   * ```
    */
   async call(
     content: UserContent | readonly Message[],
-    tools?: Tools
+    options?: { tools?: Tools; format?: Format | null }
   ): Promise<Response> {
     const messages = promoteToMessages(content);
     return this.provider.call({
       modelId: this.modelId,
       messages,
-      tools,
+      tools: options?.tools,
+      format: options?.format,
       params: this.params,
     });
   }
@@ -137,7 +152,9 @@ export class Model {
    * @param content - Content to send to the LLM. Can be a string (converted to user
    *   message), UserContent, a sequence of UserContent, or a sequence of Messages
    *   for full control.
-   * @param tools - Optional tools to make available to the model.
+   * @param options - Optional configuration for the stream.
+   * @param options.tools - Optional tools to make available to the model.
+   * @param options.format - Optional format for structured output.
    * @returns A StreamResponse object for consuming the streamed content.
    *
    * @example Simple string input
@@ -164,16 +181,31 @@ export class Model {
    * // After consuming the stream, get the full text
    * console.log(response.text());
    * ```
+   *
+   * @example With structured streaming
+   * ```typescript
+   * import { defineFormat } from 'mirascope/llm';
+   *
+   * interface Book { title: string; author: string; }
+   * const bookFormat = defineFormat<Book>({ mode: 'tool' });
+   *
+   * const response = await model.stream('Recommend a book', { format: bookFormat });
+   * for await (const partial of response.structuredStream<Book>()) {
+   *   console.log('Partial:', partial);
+   * }
+   * const book = response.parse<Book>();
+   * ```
    */
   async stream(
     content: UserContent | readonly Message[],
-    tools?: Tools
+    options?: { tools?: Tools; format?: Format | null }
   ): Promise<StreamResponse> {
     const messages = promoteToMessages(content);
     return this.provider.stream({
       modelId: this.modelId,
       messages,
-      tools,
+      tools: options?.tools,
+      format: options?.format,
       params: this.params,
     });
   }
@@ -187,7 +219,9 @@ export class Model {
    * @template DepsT - The type of dependencies in the context.
    * @param ctx - The context containing dependencies for tools.
    * @param content - Content to send to the LLM.
-   * @param tools - Optional tools to make available to the model.
+   * @param options - Optional configuration for the call.
+   * @param options.tools - Optional tools to make available to the model.
+   * @param options.format - Optional format for structured output.
    * @returns A ContextResponse object containing the LLM-generated content.
    *
    * @example
@@ -202,14 +236,15 @@ export class Model {
   async contextCall<DepsT>(
     ctx: Context<DepsT>,
     content: UserContent | readonly Message[],
-    tools?: ContextTools<DepsT>
+    options?: { tools?: ContextTools<DepsT>; format?: Format | null }
   ): Promise<ContextResponse<DepsT>> {
     const messages = promoteToMessages(content);
     return this.provider.contextCall({
       ctx,
       modelId: this.modelId,
       messages,
-      tools,
+      tools: options?.tools,
+      format: options?.format,
       params: this.params,
     });
   }
@@ -223,7 +258,9 @@ export class Model {
    * @template DepsT - The type of dependencies in the context.
    * @param ctx - The context containing dependencies for tools.
    * @param content - Content to send to the LLM.
-   * @param tools - Optional tools to make available to the model.
+   * @param options - Optional configuration for the stream.
+   * @param options.tools - Optional tools to make available to the model.
+   * @param options.format - Optional format for structured output.
    * @returns A ContextStreamResponse object for consuming the streamed content.
    *
    * @example
@@ -240,14 +277,15 @@ export class Model {
   async contextStream<DepsT>(
     ctx: Context<DepsT>,
     content: UserContent | readonly Message[],
-    tools?: ContextTools<DepsT>
+    options?: { tools?: ContextTools<DepsT>; format?: Format | null }
   ): Promise<ContextStreamResponse<DepsT>> {
     const messages = promoteToMessages(content);
     return this.provider.contextStream({
       ctx,
       modelId: this.modelId,
       messages,
-      tools,
+      tools: options?.tools,
+      format: options?.format,
       params: this.params,
     });
   }
