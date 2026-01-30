@@ -2,6 +2,7 @@ from inline_snapshot import snapshot
 
 from mirascope.llm import (
     AssistantMessage,
+    ProviderToolUsage,
     Text,
     UserMessage,
 )
@@ -20,6 +21,9 @@ test_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "provider_tool_usage": [
+                    ProviderToolUsage(name="web_search", call_count=1)
+                ],
                 "raw": "ResponseUsage(input_tokens=17668, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=711, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=18379)",
                 "total_tokens": 18379,
             },

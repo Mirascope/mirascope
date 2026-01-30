@@ -7,6 +7,38 @@ from typing import Any, Literal
 
 
 @dataclass(kw_only=True)
+class ProviderToolUsage:
+    """Usage data for a provider's server-side tool.
+
+    Tracks usage of tools executed by the provider that have separate pricing
+    beyond standard token costs (e.g., web search, code execution).
+    """
+
+    name: str
+    """Tool name matching our ProviderTool.name (e.g., "web_search").
+
+    This is the consistent cross-provider identifier that matches
+    the corresponding Mirascope ProviderTool class (e.g., WebSearchTool.name).
+    """
+
+    call_count: int = 0
+    """Number of invocations/calls of this tool."""
+
+    duration_seconds: float | None = None
+    """Duration in seconds for time-based tools (e.g., code execution).
+
+    None if not applicable to this tool type.
+    """
+
+    metadata: dict[str, Any] | None = None
+    """Provider-specific metadata for debugging/analytics.
+
+    Examples:
+    - Google grounding: {"queries": ["query1", "query2"]}
+    """
+
+
+@dataclass(kw_only=True)
 class UsageDeltaChunk:
     """A chunk containing incremental token usage information from a streaming response.
 
@@ -30,6 +62,9 @@ class UsageDeltaChunk:
 
     reasoning_tokens: int = 0
     """Delta in reasoning/thinking tokens."""
+
+    provider_tool_usage: list[ProviderToolUsage] | None = None
+    """Provider tool usage (emitted in final chunk only)."""
 
 
 @dataclass(kw_only=True)
@@ -84,6 +119,15 @@ class Usage:
     not shown to the user.
 
     Will be 0 if not reported by the provider or if the model does not support reasoning.
+    """
+
+    provider_tool_usage: list[ProviderToolUsage] | None = None
+    """Provider tool usage data for tools with separate pricing.
+
+    Tracks usage of server-side tools executed by the provider (e.g., web search,
+    code execution) that have pricing beyond standard token costs.
+
+    Will be None if no provider tools were used.
     """
 
     raw: Any = None
