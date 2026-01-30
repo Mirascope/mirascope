@@ -22,13 +22,7 @@ from .....tools import (
 )
 from ....base import _utils as _base_utils
 from ...model_id import OpenAIModelId, model_name
-from ...model_info import (
-    MODELS_WITHOUT_AUDIO_SUPPORT,
-    MODELS_WITHOUT_JSON_OBJECT_SUPPORT,
-    MODELS_WITHOUT_JSON_SCHEMA_SUPPORT,
-    NON_REASONING_MODELS,
-)
-from .constants import SKIP_MODEL_FEATURES, SkipModelFeaturesType
+from .feature_info import CompletionsModelFeatureInfo
 
 if TYPE_CHECKING:
     from .....models import Params
@@ -59,7 +53,8 @@ class ChatCompletionCreateKwargs(TypedDict, total=False):
 def _encode_user_message(
     message: UserMessage,
     model_id: OpenAIModelId,
-    model_features_name: str | SkipModelFeaturesType,
+    feature_info: CompletionsModelFeatureInfo,
+    provider_id: str,
 ) -> list[openai_types.ChatCompletionMessageParam]:
     """Convert Mirascope `UserMessage` to a list of OpenAI `ChatCompletionMessageParam`.
 
@@ -108,13 +103,10 @@ def _encode_user_message(
             )
             current_content.append(content)
         elif part.type == "audio":
-            if (
-                model_features_name is not SKIP_MODEL_FEATURES
-                and model_features_name in MODELS_WITHOUT_AUDIO_SUPPORT
-            ):
+            if feature_info.audio_support is False:
                 raise FeatureNotSupportedError(
                     feature="Audio inputs",
-                    provider_id="openai",
+                    provider_id=provider_id,
                     message=f"Model '{model_id}' does not support audio inputs.",
                 )
 
@@ -215,7 +207,8 @@ def _encode_message(
     message: Message,
     model_id: OpenAIModelId,
     encode_thoughts_as_text: bool,
-    model_features_name: str | SkipModelFeaturesType,
+    feature_info: CompletionsModelFeatureInfo,
+    provider_id: str,
 ) -> list[openai_types.ChatCompletionMessageParam]:
     """Convert a Mirascope `Message` to OpenAI `ChatCompletionMessageParam` format."""
     if message.role == "system":
@@ -225,7 +218,7 @@ def _encode_message(
             )
         ]
     elif message.role == "user":
-        return _encode_user_message(message, model_id, model_features_name)
+        return _encode_user_message(message, model_id, feature_info, provider_id)
     elif message.role == "assistant":
         return [_encode_assistant_message(message, model_id, encode_thoughts_as_text)]
     else:
@@ -300,7 +293,8 @@ def encode_request(
     tools: BaseToolkit[AnyToolSchema],
     format: FormatSpec[FormattableT] | None,
     params: Params,
-    model_features_name: str | SkipModelFeaturesType | None = None,
+    feature_info: CompletionsModelFeatureInfo,
+    provider_id: str,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ChatCompletionCreateKwargs]:
     """Prepares a request for the `OpenAI.chat.completions.create` method."""
     if model_id.endswith(":responses"):
@@ -312,23 +306,11 @@ def encode_request(
         )
     base_model_name = model_name(model_id, None)
 
-    effective_features_name: str | SkipModelFeaturesType
-    if model_features_name is SKIP_MODEL_FEATURES:
-        effective_features_name = SKIP_MODEL_FEATURES
-        is_reasoning_model = False
-        model_supports_strict = False
-    elif model_features_name is not None:
-        effective_features_name = model_features_name
-        is_reasoning_model = model_features_name not in NON_REASONING_MODELS
-        model_supports_strict = (
-            model_features_name not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
-        )
-    else:
-        effective_features_name = base_model_name
-        is_reasoning_model = base_model_name not in NON_REASONING_MODELS
-        model_supports_strict = (
-            base_model_name not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
-        )
+    is_reasoning_model = feature_info.is_reasoning_model is True
+    strict_supported = feature_info.strict_support is True
+    strict_allowed = feature_info.strict_support is not False
+    supports_json_object = feature_info.json_object_support is True
+
     kwargs: ChatCompletionCreateKwargs = ChatCompletionCreateKwargs(
         {"model": base_model_name}
     )
@@ -336,7 +318,7 @@ def encode_request(
 
     with _base_utils.ensure_all_params_accessed(
         params=params,
-        provider_id="openai",
+        provider_id=provider_id,
         unsupported_params=[
             "top_k",
             *(["temperature", "top_p", "stop_sequences"] if is_reasoning_model else []),
@@ -363,14 +345,14 @@ def encode_request(
 
     openai_tools = [_convert_tool_to_tool_param(tool) for tool in tools.tools]
 
-    default_mode = "strict" if model_supports_strict else "tool"
+    default_mode = "strict" if strict_supported else "tool"
     format = resolve_format(format, default_mode=default_mode)
     if format is not None:
         if format.mode == "strict":
-            if not model_supports_strict:
+            if not strict_allowed:
                 raise FeatureNotSupportedError(
                     feature="formatting_mode:strict",
-                    provider_id="openai",
+                    provider_id=provider_id,
                     model_id=model_id,
                 )
             kwargs["response_format"] = _create_strict_response_format(format)
@@ -385,11 +367,7 @@ def encode_request(
                 kwargs["parallel_tool_calls"] = False
             format_tool_schema = format.create_tool_schema()
             openai_tools.append(_convert_tool_to_tool_param(format_tool_schema))
-        elif (
-            format.mode == "json"
-            and effective_features_name is not SKIP_MODEL_FEATURES
-            and effective_features_name not in MODELS_WITHOUT_JSON_OBJECT_SUPPORT
-        ):
+        elif format.mode == "json" and supports_json_object:
             kwargs["response_format"] = {"type": "json_object"}
 
         if format.formatting_instructions:
@@ -404,7 +382,7 @@ def encode_request(
     for message in messages:
         encoded_messages.extend(
             _encode_message(
-                message, model_id, encode_thoughts_as_text, effective_features_name
+                message, model_id, encode_thoughts_as_text, feature_info, provider_id
             )
         )
     kwargs["messages"] = encoded_messages
