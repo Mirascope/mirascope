@@ -21,6 +21,7 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 46,
+                "provider_tool_usage": None,
                 "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=18 candidates_tokens_details=None prompt_token_count=881 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
@@ -206,6 +207,7 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 32,
+                "provider_tool_usage": None,
                 "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=17 candidates_tokens_details=None prompt_token_count=1180 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
@@ -560,6 +562,7 @@ I've meticulously reviewed the approach, and have completed the prime number lis
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 77,
+                "provider_tool_usage": None,
                 "raw": "None",
                 "total_tokens": 371,
             },
@@ -1195,6 +1198,7 @@ The final answer is $\\boxed{3}$.\
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 38,
+                "provider_tool_usage": None,
                 "raw": "None",
                 "total_tokens": 1599,
             },

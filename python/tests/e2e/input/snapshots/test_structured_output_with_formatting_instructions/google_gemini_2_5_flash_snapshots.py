@@ -21,6 +21,7 @@ test_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 129,
+                "provider_tool_usage": None,
                 "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=24 candidates_tokens_details=None prompt_token_count=62 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,

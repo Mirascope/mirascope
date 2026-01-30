@@ -9,6 +9,7 @@ test_snapshot = snapshot(
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 77,
+            "provider_tool_usage": None,
             "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=12 candidates_tokens_details=None prompt_token_count=3900 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
@@ -28,6 +29,7 @@ However, my primary function is to navigate the hyperspace lanes of Star Wars lo
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 185,
+            "provider_tool_usage": None,
             "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=110 candidates_tokens_details=None prompt_token_count=3904 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,

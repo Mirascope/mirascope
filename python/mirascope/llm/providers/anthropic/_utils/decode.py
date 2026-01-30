@@ -5,7 +5,7 @@ from typing import Any, TypeAlias, cast
 
 from anthropic import types as anthropic_types
 from anthropic.lib.streaming import AsyncMessageStreamManager, MessageStreamManager
-from anthropic.types.beta import BetaUsage
+from anthropic.types.beta import BetaMessageDeltaUsage, BetaUsage
 
 from ....content import (
     AssistantContentPart,
@@ -28,6 +28,7 @@ from ....responses import (
     ChunkIterator,
     FinishReason,
     FinishReasonChunk,
+    ProviderToolUsage,
     RawMessageChunk,
     RawStreamEventChunk,
     Usage,
@@ -63,6 +64,31 @@ def _decode_assistant_content(
         )
 
 
+def extract_tool_usage(
+    usage: (
+        anthropic_types.Usage
+        | anthropic_types.MessageDeltaUsage
+        | BetaUsage
+        | BetaMessageDeltaUsage
+    ),
+) -> list[ProviderToolUsage] | None:
+    """Extract provider tool usage from Anthropic usage object."""
+    server_tool_use = getattr(usage, "server_tool_use", None)
+    if server_tool_use is None:
+        return None
+
+    tools: list[ProviderToolUsage] = []
+
+    # Web search
+    web_search_requests = getattr(server_tool_use, "web_search_requests", None)
+    if web_search_requests and web_search_requests > 0:
+        tools.append(
+            ProviderToolUsage(name="web_search", call_count=web_search_requests)
+        )
+
+    return tools if tools else None
+
+
 def decode_usage(
     usage: anthropic_types.Usage | BetaUsage,
 ) -> Usage:
@@ -78,6 +104,7 @@ def decode_usage(
         cache_read_tokens=cache_read_tokens,
         cache_write_tokens=cache_write_tokens,
         reasoning_tokens=0,
+        provider_tool_usage=extract_tool_usage(usage),
         raw=usage,
     )
 
@@ -261,6 +288,7 @@ class _AnthropicChunkProcessor:
                 cache_read_tokens=usage.cache_read_input_tokens or 0,
                 cache_write_tokens=usage.cache_creation_input_tokens or 0,
                 reasoning_tokens=0,
+                provider_tool_usage=extract_tool_usage(usage),
             )
 
     def raw_message_chunk(self) -> RawMessageChunk:

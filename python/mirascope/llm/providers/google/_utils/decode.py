@@ -27,6 +27,7 @@ from ....responses import (
     ChunkIterator,
     FinishReason,
     FinishReasonChunk,
+    ProviderToolUsage,
     RawMessageChunk,
     RawStreamEventChunk,
     Usage,
@@ -45,8 +46,32 @@ GOOGLE_FINISH_REASON_MAP = {
 }
 
 
+def _extract_tool_usage(
+    candidate: genai_types.Candidate | None,
+) -> list[ProviderToolUsage] | None:
+    """Extract provider tool usage from Google candidate's grounding metadata."""
+    if candidate is None:  # pragma: no cover
+        return None
+
+    grounding_metadata = candidate.grounding_metadata
+    if grounding_metadata is None:
+        return None
+
+    tools: list[ProviderToolUsage] = []
+
+    # Web search queries indicate grounding was used
+    web_search_queries = grounding_metadata.web_search_queries
+    if web_search_queries and len(web_search_queries) > 0:
+        tools.append(
+            ProviderToolUsage(name="web_search", call_count=len(web_search_queries))
+        )
+
+    return tools if tools else None
+
+
 def _decode_usage(
     usage: genai_types.GenerateContentResponseUsageMetadata | None,
+    candidate: genai_types.Candidate | None = None,
 ) -> Usage | None:
     """Convert Google UsageMetadata to Mirascope Usage."""
     if (
@@ -65,6 +90,7 @@ def _decode_usage(
         cache_read_tokens=usage.cached_content_token_count or 0,
         cache_write_tokens=0,
         reasoning_tokens=usage.thoughts_token_count or 0,
+        provider_tool_usage=_extract_tool_usage(candidate),
         raw=usage,
     )
 
@@ -152,7 +178,8 @@ def decode_response(
         raw_message=candidate_content.model_dump(),
     )
 
-    usage = _decode_usage(response.usage_metadata)
+    candidate = response.candidates[0] if response.candidates else None
+    usage = _decode_usage(response.usage_metadata, candidate)
     return assistant_message, finish_reason, usage
 
 
@@ -166,6 +193,8 @@ class _GoogleChunkProcessor:
         # Track previous cumulative usage to compute deltas
         self.prev_usage = Usage()
         self.include_thoughts = include_thoughts
+        # Track web search queries count from grounding metadata
+        self.web_search_query_count = 0
 
     def process_chunk(
         self, chunk: genai_types.GenerateContentResponse
@@ -239,6 +268,15 @@ class _GoogleChunkProcessor:
                 yield ToolCallEndChunk(id=tool_id)
                 self.current_content_type = None
 
+        # Track web search queries from grounding metadata
+        if (
+            candidate.grounding_metadata
+            and candidate.grounding_metadata.web_search_queries
+        ):
+            self.web_search_query_count = len(
+                candidate.grounding_metadata.web_search_queries
+            )
+
         if candidate.finish_reason:
             if self.current_content_type == "text":
                 yield TextEndChunk()
@@ -262,6 +300,17 @@ class _GoogleChunkProcessor:
             current_cache_read = usage_metadata.cached_content_token_count or 0
             current_reasoning = usage_metadata.thoughts_token_count or 0
 
+            # Include provider_tool_usage on the final usage chunk (when finish_reason is present)
+            provider_tool_usage = (
+                [
+                    ProviderToolUsage(
+                        name="web_search", call_count=self.web_search_query_count
+                    )
+                ]
+                if candidate.finish_reason and self.web_search_query_count > 0
+                else None
+            )
+
             yield UsageDeltaChunk(
                 input_tokens=current_input - self.prev_usage.input_tokens,
                 output_tokens=current_output - self.prev_usage.output_tokens,
@@ -269,6 +318,7 @@ class _GoogleChunkProcessor:
                 - self.prev_usage.cache_read_tokens,
                 cache_write_tokens=0,
                 reasoning_tokens=current_reasoning - self.prev_usage.reasoning_tokens,
+                provider_tool_usage=provider_tool_usage,
             )
 
             # Update previous usage

@@ -20,6 +20,7 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 25,
+                "provider_tool_usage": None,
                 "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=77 candidates_tokens_details=None prompt_token_count=13 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
@@ -104,6 +105,7 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 40,
+                "provider_tool_usage": None,
                 "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=56 candidates_tokens_details=None prompt_token_count=13 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
@@ -243,6 +245,7 @@ So, 42\
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 75,
+                "provider_tool_usage": None,
                 "raw": "None",
                 "total_tokens": 76,
             },
@@ -292,6 +295,7 @@ async_stream_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 40,
+                "provider_tool_usage": None,
                 "raw": "None",
                 "total_tokens": 28,
             },

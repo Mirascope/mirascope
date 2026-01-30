@@ -2,6 +2,7 @@ from inline_snapshot import snapshot
 
 from mirascope.llm import (
     AssistantMessage,
+    ProviderToolUsage,
     Text,
     UserMessage,
 )
@@ -20,6 +21,9 @@ test_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 380,
+                "provider_tool_usage": [
+                    ProviderToolUsage(name="web_search", call_count=1)
+                ],
                 "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=204 candidates_tokens_details=None prompt_token_count=89 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
