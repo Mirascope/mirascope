@@ -6,19 +6,14 @@
  * text structure.
  */
 
-import type { RootResponse } from '@/llm/responses/root-response';
+import type { AnyResponse } from '@/llm/responses/root-response';
+export type { AnyResponse };
 
 /**
  * Type discriminator symbol for OutputParser.
  * Used at runtime to distinguish OutputParsers from other format types.
  */
 export const OUTPUT_PARSER_TYPE = Symbol('OUTPUT_PARSER_TYPE');
-
-/**
- * Any response type that can be passed to an OutputParser.
- * Uses RootResponse as the base type.
- */
-export type AnyResponse = RootResponse;
 
 /**
  * Represents a custom output parser for non-JSON formats.

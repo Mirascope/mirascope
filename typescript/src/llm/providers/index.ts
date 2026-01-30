@@ -11,7 +11,7 @@ export { KNOWN_PROVIDER_IDS } from '@/llm/providers/provider-id';
 
 // Base provider
 export { BaseProvider } from '@/llm/providers/base';
-export type { ProviderErrorMap } from '@/llm/providers/base';
+export type { Provider, ProviderErrorMap } from '@/llm/providers/base';
 
 export { AnthropicProvider } from '@/llm/providers/anthropic';
 
