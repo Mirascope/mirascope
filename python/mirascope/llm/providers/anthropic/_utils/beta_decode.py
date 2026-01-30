@@ -44,7 +44,7 @@ from ....responses import (
     UsageDeltaChunk,
 )
 from ..model_id import model_name
-from .decode import decode_usage
+from .decode import decode_usage, extract_tool_usage
 
 BETA_FINISH_REASON_MAP = {
     "max_tokens": FinishReason.MAX_TOKENS,
@@ -259,6 +259,7 @@ class _BetaChunkProcessor:
                 cache_read_tokens=usage.cache_read_input_tokens or 0,
                 cache_write_tokens=usage.cache_creation_input_tokens or 0,
                 reasoning_tokens=0,
+                provider_tool_usage=extract_tool_usage(usage),
             )
 
     def raw_message_chunk(self) -> RawMessageChunk:

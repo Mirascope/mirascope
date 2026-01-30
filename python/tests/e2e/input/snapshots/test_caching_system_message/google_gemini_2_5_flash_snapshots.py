@@ -13,6 +13,7 @@ A surprise to be sure, but a welcome one. How may this fully armed and operation
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 110,
+            "provider_tool_usage": None,
             "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=32 candidates_tokens_details=None prompt_token_count=3801 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
@@ -36,6 +37,7 @@ The choice is yours, Commander. May the Force be with your digestion!\
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 800,
+            "provider_tool_usage": None,
             "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=201 candidates_tokens_details=None prompt_token_count=3805 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,

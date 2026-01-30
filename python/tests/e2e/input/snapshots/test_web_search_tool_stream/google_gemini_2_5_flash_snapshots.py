@@ -2,6 +2,7 @@ from inline_snapshot import snapshot
 
 from mirascope.llm import (
     AssistantMessage,
+    ProviderToolUsage,
     Text,
     UserMessage,
 )
@@ -179,6 +180,9 @@ According to a Finbold article from December 15, 2025, the Ethereum Rainbow Char
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 33,
+                "provider_tool_usage": [
+                    ProviderToolUsage(name="web_search", call_count=1)
+                ],
                 "raw": "None",
                 "total_tokens": 310,
             },

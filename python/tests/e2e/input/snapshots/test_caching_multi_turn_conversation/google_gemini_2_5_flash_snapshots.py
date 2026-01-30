@@ -34,6 +34,7 @@ You have not merely altered the deal; you have *redefined* it! This protocol is 
             "cache_read_tokens": 3055,
             "cache_write_tokens": 0,
             "reasoning_tokens": 1549,
+            "provider_tool_usage": None,
             "raw": """\
 cache_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
@@ -58,6 +59,7 @@ The deal, as I see it, is 'impressive... most impressive.' But tell me, is there
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 958,
+            "provider_tool_usage": None,
             "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=137 candidates_tokens_details=None prompt_token_count=4464 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
@@ -79,6 +81,7 @@ Is it a disturbance in the Force you're sensing, a wobble in the navicomputer, o
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 934,
+            "provider_tool_usage": None,
             "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=158 candidates_tokens_details=None prompt_token_count=4610 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,

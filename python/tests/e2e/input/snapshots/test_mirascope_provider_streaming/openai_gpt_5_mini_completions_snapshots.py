@@ -31,6 +31,7 @@ test_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "provider_tool_usage": None,
                 "raw": "None",
                 "total_tokens": 26,
             },

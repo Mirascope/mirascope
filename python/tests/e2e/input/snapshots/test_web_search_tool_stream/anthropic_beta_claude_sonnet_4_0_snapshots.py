@@ -2,6 +2,7 @@ from inline_snapshot import snapshot
 
 from mirascope.llm import (
     AssistantMessage,
+    ProviderToolUsage,
     Text,
     UserMessage,
 )
@@ -309,6 +310,9 @@ The price movement coincided with \
                 "cache_read_tokens": 16392,
                 "cache_write_tokens": 24164,
                 "reasoning_tokens": 0,
+                "provider_tool_usage": [
+                    ProviderToolUsage(name="web_search", call_count=2)
+                ],
                 "raw": "None",
                 "total_tokens": 611,
             },
