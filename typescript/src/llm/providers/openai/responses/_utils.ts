@@ -22,7 +22,8 @@ import type {
   Thought,
   ToolCall,
 } from '@/llm/content';
-import type { ToolSchema } from '@/llm/tools';
+import type { ToolSchema, Tools } from '@/llm/tools';
+import { ProviderTool, isProviderTool, isWebSearchTool } from '@/llm/tools';
 import { FeatureNotSupportedError } from '@/llm/exceptions';
 import type { AssistantMessage, Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
@@ -354,7 +355,7 @@ function encodeAssistantMessage(
 export function buildRequestParams(
   modelId: OpenAIModelId,
   messages: readonly Message[],
-  tools?: readonly ToolSchema[],
+  tools?: Tools,
   params: Params = {}
 ): ResponseCreateParamsNonStreaming {
   return ParamHandler.with(params, 'openai', modelId, (p) => {
@@ -370,7 +371,39 @@ export function buildRequestParams(
 
     /* v8 ignore start - tool encoding will be tested via e2e */
     if (tools && tools.length > 0) {
-      requestParams.tools = encodeTools(tools);
+      // Separate regular tools from provider tools
+      const regularTools: ToolSchema[] = [];
+      const allTools: ResponseCreateParamsNonStreaming['tools'] = [];
+
+      for (const tool of tools) {
+        // Check for provider tools first (WebSearchTool extends ProviderTool)
+        if (isProviderTool(tool)) {
+          if (isWebSearchTool(tool)) {
+            // OpenAI Responses API web search tool
+            allTools.push({ type: 'web_search' });
+          } else {
+            // Cast needed because TS narrows to never after WebSearchTool check
+            const unsupportedTool = tool as ProviderTool;
+            throw new FeatureNotSupportedError(
+              `Provider tool ${unsupportedTool.name}`,
+              'openai:responses',
+              modelId,
+              `Provider tool '${unsupportedTool.name}' is not supported by OpenAI Responses API`
+            );
+          }
+        } else {
+          // Regular tool (BaseTool extends ToolSchema)
+          regularTools.push(tool as ToolSchema);
+        }
+      }
+
+      if (regularTools.length > 0) {
+        allTools.push(...encodeTools(regularTools));
+      }
+
+      if (allTools.length > 0) {
+        requestParams.tools = allTools;
+      }
     }
     /* v8 ignore stop */
 

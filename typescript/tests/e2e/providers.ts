@@ -63,3 +63,14 @@ export const PROVIDERS_FOR_TOOLS_TESTS: ProviderConfig[] = [
   { providerId: 'google', model: 'google/gemini-2.5-flash' },
   { providerId: 'openai:completions', model: 'openai/gpt-4o-mini:completions' },
 ];
+
+/**
+ * Providers for web search tool tests.
+ *
+ * Web search is a provider tool supported by Anthropic, Google, and OpenAI Responses API.
+ */
+export const PROVIDERS_FOR_WEB_SEARCH_TESTS: ProviderConfig[] = [
+  { providerId: 'anthropic', model: 'anthropic/claude-sonnet-4-20250514' },
+  { providerId: 'google', model: 'google/gemini-2.5-flash' },
+  { providerId: 'openai:responses', model: 'openai/gpt-4o:responses' },
+];

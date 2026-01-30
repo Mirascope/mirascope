@@ -89,6 +89,10 @@ export {
   createContextToolkit,
   TOOL_TYPE,
   CONTEXT_TOOL_TYPE,
+  ProviderTool,
+  isProviderTool,
+  WebSearchTool,
+  isWebSearchTool,
 } from '@/llm/tools';
 
 export type {

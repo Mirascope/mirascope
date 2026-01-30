@@ -54,3 +54,7 @@ export {
   normalizeTools,
   normalizeContextTools,
 } from '@/llm/tools/toolkit';
+
+// Provider tools
+export { ProviderTool, isProviderTool } from '@/llm/tools/provider-tool';
+export { WebSearchTool, isWebSearchTool } from '@/llm/tools/web-search-tool';
