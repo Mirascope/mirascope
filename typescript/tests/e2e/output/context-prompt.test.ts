@@ -8,8 +8,8 @@
 import { resolve } from 'node:path';
 import { createIt, describe, expect } from '@/tests/e2e/utils';
 import { PROVIDERS } from '@/tests/e2e/providers';
-import { defineContextPrompt } from '@/llm/prompts';
-import { createContext } from '@/llm/context';
+import { definePrompt } from '@/llm/prompts';
+import { createContext, type Context } from '@/llm/context';
 
 const it = createIt(resolve(__dirname, 'cassettes'), 'context-prompt');
 
@@ -19,7 +19,7 @@ interface TestDeps {
 
 describe('context prompt output', () => {
   it.record.each(PROVIDERS)('calls model with context', async ({ model }) => {
-    const multiply = defineContextPrompt<{ value: number }, TestDeps>({
+    const multiply = definePrompt<{ ctx: Context<TestDeps>; value: number }>({
       template: ({ ctx, value }) =>
         `What is ${value} * ${ctx.deps.multiplier}?`,
     });
@@ -32,7 +32,7 @@ describe('context prompt output', () => {
   });
 
   it.record.each(PROVIDERS)('streams model with context', async ({ model }) => {
-    const multiply = defineContextPrompt<{ value: number }, TestDeps>({
+    const multiply = definePrompt<{ ctx: Context<TestDeps>; value: number }>({
       template: ({ ctx, value }) =>
         `What is ${value} * ${ctx.deps.multiplier}?`,
     });

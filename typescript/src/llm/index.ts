@@ -11,7 +11,12 @@ export type {
 } from '@/llm/providers';
 export { KNOWN_PROVIDER_IDS } from '@/llm/providers';
 
-export { type Context, createContext } from '@/llm/context';
+export {
+  type Context,
+  createContext,
+  isContext,
+  CONTEXT_MARKER,
+} from '@/llm/context';
 
 export type {
   AssistantContentPart,
@@ -146,20 +151,26 @@ export {
   type Prompt,
   type PromptArgs,
   type TemplateFunc,
-  defineContextPrompt,
+  // Context-aware types (unified API)
   type ContextMessageTemplate,
   type ContextPrompt,
   type ContextPromptArgs,
   type ContextTemplateFunc,
+  // Type utilities
+  type ExtractDeps,
+  type ExtractVars,
+  type UnifiedPrompt,
 } from '@/llm/prompts';
 
 export {
   defineCall,
   type Call,
   type CallArgs,
-  defineContextCall,
+  // Context-aware types (unified API)
   type ContextCall,
   type ContextCallArgs,
+  // Type utilities
+  type UnifiedCall,
 } from '@/llm/calls';
 
 export {

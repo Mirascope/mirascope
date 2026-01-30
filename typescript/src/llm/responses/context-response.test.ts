@@ -8,7 +8,7 @@ import { user, assistant } from '@/llm/messages';
 import { ContextResponse } from '@/llm/responses/context-response';
 import { createUsage } from '@/llm/responses/usage';
 import { defineTool, defineContextTool, ContextToolkit } from '@/llm/tools';
-import type { Context } from '@/llm/context';
+import { createContext, type Context } from '@/llm/context';
 import type { ToolParameterSchema } from '@/llm/tools/tool-schema';
 
 describe('ContextResponse', () => {
@@ -145,7 +145,7 @@ describe('ContextResponse', () => {
         tools: [searchTool],
       });
 
-      const ctx: Context<TestDeps> = { deps: { userId: 'user-123' } };
+      const ctx = createContext<TestDeps>({ userId: 'user-123' });
       const outputs = await response.executeTools(ctx);
 
       expect(outputs).toHaveLength(1);
@@ -211,7 +211,7 @@ describe('ContextResponse', () => {
         tools: [addTool, multiplyTool],
       });
 
-      const ctx: Context<TestDeps> = { deps: { userId: '10' } };
+      const ctx = createContext<TestDeps>({ userId: '10' });
       const outputs = await response.executeTools(ctx);
 
       expect(outputs).toHaveLength(2);
