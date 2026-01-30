@@ -2,6 +2,7 @@
 
 from typing import TYPE_CHECKING, overload
 
+from ..exceptions import ParseError
 from ..formatting import FormattableT
 from ..messages import UserContent
 from ..responses import (
@@ -46,6 +47,51 @@ class RetryResponse(Response[FormattableT]):
             object.__setattr__(self, key, value)
         self.retry_config = retry_config
         self.retry_state = retry_state
+
+    def validate(self) -> FormattableT | None:
+        """Parse and validate the response, automatically retrying on ParseError.
+
+        When `max_parse_attempts` is set in the retry config, this method will
+        automatically retry on ParseError by calling `resume(error.retry_message())`
+        to ask the LLM to fix its output.
+
+        This method mutates the response - after successful validation with retries,
+        the response attributes will be updated to reflect the final successful state.
+
+        Returns:
+            The parsed output, or None if format is None.
+
+        Raises:
+            ParseError: If parsing fails after exhausting all retry attempts.
+        """
+        if self.format is None:
+            return None
+
+        max_parse_attempts = self.retry_config.max_parse_attempts
+
+        # +1 because max_parse_attempts is the number of retries, not total attempts
+        for attempt in range(max_parse_attempts + 1):
+            try:
+                return self.parse()
+            except ParseError as e:
+                if attempt == max_parse_attempts:
+                    raise  # Exhausted all attempts
+
+                self.retry_state.parse_attempts += 1
+                self.retry_state.parse_exceptions.append(e)
+
+                # Get new response via resume with the retry message
+                new_response = self.model.resume(
+                    response=self,
+                    content=e.retry_message(),
+                )
+                # Update our attributes from the new response, preserving our retry state
+                current_retry_state = self.retry_state
+                for key, value in new_response.__dict__.items():
+                    object.__setattr__(self, key, value)
+                self.retry_state = current_retry_state
+
+        raise AssertionError("Unreachable")  # pragma: no cover
 
     @property
     def model(self) -> "RetryModel":
@@ -110,6 +156,54 @@ class AsyncRetryResponse(AsyncResponse[FormattableT]):
             object.__setattr__(self, key, value)
         self.retry_config = retry_config
         self.retry_state = retry_state
+
+    async def validate(self) -> FormattableT | None:
+        """Parse and validate the response, automatically retrying on ParseError.
+
+        When `max_parse_attempts` is set in the retry config, this method will
+        automatically retry on ParseError by calling `resume(error.retry_message())`
+        to ask the LLM to fix its output.
+
+        This method mutates the response - after successful validation with retries,
+        the response attributes will be updated to reflect the final successful state.
+
+        Note: Unlike the sync version, this method is async because retries require
+        making async API calls.
+
+        Returns:
+            The parsed output, or None if format is None.
+
+        Raises:
+            ParseError: If parsing fails after exhausting all retry attempts.
+        """
+        if self.format is None:
+            return None
+
+        max_parse_attempts = self.retry_config.max_parse_attempts
+
+        # +1 because max_parse_attempts is the number of retries, not total attempts
+        for attempt in range(max_parse_attempts + 1):
+            try:
+                return self.parse()
+            except ParseError as e:
+                if attempt == max_parse_attempts:
+                    raise  # Exhausted all attempts
+
+                self.retry_state.parse_attempts += 1
+                self.retry_state.parse_exceptions.append(e)
+
+                # Get new response via resume with the retry message
+                new_response = await self.model.resume_async(
+                    response=self,
+                    content=e.retry_message(),
+                )
+                # Update our attributes from the new response, preserving our retry state
+                current_retry_state = self.retry_state
+                for key, value in new_response.__dict__.items():
+                    object.__setattr__(self, key, value)
+                self.retry_state = current_retry_state
+
+        raise AssertionError("Unreachable")  # pragma: no cover
 
     @property
     def model(self) -> "RetryModel":
