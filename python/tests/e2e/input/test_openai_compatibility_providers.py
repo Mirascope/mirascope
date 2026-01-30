@@ -87,7 +87,7 @@ def test_openrouter_with_temperature(
     """Test that temperature param is accepted for non-reasoning models.
 
     Both openai/gpt-4o (non-reasoning OpenAI model) and anthropic/claude-3-5-sonnet
-    (via SKIP_MODEL_FEATURES) should accept temperature without warnings.
+    (via empty CompletionsModelFeatureInfo) should accept temperature without warnings.
     """
 
     @llm.call(model_id, temperature=0.5)
