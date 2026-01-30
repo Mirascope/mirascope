@@ -36,6 +36,8 @@ test_snapshot = snapshot(
             "format": None,
             "tools": [],
         },
-        "logs": ["Skipping unsupported parameter: temperature=0.5 (provider: openai)"],
+        "logs": [
+            "Skipping unsupported parameter: temperature=0.5 (provider: openrouter)"
+        ],
     }
 )

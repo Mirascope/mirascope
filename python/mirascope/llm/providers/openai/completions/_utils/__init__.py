@@ -1,6 +1,3 @@
-from typing import TYPE_CHECKING
-
-from .constants import SKIP_MODEL_FEATURES
 from .decode import (
     decode_async_stream,
     decode_response,
@@ -8,15 +5,14 @@ from .decode import (
     model_name,
 )
 from .encode import encode_request
-
-if TYPE_CHECKING:
-    from .constants import SkipModelFeaturesType as SkipModelFeaturesType
+from .feature_info import CompletionsModelFeatureInfo, feature_info_for_openai_model
 
 __all__ = [
-    "SKIP_MODEL_FEATURES",
+    "CompletionsModelFeatureInfo",
     "decode_async_stream",
     "decode_response",
     "decode_stream",
     "encode_request",
+    "feature_info_for_openai_model",
     "model_name",
 ]

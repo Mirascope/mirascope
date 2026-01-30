@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import ClassVar
 
-from ..openai.completions._utils import SKIP_MODEL_FEATURES
+from ..openai.completions._utils import (
+    CompletionsModelFeatureInfo,
+    feature_info_for_openai_model,
+)
 from ..openai.completions.base_provider import BaseOpenAICompletionsProvider
 from ..openai.model_id import model_name as openai_model_name
-
-if TYPE_CHECKING:
-    from ..openai.completions._utils import SkipModelFeaturesType
 
 
 class OpenRouterProvider(BaseOpenAICompletionsProvider):
@@ -58,9 +58,10 @@ class OpenRouterProvider(BaseOpenAICompletionsProvider):
         """Strip 'openrouter/' prefix from model ID for OpenRouter API."""
         return model_id.removeprefix("openrouter/")
 
-    def _model_features_name(self, model_id: str) -> str | SkipModelFeaturesType:
-        """Return OpenAI model name for openai/* models, SKIP_MODEL_FEATURES otherwise."""
+    def _model_feature_info(self, model_id: str) -> CompletionsModelFeatureInfo:
+        """Return OpenAI feature info for openai/* models, empty info otherwise."""
         base_model_id = model_id.removeprefix("openrouter/")
         if base_model_id.startswith("openai/"):
-            return openai_model_name(base_model_id, None)
-        return SKIP_MODEL_FEATURES
+            openai_name = openai_model_name(base_model_id, None)
+            return feature_info_for_openai_model(openai_name)
+        return CompletionsModelFeatureInfo()
