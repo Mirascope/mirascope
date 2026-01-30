@@ -2,21 +2,22 @@
  * The Model class - unified interface for LLM calls.
  */
 
-import type { Context } from '@/llm/context';
-import type { Format } from '@/llm/formatting';
-import type { Message, UserContent } from '@/llm/messages';
-import { promoteToMessages } from '@/llm/messages';
-import type { RootResponse } from '@/llm/responses/root-response';
-import type { Params } from '@/llm/models/params';
-import type { BaseProvider } from '@/llm/providers/base';
-import type { ModelId } from '@/llm/providers/model-id';
-import type { ProviderId } from '@/llm/providers/provider-id';
-import { getProviderForModel } from '@/llm/providers/registry';
-import type { Response } from '@/llm/responses';
-import type { ContextResponse } from '@/llm/responses/context-response';
-import type { ContextStreamResponse } from '@/llm/responses/context-stream-response';
-import type { StreamResponse } from '@/llm/responses/stream-response';
-import type { Tools, ContextTools } from '@/llm/tools';
+import type { Context } from "@/llm/context";
+import type { Format } from "@/llm/formatting";
+import type { Message, UserContent } from "@/llm/messages";
+import type { Params } from "@/llm/models/params";
+import type { BaseProvider } from "@/llm/providers/base";
+import type { ModelId } from "@/llm/providers/model-id";
+import type { ProviderId } from "@/llm/providers/provider-id";
+import type { Response } from "@/llm/responses";
+import type { ContextResponse } from "@/llm/responses/context-response";
+import type { ContextStreamResponse } from "@/llm/responses/context-stream-response";
+import type { RootResponse } from "@/llm/responses/root-response";
+import type { StreamResponse } from "@/llm/responses/stream-response";
+import type { Tools, ContextTools } from "@/llm/tools";
+
+import { promoteToMessages } from "@/llm/messages";
+import { getProviderForModel } from "@/llm/providers/registry";
 
 /**
  * The unified LLM interface that delegates to provider-specific clients.
@@ -62,10 +63,10 @@ export class Model {
    * @throws Error if the model ID format is invalid.
    */
   constructor(modelId: ModelId, params: Params = {}) {
-    if (!modelId.includes('/')) {
+    if (!modelId.includes("/")) {
       throw new Error(
         `Invalid model_id format. Expected format: 'provider/model-name' ` +
-          `(e.g., 'anthropic/claude-sonnet-4-20250514'). Got: '${modelId}'`
+          `(e.g., 'anthropic/claude-sonnet-4-20250514'). Got: '${modelId}'`,
       );
     }
     this.modelId = modelId;
@@ -134,7 +135,7 @@ export class Model {
    */
   async call(
     content: UserContent | readonly Message[],
-    options?: { tools?: Tools; format?: Format | null }
+    options?: { tools?: Tools; format?: Format | null },
   ): Promise<Response> {
     const messages = promoteToMessages(content);
     return this.provider.call({
@@ -198,7 +199,7 @@ export class Model {
    */
   async stream(
     content: UserContent | readonly Message[],
-    options?: { tools?: Tools; format?: Format | null }
+    options?: { tools?: Tools; format?: Format | null },
   ): Promise<StreamResponse> {
     const messages = promoteToMessages(content);
     return this.provider.stream({
@@ -236,7 +237,7 @@ export class Model {
   async contextCall<DepsT>(
     ctx: Context<DepsT>,
     content: UserContent | readonly Message[],
-    options?: { tools?: ContextTools<DepsT>; format?: Format | null }
+    options?: { tools?: ContextTools<DepsT>; format?: Format | null },
   ): Promise<ContextResponse<DepsT>> {
     const messages = promoteToMessages(content);
     return this.provider.contextCall({
@@ -277,7 +278,7 @@ export class Model {
   async contextStream<DepsT>(
     ctx: Context<DepsT>,
     content: UserContent | readonly Message[],
-    options?: { tools?: ContextTools<DepsT>; format?: Format | null }
+    options?: { tools?: ContextTools<DepsT>; format?: Format | null },
   ): Promise<ContextStreamResponse<DepsT>> {
     const messages = promoteToMessages(content);
     return this.provider.contextStream({
@@ -310,7 +311,7 @@ export class Model {
    */
   async resume(
     response: RootResponse,
-    content: UserContent
+    content: UserContent,
   ): Promise<Response> {
     return this.provider.resume({
       modelId: this.modelId,
@@ -340,7 +341,7 @@ export class Model {
    */
   async resumeStream(
     response: RootResponse,
-    content: UserContent
+    content: UserContent,
   ): Promise<StreamResponse> {
     return this.provider.resumeStream({
       modelId: this.modelId,
@@ -371,7 +372,7 @@ export class Model {
   async contextResume<DepsT>(
     ctx: Context<DepsT>,
     response: RootResponse,
-    content: UserContent
+    content: UserContent,
   ): Promise<ContextResponse<DepsT>> {
     return this.provider.contextResume({
       ctx,
@@ -406,7 +407,7 @@ export class Model {
   async contextResumeStream<DepsT>(
     ctx: Context<DepsT>,
     response: RootResponse,
-    content: UserContent
+    content: UserContent,
   ): Promise<ContextStreamResponse<DepsT>> {
     return this.provider.contextResumeStream({
       ctx,

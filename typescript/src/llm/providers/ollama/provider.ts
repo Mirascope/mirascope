@@ -4,10 +4,10 @@
  * Ollama provides an OpenAI-compatible API for local LLM inference.
  */
 
-import { BaseOpenAICompletionsProvider } from '@/llm/providers/openai/completions/base-provider';
+import { BaseOpenAICompletionsProvider } from "@/llm/providers/openai/completions/base-provider";
 
-const DEFAULT_BASE_URL = 'http://localhost:11434/v1/';
-const API_KEY_ENV_VAR = 'OLLAMA_API_KEY';
+const DEFAULT_BASE_URL = "http://localhost:11434/v1/";
+const API_KEY_ENV_VAR = "OLLAMA_API_KEY";
 
 export interface OllamaProviderInit {
   apiKey?: string;
@@ -33,7 +33,7 @@ export interface OllamaProviderInit {
  * ```
  */
 export class OllamaProvider extends BaseOpenAICompletionsProvider {
-  readonly id = 'ollama' as const;
+  readonly id = "ollama" as const;
 
   /**
    * Create a new Ollama provider instance.
@@ -44,12 +44,12 @@ export class OllamaProvider extends BaseOpenAICompletionsProvider {
    */
   constructor(init: OllamaProviderInit = {}) {
     const resolvedApiKey =
-      init.apiKey ?? process.env[API_KEY_ENV_VAR] ?? 'ollama';
+      init.apiKey ?? process.env[API_KEY_ENV_VAR] ?? "ollama";
     const resolvedBaseUrl =
       init.baseURL ?? process.env.OLLAMA_BASE_URL ?? DEFAULT_BASE_URL;
 
     super({
-      id: 'ollama',
+      id: "ollama",
       apiKey: resolvedApiKey,
       baseURL: resolvedBaseUrl,
     });
@@ -59,6 +59,6 @@ export class OllamaProvider extends BaseOpenAICompletionsProvider {
    * Strip 'ollama/' prefix from model ID for Ollama API.
    */
   protected override modelName(modelId: string): string {
-    return modelId.startsWith('ollama/') ? modelId.slice(7) : modelId;
+    return modelId.startsWith("ollama/") ? modelId.slice(7) : modelId;
   }
 }

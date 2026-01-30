@@ -2,7 +2,7 @@
  * Mirascope LLM exception hierarchy for unified error handling across providers.
  */
 
-import type { ModelId, ProviderId } from '@/llm/providers';
+import type { ModelId, ProviderId } from "@/llm/providers";
 
 /**
  * Base exception for all Mirascope LLM errors.
@@ -172,7 +172,7 @@ export class ToolExecutionError extends ToolError {
     let exception: Error;
     let message: string;
 
-    if (typeof toolException === 'string') {
+    if (typeof toolException === "string") {
       // Support string for snapshot reconstruction
       message = toolException;
       exception = new Error(message);
@@ -230,10 +230,10 @@ export class ParseError extends MirascopeError {
     const original = this.originalException;
 
     // Check for JSON syntax errors
-    if (original instanceof SyntaxError && original.message.includes('JSON')) {
+    if (original instanceof SyntaxError && original.message.includes("JSON")) {
       return (
-        'Your response could not be parsed because no valid JSON object ' +
-        'was found. Please ensure your response contains a JSON object ' +
+        "Your response could not be parsed because no valid JSON object " +
+        "was found. Please ensure your response contains a JSON object " +
         "with opening '{' and closing '}' braces."
       );
     }
@@ -241,7 +241,7 @@ export class ParseError extends MirascopeError {
     // Default message for other errors
     return (
       `Your response could not be parsed: ${original.message}\n\n` +
-      'Please ensure your response matches the expected format.'
+      "Please ensure your response matches the expected format."
     );
   }
 }
@@ -272,12 +272,12 @@ export class FeatureNotSupportedError extends MirascopeError {
     feature: string,
     providerId: ProviderId,
     modelId: ModelId | null = null,
-    message: string | null = null
+    message: string | null = null,
   ) {
     const defaultMessage =
       message ??
       `Feature '${feature}' is not supported by provider '${providerId}'${
-        modelId !== null ? ` for model '${modelId}'` : ''
+        modelId !== null ? ` for model '${modelId}'` : ""
       }`;
     super(defaultMessage);
     this.feature = feature;
@@ -325,7 +325,7 @@ export class MissingAPIKeyError extends MirascopeError {
   constructor(
     providerId: string,
     envVar: string,
-    hasMirascopeFallback: boolean = false
+    hasMirascopeFallback: boolean = false,
   ) {
     let message: string;
     if (hasMirascopeFallback) {

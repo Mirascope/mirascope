@@ -11,7 +11,9 @@
 
 /* v8 ignore start - beta streaming is feature-gated behind shouldUseBeta() */
 
-import type { BetaRawMessageStreamEvent } from '@anthropic-ai/sdk/resources/beta/messages/messages';
+import type { BetaRawMessageStreamEvent } from "@anthropic-ai/sdk/resources/beta/messages/messages";
+
+import type { StreamResponseChunk } from "@/llm/responses/chunks";
 
 import {
   textStart,
@@ -20,14 +22,13 @@ import {
   thoughtStart,
   thoughtChunk,
   thoughtEnd,
-} from '@/llm/content';
-import type { StreamResponseChunk } from '@/llm/responses/chunks';
+} from "@/llm/content";
 import {
   finishReasonChunk,
   usageDeltaChunk,
   rawStreamEventChunk,
-} from '@/llm/responses/chunks';
-import { FinishReason } from '@/llm/responses/finish-reason';
+} from "@/llm/responses/chunks";
+import { FinishReason } from "@/llm/responses/finish-reason";
 
 /**
  * State tracking for stream decoding.
@@ -36,7 +37,7 @@ interface DecodeState {
   /** Index of current content block being streamed */
   currentBlockIndex: number;
   /** Type of current content block */
-  currentBlockType: 'text' | 'thinking' | null;
+  currentBlockType: "text" | "thinking" | null;
   /** Whether to include thoughts in output */
   includeThoughts: boolean;
 }
@@ -61,7 +62,7 @@ export function createBetaDecodeState(includeThoughts: boolean): DecodeState {
  */
 export function decodeBetaStreamEvent(
   event: BetaRawMessageStreamEvent,
-  state: DecodeState
+  state: DecodeState,
 ): StreamResponseChunk[] {
   const chunks: StreamResponseChunk[] = [];
 
@@ -69,7 +70,7 @@ export function decodeBetaStreamEvent(
   chunks.push(rawStreamEventChunk(event));
 
   switch (event.type) {
-    case 'message_start':
+    case "message_start":
       // Note: We don't emit rawMessageChunk here because event.message contains
       // fields like 'model' and 'id' that aren't valid in resume requests.
       // For streaming, we let rawMessage remain null - the encodeMessages function
@@ -80,22 +81,22 @@ export function decodeBetaStreamEvent(
           usageDeltaChunk({
             inputTokens: event.message.usage.input_tokens,
             outputTokens: event.message.usage.output_tokens,
-          })
+          }),
         );
       }
       break;
 
-    case 'content_block_start':
+    case "content_block_start":
       state.currentBlockIndex = event.index;
-      if (event.content_block.type === 'text') {
-        state.currentBlockType = 'text';
+      if (event.content_block.type === "text") {
+        state.currentBlockType = "text";
         chunks.push(textStart());
         // If there's initial text, emit it
         if (event.content_block.text) {
           chunks.push(textChunk(event.content_block.text));
         }
-      } else if (event.content_block.type === 'thinking') {
-        state.currentBlockType = 'thinking';
+      } else if (event.content_block.type === "thinking") {
+        state.currentBlockType = "thinking";
         // Only emit thought chunks if includeThoughts is true
         if (state.includeThoughts) {
           chunks.push(thoughtStart());
@@ -108,10 +109,10 @@ export function decodeBetaStreamEvent(
       // Note: tool_use and redacted_thinking blocks not yet fully supported
       break;
 
-    case 'content_block_delta':
-      if (event.delta.type === 'text_delta') {
+    case "content_block_delta":
+      if (event.delta.type === "text_delta") {
         chunks.push(textChunk(event.delta.text));
-      } else if (event.delta.type === 'thinking_delta') {
+      } else if (event.delta.type === "thinking_delta") {
         // Only emit thought chunks if includeThoughts is true
         if (state.includeThoughts) {
           chunks.push(thoughtChunk(event.delta.thinking));
@@ -120,11 +121,11 @@ export function decodeBetaStreamEvent(
       // Note: input_json_delta for tools not yet supported
       break;
 
-    case 'content_block_stop':
-      if (state.currentBlockType === 'text') {
+    case "content_block_stop":
+      if (state.currentBlockType === "text") {
         chunks.push(textEnd());
       } else if (
-        state.currentBlockType === 'thinking' &&
+        state.currentBlockType === "thinking" &&
         state.includeThoughts
       ) {
         chunks.push(thoughtEnd());
@@ -132,7 +133,7 @@ export function decodeBetaStreamEvent(
       state.currentBlockType = null;
       break;
 
-    case 'message_delta':
+    case "message_delta":
       // Handle finish reason
       if (event.delta.stop_reason) {
         const finishReason = decodeBetaStopReason(event.delta.stop_reason);
@@ -145,12 +146,12 @@ export function decodeBetaStreamEvent(
         chunks.push(
           usageDeltaChunk({
             outputTokens: event.usage.output_tokens,
-          })
+          }),
         );
       }
       break;
 
-    case 'message_stop':
+    case "message_stop":
       // Stream complete - no additional chunks needed
       break;
   }
@@ -163,25 +164,25 @@ export function decodeBetaStreamEvent(
  */
 function decodeBetaStopReason(
   stopReason:
-    | 'end_turn'
-    | 'max_tokens'
-    | 'stop_sequence'
-    | 'tool_use'
-    | 'refusal'
-    | 'pause_turn'
-    | 'model_context_window_exceeded'
-    | null
+    | "end_turn"
+    | "max_tokens"
+    | "stop_sequence"
+    | "tool_use"
+    | "refusal"
+    | "pause_turn"
+    | "model_context_window_exceeded"
+    | null,
 ): FinishReason | null {
   switch (stopReason) {
-    case 'max_tokens':
-    case 'model_context_window_exceeded':
+    case "max_tokens":
+    case "model_context_window_exceeded":
       return FinishReason.MAX_TOKENS;
-    case 'refusal':
+    case "refusal":
       return FinishReason.REFUSAL;
-    case 'end_turn':
-    case 'stop_sequence':
-    case 'tool_use':
-    case 'pause_turn':
+    case "end_turn":
+    case "stop_sequence":
+    case "tool_use":
+    case "pause_turn":
       return null; // Normal completion
     default:
       return null;
@@ -197,7 +198,7 @@ function decodeBetaStopReason(
  */
 export async function* decodeBetaStream(
   stream: AsyncIterable<BetaRawMessageStreamEvent>,
-  includeThoughts: boolean
+  includeThoughts: boolean,
 ): AsyncGenerator<StreamResponseChunk> {
   const state = createBetaDecodeState(includeThoughts);
 

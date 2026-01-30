@@ -8,8 +8,12 @@
 import type {
   GenerateContentResponse,
   FinishReason as GoogleFinishReasonType,
-} from '@google/genai';
-import { FinishReason as GoogleFinishReason } from '@google/genai';
+} from "@google/genai";
+
+import { FinishReason as GoogleFinishReason } from "@google/genai";
+
+import type { StreamResponseChunk } from "@/llm/responses/chunks";
+import type { Jsonable } from "@/llm/types/jsonable";
 
 import {
   textStart,
@@ -21,22 +25,20 @@ import {
   toolCallStart,
   toolCallChunk,
   toolCallEnd,
-} from '@/llm/content';
-import type { StreamResponseChunk } from '@/llm/responses/chunks';
+} from "@/llm/content";
 import {
   finishReasonChunk,
   usageDeltaChunk,
   rawStreamEventChunk,
   rawMessageChunk,
-} from '@/llm/responses/chunks';
-import { FinishReason } from '@/llm/responses/finish-reason';
-import type { Jsonable } from '@/llm/types/jsonable';
+} from "@/llm/responses/chunks";
+import { FinishReason } from "@/llm/responses/finish-reason";
 
 /**
  * Default tool ID for Google function calls when no ID is provided.
  * Google doesn't always provide tool IDs, so we use this as a fallback.
  */
-const UNKNOWN_TOOL_ID = 'google_unknown_tool_id';
+const UNKNOWN_TOOL_ID = "google_unknown_tool_id";
 
 /**
  * State tracking for stream decoding.
@@ -77,7 +79,7 @@ export function createDecodeState(includeThoughts: boolean): DecodeState {
  */
 export function decodeStreamEvent(
   response: GenerateContentResponse,
-  state: DecodeState
+  state: DecodeState,
 ): StreamResponseChunk[] {
   const chunks: StreamResponseChunk[] = [];
 
@@ -127,7 +129,7 @@ export function decodeStreamEvent(
 
       /* v8 ignore start - defensive check for malformed Google API response */
       if (!toolName) {
-        throw new Error('Required name missing on Google function call');
+        throw new Error("Required name missing on Google function call");
       }
       /* v8 ignore stop */
 
@@ -151,8 +153,8 @@ export function decodeStreamEvent(
         toolCallChunk(
           toolId,
           /* v8 ignore next 1 - empty args branch */
-          functionCall.args ? JSON.stringify(functionCall.args) : '{}'
-        )
+          functionCall.args ? JSON.stringify(functionCall.args) : "{}",
+        ),
       );
       chunks.push(toolCallEnd(toolId));
     }
@@ -188,7 +190,7 @@ export function decodeStreamEvent(
         cacheReadTokens:
           usage.cachedContentTokenCount ?? /* v8 ignore next 1 */ 0,
         reasoningTokens: usage.thoughtsTokenCount ?? /* v8 ignore next 1 */ 0,
-      })
+      }),
     );
   }
 
@@ -199,7 +201,7 @@ export function decodeStreamEvent(
  * Convert Google finish reason to Mirascope FinishReason.
  */
 function decodeFinishReason(
-  finishReason: GoogleFinishReasonType | undefined
+  finishReason: GoogleFinishReasonType | undefined,
 ): FinishReason | null {
   switch (finishReason) {
     case GoogleFinishReason.MAX_TOKENS:
@@ -231,7 +233,7 @@ function decodeFinishReason(
  */
 export async function* decodeStream(
   stream: AsyncIterable<GenerateContentResponse>,
-  includeThoughts: boolean
+  includeThoughts: boolean,
 ): AsyncGenerator<StreamResponseChunk> {
   const state = createDecodeState(includeThoughts);
 
@@ -244,7 +246,7 @@ export async function* decodeStream(
 
   // Emit raw message chunk with properly structured Content (matching Python)
   yield rawMessageChunk({
-    role: 'model',
+    role: "model",
     parts: state.accumulatedParts,
   } as unknown as Jsonable);
 }

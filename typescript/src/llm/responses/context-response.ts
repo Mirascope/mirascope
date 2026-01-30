@@ -6,15 +6,16 @@
  * - resume(): Continue the conversation with additional user content
  */
 
-import type { Context } from '@/llm/context';
-import type { ToolOutput } from '@/llm/content/tool-output';
-import type { Jsonable } from '@/llm/types/jsonable';
-import type { UserContent } from '@/llm/messages';
+import type { ToolOutput } from "@/llm/content/tool-output";
+import type { Context } from "@/llm/context";
+import type { UserContent } from "@/llm/messages";
+import type { Jsonable } from "@/llm/types/jsonable";
+
 import {
   BaseResponse,
   type BaseResponseInit,
-} from '@/llm/responses/base-response';
-import { ContextToolkit, type ContextTools } from '@/llm/tools';
+} from "@/llm/responses/base-response";
+import { ContextToolkit, type ContextTools } from "@/llm/tools";
 
 /**
  * Initialization options for creating a ContextResponse.
@@ -27,8 +28,10 @@ import { ContextToolkit, type ContextTools } from '@/llm/tools';
  *
  * @template DepsT - The type of dependencies in the context.
  */
-export interface ContextResponseInit<DepsT = unknown>
-  extends Omit<BaseResponseInit, 'toolkit'> {
+export interface ContextResponseInit<DepsT = unknown> extends Omit<
+  BaseResponseInit,
+  "toolkit"
+> {
   /**
    * The tools available for this response.
    * Can be a ContextToolkit instance or an array of tools.
@@ -122,7 +125,7 @@ export class ContextResponse<
    */
   async resume(
     ctx: Context<DepsT>,
-    content: UserContent
+    content: UserContent,
   ): Promise<ContextResponse<DepsT, F>> {
     const model = await this.model;
     return model.contextResume(ctx, this, content) as Promise<

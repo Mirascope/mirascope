@@ -6,12 +6,12 @@
  * for direct invocation.
  */
 
-import type { Context } from '@/llm/context';
-import type { ToolCall } from '@/llm/content/tool-call';
-import type { ToolOutput } from '@/llm/content/tool-output';
-import type { Jsonable } from '@/llm/types/jsonable';
-import type { ToolSchema } from '@/llm/tools/tool-schema';
-import type { ProviderTool } from '@/llm/tools/provider-tool';
+import type { ToolCall } from "@/llm/content/tool-call";
+import type { ToolOutput } from "@/llm/content/tool-output";
+import type { Context } from "@/llm/context";
+import type { ProviderTool } from "@/llm/tools/provider-tool";
+import type { ToolSchema } from "@/llm/tools/tool-schema";
+import type { Jsonable } from "@/llm/types/jsonable";
 
 /**
  * Field definition can be a string description or a Zod schema.
@@ -49,13 +49,13 @@ export interface ZodLike {
  * Type discriminator for regular tools.
  * Used at runtime to distinguish from context tools.
  */
-export const TOOL_TYPE = 'tool' as const;
+export const TOOL_TYPE = "tool" as const;
 
 /**
  * Type discriminator for context tools.
  * Used at runtime to distinguish from regular tools.
  */
-export const CONTEXT_TOOL_TYPE = 'context_tool' as const;
+export const CONTEXT_TOOL_TYPE = "context_tool" as const;
 
 /**
  * Base interface for tools without the callable signature.
@@ -129,7 +129,7 @@ export interface BaseContextTool<DepsT = unknown> extends ToolSchema {
    */
   execute(
     ctx: Context<DepsT>,
-    toolCall: ToolCall
+    toolCall: ToolCall,
   ): Promise<ToolOutput<Jsonable>>;
 
   /** The field definitions, if provided. */
@@ -234,7 +234,7 @@ export type AnyToolFn = ToolFn | ContextToolFn;
  * @returns True if the tool is a context tool.
  */
 export function isContextTool<DepsT = unknown>(
-  tool: AnyContextTool<DepsT>
+  tool: AnyContextTool<DepsT>,
 ): tool is BaseContextTool<DepsT> {
   return tool.__toolType === CONTEXT_TOOL_TYPE;
 }

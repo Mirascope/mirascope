@@ -2,14 +2,15 @@
  * Response class for LLM calls.
  */
 
-import type { ToolOutput } from '@/llm/content/tool-output';
-import type { Jsonable } from '@/llm/types/jsonable';
-import type { UserContent } from '@/llm/messages';
+import type { ToolOutput } from "@/llm/content/tool-output";
+import type { UserContent } from "@/llm/messages";
+import type { Jsonable } from "@/llm/types/jsonable";
+
 import {
   BaseResponse,
   type BaseResponseInit,
-} from '@/llm/responses/base-response';
-import { Toolkit, type Tools } from '@/llm/tools';
+} from "@/llm/responses/base-response";
+import { Toolkit, type Tools } from "@/llm/tools";
 
 /**
  * Initialization options for creating a Response.
@@ -17,7 +18,7 @@ import { Toolkit, type Tools } from '@/llm/tools';
  * Accepts `tools` as either a Toolkit or a list of tools, which gets
  * converted to a Toolkit before passing to BaseResponse.
  */
-export interface ResponseInit extends Omit<BaseResponseInit, 'toolkit'> {
+export interface ResponseInit extends Omit<BaseResponseInit, "toolkit"> {
   /**
    * The tools available for this response.
    * Can be a Toolkit instance or an array of tools.
@@ -78,7 +79,7 @@ export class Response<F = unknown> extends BaseResponse<F> {
    */
   async executeTools(): Promise<ToolOutput<Jsonable>[]> {
     return Promise.all(
-      this.toolCalls.map((call) => this.toolkit.execute(call))
+      this.toolCalls.map((call) => this.toolkit.execute(call)),
     );
   }
 

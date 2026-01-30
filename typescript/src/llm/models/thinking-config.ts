@@ -6,13 +6,13 @@
  * Level of effort/reasoning to apply to thinking.
  */
 export type ThinkingLevel =
-  | 'none'
-  | 'default'
-  | 'minimal'
-  | 'low'
-  | 'medium'
-  | 'high'
-  | 'max';
+  | "none"
+  | "default"
+  | "minimal"
+  | "low"
+  | "medium"
+  | "high"
+  | "max";
 
 /**
  * Configuration for extended reasoning/thinking in LLM responses.

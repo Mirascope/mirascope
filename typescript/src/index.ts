@@ -15,6 +15,6 @@
  * console.log(response.text());
  * ```
  */
-import * as llm from './llm';
+import * as llm from "./llm";
 
 export { llm };

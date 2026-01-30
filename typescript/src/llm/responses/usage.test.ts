@@ -2,12 +2,13 @@
  * Tests for Usage utilities.
  */
 
-import { describe, it, expect } from 'vitest';
-import { createUsage, totalTokens } from '@/llm/responses/usage';
+import { describe, it, expect } from "vitest";
 
-describe('Usage', () => {
-  describe('createUsage()', () => {
-    it('creates usage with all defaults', () => {
+import { createUsage, totalTokens } from "@/llm/responses/usage";
+
+describe("Usage", () => {
+  describe("createUsage()", () => {
+    it("creates usage with all defaults", () => {
       const usage = createUsage();
       expect(usage.inputTokens).toBe(0);
       expect(usage.outputTokens).toBe(0);
@@ -17,8 +18,8 @@ describe('Usage', () => {
       expect(usage.raw).toBeNull();
     });
 
-    it('creates usage with provided values', () => {
-      const raw = { custom: 'data' };
+    it("creates usage with provided values", () => {
+      const raw = { custom: "data" };
       const usage = createUsage({
         inputTokens: 100,
         outputTokens: 50,
@@ -36,7 +37,7 @@ describe('Usage', () => {
       expect(usage.raw).toBe(raw);
     });
 
-    it('uses defaults for missing fields', () => {
+    it("uses defaults for missing fields", () => {
       const usage = createUsage({
         inputTokens: 100,
         outputTokens: 50,
@@ -51,8 +52,8 @@ describe('Usage', () => {
     });
   });
 
-  describe('totalTokens()', () => {
-    it('calculates total from input and output tokens', () => {
+  describe("totalTokens()", () => {
+    it("calculates total from input and output tokens", () => {
       const usage = createUsage({
         inputTokens: 100,
         outputTokens: 50,
@@ -60,7 +61,7 @@ describe('Usage', () => {
       expect(totalTokens(usage)).toBe(150);
     });
 
-    it('returns 0 for empty usage', () => {
+    it("returns 0 for empty usage", () => {
       const usage = createUsage();
       expect(totalTokens(usage)).toBe(0);
     });

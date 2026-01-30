@@ -5,56 +5,57 @@
  * tool calls from responses. Tests run against multiple providers via parameterization.
  */
 
-import { resolve } from 'node:path';
-import { createIt, describe, expect } from '@/tests/e2e/utils';
-import { PROVIDERS_FOR_TOOLS_TESTS } from '@/tests/e2e/providers';
+import { resolve } from "node:path";
+
 import {
   defineCall,
   defineTool,
   type Response,
   type StreamResponse,
-} from '@/llm';
+} from "@/llm";
+import { PROVIDERS_FOR_TOOLS_TESTS } from "@/tests/e2e/providers";
+import { createIt, describe, expect } from "@/tests/e2e/utils";
 
-const it = createIt(resolve(__dirname, 'cassettes'), 'tools');
+const it = createIt(resolve(__dirname, "cassettes"), "tools");
 
 /**
  * Password map for the secret retrieval tool.
  */
 const PASSWORD_MAP: Record<string, string> = {
-  mellon: 'Welcome to Moria!',
-  radiance: 'Life before Death',
+  mellon: "Welcome to Moria!",
+  radiance: "Life before Death",
 };
 
 /**
  * A simple tool for testing that retrieves secrets based on passwords.
  */
 const secretRetrievalTool = defineTool<{ password: string }>({
-  name: 'secret_retrieval_tool',
-  description: 'A tool that requires a password to retrieve a secret.',
+  name: "secret_retrieval_tool",
+  description: "A tool that requires a password to retrieve a secret.",
   fieldDefinitions: {
-    password: 'The password to retrieve the secret for.',
+    password: "The password to retrieve the secret for.",
   },
   tool: ({ password }) => {
-    return PASSWORD_MAP[password] ?? 'Invalid password!';
+    return PASSWORD_MAP[password] ?? "Invalid password!";
   },
 });
 
-describe('tool usage', () => {
+describe("tool usage", () => {
   it.record.each(PROVIDERS_FOR_TOOLS_TESTS)(
-    'calls tool and resumes with results',
+    "calls tool and resumes with results",
     async ({ model }) => {
       const retrieveSecrets = defineCall<{ passwords: string[] }>({
         model,
         maxTokens: 1000,
         tools: [secretRetrievalTool],
         template: ({ passwords }) =>
-          `Please retrieve the secrets for these passwords: ${passwords.map((p) => `"${p}"`).join(' and ')}. ` +
-          'Use the secret_retrieval_tool for each password.',
+          `Please retrieve the secrets for these passwords: ${passwords.map((p) => `"${p}"`).join(" and ")}. ` +
+          "Use the secret_retrieval_tool for each password.",
       });
 
       // Call with tool - ask LLM to use the tool
       let response: Response = await retrieveSecrets({
-        passwords: ['mellon', 'radiance'],
+        passwords: ["mellon", "radiance"],
       });
 
       // Verify we got tool calls
@@ -68,7 +69,7 @@ describe('tool usage', () => {
         // Verify tool outputs
         expect(toolOutputs.length).toBe(response.toolCalls.length);
         for (const output of toolOutputs) {
-          expect(output.type).toBe('tool_output');
+          expect(output.type).toBe("tool_output");
           expect(output.error).toBeNull();
         }
 
@@ -80,26 +81,26 @@ describe('tool usage', () => {
       const text = response.text();
       expect(text).toMatch(/moria/i);
       expect(text).toMatch(/life before death/i);
-    }
+    },
   );
 });
 
-describe('tool usage with streaming', () => {
+describe("tool usage with streaming", () => {
   it.record.each(PROVIDERS_FOR_TOOLS_TESTS)(
-    'streams tool calls and resumes with results',
+    "streams tool calls and resumes with results",
     async ({ model }) => {
       const retrieveSecrets = defineCall<{ passwords: string[] }>({
         model,
         maxTokens: 1000,
         tools: [secretRetrievalTool],
         template: ({ passwords }) =>
-          `Please retrieve the secrets for these passwords: ${passwords.map((p) => `"${p}"`).join(' and ')}. ` +
-          'Use the secret_retrieval_tool for each password.',
+          `Please retrieve the secrets for these passwords: ${passwords.map((p) => `"${p}"`).join(" and ")}. ` +
+          "Use the secret_retrieval_tool for each password.",
       });
 
       // Stream with tool - ask LLM to use the tool
       let response: StreamResponse = await retrieveSecrets.stream({
-        passwords: ['mellon', 'radiance'],
+        passwords: ["mellon", "radiance"],
       });
 
       // Consume the stream (equivalent to Python's response.finish())
@@ -116,7 +117,7 @@ describe('tool usage with streaming', () => {
         // Verify tool outputs
         expect(toolOutputs.length).toBe(response.toolCalls.length);
         for (const output of toolOutputs) {
-          expect(output.type).toBe('tool_output');
+          expect(output.type).toBe("tool_output");
           expect(output.error).toBeNull();
         }
 
@@ -131,6 +132,6 @@ describe('tool usage with streaming', () => {
       const text = response.text();
       expect(text).toMatch(/moria/i);
       expect(text).toMatch(/life before death/i);
-    }
+    },
   );
 });

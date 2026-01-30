@@ -7,11 +7,11 @@
  */
 export const FinishReason = {
   /** Model ran out of tokens. */
-  MAX_TOKENS: 'max_tokens',
+  MAX_TOKENS: "max_tokens",
   /** Model refused to generate. */
-  REFUSAL: 'refusal',
+  REFUSAL: "refusal",
   /** Context length exceeded. */
-  CONTEXT_LENGTH_EXCEEDED: 'context_length_exceeded',
+  CONTEXT_LENGTH_EXCEEDED: "context_length_exceeded",
 } as const;
 
 /**

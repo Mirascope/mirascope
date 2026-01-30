@@ -1,1 +1,1 @@
-export { OllamaProvider, type OllamaProviderInit } from './provider';
+export { OllamaProvider, type OllamaProviderInit } from "./provider";

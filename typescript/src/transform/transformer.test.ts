@@ -2,10 +2,11 @@
  * Tests for the TypeScript transformer.
  */
 
-import { describe, it, expect } from 'vitest';
-import ts from 'typescript';
-import { createToolSchemaTransformer } from './transformer';
-import transformer from './transformer';
+import ts from "typescript";
+import { describe, it, expect } from "vitest";
+
+import { createToolSchemaTransformer } from "./transformer";
+import transformer from "./transformer";
 
 /**
  * Minimal lib.d.ts definitions for testing.
@@ -33,43 +34,43 @@ declare var Array: {
  * Helper to transform source code and get the result.
  */
 function transformSource(source: string): string {
-  const fileName = 'test.ts';
-  const libFileName = 'lib.d.ts';
+  const fileName = "test.ts";
+  const libFileName = "lib.d.ts";
 
   const sourceFile = ts.createSourceFile(
     fileName,
     source,
     ts.ScriptTarget.Latest,
-    true
+    true,
   );
 
   const libFile = ts.createSourceFile(
     libFileName,
     LIB_DTS,
     ts.ScriptTarget.Latest,
-    true
+    true,
   );
 
   const host: ts.CompilerHost = {
     getSourceFile: (name) => {
       if (name === fileName) return sourceFile;
-      if (name === libFileName || name.includes('lib.')) return libFile;
+      if (name === libFileName || name.includes("lib.")) return libFile;
       return undefined;
     },
     getDefaultLibFileName: () => libFileName,
     writeFile: () => {},
-    getCurrentDirectory: () => '/',
+    getCurrentDirectory: () => "/",
     getCanonicalFileName: (f) => f,
     useCaseSensitiveFileNames: () => true,
-    getNewLine: () => '\n',
+    getNewLine: () => "\n",
     fileExists: (name) => name === fileName || name === libFileName,
     readFile: () => undefined,
   };
 
   const program = ts.createProgram(
     [fileName],
-    { lib: ['lib.d.ts'], noLib: false },
-    host
+    { lib: ["lib.d.ts"], noLib: false },
+    host,
   );
   const transformer = createToolSchemaTransformer(program);
 
@@ -80,8 +81,8 @@ function transformSource(source: string): string {
   return printer.printFile(transformedSourceFile);
 }
 
-describe('createToolSchemaTransformer', () => {
-  it('injects __schema for defineTool with simple type', () => {
+describe("createToolSchemaTransformer", () => {
+  it("injects __schema for defineTool with simple type", () => {
     const source = `const tool = defineTool<{ city: string }>({
   name: "get_weather",
   description: "Get weather",
@@ -110,7 +111,7 @@ describe('createToolSchemaTransformer', () => {
     `);
   });
 
-  it('injects __schema for defineContextTool', () => {
+  it("injects __schema for defineContextTool", () => {
     const source = `const tool = defineContextTool<{ query: string }, MyDeps>({
   name: "search",
   description: "Search",
@@ -139,7 +140,7 @@ describe('createToolSchemaTransformer', () => {
     `);
   });
 
-  it('handles optional properties', () => {
+  it("handles optional properties", () => {
     const source = `const tool = defineTool<{ city: string; units?: string }>({
   name: "get_weather",
   description: "Get weather",
@@ -172,7 +173,7 @@ describe('createToolSchemaTransformer', () => {
     `);
   });
 
-  it('handles string literal unions (enums)', () => {
+  it("handles string literal unions (enums)", () => {
     const source = `const tool = defineTool<{ units: "celsius" | "fahrenheit" }>({
   name: "convert",
   description: "Convert",
@@ -202,7 +203,7 @@ describe('createToolSchemaTransformer', () => {
     `);
   });
 
-  it('does not override existing __schema', () => {
+  it("does not override existing __schema", () => {
     const source = `const tool = defineTool<{ city: string }>({
   name: "get_weather",
   description: "Get weather",
@@ -226,7 +227,7 @@ describe('createToolSchemaTransformer', () => {
     expect((result.match(/__schema/g) ?? []).length).toBe(1);
   });
 
-  it('handles property access (llm.defineTool)', () => {
+  it("handles property access (llm.defineTool)", () => {
     const source = `const tool = llm.defineTool<{ city: string }>({
   name: "get_weather",
   description: "Get weather",
@@ -255,7 +256,7 @@ describe('createToolSchemaTransformer', () => {
     `);
   });
 
-  it('leaves non-tool calls unchanged', () => {
+  it("leaves non-tool calls unchanged", () => {
     const source = `const result = someOtherFunction<{ city: string }>({
   name: "test",
 });`;
@@ -269,10 +270,10 @@ describe('createToolSchemaTransformer', () => {
       });
       "
     `);
-    expect(result).not.toContain('__schema');
+    expect(result).not.toContain("__schema");
   });
 
-  it('leaves calls without type arguments unchanged', () => {
+  it("leaves calls without type arguments unchanged", () => {
     const source = `const tool = defineTool({
   name: "get_weather",
   description: "Get weather",
@@ -288,10 +289,10 @@ describe('createToolSchemaTransformer', () => {
       });
       "
     `);
-    expect(result).not.toContain('__schema');
+    expect(result).not.toContain("__schema");
   });
 
-  it('leaves calls with non-object type arguments unchanged', () => {
+  it("leaves calls with non-object type arguments unchanged", () => {
     const source = `const tool = defineTool<string>({
   name: "test",
   description: "Test",
@@ -307,10 +308,10 @@ describe('createToolSchemaTransformer', () => {
       });
       "
     `);
-    expect(result).not.toContain('__schema');
+    expect(result).not.toContain("__schema");
   });
 
-  it('leaves calls with non-object literal argument unchanged', () => {
+  it("leaves calls with non-object literal argument unchanged", () => {
     const source = `const opts = { name: "test" };
 const tool = defineTool<{ x: string }>(opts);`;
 
@@ -322,10 +323,10 @@ const tool = defineTool<{ x: string }>(opts);`;
       }>(opts);
       "
     `);
-    expect(result).not.toContain('__schema');
+    expect(result).not.toContain("__schema");
   });
 
-  it('handles complex nested types', () => {
+  it("handles complex nested types", () => {
     const source = `const tool = defineTool<{
   user: { name: string; age: number };
   tags: string[];
@@ -376,7 +377,7 @@ const tool = defineTool<{ x: string }>(opts);`;
     `);
   });
 
-  it('handles number literal unions', () => {
+  it("handles number literal unions", () => {
     const source = `const tool = defineTool<{ count: 1 | 2 | 3 }>({
   name: "counter",
   description: "Counter",
@@ -406,7 +407,7 @@ const tool = defineTool<{ x: string }>(opts);`;
     `);
   });
 
-  it('handles boolean properties', () => {
+  it("handles boolean properties", () => {
     const source = `const tool = defineTool<{ enabled: boolean }>({
   name: "toggle",
   description: "Toggle",
@@ -435,7 +436,7 @@ const tool = defineTool<{ x: string }>(opts);`;
     `);
   });
 
-  it('handles null properties', () => {
+  it("handles null properties", () => {
     const source = `const tool = defineTool<{ value: null }>({
   name: "nullify",
   description: "Nullify",
@@ -465,10 +466,10 @@ const tool = defineTool<{ x: string }>(opts);`;
   });
 });
 
-describe('transformer default export', () => {
-  it('returns the same transformer as createToolSchemaTransformer', () => {
-    const fileName = 'test.ts';
-    const libFileName = 'lib.d.ts';
+describe("transformer default export", () => {
+  it("returns the same transformer as createToolSchemaTransformer", () => {
+    const fileName = "test.ts";
+    const libFileName = "lib.d.ts";
     const source = `
       const tool = defineTool<{ city: string }>({
         name: "test",
@@ -481,36 +482,36 @@ describe('transformer default export', () => {
       fileName,
       source,
       ts.ScriptTarget.Latest,
-      true
+      true,
     );
 
     const libFile = ts.createSourceFile(
       libFileName,
       LIB_DTS,
       ts.ScriptTarget.Latest,
-      true
+      true,
     );
 
     const host: ts.CompilerHost = {
       getSourceFile: (name) => {
         if (name === fileName) return sourceFile;
-        if (name === libFileName || name.includes('lib.')) return libFile;
+        if (name === libFileName || name.includes("lib.")) return libFile;
         return undefined;
       },
       getDefaultLibFileName: () => libFileName,
       writeFile: () => {},
-      getCurrentDirectory: () => '/',
+      getCurrentDirectory: () => "/",
       getCanonicalFileName: (f) => f,
       useCaseSensitiveFileNames: () => true,
-      getNewLine: () => '\n',
+      getNewLine: () => "\n",
       fileExists: (name) => name === fileName || name === libFileName,
       readFile: () => undefined,
     };
 
     const program = ts.createProgram(
       [fileName],
-      { lib: ['lib.d.ts'], noLib: false },
-      host
+      { lib: ["lib.d.ts"], noLib: false },
+      host,
     );
 
     // Test default export
@@ -526,6 +527,6 @@ describe('transformer default export', () => {
     const output2 = printer.printFile(result2.transformed[0]!);
 
     expect(output1).toBe(output2);
-    expect(output1).toContain('__schema');
+    expect(output1).toContain("__schema");
   });
 });

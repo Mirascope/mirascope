@@ -5,16 +5,17 @@
  * Tests run against multiple providers via parameterization.
  */
 
-import { resolve } from 'node:path';
-import { createIt, describe, expect } from '@/tests/e2e/utils';
-import { PROVIDERS } from '@/tests/e2e/providers';
-import { definePrompt } from '@/llm/prompts';
+import { resolve } from "node:path";
 
-const it = createIt(resolve(__dirname, 'cassettes'), 'prompt');
+import { definePrompt } from "@/llm/prompts";
+import { PROVIDERS } from "@/tests/e2e/providers";
+import { createIt, describe, expect } from "@/tests/e2e/utils";
 
-describe('prompt output', () => {
+const it = createIt(resolve(__dirname, "cassettes"), "prompt");
+
+describe("prompt output", () => {
   it.record.each(PROVIDERS)(
-    'calls model with string model id',
+    "calls model with string model id",
     async ({ model }) => {
       const addNumbers = definePrompt<{ a: number; b: number }>({
         template: ({ a, b }) => `What is ${a} + ${b}?`,
@@ -26,13 +27,13 @@ describe('prompt output', () => {
         b: 42,
       });
 
-      expect(response.text()).toContain('4242');
+      expect(response.text()).toContain("4242");
       expect(response.usage).not.toBeNull();
-    }
+    },
   );
 
   it.record.each(PROVIDERS)(
-    'streams model with string model id',
+    "streams model with string model id",
     async ({ model }) => {
       const addNumbers = definePrompt<{ a: number; b: number }>({
         template: ({ a, b }) => `What is ${a} + ${b}?`,
@@ -46,8 +47,8 @@ describe('prompt output', () => {
 
       await response.consume();
 
-      expect(response.text()).toContain('4242');
+      expect(response.text()).toContain("4242");
       expect(response.usage).not.toBeNull();
-    }
+    },
   );
 });
