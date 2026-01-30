@@ -55,7 +55,12 @@ export class GoogleProvider extends BaseProvider {
     super();
     this.client = new GoogleGenAI({
       apiKey: init.apiKey,
-      httpOptions: init.baseURL ? { baseUrl: init.baseURL } : undefined,
+      httpOptions: init.baseURL
+        ? {
+            baseUrl: init.baseURL,
+            headers: { Authorization: `Bearer ${init.apiKey}` },
+          }
+        : undefined,
     });
   }
 
