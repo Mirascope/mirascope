@@ -120,3 +120,24 @@ html.dark .shiki span {
   font-weight: var(--shiki-dark-font-weight) !important;
   text-decoration: var(--shiki-dark-text-decoration) !important;
 }
+
+/* Machine mode: use page background instead of code block background */
+.machine-mode-code .shiki {
+  background-color: hsl(var(--background)) !important;
+}
+
+html.dark .machine-mode-code .shiki {
+  background-color: hsl(var(--background)) !important;
+}
+
+/* Machine mode: word wrap for better readability */
+.machine-mode-code .shiki,
+.machine-mode-code .shiki code {
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+.machine-mode-code .shiki .line {
+  white-space: pre-wrap !important;
+}
