@@ -5,12 +5,8 @@ import {
   ToolCallStream,
 } from '@/llm/responses/streams';
 import { StreamResponse } from '@/llm/responses/stream-response';
+import type { TextChunk, ThoughtChunk, ToolCallChunk } from '@/llm/content';
 import type { StreamResponseChunk } from '@/llm/responses/chunks';
-import type {
-  TextChunk,
-  ThoughtChunk,
-  ToolCallChunk,
-} from '@/llm/responses/chunks';
 import { FinishReason } from '@/llm/responses/finish-reason';
 
 /**

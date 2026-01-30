@@ -7,14 +7,16 @@
 
 import type { ChatCompletionChunk } from 'openai/resources/chat/completions';
 
-import type { StreamResponseChunk } from '@/llm/responses/chunks';
 import {
   textStart,
   textChunk,
   textEnd,
-  toolCallStartChunk,
+  toolCallStart,
   toolCallChunk,
-  toolCallEndChunk,
+  toolCallEnd,
+} from '@/llm/content';
+import type { StreamResponseChunk } from '@/llm/responses/chunks';
+import {
   finishReasonChunk,
   usageDeltaChunk,
   rawStreamEventChunk,
@@ -134,7 +136,7 @@ export function decodeStreamEvent(
           throw new Error('No current_tool_id for ToolCallEndChunk');
         }
         /* v8 ignore stop */
-        chunks.push(toolCallEndChunk(state.currentToolId));
+        chunks.push(toolCallEnd(state.currentToolId));
         state.currentToolIndex = null;
       }
 
@@ -153,7 +155,7 @@ export function decodeStreamEvent(
 
         state.currentToolIndex = index;
         state.currentToolId = toolId;
-        chunks.push(toolCallStartChunk(toolId, name));
+        chunks.push(toolCallStart(toolId, name));
       }
 
       // Emit tool call argument chunk if present
@@ -180,7 +182,7 @@ export function decodeStreamEvent(
         throw new Error('No current_tool_id for ToolCallEndChunk');
       }
       /* v8 ignore stop */
-      chunks.push(toolCallEndChunk(state.currentToolId));
+      chunks.push(toolCallEnd(state.currentToolId));
       /* v8 ignore start - defensive check for unknown content types */
     } else if (state.currentContentType !== null) {
       throw new Error('Unexpected content type');

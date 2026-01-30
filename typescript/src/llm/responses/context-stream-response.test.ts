@@ -4,17 +4,17 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import type { ToolCall } from '@/llm/content/tool-call';
-import { createContext, type Context } from '@/llm/context';
-import { user } from '@/llm/messages';
-import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 import {
   textStart,
   textChunk,
   textEnd,
-  toolCallStartChunk,
+  toolCallStart,
   toolCallChunk,
-  toolCallEndChunk,
-} from '@/llm/responses/chunks';
+  toolCallEnd,
+} from '@/llm/content';
+import { createContext, type Context } from '@/llm/context';
+import { user } from '@/llm/messages';
+import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 import type { StreamResponseChunk } from '@/llm/responses/chunks';
 import { defineTool, defineContextTool, ContextToolkit } from '@/llm/tools';
 import type { ToolParameterSchema } from '@/llm/tools/tool-schema';
@@ -127,9 +127,9 @@ describe('ContextStreamResponse', () => {
         textStart(),
         textChunk('I will search.'),
         textEnd(),
-        toolCallStartChunk(toolCall.id, toolCall.name),
+        toolCallStart(toolCall.id, toolCall.name),
         toolCallChunk(toolCall.id, toolCall.args),
-        toolCallEndChunk(toolCall.id),
+        toolCallEnd(toolCall.id),
       ];
 
       const response = new ContextStreamResponse<TestDeps>({
@@ -193,12 +193,12 @@ describe('ContextStreamResponse', () => {
       };
 
       const chunks: StreamResponseChunk[] = [
-        toolCallStartChunk(addCall.id, addCall.name),
+        toolCallStart(addCall.id, addCall.name),
         toolCallChunk(addCall.id, addCall.args),
-        toolCallEndChunk(addCall.id),
-        toolCallStartChunk(multiplyCall.id, multiplyCall.name),
+        toolCallEnd(addCall.id),
+        toolCallStart(multiplyCall.id, multiplyCall.name),
         toolCallChunk(multiplyCall.id, multiplyCall.args),
-        toolCallEndChunk(multiplyCall.id),
+        toolCallEnd(multiplyCall.id),
       ];
 
       const response = new ContextStreamResponse<TestDeps>({

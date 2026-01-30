@@ -20,11 +20,38 @@ export {
 
 export type {
   AssistantContentPart,
+  AssistantContentChunk,
   ContentPart,
   UserContentPart,
 } from '@/llm/content';
 
 export type { Text, Thought, ToolCall } from '@/llm/content';
+
+// Content chunk types (from content module, like Python)
+export type {
+  TextStartChunk,
+  TextChunk,
+  TextEndChunk,
+  ThoughtStartChunk,
+  ThoughtChunk,
+  ThoughtEndChunk,
+  ToolCallStartChunk,
+  ToolCallChunk,
+  ToolCallEndChunk,
+} from '@/llm/content';
+
+// Content chunk factory functions
+export {
+  textStart,
+  textChunk,
+  textEnd,
+  thoughtStart,
+  thoughtChunk,
+  thoughtEnd,
+  toolCallStart,
+  toolCallChunk,
+  toolCallEnd,
+} from '@/llm/content';
 
 export {
   Audio,
@@ -198,17 +225,11 @@ export type {
   ContextResponseInit,
   StreamResponseInit,
   ContextStreamResponseInit,
-  // Streaming chunk types
-  TextStartChunk,
-  TextChunk,
-  TextEndChunk,
-  ThoughtStartChunk,
-  ThoughtChunk,
-  ThoughtEndChunk,
+  // Metadata streaming chunk types (content chunks exported from content above)
   FinishReasonChunk,
   UsageDeltaChunk,
   RawStreamEventChunk,
   RawMessageChunk,
-  AssistantContentChunk,
   StreamResponseChunk,
+  AsyncChunkIterator,
 } from '@/llm/responses';

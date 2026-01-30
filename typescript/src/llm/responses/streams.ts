@@ -7,12 +7,14 @@
  * - Partial accumulation properties to track content as it arrives
  */
 
-import type { Text, Thought, ToolCall } from '@/llm/content';
 import type {
+  Text,
   TextChunk,
+  Thought,
   ThoughtChunk,
+  ToolCall,
   ToolCallChunk,
-} from '@/llm/responses/chunks';
+} from '@/llm/content';
 
 /**
  * Stream for text content.

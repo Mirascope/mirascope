@@ -17,23 +17,21 @@
  */
 
 import type {
+  AssistantContentChunk,
   AssistantContentPart,
   Text,
+  TextChunk,
   Thought,
+  ThoughtChunk,
   ToolCall,
+  ToolCallChunk,
 } from '@/llm/content';
 import type { DeepPartial, Format } from '@/llm/formatting';
 import { FORMAT_TOOL_NAME } from '@/llm/formatting';
 import type { AssistantMessage, Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import type { ModelId, ProviderId } from '@/llm/providers';
-import type {
-  AssistantContentChunk,
-  StreamResponseChunk,
-  TextChunk,
-  ThoughtChunk,
-  ToolCallChunk,
-} from '@/llm/responses/chunks';
+import type { StreamResponseChunk } from '@/llm/responses/chunks';
 import type { FinishReason } from '@/llm/responses/finish-reason';
 import { RootResponse } from '@/llm/responses/root-response';
 import {
