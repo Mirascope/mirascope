@@ -20,11 +20,19 @@ export default defineConfig({
         'src/**/*.test.ts',
         'src/**/index.ts',
         'src/bun.ts',
+        // compile-time transformer runs in build plugins, difficult to unit test
+        'src/transform/transformer.ts',
         // type files with nothing to cover
         'src/transform/plugins/types.ts',
         'src/llm/models/params.ts',
         'src/llm/models/thinking-config.ts',
         'src/llm/providers/model-id.ts',
+        'src/llm/types/jsonable.ts',
+        'src/llm/types/vars.ts',
+        'src/llm/formatting/partial.ts',
+        'src/llm/content/text.ts',
+        'src/llm/content/thought.ts',
+        'src/llm/content/tool-call.ts',
       ],
       thresholds: {
         lines: 100,

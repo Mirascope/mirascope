@@ -12,9 +12,58 @@ import type {
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import type { ModelId, ProviderId } from '@/llm/providers';
+import type { Format, FormattingMode } from '@/llm/formatting';
+import { FORMAT_TYPE, defineOutputParser } from '@/llm/formatting';
 import type { FinishReason } from '@/llm/responses/finish-reason';
 import type { Usage } from '@/llm/responses/usage';
 import { RootResponse } from '@/llm/responses/root-response';
+import { ParseError } from '@/llm/exceptions';
+import { z } from 'zod';
+
+/** Helper to create mock Format objects for testing */
+function createMockFormat(
+  options: {
+    mode?: FormattingMode;
+    validator?: z.ZodType | null;
+    outputParser?: ((resp: RootResponse) => unknown) | null;
+  } = {}
+): Format {
+  const { mode = 'json', validator = null, outputParser = null } = options;
+
+  // If outputParser is provided, wrap it in a proper OutputParser
+  const wrappedOutputParser = outputParser
+    ? defineOutputParser({
+        formattingInstructions: 'test',
+        parser: outputParser,
+      })
+    : null;
+
+  return {
+    __formatType: FORMAT_TYPE,
+    name: 'TestFormat',
+    description: null,
+    schema: {
+      type: 'object',
+      properties: {},
+      required: [],
+      additionalProperties: false,
+    },
+    mode,
+    validator,
+    outputParser: wrappedOutputParser,
+    formattingInstructions: null,
+    createToolSchema: () => ({
+      name: 'test',
+      description: 'test',
+      parameters: {
+        type: 'object',
+        properties: {},
+        required: [],
+        additionalProperties: false,
+      },
+    }),
+  };
+}
 
 // Concrete implementation for testing
 class TestResponse extends RootResponse {
@@ -30,8 +79,12 @@ class TestResponse extends RootResponse {
   readonly thoughts: readonly Thought[];
   readonly finishReason: FinishReason | null;
   readonly usage: Usage | null;
+  readonly format: Format | null;
 
-  constructor(content: readonly AssistantContentPart[]) {
+  constructor(
+    content: readonly AssistantContentPart[],
+    format: Format | null = null
+  ) {
     super();
     this.raw = {};
     this.providerId = 'anthropic';
@@ -47,6 +100,7 @@ class TestResponse extends RootResponse {
     this.thoughts = content.filter((c): c is Thought => c.type === 'thought');
     this.finishReason = null;
     this.usage = null;
+    this.format = format;
   }
 }
 
@@ -136,6 +190,152 @@ describe('RootResponse', () => {
       ].join('\n\n');
 
       expect(response.pretty()).toBe(expected);
+    });
+  });
+
+  describe('parse()', () => {
+    it('returns null when no format is specified', () => {
+      const response = new TestResponse([{ type: 'text', text: 'Hello!' }]);
+      expect(response.parse()).toBeNull();
+    });
+
+    it('parses JSON response with format', () => {
+      const format = createMockFormat();
+      const response = new TestResponse(
+        [{ type: 'text', text: '{"title": "Test Book"}' }],
+        format
+      );
+      expect(response.parse()).toEqual({ title: 'Test Book' });
+    });
+
+    it('parses JSON with surrounding text', () => {
+      const format = createMockFormat();
+      const response = new TestResponse(
+        [{ type: 'text', text: 'Here is the data: {"name": "Alice"}' }],
+        format
+      );
+      expect(response.parse()).toEqual({ name: 'Alice' });
+    });
+
+    it('validates with Zod when validator is provided', () => {
+      const BookSchema = z.object({
+        title: z.string(),
+        author: z.string(),
+      });
+      const format = createMockFormat({ validator: BookSchema });
+      const response = new TestResponse(
+        [
+          {
+            type: 'text',
+            text: '{"title": "1984", "author": "George Orwell"}',
+          },
+        ],
+        format
+      );
+      expect(response.parse()).toEqual({
+        title: '1984',
+        author: 'George Orwell',
+      });
+    });
+
+    it('throws ParseError when validation fails', () => {
+      const BookSchema = z.object({
+        title: z.string(),
+        author: z.string(),
+      });
+      const format = createMockFormat({ validator: BookSchema });
+      const response = new TestResponse(
+        [{ type: 'text', text: '{"title": "1984"}' }], // missing author
+        format
+      );
+      expect(() => response.parse()).toThrow(ParseError);
+      expect(() => response.parse()).toThrow('Validation failed');
+    });
+
+    it('throws ParseError when JSON is invalid', () => {
+      const format = createMockFormat();
+      const response = new TestResponse(
+        [{ type: 'text', text: 'not valid json' }],
+        format
+      );
+      expect(() => response.parse()).toThrow(ParseError);
+    });
+
+    it('uses OutputParser when provided', () => {
+      const format = createMockFormat({
+        mode: 'parser',
+        outputParser: (resp: RootResponse) => ({
+          custom: resp.text().toUpperCase(),
+        }),
+      });
+      const response = new TestResponse(
+        [{ type: 'text', text: 'hello world' }],
+        format
+      );
+      expect(response.parse()).toEqual({ custom: 'HELLO WORLD' });
+    });
+
+    it('throws when OutputParser fails', () => {
+      const format = createMockFormat({
+        mode: 'parser',
+        outputParser: () => {
+          throw new Error('Parser error');
+        },
+      });
+      const response = new TestResponse(
+        [{ type: 'text', text: 'hello' }],
+        format
+      );
+      expect(() => response.parse()).toThrow(ParseError);
+      expect(() => response.parse()).toThrow('OutputParser failed');
+    });
+
+    it('throws when OutputParser fails with non-Error', () => {
+      const format = createMockFormat({
+        mode: 'parser',
+        outputParser: () => {
+          throw 'string error'; // eslint-disable-line @typescript-eslint/only-throw-error
+        },
+      });
+      const response = new TestResponse(
+        [{ type: 'text', text: 'hello' }],
+        format
+      );
+      expect(() => response.parse()).toThrow(ParseError);
+    });
+
+    it('throws when partial parsing with OutputParser', () => {
+      const format = createMockFormat({
+        mode: 'parser',
+        outputParser: () => ({}),
+      });
+      const response = new TestResponse(
+        [{ type: 'text', text: 'hello' }],
+        format
+      );
+      expect(() => response.parse({ partial: true })).toThrow(
+        'parse({ partial: true }) is not supported with OutputParser'
+      );
+    });
+
+    it('returns partial object when partial: true', () => {
+      const format = createMockFormat();
+      // Incomplete JSON
+      const response = new TestResponse(
+        [{ type: 'text', text: '{"title": "Test' }],
+        format
+      );
+      const partial = response.parse({ partial: true });
+      expect(partial).toEqual({ title: 'Test' });
+    });
+
+    it('handles non-Error exceptions during JSON parsing', () => {
+      const format = createMockFormat();
+      const response = new TestResponse(
+        [{ type: 'text', text: 'no json here at all' }],
+        format
+      );
+      expect(() => response.parse()).toThrow(ParseError);
     });
   });
 });

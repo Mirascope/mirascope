@@ -34,6 +34,8 @@ export interface StreamResponseInit
  * Extends BaseStreamResponse to provide the standard streaming interface,
  * adding resume methods for continuing conversations.
  *
+ * @template F - The type of the formatted output when using structured outputs.
+ *
  * @example
  * ```typescript
  * const response = await model.stream('Hello!');
@@ -45,8 +47,17 @@ export interface StreamResponseInit
  * // Continue the conversation
  * const followUp = await response.resume('Tell me more');
  * ```
+ *
+ * @example With structured output
+ * ```typescript
+ * interface Book { title: string; author: string; }
+ * const response = await model.stream<Book>('Recommend a book', { format: BookSchema });
+ * for await (const partial of response.structuredStream()) {
+ *   console.log(partial.title); // Typed as DeepPartial<Book>
+ * }
+ * ```
  */
-export class StreamResponse extends BaseStreamResponse {
+export class StreamResponse<F = unknown> extends BaseStreamResponse<F> {
   /**
    * Override base toolkit with correct type for execute() support.
    */
@@ -124,8 +135,8 @@ export class StreamResponse extends BaseStreamResponse {
    * }
    * ```
    */
-  async resume(content: UserContent): Promise<StreamResponse> {
+  async resume(content: UserContent): Promise<StreamResponse<F>> {
     const model = await this.model;
-    return model.resumeStream(this, content);
+    return model.resumeStream(this, content) as Promise<StreamResponse<F>>;
   }
 }

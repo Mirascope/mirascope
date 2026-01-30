@@ -1,8 +1,9 @@
 /**
- * TypeScript transformer for injecting tool schemas.
+ * TypeScript transformer for injecting schemas into tool and format definitions.
  *
- * This transformer finds calls to `defineTool<T>()` and `defineContextTool<T, DepsT>()`
- * and injects the `__schema` property with the JSON schema generated from type T.
+ * This transformer finds calls to `defineTool<T>()`, `defineContextTool<T, DepsT>()`,
+ * and `defineFormat<T>()` and injects the `__schema` property with the JSON schema
+ * generated from type T.
  */
 
 import ts from 'typescript';
@@ -12,6 +13,11 @@ import { typeToToolParameterSchema } from './type-to-schema';
  * Names of functions that should have schemas injected.
  */
 const TOOL_FUNCTION_NAMES = new Set(['defineTool', 'defineContextTool']);
+
+/**
+ * Names of format functions that should have schemas injected.
+ */
+const FORMAT_FUNCTION_NAMES = new Set(['defineFormat']);
 
 /**
  * Create a TypeScript transformer that injects __schema into tool definitions.
@@ -29,9 +35,20 @@ export function createToolSchemaTransformer(
       const visitor = (node: ts.Node): ts.Node => {
         // Look for call expressions
         if (ts.isCallExpression(node)) {
-          const transformed = tryTransformToolCall(node, checker, context);
-          if (transformed) {
-            return transformed;
+          // Try tool transform first
+          const toolTransformed = tryTransformToolCall(node, checker, context);
+          if (toolTransformed) {
+            return toolTransformed;
+          }
+
+          // Try format transform
+          const formatTransformed = tryTransformFormatCall(
+            node,
+            checker,
+            context
+          );
+          if (formatTransformed) {
+            return formatTransformed;
           }
         }
 
@@ -123,6 +140,99 @@ function tryTransformToolCall(
     node.typeArguments,
     newArgs
   );
+}
+
+/**
+ * Try to transform a call expression if it's a format definition.
+ *
+ * For defineFormat<T>(options):
+ * - If the options arg is an object literal, inject __schema from type T
+ * - If __schema is already present, leave unchanged
+ * - If options has a validator, the validator's schema is used at runtime
+ *
+ * @param node - The call expression node.
+ * @param checker - The type checker.
+ * @param context - The transformation context.
+ * @returns The transformed node, or undefined if not a format definition.
+ */
+function tryTransformFormatCall(
+  node: ts.CallExpression,
+  checker: ts.TypeChecker,
+  context: ts.TransformationContext
+): ts.CallExpression | undefined {
+  // Check if this is a call to defineFormat
+  const functionName = getFunctionName(node);
+  if (!functionName || !FORMAT_FUNCTION_NAMES.has(functionName)) {
+    return undefined;
+  }
+
+  // Get the type arguments (the generic parameter T)
+  const typeArgs = node.typeArguments;
+  if (!typeArgs || typeArgs.length === 0) {
+    // No type arguments - can't generate schema
+    return undefined;
+  }
+
+  // Get the first type argument (T for the output type)
+  const outputTypeNode = typeArgs[0]!;
+  const outputType = checker.getTypeFromTypeNode(outputTypeNode);
+
+  // Get the first argument
+  const args = node.arguments;
+  const firstArg = args[0];
+  if (!firstArg) {
+    return undefined;
+  }
+
+  // If first arg is an object literal (FormatSpec), inject __schema
+  if (ts.isObjectLiteralExpression(firstArg)) {
+    const formatSpecObject = firstArg;
+
+    // Check if __schema is already present
+    const hasSchema = formatSpecObject.properties.some(
+      (prop) =>
+        ts.isPropertyAssignment(prop) &&
+        ts.isIdentifier(prop.name) &&
+        prop.name.text === '__schema'
+    );
+
+    if (hasSchema) {
+      // Already has a schema, don't override
+      return undefined;
+    }
+
+    // Generate the schema from the type
+    let schema;
+    try {
+      schema = typeToToolParameterSchema(outputType, checker);
+    } catch {
+      // If schema generation fails, leave the call unchanged
+      return undefined;
+    }
+
+    // Create the __schema property
+    const schemaProperty = createSchemaProperty(schema, context.factory);
+
+    // Create a new format spec object with __schema added
+    const newProperties = [...formatSpecObject.properties, schemaProperty];
+    const newFormatSpecObject = context.factory.updateObjectLiteralExpression(
+      formatSpecObject,
+      newProperties
+    );
+
+    // Create a new call expression with the updated format spec
+    const newArgs = [newFormatSpecObject, ...args.slice(1)];
+    return context.factory.updateCallExpression(
+      node,
+      node.expression,
+      node.typeArguments,
+      newArgs
+    );
+  }
+
+  // If first arg is not an object literal (e.g., a Zod schema identifier),
+  // leave unchanged - Zod schemas handle their own schema generation
+  return undefined;
 }
 
 /**

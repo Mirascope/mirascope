@@ -3,6 +3,7 @@
  */
 
 import type { Context } from '@/llm/context';
+import type { Format } from '@/llm/formatting';
 import type { Message, UserContent } from '@/llm/messages';
 import { user } from '@/llm/messages';
 import type { Params } from '@/llm/models';
@@ -68,6 +69,7 @@ export abstract class BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: Tools;
+    format?: Format | null;
     params?: Params;
   }): Promise<Response> {
     try {
@@ -86,6 +88,7 @@ export abstract class BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: Tools;
+    format?: Format | null;
     params?: Params;
   }): Promise<Response>;
 
@@ -100,6 +103,7 @@ export abstract class BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: Tools;
+    format?: Format | null;
     params?: Params;
   }): Promise<StreamResponse> {
     let response: StreamResponse;
@@ -144,6 +148,7 @@ export abstract class BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: Tools;
+    format?: Format | null;
     params?: Params;
   }): Promise<StreamResponse>;
 
@@ -160,6 +165,7 @@ export abstract class BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: ContextTools<DepsT>;
+    format?: Format | null;
     params?: Params;
   }): Promise<ContextResponse<DepsT>> {
     try {
@@ -182,6 +188,7 @@ export abstract class BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: ContextTools<DepsT>;
+    format?: Format | null;
     params?: Params;
   }): Promise<ContextResponse<DepsT>>;
 
@@ -198,6 +205,7 @@ export abstract class BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: ContextTools<DepsT>;
+    format?: Format | null;
     params?: Params;
   }): Promise<ContextStreamResponse<DepsT>> {
     let response: ContextStreamResponse<DepsT>;
@@ -228,6 +236,7 @@ export abstract class BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: ContextTools<DepsT>;
+    format?: Format | null;
     params?: Params;
   }): Promise<ContextStreamResponse<DepsT>>;
 
@@ -254,11 +263,13 @@ export abstract class BaseProvider {
     const messages = [...args.response.messages, user(args.content)];
     const tools = (args.response as { toolkit?: { tools: BaseTool[] } }).toolkit
       ?.tools;
+    const format = args.response.format;
     return this.call({
       modelId: args.modelId,
       messages,
       params: args.params,
       tools,
+      format,
     });
   }
 
@@ -283,10 +294,12 @@ export abstract class BaseProvider {
     const messages = [...args.response.messages, user(args.content)];
     const tools = (args.response as { toolkit?: { tools: BaseTool[] } }).toolkit
       ?.tools;
+    const format = args.response.format;
     return this.stream({
       modelId: args.modelId,
       messages,
       tools,
+      format,
       params: args.params,
     });
   }
@@ -316,11 +329,13 @@ export abstract class BaseProvider {
     const tools = (
       args.response as { toolkit?: { tools: AnyContextTool<DepsT>[] } }
     ).toolkit?.tools;
+    const format = args.response.format;
     return this.contextCall({
       ctx: args.ctx,
       modelId: args.modelId,
       messages,
       tools,
+      format,
       params: args.params,
     });
   }
@@ -350,11 +365,13 @@ export abstract class BaseProvider {
     const tools = (
       args.response as { toolkit?: { tools: AnyContextTool<DepsT>[] } }
     ).toolkit?.tools;
+    const format = args.response.format;
     return this.contextStream({
       ctx: args.ctx,
       modelId: args.modelId,
       messages,
       tools,
+      format,
       params: args.params,
     });
   }

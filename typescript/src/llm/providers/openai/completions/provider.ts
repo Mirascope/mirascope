@@ -5,6 +5,7 @@
 import OpenAI from 'openai';
 
 import type { Context } from '@/llm/context';
+import type { Format } from '@/llm/formatting';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { BaseProvider } from '@/llm/providers/base';
@@ -66,6 +67,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
    * @param args.modelId - The OpenAI model ID to use
    * @param args.messages - Array of messages to send
    * @param args.tools - Optional tools to make available to the model
+   * @param args.format - Optional format for structured output
    * @param args.params - Optional additional parameters
    * @returns Response object containing the API response
    */
@@ -73,6 +75,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: Tools;
+    format?: Format | null;
     params?: Params;
   }): Promise<Response> {
     const modelIdTyped = args.modelId as OpenAIModelId;
@@ -98,6 +101,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
       providerModelName: modelName(modelIdTyped, 'completions'),
       params: args.params ?? /* v8 ignore next 1 */ {},
       tools: args.tools,
+      format: args.format,
       inputMessages: args.messages,
       assistantMessage,
       finishReason,
@@ -112,6 +116,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
    * @param args.modelId - The OpenAI model ID to use
    * @param args.messages - Array of messages to send
    * @param args.tools - Optional tools to make available to the model
+   * @param args.format - Optional format for structured output
    * @param args.params - Optional additional parameters
    * @returns StreamResponse object for streaming consumption
    */
@@ -119,6 +124,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: Tools;
+    format?: Format | null;
     params?: Params;
   }): Promise<StreamResponse> {
     const modelIdTyped = args.modelId as OpenAIModelId;
@@ -143,6 +149,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
       providerModelName: modelName(modelIdTyped, 'completions'),
       params: args.params ?? /* v8 ignore next 1 */ {},
       tools: args.tools,
+      format: args.format,
       inputMessages: args.messages,
       chunkIterator,
     });
@@ -160,6 +167,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
    * @param args.modelId - The OpenAI model ID to use
    * @param args.messages - Array of messages to send
    * @param args.tools - Optional tools to make available to the model
+   * @param args.format - Optional format for structured output
    * @param args.params - Optional additional parameters
    * @returns ContextResponse object containing the API response
    */
@@ -168,6 +176,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: ContextTools<DepsT>;
+    format?: Format | null;
     params?: Params;
   }): Promise<ContextResponse<DepsT>> {
     const modelIdTyped = args.modelId as OpenAIModelId;
@@ -193,6 +202,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
       providerModelName: modelName(modelIdTyped, 'completions'),
       params: args.params ?? /* v8 ignore next 1 */ {},
       tools: args.tools,
+      format: args.format,
       inputMessages: args.messages,
       assistantMessage,
       finishReason,
@@ -212,6 +222,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
    * @param args.modelId - The OpenAI model ID to use
    * @param args.messages - Array of messages to send
    * @param args.tools - Optional tools to make available to the model
+   * @param args.format - Optional format for structured output
    * @param args.params - Optional additional parameters
    * @returns ContextStreamResponse object for streaming consumption
    */
@@ -220,6 +231,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: ContextTools<DepsT>;
+    format?: Format | null;
     params?: Params;
   }): Promise<ContextStreamResponse<DepsT>> {
     const modelIdTyped = args.modelId as OpenAIModelId;
@@ -244,6 +256,7 @@ export class OpenAICompletionsProvider extends BaseProvider {
       providerModelName: modelName(modelIdTyped, 'completions'),
       params: args.params ?? /* v8 ignore next 1 */ {},
       tools: args.tools,
+      format: args.format,
       inputMessages: args.messages,
       chunkIterator,
     });

@@ -8,6 +8,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 
 import type { Context } from '@/llm/context';
+import type { Format } from '@/llm/formatting';
 import type { Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import { BaseProvider } from '@/llm/providers/base';
@@ -71,6 +72,7 @@ export class AnthropicBetaProvider extends BaseProvider {
    * @param args.modelId - The Anthropic model ID to use
    * @param args.messages - Array of messages to send
    * @param args.tools - Optional tools to make available to the model
+   * @param args.format - Optional format for structured output
    * @param args.params - Optional additional parameters
    * @returns Response object containing the API response
    */
@@ -78,6 +80,7 @@ export class AnthropicBetaProvider extends BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: Tools;
+    format?: Format | null;
     params?: Params;
   }): Promise<Response> {
     const modelId = args.modelId as AnthropicModelId;
@@ -85,6 +88,7 @@ export class AnthropicBetaProvider extends BaseProvider {
       modelId,
       args.messages,
       args.tools,
+      args.format,
       args.params
     );
 
@@ -106,6 +110,7 @@ export class AnthropicBetaProvider extends BaseProvider {
       modelId,
       providerModelName: modelName(modelId),
       params: args.params ?? /* v8 ignore next 1 */ {},
+      format: args.format ?? null,
       inputMessages: args.messages,
       assistantMessage,
       finishReason,
@@ -120,6 +125,7 @@ export class AnthropicBetaProvider extends BaseProvider {
    * @param args.modelId - The Anthropic model ID to use
    * @param args.messages - Array of messages to send
    * @param args.tools - Optional tools to make available to the model
+   * @param args.format - Optional format for structured output
    * @param args.params - Optional additional parameters
    * @returns StreamResponse object for streaming consumption
    */
@@ -128,6 +134,7 @@ export class AnthropicBetaProvider extends BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: Tools;
+    format?: Format | null;
     params?: Params;
   }): Promise<StreamResponse> {
     const modelId = args.modelId as AnthropicModelId;
@@ -135,6 +142,7 @@ export class AnthropicBetaProvider extends BaseProvider {
       modelId,
       args.messages,
       args.tools,
+      args.format,
       args.params
     );
 
@@ -152,6 +160,7 @@ export class AnthropicBetaProvider extends BaseProvider {
         providerModelName: modelName(modelId),
         params: args.params ?? /* v8 ignore next 1 */ {},
         tools: args.tools,
+        format: args.format ?? null,
         inputMessages: args.messages,
         chunkIterator,
       })
@@ -171,6 +180,7 @@ export class AnthropicBetaProvider extends BaseProvider {
    * @param args.modelId - The Anthropic model ID to use
    * @param args.messages - Array of messages to send
    * @param args.tools - Optional tools to make available to the model
+   * @param args.format - Optional format for structured output
    * @param args.params - Optional additional parameters
    * @returns ContextResponse object containing the API response
    */
@@ -180,6 +190,7 @@ export class AnthropicBetaProvider extends BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: ContextTools<DepsT>;
+    format?: Format | null;
     params?: Params;
   }): Promise<ContextResponse<DepsT>> {
     const modelId = args.modelId as AnthropicModelId;
@@ -187,6 +198,7 @@ export class AnthropicBetaProvider extends BaseProvider {
       modelId,
       args.messages,
       args.tools,
+      args.format,
       args.params
     );
 
@@ -208,6 +220,7 @@ export class AnthropicBetaProvider extends BaseProvider {
       modelId,
       providerModelName: modelName(modelId),
       params: args.params ?? /* v8 ignore next 1 */ {},
+      format: args.format ?? null,
       inputMessages: args.messages,
       assistantMessage,
       finishReason,
@@ -228,6 +241,7 @@ export class AnthropicBetaProvider extends BaseProvider {
    * @param args.modelId - The Anthropic model ID to use
    * @param args.messages - Array of messages to send
    * @param args.tools - Optional tools to make available to the model
+   * @param args.format - Optional format for structured output
    * @param args.params - Optional additional parameters
    * @returns ContextStreamResponse object for streaming consumption
    */
@@ -237,6 +251,7 @@ export class AnthropicBetaProvider extends BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: ContextTools<DepsT>;
+    format?: Format | null;
     params?: Params;
   }): Promise<ContextStreamResponse<DepsT>> {
     const modelId = args.modelId as AnthropicModelId;
@@ -244,6 +259,7 @@ export class AnthropicBetaProvider extends BaseProvider {
       modelId,
       args.messages,
       args.tools,
+      args.format,
       args.params
     );
 
@@ -261,6 +277,7 @@ export class AnthropicBetaProvider extends BaseProvider {
         providerModelName: modelName(modelId),
         params: args.params ?? /* v8 ignore next 1 */ {},
         tools: args.tools,
+        format: args.format ?? null,
         inputMessages: args.messages,
         chunkIterator,
       })

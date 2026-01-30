@@ -31,13 +31,22 @@ export interface ResponseInit extends Omit<BaseResponseInit, 'toolkit'> {
  * This is the primary response class for non-streaming LLM calls. Since TypeScript
  * IO is always async, this single class handles all async response scenarios.
  *
+ * @template F - The type of the formatted output when using structured outputs.
+ *
  * @example
  * ```typescript
  * const response = await model.call([user("Hello!")]);
  * console.log(response.text());
  * ```
+ *
+ * @example With structured output
+ * ```typescript
+ * interface Book { title: string; author: string; }
+ * const response = await model.call<Book>('Recommend a book', { format: BookSchema });
+ * const book = response.parse(); // Type: Book | DeepPartial<Book> | null
+ * ```
  */
-export class Response extends BaseResponse {
+export class Response<F = unknown> extends BaseResponse<F> {
   /**
    * Override base toolkit with correct type for execute() support.
    */
@@ -92,8 +101,8 @@ export class Response extends BaseResponse {
    * console.log(followUp.text());
    * ```
    */
-  async resume(content: UserContent): Promise<Response> {
+  async resume(content: UserContent): Promise<Response<F>> {
     const model = await this.model;
-    return model.resume(this, content);
+    return model.resume(this, content) as Promise<Response<F>>;
   }
 }

@@ -8,6 +8,8 @@ import type {
   Thought,
   ToolCall,
 } from '@/llm/content';
+import type { Format } from '@/llm/formatting';
+import { FORMAT_TOOL_NAME } from '@/llm/formatting';
 import type { AssistantMessage, Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import type { ModelId, ProviderId } from '@/llm/providers';
@@ -51,7 +53,10 @@ export interface BaseResponseInit {
    */
   toolkit: BaseToolkit;
 
-  // Note: format will go here when implemented
+  /**
+   * The Format describing the structured response format, if any.
+   */
+  format?: Format | null;
 
   /**
    * The input messages (before the assistant response).
@@ -79,8 +84,10 @@ export interface BaseResponseInit {
  *
  * This class processes the assistant message content, organizing it by type
  * (text, tool calls, thoughts) for easy access.
+ *
+ * @template F - The type of the formatted output when using structured outputs.
  */
-export class BaseResponse extends RootResponse {
+export class BaseResponse<F = unknown> extends RootResponse<F> {
   readonly raw: unknown;
   readonly providerId: ProviderId;
   readonly modelId: ModelId;
@@ -93,6 +100,7 @@ export class BaseResponse extends RootResponse {
   readonly thoughts: readonly Thought[];
   readonly finishReason: FinishReason | null;
   readonly usage: Usage | null;
+  readonly format: Format | null;
   readonly toolkit: BaseToolkit;
 
   constructor(init: BaseResponseInit) {
@@ -105,26 +113,34 @@ export class BaseResponse extends RootResponse {
     this.params = init.params;
     this.finishReason = init.finishReason;
     this.usage = init.usage;
+    this.format = init.format ?? null;
 
     // Process content from assistant message, organizing by type
+    // FORMAT_TOOL calls are transformed to text content for parse() access
     const texts: Text[] = [];
     const toolCalls: ToolCall[] = [];
     const thoughts: Thought[] = [];
     const content: AssistantContentPart[] = [];
 
     for (const part of init.assistantMessage.content) {
-      content.push(part);
-
       if (part.type === 'text') {
         texts.push(part);
+        content.push(part);
         /* v8 ignore start - tool_call and thought content not yet implemented */
       } else if (part.type === 'tool_call') {
-        // Note: FORMAT_TOOL transformation is not implemented yet as it requires
-        // Format infrastructure. When implemented, tool calls starting with the
-        // format tool name should be converted to Text parts.
-        toolCalls.push(part);
+        // Transform FORMAT_TOOL calls to text content
+        // The tool call args contain the JSON structured output
+        if (part.name.startsWith(FORMAT_TOOL_NAME)) {
+          const textPart: Text = { type: 'text', text: part.args };
+          texts.push(textPart);
+          content.push(textPart);
+        } else {
+          toolCalls.push(part);
+          content.push(part);
+        }
       } else if (part.type === 'thought') {
         thoughts.push(part);
+        content.push(part);
       }
       /* v8 ignore stop */
     }

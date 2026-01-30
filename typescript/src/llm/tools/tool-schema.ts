@@ -39,6 +39,7 @@ export interface JsonSchemaProperty {
  */
 export interface ToolParameterSchema {
   readonly type: 'object';
+  readonly title?: string;
   readonly properties: Record<string, JsonSchemaProperty>;
   readonly required: readonly string[];
   readonly additionalProperties: false;

@@ -26,11 +26,17 @@ export type FieldDefinition = string | ZodLike;
  *
  * This allows accepting Zod schemas without requiring Zod as a dependency.
  * We detect Zod schemas at runtime by checking for these properties.
+ *
+ * Compatible with both Zod 3 (description in _def.description) and
+ * Zod 4 (description may be at schema.description or _def.description).
  */
 export interface ZodLike {
-  readonly _def: {
-    readonly description?: string;
-  };
+  /** Internal Zod definition - structure varies by version */
+  // Using 'object' instead of Record<string, unknown> for Zod 4 compatibility
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  readonly _def: any;
+  /** Description may be at top level in Zod 4 */
+  readonly description?: string;
   safeParse(data: unknown): {
     success: boolean;
     data?: unknown;

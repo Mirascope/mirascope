@@ -28,13 +28,14 @@ export type { StreamResponseInit } from '@/llm/responses/stream-response';
 export { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 export type { ContextStreamResponseInit as ContextStreamResponseInit } from '@/llm/responses/context-stream-response';
 
-// Stream classes for substream interface
 export {
   TextStream,
   ThoughtStream,
   ToolCallStream,
 } from '@/llm/responses/streams';
 export type { Stream } from '@/llm/responses/streams';
+
+export { extractSerializedJson, parsePartial } from '@/llm/responses/utils';
 
 // Streaming chunk types
 export {

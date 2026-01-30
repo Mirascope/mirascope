@@ -40,7 +40,9 @@ function getFieldDescription(field: FieldDefinition): string | undefined {
     return field;
   }
   if (isZodLike(field)) {
-    return field._def.description;
+    // Zod 4: description at top level, Zod 3: in _def.description
+    const def = field._def as { description?: string };
+    return field.description ?? def.description;
   }
   return undefined;
 }
