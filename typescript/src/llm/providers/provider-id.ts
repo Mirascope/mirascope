@@ -9,6 +9,7 @@ export const KNOWN_PROVIDER_IDS = [
   'anthropic',
   'google',
   'mirascope',
+  'ollama',
   'openai',
 ] as const;
 

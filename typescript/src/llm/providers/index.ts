@@ -21,6 +21,9 @@ export { GoogleProvider } from '@/llm/providers/google';
 // Mirascope provider
 export { MirascopeProvider } from '@/llm/providers/mirascope';
 
+// Ollama provider
+export { OllamaProvider } from '@/llm/providers/ollama';
+
 // OpenAI provider
 export {
   OpenAIProvider,
