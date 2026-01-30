@@ -21,6 +21,11 @@ def load_api_keys() -> None:
     load_dotenv(override=True)
     # Set dummy keys if not present so that tests pass in CI.
     os.environ.setdefault("ANTHROPIC_API_KEY", "dummy-anthropic-key")
+    os.environ.setdefault("AZURE_ANTHROPIC_API_KEY", "dummy-azure-anthropic-key")
+    os.environ.setdefault(
+        "AZURE_AI_ANTHROPIC_ENDPOINT",
+        "https://dummy.services.ai.azure.com/anthropic/",
+    )
     os.environ.setdefault("AZURE_OPENAI_API_KEY", "dummy-azure-openai-key")
     os.environ.setdefault("AZURE_OPENAI_ENDPOINT", "https://dummy.openai.azure.com/")
     os.environ.setdefault("GOOGLE_API_KEY", "dummy-google-key")

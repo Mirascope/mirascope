@@ -5,6 +5,7 @@ import os
 import pytest
 
 from mirascope import llm
+from mirascope.llm.providers.azure import AzureProvider
 from tests.utils import (
     Snapshot,
     response_snapshot_dict,
@@ -215,4 +216,50 @@ async def test_azure_openai_async_call_and_stream(
         snap["async_context_stream"] = stream_response_snapshot_dict(stream_ctx)
         assert "4242" in stream_ctx.pretty(), (
             f"Expected '4242' in response: {stream_ctx.pretty()}"
+        )
+
+
+AZURE_ANTHROPIC_MODEL_NAME = (
+    "azureml://registries/azureml-anthropic/models/claude-haiku-4-5/versions/20251001"
+)
+AZURE_ANTHROPIC_MODEL_IDS = [f"azure/{AZURE_ANTHROPIC_MODEL_NAME}"]
+
+
+@pytest.mark.skipif(
+    not os.getenv("AZURE_ANTHROPIC_DEPLOYED"),
+    reason="Azure Anthropic not yet deployed - set AZURE_ANTHROPIC_DEPLOYED=1 to enable",
+)
+@pytest.mark.parametrize("model_id", AZURE_ANTHROPIC_MODEL_IDS)
+@pytest.mark.vcr
+def test_azure_anthropic_provider(
+    model_id: llm.ModelId,
+    snapshot: Snapshot,
+) -> None:
+    """Test that Azure Anthropic provider is wired for Foundry models."""
+
+    @llm.call(model_id)
+    def add_numbers(a: int, b: int) -> str:
+        return f"What is {a} + {b}?"
+
+    provider = AzureProvider(
+        api_key=os.getenv("AZURE_OPENAI_API_KEY", "test"),
+        base_url=os.getenv(
+            "AZURE_OPENAI_ENDPOINT",
+            "https://dummy.openai.azure.com/",
+        ),
+        anthropic_api_key=os.getenv("AZURE_ANTHROPIC_API_KEY", "test"),
+        anthropic_base_url=os.getenv(
+            "AZURE_AI_ANTHROPIC_ENDPOINT",
+            "https://dummy.services.ai.azure.com/anthropic/",
+        ),
+    )
+    llm.register_provider(provider, "azure/")
+
+    with snapshot_test(snapshot) as snap:
+        response = add_numbers(4200, 42)
+        assert response.provider_id == "azure"
+        assert response.provider_model_name == AZURE_ANTHROPIC_MODEL_NAME
+        snap.set_response(response)
+        assert "4242" in response.pretty(), (
+            f"Expected '4242' in response: {response.pretty()}"
         )

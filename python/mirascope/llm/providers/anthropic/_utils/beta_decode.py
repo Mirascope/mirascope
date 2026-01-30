@@ -80,6 +80,8 @@ def beta_decode_response(
     model_id: str,
     *,
     include_thoughts: bool,
+    provider_id: str = "anthropic",
+    provider_model_name: str | None = None,
 ) -> tuple[AssistantMessage, FinishReason | None, Usage]:
     """Convert Beta message to mirascope AssistantMessage and usage."""
     content = [
@@ -91,11 +93,12 @@ def beta_decode_response(
     ]
     if not include_thoughts:
         content = [part for part in content if part.type != "thought"]
+    resolved_model_name = provider_model_name or model_name(model_id)
     assistant_message = AssistantMessage(
         content=content,
-        provider_id="anthropic",
+        provider_id=provider_id,
         model_id=model_id,
-        provider_model_name=model_name(model_id),
+        provider_model_name=resolved_model_name,
         raw_message={
             "role": response.role,
             "content": [

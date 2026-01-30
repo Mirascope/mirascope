@@ -177,6 +177,8 @@ def beta_encode_request(
     tools: BaseToolkit[AnyToolSchema],
     format: FormatSpec[FormattableT] | None,
     params: "Params",
+    model_name_override: str | None = None,
+    provider_id: str = "anthropic",
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, BetaParseKwargs]:
     """Prepares a request for the Anthropic beta.messages.parse method."""
 
@@ -184,9 +186,10 @@ def beta_encode_request(
     encode_thoughts_as_text = processed.pop("encode_thoughts_as_text", False)
     max_tokens = processed.pop("max_tokens", DEFAULT_MAX_TOKENS)
 
+    resolved_model_name = model_name_override or model_name(model_id)
     kwargs: BetaParseKwargs = BetaParseKwargs(
         {
-            "model": model_name(model_id),
+            "model": resolved_model_name,
             "max_tokens": max_tokens,
             "betas": ["structured-outputs-2025-11-13"],
             **processed,
@@ -194,13 +197,13 @@ def beta_encode_request(
     )
 
     model_supports_strict = (
-        model_name(model_id) not in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
+        resolved_model_name not in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
     )
     # Check for strict tools on models that don't support them
     if _base_utils.has_strict_tools(tools.tools) and not model_supports_strict:
         raise FeatureNotSupportedError(
             feature="strict tools",
-            provider_id="anthropic",
+            provider_id=provider_id,
             model_id=model_id,
             message="Strict tools require a model that supports structured outputs. "
             "Use a newer model like claude-sonnet-4-5 or set strict=False on your tools.",
@@ -216,10 +219,10 @@ def beta_encode_request(
 
     if format is not None:
         if format.mode == "strict":
-            if model_name(model_id) in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS:
+            if resolved_model_name in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS:
                 raise FeatureNotSupportedError(
                     feature=f"formatting_mode:{format.mode}",
-                    provider_id="anthropic",
+                    provider_id=provider_id,
                     model_id=model_id,
                 )
             else:
