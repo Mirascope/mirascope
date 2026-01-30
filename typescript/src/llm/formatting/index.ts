@@ -26,7 +26,6 @@ export type { DeepPartial } from '@/llm/formatting/partial';
 export type {
   OutputParser,
   OutputParserArgs,
-  AnyResponse,
 } from '@/llm/formatting/output-parser';
 export {
   defineOutputParser,

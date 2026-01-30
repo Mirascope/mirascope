@@ -8,7 +8,7 @@ import {
   defineOutputParser,
   isOutputParser,
 } from './output-parser';
-import type { AnyResponse } from './output-parser';
+import type { AnyResponse } from '@/llm/responses';
 
 // Mock response for testing
 const createMockResponse = (text: string): AnyResponse =>
