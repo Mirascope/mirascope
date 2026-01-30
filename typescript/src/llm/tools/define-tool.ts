@@ -2,7 +2,11 @@
  * Tool definition functions for creating LLM-callable tools.
  *
  * Provides `defineTool()` and `defineContextTool()` for creating tools
- * with type-safe argument inference and optional Zod validation.
+ * with type-safe argument inference.
+ *
+ * Two patterns are supported:
+ * 1. **Zod-native**: Use `validator` option with a Zod schema (no transformer needed)
+ * 2. **Transformer-based**: Use generic type parameter (requires transformer for schema injection)
  */
 
 import type { ToolCall } from "@/llm/content/tool-call";
@@ -12,11 +16,12 @@ import type { Jsonable } from "@/llm/types/jsonable";
 
 import { ToolOutput } from "@/llm/content/tool-output";
 import { ToolExecutionError } from "@/llm/exceptions";
+import { extractSchemaFromZod } from "@/llm/formatting";
 import {
   TOOL_TYPE,
   CONTEXT_TOOL_TYPE,
-  type FieldDefinition,
   type ZodLike,
+  type InferZod,
   type Tool,
   type ContextTool,
 } from "@/llm/tools/tools";
@@ -33,23 +38,81 @@ export function isZodLike(value: unknown): value is ZodLike {
   );
 }
 
+// =============================================================================
+// Zod-Native Tool Args (No Transformer Required)
+// =============================================================================
+
 /**
- * Get description from a field definition.
+ * Arguments for defining a tool using a Zod schema.
+ *
+ * This pattern does NOT require the compile-time transformer.
+ * The schema is extracted from the Zod validator at runtime.
+ *
+ * @template Z - The Zod schema type.
  */
-function getFieldDescription(field: FieldDefinition): string | undefined {
-  if (typeof field === "string") {
-    return field;
-  }
-  if (isZodLike(field)) {
-    // Zod 4: description at top level, Zod 3: in _def.description
-    const def = field._def as { description?: string };
-    return field.description ?? def.description;
-  }
-  return undefined;
+export interface ZodToolArgs<Z extends ZodLike> {
+  /** The name of the tool. */
+  name: string;
+
+  /** A description of what the tool does. */
+  description: string;
+
+  /**
+   * Whether to use strict mode for the tool schema.
+   * When true, providers that support it will enforce strict schema validation.
+   */
+  strict?: boolean;
+
+  /**
+   * Zod schema for both schema generation AND runtime validation.
+   * Use `.describe()` on fields to add descriptions.
+   */
+  validator: Z;
+
+  /** The tool implementation function. */
+  tool: (args: InferZod<Z>) => Jsonable | Promise<Jsonable>;
 }
 
 /**
- * Arguments for defining a tool.
+ * Arguments for defining a context tool using a Zod schema.
+ *
+ * This pattern does NOT require the compile-time transformer.
+ *
+ * @template Z - The Zod schema type.
+ * @template DepsT - The type of dependencies in the context.
+ */
+export interface ZodContextToolArgs<Z extends ZodLike, DepsT = unknown> {
+  /** The name of the tool. */
+  name: string;
+
+  /** A description of what the tool does. */
+  description: string;
+
+  /**
+   * Whether to use strict mode for the tool schema.
+   * When true, providers that support it will enforce strict schema validation.
+   */
+  strict?: boolean;
+
+  /**
+   * Zod schema for both schema generation AND runtime validation.
+   * Use `.describe()` on fields to add descriptions.
+   */
+  validator: Z;
+
+  /** The tool implementation function with context. */
+  tool: (
+    ctx: Context<DepsT>,
+    args: InferZod<Z>,
+  ) => Jsonable | Promise<Jsonable>;
+}
+
+// =============================================================================
+// Transformer-Based Tool Args
+// =============================================================================
+
+/**
+ * Arguments for defining a tool using the compile-time transformer.
  *
  * @template T - The type of arguments the tool accepts.
  */
@@ -66,15 +129,6 @@ export interface ToolArgs<T extends Record<string, unknown>> {
    */
   strict?: boolean;
 
-  /**
-   * Optional field definitions providing descriptions or Zod validators.
-   *
-   * Keys should match the fields in T. Values can be:
-   * - A string description for the field
-   * - A Zod schema for validation + description
-   */
-  fieldDefinitions?: Partial<Record<keyof T, FieldDefinition>>;
-
   /** The tool implementation function. */
   tool: (args: T) => Jsonable | Promise<Jsonable>;
 
@@ -86,7 +140,7 @@ export interface ToolArgs<T extends Record<string, unknown>> {
 }
 
 /**
- * Arguments for defining a context tool with dependency injection.
+ * Arguments for defining a context tool using the compile-time transformer.
  *
  * @template T - The type of arguments the tool accepts.
  * @template DepsT - The type of dependencies in the context.
@@ -107,15 +161,6 @@ export interface ContextToolArgs<
    */
   strict?: boolean;
 
-  /**
-   * Optional field definitions providing descriptions or Zod validators.
-   *
-   * Keys should match the fields in T. Values can be:
-   * - A string description for the field
-   * - A Zod schema for validation + description
-   */
-  fieldDefinitions?: Partial<Record<keyof T, FieldDefinition>>;
-
   /** The tool implementation function with context. */
   tool: (ctx: Context<DepsT>, args: T) => Jsonable | Promise<Jsonable>;
 
@@ -126,129 +171,173 @@ export interface ContextToolArgs<
   __schema?: ToolParameterSchema;
 }
 
+// =============================================================================
+// Type Guards
+// =============================================================================
+
 /**
- * Validate arguments against Zod field definitions.
+ * Check if args have a validator (Zod-native path).
+ */
+function hasValidator<Z extends ZodLike>(
+  args: ZodToolArgs<Z> | ToolArgs<Record<string, unknown>>,
+): args is ZodToolArgs<Z> {
+  return "validator" in args && isZodLike(args.validator);
+}
+
+/**
+ * Check if context tool args have a validator (Zod-native path).
+ */
+function hasContextValidator<Z extends ZodLike, DepsT>(
+  args:
+    | ZodContextToolArgs<Z, DepsT>
+    | ContextToolArgs<Record<string, unknown>, DepsT>,
+): args is ZodContextToolArgs<Z, DepsT> {
+  return "validator" in args && isZodLike(args.validator);
+}
+
+// =============================================================================
+// Validation Helper
+// =============================================================================
+
+/**
+ * Validate arguments against a Zod validator.
  *
  * @param args - The arguments to validate.
- * @param fieldDefinitions - The field definitions with potential Zod schemas.
+ * @param validator - The Zod validator.
  * @returns The validated arguments (potentially transformed by Zod).
  * @throws Error if validation fails.
  */
-function validateArgs<T extends Record<string, unknown>>(
-  args: T,
-  fieldDefinitions: Partial<Record<keyof T, FieldDefinition>> | undefined,
-): T {
-  if (!fieldDefinitions) {
-    return args;
+function validateWithZod<T>(args: T, validator: ZodLike): T {
+  const result = validator.safeParse(args);
+  if (!result.success) {
+    throw new Error(`Validation failed: ${JSON.stringify(result.error)}`);
   }
-
-  const validated = { ...args };
-
-  for (const [key, definition] of Object.entries(fieldDefinitions)) {
-    if (isZodLike(definition)) {
-      const result = definition.safeParse(args[key as keyof T]);
-      if (!result.success) {
-        throw new Error(
-          `Validation failed for field '${key}': ${JSON.stringify(result.error)}`,
-        );
-      }
-      validated[key as keyof T] = result.data as T[keyof T];
-    }
-  }
-
-  return validated;
+  return result.data as T;
 }
 
+// =============================================================================
+// defineTool Function
+// =============================================================================
+
 /**
- * Merge field definitions into the schema properties.
+ * Define a tool using a Zod schema (no transformer needed).
  *
- * @param schema - The base schema from __schema.
- * @param fieldDefinitions - The field definitions with descriptions.
- * @returns A new schema with descriptions merged in.
+ * @template Z - The Zod schema type.
+ * @param args - The tool definition arguments with validator.
+ * @returns A Tool instance with args inferred from the Zod schema.
+ *
+ * @example
+ * ```typescript
+ * import { z } from 'zod';
+ *
+ * const getWeather = defineTool({
+ *   name: 'get_weather',
+ *   description: 'Get weather for a city',
+ *   validator: z.object({
+ *     city: z.string().describe('The city name'),
+ *   }),
+ *   tool: ({ city }) => ({ temp: 72, city }),
+ * });
+ * ```
  */
-function mergeDescriptions(
-  schema: ToolParameterSchema,
-  fieldDefinitions: Partial<Record<string, FieldDefinition>> | undefined,
-): ToolParameterSchema {
-  if (!fieldDefinitions) {
-    return schema;
-  }
-
-  const newProperties = { ...schema.properties };
-
-  for (const [key, definition] of Object.entries(fieldDefinitions)) {
-    if (key in newProperties && definition !== undefined) {
-      const description = getFieldDescription(definition);
-      if (description !== undefined) {
-        newProperties[key] = {
-          ...newProperties[key],
-          description,
-        };
-      }
-    }
-  }
-
-  return {
-    ...schema,
-    properties: newProperties,
-  };
-}
+export function defineTool<Z extends ZodLike>(
+  args: ZodToolArgs<Z>,
+): Tool<InferZod<Z>>;
 
 /**
- * Define a tool that can be called by an LLM.
+ * Define a tool using the compile-time transformer.
  *
  * @template T - The type of arguments the tool accepts.
  * @param args - The tool definition arguments.
  * @returns A Tool instance.
  *
- * @example Basic usage
+ * @example
  * ```typescript
- * const getWeather = defineTool<{ city: string }>({
+ * interface WeatherArgs {
+ *   // JSDoc comments become field descriptions via transformer
+ *   city: string;
+ * }
+ *
+ * const getWeather = defineTool<WeatherArgs>({
  *   name: 'get_weather',
  *   description: 'Get weather for a city',
- *   fieldDefinitions: {
- *     city: 'The city name',
- *   },
- *   tool: ({ city }) => ({ temp: 72, city }),
- * });
- * ```
- *
- * @example With Zod validation
- * ```typescript
- * import { z } from 'zod';
- *
- * const getWeather = defineTool<{ city: string }>({
- *   name: 'get_weather',
- *   description: 'Get weather for a city',
- *   fieldDefinitions: {
- *     city: z.string().min(1).describe('The city name'),
- *   },
  *   tool: ({ city }) => ({ temp: 72, city }),
  * });
  * ```
  */
 export function defineTool<T extends Record<string, unknown>>(
   args: ToolArgs<T>,
-): Tool<T> {
-  const { name, description, fieldDefinitions, tool, strict, __schema } = args;
+): Tool<T>;
 
-  // Schema is required - either from transformer or explicit
+/**
+ * Implementation of defineTool.
+ */
+export function defineTool<
+  T extends Record<string, unknown>,
+  Z extends ZodLike = ZodLike,
+>(args: ZodToolArgs<Z> | ToolArgs<T>): Tool<T> | Tool<InferZod<Z>> {
+  const { name, description, strict } = args;
+
+  // Determine which path to use
+  if (
+    hasValidator<Z>(args as ZodToolArgs<Z> | ToolArgs<Record<string, unknown>>)
+  ) {
+    // Zod-native path
+    const { validator, tool } = args as ZodToolArgs<Z>;
+    const parameters = extractSchemaFromZod(validator);
+
+    const callable = async (toolArgs: InferZod<Z>): Promise<Jsonable> => {
+      const validatedArgs = validateWithZod(toolArgs, validator);
+      const result = tool(validatedArgs);
+      return result instanceof Promise ? result : Promise.resolve(result);
+    };
+
+    const execute = async (
+      toolCall: ToolCall,
+    ): Promise<ToolOutput<Jsonable>> => {
+      try {
+        const parsedArgs = JSON.parse(toolCall.args) as InferZod<Z>;
+        const result = await callable(parsedArgs);
+        return ToolOutput.success(toolCall.id, name, result);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        return ToolOutput.failure(
+          toolCall.id,
+          name,
+          new ToolExecutionError(err),
+        );
+      }
+    };
+
+    Object.defineProperty(callable, "name", { value: name, writable: false });
+    return Object.assign(callable, {
+      __toolType: TOOL_TYPE,
+      description,
+      parameters,
+      strict,
+      execute,
+      validator,
+    }) as Tool<InferZod<Z>>;
+  }
+
+  // Transformer-based path
+  const { tool, __schema } = args as ToolArgs<T>;
+
+  // Schema is required from transformer
   // Coverage ignored: When using the Mirascope transformer, __schema is always
   // injected at compile time. This error path is defensive for non-transformed usage.
   /* v8 ignore start */
   if (!__schema) {
     throw new Error(
       `Tool '${name}' is missing __schema. ` +
-        "Either use the Mirascope TypeScript transformer, or provide __schema explicitly.",
+        "Either use the Mirascope TypeScript transformer, " +
+        "or use the Zod-native pattern with a 'validator' option.",
     );
   }
   /* v8 ignore end */
 
-  const parameters = mergeDescriptions(__schema, fieldDefinitions);
-
   const callable = async (toolArgs: T): Promise<Jsonable> => {
-    const validatedArgs = validateArgs(toolArgs, fieldDefinitions);
-    const result = tool(validatedArgs);
+    const result = tool(toolArgs);
     return result instanceof Promise ? result : Promise.resolve(result);
   };
 
@@ -263,20 +352,49 @@ export function defineTool<T extends Record<string, unknown>>(
     }
   };
 
-  // Note: We need to use defineProperty for 'name' since Function.name is read-only
   Object.defineProperty(callable, "name", { value: name, writable: false });
   return Object.assign(callable, {
     __toolType: TOOL_TYPE,
     description,
-    parameters,
+    parameters: __schema,
     strict,
     execute,
-    fieldDefinitions,
+    validator: undefined,
   }) as Tool<T>;
 }
 
+// =============================================================================
+// defineContextTool Function
+// =============================================================================
+
 /**
- * Define a context tool with dependency injection.
+ * Define a context tool using a Zod schema (no transformer needed).
+ *
+ * @template Z - The Zod schema type.
+ * @template DepsT - The type of dependencies in the context.
+ * @param args - The tool definition arguments with validator.
+ * @returns A ContextTool instance with args inferred from the Zod schema.
+ *
+ * @example
+ * ```typescript
+ * import { z } from 'zod';
+ *
+ * const searchDatabase = defineContextTool({
+ *   name: 'search_database',
+ *   description: 'Search the database',
+ *   validator: z.object({
+ *     query: z.string().describe('The search query'),
+ *   }),
+ *   tool: (ctx, { query }) => ctx.deps.db.search(query),
+ * });
+ * ```
+ */
+export function defineContextTool<Z extends ZodLike, DepsT = unknown>(
+  args: ZodContextToolArgs<Z, DepsT>,
+): ContextTool<InferZod<Z>, DepsT>;
+
+/**
+ * Define a context tool using the compile-time transformer.
  *
  * @template T - The type of arguments the tool accepts.
  * @template DepsT - The type of dependencies in the context.
@@ -289,12 +407,13 @@ export function defineTool<T extends Record<string, unknown>>(
  *   db: Database;
  * }
  *
- * const searchDatabase = defineContextTool<{ query: string }, MyDeps>({
+ * interface SearchArgs {
+ *   query: string;
+ * }
+ *
+ * const searchDatabase = defineContextTool<SearchArgs, MyDeps>({
  *   name: 'search_database',
  *   description: 'Search the database',
- *   fieldDefinitions: {
- *     query: 'The search query',
- *   },
  *   tool: (ctx, { query }) => ctx.deps.db.search(query),
  * });
  * ```
@@ -302,29 +421,91 @@ export function defineTool<T extends Record<string, unknown>>(
 export function defineContextTool<
   T extends Record<string, unknown>,
   DepsT = unknown,
->(args: ContextToolArgs<T, DepsT>): ContextTool<T, DepsT> {
-  const { name, description, fieldDefinitions, tool, strict, __schema } = args;
+>(args: ContextToolArgs<T, DepsT>): ContextTool<T, DepsT>;
 
-  // Schema is required - either from transformer or explicit
+/**
+ * Implementation of defineContextTool.
+ */
+export function defineContextTool<
+  T extends Record<string, unknown>,
+  DepsT = unknown,
+  Z extends ZodLike = ZodLike,
+>(
+  args: ZodContextToolArgs<Z, DepsT> | ContextToolArgs<T, DepsT>,
+): ContextTool<T, DepsT> | ContextTool<InferZod<Z>, DepsT> {
+  const { name, description, strict } = args;
+
+  // Determine which path to use
+  if (
+    hasContextValidator<Z, DepsT>(
+      args as
+        | ZodContextToolArgs<Z, DepsT>
+        | ContextToolArgs<Record<string, unknown>, DepsT>,
+    )
+  ) {
+    // Zod-native path
+    const { validator, tool } = args as ZodContextToolArgs<Z, DepsT>;
+    const parameters = extractSchemaFromZod(validator);
+
+    const callable = async (
+      ctx: Context<DepsT>,
+      toolArgs: InferZod<Z>,
+    ): Promise<Jsonable> => {
+      const validatedArgs = validateWithZod(toolArgs, validator);
+      const result = tool(ctx, validatedArgs);
+      return result instanceof Promise ? result : Promise.resolve(result);
+    };
+
+    const execute = async (
+      ctx: Context<DepsT>,
+      toolCall: ToolCall,
+    ): Promise<ToolOutput<Jsonable>> => {
+      try {
+        const parsedArgs = JSON.parse(toolCall.args) as InferZod<Z>;
+        const result = await callable(ctx, parsedArgs);
+        return ToolOutput.success(toolCall.id, name, result);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        return ToolOutput.failure(
+          toolCall.id,
+          name,
+          new ToolExecutionError(err),
+        );
+      }
+    };
+
+    Object.defineProperty(callable, "name", { value: name, writable: false });
+    return Object.assign(callable, {
+      __toolType: CONTEXT_TOOL_TYPE,
+      description,
+      parameters,
+      strict,
+      execute,
+      validator,
+    }) as ContextTool<InferZod<Z>, DepsT>;
+  }
+
+  // Transformer-based path
+  const { tool, __schema } = args as ContextToolArgs<T, DepsT>;
+
+  // Schema is required from transformer
   // Coverage ignored: When using the Mirascope transformer, __schema is always
   // injected at compile time. This error path is defensive for non-transformed usage.
   /* v8 ignore start */
   if (!__schema) {
     throw new Error(
       `Tool '${name}' is missing __schema. ` +
-        "Either use the Mirascope TypeScript transformer, or provide __schema explicitly.",
+        "Either use the Mirascope TypeScript transformer, " +
+        "or use the Zod-native pattern with a 'validator' option.",
     );
   }
   /* v8 ignore end */
-
-  const parameters = mergeDescriptions(__schema, fieldDefinitions);
 
   const callable = async (
     ctx: Context<DepsT>,
     toolArgs: T,
   ): Promise<Jsonable> => {
-    const validatedArgs = validateArgs(toolArgs, fieldDefinitions);
-    const result = tool(ctx, validatedArgs);
+    const result = tool(ctx, toolArgs);
     return result instanceof Promise ? result : Promise.resolve(result);
   };
 
@@ -342,14 +523,13 @@ export function defineContextTool<
     }
   };
 
-  // Note: We need to use defineProperty for 'name' since Function.name is read-only
   Object.defineProperty(callable, "name", { value: name, writable: false });
   return Object.assign(callable, {
     __toolType: CONTEXT_TOOL_TYPE,
     description,
-    parameters,
+    parameters: __schema,
     strict,
     execute,
-    fieldDefinitions,
+    validator: undefined,
   }) as ContextTool<T, DepsT>;
 }

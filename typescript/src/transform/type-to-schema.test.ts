@@ -385,3 +385,91 @@ describe("typeToToolParameterSchema", () => {
     );
   });
 });
+
+describe("JSDoc extraction", () => {
+  it("extracts JSDoc comments as property descriptions", () => {
+    const { type, checker } = getTypeFromSource(`
+      type TestType = {
+        /** The city to get weather for */
+        city: string;
+        /** Temperature units */
+        units: string;
+      };
+    `);
+    const ctx = createConversionContext(checker);
+    const schema = typeToJsonSchema(type, ctx);
+
+    expect(schema.properties?.city?.description).toBe(
+      "The city to get weather for",
+    );
+    expect(schema.properties?.units?.description).toBe("Temperature units");
+  });
+
+  it("extracts multi-line JSDoc comments", () => {
+    const { type, checker } = getTypeFromSource(`
+      type TestType = {
+        /**
+         * The search query to execute.
+         * Supports full-text search syntax.
+         */
+        query: string;
+      };
+    `);
+    const ctx = createConversionContext(checker);
+    const schema = typeToJsonSchema(type, ctx);
+
+    // Multi-line JSDoc gets combined
+    expect(schema.properties?.query?.description).toContain("search query");
+  });
+
+  it("handles properties without JSDoc comments", () => {
+    const { type, checker } = getTypeFromSource(`
+      type TestType = {
+        /** Has a description */
+        documented: string;
+        noDoc: number;
+      };
+    `);
+    const ctx = createConversionContext(checker);
+    const schema = typeToJsonSchema(type, ctx);
+
+    expect(schema.properties?.documented?.description).toBe(
+      "Has a description",
+    );
+    expect(schema.properties?.noDoc?.description).toBeUndefined();
+  });
+
+  it("extracts JSDoc from nested objects", () => {
+    const { type, checker } = getTypeFromSource(`
+      type TestType = {
+        /** The user object */
+        user: {
+          /** The user's name */
+          name: string;
+        };
+      };
+    `);
+    const ctx = createConversionContext(checker);
+    const schema = typeToJsonSchema(type, ctx);
+
+    expect(schema.properties?.user?.description).toBe("The user object");
+    // Nested properties also get descriptions
+    const userProps = schema.properties?.user?.properties;
+    expect(userProps?.name?.description).toBe("The user's name");
+  });
+
+  it("extracts JSDoc descriptions in ToolParameterSchema", () => {
+    const { type, checker } = getTypeFromSource(`
+      type TestType = {
+        /** The city name */
+        city: string;
+        /** Optional count */
+        count?: number;
+      };
+    `);
+    const schema = typeToToolParameterSchema(type, checker);
+
+    expect(schema.properties.city?.description).toBe("The city name");
+    expect(schema.properties.count?.description).toBe("Optional count");
+  });
+});
