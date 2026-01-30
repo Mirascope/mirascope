@@ -5,7 +5,10 @@
  * The Chat Completions API does not support native reasoning/thinking.
  */
 
-import type { ChatCompletionChunk } from 'openai/resources/chat/completions';
+import type { ChatCompletionChunk } from "openai/resources/chat/completions";
+
+import type { StreamResponseChunk } from "@/llm/responses/chunks";
+import type { Jsonable } from "@/llm/types/jsonable";
 
 import {
   textStart,
@@ -14,16 +17,14 @@ import {
   toolCallStart,
   toolCallChunk,
   toolCallEnd,
-} from '@/llm/content';
-import type { StreamResponseChunk } from '@/llm/responses/chunks';
+} from "@/llm/content";
 import {
   finishReasonChunk,
   usageDeltaChunk,
   rawStreamEventChunk,
   rawMessageChunk,
-} from '@/llm/responses/chunks';
-import { FinishReason } from '@/llm/responses/finish-reason';
-import type { Jsonable } from '@/llm/types/jsonable';
+} from "@/llm/responses/chunks";
+import { FinishReason } from "@/llm/responses/finish-reason";
 
 /**
  * State tracking for stream decoding.
@@ -31,7 +32,7 @@ import type { Jsonable } from '@/llm/types/jsonable';
  */
 interface DecodeState {
   /** Current content type being streamed */
-  currentContentType: 'text' | 'tool_call' | null;
+  currentContentType: "text" | "tool_call" | null;
   /** Index of the current tool call being streamed */
   currentToolIndex: number | null;
   /** ID of the current tool call being streamed */
@@ -61,7 +62,7 @@ export function createDecodeState(): DecodeState {
  */
 export function decodeStreamEvent(
   chunk: ChatCompletionChunk,
-  state: DecodeState
+  state: DecodeState,
 ): StreamResponseChunk[] {
   const chunks: StreamResponseChunk[] = [];
 
@@ -82,7 +83,7 @@ export function decodeStreamEvent(
         reasoningTokens:
           chunk.usage.completion_tokens_details?.reasoning_tokens ?? 0,
         /* v8 ignore stop */
-      })
+      }),
     );
   }
 
@@ -103,7 +104,7 @@ export function decodeStreamEvent(
   if (content !== undefined && content !== null) {
     if (state.currentContentType === null) {
       chunks.push(textStart());
-      state.currentContentType = 'text';
+      state.currentContentType = "text";
     }
     chunks.push(textChunk(content));
   }
@@ -111,11 +112,11 @@ export function decodeStreamEvent(
   // Handle tool calls
   if (delta?.tool_calls) {
     /* v8 ignore start - rare to have text and tool calls in same chunk */
-    if (state.currentContentType === 'text') {
+    if (state.currentContentType === "text") {
       chunks.push(textEnd());
     }
     /* v8 ignore stop */
-    state.currentContentType = 'tool_call';
+    state.currentContentType = "tool_call";
 
     for (const toolCallDelta of delta.tool_calls) {
       const index = toolCallDelta.index;
@@ -124,7 +125,7 @@ export function decodeStreamEvent(
       /* v8 ignore start - defensive check for malformed streams */
       if (state.currentToolIndex !== null && state.currentToolIndex > index) {
         throw new Error(
-          `Received tool data for already-finished tool at index ${index}`
+          `Received tool data for already-finished tool at index ${index}`,
         );
       }
       /* v8 ignore stop */
@@ -133,7 +134,7 @@ export function decodeStreamEvent(
       if (state.currentToolIndex !== null && state.currentToolIndex < index) {
         /* v8 ignore start - defensive check */
         if (state.currentToolId === null) {
-          throw new Error('No current_tool_id for ToolCallEndChunk');
+          throw new Error("No current_tool_id for ToolCallEndChunk");
         }
         /* v8 ignore stop */
         chunks.push(toolCallEnd(state.currentToolId));
@@ -162,11 +163,11 @@ export function decodeStreamEvent(
       if (toolCallDelta.function?.arguments) {
         /* v8 ignore start - defensive check */
         if (state.currentToolId === null) {
-          throw new Error('No current_tool_id for ToolCallChunk');
+          throw new Error("No current_tool_id for ToolCallChunk");
         }
         /* v8 ignore stop */
         chunks.push(
-          toolCallChunk(state.currentToolId, toolCallDelta.function.arguments)
+          toolCallChunk(state.currentToolId, toolCallDelta.function.arguments),
         );
       }
     }
@@ -174,18 +175,18 @@ export function decodeStreamEvent(
 
   // Handle finish reason
   if (choice.finish_reason) {
-    if (state.currentContentType === 'text') {
+    if (state.currentContentType === "text") {
       chunks.push(textEnd());
-    } else if (state.currentContentType === 'tool_call') {
+    } else if (state.currentContentType === "tool_call") {
       /* v8 ignore start - defensive check */
       if (state.currentToolId === null) {
-        throw new Error('No current_tool_id for ToolCallEndChunk');
+        throw new Error("No current_tool_id for ToolCallEndChunk");
       }
       /* v8 ignore stop */
       chunks.push(toolCallEnd(state.currentToolId));
       /* v8 ignore start - defensive check for unknown content types */
     } else if (state.currentContentType !== null) {
-      throw new Error('Unexpected content type');
+      throw new Error("Unexpected content type");
     }
     /* v8 ignore stop */
 
@@ -206,18 +207,18 @@ export function decodeStreamEvent(
  * Convert OpenAI finish reason to Mirascope FinishReason.
  */
 function decodeFinishReason(
-  finishReason: ChatCompletionChunk.Choice['finish_reason']
+  finishReason: ChatCompletionChunk.Choice["finish_reason"],
 ): FinishReason | null {
   switch (finishReason) {
-    case 'length':
+    case "length":
       return FinishReason.MAX_TOKENS;
     /* v8 ignore start - content_filter is a rare edge case */
-    case 'content_filter':
+    case "content_filter":
       return FinishReason.REFUSAL;
     /* v8 ignore stop */
-    case 'stop':
-    case 'tool_calls':
-    case 'function_call':
+    case "stop":
+    case "tool_calls":
+    case "function_call":
       return null; // Normal completion
     /* v8 ignore start - exhaustive switch default */
     default:
@@ -233,7 +234,7 @@ function decodeFinishReason(
  * @returns Async iterator of Mirascope chunks
  */
 export async function* decodeStream(
-  stream: AsyncIterable<ChatCompletionChunk>
+  stream: AsyncIterable<ChatCompletionChunk>,
 ): AsyncGenerator<StreamResponseChunk> {
   const state = createDecodeState();
 

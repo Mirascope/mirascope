@@ -2,7 +2,7 @@
  * Shared types for build system plugins.
  */
 
-import type ts from 'typescript';
+import type ts from "typescript";
 
 /**
  * Common transformer configuration that can be passed to build plugins.

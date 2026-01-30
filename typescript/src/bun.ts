@@ -24,11 +24,12 @@
  */
 
 /* eslint-disable @typescript-eslint/unbound-method */
-import { plugin } from 'bun';
-import ts from 'typescript';
-import { resolve, dirname } from 'path';
-import { readFileSync } from 'fs';
-import { createToolSchemaTransformer } from './transform/transformer';
+import { plugin } from "bun";
+import { readFileSync } from "fs";
+import { resolve, dirname } from "path";
+import ts from "typescript";
+
+import { createToolSchemaTransformer } from "./transform/transformer";
 
 /**
  * Options for the Mirascope Bun plugin.
@@ -59,13 +60,13 @@ function needsTransform(contents: string): boolean {
  */
 function transformSource(
   filePath: string,
-  contents: string
+  contents: string,
 ): string | undefined {
   // Find tsconfig.json
   const configPath = ts.findConfigFile(
     dirname(filePath),
     ts.sys.fileExists,
-    'tsconfig.json'
+    "tsconfig.json",
   );
 
   const compilerOptions: ts.CompilerOptions = {
@@ -83,7 +84,7 @@ function transformSource(
       const parsed = ts.parseJsonConfigFileContent(
         configFile.config,
         ts.sys,
-        dirname(configPath)
+        dirname(configPath),
       );
       Object.assign(compilerOptions, parsed.options);
     }
@@ -98,7 +99,7 @@ function transformSource(
     fileName: string,
     languageVersion: ts.ScriptTarget,
     onError?: (message: string) => void,
-    shouldCreateNewSourceFile?: boolean
+    shouldCreateNewSourceFile?: boolean,
   ) => {
     if (resolve(fileName) === resolve(filePath)) {
       return ts.createSourceFile(fileName, contents, languageVersion, true);
@@ -107,7 +108,7 @@ function transformSource(
       fileName,
       languageVersion,
       onError,
-      shouldCreateNewSourceFile
+      shouldCreateNewSourceFile,
     );
   };
 
@@ -152,7 +153,7 @@ export function mirascope(options: MirascopeBunPluginOptions = {}): void {
   const { filter = /\.tsx?$/, exclude = [/node_modules/] } = options;
 
   plugin({
-    name: 'mirascope',
+    name: "mirascope",
     setup(build) {
       build.onLoad({ filter }, (args) => {
         // Check exclusions - let Bun handle these normally
@@ -163,8 +164,8 @@ export function mirascope(options: MirascopeBunPluginOptions = {}): void {
           }
         }
 
-        const contents = readFileSync(args.path, 'utf-8');
-        const loader = args.path.endsWith('.tsx') ? 'tsx' : 'ts';
+        const contents = readFileSync(args.path, "utf-8");
+        const loader = args.path.endsWith(".tsx") ? "tsx" : "ts";
 
         // Quick check: skip files without tool definitions
         if (!needsTransform(contents)) {

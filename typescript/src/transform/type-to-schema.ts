@@ -5,8 +5,9 @@
  * JSON Schema representations suitable for LLM tool definitions.
  */
 
-import ts from 'typescript';
-import type { JsonSchemaProperty, ToolParameterSchema } from '@/llm/tools';
+import ts from "typescript";
+
+import type { JsonSchemaProperty, ToolParameterSchema } from "@/llm/tools";
 
 /**
  * Context for type-to-schema conversion.
@@ -42,12 +43,12 @@ function isArrayLikeType(type: ts.Type, checker: ts.TypeChecker): boolean {
     if (objectFlags & ts.ObjectFlags.Reference) {
       const typeRef = type as ts.TypeReference;
       const symbol = typeRef.symbol;
-      if (symbol && symbol.getName() === 'Array') {
+      if (symbol && symbol.getName() === "Array") {
         return true;
       }
       // Also check the target's symbol for ReadonlyArray, etc.
       const target = typeRef.target;
-      if (target && target.symbol && target.symbol.getName() === 'Array') {
+      if (target && target.symbol && target.symbol.getName() === "Array") {
         return true;
       }
     }
@@ -55,7 +56,7 @@ function isArrayLikeType(type: ts.Type, checker: ts.TypeChecker): boolean {
 
   // Check the type string as a fallback
   const typeString = checker.typeToString(type);
-  if (typeString.endsWith('[]') || typeString.startsWith('Array<')) {
+  if (typeString.endsWith("[]") || typeString.startsWith("Array<")) {
     return true;
   }
 
@@ -72,7 +73,7 @@ function isArrayLikeType(type: ts.Type, checker: ts.TypeChecker): boolean {
  */
 export function typeToJsonSchema(
   type: ts.Type,
-  ctx: ConversionContext
+  ctx: ConversionContext,
 ): JsonSchemaProperty {
   const checker = ctx.checker;
 
@@ -97,22 +98,22 @@ export function typeToJsonSchema(
   if (flags & ts.TypeFlags.BooleanLiteral) {
     const intrinsicName = (type as ts.Type & { intrinsicName?: string })
       .intrinsicName;
-    const isTrue = intrinsicName === 'true';
-    return { type: 'boolean', enum: [isTrue] };
+    const isTrue = intrinsicName === "true";
+    return { type: "boolean", enum: [isTrue] };
   }
 
   // Handle primitive types
 
   if (flags & ts.TypeFlags.String) {
-    return { type: 'string' };
+    return { type: "string" };
   }
 
   if (flags & ts.TypeFlags.Number) {
-    return { type: 'number' };
+    return { type: "number" };
   }
 
   if (flags & ts.TypeFlags.Null) {
-    return { type: 'null' };
+    return { type: "null" };
   }
 
   if (flags & ts.TypeFlags.Undefined) {
@@ -127,13 +128,13 @@ export function typeToJsonSchema(
     const typeArgs = checker.getTypeArguments(typeRef);
     if (typeArgs && typeArgs.length > 0) {
       return {
-        type: 'array',
+        type: "array",
         items: typeToJsonSchema(typeArgs[0]!, ctx),
       };
     }
     // Coverage ignored: Fallback for arrays without type arguments (e.g., broken lib.d.ts)
     /* v8 ignore next */
-    return { type: 'array' };
+    return { type: "array" };
   }
 
   // Handle object types (interfaces, type literals, classes)
@@ -151,13 +152,13 @@ export function typeToJsonSchema(
  */
 function handleUnionType(
   type: ts.UnionType,
-  ctx: ConversionContext
+  ctx: ConversionContext,
 ): JsonSchemaProperty {
   const types = type.types;
 
   // Filter out undefined (for optional properties)
   const nonUndefinedTypes = types.filter(
-    (t) => !(t.getFlags() & ts.TypeFlags.Undefined)
+    (t) => !(t.getFlags() & ts.TypeFlags.Undefined),
   );
 
   // Check if this is a boolean type (union of true | false)
@@ -165,28 +166,28 @@ function handleUnionType(
     nonUndefinedTypes.length === 2 &&
     nonUndefinedTypes.every((t) => t.getFlags() & ts.TypeFlags.BooleanLiteral)
   ) {
-    return { type: 'boolean' };
+    return { type: "boolean" };
   }
 
   // If all non-undefined types are string/number literals, create an enum
   if (
     nonUndefinedTypes.every((t): t is ts.StringLiteralType =>
-      t.isStringLiteral()
+      t.isStringLiteral(),
     )
   ) {
     return {
-      type: 'string',
+      type: "string",
       enum: nonUndefinedTypes.map((t) => t.value),
     };
   }
 
   if (
     nonUndefinedTypes.every((t): t is ts.NumberLiteralType =>
-      t.isNumberLiteral()
+      t.isNumberLiteral(),
     )
   ) {
     return {
-      type: 'number',
+      type: "number",
       enum: nonUndefinedTypes.map((t) => t.value),
     };
   }
@@ -207,14 +208,14 @@ function handleUnionType(
  */
 function handleIntersectionType(
   type: ts.IntersectionType,
-  ctx: ConversionContext
+  ctx: ConversionContext,
 ): JsonSchemaProperty {
   const allOf = type.types.map((t) => typeToJsonSchema(t, ctx));
 
   // If all parts are objects, try to merge them
-  if (allOf.every((s) => s.type === 'object')) {
+  if (allOf.every((s) => s.type === "object")) {
     const merged: JsonSchemaProperty = {
-      type: 'object',
+      type: "object",
       properties: {},
       required: [],
     };
@@ -244,11 +245,11 @@ function handleIntersectionType(
  */
 function handleLiteralType(type: ts.Type): JsonSchemaProperty {
   if (type.isStringLiteral()) {
-    return { type: 'string', enum: [type.value] };
+    return { type: "string", enum: [type.value] };
   }
 
   if (type.isNumberLiteral()) {
-    return { type: 'number', enum: [type.value] };
+    return { type: "number", enum: [type.value] };
   }
 
   /* v8 ignore start */
@@ -261,7 +262,7 @@ function handleLiteralType(type: ts.Type): JsonSchemaProperty {
  */
 function handleObjectType(
   type: ts.ObjectType,
-  ctx: ConversionContext
+  ctx: ConversionContext,
 ): JsonSchemaProperty {
   const checker = ctx.checker;
   const properties: Record<string, JsonSchemaProperty> = {};
@@ -287,7 +288,7 @@ function handleObjectType(
   }
 
   return {
-    type: 'object',
+    type: "object",
     properties,
     required: required.length > 0 ? required : undefined,
   };
@@ -305,7 +306,7 @@ function handleObjectType(
  */
 export function typeToToolParameterSchema(
   type: ts.Type,
-  checker: ts.TypeChecker
+  checker: ts.TypeChecker,
 ): ToolParameterSchema {
   const ctx: ConversionContext = {
     checker,
@@ -316,22 +317,22 @@ export function typeToToolParameterSchema(
   const schema = typeToJsonSchema(type, ctx);
 
   // Ensure the result is an object schema
-  if (schema.type !== 'object') {
+  if (schema.type !== "object") {
     throw new Error(
-      'Tool parameter type must be an object type, got: ' +
-        JSON.stringify(schema)
+      "Tool parameter type must be an object type, got: " +
+        JSON.stringify(schema),
     );
   }
 
   // Build a mutable result, then return as readonly
   const result: {
-    type: 'object';
+    type: "object";
     properties: Record<string, JsonSchemaProperty>;
     required: readonly string[];
     additionalProperties: false;
     $defs?: Record<string, JsonSchemaProperty>;
   } = {
-    type: 'object',
+    type: "object",
     properties: schema.properties ?? {},
     required: (schema.required as readonly string[]) ?? [],
     additionalProperties: false,
@@ -351,7 +352,7 @@ export function typeToToolParameterSchema(
  * Create a ConversionContext for testing or manual use.
  */
 export function createConversionContext(
-  checker: ts.TypeChecker
+  checker: ts.TypeChecker,
 ): ConversionContext {
   return {
     checker,

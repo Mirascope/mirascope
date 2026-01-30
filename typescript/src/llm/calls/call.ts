@@ -17,9 +17,18 @@ import type {
   Format,
   FormatSpec,
   OutputParser,
-} from '@/llm/formatting';
-import { Model, useModel } from '@/llm/models';
-import type { Params } from '@/llm/models/params';
+} from "@/llm/formatting";
+import type { Params } from "@/llm/models/params";
+import type { ModelId } from "@/llm/providers/model-id";
+import type { Response } from "@/llm/responses";
+import type { ContextResponse } from "@/llm/responses/context-response";
+import type { ContextStreamResponse } from "@/llm/responses/context-stream-response";
+import type { StreamResponse } from "@/llm/responses/stream-response";
+import type { ContextTools, Tools, ZodLike } from "@/llm/tools";
+import type { NoVars } from "@/llm/types";
+
+import { type Context, isContext } from "@/llm/context";
+import { Model, useModel } from "@/llm/models";
 import {
   definePrompt,
   type ContextPrompt,
@@ -29,15 +38,7 @@ import {
   type Prompt,
   type PromptArgs,
   type TemplateFunc,
-} from '@/llm/prompts';
-import type { ModelId } from '@/llm/providers/model-id';
-import type { Response } from '@/llm/responses';
-import type { ContextResponse } from '@/llm/responses/context-response';
-import type { ContextStreamResponse } from '@/llm/responses/context-stream-response';
-import type { StreamResponse } from '@/llm/responses/stream-response';
-import type { ContextTools, Tools, ZodLike } from '@/llm/tools';
-import type { NoVars } from '@/llm/types';
-import { type Context, isContext } from '@/llm/context';
+} from "@/llm/prompts";
 
 // ============================================================================
 // Call Args Types
@@ -49,8 +50,10 @@ import { type Context, isContext } from '@/llm/context';
  * @template T - The type of variables the template accepts. Defaults to NoVars.
  * @template F - The format input type. The output type F is derived via ExtractFormatType<F>.
  */
-export interface CallArgs<T = NoVars, F extends AnyFormatInput = undefined>
-  extends Params {
+export interface CallArgs<
+  T = NoVars,
+  F extends AnyFormatInput = undefined,
+> extends Params {
   /** The model to use, either a Model instance or model ID string. */
   model: Model | ModelId;
   /** Optional tools to make available to the model. */
@@ -345,7 +348,7 @@ export type UnifiedCall<T, F extends AnyFormatInput = undefined> =
  */
 export interface CallBuilder<T extends Record<string, unknown>> {
   <F extends AnyFormatInput = undefined>(
-    args: CallArgs<T, F> | ContextCallArgs<T, F>
+    args: CallArgs<T, F> | ContextCallArgs<T, F>,
   ): UnifiedCall<T, F>;
 }
 
@@ -361,15 +364,15 @@ function createCall<T, F extends AnyFormatInput>({
   template,
   ...params
 }: CallArgs<T, F> | ContextCallArgs<T, F>): UnifiedCall<T, F> {
-  if (typeof model !== 'string' && Object.keys(params).length > 0) {
+  if (typeof model !== "string" && Object.keys(params).length > 0) {
     throw new Error(
-      'Cannot pass params when model is a Model instance. Use new Model(id, params) instead.'
+      "Cannot pass params when model is a Model instance. Use new Model(id, params) instead.",
     );
   }
 
   // Resolve the default model at definition time (bakes in params)
   const defaultModel: Model =
-    typeof model === 'string' ? new Model(model, params) : model;
+    typeof model === "string" ? new Model(model, params) : model;
 
   // Create the unified prompt (it handles both context and non-context cases)
   const prompt = definePrompt({ tools, format, template } as PromptArgs<
@@ -396,7 +399,7 @@ function createCall<T, F extends AnyFormatInput>({
         call(
           model: Model,
           ctx: Context<unknown>,
-          vars?: ExtractVars<T>
+          vars?: ExtractVars<T>,
         ): Promise<ContextResponse<unknown, ExtractFormatType<F>>>;
       };
       return contextPrompt.call(useModel(defaultModel), ctx, vars);
@@ -437,7 +440,7 @@ function createCall<T, F extends AnyFormatInput>({
         stream(
           model: Model,
           ctx: Context<unknown>,
-          vars?: ExtractVars<T>
+          vars?: ExtractVars<T>,
         ): Promise<ContextStreamResponse<unknown, ExtractFormatType<F>>>;
       };
       return contextPrompt.stream(useModel(defaultModel), ctx, vars);
@@ -447,7 +450,7 @@ function createCall<T, F extends AnyFormatInput>({
       const regularPrompt = prompt as unknown as {
         stream(
           model: Model,
-          vars?: T
+          vars?: T,
         ): Promise<StreamResponse<ExtractFormatType<F>>>;
       };
       return regularPrompt.stream(useModel(defaultModel), vars);
@@ -464,7 +467,7 @@ function createCall<T, F extends AnyFormatInput>({
     template,
   });
 
-  Object.defineProperty(definedCall, 'model', {
+  Object.defineProperty(definedCall, "model", {
     get: () => useModel(defaultModel),
     enumerable: true,
   });
@@ -570,12 +573,12 @@ export function defineCall<
 
 // Implementation
 export function defineCall<T, F extends AnyFormatInput>(
-  args?: CallArgs<T, F> | ContextCallArgs<T, F>
+  args?: CallArgs<T, F> | ContextCallArgs<T, F>,
 ): UnifiedCall<T, F> | CallBuilder<T & Record<string, unknown>> {
   // If no args provided, return a builder function for curried usage
   if (args === undefined) {
     return (<F2 extends AnyFormatInput = undefined>(
-      builderArgs: CallArgs<T, F2> | ContextCallArgs<T, F2>
+      builderArgs: CallArgs<T, F2> | ContextCallArgs<T, F2>,
     ): UnifiedCall<T, F2> => {
       return createCall(builderArgs);
     }) as CallBuilder<T & Record<string, unknown>>;

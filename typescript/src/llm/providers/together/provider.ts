@@ -4,10 +4,10 @@
  * Together AI provides an OpenAI-compatible API for hosted LLM inference.
  */
 
-import { BaseOpenAICompletionsProvider } from '@/llm/providers/openai/completions/base-provider';
+import { BaseOpenAICompletionsProvider } from "@/llm/providers/openai/completions/base-provider";
 
-const DEFAULT_BASE_URL = 'https://api.together.xyz/v1';
-const API_KEY_ENV_VAR = 'TOGETHER_API_KEY';
+const DEFAULT_BASE_URL = "https://api.together.xyz/v1";
+const API_KEY_ENV_VAR = "TOGETHER_API_KEY";
 
 export interface TogetherProviderInit {
   apiKey?: string;
@@ -36,7 +36,7 @@ export interface TogetherProviderInit {
  * ```
  */
 export class TogetherProvider extends BaseOpenAICompletionsProvider {
-  readonly id = 'together' as const;
+  readonly id = "together" as const;
 
   /**
    * Create a new Together AI provider instance.
@@ -50,7 +50,7 @@ export class TogetherProvider extends BaseOpenAICompletionsProvider {
     const resolvedBaseUrl = init.baseURL ?? DEFAULT_BASE_URL;
 
     super({
-      id: 'together',
+      id: "together",
       apiKey: resolvedApiKey,
       baseURL: resolvedBaseUrl,
     });

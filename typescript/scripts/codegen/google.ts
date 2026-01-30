@@ -14,7 +14,7 @@ import {
   generateFileHeader,
   generateKnownModelsExports,
   generateFeatureSet,
-} from './utils';
+} from "./utils";
 
 interface FeatureResult {
   status?: string;
@@ -48,7 +48,7 @@ function collectModelData(data: YamlData): {
 
     // Check if model supports chat
     const chatResult = features.chat_model ?? {};
-    const chatSupported = chatResult.status === 'supported';
+    const chatSupported = chatResult.status === "supported";
 
     // Skip models that don't support chat
     if (!chatSupported) {
@@ -62,7 +62,7 @@ function collectModelData(data: YamlData): {
     const structuredOutputToolsResult =
       features.structured_output_with_tools ?? {};
     const supportsStructuredOutputAndTools =
-      structuredOutputToolsResult.status === 'supported';
+      structuredOutputToolsResult.status === "supported";
 
     if (!supportsStructuredOutputAndTools) {
       modelsWithoutSupport.add(modelId);
@@ -80,45 +80,45 @@ function collectModelData(data: YamlData): {
  */
 function generateModelInfoContent(
   modelIds: string[],
-  modelsWithoutSupport: string[]
+  modelsWithoutSupport: string[],
 ): string {
   const lines: string[] = [
-    ...generateFileHeader('Google', 'typescript/scripts/codegen/google.ts'),
-    '',
+    ...generateFileHeader("Google", "typescript/scripts/codegen/google.ts"),
+    "",
     ...generateKnownModelsExports(
-      'GOOGLE',
-      'Google',
+      "GOOGLE",
+      "Google",
       modelIds,
-      'Valid Google model IDs.'
+      "Valid Google model IDs.",
     ),
-    '',
+    "",
     ...generateFeatureSet(
-      'MODELS_WITHOUT_STRUCTURED_OUTPUT_AND_TOOLS_SUPPORT',
-      'Models that do not support structured outputs when tools are present.',
+      "MODELS_WITHOUT_STRUCTURED_OUTPUT_AND_TOOLS_SUPPORT",
+      "Models that do not support structured outputs when tools are present.",
       null,
-      modelsWithoutSupport
+      modelsWithoutSupport,
     ),
-    '',
+    "",
   ];
 
-  return lines.join('\n');
+  return lines.join("\n");
 }
 
 /**
  * Generate Google model info from YAML test data.
  */
 export function generateGoogleModelInfo(): void {
-  const { inputPath, outputPath } = getPaths('google', import.meta.dirname);
+  const { inputPath, outputPath } = getPaths("google", import.meta.dirname);
 
   // Load YAML
-  const data = readYamlData<YamlData>(inputPath, 'google');
+  const data = readYamlData<YamlData>(inputPath, "google");
 
   // Collect model data
-  console.log('Collecting model data...');
+  console.log("Collecting model data...");
   const { modelIds, modelsWithoutSupport } = collectModelData(data);
 
   // Generate TypeScript code
-  console.log('Generating TypeScript model info...');
+  console.log("Generating TypeScript model info...");
   const content = generateModelInfoContent(modelIds, modelsWithoutSupport);
 
   // Write file
@@ -128,13 +128,13 @@ export function generateGoogleModelInfo(): void {
   const modelsData = data.models ?? {};
   const discoveredModelCount = Object.keys(modelsData).length;
   const chatModelCount = Object.values(modelsData).filter(
-    (info) => info.features?.chat_model?.status === 'supported'
+    (info) => info.features?.chat_model?.status === "supported",
   ).length;
 
   console.log(`  Discovered models: ${discoveredModelCount}`);
   console.log(`  Chat models (generated): ${chatModelCount}`);
   console.log(
-    `  Models without structured output + tools support: ${modelsWithoutSupport.length}`
+    `  Models without structured output + tools support: ${modelsWithoutSupport.length}`,
   );
 }
 

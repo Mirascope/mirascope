@@ -2,13 +2,13 @@
  * OpenAI Completions provider implementation.
  */
 
-import { modelName } from '@/llm/providers/openai/model-id';
 import {
   BaseOpenAICompletionsProvider,
   type BaseOpenAICompletionsProviderInit,
-} from '@/llm/providers/openai/completions/base-provider';
+} from "@/llm/providers/openai/completions/base-provider";
+import { modelName } from "@/llm/providers/openai/model-id";
 
-const API_KEY_ENV_VAR = 'OPENAI_API_KEY';
+const API_KEY_ENV_VAR = "OPENAI_API_KEY";
 
 /**
  * Provider for the OpenAI Chat Completions API.
@@ -27,12 +27,12 @@ const API_KEY_ENV_VAR = 'OPENAI_API_KEY';
  * ```
  */
 export class OpenAICompletionsProvider extends BaseOpenAICompletionsProvider {
-  readonly id = 'openai' as const;
+  readonly id = "openai" as const;
 
   constructor(init: BaseOpenAICompletionsProviderInit = {}) {
     const resolvedApiKey = init.apiKey ?? process.env[API_KEY_ENV_VAR];
     super({
-      id: 'openai',
+      id: "openai",
       apiKey: resolvedApiKey,
       baseURL: init.baseURL,
     });
@@ -44,6 +44,6 @@ export class OpenAICompletionsProvider extends BaseOpenAICompletionsProvider {
    * Returns the model name with :completions suffix for tracking which API was used.
    */
   protected override providerModelName(modelId: string): string {
-    return modelName(modelId, 'completions');
+    return modelName(modelId, "completions");
   }
 }

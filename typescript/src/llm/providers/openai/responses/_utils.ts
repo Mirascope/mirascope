@@ -2,7 +2,7 @@
  * OpenAI Responses API utilities for encoding requests and decoding responses.
  */
 
-import type OpenAI from 'openai';
+import type OpenAI from "openai";
 import type {
   Response as OpenAIResponse,
   ResponseCreateParamsNonStreaming,
@@ -12,8 +12,8 @@ import type {
   ResponseInputImage,
   ResponseInputItem,
   ResponseOutputItem,
-} from 'openai/resources/responses/responses';
-import type { Reasoning, ReasoningEffort } from 'openai/resources/shared';
+} from "openai/resources/responses/responses";
+import type { Reasoning, ReasoningEffort } from "openai/resources/shared";
 
 import type {
   AssistantContentPart,
@@ -21,31 +21,32 @@ import type {
   Text,
   Thought,
   ToolCall,
-} from '@/llm/content';
-import type { ToolSchema, Tools } from '@/llm/tools';
-import { ProviderTool, isProviderTool, isWebSearchTool } from '@/llm/tools';
-import { FeatureNotSupportedError } from '@/llm/exceptions';
-import type { AssistantMessage, Message } from '@/llm/messages';
-import type { Params } from '@/llm/models';
-import type { ThinkingLevel } from '@/llm/models/thinking-config';
-import { ParamHandler } from '@/llm/providers/base';
-import type { OpenAIModelId } from '@/llm/providers/openai/model-id';
-import { modelName } from '@/llm/providers/openai/model-id';
-import { FinishReason } from '@/llm/responses/finish-reason';
-import type { Usage } from '@/llm/responses/usage';
-import { createUsage } from '@/llm/responses/usage';
+} from "@/llm/content";
+import type { AssistantMessage, Message } from "@/llm/messages";
+import type { Params } from "@/llm/models";
+import type { ThinkingLevel } from "@/llm/models/thinking-config";
+import type { OpenAIModelId } from "@/llm/providers/openai/model-id";
+import type { Usage } from "@/llm/responses/usage";
+import type { ToolSchema, Tools } from "@/llm/tools";
+
+import { FeatureNotSupportedError } from "@/llm/exceptions";
+import { ParamHandler } from "@/llm/providers/base";
+import { modelName } from "@/llm/providers/openai/model-id";
+import { FinishReason } from "@/llm/responses/finish-reason";
+import { createUsage } from "@/llm/responses/usage";
+import { ProviderTool, isProviderTool, isWebSearchTool } from "@/llm/tools";
 
 /**
  * Maps ThinkingLevel to OpenAI ReasoningEffort.
  */
 const THINKING_LEVEL_TO_EFFORT: Record<ThinkingLevel, ReasoningEffort> = {
-  default: 'medium',
-  none: 'none',
-  minimal: 'minimal',
-  low: 'low',
-  medium: 'medium',
-  high: 'high',
-  max: 'xhigh',
+  default: "medium",
+  none: "none",
+  minimal: "minimal",
+  low: "low",
+  medium: "medium",
+  high: "high",
+  max: "xhigh",
 };
 
 /**
@@ -57,15 +58,15 @@ const THINKING_LEVEL_TO_EFFORT: Record<ThinkingLevel, ReasoningEffort> = {
  */
 export function computeReasoning(
   level: ThinkingLevel,
-  includeThoughts: boolean
+  includeThoughts: boolean,
 ): Reasoning {
   const reasoning: Reasoning = {
     /* v8 ignore next - all ThinkingLevel values are covered in the map */
-    effort: THINKING_LEVEL_TO_EFFORT[level] ?? 'medium',
+    effort: THINKING_LEVEL_TO_EFFORT[level] ?? "medium",
   };
 
   if (includeThoughts) {
-    reasoning.summary = 'auto';
+    reasoning.summary = "auto";
   }
 
   return reasoning;
@@ -85,12 +86,12 @@ type EasyInputMessage = OpenAI.Responses.EasyInputMessage;
  */
 function encodeImage(image: Image): ResponseInputImage {
   let imageUrl: string;
-  if (image.source.type === 'url_image_source') {
+  if (image.source.type === "url_image_source") {
     imageUrl = image.source.url;
   } else {
     imageUrl = `data:${image.source.mimeType};base64,${image.source.data}`;
   }
-  return { type: 'input_image', image_url: imageUrl, detail: 'auto' };
+  return { type: "input_image", image_url: imageUrl, detail: "auto" };
 }
 
 // ============================================================================
@@ -103,11 +104,11 @@ function encodeImage(image: Image): ResponseInputImage {
  */
 export function encodeToolSchema(tool: ToolSchema): FunctionTool {
   return {
-    type: 'function',
+    type: "function",
     name: tool.name,
     description: tool.description,
     parameters: {
-      type: 'object',
+      type: "object",
       properties: tool.parameters.properties as Record<string, unknown>,
       required: tool.parameters.required as string[] | undefined,
     },
@@ -144,18 +145,18 @@ export function encodeTools(tools: readonly ToolSchema[]): FunctionTool[] {
 export function encodeMessages(
   messages: readonly Message[],
   modelId: OpenAIModelId,
-  encodeThoughtsAsText: boolean = false
+  encodeThoughtsAsText: boolean = false,
 ): ResponseInputItem[] {
   const inputItems: ResponseInputItem[] = [];
-  const expectedProviderModelName = modelName(modelId, 'responses');
+  const expectedProviderModelName = modelName(modelId, "responses");
 
   for (const message of messages) {
-    if (message.role === 'system') {
+    if (message.role === "system") {
       inputItems.push({
-        role: 'developer',
+        role: "developer",
         content: message.content.text,
       });
-    } else if (message.role === 'user') {
+    } else if (message.role === "user") {
       // Check for tool outputs first
       const toolOutputs = encodeToolOutputs(message);
       /* v8 ignore start - tool encoding will be tested via e2e */
@@ -168,12 +169,12 @@ export function encodeMessages(
       if (userMessage !== null) {
         inputItems.push(userMessage);
       }
-    } else if (message.role === 'assistant') {
+    } else if (message.role === "assistant") {
       // Check if we can reuse the raw message (from same provider/model)
       // Array check is needed because we spread into inputItems
       if (
-        (message.providerId === 'openai' ||
-          message.providerId === 'openai:responses') &&
+        (message.providerId === "openai" ||
+          message.providerId === "openai:responses") &&
         message.providerModelName === expectedProviderModelName &&
         message.rawMessage &&
         Array.isArray(message.rawMessage) &&
@@ -181,12 +182,12 @@ export function encodeMessages(
       ) {
         // Reuse serialized output items directly
         inputItems.push(
-          ...(message.rawMessage as unknown as ResponseInputItem[])
+          ...(message.rawMessage as unknown as ResponseInputItem[]),
         );
       } else {
         // Otherwise, encode from content parts
         inputItems.push(
-          ...encodeAssistantMessage(message, encodeThoughtsAsText)
+          ...encodeAssistantMessage(message, encodeThoughtsAsText),
         );
       }
     }
@@ -200,17 +201,17 @@ export function encodeMessages(
  * Encode tool outputs from a user message to function_call_output items.
  */
 function encodeToolOutputs(
-  message: Extract<Message, { role: 'user' }>
+  message: Extract<Message, { role: "user" }>,
 ): ResponseInputItem.FunctionCallOutput[] {
   const outputs: ResponseInputItem.FunctionCallOutput[] = [];
 
   for (const part of message.content) {
-    if (part.type === 'tool_output') {
+    if (part.type === "tool_output") {
       outputs.push({
-        type: 'function_call_output',
+        type: "function_call_output",
         call_id: part.id,
         output:
-          typeof part.result === 'string'
+          typeof part.result === "string"
             ? part.result
             : JSON.stringify(part.result),
       });
@@ -229,38 +230,38 @@ function encodeToolOutputs(
  * - Returns null if message contains only tool outputs (handled separately)
  */
 function encodeUserMessage(
-  message: Extract<Message, { role: 'user' }>
+  message: Extract<Message, { role: "user" }>,
 ): EasyInputMessage | null {
   const contentItems: ResponseInputContent[] = [];
 
   for (const part of message.content) {
     switch (part.type) {
-      case 'text':
-        contentItems.push({ type: 'input_text', text: part.text });
+      case "text":
+        contentItems.push({ type: "input_text", text: part.text });
         break;
 
-      case 'image':
+      case "image":
         contentItems.push(encodeImage(part));
         break;
 
-      case 'audio':
+      case "audio":
         throw new FeatureNotSupportedError(
-          'audio input',
-          'openai',
+          "audio input",
+          "openai",
           null,
-          'OpenAI Responses API does not support audio inputs. Try appending ":completions" to your model ID instead.'
+          'OpenAI Responses API does not support audio inputs. Try appending ":completions" to your model ID instead.',
         );
 
       /* v8 ignore start - content types not yet fully implemented */
-      case 'document':
+      case "document":
         throw new FeatureNotSupportedError(
-          'document content encoding',
-          'openai',
+          "document content encoding",
+          "openai",
           null,
-          'Document content is not yet implemented'
+          "Document content is not yet implemented",
         );
 
-      case 'tool_output':
+      case "tool_output":
         // Tool outputs in Responses API are handled separately as function_call_output items
         // Skip here - they're processed in encodeMessages
         break;
@@ -276,16 +277,16 @@ function encodeUserMessage(
   /* v8 ignore stop */
 
   // Single text part: simplify to string
-  if (contentItems.length === 1 && contentItems[0]?.type === 'input_text') {
+  if (contentItems.length === 1 && contentItems[0]?.type === "input_text") {
     return {
-      role: 'user',
+      role: "user",
       content: contentItems[0].text,
     };
   }
 
   // Multiple parts or non-text content: use array format
   return {
-    role: 'user',
+    role: "user",
     content: contentItems,
   };
 }
@@ -303,35 +304,35 @@ function encodeUserMessage(
  */
 function encodeAssistantMessage(
   message: AssistantMessage,
-  encodeThoughtsAsText: boolean
+  encodeThoughtsAsText: boolean,
 ): ResponseInputItem[] {
   const result: ResponseInputItem[] = [];
 
   for (const part of message.content) {
-    if (part.type === 'text') {
+    if (part.type === "text") {
       result.push({
-        role: 'assistant',
+        role: "assistant",
         content: part.text,
       });
       /* v8 ignore start - thought encoding will be tested via e2e */
-    } else if (part.type === 'thought') {
+    } else if (part.type === "thought") {
       // Encode thoughts as text when requested, otherwise drop
       if (encodeThoughtsAsText) {
         result.push({
-          role: 'assistant',
-          content: '**Thinking:** ' + part.thought,
+          role: "assistant",
+          content: "**Thinking:** " + part.thought,
         });
       }
       /* v8 ignore stop */
       /* v8 ignore start - tool call encoding will be tested via e2e */
-    } else if (part.type === 'tool_call') {
+    } else if (part.type === "tool_call") {
       const toolCallItem: ResponseFunctionToolCall = {
-        type: 'function_call',
+        type: "function_call",
         id: part.id,
         call_id: part.id, // Used to match with function_call_output
         name: part.name,
         arguments: part.args,
-        status: 'completed', // Required for model to recognize tool was executed
+        status: "completed", // Required for model to recognize tool was executed
       };
       result.push(toolCallItem);
     }
@@ -356,10 +357,10 @@ export function buildRequestParams(
   modelId: OpenAIModelId,
   messages: readonly Message[],
   tools?: Tools,
-  params: Params = {}
+  params: Params = {},
 ): ResponseCreateParamsNonStreaming {
-  return ParamHandler.with(params, 'openai', modelId, (p) => {
-    const thinkingConfig = p.get('thinking');
+  return ParamHandler.with(params, "openai", modelId, (p) => {
+    const thinkingConfig = p.get("thinking");
     const encodeThoughtsAsText = thinkingConfig?.encodeThoughtsAsText ?? false;
 
     const inputItems = encodeMessages(messages, modelId, encodeThoughtsAsText);
@@ -373,22 +374,22 @@ export function buildRequestParams(
     if (tools && tools.length > 0) {
       // Separate regular tools from provider tools
       const regularTools: ToolSchema[] = [];
-      const allTools: ResponseCreateParamsNonStreaming['tools'] = [];
+      const allTools: ResponseCreateParamsNonStreaming["tools"] = [];
 
       for (const tool of tools) {
         // Check for provider tools first (WebSearchTool extends ProviderTool)
         if (isProviderTool(tool)) {
           if (isWebSearchTool(tool)) {
             // OpenAI Responses API web search tool
-            allTools.push({ type: 'web_search' });
+            allTools.push({ type: "web_search" });
           } else {
             // Cast needed because TS narrows to never after WebSearchTool check
             const unsupportedTool = tool as ProviderTool;
             throw new FeatureNotSupportedError(
               `Provider tool ${unsupportedTool.name}`,
-              'openai:responses',
+              "openai:responses",
               modelId,
-              `Provider tool '${unsupportedTool.name}' is not supported by OpenAI Responses API`
+              `Provider tool '${unsupportedTool.name}' is not supported by OpenAI Responses API`,
             );
           }
         } else {
@@ -407,37 +408,37 @@ export function buildRequestParams(
     }
     /* v8 ignore stop */
 
-    const maxTokens = p.get('maxTokens');
+    const maxTokens = p.get("maxTokens");
     if (maxTokens !== undefined) {
       requestParams.max_output_tokens = maxTokens;
     }
 
-    const temperature = p.get('temperature');
+    const temperature = p.get("temperature");
     if (temperature !== undefined) {
       requestParams.temperature = temperature;
     }
 
-    const topP = p.get('topP');
+    const topP = p.get("topP");
     if (topP !== undefined) {
       requestParams.top_p = topP;
     }
 
     // OpenAI Responses API doesn't support these params
-    p.warnUnsupported('topK', 'OpenAI does not support the top_k parameter');
+    p.warnUnsupported("topK", "OpenAI does not support the top_k parameter");
     p.warnUnsupported(
-      'seed',
-      'OpenAI Responses API does not support the seed parameter'
+      "seed",
+      "OpenAI Responses API does not support the seed parameter",
     );
     p.warnUnsupported(
-      'stopSequences',
-      'OpenAI Responses API does not support stop sequences'
+      "stopSequences",
+      "OpenAI Responses API does not support stop sequences",
     );
 
     if (thinkingConfig) {
       const includeThoughts = thinkingConfig.includeThoughts ?? false;
       requestParams.reasoning = computeReasoning(
         thinkingConfig.level,
-        includeThoughts
+        includeThoughts,
       );
     }
 
@@ -455,7 +456,7 @@ export function buildRequestParams(
 export function decodeResponse(
   response: OpenAIResponse,
   modelId: OpenAIModelId,
-  includeThoughts: boolean = false
+  includeThoughts: boolean = false,
 ): {
   assistantMessage: AssistantMessage;
   finishReason: FinishReason | null;
@@ -469,13 +470,13 @@ export function decodeResponse(
   const serializedOutput = response.output.map(serializeOutputItem);
 
   const assistantMessage: AssistantMessage = {
-    role: 'assistant',
+    role: "assistant",
     content,
     name: null,
-    providerId: 'openai',
+    providerId: "openai",
     modelId,
-    providerModelName: modelName(modelId, 'responses'),
-    rawMessage: serializedOutput as unknown as AssistantMessage['rawMessage'],
+    providerModelName: modelName(modelId, "responses"),
+    rawMessage: serializedOutput as unknown as AssistantMessage["rawMessage"],
   };
 
   /* v8 ignore next - usage is always present in API responses */
@@ -491,42 +492,42 @@ export function decodeResponse(
  * @param includeThoughts - Whether to include reasoning blocks as thoughts
  */
 function decodeContent(
-  output: OpenAIResponse['output'],
-  includeThoughts: boolean
+  output: OpenAIResponse["output"],
+  includeThoughts: boolean,
 ): AssistantContentPart[] {
   const parts: AssistantContentPart[] = [];
 
   for (const item of output) {
-    if (item.type === 'message') {
+    if (item.type === "message") {
       for (const contentPart of item.content) {
-        if (contentPart.type === 'output_text') {
-          const text: Text = { type: 'text', text: contentPart.text };
+        if (contentPart.type === "output_text") {
+          const text: Text = { type: "text", text: contentPart.text };
           parts.push(text);
           /* v8 ignore start - refusals are difficult to trigger reliably */
-        } else if (contentPart.type === 'refusal') {
-          const text: Text = { type: 'text', text: contentPart.refusal };
+        } else if (contentPart.type === "refusal") {
+          const text: Text = { type: "text", text: contentPart.refusal };
           parts.push(text);
         }
         /* v8 ignore stop */
       }
       /* v8 ignore start - tool decoding will be tested via e2e */
-    } else if (item.type === 'function_call') {
+    } else if (item.type === "function_call") {
       const toolCall: ToolCall = {
-        type: 'tool_call',
+        type: "tool_call",
         id: item.call_id,
         name: item.name,
         args: item.arguments,
       };
       parts.push(toolCall);
       /* v8 ignore stop */
-    } else if (item.type === 'reasoning') {
+    } else if (item.type === "reasoning") {
       if (includeThoughts) {
         // Extract thoughts from summary (preferred) or content
         /* v8 ignore next - summary is always defined per types, but defensive coding */
         for (const summaryPart of item.summary ?? []) {
-          if (summaryPart.type === 'summary_text') {
+          if (summaryPart.type === "summary_text") {
             const thought: Thought = {
-              type: 'thought',
+              type: "thought",
               thought: summaryPart.text,
             };
             parts.push(thought);
@@ -535,9 +536,9 @@ function decodeContent(
         /* v8 ignore start - reasoning_text content is rare, likely only in open-source models */
         if (item.content) {
           for (const contentPart of item.content) {
-            if (contentPart.type === 'reasoning_text') {
+            if (contentPart.type === "reasoning_text") {
               const thought: Thought = {
-                type: 'thought',
+                type: "thought",
                 thought: contentPart.text,
               };
               parts.push(thought);
@@ -560,10 +561,10 @@ function decodeContent(
 function decodeFinishReason(response: OpenAIResponse): FinishReason | null {
   // Check for refusal in output content
   for (const item of response.output) {
-    if (item.type === 'message') {
+    if (item.type === "message") {
       for (const contentPart of item.content) {
         /* v8 ignore start - refusals are difficult to trigger reliably */
-        if (contentPart.type === 'refusal') {
+        if (contentPart.type === "refusal") {
           return FinishReason.REFUSAL;
         }
         /* v8 ignore end */
@@ -574,11 +575,11 @@ function decodeFinishReason(response: OpenAIResponse): FinishReason | null {
   // Check incomplete_details for finish reason
   if (response.incomplete_details) {
     const reason = response.incomplete_details.reason;
-    if (reason === 'max_output_tokens') {
+    if (reason === "max_output_tokens") {
       return FinishReason.MAX_TOKENS;
     }
     /* v8 ignore start - refusals are difficult to trigger reliably */
-    if (reason === 'content_filter') {
+    if (reason === "content_filter") {
       return FinishReason.REFUSAL;
     }
     /* v8 ignore stop */
@@ -590,7 +591,7 @@ function decodeFinishReason(response: OpenAIResponse): FinishReason | null {
 /**
  * Decode usage information from the Responses API.
  */
-function decodeUsage(usage: NonNullable<OpenAIResponse['usage']>): Usage {
+function decodeUsage(usage: NonNullable<OpenAIResponse["usage"]>): Usage {
   return createUsage({
     inputTokens: usage.input_tokens,
     outputTokens: usage.output_tokens,
@@ -608,7 +609,7 @@ function decodeUsage(usage: NonNullable<OpenAIResponse['usage']>): Usage {
  * resuming a conversation.
  */
 function serializeOutputItem(
-  item: ResponseOutputItem
+  item: ResponseOutputItem,
 ): Record<string, unknown> {
   // Copy all non-undefined properties from the item
   const serialized: Record<string, unknown> = {};

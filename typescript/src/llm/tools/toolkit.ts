@@ -5,20 +5,21 @@
  * a collection of registered tools.
  */
 
-import type { Context } from '@/llm/context';
-import { ToolNotFoundError } from '@/llm/exceptions';
-import type { ToolCall } from '@/llm/content/tool-call';
-import { ToolOutput } from '@/llm/content/tool-output';
-import type { Jsonable } from '@/llm/types/jsonable';
+import type { ToolCall } from "@/llm/content/tool-call";
+import type { Context } from "@/llm/context";
+import type { ToolSchema } from "@/llm/tools/tool-schema";
+import type { Jsonable } from "@/llm/types/jsonable";
+
+import { ToolOutput } from "@/llm/content/tool-output";
+import { ToolNotFoundError } from "@/llm/exceptions";
+import { ProviderTool, isProviderTool } from "@/llm/tools/provider-tool";
 import {
   isContextTool,
   type BaseTool,
   type AnyContextTool,
   type Tools,
   type ContextTools,
-} from '@/llm/tools/tools';
-import type { ToolSchema } from '@/llm/tools/tool-schema';
-import { ProviderTool, isProviderTool } from '@/llm/tools/provider-tool';
+} from "@/llm/tools/tools";
 
 /**
  * Base interface that all toolkit types implement.
@@ -208,9 +209,9 @@ export class Toolkit implements BaseToolkit<BaseTool> {
  * const output = await toolkit.execute(ctx, toolCall);
  * ```
  */
-export class ContextToolkit<DepsT = unknown>
-  implements BaseToolkit<AnyContextTool<DepsT>>
-{
+export class ContextToolkit<DepsT = unknown> implements BaseToolkit<
+  AnyContextTool<DepsT>
+> {
   readonly toolMap: Map<string, AnyContextTool<DepsT>>;
   private readonly providerToolMap: Map<string, ProviderTool>;
   private readonly _tools: readonly (AnyContextTool<DepsT> | ProviderTool)[];
@@ -224,7 +225,7 @@ export class ContextToolkit<DepsT = unknown>
    * @throws Error if multiple tools have the same name.
    */
   constructor(
-    tools: readonly (AnyContextTool<DepsT> | ProviderTool)[] | null | undefined
+    tools: readonly (AnyContextTool<DepsT> | ProviderTool)[] | null | undefined,
   ) {
     this.toolMap = new Map();
     this.providerToolMap = new Map();
@@ -291,7 +292,7 @@ export class ContextToolkit<DepsT = unknown>
    */
   async execute(
     ctx: Context<DepsT>,
-    toolCall: ToolCall
+    toolCall: ToolCall,
   ): Promise<ToolOutput<Jsonable>> {
     const tool = this.toolMap.get(toolCall.name);
 
@@ -319,7 +320,7 @@ export class ContextToolkit<DepsT = unknown>
    */
   async executeAll(
     ctx: Context<DepsT>,
-    toolCalls: readonly ToolCall[]
+    toolCalls: readonly ToolCall[],
   ): Promise<ToolOutput<Jsonable>[]> {
     return Promise.all(toolCalls.map((call) => this.execute(ctx, call)));
   }
@@ -338,7 +339,7 @@ export class ContextToolkit<DepsT = unknown>
  * @returns A new Toolkit instance.
  */
 export function createToolkit(
-  tools: readonly (BaseTool | ProviderTool)[]
+  tools: readonly (BaseTool | ProviderTool)[],
 ): Toolkit {
   return new Toolkit(tools);
 }
@@ -354,7 +355,7 @@ export function createToolkit(
  * @returns A new ContextToolkit instance.
  */
 export function createContextToolkit<DepsT = unknown>(
-  tools: readonly (AnyContextTool<DepsT> | ProviderTool)[]
+  tools: readonly (AnyContextTool<DepsT> | ProviderTool)[],
 ): ContextToolkit<DepsT> {
   return new ContextToolkit(tools);
 }
@@ -401,7 +402,7 @@ export function normalizeTools(tools: AnyTools | null | undefined): Toolkit {
  * @returns A ContextToolkit containing the tools (or an empty ContextToolkit if null/undefined).
  */
 export function normalizeContextTools<DepsT = unknown>(
-  tools: AnyContextTools<DepsT> | null | undefined
+  tools: AnyContextTools<DepsT> | null | undefined,
 ): ContextToolkit<DepsT> {
   if (tools == null) {
     return new ContextToolkit<DepsT>(null);

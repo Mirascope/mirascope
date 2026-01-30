@@ -2,8 +2,9 @@
  * Utility functions for message handling.
  */
 
-import type { Message, UserContent } from '@/llm/messages/message';
-import { user } from '@/llm/messages/message';
+import type { Message, UserContent } from "@/llm/messages/message";
+
+import { user } from "@/llm/messages/message";
 
 /**
  * Type guard that checks if the content is a sequence of Messages.
@@ -13,21 +14,21 @@ import { user } from '@/llm/messages/message';
  * @throws Error if an empty array is provided.
  */
 export function isMessages(
-  content: UserContent | readonly Message[]
+  content: UserContent | readonly Message[],
 ): content is readonly Message[] {
   if (Array.isArray(content)) {
     if (content.length === 0) {
-      throw new Error('Empty array may not be used as message content');
+      throw new Error("Empty array may not be used as message content");
     }
     const first: unknown = content[0];
     return (
-      typeof first === 'object' &&
+      typeof first === "object" &&
       first !== null &&
-      'role' in first &&
-      typeof (first as { role: unknown }).role === 'string' &&
-      ((first as { role: string }).role === 'system' ||
-        (first as { role: string }).role === 'user' ||
-        (first as { role: string }).role === 'assistant')
+      "role" in first &&
+      typeof (first as { role: unknown }).role === "string" &&
+      ((first as { role: string }).role === "system" ||
+        (first as { role: string }).role === "user" ||
+        (first as { role: string }).role === "assistant")
     );
   }
   return false;
@@ -43,7 +44,7 @@ export function isMessages(
  * @returns A sequence of Messages.
  */
 export function promoteToMessages(
-  content: UserContent | readonly Message[]
+  content: UserContent | readonly Message[],
 ): readonly Message[] {
   if (isMessages(content)) {
     return content;

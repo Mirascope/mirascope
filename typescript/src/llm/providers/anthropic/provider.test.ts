@@ -4,10 +4,9 @@
  * Tests error handling by mocking the SDK client to throw errors.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import Anthropic from '@anthropic-ai/sdk';
-import { AnthropicProvider } from './provider';
-import { user } from '@/llm/messages';
+import Anthropic from "@anthropic-ai/sdk";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import {
   AuthenticationError,
   BadRequestError,
@@ -17,11 +16,14 @@ import {
   ServerError,
   APIError,
   ConnectionError,
-} from '@/llm/exceptions';
+} from "@/llm/exceptions";
+import { user } from "@/llm/messages";
+
+import { AnthropicProvider } from "./provider";
 
 // Mock the Anthropic SDK
-vi.mock('@anthropic-ai/sdk', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@anthropic-ai/sdk')>();
+vi.mock("@anthropic-ai/sdk", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@anthropic-ai/sdk")>();
   const mockCreate = vi.fn();
 
   // Create a mock class that mimics Anthropic client
@@ -57,115 +59,115 @@ function createSdkError(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ErrorClass: new (...args: any[]) => InstanceType<typeof Anthropic.APIError>,
   message: string,
-  status: number
+  status: number,
 ): InstanceType<typeof Anthropic.APIError> {
   return new ErrorClass(
     status,
-    { type: 'error', error: { type: 'api_error', message } },
+    { type: "error", error: { type: "api_error", message } },
     message,
-    new Headers()
+    new Headers(),
   );
 }
 
-describe('AnthropicProvider', () => {
+describe("AnthropicProvider", () => {
   let provider: AnthropicProvider;
   let mockCreate: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    provider = new AnthropicProvider({ apiKey: 'test-key' });
+    provider = new AnthropicProvider({ apiKey: "test-key" });
     // Get the mock function from the provider's client
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     mockCreate = (provider as any).client.messages.create;
   });
 
-  describe('constructor', () => {
-    it('accepts custom baseURL', () => {
+  describe("constructor", () => {
+    it("accepts custom baseURL", () => {
       const customProvider = new AnthropicProvider({
-        apiKey: 'test-key',
-        baseURL: 'https://custom.api.example.com',
+        apiKey: "test-key",
+        baseURL: "https://custom.api.example.com",
       });
-      expect(customProvider.id).toBe('anthropic');
+      expect(customProvider.id).toBe("anthropic");
     });
   });
 
-  describe('call', () => {
+  describe("call", () => {
     const mockResponse = {
-      id: 'msg_123',
-      type: 'message',
-      role: 'assistant',
-      content: [{ type: 'text', text: 'Hello!' }],
-      model: 'claude-haiku-4-5',
-      stop_reason: 'end_turn',
+      id: "msg_123",
+      type: "message",
+      role: "assistant",
+      content: [{ type: "text", text: "Hello!" }],
+      model: "claude-haiku-4-5",
+      stop_reason: "end_turn",
       usage: { input_tokens: 5, output_tokens: 2 },
     };
 
-    it('returns response with params when provided', async () => {
+    it("returns response with params when provided", async () => {
       mockCreate.mockResolvedValueOnce(mockResponse);
 
       const response = await provider.call({
-        modelId: 'anthropic/claude-haiku-4-5',
-        messages: [user('Hi')],
+        modelId: "anthropic/claude-haiku-4-5",
+        messages: [user("Hi")],
         params: { temperature: 0.5 },
       });
 
-      expect(response.text()).toBe('Hello!');
+      expect(response.text()).toBe("Hello!");
     });
 
-    it('returns response without params', async () => {
+    it("returns response without params", async () => {
       mockCreate.mockResolvedValueOnce(mockResponse);
 
       const response = await provider.call({
-        modelId: 'anthropic/claude-haiku-4-5',
-        messages: [user('Hi')],
+        modelId: "anthropic/claude-haiku-4-5",
+        messages: [user("Hi")],
       });
 
-      expect(response.text()).toBe('Hello!');
+      expect(response.text()).toBe("Hello!");
     });
   });
 
-  describe('error handling', () => {
+  describe("error handling", () => {
     const testCases = [
       {
         ErrorClass: Anthropic.AuthenticationError,
         MirascopeError: AuthenticationError,
-        name: 'AuthenticationError',
+        name: "AuthenticationError",
         status: 401,
       },
       {
         ErrorClass: Anthropic.PermissionDeniedError,
         MirascopeError: PermissionError,
-        name: 'PermissionError',
+        name: "PermissionError",
         status: 403,
       },
       {
         ErrorClass: Anthropic.BadRequestError,
         MirascopeError: BadRequestError,
-        name: 'BadRequestError',
+        name: "BadRequestError",
         status: 400,
       },
       {
         ErrorClass: Anthropic.NotFoundError,
         MirascopeError: NotFoundError,
-        name: 'NotFoundError',
+        name: "NotFoundError",
         status: 404,
       },
       {
         ErrorClass: Anthropic.RateLimitError,
         MirascopeError: RateLimitError,
-        name: 'RateLimitError',
+        name: "RateLimitError",
         status: 429,
       },
       {
         ErrorClass: Anthropic.InternalServerError,
         MirascopeError: ServerError,
-        name: 'ServerError',
+        name: "ServerError",
         status: 500,
       },
       {
         ErrorClass: Anthropic.APIError,
         MirascopeError: APIError,
-        name: 'APIError',
+        name: "APIError",
         status: 418,
       },
     ];
@@ -176,62 +178,62 @@ describe('AnthropicProvider', () => {
         mockCreate.mockRejectedValueOnce(sdkError);
 
         const callPromise = provider.call({
-          modelId: 'anthropic/claude-haiku-4-5',
-          messages: [user('Hello')],
+          modelId: "anthropic/claude-haiku-4-5",
+          messages: [user("Hello")],
         });
 
         await expect(callPromise).rejects.toBeInstanceOf(MirascopeError);
         await expect(callPromise).rejects.toMatchObject({
-          provider: 'anthropic',
+          provider: "anthropic",
         });
       });
     }
 
-    it('wraps APIConnectionError as ConnectionError', async () => {
+    it("wraps APIConnectionError as ConnectionError", async () => {
       // APIConnectionError has a different constructor signature
       const sdkError = new Anthropic.APIConnectionError({
-        cause: new Error('Connection failed'),
+        cause: new Error("Connection failed"),
       });
       mockCreate.mockRejectedValueOnce(sdkError);
 
       const callPromise = provider.call({
-        modelId: 'anthropic/claude-haiku-4-5',
-        messages: [user('Hello')],
+        modelId: "anthropic/claude-haiku-4-5",
+        messages: [user("Hello")],
       });
 
       await expect(callPromise).rejects.toBeInstanceOf(ConnectionError);
       await expect(callPromise).rejects.toMatchObject({
-        provider: 'anthropic',
+        provider: "anthropic",
       });
     });
 
-    it('preserves original error as originalException', async () => {
+    it("preserves original error as originalException", async () => {
       const sdkError = createSdkError(
         Anthropic.AuthenticationError,
-        'Invalid API key',
-        401
+        "Invalid API key",
+        401,
       );
       mockCreate.mockRejectedValueOnce(sdkError);
 
       try {
         await provider.call({
-          modelId: 'anthropic/claude-haiku-4-5',
-          messages: [user('Hello')],
+          modelId: "anthropic/claude-haiku-4-5",
+          messages: [user("Hello")],
         });
-        expect.fail('Expected error to be thrown');
+        expect.fail("Expected error to be thrown");
       } catch (e) {
         expect(e).toBeInstanceOf(AuthenticationError);
         expect((e as AuthenticationError).originalException).toBe(sdkError);
       }
     });
 
-    it('re-throws non-SDK errors as-is', async () => {
-      const genericError = new Error('Network failure');
+    it("re-throws non-SDK errors as-is", async () => {
+      const genericError = new Error("Network failure");
       mockCreate.mockRejectedValueOnce(genericError);
 
       const callPromise = provider.call({
-        modelId: 'anthropic/claude-haiku-4-5',
-        messages: [user('Hello')],
+        modelId: "anthropic/claude-haiku-4-5",
+        messages: [user("Hello")],
       });
 
       // Base class returns non-mapped errors unchanged

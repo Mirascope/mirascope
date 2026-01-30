@@ -11,7 +11,7 @@
  * This is used internally to convert formatted output tool calls to textual output.
  * It should not be used for regular tool definitions.
  */
-export const FORMAT_TOOL_NAME = '__mirascope_formatted_output_tool__' as const;
+export const FORMAT_TOOL_NAME = "__mirascope_formatted_output_tool__" as const;
 
 /**
  * JSON Schema property definition for a single tool parameter.
@@ -38,7 +38,7 @@ export interface JsonSchemaProperty {
  * including all properties, required fields, and definitions.
  */
 export interface ToolParameterSchema {
-  readonly type: 'object';
+  readonly type: "object";
   readonly title?: string;
   readonly properties: Record<string, JsonSchemaProperty>;
   readonly required: readonly string[];

@@ -1,116 +1,118 @@
-import { describe, expect, it } from 'vitest';
-import type { Image } from '@/llm/content/image';
-import type { ToolCall } from '@/llm/content/tool-call';
-import type { Thought } from '@/llm/content/thought';
-import { assistant, system, user } from '@/llm/messages/message';
+import { describe, expect, it } from "vitest";
 
-describe('system', () => {
-  it('creates a system message from a string', () => {
-    const msg = system('You are a helpful assistant.');
+import type { Image } from "@/llm/content/image";
+import type { Thought } from "@/llm/content/thought";
+import type { ToolCall } from "@/llm/content/tool-call";
+
+import { assistant, system, user } from "@/llm/messages/message";
+
+describe("system", () => {
+  it("creates a system message from a string", () => {
+    const msg = system("You are a helpful assistant.");
 
     expect(msg).toEqual({
-      role: 'system',
-      content: { type: 'text', text: 'You are a helpful assistant.' },
+      role: "system",
+      content: { type: "text", text: "You are a helpful assistant." },
     });
   });
 
-  it('creates a system message from a Text object', () => {
-    const msg = system({ type: 'text', text: 'System instructions.' });
+  it("creates a system message from a Text object", () => {
+    const msg = system({ type: "text", text: "System instructions." });
 
     expect(msg).toEqual({
-      role: 'system',
-      content: { type: 'text', text: 'System instructions.' },
+      role: "system",
+      content: { type: "text", text: "System instructions." },
     });
   });
 });
 
-describe('user', () => {
-  it('creates a user message from a string', () => {
-    const msg = user('Hello!');
+describe("user", () => {
+  it("creates a user message from a string", () => {
+    const msg = user("Hello!");
 
     expect(msg).toEqual({
-      role: 'user',
-      content: [{ type: 'text', text: 'Hello!' }],
+      role: "user",
+      content: [{ type: "text", text: "Hello!" }],
       name: null,
     });
   });
 
-  it('creates a user message from a Text object', () => {
-    const msg = user({ type: 'text', text: 'Hello!' });
+  it("creates a user message from a Text object", () => {
+    const msg = user({ type: "text", text: "Hello!" });
 
     expect(msg).toEqual({
-      role: 'user',
-      content: [{ type: 'text', text: 'Hello!' }],
+      role: "user",
+      content: [{ type: "text", text: "Hello!" }],
       name: null,
     });
   });
 
-  it('creates a user message from an array of strings', () => {
-    const msg = user(['Hello!', 'How are you?']);
+  it("creates a user message from an array of strings", () => {
+    const msg = user(["Hello!", "How are you?"]);
 
     expect(msg).toEqual({
-      role: 'user',
+      role: "user",
       content: [
-        { type: 'text', text: 'Hello!' },
-        { type: 'text', text: 'How are you?' },
+        { type: "text", text: "Hello!" },
+        { type: "text", text: "How are you?" },
       ],
       name: null,
     });
   });
 
-  it('creates a user message with mixed content types', () => {
+  it("creates a user message with mixed content types", () => {
     const image: Image = {
-      type: 'image',
-      source: { type: 'url_image_source', url: 'https://example.com/img.png' },
+      type: "image",
+      source: { type: "url_image_source", url: "https://example.com/img.png" },
     };
 
-    const msg = user(['Look at this:', image]);
+    const msg = user(["Look at this:", image]);
 
     expect(msg).toEqual({
-      role: 'user',
-      content: [{ type: 'text', text: 'Look at this:' }, image],
+      role: "user",
+      content: [{ type: "text", text: "Look at this:" }, image],
       name: null,
     });
   });
 
-  it('creates a user message with a name', () => {
-    const msg = user('Hello!', { name: 'Alice' });
+  it("creates a user message with a name", () => {
+    const msg = user("Hello!", { name: "Alice" });
 
     expect(msg).toEqual({
-      role: 'user',
-      content: [{ type: 'text', text: 'Hello!' }],
-      name: 'Alice',
+      role: "user",
+      content: [{ type: "text", text: "Hello!" }],
+      name: "Alice",
     });
   });
 });
 
-describe('assistant', () => {
-  it('creates an assistant message from a string', () => {
-    const msg = assistant('Hello! How can I help?', {
-      modelId: 'claude-3-opus',
-      providerId: 'anthropic',
+describe("assistant", () => {
+  it("creates an assistant message from a string", () => {
+    const msg = assistant("Hello! How can I help?", {
+      modelId: "claude-3-opus",
+      providerId: "anthropic",
     });
 
     expect(msg).toEqual({
-      role: 'assistant',
-      content: [{ type: 'text', text: 'Hello! How can I help?' }],
+      role: "assistant",
+      content: [{ type: "text", text: "Hello! How can I help?" }],
       name: null,
-      providerId: 'anthropic',
-      modelId: 'claude-3-opus',
+      providerId: "anthropic",
+      modelId: "claude-3-opus",
       providerModelName: null,
       rawMessage: null,
     });
   });
 
-  it('creates an assistant message from a Text object', () => {
+  it("creates an assistant message from a Text object", () => {
     const msg = assistant(
-      { type: 'text', text: 'Response text.' },
-      { modelId: null, providerId: null }
+      { type: "text", text: "Response text." },
+      { modelId: null, providerId: null },
     );
 
     expect(msg).toEqual({
-      role: 'assistant',
-      content: [{ type: 'text', text: 'Response text.' }],
+      role: "assistant",
+      content: [{ type: "text", text: "Response text." }],
       name: null,
       providerId: null,
       modelId: null,
@@ -119,70 +121,70 @@ describe('assistant', () => {
     });
   });
 
-  it('creates an assistant message with tool calls', () => {
+  it("creates an assistant message with tool calls", () => {
     const toolCall: ToolCall = {
-      type: 'tool_call',
-      id: 'call_123',
-      name: 'get_weather',
+      type: "tool_call",
+      id: "call_123",
+      name: "get_weather",
       args: '{"location": "San Francisco"}',
     };
 
-    const msg = assistant(['Let me check the weather.', toolCall], {
-      modelId: 'gpt-4',
-      providerId: 'openai',
+    const msg = assistant(["Let me check the weather.", toolCall], {
+      modelId: "gpt-4",
+      providerId: "openai",
     });
 
     expect(msg).toEqual({
-      role: 'assistant',
-      content: [{ type: 'text', text: 'Let me check the weather.' }, toolCall],
+      role: "assistant",
+      content: [{ type: "text", text: "Let me check the weather." }, toolCall],
       name: null,
-      providerId: 'openai',
-      modelId: 'gpt-4',
+      providerId: "openai",
+      modelId: "gpt-4",
       providerModelName: null,
       rawMessage: null,
     });
   });
 
-  it('creates an assistant message with thoughts', () => {
+  it("creates an assistant message with thoughts", () => {
     const thought: Thought = {
-      type: 'thought',
-      thought: 'I should consider the context...',
+      type: "thought",
+      thought: "I should consider the context...",
     };
 
-    const msg = assistant([thought, 'Here is my response.'], {
-      modelId: 'claude-3-opus',
-      providerId: 'anthropic',
+    const msg = assistant([thought, "Here is my response."], {
+      modelId: "claude-3-opus",
+      providerId: "anthropic",
     });
 
     expect(msg).toEqual({
-      role: 'assistant',
-      content: [thought, { type: 'text', text: 'Here is my response.' }],
+      role: "assistant",
+      content: [thought, { type: "text", text: "Here is my response." }],
       name: null,
-      providerId: 'anthropic',
-      modelId: 'claude-3-opus',
+      providerId: "anthropic",
+      modelId: "claude-3-opus",
       providerModelName: null,
       rawMessage: null,
     });
   });
 
-  it('creates an assistant message with all optional fields', () => {
-    const rawData = { id: 'msg_123', model: 'claude-3-opus' };
+  it("creates an assistant message with all optional fields", () => {
+    const rawData = { id: "msg_123", model: "claude-3-opus" };
 
-    const msg = assistant('Response', {
-      modelId: 'claude-3-opus',
-      providerId: 'anthropic',
-      providerModelName: 'claude-3-opus:messages',
+    const msg = assistant("Response", {
+      modelId: "claude-3-opus",
+      providerId: "anthropic",
+      providerModelName: "claude-3-opus:messages",
       rawMessage: rawData,
-      name: 'Assistant',
+      name: "Assistant",
     });
 
     expect(msg).toEqual({
-      role: 'assistant',
-      content: [{ type: 'text', text: 'Response' }],
-      name: 'Assistant',
-      providerId: 'anthropic',
-      modelId: 'claude-3-opus',
-      providerModelName: 'claude-3-opus:messages',
+      role: "assistant",
+      content: [{ type: "text", text: "Response" }],
+      name: "Assistant",
+      providerId: "anthropic",
+      modelId: "claude-3-opus",
+      providerModelName: "claude-3-opus:messages",
       rawMessage: rawData,
     });
   });

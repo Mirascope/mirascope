@@ -2,7 +2,6 @@
  * Anthropic-specific utilities for encoding requests and decoding responses.
  */
 
-import Anthropic from '@anthropic-ai/sdk';
 import type {
   Base64ImageSource as AnthropicBase64ImageSource,
   ContentBlock,
@@ -10,7 +9,9 @@ import type {
   Message as AnthropicMessage,
   MessageCreateParamsNonStreaming,
   URLImageSource as AnthropicURLImageSource,
-} from '@anthropic-ai/sdk/resources/messages';
+} from "@anthropic-ai/sdk/resources/messages";
+
+import Anthropic from "@anthropic-ai/sdk";
 
 import type {
   AssistantContentPart,
@@ -20,10 +21,15 @@ import type {
   Thought,
   ToolCall,
   UserContentPart,
-} from '@/llm/content';
-import type { Format } from '@/llm/formatting';
-import type { ToolSchema, Tools } from '@/llm/tools';
-import { ProviderTool, isProviderTool, isWebSearchTool } from '@/llm/tools';
+} from "@/llm/content";
+import type { Format } from "@/llm/formatting";
+import type { AssistantMessage, Message } from "@/llm/messages";
+import type { Params } from "@/llm/models";
+import type { ThinkingLevel } from "@/llm/models/thinking-config";
+import type { AnthropicModelId } from "@/llm/providers/anthropic/model-id";
+import type { Usage } from "@/llm/responses/usage";
+import type { ToolSchema, Tools } from "@/llm/tools";
+
 import {
   APIError,
   AuthenticationError,
@@ -34,16 +40,12 @@ import {
   PermissionError,
   RateLimitError,
   ServerError,
-} from '@/llm/exceptions';
-import type { AssistantMessage, Message } from '@/llm/messages';
-import type { Params } from '@/llm/models';
-import type { ThinkingLevel } from '@/llm/models/thinking-config';
-import { ParamHandler, type ProviderErrorMap } from '@/llm/providers/base';
-import type { AnthropicModelId } from '@/llm/providers/anthropic/model-id';
-import { modelName } from '@/llm/providers/anthropic/model-id';
-import { FinishReason } from '@/llm/responses/finish-reason';
-import type { Usage } from '@/llm/responses/usage';
-import { createUsage } from '@/llm/responses/usage';
+} from "@/llm/exceptions";
+import { modelName } from "@/llm/providers/anthropic/model-id";
+import { ParamHandler, type ProviderErrorMap } from "@/llm/providers/base";
+import { FinishReason } from "@/llm/responses/finish-reason";
+import { createUsage } from "@/llm/responses/usage";
+import { ProviderTool, isProviderTool, isWebSearchTool } from "@/llm/tools";
 
 /**
  * Default max tokens for Anthropic requests.
@@ -54,10 +56,10 @@ const DEFAULT_MAX_TOKENS = 4096;
  * Supported Anthropic image MIME types.
  */
 type AnthropicImageMimeType =
-  | 'image/jpeg'
-  | 'image/png'
-  | 'image/gif'
-  | 'image/webp';
+  | "image/jpeg"
+  | "image/png"
+  | "image/gif"
+  | "image/webp";
 
 /**
  * Convert an ImageMimeType to Anthropic-supported media type.
@@ -65,21 +67,21 @@ type AnthropicImageMimeType =
  * @throws FeatureNotSupportedError for unsupported formats (HEIC, HEIF)
  */
 function toAnthropicImageMimeType(
-  mimeType: ImageMimeType
+  mimeType: ImageMimeType,
 ): AnthropicImageMimeType {
   if (
-    mimeType === 'image/jpeg' ||
-    mimeType === 'image/png' ||
-    mimeType === 'image/gif' ||
-    mimeType === 'image/webp'
+    mimeType === "image/jpeg" ||
+    mimeType === "image/png" ||
+    mimeType === "image/gif" ||
+    mimeType === "image/webp"
   ) {
     return mimeType;
   }
   throw new FeatureNotSupportedError(
     `image format: ${mimeType}`,
-    'anthropic',
+    "anthropic",
     null,
-    `Anthropic does not support ${mimeType}. Supported formats: JPEG, PNG, GIF, WebP.`
+    `Anthropic does not support ${mimeType}. Supported formats: JPEG, PNG, GIF, WebP.`,
   );
 }
 
@@ -87,19 +89,19 @@ function toAnthropicImageMimeType(
  * Encode an Image content part to Anthropic's ImageBlockParam format.
  */
 function encodeImage(image: Image): ImageBlockParam {
-  if (image.source.type === 'base64_image_source') {
+  if (image.source.type === "base64_image_source") {
     const source: AnthropicBase64ImageSource = {
-      type: 'base64',
+      type: "base64",
       media_type: toAnthropicImageMimeType(image.source.mimeType),
       data: image.source.data,
     };
-    return { type: 'image', source };
+    return { type: "image", source };
   } else {
     const source: AnthropicURLImageSource = {
-      type: 'url',
+      type: "url",
       url: image.source.url,
     };
-    return { type: 'image', source };
+    return { type: "image", source };
   }
 }
 
@@ -108,7 +110,7 @@ function encodeImage(image: Image): ImageBlockParam {
  * The multiplier is applied to max_tokens to compute the thinking budget.
  */
 const THINKING_LEVEL_TO_BUDGET_MULTIPLIER: Record<
-  Exclude<ThinkingLevel, 'none' | 'default'>,
+  Exclude<ThinkingLevel, "none" | "default">,
   number
 > = {
   minimal: 0, // Will become 1024 (minimum allowed)
@@ -127,12 +129,12 @@ const THINKING_LEVEL_TO_BUDGET_MULTIPLIER: Record<
  */
 export function computeThinkingBudget(
   level: ThinkingLevel,
-  maxTokens: number
+  maxTokens: number,
 ): number {
-  if (level === 'none') {
+  if (level === "none") {
     return 0; // Disabled
   }
-  if (level === 'default') {
+  if (level === "default") {
     return -1; // Use provider default (don't set thinking param)
   }
 
@@ -165,10 +167,10 @@ export const ANTHROPIC_ERROR_MAP: ProviderErrorMap = [
  * Cacheable content types that can have cache_control applied.
  */
 const CACHEABLE_CONTENT_TYPES = new Set([
-  'text',
-  'image',
-  'tool_output',
-  'tool_call',
+  "text",
+  "image",
+  "tool_output",
+  "tool_call",
 ]);
 
 /**
@@ -182,7 +184,7 @@ const CACHEABLE_CONTENT_TYPES = new Set([
 function processContentParts(
   content: readonly (UserContentPart | AssistantContentPart)[],
   encodeThoughtsAsText: boolean = false,
-  addCacheControl: boolean = false
+  addCacheControl: boolean = false,
 ): Anthropic.Messages.ContentBlockParam[] {
   const blocks: Anthropic.Messages.ContentBlockParam[] = [];
 
@@ -193,7 +195,7 @@ function processContentParts(
       const part = content[i]!;
       if (CACHEABLE_CONTENT_TYPES.has(part.type)) {
         // Skip empty text
-        if (part.type === 'text' && !part.text) {
+        if (part.type === "text" && !part.text) {
           continue;
         }
         lastCacheableIndex = i;
@@ -207,69 +209,69 @@ function processContentParts(
     const shouldAddCache = addCacheControl && i === lastCacheableIndex;
 
     switch (part.type) {
-      case 'text':
+      case "text":
         blocks.push({
-          type: 'text',
+          type: "text",
           text: part.text,
-          ...(shouldAddCache && { cache_control: { type: 'ephemeral' } }),
+          ...(shouldAddCache && { cache_control: { type: "ephemeral" } }),
         });
         break;
 
-      case 'image':
+      case "image":
         blocks.push({
           ...encodeImage(part),
-          ...(shouldAddCache && { cache_control: { type: 'ephemeral' } }),
+          ...(shouldAddCache && { cache_control: { type: "ephemeral" } }),
         });
         break;
 
-      case 'audio':
+      case "audio":
         throw new FeatureNotSupportedError(
-          'audio input',
-          'anthropic',
+          "audio input",
+          "anthropic",
           null,
-          'Anthropic does not support audio inputs.'
+          "Anthropic does not support audio inputs.",
         );
 
       /* v8 ignore start - tool encoding will be tested via e2e */
-      case 'tool_call':
+      case "tool_call":
         blocks.push({
-          type: 'tool_use',
+          type: "tool_use",
           id: part.id,
           name: part.name,
           input: JSON.parse(part.args) as Record<string, unknown>,
-          ...(shouldAddCache && { cache_control: { type: 'ephemeral' } }),
+          ...(shouldAddCache && { cache_control: { type: "ephemeral" } }),
         });
         break;
 
-      case 'tool_output':
+      case "tool_output":
         blocks.push({
-          type: 'tool_result',
+          type: "tool_result",
           tool_use_id: part.id,
           content:
-            typeof part.result === 'string'
+            typeof part.result === "string"
               ? part.result
               : JSON.stringify(part.result),
           is_error: part.error !== null,
-          ...(shouldAddCache && { cache_control: { type: 'ephemeral' } }),
+          ...(shouldAddCache && { cache_control: { type: "ephemeral" } }),
         });
         break;
       /* v8 ignore stop */
 
       /* v8 ignore start - content types not yet implemented */
-      case 'document':
+      case "document":
         throw new FeatureNotSupportedError(
-          'document content encoding',
-          'anthropic',
+          "document content encoding",
+          "anthropic",
           null,
-          'Document content is not yet implemented'
+          "Document content is not yet implemented",
         );
       /* v8 ignore stop */
 
       /* v8 ignore start - encodeThoughtsAsText will be tested via e2e */
-      case 'thought':
+      case "thought":
         // Encode thoughts as text when requested, otherwise drop
         if (encodeThoughtsAsText) {
-          blocks.push({ type: 'text', text: '**Thinking:** ' + part.thought });
+          blocks.push({ type: "text", text: "**Thinking:** " + part.thought });
         }
         break;
       /* v8 ignore stop */
@@ -288,13 +290,13 @@ function processContentParts(
  * Anthropic accepts string for simple messages, but not when cache_control is present.
  */
 function simplifyContent(
-  blocks: Anthropic.Messages.ContentBlockParam[]
+  blocks: Anthropic.Messages.ContentBlockParam[],
 ): string | Anthropic.Messages.ContentBlockParam[] {
   if (
     blocks.length === 1 &&
     blocks[0] &&
-    blocks[0].type === 'text' &&
-    !('cache_control' in blocks[0] && blocks[0].cache_control)
+    blocks[0].type === "text" &&
+    !("cache_control" in blocks[0] && blocks[0].cache_control)
   ) {
     return blocks[0].text;
   }
@@ -317,21 +319,21 @@ function encodeMessage(
   message: Message,
   modelId: AnthropicModelId,
   encodeThoughtsAsText: boolean,
-  addCacheControl: boolean
+  addCacheControl: boolean,
 ): Anthropic.Messages.MessageParam | null {
   /* v8 ignore next 3 - defensive check: system messages filtered in encodeMessages */
-  if (message.role === 'system') {
+  if (message.role === "system") {
     return null; // System messages are handled separately
   }
 
-  if (message.role === 'user') {
+  if (message.role === "user") {
     const blocks = processContentParts(
       message.content,
       false, // encodeThoughtsAsText not applicable to user messages
-      addCacheControl
+      addCacheControl,
     );
     return {
-      role: 'user',
+      role: "user",
       content: simplifyContent(blocks),
     };
   }
@@ -342,7 +344,7 @@ function encodeMessage(
   if (
     !addCacheControl &&
     !encodeThoughtsAsText &&
-    message.providerId === 'anthropic' &&
+    message.providerId === "anthropic" &&
     message.modelId === modelId &&
     message.rawMessage
   ) {
@@ -354,10 +356,10 @@ function encodeMessage(
   const blocks = processContentParts(
     message.content,
     encodeThoughtsAsText,
-    addCacheControl
+    addCacheControl,
   );
   return {
-    role: 'assistant',
+    role: "assistant",
     content: simplifyContent(blocks),
   };
 }
@@ -375,18 +377,18 @@ function encodeMessage(
 export function encodeMessages(
   messages: readonly Message[],
   modelId: AnthropicModelId,
-  encodeThoughtsAsText: boolean = false
+  encodeThoughtsAsText: boolean = false,
 ): {
   system: string | undefined;
-  messages: MessageCreateParamsNonStreaming['messages'];
+  messages: MessageCreateParamsNonStreaming["messages"];
 } {
   let system: string | undefined;
-  const anthropicMessages: MessageCreateParamsNonStreaming['messages'] = [];
+  const anthropicMessages: MessageCreateParamsNonStreaming["messages"] = [];
 
   // Extract system message
   const nonSystemMessages: Message[] = [];
   for (const message of messages) {
-    if (message.role === 'system') {
+    if (message.role === "system") {
       system = message.content.text;
     } else {
       nonSystemMessages.push(message);
@@ -395,7 +397,7 @@ export function encodeMessages(
 
   // Detect multi-turn conversations by checking for assistant messages
   const hasAssistantMessage = nonSystemMessages.some(
-    (msg) => msg.role === 'assistant'
+    (msg) => msg.role === "assistant",
   );
 
   // Encode messages, adding cache_control to the last message if multi-turn
@@ -408,7 +410,7 @@ export function encodeMessages(
       message,
       modelId,
       encodeThoughtsAsText,
-      addCacheControl
+      addCacheControl,
     );
     if (encoded) {
       anthropicMessages.push(encoded);
@@ -431,7 +433,7 @@ export function encodeToolSchema(tool: ToolSchema): Anthropic.Messages.Tool {
     name: tool.name,
     description: tool.description,
     input_schema: {
-      type: 'object',
+      type: "object",
       properties: tool.parameters.properties as Record<
         string,
         Anthropic.Messages.Tool.InputSchema
@@ -445,7 +447,7 @@ export function encodeToolSchema(tool: ToolSchema): Anthropic.Messages.Tool {
  * Encode an array of tool schemas to Anthropic's format.
  */
 export function encodeTools(
-  tools: readonly ToolSchema[]
+  tools: readonly ToolSchema[],
 ): Anthropic.Messages.Tool[] {
   return tools.map(encodeToolSchema);
 }
@@ -468,19 +470,19 @@ export function buildRequestParams(
   messages: readonly Message[],
   tools?: Tools,
   format?: Format | null,
-  params: Params = {}
+  params: Params = {},
 ): MessageCreateParamsNonStreaming {
-  return ParamHandler.with(params, 'anthropic', modelId, (p) => {
-    const thinkingConfig = p.get('thinking');
+  return ParamHandler.with(params, "anthropic", modelId, (p) => {
+    const thinkingConfig = p.get("thinking");
     const encodeThoughtsAsText = thinkingConfig?.encodeThoughtsAsText ?? false;
 
     const { system, messages: anthropicMessages } = encodeMessages(
       messages,
       modelId,
-      encodeThoughtsAsText
+      encodeThoughtsAsText,
     );
 
-    const maxTokens = p.getOrDefault('maxTokens', DEFAULT_MAX_TOKENS);
+    const maxTokens = p.getOrDefault("maxTokens", DEFAULT_MAX_TOKENS);
     const requestParams: MessageCreateParamsNonStreaming = {
       model: modelName(modelId),
       messages: anthropicMessages,
@@ -503,17 +505,17 @@ export function buildRequestParams(
           if (isWebSearchTool(tool)) {
             // Anthropic's web search tool
             allTools.push({
-              type: 'web_search_20250305',
-              name: 'web_search',
+              type: "web_search_20250305",
+              name: "web_search",
             });
           } else {
             // Cast needed because TS narrows to never after WebSearchTool check
             const unsupportedTool = tool as ProviderTool;
             throw new FeatureNotSupportedError(
               `Provider tool ${unsupportedTool.name}`,
-              'anthropic',
+              "anthropic",
               modelId,
-              `Provider tool '${unsupportedTool.name}' is not supported by Anthropic`
+              `Provider tool '${unsupportedTool.name}' is not supported by Anthropic`,
             );
           }
         } else {
@@ -531,28 +533,28 @@ export function buildRequestParams(
     /* v8 ignore start - format encoding will be tested via e2e */
     if (format) {
       // Check mode support
-      if (format.mode === 'strict') {
+      if (format.mode === "strict") {
         throw new FeatureNotSupportedError(
-          'formatting_mode:strict',
-          'anthropic',
+          "formatting_mode:strict",
+          "anthropic",
           modelId,
-          'Anthropic standard API does not support strict mode formatting. Use beta API or tool mode.'
+          "Anthropic standard API does not support strict mode formatting. Use beta API or tool mode.",
         );
       }
 
       // Add format tool if mode is 'tool'
-      if (format.mode === 'tool') {
+      if (format.mode === "tool") {
         const formatToolSchema = format.createToolSchema();
         allTools.push(encodeToolSchema(formatToolSchema));
 
         // Set tool_choice based on whether we have other tools
         if (tools && tools.length > 0) {
           // When we have other tools, use 'any' to require a tool call
-          requestParams.tool_choice = { type: 'any' };
+          requestParams.tool_choice = { type: "any" };
         } else {
           // When only format tool, force that specific tool
           requestParams.tool_choice = {
-            type: 'tool',
+            type: "tool",
             name: formatToolSchema.name,
             disable_parallel_tool_use: true,
           };
@@ -574,9 +576,9 @@ export function buildRequestParams(
     if (systemPrompt) {
       requestParams.system = [
         {
-          type: 'text',
+          type: "text",
           text: systemPrompt,
-          cache_control: { type: 'ephemeral' },
+          cache_control: { type: "ephemeral" },
         },
       ];
     }
@@ -588,21 +590,21 @@ export function buildRequestParams(
       const lastTool = allTools[allTools.length - 1]!;
       (
         lastTool as Anthropic.Messages.Tool & { cache_control?: object }
-      ).cache_control = { type: 'ephemeral' };
+      ).cache_control = { type: "ephemeral" };
       requestParams.tools = allTools;
     }
     /* v8 ignore stop */
 
-    const temperature = p.get('temperature');
-    const topP = p.get('topP');
+    const temperature = p.get("temperature");
+    const topP = p.get("topP");
 
     // Anthropic doesn't allow both temperature and topP together
     if (temperature !== undefined && topP !== undefined) {
       throw new FeatureNotSupportedError(
-        'temperature + topP',
-        'anthropic',
+        "temperature + topP",
+        "anthropic",
         modelId,
-        'Anthropic does not allow both temperature and top_p to be specified together'
+        "Anthropic does not allow both temperature and top_p to be specified together",
       );
     }
 
@@ -614,25 +616,25 @@ export function buildRequestParams(
       requestParams.top_p = topP;
     }
 
-    const topK = p.get('topK');
+    const topK = p.get("topK");
     if (topK !== undefined) {
       requestParams.top_k = topK;
     }
 
-    const stopSequences = p.get('stopSequences');
+    const stopSequences = p.get("stopSequences");
     if (stopSequences !== undefined) {
       requestParams.stop_sequences = stopSequences;
     }
 
     // Anthropic doesn't support seed
-    p.warnUnsupported('seed', 'Anthropic does not support the seed parameter');
+    p.warnUnsupported("seed", "Anthropic does not support the seed parameter");
 
     if (thinkingConfig) {
       const budget = computeThinkingBudget(thinkingConfig.level, maxTokens);
       if (budget === 0) {
-        requestParams.thinking = { type: 'disabled' };
+        requestParams.thinking = { type: "disabled" };
       } else if (budget > 0) {
-        requestParams.thinking = { type: 'enabled', budget_tokens: budget };
+        requestParams.thinking = { type: "enabled", budget_tokens: budget };
       }
       // If budget === -1, don't set thinking (use provider default)
     }
@@ -647,7 +649,7 @@ export function buildRequestParams(
  * This mirrors Python's `part.model_dump()` pattern for round-tripping.
  */
 function serializeContentBlocks(
-  content: ContentBlock[]
+  content: ContentBlock[],
 ): Record<string, unknown>[] {
   return content.map((block) => {
     // Copy all non-undefined properties from the block
@@ -671,7 +673,7 @@ function serializeContentBlocks(
 export function decodeResponse(
   response: AnthropicMessage,
   modelId: AnthropicModelId,
-  includeThoughts: boolean = false
+  includeThoughts: boolean = false,
 ): {
   assistantMessage: AssistantMessage;
   finishReason: FinishReason | null;
@@ -687,14 +689,14 @@ export function decodeResponse(
   };
 
   const assistantMessage: AssistantMessage = {
-    role: 'assistant',
+    role: "assistant",
     content,
     name: null,
-    providerId: 'anthropic',
+    providerId: "anthropic",
     modelId,
     providerModelName: modelName(modelId),
     rawMessage:
-      serializedRawMessage as unknown as AssistantMessage['rawMessage'],
+      serializedRawMessage as unknown as AssistantMessage["rawMessage"],
   };
 
   const finishReason = decodeStopReason(response.stop_reason);
@@ -705,37 +707,37 @@ export function decodeResponse(
 
 function decodeContent(
   content: ContentBlock[],
-  includeThoughts: boolean
+  includeThoughts: boolean,
 ): AssistantContentPart[] {
   const parts: AssistantContentPart[] = [];
 
   for (const block of content) {
-    if (block.type === 'text') {
-      const text: Text = { type: 'text', text: block.text };
+    if (block.type === "text") {
+      const text: Text = { type: "text", text: block.text };
       parts.push(text);
-    } else if (block.type === 'thinking') {
+    } else if (block.type === "thinking") {
       if (includeThoughts) {
-        const thought: Thought = { type: 'thought', thought: block.thinking };
+        const thought: Thought = { type: "thought", thought: block.thinking };
         parts.push(thought);
       }
       /* v8 ignore start - redacted_thinking can't be reliably triggered in tests */
-    } else if (block.type === 'redacted_thinking') {
+    } else if (block.type === "redacted_thinking") {
       // Skip redacted thinking blocks - they contain encrypted thinking
       // that cannot be decoded
       continue;
       /* v8 ignore stop */
       /* v8 ignore start - tool decoding will be tested via e2e */
-    } else if (block.type === 'tool_use') {
+    } else if (block.type === "tool_use") {
       const toolCall: ToolCall = {
-        type: 'tool_call',
+        type: "tool_call",
         id: block.id,
         name: block.name,
         args: JSON.stringify(block.input),
       };
       parts.push(toolCall);
     } else if (
-      block.type === 'server_tool_use' ||
-      block.type === 'web_search_tool_result'
+      block.type === "server_tool_use" ||
+      block.type === "web_search_tool_result"
     ) {
       // Skip server-side tool content - preserved in rawMessage
       continue;
@@ -746,9 +748,9 @@ function decodeContent(
       const unknownBlock = block as { type: string };
       throw new FeatureNotSupportedError(
         `unknown block type: ${unknownBlock.type}`,
-        'anthropic',
+        "anthropic",
         null,
-        `Unknown content block type '${unknownBlock.type}' in response is not yet implemented`
+        `Unknown content block type '${unknownBlock.type}' in response is not yet implemented`,
       );
     }
     /* v8 ignore stop */
@@ -758,14 +760,14 @@ function decodeContent(
 }
 
 function decodeStopReason(
-  stopReason: AnthropicMessage['stop_reason']
+  stopReason: AnthropicMessage["stop_reason"],
 ): FinishReason | null {
   switch (stopReason) {
-    case 'max_tokens':
+    case "max_tokens":
       return FinishReason.MAX_TOKENS;
-    case 'end_turn':
-    case 'stop_sequence':
-    case 'tool_use':
+    case "end_turn":
+    case "stop_sequence":
+    case "tool_use":
       return null; // Normal completion
     /* v8 ignore next 2 - defensive default case */
     default:
@@ -773,7 +775,7 @@ function decodeStopReason(
   }
 }
 
-export function decodeUsage(usage: AnthropicMessage['usage']): Usage {
+export function decodeUsage(usage: AnthropicMessage["usage"]): Usage {
   return createUsage({
     inputTokens: usage.input_tokens,
     outputTokens: usage.output_tokens,

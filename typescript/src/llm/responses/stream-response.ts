@@ -4,14 +4,15 @@
  * Extends BaseStreamResponse with resume methods for continuing conversations.
  */
 
-import type { ToolOutput } from '@/llm/content/tool-output';
-import type { Jsonable } from '@/llm/types/jsonable';
-import type { UserContent } from '@/llm/messages';
+import type { ToolOutput } from "@/llm/content/tool-output";
+import type { UserContent } from "@/llm/messages";
+import type { Jsonable } from "@/llm/types/jsonable";
+
 import {
   BaseStreamResponse,
   type BaseStreamResponseInit,
-} from '@/llm/responses/base-stream-response';
-import { Toolkit, type Tools } from '@/llm/tools';
+} from "@/llm/responses/base-stream-response";
+import { Toolkit, type Tools } from "@/llm/tools";
 
 /**
  * Arguments for constructing a StreamResponse.
@@ -19,8 +20,10 @@ import { Toolkit, type Tools } from '@/llm/tools';
  * Accepts `tools` as either a Toolkit or a list of tools, which gets
  * converted to a Toolkit before passing to BaseStreamResponse.
  */
-export interface StreamResponseInit
-  extends Omit<BaseStreamResponseInit, 'toolkit'> {
+export interface StreamResponseInit extends Omit<
+  BaseStreamResponseInit,
+  "toolkit"
+> {
   /**
    * The tools available for this response.
    * Can be a Toolkit instance or an array of tools.
@@ -101,7 +104,7 @@ export class StreamResponse<F = unknown> extends BaseStreamResponse<F> {
    */
   async executeTools(): Promise<ToolOutput<Jsonable>[]> {
     return Promise.all(
-      this.toolCalls.map((call) => this.toolkit.execute(call))
+      this.toolCalls.map((call) => this.toolkit.execute(call)),
     );
   }
 

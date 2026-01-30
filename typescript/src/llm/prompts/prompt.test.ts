@@ -1,101 +1,102 @@
-import { describe, expect, it } from 'vitest';
-import { definePrompt } from '@/llm/prompts/prompt';
-import { system, user } from '@/llm/messages';
+import { describe, expect, it } from "vitest";
 
-describe('definePrompt', () => {
-  describe('with variables', () => {
-    it('creates a prompt with messages method', () => {
+import { system, user } from "@/llm/messages";
+import { definePrompt } from "@/llm/prompts/prompt";
+
+describe("definePrompt", () => {
+  describe("with variables", () => {
+    it("creates a prompt with messages method", () => {
       const recommendBook = definePrompt<{ genre: string }>({
         template: ({ genre }) => `Recommend a ${genre} book`,
       });
 
-      const messages = recommendBook.messages({ genre: 'fantasy' });
+      const messages = recommendBook.messages({ genre: "fantasy" });
 
       expect(messages).toHaveLength(1);
       expect(messages[0]).toMatchObject({
-        role: 'user',
-        content: [{ type: 'text', text: 'Recommend a fantasy book' }],
+        role: "user",
+        content: [{ type: "text", text: "Recommend a fantasy book" }],
       });
     });
 
-    it('stores the template function', () => {
+    it("stores the template function", () => {
       const template = ({ name }: { name: string }) => `Hello, ${name}!`;
       const greet = definePrompt<{ name: string }>({ template });
 
       expect(greet.template).toBe(template);
     });
 
-    it('has a stream method', () => {
+    it("has a stream method", () => {
       const prompt = definePrompt<{ genre: string }>({
         template: ({ genre }) => `Recommend a ${genre} book`,
       });
 
-      expect(typeof prompt.stream).toBe('function');
+      expect(typeof prompt.stream).toBe("function");
     });
 
-    it('has a call method', () => {
+    it("has a call method", () => {
       const prompt = definePrompt<{ genre: string }>({
         template: ({ genre }) => `Recommend a ${genre} book`,
       });
 
-      expect(typeof prompt.call).toBe('function');
+      expect(typeof prompt.call).toBe("function");
     });
 
-    it('supports message arrays', () => {
+    it("supports message arrays", () => {
       const chatBot = definePrompt<{ question: string }>({
         template: ({ question }) => [
-          system('You are helpful.'),
+          system("You are helpful."),
           user(question),
         ],
       });
 
-      const messages = chatBot.messages({ question: 'What is TypeScript?' });
+      const messages = chatBot.messages({ question: "What is TypeScript?" });
 
       expect(messages).toHaveLength(2);
-      expect(messages[0]).toMatchObject({ role: 'system' });
+      expect(messages[0]).toMatchObject({ role: "system" });
       expect(messages[1]).toMatchObject({
-        role: 'user',
-        content: [{ type: 'text', text: 'What is TypeScript?' }],
+        role: "user",
+        content: [{ type: "text", text: "What is TypeScript?" }],
       });
     });
 
-    it('supports multiple variables', () => {
+    it("supports multiple variables", () => {
       const prompt = definePrompt<{ author: string; genre: string }>({
         template: ({ author, genre }) =>
           `Recommend a ${genre} book by ${author}`,
       });
 
-      const messages = prompt.messages({ author: 'Tolkien', genre: 'fantasy' });
+      const messages = prompt.messages({ author: "Tolkien", genre: "fantasy" });
 
       expect(messages[0]).toMatchObject({
-        role: 'user',
+        role: "user",
         content: [
-          { type: 'text', text: 'Recommend a fantasy book by Tolkien' },
+          { type: "text", text: "Recommend a fantasy book by Tolkien" },
         ],
       });
     });
   });
 
-  describe('without variables', () => {
-    it('creates a prompt that can be called without vars', () => {
+  describe("without variables", () => {
+    it("creates a prompt that can be called without vars", () => {
       const sayHello = definePrompt({
-        template: () => 'Hello!',
+        template: () => "Hello!",
       });
 
       const messages = sayHello.messages();
 
       expect(messages).toHaveLength(1);
       expect(messages[0]).toMatchObject({
-        role: 'user',
-        content: [{ type: 'text', text: 'Hello!' }],
+        role: "user",
+        content: [{ type: "text", text: "Hello!" }],
       });
     });
 
-    it('supports message arrays without variables', () => {
+    it("supports message arrays without variables", () => {
       const prompt = definePrompt({
         template: () => [
-          system('You are a helpful assistant.'),
-          user('What can you do?'),
+          system("You are a helpful assistant."),
+          user("What can you do?"),
         ],
       });
 
@@ -104,20 +105,20 @@ describe('definePrompt', () => {
       expect(messages).toHaveLength(2);
     });
 
-    it('has a stream method', () => {
+    it("has a stream method", () => {
       const prompt = definePrompt({
-        template: () => 'Hello!',
+        template: () => "Hello!",
       });
 
-      expect(typeof prompt.stream).toBe('function');
+      expect(typeof prompt.stream).toBe("function");
     });
 
-    it('has a call method', () => {
+    it("has a call method", () => {
       const prompt = definePrompt({
-        template: () => 'Hello!',
+        template: () => "Hello!",
       });
 
-      expect(typeof prompt.call).toBe('function');
+      expect(typeof prompt.call).toBe("function");
     });
   });
 });

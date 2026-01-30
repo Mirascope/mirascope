@@ -10,15 +10,16 @@ import type {
   BetaMessage,
   BetaStopReason,
   BetaUsage,
-} from '@anthropic-ai/sdk/resources/beta/messages/messages';
+} from "@anthropic-ai/sdk/resources/beta/messages/messages";
 
-import type { AssistantContentPart, Text, Thought } from '@/llm/content';
-import { FeatureNotSupportedError } from '@/llm/exceptions';
-import type { AssistantMessage } from '@/llm/messages';
-import type { AnthropicModelId } from '@/llm/providers/anthropic/model-id';
-import { FinishReason } from '@/llm/responses/finish-reason';
-import type { Usage } from '@/llm/responses/usage';
-import { createUsage } from '@/llm/responses/usage';
+import type { AssistantContentPart, Text, Thought } from "@/llm/content";
+import type { AssistantMessage } from "@/llm/messages";
+import type { AnthropicModelId } from "@/llm/providers/anthropic/model-id";
+import type { Usage } from "@/llm/responses/usage";
+
+import { FeatureNotSupportedError } from "@/llm/exceptions";
+import { FinishReason } from "@/llm/responses/finish-reason";
+import { createUsage } from "@/llm/responses/usage";
 
 /**
  * Decode Beta Anthropic response to Mirascope types.
@@ -33,7 +34,7 @@ import { createUsage } from '@/llm/responses/usage';
 export function betaDecodeResponse(
   response: BetaMessage,
   modelId: AnthropicModelId,
-  includeThoughts: boolean = false
+  includeThoughts: boolean = false,
 ): {
   assistantMessage: AssistantMessage;
   finishReason: FinishReason | null;
@@ -42,14 +43,14 @@ export function betaDecodeResponse(
   const content = betaDecodeContent(response.content, includeThoughts);
 
   const assistantMessage: AssistantMessage = {
-    role: 'assistant',
+    role: "assistant",
     content,
     name: null,
     // Note: providerId is 'anthropic' (not 'anthropic-beta') to match Python SDK
-    providerId: 'anthropic',
+    providerId: "anthropic",
     modelId,
     providerModelName: response.model,
-    rawMessage: response as unknown as AssistantMessage['rawMessage'],
+    rawMessage: response as unknown as AssistantMessage["rawMessage"],
   };
 
   const finishReason = betaDecodeStopReason(response.stop_reason);
@@ -66,38 +67,38 @@ export function betaDecodeResponse(
  */
 function betaDecodeContent(
   content: BetaContentBlock[],
-  includeThoughts: boolean
+  includeThoughts: boolean,
 ): AssistantContentPart[] {
   const parts: AssistantContentPart[] = [];
 
   for (const block of content) {
-    if (block.type === 'text') {
-      const text: Text = { type: 'text', text: block.text };
+    if (block.type === "text") {
+      const text: Text = { type: "text", text: block.text };
       parts.push(text);
-    } else if (block.type === 'thinking') {
+    } else if (block.type === "thinking") {
       if (includeThoughts) {
-        const thought: Thought = { type: 'thought', thought: block.thinking };
+        const thought: Thought = { type: "thought", thought: block.thinking };
         parts.push(thought);
       }
-    } else if (block.type === 'redacted_thinking') {
+    } else if (block.type === "redacted_thinking") {
       // Skip redacted thinking blocks - they contain encrypted thinking
       // that cannot be decoded
       continue;
       /* v8 ignore start - content types not yet implemented */
-    } else if (block.type === 'tool_use') {
+    } else if (block.type === "tool_use") {
       throw new FeatureNotSupportedError(
-        'tool use decoding',
-        'anthropic',
+        "tool use decoding",
+        "anthropic",
         null,
-        'Tool use blocks in responses are not yet implemented'
+        "Tool use blocks in responses are not yet implemented",
       );
     } else {
       // Unknown block type - be strict so we know what we're missing
       throw new FeatureNotSupportedError(
         `unknown block type: ${block.type}`,
-        'anthropic',
+        "anthropic",
         null,
-        `Unknown content block type '${block.type}' in beta response is not yet implemented`
+        `Unknown content block type '${block.type}' in beta response is not yet implemented`,
       );
     }
     /* v8 ignore stop */
@@ -115,17 +116,17 @@ function betaDecodeContent(
  * - 'model_context_window_exceeded': Context too long (not yet supported)
  */
 function betaDecodeStopReason(
-  stopReason: BetaStopReason | null
+  stopReason: BetaStopReason | null,
 ): FinishReason | null {
   switch (stopReason) {
-    case 'max_tokens':
+    case "max_tokens":
       return FinishReason.MAX_TOKENS;
-    case 'refusal':
+    case "refusal":
       return FinishReason.REFUSAL;
-    case 'end_turn':
-    case 'stop_sequence':
-    case 'tool_use':
-    case 'pause_turn':
+    case "end_turn":
+    case "stop_sequence":
+    case "tool_use":
+    case "pause_turn":
       return null; // Normal completion
     /* v8 ignore next 2 - defensive default case */
     default:

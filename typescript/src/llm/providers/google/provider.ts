@@ -2,28 +2,29 @@
  * Google provider implementation.
  */
 
-import { GoogleGenAI, ApiError } from '@google/genai';
+import { GoogleGenAI, ApiError } from "@google/genai";
 
-import type { Context } from '@/llm/context';
-import type { Format } from '@/llm/formatting';
-import type { Message } from '@/llm/messages';
-import type { Params } from '@/llm/models';
-import { BaseProvider } from '@/llm/providers/base';
-import type { Tools, ContextTools } from '@/llm/tools';
-import { getIncludeThoughts } from '@/llm/providers/_utils';
-import type { GoogleModelId } from '@/llm/providers/google/model-id';
-import { modelName } from '@/llm/providers/google/model-id';
-import { Response } from '@/llm/responses';
-import { ContextResponse } from '@/llm/responses/context-response';
-import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
-import { StreamResponse } from '@/llm/responses/stream-response';
+import type { Context } from "@/llm/context";
+import type { Format } from "@/llm/formatting";
+import type { Message } from "@/llm/messages";
+import type { Params } from "@/llm/models";
+import type { GoogleModelId } from "@/llm/providers/google/model-id";
+import type { Tools, ContextTools } from "@/llm/tools";
+
+import { getIncludeThoughts } from "@/llm/providers/_utils";
+import { BaseProvider } from "@/llm/providers/base";
 import {
   GOOGLE_ERROR_MAP,
   buildRequestParams,
   decodeResponse,
   mapGoogleErrorByStatus,
-} from '@/llm/providers/google/_utils';
-import { decodeStream } from '@/llm/providers/google/decode-stream';
+} from "@/llm/providers/google/_utils";
+import { decodeStream } from "@/llm/providers/google/decode-stream";
+import { modelName } from "@/llm/providers/google/model-id";
+import { Response } from "@/llm/responses";
+import { ContextResponse } from "@/llm/responses/context-response";
+import { ContextStreamResponse } from "@/llm/responses/context-stream-response";
+import { StreamResponse } from "@/llm/responses/stream-response";
 
 /**
  * Provider for the Google Gemini API.
@@ -39,7 +40,7 @@ import { decodeStream } from '@/llm/providers/google/decode-stream';
  * ```
  */
 export class GoogleProvider extends BaseProvider {
-  readonly id = 'google' as const;
+  readonly id = "google" as const;
   protected readonly errorMap = GOOGLE_ERROR_MAP;
 
   private readonly client: GoogleGenAI;
@@ -87,7 +88,7 @@ export class GoogleProvider extends BaseProvider {
       modelId,
       args.messages,
       args.tools,
-      args.params
+      args.params,
     );
 
     const googleResponse =
@@ -98,12 +99,12 @@ export class GoogleProvider extends BaseProvider {
     const { assistantMessage, finishReason, usage } = decodeResponse(
       googleResponse,
       modelId,
-      includeThoughts
+      includeThoughts,
     );
 
     return new Response({
       raw: googleResponse,
-      providerId: 'google',
+      providerId: "google",
       modelId,
       providerModelName: modelName(modelId),
       params: args.params ?? /* v8 ignore next 1 */ {},
@@ -139,7 +140,7 @@ export class GoogleProvider extends BaseProvider {
       modelId,
       args.messages,
       args.tools,
-      args.params
+      args.params,
     );
 
     const includeThoughts = getIncludeThoughts(args.params);
@@ -150,7 +151,7 @@ export class GoogleProvider extends BaseProvider {
     const chunkIterator = decodeStream(stream, includeThoughts);
 
     return new StreamResponse({
-      providerId: 'google',
+      providerId: "google",
       modelId,
       providerModelName: modelName(modelId),
       params: args.params ?? /* v8 ignore next 1 */ {},
@@ -190,7 +191,7 @@ export class GoogleProvider extends BaseProvider {
       modelId,
       args.messages,
       args.tools,
-      args.params
+      args.params,
     );
 
     const googleResponse =
@@ -201,12 +202,12 @@ export class GoogleProvider extends BaseProvider {
     const { assistantMessage, finishReason, usage } = decodeResponse(
       googleResponse,
       modelId,
-      includeThoughts
+      includeThoughts,
     );
 
     return new ContextResponse({
       raw: googleResponse,
-      providerId: 'google',
+      providerId: "google",
       modelId,
       providerModelName: modelName(modelId),
       params: args.params ?? /* v8 ignore next 1 */ {},
@@ -248,7 +249,7 @@ export class GoogleProvider extends BaseProvider {
       modelId,
       args.messages,
       args.tools,
-      args.params
+      args.params,
     );
 
     const includeThoughts = getIncludeThoughts(args.params);
@@ -259,7 +260,7 @@ export class GoogleProvider extends BaseProvider {
     const chunkIterator = decodeStream(stream, includeThoughts);
 
     return new ContextStreamResponse({
-      providerId: 'google',
+      providerId: "google",
       modelId,
       providerModelName: modelName(modelId),
       params: args.params ?? /* v8 ignore next 1 */ {},

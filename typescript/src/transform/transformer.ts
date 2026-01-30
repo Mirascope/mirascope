@@ -6,18 +6,19 @@
  * generated from type T.
  */
 
-import ts from 'typescript';
-import { typeToToolParameterSchema } from './type-to-schema';
+import ts from "typescript";
+
+import { typeToToolParameterSchema } from "./type-to-schema";
 
 /**
  * Names of functions that should have schemas injected.
  */
-const TOOL_FUNCTION_NAMES = new Set(['defineTool', 'defineContextTool']);
+const TOOL_FUNCTION_NAMES = new Set(["defineTool", "defineContextTool"]);
 
 /**
  * Names of format functions that should have schemas injected.
  */
-const FORMAT_FUNCTION_NAMES = new Set(['defineFormat']);
+const FORMAT_FUNCTION_NAMES = new Set(["defineFormat"]);
 
 /**
  * Create a TypeScript transformer that injects __schema into tool definitions.
@@ -26,7 +27,7 @@ const FORMAT_FUNCTION_NAMES = new Set(['defineFormat']);
  * @returns A transformer factory.
  */
 export function createToolSchemaTransformer(
-  program: ts.Program
+  program: ts.Program,
 ): ts.TransformerFactory<ts.SourceFile> {
   const checker = program.getTypeChecker();
 
@@ -45,7 +46,7 @@ export function createToolSchemaTransformer(
           const formatTransformed = tryTransformFormatCall(
             node,
             checker,
-            context
+            context,
           );
           if (formatTransformed) {
             return formatTransformed;
@@ -72,7 +73,7 @@ export function createToolSchemaTransformer(
 function tryTransformToolCall(
   node: ts.CallExpression,
   checker: ts.TypeChecker,
-  context: ts.TransformationContext
+  context: ts.TransformationContext,
 ): ts.CallExpression | undefined {
   // Check if this is a call to defineTool or defineContextTool
   const functionName = getFunctionName(node);
@@ -114,7 +115,7 @@ function tryTransformToolCall(
     (prop) =>
       ts.isPropertyAssignment(prop) &&
       ts.isIdentifier(prop.name) &&
-      prop.name.text === '__schema'
+      prop.name.text === "__schema",
   );
 
   if (hasSchema) {
@@ -129,7 +130,7 @@ function tryTransformToolCall(
   const newProperties = [...optionsObject.properties, schemaProperty];
   const newOptionsObject = context.factory.updateObjectLiteralExpression(
     optionsObject,
-    newProperties
+    newProperties,
   );
 
   // Create a new call expression with the updated options
@@ -138,7 +139,7 @@ function tryTransformToolCall(
     node,
     node.expression,
     node.typeArguments,
-    newArgs
+    newArgs,
   );
 }
 
@@ -158,7 +159,7 @@ function tryTransformToolCall(
 function tryTransformFormatCall(
   node: ts.CallExpression,
   checker: ts.TypeChecker,
-  context: ts.TransformationContext
+  context: ts.TransformationContext,
 ): ts.CallExpression | undefined {
   // Check if this is a call to defineFormat
   const functionName = getFunctionName(node);
@@ -193,7 +194,7 @@ function tryTransformFormatCall(
       (prop) =>
         ts.isPropertyAssignment(prop) &&
         ts.isIdentifier(prop.name) &&
-        prop.name.text === '__schema'
+        prop.name.text === "__schema",
     );
 
     if (hasSchema) {
@@ -217,7 +218,7 @@ function tryTransformFormatCall(
     const newProperties = [...formatSpecObject.properties, schemaProperty];
     const newFormatSpecObject = context.factory.updateObjectLiteralExpression(
       formatSpecObject,
-      newProperties
+      newProperties,
     );
 
     // Create a new call expression with the updated format spec
@@ -226,7 +227,7 @@ function tryTransformFormatCall(
       node,
       node.expression,
       node.typeArguments,
-      newArgs
+      newArgs,
     );
   }
 
@@ -261,11 +262,11 @@ function getFunctionName(node: ts.CallExpression): string | undefined {
  */
 function createSchemaProperty(
   schema: object,
-  factory: ts.NodeFactory
+  factory: ts.NodeFactory,
 ): ts.PropertyAssignment {
   return factory.createPropertyAssignment(
-    factory.createIdentifier('__schema'),
-    jsonToAst(schema, factory)
+    factory.createIdentifier("__schema"),
+    jsonToAst(schema, factory),
   );
 }
 
@@ -284,35 +285,35 @@ function jsonToAst(value: unknown, factory: ts.NodeFactory): ts.Expression {
     return factory.createNull();
   }
   if (value === undefined) {
-    return factory.createIdentifier('undefined');
+    return factory.createIdentifier("undefined");
   }
   /* v8 ignore end */
 
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     return factory.createStringLiteral(value);
   }
 
-  if (typeof value === 'number') {
+  if (typeof value === "number") {
     return factory.createNumericLiteral(value);
   }
 
-  if (typeof value === 'boolean') {
+  if (typeof value === "boolean") {
     /* v8 ignore next */
     return value ? factory.createTrue() : factory.createFalse();
   }
 
   if (Array.isArray(value)) {
     return factory.createArrayLiteralExpression(
-      value.map((item) => jsonToAst(item, factory))
+      value.map((item) => jsonToAst(item, factory)),
     );
   }
 
-  if (typeof value === 'object') {
+  if (typeof value === "object") {
     const properties = Object.entries(value).map(([key, val]) =>
       factory.createPropertyAssignment(
         factory.createIdentifier(key),
-        jsonToAst(val, factory)
-      )
+        jsonToAst(val, factory),
+      ),
     );
     return factory.createObjectLiteralExpression(properties, true);
   }
@@ -320,14 +321,14 @@ function jsonToAst(value: unknown, factory: ts.NodeFactory): ts.Expression {
   // Coverage ignored: After handling all JSON-valid types (null, undefined,
   // string, number, boolean, array, object), this is unreachable
   /* v8 ignore next */
-  return factory.createIdentifier('undefined');
+  return factory.createIdentifier("undefined");
 }
 
 /**
  * Default export for ts-patch and other transformer loaders.
  */
 export default function transformer(
-  program: ts.Program
+  program: ts.Program,
 ): ts.TransformerFactory<ts.SourceFile> {
   return createToolSchemaTransformer(program);
 }

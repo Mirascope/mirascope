@@ -2,27 +2,27 @@
  * MIME types for text-based documents.
  */
 export type DocumentTextMimeType =
-  | 'application/json'
-  | 'text/plain'
-  | 'application/x-javascript'
-  | 'text/javascript'
-  | 'application/x-python'
-  | 'text/x-python'
-  | 'text/html'
-  | 'text/css'
-  | 'text/xml'
-  | 'text/rtf';
+  | "application/json"
+  | "text/plain"
+  | "application/x-javascript"
+  | "text/javascript"
+  | "application/x-python"
+  | "text/x-python"
+  | "text/html"
+  | "text/css"
+  | "text/xml"
+  | "text/rtf";
 
 /**
  * MIME types for binary documents (base64 encoded).
  */
-export type DocumentBase64MimeType = 'application/pdf';
+export type DocumentBase64MimeType = "application/pdf";
 
 /**
  * Document data encoded as base64 (for binary formats like PDF).
  */
 export type Base64DocumentSource = {
-  readonly type: 'base64_document_source';
+  readonly type: "base64_document_source";
 
   /** The document data, as a base64 encoded string. */
   readonly data: string;
@@ -35,7 +35,7 @@ export type Base64DocumentSource = {
  * Document data as plain text.
  */
 export type TextDocumentSource = {
-  readonly type: 'text_document_source';
+  readonly type: "text_document_source";
 
   /** The document data, as plain text. */
   readonly data: string;
@@ -48,7 +48,7 @@ export type TextDocumentSource = {
  * Document referenced by URL.
  */
 export type URLDocumentSource = {
-  readonly type: 'url_document_source';
+  readonly type: "url_document_source";
 
   /** The url of the document (e.g. https://example.com/paper.pdf). */
   readonly url: string;
@@ -61,7 +61,7 @@ export type URLDocumentSource = {
  * Supports text documents (JSON, plain text, code) and binary documents (PDF).
  */
 export type Document = {
-  readonly type: 'document';
+  readonly type: "document";
 
   readonly source:
     | Base64DocumentSource
@@ -82,7 +82,7 @@ export const Document = {
    * @throws Error (not implemented)
    */
   fromUrl: (_url: string, _options?: { download?: boolean }): Document => {
-    throw new Error('Document.fromUrl is not yet implemented');
+    throw new Error("Document.fromUrl is not yet implemented");
   },
 
   /**
@@ -92,8 +92,8 @@ export const Document = {
    */
   fromBytes: (
     _data: Uint8Array,
-    _options?: { mimeType?: DocumentTextMimeType | DocumentBase64MimeType }
+    _options?: { mimeType?: DocumentTextMimeType | DocumentBase64MimeType },
   ): Document => {
-    throw new Error('Document.fromBytes is not yet implemented');
+    throw new Error("Document.fromBytes is not yet implemented");
   },
 };

@@ -10,28 +10,30 @@
  * Anthropic and OpenAI Responses API do NOT support audio inputs.
  */
 
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
-import { createIt, describe, expect } from '@/tests/e2e/utils';
-import { defineCall } from '@/llm/calls';
-import { user } from '@/llm/messages';
-import { Audio } from '@/llm/content';
-import type { ProviderConfig } from '@/tests/e2e/providers';
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
-const it = createIt(resolve(__dirname, 'cassettes'), 'audio');
+import type { ProviderConfig } from "@/tests/e2e/providers";
+
+import { defineCall } from "@/llm/calls";
+import { Audio } from "@/llm/content";
+import { user } from "@/llm/messages";
+import { createIt, describe, expect } from "@/tests/e2e/utils";
+
+const it = createIt(resolve(__dirname, "cassettes"), "audio");
 
 // Path to test audio
-const TAGLINE_AUDIO_PATH = resolve(__dirname, '../assets/audio/tagline.mp3');
+const TAGLINE_AUDIO_PATH = resolve(__dirname, "../assets/audio/tagline.mp3");
 
 /**
  * Providers that support audio inputs.
  */
 const AUDIO_PROVIDERS: ProviderConfig[] = [
-  { providerId: 'google', model: 'google/gemini-2.5-flash' },
+  { providerId: "google", model: "google/gemini-2.5-flash" },
   // OpenAI audio support requires gpt-4o-audio-preview model
   {
-    providerId: 'openai:completions',
-    model: 'openai/gpt-4o-audio-preview:completions',
+    providerId: "openai:completions",
+    model: "openai/gpt-4o-audio-preview:completions",
   },
 ];
 
@@ -43,9 +45,9 @@ function loadTestAudio(): Audio {
   return Audio.fromBytes(new Uint8Array(data));
 }
 
-describe('audio content', () => {
+describe("audio content", () => {
   it.record.each(AUDIO_PROVIDERS)(
-    'encodes audio content',
+    "encodes audio content",
     async ({ model }) => {
       const audio = loadTestAudio();
       const call = defineCall({
@@ -53,7 +55,7 @@ describe('audio content', () => {
         maxTokens: 200,
         template: () => [
           user([
-            'What is being said in this audio? Transcribe it exactly.',
+            "What is being said in this audio? Transcribe it exactly.",
             audio,
           ]),
         ],
@@ -63,6 +65,6 @@ describe('audio content', () => {
 
       // Response should transcribe the audio
       expect(response.text().length).toBeGreaterThan(0);
-    }
+    },
   );
 });

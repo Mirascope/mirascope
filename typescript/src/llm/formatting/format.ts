@@ -5,23 +5,24 @@
  * structured output formats.
  */
 
-import type { ToolParameterSchema, ToolSchema, ZodLike } from '@/llm/tools';
+import type { ToolParameterSchema, ToolSchema, ZodLike } from "@/llm/tools";
+
 import {
   isOutputParser,
   type OutputParser,
-} from '@/llm/formatting/output-parser';
+} from "@/llm/formatting/output-parser";
 import {
   isFormatSpec,
   isZodSchema,
   type FormattingMode,
   type FormatSpec,
-} from '@/llm/formatting/types';
+} from "@/llm/formatting/types";
 
 /**
  * Reserved tool name for formatted output tools.
  * This is used internally to convert formatted output tool calls to textual output.
  */
-export const FORMAT_TOOL_NAME = '__mirascope_formatted_output_tool__';
+export const FORMAT_TOOL_NAME = "__mirascope_formatted_output_tool__";
 
 /**
  * System prompt instructions for tool mode formatting.
@@ -33,12 +34,12 @@ export const TOOL_MODE_INSTRUCTIONS = `Always respond to the user's query using 
  * The {json_schema} placeholder will be replaced with the actual schema.
  */
 export const JSON_MODE_INSTRUCTIONS =
-  'Respond only with valid JSON that matches this exact schema:\n{json_schema}';
+  "Respond only with valid JSON that matches this exact schema:\n{json_schema}";
 
 /**
  * Type discriminator symbol for Format.
  */
-export const FORMAT_TYPE = Symbol('FORMAT_TYPE');
+export const FORMAT_TYPE = Symbol("FORMAT_TYPE");
 
 /**
  * Represents a resolved structured output format.
@@ -108,9 +109,9 @@ export interface Format<T = unknown> {
  */
 export function isFormat(obj: unknown): obj is Format<unknown> {
   return (
-    typeof obj === 'object' &&
+    typeof obj === "object" &&
     obj !== null &&
-    '__formatType' in obj &&
+    "__formatType" in obj &&
     (obj as Format).__formatType === FORMAT_TYPE
   );
 }
@@ -179,9 +180,9 @@ export function defineFormat<T>(options: DefineFormatOptions<T>): Format<T> {
   // Must have __schema (injected by transformer) at this point
   if (!__schema) {
     throw new Error(
-      'Format specification is missing schema. ' +
-        'Provide a Zod schema via the `validator` option, ' +
-        'or use the Mirascope TypeScript transformer with a type parameter.'
+      "Format specification is missing schema. " +
+        "Provide a Zod schema via the `validator` option, " +
+        "or use the Mirascope TypeScript transformer with a type parameter.",
     );
   }
 
@@ -208,7 +209,7 @@ export function resolveFormat<T>(
     | OutputParser<T>
     | null
     | undefined,
-  defaultMode: FormattingMode
+  defaultMode: FormattingMode,
 ): Format<T> | null {
   // Handle null/undefined
   if (formatArg === null || formatArg === undefined) {
@@ -242,16 +243,16 @@ export function resolveFormat<T>(
     // Must have __schema
     if (!spec.__schema) {
       throw new Error(
-        'Format specification is missing __schema. ' +
-          'Either use the Mirascope TypeScript transformer, provide a Zod schema, ' +
-          'or provide __schema explicitly.'
+        "Format specification is missing __schema. " +
+          "Either use the Mirascope TypeScript transformer, provide a Zod schema, " +
+          "or provide __schema explicitly.",
       );
     }
 
     return createFormatFromSchema<T>(
       spec.__schema,
       spec.validator ?? null,
-      defaultMode
+      defaultMode,
     );
   }
 
@@ -268,7 +269,7 @@ export function resolveFormat<T>(
  */
 function createFormatFromZod<T>(
   zodSchema: ZodLike,
-  mode: FormattingMode
+  mode: FormattingMode,
 ): Format<T> {
   // Extract JSON schema from Zod
   // Note: In production, we'd use zod-to-json-schema or similar
@@ -295,13 +296,13 @@ function createFormatFromZod<T>(
 function createFormatFromSchema<T>(
   schema: ToolParameterSchema,
   validator: ZodLike | null,
-  mode: FormattingMode
+  mode: FormattingMode,
 ): Format<T> {
   // Extract name from schema title or use default
   const name =
     ((schema as unknown as Record<string, unknown>).title as
       | string
-      | undefined) ?? 'FormattedOutput';
+      | undefined) ?? "FormattedOutput";
 
   return createFormat<T>({
     name,
@@ -319,7 +320,7 @@ function createFormatFromSchema<T>(
 function createFormatFromOutputParser<T>(parser: OutputParser<T>): Format<T> {
   // OutputParser has empty schema - it uses custom parsing
   const emptySchema: ToolParameterSchema = {
-    type: 'object',
+    type: "object",
     properties: {},
     required: [],
     additionalProperties: false,
@@ -329,7 +330,7 @@ function createFormatFromOutputParser<T>(parser: OutputParser<T>): Format<T> {
     name: parser.name,
     description: null,
     schema: emptySchema,
-    mode: 'parser',
+    mode: "parser",
     validator: null,
     outputParser: parser,
   });
@@ -357,13 +358,13 @@ function createFormat<T>(options: CreateFormatOptions<T>): Format<T> {
   let formattingInstructions: string | null;
   if (outputParser) {
     formattingInstructions = outputParser.formattingInstructions;
-  } else if (mode === 'tool') {
+  } else if (mode === "tool") {
     formattingInstructions = TOOL_MODE_INSTRUCTIONS;
-  } else if (mode === 'json') {
+  } else if (mode === "json") {
     const jsonSchema = JSON.stringify(schema, null, 2);
     formattingInstructions = JSON_MODE_INSTRUCTIONS.replace(
-      '{json_schema}',
-      jsonSchema
+      "{json_schema}",
+      jsonSchema,
     );
   } else {
     // strict mode - let provider handle instructions
@@ -381,7 +382,7 @@ function createFormat<T>(options: CreateFormatOptions<T>): Format<T> {
     formattingInstructions,
     createToolSchema(): ToolSchema {
       const toolDescription = `Use this tool to extract data in ${name} format for a final response.${
-        description ? '\n' + description : ''
+        description ? "\n" + description : ""
       }`;
 
       // Get all property keys as required
@@ -391,7 +392,7 @@ function createFormat<T>(options: CreateFormatOptions<T>): Format<T> {
 
       // Build parameters object - include $defs if present
       const parameters: ToolParameterSchema = {
-        type: 'object',
+        type: "object",
         properties,
         required,
         additionalProperties: false,
@@ -419,7 +420,7 @@ function extractSchemaFromZod(zodSchema: ZodLike): ToolParameterSchema {
   const schemaAny = zodSchema as unknown as Record<string, unknown>;
 
   // Zod 4: Use toJSONSchema() if available (preferred method)
-  if (typeof schemaAny.toJSONSchema === 'function') {
+  if (typeof schemaAny.toJSONSchema === "function") {
     try {
       const jsonSchema = (schemaAny.toJSONSchema as () => unknown)() as Record<
         string,
@@ -429,17 +430,17 @@ function extractSchemaFromZod(zodSchema: ZodLike): ToolParameterSchema {
       // Note: ?? fallbacks are for edge cases where toJSONSchema returns incomplete data
       const properties =
         /* v8 ignore next */
-        (jsonSchema.properties as ToolParameterSchema['properties']) ?? {};
+        (jsonSchema.properties as ToolParameterSchema["properties"]) ?? {};
       const required =
         /* v8 ignore next */
-        (jsonSchema.required as ToolParameterSchema['required']) ?? [];
-      const $defs = jsonSchema.$defs as ToolParameterSchema['$defs'];
+        (jsonSchema.required as ToolParameterSchema["required"]) ?? [];
+      const $defs = jsonSchema.$defs as ToolParameterSchema["$defs"];
 
       // Include $defs if present (for nested schemas)
       /* v8 ignore start */
       if ($defs) {
         return {
-          type: 'object',
+          type: "object",
           properties,
           required,
           additionalProperties: false,
@@ -448,7 +449,7 @@ function extractSchemaFromZod(zodSchema: ZodLike): ToolParameterSchema {
       }
       /* v8 ignore end */
       return {
-        type: 'object',
+        type: "object",
         properties,
         required,
         additionalProperties: false,
@@ -459,17 +460,17 @@ function extractSchemaFromZod(zodSchema: ZodLike): ToolParameterSchema {
   }
 
   // Zod 3/4 fallback: Manually extract from _def
-  if (typeof schemaAny._def === 'object' && schemaAny._def !== null) {
+  if (typeof schemaAny._def === "object" && schemaAny._def !== null) {
     const def = schemaAny._def as Record<string, unknown>;
 
     // Zod 3: typeName is 'ZodObject', shape is a function
-    if (def.typeName === 'ZodObject' && typeof def.shape === 'function') {
+    if (def.typeName === "ZodObject" && typeof def.shape === "function") {
       return extractSchemaFromZod3(def);
     }
 
     /* v8 ignore start */
     // Zod 4: type is 'object', shape is a getter (object)
-    if (def.type === 'object' && typeof def.shape === 'object') {
+    if (def.type === "object" && typeof def.shape === "object") {
       return extractSchemaFromZod4(def);
     }
     /* v8 ignore end */
@@ -479,7 +480,7 @@ function extractSchemaFromZod(zodSchema: ZodLike): ToolParameterSchema {
   // The transformer should inject proper schema at compile time
   /* v8 ignore start */
   return {
-    type: 'object',
+    type: "object",
     properties: {},
     required: [],
     additionalProperties: false,
@@ -491,7 +492,7 @@ function extractSchemaFromZod(zodSchema: ZodLike): ToolParameterSchema {
  * Extract schema from Zod 3 definition.
  */
 function extractSchemaFromZod3(
-  def: Record<string, unknown>
+  def: Record<string, unknown>,
 ): ToolParameterSchema {
   const shape = (def.shape as () => Record<string, ZodLike>)();
   const properties: Record<string, unknown> = {};
@@ -501,13 +502,13 @@ function extractSchemaFromZod3(
     properties[key] = extractFieldSchema(fieldSchema);
     // Check if field is optional
     const fieldDef = fieldSchema._def as Record<string, unknown>;
-    if (fieldDef.typeName !== 'ZodOptional') {
+    if (fieldDef.typeName !== "ZodOptional") {
       required.push(key);
     }
   }
 
   return {
-    type: 'object',
+    type: "object",
     properties: properties as Record<
       string,
       { type?: string; description?: string }
@@ -523,7 +524,7 @@ function extractSchemaFromZod3(
  */
 /* v8 ignore start */
 function extractSchemaFromZod4(
-  def: Record<string, unknown>
+  def: Record<string, unknown>,
 ): ToolParameterSchema {
   const shape = def.shape as Record<string, ZodLike>;
   const properties: Record<string, unknown> = {};
@@ -537,16 +538,16 @@ function extractSchemaFromZod4(
       _def?: { type?: string };
     };
     const isOptional =
-      typeof schemaAny.isOptional === 'function'
+      typeof schemaAny.isOptional === "function"
         ? schemaAny.isOptional()
-        : schemaAny._def?.type === 'optional';
+        : schemaAny._def?.type === "optional";
     if (!isOptional) {
       required.push(key);
     }
   }
 
   return {
-    type: 'object',
+    type: "object",
     properties: properties as Record<
       string,
       { type?: string; description?: string }
@@ -568,7 +569,7 @@ function extractFieldSchema(zodField: ZodLike): {
   const description = def.description as string | undefined;
 
   // Handle wrapped types (optional, nullable, etc.)
-  if (def.innerType && typeof def.innerType === 'object') {
+  if (def.innerType && typeof def.innerType === "object") {
     const inner = extractFieldSchema(def.innerType as ZodLike);
     /* v8 ignore next */ // description ?? inner.description - both branches tested
     return { ...inner, description: description ?? inner.description };
@@ -576,11 +577,11 @@ function extractFieldSchema(zodField: ZodLike): {
 
   // Map Zod types to JSON Schema types
   const typeMapping: Record<string, string> = {
-    ZodString: 'string',
-    ZodNumber: 'number',
-    ZodBoolean: 'boolean',
-    ZodArray: 'array',
-    ZodObject: 'object',
+    ZodString: "string",
+    ZodNumber: "number",
+    ZodBoolean: "boolean",
+    ZodArray: "array",
+    ZodObject: "object",
   };
 
   const typeName = def.typeName as string;
@@ -610,7 +611,7 @@ function extractFieldSchemaZod4(zodField: ZodLike): {
     fieldAny.description ?? (def.description as string | undefined);
 
   // Handle wrapped types (optional, nullable, etc.)
-  if (def.innerType && typeof def.innerType === 'object') {
+  if (def.innerType && typeof def.innerType === "object") {
     const inner = extractFieldSchemaZod4(def.innerType as ZodLike);
     return { ...inner, description: description ?? inner.description };
   }
@@ -620,21 +621,21 @@ function extractFieldSchemaZod4(zodField: ZodLike): {
 
   // Map Zod 4 types to JSON Schema types
   const typeMapping: Record<string, string> = {
-    string: 'string',
-    number: 'number',
-    boolean: 'boolean',
-    array: 'array',
-    object: 'object',
-    int: 'integer',
+    string: "string",
+    number: "number",
+    boolean: "boolean",
+    array: "array",
+    object: "object",
+    int: "integer",
   };
 
   const type = zodType ? typeMapping[zodType] : undefined;
 
   // Handle array items
-  if (zodType === 'array' && def.element) {
+  if (zodType === "array" && def.element) {
     const itemSchema = extractFieldSchemaZod4(def.element as ZodLike);
     return {
-      type: 'array',
+      type: "array",
       items: itemSchema,
       ...(description && { description }),
     };
@@ -662,5 +663,5 @@ function extractNameFromZod(zodSchema: ZodLike): string {
     }
   }
 
-  return 'FormattedOutput';
+  return "FormattedOutput";
 }

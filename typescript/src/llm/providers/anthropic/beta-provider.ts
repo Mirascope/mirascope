@@ -5,27 +5,28 @@
  * additional features like extended thinking and structured outputs.
  */
 
-import Anthropic from '@anthropic-ai/sdk';
+import Anthropic from "@anthropic-ai/sdk";
 
-import type { Context } from '@/llm/context';
-import type { Format } from '@/llm/formatting';
-import type { Message } from '@/llm/messages';
-import type { Params } from '@/llm/models';
-import { BaseProvider } from '@/llm/providers/base';
-import type { Tools, ContextTools } from '@/llm/tools';
-import { getIncludeThoughts } from '@/llm/providers/_utils';
-import type { AnthropicModelId } from '@/llm/providers/anthropic/model-id';
-import { modelName } from '@/llm/providers/anthropic/model-id';
-import { Response } from '@/llm/responses';
-import { ContextResponse } from '@/llm/responses/context-response';
-import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
-import { StreamResponse } from '@/llm/responses/stream-response';
+import type { Context } from "@/llm/context";
+import type { Format } from "@/llm/formatting";
+import type { Message } from "@/llm/messages";
+import type { Params } from "@/llm/models";
+import type { AnthropicModelId } from "@/llm/providers/anthropic/model-id";
+import type { Tools, ContextTools } from "@/llm/tools";
+
+import { getIncludeThoughts } from "@/llm/providers/_utils";
 import {
   ANTHROPIC_ERROR_MAP,
   buildRequestParams,
-} from '@/llm/providers/anthropic/_utils';
-import { betaDecodeResponse } from '@/llm/providers/anthropic/beta-decode';
-import { decodeBetaStream } from '@/llm/providers/anthropic/beta-decode-stream';
+} from "@/llm/providers/anthropic/_utils";
+import { betaDecodeResponse } from "@/llm/providers/anthropic/beta-decode";
+import { decodeBetaStream } from "@/llm/providers/anthropic/beta-decode-stream";
+import { modelName } from "@/llm/providers/anthropic/model-id";
+import { BaseProvider } from "@/llm/providers/base";
+import { Response } from "@/llm/responses";
+import { ContextResponse } from "@/llm/responses/context-response";
+import { ContextStreamResponse } from "@/llm/responses/context-stream-response";
+import { StreamResponse } from "@/llm/responses/stream-response";
 
 /**
  * Provider for the Anthropic Beta API.
@@ -45,7 +46,7 @@ import { decodeBetaStream } from '@/llm/providers/anthropic/beta-decode-stream';
  * ```
  */
 export class AnthropicBetaProvider extends BaseProvider {
-  readonly id = 'anthropic-beta' as const;
+  readonly id = "anthropic-beta" as const;
   protected readonly errorMap = ANTHROPIC_ERROR_MAP;
 
   private readonly client: Anthropic;
@@ -89,7 +90,7 @@ export class AnthropicBetaProvider extends BaseProvider {
       args.messages,
       args.tools,
       args.format,
-      args.params
+      args.params,
     );
 
     // Use beta API instead of standard
@@ -100,13 +101,13 @@ export class AnthropicBetaProvider extends BaseProvider {
     const { assistantMessage, finishReason, usage } = betaDecodeResponse(
       betaResponse,
       modelId,
-      includeThoughts
+      includeThoughts,
     );
 
     return new Response({
       raw: betaResponse,
       // Note: providerId is 'anthropic' (not 'anthropic-beta') to match Python SDK
-      providerId: 'anthropic',
+      providerId: "anthropic",
       modelId,
       providerModelName: modelName(modelId),
       params: args.params ?? /* v8 ignore next 1 */ {},
@@ -143,7 +144,7 @@ export class AnthropicBetaProvider extends BaseProvider {
       args.messages,
       args.tools,
       args.format,
-      args.params
+      args.params,
     );
 
     const includeThoughts = getIncludeThoughts(args.params);
@@ -155,7 +156,7 @@ export class AnthropicBetaProvider extends BaseProvider {
     return Promise.resolve(
       new StreamResponse({
         // Note: providerId is 'anthropic' (not 'anthropic-beta')
-        providerId: 'anthropic',
+        providerId: "anthropic",
         modelId,
         providerModelName: modelName(modelId),
         params: args.params ?? /* v8 ignore next 1 */ {},
@@ -163,7 +164,7 @@ export class AnthropicBetaProvider extends BaseProvider {
         format: args.format ?? null,
         inputMessages: args.messages,
         chunkIterator,
-      })
+      }),
     );
   }
   /* v8 ignore stop */
@@ -199,7 +200,7 @@ export class AnthropicBetaProvider extends BaseProvider {
       args.messages,
       args.tools,
       args.format,
-      args.params
+      args.params,
     );
 
     // Use beta API instead of standard
@@ -210,13 +211,13 @@ export class AnthropicBetaProvider extends BaseProvider {
     const { assistantMessage, finishReason, usage } = betaDecodeResponse(
       betaResponse,
       modelId,
-      includeThoughts
+      includeThoughts,
     );
 
     return new ContextResponse({
       raw: betaResponse,
       // Note: providerId is 'anthropic' (not 'anthropic-beta') to match Python SDK
-      providerId: 'anthropic',
+      providerId: "anthropic",
       modelId,
       providerModelName: modelName(modelId),
       params: args.params ?? /* v8 ignore next 1 */ {},
@@ -260,7 +261,7 @@ export class AnthropicBetaProvider extends BaseProvider {
       args.messages,
       args.tools,
       args.format,
-      args.params
+      args.params,
     );
 
     const includeThoughts = getIncludeThoughts(args.params);
@@ -272,7 +273,7 @@ export class AnthropicBetaProvider extends BaseProvider {
     return Promise.resolve(
       new ContextStreamResponse({
         // Note: providerId is 'anthropic' (not 'anthropic-beta')
-        providerId: 'anthropic',
+        providerId: "anthropic",
         modelId,
         providerModelName: modelName(modelId),
         params: args.params ?? /* v8 ignore next 1 */ {},
@@ -280,7 +281,7 @@ export class AnthropicBetaProvider extends BaseProvider {
         format: args.format ?? null,
         inputMessages: args.messages,
         chunkIterator,
-      })
+      }),
     );
   }
   /* v8 ignore stop */

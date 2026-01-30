@@ -14,7 +14,7 @@ import {
   generateFileHeader,
   generateKnownModelsExports,
   generateFeatureSet,
-} from './utils';
+} from "./utils";
 
 interface FeatureResult {
   status?: string;
@@ -66,8 +66,8 @@ function collectModelData(data: YamlData): OpenAIModelData {
     const structuredOutputResult = features.structured_output ?? {};
     const jsonObjectResult = features.json_object ?? {};
 
-    const completionsSupported = completionsResult.status === 'supported';
-    const responsesSupported = responsesResult.status === 'supported';
+    const completionsSupported = completionsResult.status === "supported";
+    const responsesSupported = responsesResult.status === "supported";
 
     // Skip if neither API is supported
     if (!completionsSupported && !responsesSupported) {
@@ -88,21 +88,21 @@ function collectModelData(data: YamlData): OpenAIModelData {
 
     // Categorize audio support (for completions API)
     const audioStatus = audioResult.status;
-    if (audioStatus === 'not_supported' || audioStatus === 'unavailable') {
+    if (audioStatus === "not_supported" || audioStatus === "unavailable") {
       modelsWithoutAudio.add(modelId);
     }
 
     // Categorize reasoning support (for responses API)
     const reasoningStatus = reasoningResult.status;
-    if (reasoningStatus === 'not_supported') {
+    if (reasoningStatus === "not_supported") {
       nonReasoning.add(modelId);
     }
 
     // Categorize JSON schema support (structured outputs)
     const structuredOutputStatus = structuredOutputResult.status;
     if (
-      structuredOutputStatus === 'not_supported' ||
-      structuredOutputStatus === 'unavailable'
+      structuredOutputStatus === "not_supported" ||
+      structuredOutputStatus === "unavailable"
     ) {
       withoutJsonSchema.add(modelId);
     }
@@ -110,8 +110,8 @@ function collectModelData(data: YamlData): OpenAIModelData {
     // Categorize JSON object support
     const jsonObjectStatus = jsonObjectResult.status;
     if (
-      jsonObjectStatus === 'not_supported' ||
-      jsonObjectStatus === 'unavailable'
+      jsonObjectStatus === "not_supported" ||
+      jsonObjectStatus === "unavailable"
     ) {
       withoutJsonObject.add(modelId);
     }
@@ -131,63 +131,63 @@ function collectModelData(data: YamlData): OpenAIModelData {
  */
 function generateModelInfoContent(modelData: OpenAIModelData): string {
   const lines: string[] = [
-    ...generateFileHeader('OpenAI', 'typescript/scripts/codegen/openai.ts'),
-    '',
+    ...generateFileHeader("OpenAI", "typescript/scripts/codegen/openai.ts"),
+    "",
     ...generateKnownModelsExports(
-      'OPENAI',
-      'OpenAI',
+      "OPENAI",
+      "OpenAI",
       modelData.modelIds,
-      'Valid OpenAI model IDs including API-specific variants.'
+      "Valid OpenAI model IDs including API-specific variants.",
     ),
-    '',
+    "",
     ...generateFeatureSet(
-      'MODELS_WITHOUT_AUDIO_SUPPORT',
-      'Models that do not support audio inputs.',
-      'Models not in this set are assumed to support audio (optimistic default).',
-      modelData.modelsWithoutAudioSupport
+      "MODELS_WITHOUT_AUDIO_SUPPORT",
+      "Models that do not support audio inputs.",
+      "Models not in this set are assumed to support audio (optimistic default).",
+      modelData.modelsWithoutAudioSupport,
     ),
-    '',
+    "",
     ...generateFeatureSet(
-      'NON_REASONING_MODELS',
-      'Models that do not support the reasoning parameter.',
-      'Models not in this set are assumed to support reasoning (optimistic default).',
-      modelData.nonReasoningModels
+      "NON_REASONING_MODELS",
+      "Models that do not support the reasoning parameter.",
+      "Models not in this set are assumed to support reasoning (optimistic default).",
+      modelData.nonReasoningModels,
     ),
-    '',
+    "",
     ...generateFeatureSet(
-      'MODELS_WITHOUT_JSON_SCHEMA_SUPPORT',
-      'Models that do not support JSON schema (structured outputs).',
-      'Models not in this set are assumed to support JSON schema (optimistic default).',
-      modelData.modelsWithoutJsonSchemaSupport
+      "MODELS_WITHOUT_JSON_SCHEMA_SUPPORT",
+      "Models that do not support JSON schema (structured outputs).",
+      "Models not in this set are assumed to support JSON schema (optimistic default).",
+      modelData.modelsWithoutJsonSchemaSupport,
     ),
-    '',
+    "",
     ...generateFeatureSet(
-      'MODELS_WITHOUT_JSON_OBJECT_SUPPORT',
-      'Models that do not support JSON object mode.',
-      'Models not in this set are assumed to support JSON object mode (optimistic default).',
-      modelData.modelsWithoutJsonObjectSupport
+      "MODELS_WITHOUT_JSON_OBJECT_SUPPORT",
+      "Models that do not support JSON object mode.",
+      "Models not in this set are assumed to support JSON object mode (optimistic default).",
+      modelData.modelsWithoutJsonObjectSupport,
     ),
-    '',
+    "",
   ];
 
-  return lines.join('\n');
+  return lines.join("\n");
 }
 
 /**
  * Generate OpenAI model info from YAML test data.
  */
 export function generateOpenAIModelInfo(): void {
-  const { inputPath, outputPath } = getPaths('openai', import.meta.dirname);
+  const { inputPath, outputPath } = getPaths("openai", import.meta.dirname);
 
   // Load YAML
-  const data = readYamlData<YamlData>(inputPath, 'openai');
+  const data = readYamlData<YamlData>(inputPath, "openai");
 
   // Collect model data
-  console.log('Collecting model data...');
+  console.log("Collecting model data...");
   const modelData = collectModelData(data);
 
   // Generate TypeScript code
-  console.log('Generating TypeScript model info...');
+  console.log("Generating TypeScript model info...");
   const content = generateModelInfoContent(modelData);
 
   // Write file
@@ -196,14 +196,14 @@ export function generateOpenAIModelInfo(): void {
   // Show stats
   console.log(`  Total model IDs: ${modelData.modelIds.length}`);
   console.log(
-    `  Models without audio support: ${modelData.modelsWithoutAudioSupport.length}`
+    `  Models without audio support: ${modelData.modelsWithoutAudioSupport.length}`,
   );
   console.log(`  Non-reasoning models: ${modelData.nonReasoningModels.length}`);
   console.log(
-    `  Models without JSON schema support: ${modelData.modelsWithoutJsonSchemaSupport.length}`
+    `  Models without JSON schema support: ${modelData.modelsWithoutJsonSchemaSupport.length}`,
   );
   console.log(
-    `  Models without JSON object support: ${modelData.modelsWithoutJsonObjectSupport.length}`
+    `  Models without JSON object support: ${modelData.modelsWithoutJsonObjectSupport.length}`,
   );
 }
 

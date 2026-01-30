@@ -5,7 +5,7 @@
  * should follow when generating responses.
  */
 
-import type { ToolParameterSchema, ZodLike } from '@/llm/tools';
+import type { ToolParameterSchema, ZodLike } from "@/llm/tools";
 
 /**
  * Formatting mode determines how the structured output is requested from the LLM.
@@ -15,7 +15,7 @@ import type { ToolParameterSchema, ZodLike } from '@/llm/tools';
  * - `tool`: Use tool calling with a format tool to get structured output
  * - `parser`: Use custom OutputParser for non-JSON formats
  */
-export type FormattingMode = 'strict' | 'json' | 'tool' | 'parser';
+export type FormattingMode = "strict" | "json" | "tool" | "parser";
 
 /**
  * User-facing format specification.
@@ -57,10 +57,10 @@ export interface FormatSpec<T = unknown> {
  */
 export function isZodSchema(value: unknown): value is ZodLike {
   return (
-    typeof value === 'object' &&
+    typeof value === "object" &&
     value !== null &&
-    '_def' in value &&
-    typeof (value as ZodLike).safeParse === 'function'
+    "_def" in value &&
+    typeof (value as ZodLike).safeParse === "function"
   );
 }
 
@@ -71,21 +71,21 @@ export function isZodSchema(value: unknown): value is ZodLike {
  * @returns True if the value is a FormatSpec object.
  */
 export function isFormatSpec(value: unknown): value is FormatSpec {
-  if (typeof value !== 'object' || value === null) return false;
+  if (typeof value !== "object" || value === null) return false;
 
   // FormatSpec has optional schema, validator, or __schema
   const obj = value as Record<string, unknown>;
   return (
-    '__schema' in obj ||
-    'validator' in obj ||
-    ('schema' in obj && !('__formatType' in obj))
+    "__schema" in obj ||
+    "validator" in obj ||
+    ("schema" in obj && !("__formatType" in obj))
   );
 }
 
 // Import Format and OutputParser types for ExtractFormatType
 // These are imported lazily to avoid circular dependencies
-import type { Format } from '@/llm/formatting/format';
-import type { OutputParser } from '@/llm/formatting/output-parser';
+import type { Format } from "@/llm/formatting/format";
+import type { OutputParser } from "@/llm/formatting/output-parser";
 
 /**
  * Any format input that can be provided to defineCall/definePrompt.
