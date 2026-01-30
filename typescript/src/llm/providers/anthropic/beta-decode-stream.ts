@@ -14,7 +14,6 @@
 import type { BetaRawMessageStreamEvent } from '@anthropic-ai/sdk/resources/beta/messages/messages';
 
 import type { Jsonable } from '@/llm/types/jsonable';
-import type { StreamResponseChunk } from '@/llm/responses/chunks';
 import {
   textStart,
   textChunk,
@@ -22,6 +21,9 @@ import {
   thoughtStart,
   thoughtChunk,
   thoughtEnd,
+} from '@/llm/content';
+import type { StreamResponseChunk } from '@/llm/responses/chunks';
+import {
   finishReasonChunk,
   usageDeltaChunk,
   rawStreamEventChunk,

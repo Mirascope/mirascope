@@ -18,6 +18,12 @@ import type { Usage } from '@/llm/responses/usage';
 import { extractSerializedJson, parsePartial } from '@/llm/responses/utils';
 
 /**
+ * Type alias for RootResponse with any format type.
+ * Useful for functions that accept any response type.
+ */
+export type AnyResponse = RootResponse<unknown>;
+
+/**
  * Base class for LLM responses.
  *
  * This abstract class defines the core interface that all response types must implement.

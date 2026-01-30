@@ -12,7 +12,6 @@ import type {
   ResponseIncompleteEvent,
 } from 'openai/resources/responses/responses';
 
-import type { StreamResponseChunk } from '@/llm/responses/chunks';
 import {
   textStart,
   textChunk,
@@ -20,9 +19,12 @@ import {
   thoughtStart,
   thoughtChunk,
   thoughtEnd,
-  toolCallStartChunk,
+  toolCallStart,
   toolCallChunk,
-  toolCallEndChunk,
+  toolCallEnd,
+} from '@/llm/content';
+import type { StreamResponseChunk } from '@/llm/responses/chunks';
+import {
   finishReasonChunk,
   usageDeltaChunk,
   rawStreamEventChunk,
@@ -107,7 +109,7 @@ export function decodeStreamEvent(
     case 'response.output_item.added':
       if (event.item.type === 'function_call') {
         state.currentToolCallId = event.item.call_id;
-        chunks.push(toolCallStartChunk(event.item.call_id, event.item.name));
+        chunks.push(toolCallStart(event.item.call_id, event.item.name));
       }
       break;
 
@@ -119,7 +121,7 @@ export function decodeStreamEvent(
 
     case 'response.function_call_arguments.done':
       if (state.currentToolCallId) {
-        chunks.push(toolCallEndChunk(state.currentToolCallId));
+        chunks.push(toolCallEnd(state.currentToolCallId));
         state.currentToolCallId = null;
       }
       break;

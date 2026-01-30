@@ -37,17 +37,8 @@ export type { Stream } from '@/llm/responses/streams';
 
 export { extractSerializedJson, parsePartial } from '@/llm/responses/utils';
 
-// Streaming chunk types
+// Metadata streaming chunk types (content chunks are in content/)
 export {
-  textStart,
-  textChunk,
-  textEnd,
-  thoughtStart,
-  thoughtChunk,
-  thoughtEnd,
-  toolCallStartChunk,
-  toolCallChunk,
-  toolCallEndChunk,
   finishReasonChunk,
   usageDeltaChunk,
   rawStreamEventChunk,
@@ -55,19 +46,10 @@ export {
 } from '@/llm/responses/chunks';
 
 export type {
-  TextStartChunk,
-  TextChunk,
-  TextEndChunk,
-  ThoughtStartChunk,
-  ThoughtChunk,
-  ThoughtEndChunk,
-  ToolCallStartChunk,
-  ToolCallChunk,
-  ToolCallEndChunk,
   FinishReasonChunk,
   UsageDeltaChunk,
   RawStreamEventChunk,
   RawMessageChunk,
-  AssistantContentChunk,
   StreamResponseChunk,
+  AsyncChunkIterator,
 } from '@/llm/responses/chunks';
