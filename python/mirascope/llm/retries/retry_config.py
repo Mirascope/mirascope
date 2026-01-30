@@ -28,6 +28,14 @@ These are transient errors that are likely to succeed on retry:
 DEFAULT_MAX_ATTEMPTS: int = 3
 """Default maximum number of attempts (1 initial + 2 retries)."""
 
+DEFAULT_MAX_PARSE_ATTEMPTS: int = 3
+"""Default maximum number of parse validation attempts (0 = disabled).
+
+When set to a positive number, `.parse()` on retry responses will automatically
+retry on ParseError by calling `resume(error.retry_message())` to ask the LLM
+to fix its output.
+"""
+
 
 class RetryArgs(TypedDict, total=False):
     """Arguments for configuring retry behavior.
@@ -41,6 +49,10 @@ class RetryArgs(TypedDict, total=False):
         retry_on: Tuple of exception types that should trigger a retry.
             Defaults to DEFAULT_RETRYABLE_ERRORS (ConnectionError, RateLimitError,
             ServerError, TimeoutError).
+        max_parse_attempts: Maximum number of parse validation attempts.
+            When set to a positive number, `.parse()` will automatically retry
+            on ParseError by calling `resume(error.retry_message())`.
+            Defaults to 3.
     """
 
     max_attempts: int
@@ -53,6 +65,13 @@ class RetryArgs(TypedDict, total=False):
     ServerError, TimeoutError).
     """
 
+    max_parse_attempts: int
+    """Maximum number of parse validation attempts.
+
+    When set to a positive number, `.parse()` will automatically retry
+    on ParseError by calling `resume(error.retry_message())`. Defaults to 3.
+    """
+
 
 @dataclass(frozen=True)
 class RetryConfig:
@@ -61,6 +80,7 @@ class RetryConfig:
     Attributes:
         max_attempts: Maximum number of attempts (including the initial attempt).
         retry_on: Tuple of exception types that should trigger a retry.
+        max_parse_attempts: Maximum number of parse validation attempts.
     """
 
     max_attempts: int = DEFAULT_MAX_ATTEMPTS
@@ -69,10 +89,19 @@ class RetryConfig:
     retry_on: tuple[type[Exception], ...] = DEFAULT_RETRYABLE_ERRORS
     """Tuple of exception types that should trigger a retry."""
 
+    max_parse_attempts: int = DEFAULT_MAX_PARSE_ATTEMPTS
+    """Maximum number of parse validation attempts.
+
+    When set to a positive number, `.parse()` will automatically retry
+    on ParseError by calling `resume(error.retry_message())`.
+    """
+
     def __post_init__(self) -> None:
         """Validate configuration values."""
         if self.max_attempts < 1:
             raise ValueError("max_attempts must be at least 1")
+        if self.max_parse_attempts < 0:
+            raise ValueError("max_parse_attempts must be non-negative")
 
     @classmethod
     def from_args(cls, **args: Unpack[RetryArgs]) -> "RetryConfig":
@@ -80,4 +109,7 @@ class RetryConfig:
         return cls(
             max_attempts=args.get("max_attempts", DEFAULT_MAX_ATTEMPTS),
             retry_on=args.get("retry_on", DEFAULT_RETRYABLE_ERRORS),
+            max_parse_attempts=args.get(
+                "max_parse_attempts", DEFAULT_MAX_PARSE_ATTEMPTS
+            ),
         )

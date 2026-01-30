@@ -53,7 +53,11 @@ class MockProvider(BaseProvider[None]):
         self._stream_exceptions: list[BaseException] = []
         self._call_count = 0
         self._stream_count = 0
-        self._stream_text: str | None = None  # Custom text for streaming
+        self._stream_text: str | None = None  # Custom text for streaming (single)
+        self._response_texts: list[
+            str
+        ] = []  # Queue of response texts for non-streaming
+        self._stream_texts: list[str] = []  # Queue of stream texts
 
     @property
     def call_count(self) -> int:
@@ -92,10 +96,37 @@ class MockProvider(BaseProvider[None]):
         """
         self._stream_text = text
 
+    def set_response_texts(self, texts: Sequence[str]) -> None:
+        """Set a queue of response texts for non-streaming calls.
+
+        Each call will use the next text in the queue. Once exhausted,
+        subsequent calls will use the default 'mock response'.
+
+        Args:
+            texts: A list of response texts in order.
+        """
+        self._response_texts = list(texts)
+
+    def set_stream_texts(self, texts: Sequence[str]) -> None:
+        """Set a queue of stream texts for streaming calls.
+
+        Each stream will use the next text in the queue. Once exhausted,
+        subsequent streams will use the default 'mock response'.
+
+        Args:
+            texts: A list of stream texts in order.
+        """
+        self._stream_texts = list(texts)
+
     def _make_response(
-        self, model_id: str, messages: Sequence[llm.messages.Message]
+        self,
+        model_id: str,
+        messages: Sequence[llm.messages.Message],
+        format: Format[Any] | None = None,
     ) -> Response[Any]:
         """Create a minimal valid Response for testing."""
+        # Use queued response text if available
+        text = self._response_texts.pop(0) if self._response_texts else "mock response"
         return Response(
             raw={"mock": True},
             usage=None,
@@ -104,9 +135,10 @@ class MockProvider(BaseProvider[None]):
             provider_model_name="test-model",
             params={},
             tools=None,
+            format=format,
             input_messages=list(messages),
             assistant_message=llm.messages.assistant(
-                [llm.Text(text="mock response")],
+                [llm.Text(text=text)],
                 model_id=model_id,
                 provider_id="mock",
             ),
@@ -114,9 +146,14 @@ class MockProvider(BaseProvider[None]):
         )
 
     def _make_async_response(
-        self, model_id: str, messages: Sequence[llm.messages.Message]
+        self,
+        model_id: str,
+        messages: Sequence[llm.messages.Message],
+        format: Format[Any] | None = None,
     ) -> AsyncResponse[Any]:
         """Create a minimal valid AsyncResponse for testing."""
+        # Use queued response text if available
+        text = self._response_texts.pop(0) if self._response_texts else "mock response"
         return AsyncResponse(
             raw={"mock": True},
             usage=None,
@@ -125,9 +162,10 @@ class MockProvider(BaseProvider[None]):
             provider_model_name="test-model",
             params={},
             tools=None,
+            format=format,
             input_messages=list(messages),
             assistant_message=llm.messages.assistant(
-                [llm.Text(text="mock response")],
+                [llm.Text(text=text)],
                 model_id=model_id,
                 provider_id="mock",
             ),
@@ -150,7 +188,16 @@ class MockProvider(BaseProvider[None]):
         self._call_count += 1
         if self._exceptions:
             raise self._exceptions.pop(0)
-        return self._make_response(model_id, messages)
+        # Resolve format to Format object
+        resolved_format: Format[Any] | None = None
+        if format is not None:
+            if isinstance(format, Format):
+                resolved_format = format
+            elif isinstance(format, OutputParser):
+                resolved_format = llm.format(format, mode="parser")
+            else:
+                resolved_format = llm.format(format, mode="json")
+        return self._make_response(model_id, messages, resolved_format)
 
     async def _call_async(
         self,
@@ -168,7 +215,16 @@ class MockProvider(BaseProvider[None]):
         self._call_count += 1
         if self._exceptions:
             raise self._exceptions.pop(0)
-        return self._make_async_response(model_id, messages)
+        # Resolve format to Format object
+        resolved_format: Format[Any] | None = None
+        if format is not None:
+            if isinstance(format, Format):
+                resolved_format = format
+            elif isinstance(format, OutputParser):
+                resolved_format = llm.format(format, mode="parser")
+            else:
+                resolved_format = llm.format(format, mode="json")
+        return self._make_async_response(model_id, messages, resolved_format)
 
     def _context_call(
         self,
@@ -208,21 +264,20 @@ class MockProvider(BaseProvider[None]):
         If stream exceptions are configured, raises the next one mid-stream.
         """
         yield TextStartChunk()
-        if self._stream_text is not None:
-            # Use custom text, split into chunks
+        # Determine text to stream: queued texts > single text > default
+        if self._stream_texts:
+            text = self._stream_texts.pop(0)
+        elif self._stream_text is not None:
             text = self._stream_text
-            mid = len(text) // 2
-            yield TextChunk(delta=text[:mid])
-            # Raise exception mid-stream if configured
-            if self._stream_exceptions:
-                raise self._stream_exceptions.pop(0)
-            yield TextChunk(delta=text[mid:])
         else:
-            yield TextChunk(delta="mock ")
-            # Raise exception mid-stream if configured
-            if self._stream_exceptions:
-                raise self._stream_exceptions.pop(0)
-            yield TextChunk(delta="response")
+            text = "mock response"
+
+        mid = len(text) // 2
+        yield TextChunk(delta=text[:mid])
+        # Raise exception mid-stream if configured
+        if self._stream_exceptions:
+            raise self._stream_exceptions.pop(0)
+        yield TextChunk(delta=text[mid:])
         yield TextEndChunk()
 
     async def _make_async_chunk_iterator(self) -> AsyncIterator[StreamResponseChunk]:
@@ -231,21 +286,20 @@ class MockProvider(BaseProvider[None]):
         If stream exceptions are configured, raises the next one mid-stream.
         """
         yield TextStartChunk()
-        if self._stream_text is not None:
-            # Use custom text, split into chunks
+        # Determine text to stream: queued texts > single text > default
+        if self._stream_texts:
+            text = self._stream_texts.pop(0)
+        elif self._stream_text is not None:
             text = self._stream_text
-            mid = len(text) // 2
-            yield TextChunk(delta=text[:mid])
-            # Raise exception mid-stream if configured
-            if self._stream_exceptions:
-                raise self._stream_exceptions.pop(0)
-            yield TextChunk(delta=text[mid:])
         else:
-            yield TextChunk(delta="mock ")
-            # Raise exception mid-stream if configured
-            if self._stream_exceptions:
-                raise self._stream_exceptions.pop(0)
-            yield TextChunk(delta="response")
+            text = "mock response"
+
+        mid = len(text) // 2
+        yield TextChunk(delta=text[:mid])
+        # Raise exception mid-stream if configured
+        if self._stream_exceptions:
+            raise self._stream_exceptions.pop(0)
+        yield TextChunk(delta=text[mid:])
         yield TextEndChunk()
 
     def _stream(

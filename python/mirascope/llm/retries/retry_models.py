@@ -443,7 +443,7 @@ class RetryModel(Model):
     def resume_stream(
         self,
         *,
-        response: StreamResponse[None],
+        response: StreamResponse,
         content: UserContent,
     ) -> RetryStreamResponse[None]: ...
 
@@ -459,14 +459,14 @@ class RetryModel(Model):
     def resume_stream(
         self,
         *,
-        response: StreamResponse[None] | StreamResponse[FormattableT],
+        response: StreamResponse | StreamResponse[FormattableT],
         content: UserContent,
     ) -> RetryStreamResponse[None] | RetryStreamResponse[FormattableT]: ...
 
     def resume_stream(
         self,
         *,
-        response: StreamResponse[None] | StreamResponse[FormattableT],
+        response: StreamResponse | StreamResponse[FormattableT],
         content: UserContent,
     ) -> RetryStreamResponse[None] | RetryStreamResponse[FormattableT]:
         """Generate a new RetryStreamResponse by extending another response's messages.
@@ -498,7 +498,7 @@ class RetryModel(Model):
     async def resume_stream_async(
         self,
         *,
-        response: AsyncStreamResponse[None],
+        response: AsyncStreamResponse,
         content: UserContent,
     ) -> AsyncRetryStreamResponse[None]: ...
 
@@ -514,14 +514,14 @@ class RetryModel(Model):
     async def resume_stream_async(
         self,
         *,
-        response: AsyncStreamResponse[None] | AsyncStreamResponse[FormattableT],
+        response: AsyncStreamResponse | AsyncStreamResponse[FormattableT],
         content: UserContent,
     ) -> AsyncRetryStreamResponse[None] | AsyncRetryStreamResponse[FormattableT]: ...
 
     async def resume_stream_async(
         self,
         *,
-        response: AsyncStreamResponse[None] | AsyncStreamResponse[FormattableT],
+        response: AsyncStreamResponse | AsyncStreamResponse[FormattableT],
         content: UserContent,
     ) -> AsyncRetryStreamResponse[None] | AsyncRetryStreamResponse[FormattableT]:
         """Generate a new AsyncRetryStreamResponse by extending another response's messages.
