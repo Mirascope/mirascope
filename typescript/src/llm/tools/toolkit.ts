@@ -18,6 +18,7 @@ import {
   type ContextTools,
 } from '@/llm/tools/tools';
 import type { ToolSchema } from '@/llm/tools/tool-schema';
+import { ProviderTool, isProviderTool } from '@/llm/tools/provider-tool';
 
 /**
  * Base interface that all toolkit types implement.
@@ -29,15 +30,20 @@ import type { ToolSchema } from '@/llm/tools/tool-schema';
  */
 export interface BaseToolkit<T extends ToolSchema = ToolSchema> {
   /**
-   * Get all tools in the toolkit.
+   * Get all tools in the toolkit (including provider tools).
    */
-  readonly tools: readonly T[];
+  readonly tools: readonly (T | ProviderTool)[];
 
   /**
    * Get the schemas for all tools in the toolkit.
-   * Tools ARE schemas (they extend ToolSchema), so this is typically the same as tools.
+   * Does NOT include provider tools (they have no schema).
    */
   readonly schemas: readonly ToolSchema[];
+
+  /**
+   * Get the provider tools in the toolkit.
+   */
+  readonly providerTools: readonly ProviderTool[];
 
   /**
    * Map of tool name to tool for direct access.
@@ -90,8 +96,10 @@ export type AnyContextTools<DepsT = unknown> =
  * const output = await toolkit.execute(toolCall);
  * ```
  */
-export class Toolkit {
+export class Toolkit implements BaseToolkit<BaseTool> {
   readonly toolMap: Map<string, BaseTool>;
+  private readonly providerToolMap: Map<string, ProviderTool>;
+  private readonly _tools: readonly (BaseTool | ProviderTool)[];
 
   /**
    * Create a new Toolkit with the given tools.
@@ -99,29 +107,47 @@ export class Toolkit {
    * @param tools - The tools to include in the toolkit, or null/undefined for empty.
    * @throws Error if multiple tools have the same name.
    */
-  constructor(tools: readonly BaseTool[] | null | undefined) {
+  constructor(tools: readonly (BaseTool | ProviderTool)[] | null | undefined) {
     this.toolMap = new Map();
-    for (const tool of tools ?? []) {
-      if (this.toolMap.has(tool.name)) {
-        throw new Error(`Multiple tools with name: ${tool.name}`);
+    this.providerToolMap = new Map();
+    this._tools = tools ?? [];
+
+    for (const tool of this._tools) {
+      if (isProviderTool(tool)) {
+        if (this.providerToolMap.has(tool.name)) {
+          throw new Error(`Multiple provider tools with name: ${tool.name}`);
+        }
+        this.providerToolMap.set(tool.name, tool);
+      } else {
+        const baseTool = tool as BaseTool;
+        if (this.toolMap.has(baseTool.name)) {
+          throw new Error(`Multiple tools with name: ${baseTool.name}`);
+        }
+        this.toolMap.set(baseTool.name, baseTool);
       }
-      this.toolMap.set(tool.name, tool);
     }
   }
 
   /**
-   * Get all tools in the toolkit.
+   * Get all tools in the toolkit (including provider tools).
    */
-  get tools(): readonly BaseTool[] {
-    return Array.from(this.toolMap.values());
+  get tools(): readonly (BaseTool | ProviderTool)[] {
+    return this._tools;
   }
 
   /**
    * Get the schemas for all tools in the toolkit.
-   * Tools ARE schemas (they extend ToolSchema), so we return them directly.
+   * Does NOT include provider tools (they have no schema).
    */
   get schemas(): readonly ToolSchema[] {
-    return this.tools;
+    return Array.from(this.toolMap.values());
+  }
+
+  /**
+   * Get the provider tools in the toolkit.
+   */
+  get providerTools(): readonly ProviderTool[] {
+    return Array.from(this.providerToolMap.values());
   }
 
   /**
@@ -182,40 +208,64 @@ export class Toolkit {
  * const output = await toolkit.execute(ctx, toolCall);
  * ```
  */
-export class ContextToolkit<DepsT = unknown> {
+export class ContextToolkit<DepsT = unknown>
+  implements BaseToolkit<AnyContextTool<DepsT>>
+{
   readonly toolMap: Map<string, AnyContextTool<DepsT>>;
+  private readonly providerToolMap: Map<string, ProviderTool>;
+  private readonly _tools: readonly (AnyContextTool<DepsT> | ProviderTool)[];
 
   /**
    * Create a new ContextToolkit with the given tools.
    *
-   * Accepts both regular tools (BaseTool) and context tools (BaseContextTool).
+   * Accepts regular tools (BaseTool), context tools (BaseContextTool), and provider tools.
    *
    * @param tools - The tools to include in the toolkit, or null/undefined for empty.
    * @throws Error if multiple tools have the same name.
    */
-  constructor(tools: readonly AnyContextTool<DepsT>[] | null | undefined) {
+  constructor(
+    tools: readonly (AnyContextTool<DepsT> | ProviderTool)[] | null | undefined
+  ) {
     this.toolMap = new Map();
-    for (const tool of tools ?? []) {
-      if (this.toolMap.has(tool.name)) {
-        throw new Error(`Multiple tools with name: ${tool.name}`);
+    this.providerToolMap = new Map();
+    this._tools = tools ?? [];
+
+    for (const tool of this._tools) {
+      if (isProviderTool(tool)) {
+        if (this.providerToolMap.has(tool.name)) {
+          throw new Error(`Multiple provider tools with name: ${tool.name}`);
+        }
+        this.providerToolMap.set(tool.name, tool);
+      } else {
+        const contextTool = tool as AnyContextTool<DepsT>;
+        if (this.toolMap.has(contextTool.name)) {
+          throw new Error(`Multiple tools with name: ${contextTool.name}`);
+        }
+        this.toolMap.set(contextTool.name, contextTool);
       }
-      this.toolMap.set(tool.name, tool);
     }
   }
 
   /**
-   * Get all tools in the toolkit.
+   * Get all tools in the toolkit (including provider tools).
    */
-  get tools(): readonly AnyContextTool<DepsT>[] {
-    return Array.from(this.toolMap.values());
+  get tools(): readonly (AnyContextTool<DepsT> | ProviderTool)[] {
+    return this._tools;
   }
 
   /**
    * Get the schemas for all tools in the toolkit.
-   * Tools ARE schemas (they extend ToolSchema), so we return them directly.
+   * Does NOT include provider tools (they have no schema).
    */
   get schemas(): readonly ToolSchema[] {
-    return this.tools;
+    return Array.from(this.toolMap.values());
+  }
+
+  /**
+   * Get the provider tools in the toolkit.
+   */
+  get providerTools(): readonly ProviderTool[] {
+    return Array.from(this.providerToolMap.values());
   }
 
   /**
@@ -287,7 +337,9 @@ export class ContextToolkit<DepsT = unknown> {
  * @param tools - The tools to include in the toolkit.
  * @returns A new Toolkit instance.
  */
-export function createToolkit(tools: readonly BaseTool[]): Toolkit {
+export function createToolkit(
+  tools: readonly (BaseTool | ProviderTool)[]
+): Toolkit {
   return new Toolkit(tools);
 }
 
@@ -295,14 +347,14 @@ export function createToolkit(tools: readonly BaseTool[]): Toolkit {
  * Create a context toolkit from an array of tools.
  *
  * This is a convenience function for creating ContextToolkit instances.
- * Accepts both regular tools (BaseTool) and context tools (BaseContextTool).
+ * Accepts regular tools (BaseTool), context tools (BaseContextTool), and provider tools.
  *
  * @template DepsT - The type of dependencies in the context.
  * @param tools - The tools to include in the toolkit.
  * @returns A new ContextToolkit instance.
  */
 export function createContextToolkit<DepsT = unknown>(
-  tools: readonly AnyContextTool<DepsT>[]
+  tools: readonly (AnyContextTool<DepsT> | ProviderTool)[]
 ): ContextToolkit<DepsT> {
   return new ContextToolkit(tools);
 }

@@ -28,7 +28,8 @@ import type {
   ToolCall,
   UserContentPart,
 } from '@/llm/content';
-import type { ToolSchema } from '@/llm/tools';
+import type { ToolSchema, Tools } from '@/llm/tools';
+import { ProviderTool, isProviderTool, isWebSearchTool } from '@/llm/tools';
 import {
   APIError,
   AuthenticationError,
@@ -407,7 +408,7 @@ export function encodeMessages(
 export function buildRequestParams(
   modelId: GoogleModelId,
   messages: readonly Message[],
-  tools?: readonly ToolSchema[],
+  tools?: Tools,
   params: Params = {}
 ): GenerateContentParameters {
   return ParamHandler.with(params, 'google', modelId, (p) => {
@@ -431,7 +432,44 @@ export function buildRequestParams(
 
     /* v8 ignore start - tool encoding will be tested via e2e */
     if (tools !== undefined && tools.length > 0) {
-      config.tools = encodeTools(tools);
+      // Separate regular tools from provider tools
+      const regularTools: ToolSchema[] = [];
+      let hasWebSearch = false;
+
+      for (const tool of tools) {
+        // Check for provider tools first (WebSearchTool extends ProviderTool)
+        if (isProviderTool(tool)) {
+          if (isWebSearchTool(tool)) {
+            hasWebSearch = true;
+          } else {
+            // Cast needed because TS narrows to never after WebSearchTool check
+            const unsupportedTool = tool as ProviderTool;
+            throw new FeatureNotSupportedError(
+              `Provider tool ${unsupportedTool.name}`,
+              'google',
+              modelId,
+              `Provider tool '${unsupportedTool.name}' is not supported by Google`
+            );
+          }
+        } else {
+          // Regular tool (BaseTool extends ToolSchema)
+          regularTools.push(tool as ToolSchema);
+        }
+      }
+
+      const googleTools: NonNullable<GenerateContentConfig['tools']> = [];
+
+      if (regularTools.length > 0) {
+        googleTools.push(...encodeTools(regularTools));
+      }
+
+      if (hasWebSearch) {
+        googleTools.push({ googleSearch: {} });
+      }
+
+      if (googleTools.length > 0) {
+        config.tools = googleTools;
+      }
     }
     /* v8 ignore stop */
 

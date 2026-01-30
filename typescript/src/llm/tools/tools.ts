@@ -11,6 +11,7 @@ import type { ToolCall } from '@/llm/content/tool-call';
 import type { ToolOutput } from '@/llm/content/tool-output';
 import type { Jsonable } from '@/llm/types/jsonable';
 import type { ToolSchema } from '@/llm/tools/tool-schema';
+import type { ProviderTool } from '@/llm/tools/provider-tool';
 
 /**
  * Field definition can be a string description or a Zod schema.
@@ -189,18 +190,21 @@ export type AnyToolSchema = BaseTool | BaseContextTool;
 
 /**
  * Type alias for an array of regular tools.
- * Matches Python's `Tools = Sequence[Tool]`.
+ * Matches Python's `Tools = Sequence[Tool | ProviderTool]`.
  */
-export type Tools = readonly BaseTool[];
+export type Tools = readonly (BaseTool | ProviderTool)[];
 
 /**
  * Type alias for an array of tools usable in context paths.
- * Accepts both regular tools AND context tools.
- * Matches Python's `ContextTools[DepsT] = Sequence[Tool | ContextTool[DepsT]]`.
+ * Accepts both regular tools AND context tools, plus provider tools.
+ * Matches Python's `ContextTools[DepsT] = Sequence[Tool | ContextTool[DepsT] | ProviderTool]`.
  *
  * @template DepsT - The type of dependencies in the context.
  */
-export type ContextTools<DepsT = unknown> = readonly AnyContextTool<DepsT>[];
+export type ContextTools<DepsT = unknown> = readonly (
+  | AnyContextTool<DepsT>
+  | ProviderTool
+)[];
 
 // =============================================================================
 // Tool Function Types
