@@ -79,3 +79,8 @@ def default_anthropic_scopes() -> list[str]:
     for region_prefix in ("us.", "eu.", "apac.", "global."):
         scopes.add(f"bedrock/{region_prefix}anthropic.")
     return sorted(scopes)
+
+
+# Default OpenAI-compatible model ID prefixes for Bedrock routing.
+# e.g. bedrock/openai.gpt-oss-20b-1:0
+BEDROCK_OPENAI_MODEL_PREFIXES = ("bedrock/openai.",)

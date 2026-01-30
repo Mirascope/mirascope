@@ -29,23 +29,28 @@ from ..anthropic._utils.errors import ANTHROPIC_ERROR_MAP
 from ..base import BaseProvider
 from . import _utils as bedrock_utils
 from .model_id import BedrockModelId
+from .openai import BedrockOpenAIRoutedProvider
 
 if TYPE_CHECKING:
     from anthropic import AnthropicBedrock
+    from openai import OpenAI
 
     from ...models import Params
     from .anthropic import BedrockAnthropicRoutedProvider
 else:
     AnthropicBedrock = None
+    OpenAI = None
 
 BEDROCK_ANTHROPIC_MODEL_PREFIXES = tuple(bedrock_utils.default_anthropic_scopes())
+BEDROCK_OPENAI_MODEL_PREFIXES = bedrock_utils.BEDROCK_OPENAI_MODEL_PREFIXES
 
-RoutingProviderId = Literal["anthropic"]
+RoutingProviderId = Literal["anthropic", "openai"]
 
 
 def _default_routing_scopes() -> dict[RoutingProviderId, list[str]]:
     return {
         "anthropic": list(BEDROCK_ANTHROPIC_MODEL_PREFIXES),
+        "openai": list(BEDROCK_OPENAI_MODEL_PREFIXES),
     }
 
 
@@ -57,7 +62,7 @@ def _is_anthropic_arn(model_id: str) -> bool:
     return "foundation-model/anthropic." in model_id
 
 
-class BedrockProvider(BaseProvider["AnthropicBedrock | None"]):
+class BedrockProvider(BaseProvider["AnthropicBedrock | OpenAI | None"]):
     """Unified provider for Amazon Bedrock using routing.
 
     Auto-routing is strict. It matches only:
@@ -65,12 +70,12 @@ class BedrockProvider(BaseProvider["AnthropicBedrock | None"]):
     - Anthropic cross-region inference profile IDs
       (``bedrock/us.anthropic.<model>``, ``bedrock/eu.anthropic.<model>``, etc.)
     - Anthropic foundation model ARNs containing ``foundation-model/anthropic.``
+    - OpenAI-compatible model IDs (``bedrock/openai.<model>``)
 
-    Other model identifiers (OpenAI-compatible, Converse, InvokeModel) are not
-    auto-detected in this initial implementation. If a model id does not match
-    one of the defaults above, you must add routing prefixes via
-    ``routing_scopes``; otherwise calling this provider raises ``ValueError``
-    with guidance on how to configure routing.
+    Other model identifiers (Converse, InvokeModel) are not auto-detected in this
+    initial implementation. If a model id does not match one of the defaults above,
+    you must add routing prefixes via ``routing_scopes``; otherwise calling this
+    provider raises ``ValueError`` with guidance on how to configure routing.
     """
 
     id = "bedrock"
@@ -88,6 +93,7 @@ class BedrockProvider(BaseProvider["AnthropicBedrock | None"]):
         base_url: str | None = None,
         routing_scopes: dict[RoutingProviderId, list[str]] | None = None,
         anthropic_api_key: str | None = None,
+        openai_api_key: str | None = None,
     ) -> None:
         """Initialize the Bedrock provider.
 
@@ -106,8 +112,11 @@ class BedrockProvider(BaseProvider["AnthropicBedrock | None"]):
                 guidance on how to configure routing.
             anthropic_api_key: Optional API key for Anthropic subprovider authentication.
                 If provided, this takes priority over AWS credentials for Anthropic models.
+            openai_api_key: Optional API key for OpenAI subprovider authentication.
+                If provided, this takes priority over AWS credentials for OpenAI models.
         """
         self._anthropic_provider: BedrockAnthropicRoutedProvider | None = None
+        self._openai_provider: BedrockOpenAIRoutedProvider | None = None
         self.client: Any = None
         self._aws_region = aws_region
         self._aws_access_key = aws_access_key
@@ -116,6 +125,7 @@ class BedrockProvider(BaseProvider["AnthropicBedrock | None"]):
         self._aws_profile = aws_profile
         self._base_url = base_url
         self._anthropic_api_key = anthropic_api_key
+        self._openai_api_key = openai_api_key
         self._routing_scopes = _default_routing_scopes()
         if routing_scopes:
             for provider_id, scopes in routing_scopes.items():
@@ -137,24 +147,42 @@ class BedrockProvider(BaseProvider["AnthropicBedrock | None"]):
             self.client = self._anthropic_provider.client
         return self._anthropic_provider
 
+    def _get_openai_provider(self) -> BedrockOpenAIRoutedProvider:
+        if self._openai_provider is None:
+            self._openai_provider = BedrockOpenAIRoutedProvider(
+                api_key=self._openai_api_key,
+                aws_region=self._aws_region,
+                aws_access_key_id=self._aws_access_key,
+                aws_secret_access_key=self._aws_secret_key,
+                aws_session_token=self._aws_session_token,
+                aws_profile=self._aws_profile,
+                base_url=self._base_url,
+            )
+            self.client = self._openai_provider.client
+        return self._openai_provider
+
     def get_error_status(self, e: Exception) -> int | None:
         """Extract HTTP status code from provider exception."""
         return getattr(e, "status_code", None)
 
     def _choose_subprovider(
         self, model_id: BedrockModelId, messages: Sequence[Message]
-    ) -> BedrockAnthropicRoutedProvider:
+    ) -> BedrockAnthropicRoutedProvider | BedrockOpenAIRoutedProvider:
         route = self._route_provider(model_id)
         if route == "anthropic":
             return self._get_anthropic_provider()
+        if route == "openai":
+            return self._get_openai_provider()
 
         message = (
             "BedrockProvider could not determine which SDK to use for "
-            f"model_id='{model_id}'. Auto-routing only supports Anthropic model "
-            "prefixes (e.g., 'bedrock/anthropic.', 'bedrock/us.anthropic.', or "
-            "Anthropic foundation model ARNs). If you need to use a different model, "
-            "pass routing_scopes={'anthropic': ['bedrock/<prefix>']} when "
-            "registering the BedrockProvider."
+            f"model_id='{model_id}'. Auto-routing supports Anthropic model "
+            "prefixes (e.g., 'bedrock/anthropic.', 'bedrock/us.anthropic.', "
+            "Anthropic foundation model ARNs) and OpenAI-compatible model "
+            "prefixes (e.g., 'bedrock/openai.'). If you need to use a different "
+            "model, pass routing_scopes={'anthropic': ['bedrock/<prefix>']} or "
+            "routing_scopes={'openai': ['bedrock/<prefix>']} when registering "
+            "the BedrockProvider."
         )
         raise ValueError(message)
 

@@ -1,0 +1,63 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"List all U.S. states."}],"model":"openai.gpt-oss-20b-1:0","max_completion_tokens":50}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '124'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AsyncOpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"choices":[{"finish_reason":"length","index":0,"logprobs":null,"message":{"content":"<reasoning>User:
+        \"List all U.S. states.\" There''s no special instruction, so just give list
+        of 50 U.S. states.\n\nWe should comply and provide a list of all 50 states
+        alphabetically or similar. Provide as final</reasoning>","refusal":null,"role":"assistant"}}],"created":1769185906,"id":"chatcmpl-7746109b-341d-457b-ae8c-2a374af31094","model":"openai.gpt-oss-20b-1:0","object":"chat.completion","service_tier":"default","usage":{"completion_tokens":50,"prompt_tokens":76,"prompt_tokens_details":{"audio_tokens":0,"cached_tokens":48},"total_tokens":126}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '640'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 16:31:47 GMT
+      X-Request-ID:
+      - a4000c75-2ba2-4bbc-852c-ebcec1ba9088
+      x-amzn-RequestId:
+      - a4000c75-2ba2-4bbc-852c-ebcec1ba9088
+    status:
+      code: 200
+      message: OK
+version: 1

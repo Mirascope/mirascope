@@ -9,6 +9,7 @@ import pytest
 from dotenv import load_dotenv
 
 from mirascope import llm
+from mirascope.llm.providers.bedrock import BedrockProvider
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -21,7 +22,9 @@ def load_api_keys() -> None:
     load_dotenv(override=True)
     # Set dummy keys if not present so that tests pass in CI.
     os.environ.setdefault("ANTHROPIC_API_KEY", "dummy-anthropic-key")
+    os.environ.setdefault("AWS_ACCESS_KEY_ID", "dummy-aws-access-key-id")
     os.environ.setdefault("AWS_BEARER_TOKEN_BEDROCK", "dummy-bedrock-api-key")
+    os.environ.setdefault("AWS_SECRET_ACCESS_KEY", "dummy-aws-secret-access-key")
     os.environ.setdefault("AZURE_ANTHROPIC_API_KEY", "dummy-azure-anthropic-key")
     os.environ.setdefault(
         "AZURE_AI_ANTHROPIC_ENDPOINT",
@@ -39,11 +42,16 @@ def load_api_keys() -> None:
 def reset_provider_registry() -> Generator[None, None, None]:
     """Reset the provider registry before and after each test.
 
-    Also, configures the anthropic-beta provider for testing purposes.
+    Also, configures the anthropic-beta provider and bedrock provider for testing.
     """
     llm.reset_provider_registry()
     anthropic_provider = llm.register_provider("anthropic")
     assert isinstance(anthropic_provider, llm.providers.AnthropicProvider)
     anthropic_beta_provider = anthropic_provider._beta_provider  # pyright: ignore[reportPrivateUsage]
     llm.register_provider(anthropic_beta_provider, "anthropic-beta/")
+    llm.register_provider(
+        BedrockProvider(
+            openai_api_key=os.getenv("AWS_BEARER_TOKEN_BEDROCK"),
+        )
+    )
     yield

@@ -1,0 +1,61 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"What is 4200 + 42?"}],"model":"openai.gpt-oss-20b-1:0"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '94'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: "{\"choices\":[{\"finish_reason\":\"stop\",\"index\":0,\"logprobs\":null,\"message\":{\"content\":\"<reasoning>We
+        need to answer sum. 4200+42=4242. Probably just answer.</reasoning>4200\u202F+\u202F42\u202F=\u202F4242.\",\"refusal\":null,\"role\":\"assistant\"}}],\"created\":1769185778,\"id\":\"chatcmpl-b4cd8721-b80b-4a8c-a2da-da6858f12a0d\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion\",\"service_tier\":\"default\",\"usage\":{\"completion_tokens\":41,\"prompt_tokens\":78,\"total_tokens\":119}}"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '459'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 16:29:38 GMT
+      X-Request-ID:
+      - 0e5804a4-97e8-4c71-83cc-e0cc24b95b4e
+      x-amzn-RequestId:
+      - 0e5804a4-97e8-4c71-83cc-e0cc24b95b4e
+    status:
+      code: 200
+      message: OK
+version: 1

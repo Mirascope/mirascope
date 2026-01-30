@@ -1,0 +1,252 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"What is 4200 + 42?"}],"model":"openai.gpt-oss-20b-1:0"}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '94'
+      Content-Type:
+      - application/json
+      Host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      User-Agent:
+      - OpenAI/Python 2.16.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.13.3
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"choices":[{"finish_reason":"stop","index":0,"logprobs":null,"message":{"content":"<reasoning>The
+        user asks: \"What is 4200 + 42?\" That''s a simple addition: 4200 + 42 = 4242.
+        So answer 4242. That''s it.</reasoning>4220 + 22 is 4220 + 22 = 4242.\n\nTherefore,
+        4200 + 42 = **4242**.","refusal":null,"role":"assistant"}}],"created":1769777285,"id":"chatcmpl-497b74de-0fe5-412b-a803-8b60f04c3037","model":"openai.gpt-oss-20b-1:0","object":"chat.completion","service_tier":"default","usage":{"completion_tokens":80,"prompt_tokens":74,"total_tokens":154}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '550'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 30 Jan 2026 12:48:08 GMT
+      X-Request-ID:
+      - 991c49d7-6122-45f0-8940-e23508b1c25a
+      x-amzn-RequestId:
+      - 991c49d7-6122-45f0-8940-e23508b1c25a
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"user","content":"What is 4200 + 42?"}],"model":"openai.gpt-oss-20b-1:0"}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '94'
+      Content-Type:
+      - application/json
+      Host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      User-Agent:
+      - OpenAI/Python 2.16.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.13.3
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"choices":[{"finish_reason":"stop","index":0,"logprobs":null,"message":{"content":"<reasoning>The
+        user is asking a simple arithmetic addition problem: 4200 + 42. The answer
+        is 4242. I should respond succinctly: 4242.</reasoning>\\(4200 + 42 = 4242\\)","refusal":null,"role":"assistant"}}],"created":1769777289,"id":"chatcmpl-bb7a8c79-62d1-42f5-8bb8-810536312706","model":"openai.gpt-oss-20b-1:0","object":"chat.completion","service_tier":"default","usage":{"completion_tokens":56,"prompt_tokens":74,"total_tokens":130}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '520'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 30 Jan 2026 12:48:09 GMT
+      X-Request-ID:
+      - 7f9c811d-2891-4f69-b157-3fa4aee80ab3
+      x-amzn-RequestId:
+      - 7f9c811d-2891-4f69-b157-3fa4aee80ab3
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"user","content":"What is 4200 + 42?"}],"model":"openai.gpt-oss-20b-1:0","stream":true,"stream_options":{"include_usage":true}}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '148'
+      Content-Type:
+      - application/json
+      Host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      User-Agent:
+      - OpenAI/Python 2.16.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.13.3
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: "data: {\"choices\":[{\"delta\":{\"content\":\"\",\"role\":\"assistant\"},\"finish_reason\":null,\"index\":0,\"obfuscation\":\"Z30Orx1CqiVKx2OrgvTIscn0qRdkXm7yBw4OAJ4WR3WSNqYSMwXWjGScZlu9m7MhOg08bNvYmMhCltFgqvFLBCg8EogZlQPd1Pk1b4rOIKU92DGS2Lv2b9cRJx\"}],\"created\":1769777290,\"id\":\"chatcmpl-6b7ea2f5-5138-46db-bfe8-0577a85b25ba\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[{\"delta\":{\"content\":\"<reasoning>User asks simple math:
+        4200 + 42? That's 4242. Provide answer. I might mention it's 4242.</reasoning>\"},\"finish_reason\":null,\"index\":0,\"obfuscation\":\"2HPCpg92DdglUZbQhlPDAd9KYrfqLJDoZx84TsbvyQZ85QvdvNTofIpaHgrwQ1jYoSWnJ9CtUV5qCwz68VplDvdzK9Um2fD2e0r1640ZVL1Oa5eEefQw\"}],\"created\":1769777290,\"id\":\"chatcmpl-6b7ea2f5-5138-46db-bfe8-0577a85b25ba\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[{\"delta\":{\"content\":\"4200\u202F+\u202F42\u202F=\"},\"finish_reason\":null,\"index\":0,\"obfuscation\":\"DnmSmtb6kaIw0N1b13TIgxu7zcZ4AiuDPCaHUdLpaj1J4I9XFwrB73eJTeE\"}],\"created\":1769777290,\"id\":\"chatcmpl-6b7ea2f5-5138-46db-bfe8-0577a85b25ba\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[{\"delta\":{\"content\":\"\u202F**4242**.\"},\"finish_reason\":null,\"index\":0,\"obfuscation\":\"eaU3txNvhy97J318h9uNeY8OSXgR3IOoqxnddYgO8GTCX06mTkRNzI8W6bzDMmq6w1AW5n7mUIxC0Z4gV2xlzyDp6Ts6fJwSfTuiCnk5l22rMmglLj9CKOdHdxpCqIf\"}],\"created\":1769777290,\"id\":\"chatcmpl-6b7ea2f5-5138-46db-bfe8-0577a85b25ba\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\",\"index\":0,\"obfuscation\":\"6YjV01dIGyRL3jU5Bb6N5kScIh287TSgPxlZgScCeLDSjY\"}],\"created\":1769777290,\"id\":\"chatcmpl-6b7ea2f5-5138-46db-bfe8-0577a85b25ba\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[],\"created\":1769777290,\"id\":\"chatcmpl-6b7ea2f5-5138-46db-bfe8-0577a85b25ba\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\",\"usage\":{\"completion_tokens\":52,\"prompt_tokens\":74,\"prompt_tokens_details\":{\"audio_tokens\":0,\"cached_tokens\":48},\"total_tokens\":126}}\n\ndata:
+        [DONE]\n\n"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 30 Jan 2026 12:48:10 GMT
+      Transfer-Encoding:
+      - chunked
+      X-Request-ID:
+      - 1577a217-9b58-465b-8b81-ea5bd17feec1
+      x-amzn-RequestId:
+      - 1577a217-9b58-465b-8b81-ea5bd17feec1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"user","content":"What is 4200 + 42?"}],"model":"openai.gpt-oss-20b-1:0","stream":true,"stream_options":{"include_usage":true}}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '148'
+      Content-Type:
+      - application/json
+      Host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      User-Agent:
+      - OpenAI/Python 2.16.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.13.3
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: "data: {\"choices\":[{\"delta\":{\"content\":\"\",\"role\":\"assistant\"},\"finish_reason\":null,\"index\":0,\"obfuscation\":\"iDM4t3D36zWvaMeTrJQYSKkLD7RE5PmajgUMa5Quq2EbLjSgA9flgatCUktq1FPZDlizUcocsiYM9gtwRGlo\"}],\"created\":1769777293,\"id\":\"chatcmpl-f1208a8c-0adc-4202-b5f3-135bbffeaa23\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[{\"delta\":{\"content\":\"<reasoning>The user asks: \\\"What
+        is 4200 + 42?\\\" Simple addition: 4200 + 42 = 4242. So answer is 4242.</reasoning>\"},\"finish_reason\":null,\"index\":0,\"obfuscation\":\"VoxoP0nbtjvYiBOWGclcfq4UNNDbqb6qr6DW\"}],\"created\":1769777293,\"id\":\"chatcmpl-f1208a8c-0adc-4202-b5f3-135bbffeaa23\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[{\"delta\":{\"content\":\"The sum is\u202F**4242**.\"},\"finish_reason\":null,\"index\":0,\"obfuscation\":\"ZnPwWV6wyyVYuDyKa4IUXb6Q7HGg7bRq0ETBHgMGeqH7c7OaUh9CvUAJtnMBYZVHHVyGvZN15uXBKncVFKmejxWdsc3ix2qn60Pwq43Q\"}],\"created\":1769777293,\"id\":\"chatcmpl-f1208a8c-0adc-4202-b5f3-135bbffeaa23\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\",\"index\":0,\"obfuscation\":\"tT9hJRhDhmURJgBLobfKJqS1iysLlLIWijC0\"}],\"created\":1769777293,\"id\":\"chatcmpl-f1208a8c-0adc-4202-b5f3-135bbffeaa23\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[],\"created\":1769777293,\"id\":\"chatcmpl-f1208a8c-0adc-4202-b5f3-135bbffeaa23\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\",\"usage\":{\"completion_tokens\":54,\"prompt_tokens\":74,\"total_tokens\":128}}\n\ndata:
+        [DONE]\n\n"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 30 Jan 2026 12:48:13 GMT
+      Transfer-Encoding:
+      - chunked
+      X-Request-ID:
+      - 4423df38-a252-4c4b-8b84-3bbacc92e62d
+      x-amzn-RequestId:
+      - 4423df38-a252-4c4b-8b84-3bbacc92e62d
+    status:
+      code: 200
+      message: OK
+version: 1

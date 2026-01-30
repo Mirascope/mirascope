@@ -1,0 +1,67 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Say hello in one word."}],"model":"openai.gpt-oss-20b-1:0"}'
+    headers:
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      User-Agent:
+      - OpenAI/Python 2.16.0
+      X-Amz-Date:
+      - 20260130T142607Z
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.13.3
+      accept:
+      - application/json
+      content-length:
+      - '98'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: "{\"choices\":[{\"finish_reason\":\"stop\",\"index\":0,\"logprobs\":null,\"message\":{\"content\":\"<reasoning>The
+        user: \\\"Say hello in one word.\\\" They want an answer: \\\"hello\\\" or
+        \\\"hola\\\" etc. The task is to produce a greeting consisting of a single
+        word. So maybe respond with \\\"hello\\\". Possibly includes mention that
+        it's greeting. They want a single word\u2014likely \\\"hello\\\". So respond
+        \\\"hello\\\". That satisfies.</reasoning>hello\",\"refusal\":null,\"role\":\"assistant\"}}],\"created\":1769783168,\"id\":\"chatcmpl-e1873a97-d89e-4694-9ae4-1bae3911e4af\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion\",\"service_tier\":\"default\",\"usage\":{\"completion_tokens\":80,\"prompt_tokens\":71,\"total_tokens\":151}}"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '689'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 30 Jan 2026 14:26:08 GMT
+      X-Request-ID:
+      - 03b4afd9-cb04-44c8-b301-3a0577bfd7b0
+      x-amzn-RequestId:
+      - 03b4afd9-cb04-44c8-b301-3a0577bfd7b0
+    status:
+      code: 200
+      message: OK
+version: 1
