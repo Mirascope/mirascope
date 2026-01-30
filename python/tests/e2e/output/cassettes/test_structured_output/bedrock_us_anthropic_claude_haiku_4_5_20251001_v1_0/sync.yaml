@@ -1,0 +1,79 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
+      the most popular book by Patrick Rothfuss"}],"system":[{"type":"text","text":"Always
+      respond to the user''s query using the __mirascope_formatted_output_tool__ tool
+      for structured output.","cache_control":{"type":"ephemeral"}}],"tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in Book format for a final response.\nA book with
+      a rating. The title should be in all caps!","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
+      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
+      author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
+      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object"}},"type":"object"},"cache_control":{"type":"ephemeral"}}],"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1230'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.75.0
+      x-amz-date:
+      - 20260123T124332Z
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01GeC1y12tC17BMSrJhwV2TJ","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01TQNEW7H7Q2KVtCr5hULjso","name":"__mirascope_formatted_output_tool__","input":{"title":"THE
+        NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":880,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":81}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '576'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 12:43:33 GMT
+      X-Amzn-Bedrock-Cache-Read-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Cache-Write-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '880'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '1083'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '81'
+      x-amzn-RequestId:
+      - 3162a019-c43f-4852-bb60-444416b345ee
+    status:
+      code: 200
+      message: OK
+version: 1

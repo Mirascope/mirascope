@@ -61,6 +61,7 @@ Changelog = "https://github.com/Mirascope/mirascope/releases"
 [project.optional-dependencies]
 anthropic = ["anthropic>=0.76.0,<1.0"]
 api = ["pydantic-settings>=2.12.0"]
+bedrock = ["anthropic[bedrock]>=0.76.0,<1.0", "boto3>=1.35.0"]
 google = ["google-genai>=1.58.0,<2", "pillow>=10.4.0,<11", "proto-plus>=1.24.0"]
 openai = ["openai>=2.15.0,<3"]
 mcp = ["mcp>=1.25.0,<2"]
@@ -80,7 +81,7 @@ ops = [
     "opentelemetry-instrumentation-google-genai>=0.3b0,<1",
 ]
 mlx = ["mlx-lm>=0.28.4,<1"]
-all = ["mirascope[anthropic,api,google,openai,mcp,ops,mlx]"]
+all = ["mirascope[anthropic,api,bedrock,google,openai,mcp,ops,mlx]"]
 
 [dependency-groups]
 dev = [
@@ -98,6 +99,7 @@ dev = [
     "datamodel-code-generator>=0.39.0",
     "fastmcp>=0.3.0",
     "tomli>=2.2.1",
+    "boto3>=1.35.0",  # Required for Bedrock e2e tests (SigV4 auth)
 ]
 
 

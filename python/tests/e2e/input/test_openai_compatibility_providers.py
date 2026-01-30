@@ -263,3 +263,131 @@ def test_azure_anthropic_provider(
         assert "4242" in response.pretty(), (
             f"Expected '4242' in response: {response.pretty()}"
         )
+
+
+# =============================================================================
+# Bedrock Anthropic Provider Tests
+# =============================================================================
+
+BEDROCK_ANTHROPIC_MODEL_IDS = ["bedrock/us.anthropic.claude-haiku-4-5-20251001-v1:0"]
+
+
+def _register_bedrock_provider() -> None:
+    llm.register_provider("bedrock", "bedrock/")
+
+
+@pytest.mark.parametrize("model_id", BEDROCK_ANTHROPIC_MODEL_IDS)
+@pytest.mark.vcr
+def test_bedrock_anthropic_provider(model_id: llm.ModelId, snapshot: Snapshot) -> None:
+    """Test that Bedrock Anthropic provider works correctly."""
+
+    @llm.call(model_id)
+    def add_numbers(a: int, b: int) -> str:
+        return f"What is {a} + {b}?"
+
+    _register_bedrock_provider()
+
+    with snapshot_test(snapshot) as snap:
+        response = add_numbers(4200, 42)
+        assert response.provider_id == "bedrock"
+        assert (
+            response.provider_model_name
+            == "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+        )
+        snap.set_response(response)
+        assert "4242" in response.pretty(), (
+            f"Expected '4242' in response: {response.pretty()}"
+        )
+
+
+@pytest.mark.parametrize("model_id", BEDROCK_ANTHROPIC_MODEL_IDS)
+@pytest.mark.vcr
+def test_bedrock_anthropic_sync_call_and_stream(
+    model_id: llm.ModelId, snapshot: Snapshot
+) -> None:
+    """Test sync call + stream paths for Bedrock Anthropic (with and without context)."""
+
+    @llm.call(model_id)
+    def add_numbers(a: int, b: int) -> str:
+        return f"What is {a} + {b}?"
+
+    @llm.call(model_id)
+    def add_numbers_ctx(ctx: llm.Context[int], b: int) -> str:
+        return f"What is {ctx.deps} + {b}?"
+
+    _register_bedrock_provider()
+
+    with snapshot_test(snapshot) as snap:
+        response = add_numbers(4200, 42)
+        snap["call"] = response_snapshot_dict(response)
+        assert "4242" in response.pretty(), (
+            f"Expected '4242' in response: {response.pretty()}"
+        )
+
+        ctx = llm.Context(deps=4200)
+        response_ctx = add_numbers_ctx(ctx, 42)
+        snap["context_call"] = response_snapshot_dict(response_ctx)
+        assert "4242" in response_ctx.pretty(), (
+            f"Expected '4242' in response: {response_ctx.pretty()}"
+        )
+
+        stream = add_numbers.stream(4200, 42)
+        stream.finish()
+        snap["stream"] = stream_response_snapshot_dict(stream)
+        assert "4242" in stream.pretty(), (
+            f"Expected '4242' in response: {stream.pretty()}"
+        )
+
+        stream_ctx = add_numbers_ctx.stream(ctx, 42)
+        stream_ctx.finish()
+        snap["context_stream"] = stream_response_snapshot_dict(stream_ctx)
+        assert "4242" in stream_ctx.pretty(), (
+            f"Expected '4242' in response: {stream_ctx.pretty()}"
+        )
+
+
+@pytest.mark.parametrize("model_id", BEDROCK_ANTHROPIC_MODEL_IDS)
+@pytest.mark.vcr
+@pytest.mark.asyncio
+async def test_bedrock_anthropic_async_call_and_stream(
+    model_id: llm.ModelId, snapshot: Snapshot
+) -> None:
+    """Test async call + stream paths for Bedrock Anthropic (with and without context)."""
+
+    @llm.call(model_id)
+    async def add_numbers(a: int, b: int) -> str:
+        return f"What is {a} + {b}?"
+
+    @llm.call(model_id)
+    async def add_numbers_ctx(ctx: llm.Context[int], b: int) -> str:
+        return f"What is {ctx.deps} + {b}?"
+
+    _register_bedrock_provider()
+
+    with snapshot_test(snapshot) as snap:
+        response = await add_numbers(4200, 42)
+        snap["async_call"] = response_snapshot_dict(response)
+        assert "4242" in response.pretty(), (
+            f"Expected '4242' in response: {response.pretty()}"
+        )
+
+        ctx = llm.Context(deps=4200)
+        response_ctx = await add_numbers_ctx(ctx, 42)
+        snap["async_context_call"] = response_snapshot_dict(response_ctx)
+        assert "4242" in response_ctx.pretty(), (
+            f"Expected '4242' in response: {response_ctx.pretty()}"
+        )
+
+        stream = await add_numbers.stream(4200, 42)
+        await stream.finish()
+        snap["async_stream"] = stream_response_snapshot_dict(stream)
+        assert "4242" in stream.pretty(), (
+            f"Expected '4242' in response: {stream.pretty()}"
+        )
+
+        stream_ctx = await add_numbers_ctx.stream(ctx, 42)
+        await stream_ctx.finish()
+        snap["async_context_stream"] = stream_response_snapshot_dict(stream_ctx)
+        assert "4242" in stream_ctx.pretty(), (
+            f"Expected '4242' in response: {stream_ctx.pretty()}"
+        )
