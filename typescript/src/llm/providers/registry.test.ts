@@ -20,6 +20,7 @@ describe('provider registry', () => {
     vi.stubEnv('ANTHROPIC_API_KEY', 'test-key');
     vi.stubEnv('GOOGLE_API_KEY', 'test-google-key');
     vi.stubEnv('OPENAI_API_KEY', 'test-openai-key');
+    vi.stubEnv('TOGETHER_API_KEY', 'test-together-key');
   });
 
   describe('registerProvider', () => {
@@ -142,6 +143,19 @@ describe('provider registry', () => {
         baseURL: 'http://custom.ollama.example.com/v1/',
       });
       expect(provider.id).toBe('ollama');
+    });
+
+    it('registers together provider by ID', () => {
+      const provider = registerProvider('together');
+      expect(provider.id).toBe('together');
+    });
+
+    it('registers together provider by ID with options', () => {
+      const provider = registerProvider('together', {
+        apiKey: 'custom-key',
+        baseURL: 'https://custom.together.api.com',
+      });
+      expect(provider.id).toBe('together');
     });
   });
 

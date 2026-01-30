@@ -14,6 +14,7 @@ import { GoogleProvider } from '@/llm/providers/google';
 import { MirascopeProvider } from '@/llm/providers/mirascope';
 import { OllamaProvider } from '@/llm/providers/ollama';
 import { OpenAIProvider } from '@/llm/providers/openai/provider';
+import { TogetherProvider } from '@/llm/providers/together';
 import type { ProviderId } from '@/llm/providers/provider-id';
 
 /**
@@ -52,6 +53,7 @@ const DEFAULT_AUTO_REGISTER_SCOPES: Record<string, ProviderDefault[]> = {
   ],
   'ollama/': [{ providerId: 'ollama', apiKeyEnvVar: null }],
   'openai/': [{ providerId: 'openai', apiKeyEnvVar: 'OPENAI_API_KEY' }],
+  'together/': [{ providerId: 'together', apiKeyEnvVar: 'TOGETHER_API_KEY' }],
 };
 
 /**
@@ -113,6 +115,12 @@ export function getProviderSingleton(
       break;
     case 'openai':
       provider = new OpenAIProvider({
+        apiKey: options?.apiKey,
+        baseURL: options?.baseURL,
+      });
+      break;
+    case 'together':
+      provider = new TogetherProvider({
         apiKey: options?.apiKey,
         baseURL: options?.baseURL,
       });
