@@ -20,12 +20,18 @@ from .retry_responses import (
     AsyncRetryResponse,
     RetryResponse,
 )
+from .retry_stream_responses import (
+    AsyncRetryStreamResponse,
+    RetryStreamResponse,
+)
 
 
-def _ensure_retry_model(model: Model, config: RetryConfig) -> RetryModel:
+def _ensure_retry_model(model: Model | ModelId, config: RetryConfig) -> RetryModel:
     """Ensure a model has retry capabilities, adding them if necessary."""
     if isinstance(model, RetryModel):
         return model
+    if isinstance(model, str):
+        model = Model(model)
     return RetryModel(model=model, retry_config=config)
 
 
@@ -97,11 +103,35 @@ class RetryPrompt(BaseRetryPrompt, Prompt[P, FormattableT], Generic[P, Formattab
         self, model: Model | ModelId, *args: P.args, **kwargs: P.kwargs
     ) -> RetryResponse[None] | RetryResponse[FormattableT]:
         """Generates a retry response using the provided model."""
-        if isinstance(model, str):
-            model = Model(model)
         retry_model = _ensure_retry_model(model, self.retry_config)
         messages = self.messages(*args, **kwargs)
         return retry_model.call(
+            content=messages, tools=self.toolkit, format=self.format
+        )
+
+    @overload
+    def stream(
+        self: "RetryPrompt[P, None]",
+        model: Model | ModelId,
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> RetryStreamResponse[None]: ...
+
+    @overload
+    def stream(
+        self: "RetryPrompt[P, FormattableT]",
+        model: Model | ModelId,
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> RetryStreamResponse[FormattableT]: ...
+
+    def stream(
+        self, model: Model | ModelId, *args: P.args, **kwargs: P.kwargs
+    ) -> RetryStreamResponse[None] | RetryStreamResponse[FormattableT]:
+        """Generates a retry stream response using the provided model."""
+        retry_model = _ensure_retry_model(model, self.retry_config)
+        messages = self.messages(*args, **kwargs)
+        return retry_model.stream(
             content=messages, tools=self.toolkit, format=self.format
         )
 
@@ -164,10 +194,34 @@ class AsyncRetryPrompt(
         self, model: Model | ModelId, *args: P.args, **kwargs: P.kwargs
     ) -> AsyncRetryResponse[None] | AsyncRetryResponse[FormattableT]:
         """Generates a retry response using the provided model asynchronously."""
-        if isinstance(model, str):
-            model = Model(model)
         retry_model = _ensure_retry_model(model, self.retry_config)
         messages = await self.messages(*args, **kwargs)
         return await retry_model.call_async(
+            content=messages, tools=self.toolkit, format=self.format
+        )
+
+    @overload
+    async def stream(
+        self: "AsyncRetryPrompt[P, None]",
+        model: Model | ModelId,
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> AsyncRetryStreamResponse[None]: ...
+
+    @overload
+    async def stream(
+        self: "AsyncRetryPrompt[P, FormattableT]",
+        model: Model | ModelId,
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> AsyncRetryStreamResponse[FormattableT]: ...
+
+    async def stream(
+        self, model: Model | ModelId, *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncRetryStreamResponse[None] | AsyncRetryStreamResponse[FormattableT]:
+        """Generates a retry stream response using the provided model asynchronously."""
+        retry_model = _ensure_retry_model(model, self.retry_config)
+        messages = await self.messages(*args, **kwargs)
+        return await retry_model.stream_async(
             content=messages, tools=self.toolkit, format=self.format
         )

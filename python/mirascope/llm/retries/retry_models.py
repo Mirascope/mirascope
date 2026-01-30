@@ -10,7 +10,9 @@ from ..models import Model, Params
 from ..providers import ModelId
 from ..responses import (
     AsyncResponse,
+    AsyncStreamResponse,
     Response,
+    StreamResponse,
 )
 from ..tools import (
     AsyncTools,
@@ -20,6 +22,10 @@ from .retry_config import RetryConfig
 from .retry_responses import (
     AsyncRetryResponse,
     RetryResponse,
+)
+from .retry_stream_responses import (
+    AsyncRetryStreamResponse,
+    RetryStreamResponse,
 )
 from .utils import with_retry, with_retry_async
 
@@ -299,4 +305,246 @@ class RetryModel(Model):
             response=cast("AsyncResponse[FormattableT]", new_response),
             retry_config=self.retry_config,
             retry_state=retry_state,
+        )
+
+    # Stream methods
+
+    @overload
+    def stream(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        tools: Tools | None = None,
+        format: None = None,
+    ) -> RetryStreamResponse[None]: ...
+
+    @overload
+    def stream(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        tools: Tools | None = None,
+        format: FormatSpec[FormattableT],
+    ) -> RetryStreamResponse[FormattableT]: ...
+
+    @overload
+    def stream(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        tools: Tools | None = None,
+        format: FormatSpec[FormattableT] | None,
+    ) -> RetryStreamResponse[None] | RetryStreamResponse[FormattableT]: ...
+
+    def stream(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        tools: Tools | None = None,
+        format: FormatSpec[FormattableT] | None = None,
+    ) -> RetryStreamResponse[None] | RetryStreamResponse[FormattableT]:
+        """Generate a RetryStreamResponse by streaming from this model's LLM provider.
+
+        The returned response supports automatic retry on failure. If a retryable
+        error occurs during iteration, a `StreamRestarted` exception is raised
+        and the user can re-iterate to continue from the new attempt.
+
+        Args:
+            content: User content or LLM messages to send to the LLM.
+            tools: Optional tools that the model may invoke.
+            format: Optional response format specifier.
+
+        Returns:
+            A RetryStreamResponse for iterating over the LLM-generated content.
+        """
+
+        def stream_factory() -> StreamResponse[FormattableT]:
+            return cast(
+                "StreamResponse[FormattableT]",
+                super(RetryModel, self).stream(
+                    content=content, tools=tools, format=format
+                ),
+            )
+
+        initial_stream = stream_factory()
+        return RetryStreamResponse(
+            stream=initial_stream,
+            retry_config=self.retry_config,
+            stream_factory=stream_factory,
+        )
+
+    @overload
+    async def stream_async(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        tools: AsyncTools | None = None,
+        format: None = None,
+    ) -> AsyncRetryStreamResponse[None]: ...
+
+    @overload
+    async def stream_async(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        tools: AsyncTools | None = None,
+        format: FormatSpec[FormattableT],
+    ) -> AsyncRetryStreamResponse[FormattableT]: ...
+
+    @overload
+    async def stream_async(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        tools: AsyncTools | None = None,
+        format: FormatSpec[FormattableT] | None,
+    ) -> AsyncRetryStreamResponse[None] | AsyncRetryStreamResponse[FormattableT]: ...
+
+    async def stream_async(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        tools: AsyncTools | None = None,
+        format: FormatSpec[FormattableT] | None = None,
+    ) -> AsyncRetryStreamResponse[None] | AsyncRetryStreamResponse[FormattableT]:
+        """Generate an AsyncRetryStreamResponse by streaming from this model's LLM provider.
+
+        The returned response supports automatic retry on failure. If a retryable
+        error occurs during iteration, a `StreamRestarted` exception is raised
+        and the user can re-iterate to continue from the new attempt.
+
+        Args:
+            content: User content or LLM messages to send to the LLM.
+            tools: Optional tools that the model may invoke.
+            format: Optional response format specifier.
+
+        Returns:
+            An AsyncRetryStreamResponse for asynchronously iterating over the LLM-generated content.
+        """
+
+        async def stream_factory() -> AsyncStreamResponse[FormattableT]:
+            return cast(
+                "AsyncStreamResponse[FormattableT]",
+                await super(RetryModel, self).stream_async(
+                    content=content, tools=tools, format=format
+                ),
+            )
+
+        initial_stream = await stream_factory()
+        return AsyncRetryStreamResponse(
+            stream=initial_stream,
+            retry_config=self.retry_config,
+            stream_factory=stream_factory,
+        )
+
+    # Resume stream methods
+
+    @overload
+    def resume_stream(
+        self,
+        *,
+        response: StreamResponse[None],
+        content: UserContent,
+    ) -> RetryStreamResponse[None]: ...
+
+    @overload
+    def resume_stream(
+        self,
+        *,
+        response: StreamResponse[FormattableT],
+        content: UserContent,
+    ) -> RetryStreamResponse[FormattableT]: ...
+
+    @overload
+    def resume_stream(
+        self,
+        *,
+        response: StreamResponse[None] | StreamResponse[FormattableT],
+        content: UserContent,
+    ) -> RetryStreamResponse[None] | RetryStreamResponse[FormattableT]: ...
+
+    def resume_stream(
+        self,
+        *,
+        response: StreamResponse[None] | StreamResponse[FormattableT],
+        content: UserContent,
+    ) -> RetryStreamResponse[None] | RetryStreamResponse[FormattableT]:
+        """Generate a new RetryStreamResponse by extending another response's messages.
+
+        Args:
+            response: Previous stream response to extend.
+            content: Additional user content to append.
+
+        Returns:
+            A new RetryStreamResponse for streaming the extended conversation.
+        """
+
+        def stream_factory() -> StreamResponse[FormattableT]:
+            return cast(
+                "StreamResponse[FormattableT]",
+                super(RetryModel, self).resume_stream(
+                    response=response, content=content
+                ),
+            )
+
+        initial_stream = stream_factory()
+        return RetryStreamResponse(
+            stream=initial_stream,
+            retry_config=self.retry_config,
+            stream_factory=stream_factory,
+        )
+
+    @overload
+    async def resume_stream_async(
+        self,
+        *,
+        response: AsyncStreamResponse[None],
+        content: UserContent,
+    ) -> AsyncRetryStreamResponse[None]: ...
+
+    @overload
+    async def resume_stream_async(
+        self,
+        *,
+        response: AsyncStreamResponse[FormattableT],
+        content: UserContent,
+    ) -> AsyncRetryStreamResponse[FormattableT]: ...
+
+    @overload
+    async def resume_stream_async(
+        self,
+        *,
+        response: AsyncStreamResponse[None] | AsyncStreamResponse[FormattableT],
+        content: UserContent,
+    ) -> AsyncRetryStreamResponse[None] | AsyncRetryStreamResponse[FormattableT]: ...
+
+    async def resume_stream_async(
+        self,
+        *,
+        response: AsyncStreamResponse[None] | AsyncStreamResponse[FormattableT],
+        content: UserContent,
+    ) -> AsyncRetryStreamResponse[None] | AsyncRetryStreamResponse[FormattableT]:
+        """Generate a new AsyncRetryStreamResponse by extending another response's messages.
+
+        Args:
+            response: Previous async stream response to extend.
+            content: Additional user content to append.
+
+        Returns:
+            A new AsyncRetryStreamResponse for asynchronously streaming the extended conversation.
+        """
+
+        async def stream_factory() -> AsyncStreamResponse[FormattableT]:
+            return cast(
+                "AsyncStreamResponse[FormattableT]",
+                await super(RetryModel, self).resume_stream_async(
+                    response=response, content=content
+                ),
+            )
+
+        initial_stream = await stream_factory()
+        return AsyncRetryStreamResponse(
+            stream=initial_stream,
+            retry_config=self.retry_config,
+            stream_factory=stream_factory,
         )

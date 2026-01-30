@@ -645,3 +645,684 @@ class TestRetryDecoratorErrors:
         """Test that retry raises ValueError for unsupported target types."""
         with pytest.raises(ValueError, match="Unsupported target type for retry"):
             llm.retry("not a valid target", max_attempts=3)  # type: ignore[arg-type]
+
+
+class TestSyncStreamRetry:
+    """Tests for sync streaming with retry support."""
+
+    def test_stream_succeeds_first_attempt(self, mock_provider: MockProvider) -> None:
+        """Test that a successful stream completes without raising StreamRestarted."""
+
+        @llm.retry(max_attempts=3)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        response = greet.stream()
+
+        # Consume the stream
+        chunks = list(response.text_stream())
+
+        assert "mock " in "".join(chunks)
+        assert "response" in "".join(chunks)
+        assert response.retry_state.attempts == 1
+        assert response.retry_state.exceptions == []
+        assert mock_provider.stream_count == 1
+
+    def test_stream_raises_stream_restarted_on_error(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that StreamRestarted is raised when a retryable error occurs mid-stream."""
+        mock_provider.set_stream_exceptions([CONNECTION_ERROR])
+
+        @llm.retry(max_attempts=3)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        response = greet.stream()
+
+        # First iteration should raise StreamRestarted
+        with pytest.raises(llm.StreamRestarted) as exc_info:
+            list(response.text_stream())
+
+        assert exc_info.value.attempt == 2
+        assert exc_info.value.error is CONNECTION_ERROR
+        assert response.retry_state.attempts == 2
+        assert response.retry_state.exceptions == [CONNECTION_ERROR]
+
+    def test_stream_can_continue_after_restart(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that user can re-iterate after catching StreamRestarted."""
+        mock_provider.set_stream_exceptions([CONNECTION_ERROR])
+
+        @llm.retry(max_attempts=3)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        response = greet.stream()
+        restart_count = 0
+
+        # Use the recommended pattern: catch StreamRestarted and re-iterate
+        while True:
+            try:
+                chunks = list(response.text_stream())
+                break
+            except llm.StreamRestarted:
+                restart_count += 1
+
+        assert restart_count == 1
+        assert "mock " in "".join(chunks)
+        assert "response" in "".join(chunks)
+        assert response.retry_state.attempts == 2
+        assert mock_provider.stream_count == 2
+
+    def test_stream_raises_original_error_after_max_attempts(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that original error is raised when max attempts exhausted."""
+        # Set more errors than max_attempts allows
+        mock_provider.set_stream_exceptions([CONNECTION_ERROR, RATE_LIMIT_ERROR])
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        response = greet.stream()
+
+        # First attempt fails, catch StreamRestarted
+        with pytest.raises(llm.StreamRestarted):
+            list(response.text_stream())
+
+        # Second attempt also fails, should raise original error (not StreamRestarted)
+        with pytest.raises(llm.RateLimitError, match="rate limited"):
+            list(response.text_stream())
+
+        # attempts is 3 because: 1 (initial) + 1 (after first error) + 1 (after second error)
+        # The third attempt never happens because max_attempts is exceeded
+        assert response.retry_state.attempts == 3
+        assert mock_provider.stream_count == 2
+
+    def test_stream_retry_state_accessible(self, mock_provider: MockProvider) -> None:
+        """Test that retry_state is accessible from the response."""
+        mock_provider.set_stream_exceptions([SERVER_ERROR])
+
+        @llm.retry(max_attempts=5)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        response = greet.stream()
+
+        # Initial state
+        assert response.retry_state.max_attempts == 5
+        assert response.retry_state.attempts == 1
+
+        # After first error
+        with pytest.raises(llm.StreamRestarted):
+            list(response.text_stream())
+
+        assert response.retry_state.attempts == 2
+        assert len(response.retry_state.exceptions) == 1
+
+    def test_stream_model_property(
+        self,
+        mock_provider: MockProvider,  # noqa: ARG002
+    ) -> None:
+        """Test that model property returns RetryModel."""
+
+        @llm.retry(max_attempts=3)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        response = greet.stream()
+
+        assert isinstance(response.model, llm.RetryModel)
+        assert response.model.model_id == "mock/test-model"
+
+
+@pytest.mark.asyncio
+class TestAsyncStreamRetry:
+    """Tests for async streaming with retry support."""
+
+    async def test_stream_async_succeeds_first_attempt(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that a successful async stream completes without raising StreamRestarted."""
+
+        @llm.retry(max_attempts=3)
+        @llm.call("mock/test-model")
+        async def greet() -> str:
+            return "Hello"
+
+        response = await greet.stream()
+
+        # Consume the stream
+        chunks = [chunk async for chunk in response.text_stream()]
+
+        assert "mock " in "".join(chunks)
+        assert "response" in "".join(chunks)
+        assert response.retry_state.attempts == 1
+        assert response.retry_state.exceptions == []
+        assert mock_provider.stream_count == 1
+
+    async def test_stream_async_raises_stream_restarted_on_error(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that StreamRestarted is raised when a retryable error occurs mid-stream."""
+        mock_provider.set_stream_exceptions([TIMEOUT_ERROR])
+
+        @llm.retry(max_attempts=3)
+        @llm.call("mock/test-model")
+        async def greet() -> str:
+            return "Hello"
+
+        response = await greet.stream()
+
+        # First iteration should raise StreamRestarted
+        with pytest.raises(llm.StreamRestarted) as exc_info:
+            _ = [chunk async for chunk in response.text_stream()]
+
+        assert exc_info.value.attempt == 2
+        assert exc_info.value.error is TIMEOUT_ERROR
+        assert response.retry_state.attempts == 2
+
+    async def test_stream_async_can_continue_after_restart(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that user can re-iterate after catching StreamRestarted."""
+        mock_provider.set_stream_exceptions([SERVER_ERROR])
+
+        @llm.retry(max_attempts=3)
+        @llm.call("mock/test-model")
+        async def greet() -> str:
+            return "Hello"
+
+        response = await greet.stream()
+        restart_count = 0
+
+        # Use the recommended pattern: catch StreamRestarted and re-iterate
+        while True:
+            try:
+                chunks = [chunk async for chunk in response.text_stream()]
+                break
+            except llm.StreamRestarted:
+                restart_count += 1
+
+        assert restart_count == 1
+        assert "mock " in "".join(chunks)
+        assert "response" in "".join(chunks)
+        assert response.retry_state.attempts == 2
+        assert mock_provider.stream_count == 2
+
+    async def test_stream_async_raises_original_error_after_max_attempts(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that original error is raised when max attempts exhausted."""
+        mock_provider.set_stream_exceptions([CONNECTION_ERROR, SERVER_ERROR])
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        async def greet() -> str:
+            return "Hello"
+
+        response = await greet.stream()
+
+        # First attempt fails, catch StreamRestarted
+        with pytest.raises(llm.StreamRestarted):
+            _ = [chunk async for chunk in response.text_stream()]
+
+        # Second attempt also fails, should raise original error
+        with pytest.raises(llm.ServerError, match="server error"):
+            _ = [chunk async for chunk in response.text_stream()]
+
+        # attempts is 3 because: 1 (initial) + 1 (after first error) + 1 (after second error)
+        # The third attempt never happens because max_attempts is exceeded
+        assert response.retry_state.attempts == 3
+        assert mock_provider.stream_count == 2
+
+
+class TestRetryStreamResponseProperties:
+    """Tests for RetryStreamResponse property delegation."""
+
+    def test_delegated_properties(self, mock_provider: MockProvider) -> None:
+        """Test that all properties delegate to the wrapped stream response."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        response = greet.stream()
+
+        # Consume the stream to populate properties
+        list(response.chunk_stream())
+
+        # Test all delegated properties
+        assert response.raw_stream_events is not None
+        assert response.chunks is not None
+        assert response.provider_id == "mock"
+        assert response.model_id == "mock/test-model"
+        assert response.provider_model_name == "test-model"
+        assert response.params is not None
+        assert response.toolkit is not None
+        assert response.messages is not None
+        assert response.content is not None
+        assert response.texts is not None
+        assert response.tool_calls is not None
+        assert response.thoughts is not None
+        _ = response.finish_reason
+        _ = response.usage
+        assert response.consumed is True
+        assert response.format is None
+        assert response.parse() is None
+
+    def test_finish_method(self, mock_provider: MockProvider) -> None:
+        """Test that finish() consumes the stream."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        response = greet.stream()
+        assert response.consumed is False
+
+        response.finish()
+
+        assert response.consumed is True
+        assert mock_provider.stream_count == 1
+
+    def test_pretty_stream(self, mock_provider: MockProvider) -> None:
+        """Test that pretty_stream() yields formatted text."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        response = greet.stream()
+
+        output = list(response.pretty_stream())
+
+        # Should have content from the mock stream
+        full_output = "".join(output)
+        assert "mock " in full_output or "response" in full_output
+        assert mock_provider.stream_count == 1
+
+    def test_streams_method(self, mock_provider: MockProvider) -> None:
+        """Test that streams() yields Stream objects."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        response = greet.stream()
+        streams = list(response.streams())
+
+        assert len(streams) == 1
+        assert streams[0].content_type == "text"
+        assert mock_provider.stream_count == 1
+
+    def test_execute_tools_sync(self, mock_provider: MockProvider) -> None:  # noqa: ARG002
+        """Test that execute_tools delegates to wrapped response."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        response = greet.stream()
+        response.finish()
+
+        result = response.execute_tools()
+        assert result == []
+
+    def test_pretty_method(self, mock_provider: MockProvider) -> None:
+        """Test that pretty() returns formatted text after consumption."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        response = greet.stream()
+        response.finish()
+
+        output = response.pretty()
+        assert "mock response" in output
+
+
+class TestRetryStreamResponseStructuredStream:
+    """Tests for structured_stream() method on RetryStreamResponse."""
+
+    def test_structured_stream_raises_without_format(
+        self,
+        mock_provider: MockProvider,  # noqa: ARG002
+    ) -> None:
+        """Test that structured_stream raises ValueError without format."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        response = greet.stream()
+
+        with pytest.raises(ValueError, match="structured_stream\\(\\) requires format"):
+            list(response.structured_stream())
+
+
+class TestRetryStreamResponseResume:
+    """Tests for resume() method on RetryStreamResponse."""
+
+    def test_resume_returns_retry_stream_response(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that resume returns a new RetryStreamResponse."""
+
+        @llm.retry(max_attempts=3)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        response = greet.stream()
+        response.finish()
+
+        resumed = response.resume("Follow up")
+
+        assert isinstance(resumed, llm.RetryStreamResponse)
+        assert mock_provider.stream_count == 2
+
+
+@pytest.mark.asyncio
+class TestAsyncRetryStreamResponseProperties:
+    """Tests for AsyncRetryStreamResponse property delegation."""
+
+    async def test_delegated_properties(self, mock_provider: MockProvider) -> None:
+        """Test that all properties delegate to the wrapped async stream response."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        async def greet() -> str:
+            return "Hello"
+
+        response = await greet.stream()
+
+        # Consume the stream to populate properties
+        async for _ in response.chunk_stream():
+            pass
+
+        # Test all delegated properties
+        assert response.raw_stream_events is not None
+        assert response.chunks is not None
+        assert response.provider_id == "mock"
+        assert response.model_id == "mock/test-model"
+        assert response.provider_model_name == "test-model"
+        assert response.params is not None
+        assert response.toolkit is not None
+        assert response.messages is not None
+        assert response.content is not None
+        assert response.texts is not None
+        assert response.tool_calls is not None
+        assert response.thoughts is not None
+        _ = response.finish_reason
+        _ = response.usage
+        assert response.consumed is True
+        assert response.format is None
+        assert response.parse() is None
+
+    async def test_finish_method(self, mock_provider: MockProvider) -> None:
+        """Test that finish() consumes the async stream."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        async def greet() -> str:
+            return "Hello"
+
+        response = await greet.stream()
+        assert response.consumed is False
+
+        await response.finish()
+
+        assert response.consumed is True
+        assert mock_provider.stream_count == 1
+
+    async def test_pretty_stream(self, mock_provider: MockProvider) -> None:
+        """Test that pretty_stream() yields formatted text."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        async def greet() -> str:
+            return "Hello"
+
+        response = await greet.stream()
+
+        output = [chunk async for chunk in response.pretty_stream()]
+
+        # Should have content from the mock stream
+        full_output = "".join(output)
+        assert "mock " in full_output or "response" in full_output
+        assert mock_provider.stream_count == 1
+
+    async def test_streams_method(self, mock_provider: MockProvider) -> None:
+        """Test that streams() yields AsyncStream objects."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        async def greet() -> str:
+            return "Hello"
+
+        response = await greet.stream()
+        streams = [s async for s in response.streams()]
+
+        assert len(streams) == 1
+        assert streams[0].content_type == "text"
+        assert mock_provider.stream_count == 1
+
+    async def test_execute_tools_async(
+        self,
+        mock_provider: MockProvider,  # noqa: ARG002
+    ) -> None:
+        """Test that execute_tools delegates to wrapped response."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        async def greet() -> str:
+            return "Hello"
+
+        response = await greet.stream()
+        await response.finish()
+
+        result = await response.execute_tools()
+        assert result == []
+
+    async def test_pretty_method(self, mock_provider: MockProvider) -> None:
+        """Test that pretty() returns formatted text after consumption."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        async def greet() -> str:
+            return "Hello"
+
+        response = await greet.stream()
+        await response.finish()
+
+        output = response.pretty()
+        assert "mock response" in output
+
+
+@pytest.mark.asyncio
+class TestAsyncRetryStreamResponseStructuredStream:
+    """Tests for structured_stream() method on AsyncRetryStreamResponse."""
+
+    async def test_structured_stream_raises_without_format(
+        self,
+        mock_provider: MockProvider,  # noqa: ARG002
+    ) -> None:
+        """Test that structured_stream raises ValueError without format."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        async def greet() -> str:
+            return "Hello"
+
+        response = await greet.stream()
+
+        with pytest.raises(ValueError, match="structured_stream\\(\\) requires format"):
+            _ = [chunk async for chunk in response.structured_stream()]
+
+
+@pytest.mark.asyncio
+class TestAsyncRetryStreamResponseResume:
+    """Tests for resume() method on AsyncRetryStreamResponse."""
+
+    async def test_resume_returns_async_retry_stream_response(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that resume returns a new AsyncRetryStreamResponse."""
+
+        @llm.retry(max_attempts=3)
+        @llm.call("mock/test-model")
+        async def greet() -> str:
+            return "Hello"
+
+        response = await greet.stream()
+        await response.finish()
+
+        resumed = await response.resume("Follow up")
+
+        assert isinstance(resumed, llm.AsyncRetryStreamResponse)
+        assert mock_provider.stream_count == 2
+
+    async def test_resume_stream_factory_called_on_retry(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that resume's stream_factory is invoked when a retry happens."""
+
+        @llm.retry(max_attempts=3)
+        @llm.call("mock/test-model")
+        async def greet() -> str:
+            return "Hello"
+
+        response = await greet.stream()
+        await response.finish()
+
+        # Set up error for resumed stream
+        mock_provider.set_stream_exceptions([CONNECTION_ERROR])
+
+        resumed = await response.resume("Follow up")
+
+        # First iteration fails, raises StreamRestarted
+        with pytest.raises(llm.StreamRestarted):
+            _ = [chunk async for chunk in resumed.text_stream()]
+
+        # Stream factory was called for the retry:
+        # 1 = original stream, 2 = resume initial stream, 3 = retry (via stream_factory)
+        assert mock_provider.stream_count == 3
+
+        # Can successfully complete after retry (uses stream #3 that was already created)
+        chunks = [chunk async for chunk in resumed.text_stream()]
+        assert "mock " in "".join(chunks) or "response" in "".join(chunks)
+        # No new stream created - we're using the one created by stream_factory
+        assert mock_provider.stream_count == 3
+
+
+class TestRetryStreamResponseStructuredStreamHappyPath:
+    """Tests for structured_stream() happy path on RetryStreamResponse."""
+
+    def test_structured_stream_yields_partials(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that structured_stream yields partial outputs."""
+        from pydantic import BaseModel
+
+        class Person(BaseModel):
+            name: str
+            age: int
+
+        # Set up mock to return valid JSON
+        mock_provider.set_stream_text('{"name": "Alice", "age": 30}')
+
+        model = llm.Model("mock/test-model")
+        retry_model = llm.retry(model, max_attempts=2)
+
+        response = retry_model.stream("Get person", format=Person)
+
+        partials = list(response.structured_stream())
+
+        # Should have yielded at least one partial
+        assert len(partials) >= 1
+
+    def test_structured_stream_raises_for_output_parser(
+        self,
+        mock_provider: MockProvider,  # noqa: ARG002
+    ) -> None:
+        """Test that structured_stream raises NotImplementedError for OutputParser."""
+
+        @llm.output_parser(formatting_instructions="Return text")
+        def custom_parser(response: llm.RootResponse[llm.Toolkit, None]) -> str:
+            return response.text()
+
+        model = llm.Model("mock/test-model")
+        retry_model = llm.retry(model, max_attempts=2)
+
+        response = retry_model.stream("Hello", format=custom_parser)
+
+        with pytest.raises(
+            NotImplementedError, match="structured_stream\\(\\) not supported"
+        ):
+            list(response.structured_stream())
+
+
+@pytest.mark.asyncio
+class TestAsyncRetryStreamResponseStructuredStreamHappyPath:
+    """Tests for structured_stream() happy path on AsyncRetryStreamResponse."""
+
+    async def test_structured_stream_yields_partials(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that async structured_stream yields partial outputs."""
+        from pydantic import BaseModel
+
+        class Person(BaseModel):
+            name: str
+            age: int
+
+        # Set up mock to return valid JSON
+        mock_provider.set_stream_text('{"name": "Bob", "age": 25}')
+
+        model = llm.Model("mock/test-model")
+        retry_model = llm.retry(model, max_attempts=2)
+
+        response = await retry_model.stream_async("Get person", format=Person)
+
+        partials = [p async for p in response.structured_stream()]
+
+        # Should have yielded at least one partial
+        assert len(partials) >= 1
+
+    async def test_structured_stream_raises_for_output_parser(
+        self,
+        mock_provider: MockProvider,  # noqa: ARG002
+    ) -> None:
+        """Test that async structured_stream raises NotImplementedError for OutputParser."""
+
+        @llm.output_parser(formatting_instructions="Return text")
+        def custom_parser(response: llm.RootResponse[llm.Toolkit, None]) -> str:
+            return response.text()
+
+        model = llm.Model("mock/test-model")
+        retry_model = llm.retry(model, max_attempts=2)
+
+        response = await retry_model.stream_async("Hello", format=custom_parser)
+
+        with pytest.raises(
+            NotImplementedError, match="structured_stream\\(\\) not supported"
+        ):
+            _ = [p async for p in response.structured_stream()]
