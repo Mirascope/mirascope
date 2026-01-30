@@ -31,15 +31,10 @@ from ..tools import FORMAT_TOOL_NAME, ToolkitT
 from ..types import Jsonable
 from .finish_reason import FinishReasonChunk
 from .root_response import RootResponse
+from .stream_helpers import async_streams, pretty_chunk, sync_streams
 from .streams import (
     AsyncStream,
-    AsyncTextStream,
-    AsyncThoughtStream,
-    AsyncToolCallStream,
     Stream,
-    TextStream,
-    ThoughtStream,
-    ToolCallStream,
 )
 from .usage import Usage, UsageDeltaChunk
 
@@ -366,23 +361,6 @@ class BaseStreamResponse(
             self._tool_calls.append(tool_call)
             del self._current_tool_calls[chunk.id]
 
-    def _pretty_chunk(self, chunk: AssistantContentChunk, spacer: str) -> str:
-        match chunk.type:
-            case "text_start_chunk":
-                return spacer
-            case "text_chunk":
-                return chunk.delta
-            case "tool_call_start_chunk":
-                return spacer + f"**ToolCall ({chunk.name}):** "
-            case "tool_call_chunk":
-                return chunk.delta
-            case "thought_start_chunk":
-                return spacer + "**Thinking:**\n  "
-            case "thought_chunk":
-                return chunk.delta.replace("\n", "\n  ")  # Indent every line
-            case _:
-                return ""
-
 
 class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, FormattableT]):
     """A base class for synchronous Stream Responses."""
@@ -405,62 +383,7 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
         the LLM), it will proceed to consume it once it has iterated through all the
         cached chunks.
         """
-        chunk_iter = self.chunk_stream()
-
-        for start_chunk in chunk_iter:
-            # At the start of this loop, we always expect to find a start chunk. Then,
-            # before proceeding, we will collect from the stream we create (in case the
-            # user did not exhaust it), which ensures we will be expecting a start chunk
-            # again on the next iteration
-            match start_chunk.type:
-                case "text_start_chunk":
-
-                    def text_stream_iterator() -> Iterator[TextChunk]:
-                        for chunk in chunk_iter:
-                            if chunk.type == "text_chunk":
-                                yield chunk
-                            else:
-                                return  # Stream finished
-
-                    stream = TextStream(chunk_iterator=text_stream_iterator())
-                    yield stream
-
-                case "thought_start_chunk":
-
-                    def thought_stream_iterator() -> Iterator[ThoughtChunk]:
-                        for chunk in chunk_iter:
-                            if chunk.type == "thought_chunk":
-                                yield chunk
-                            else:
-                                return  # Stream finished
-
-                    stream = ThoughtStream(chunk_iterator=thought_stream_iterator())
-                    yield stream
-
-                case "tool_call_start_chunk":
-                    tool_id = start_chunk.id
-                    tool_name = start_chunk.name
-
-                    def tool_call_stream_iterator() -> Iterator[ToolCallChunk]:
-                        for chunk in chunk_iter:
-                            if chunk.type == "tool_call_chunk":
-                                yield chunk
-                            else:
-                                return  # Stream finished
-
-                    stream = ToolCallStream(
-                        tool_id=tool_id,
-                        tool_name=tool_name,
-                        chunk_iterator=tool_call_stream_iterator(),
-                    )
-                    yield stream
-
-                case _:  # pragma: no cover
-                    raise RuntimeError(f"Expected start chunk, got: {start_chunk.type}")
-
-            # Before continuing to the next stream, make sure the last stream is consumed
-            # (If the user did not do so when we yielded it)
-            stream.collect()
+        yield from sync_streams(self.chunk_stream())
 
     def chunk_stream(
         self,
@@ -551,10 +474,10 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
         printed = False
 
         for chunk in self.chunk_stream():
-            pretty = self._pretty_chunk(chunk, "\n\n" if printed else "")
-            if pretty != "":
+            formatted = pretty_chunk(chunk, "\n\n" if printed else "")
+            if formatted != "":
                 printed = True
-            yield pretty
+            yield formatted
 
     def structured_stream(
         self,
@@ -621,66 +544,8 @@ class BaseAsyncStreamResponse(
         the LLM), it will proceed to consume it once it has iterated through all the
         cached chunks.
         """
-        chunk_iter = self.chunk_stream()
-
-        async for start_chunk in chunk_iter:
-            # At the start of this loop, we always expect to find a start chunk. Then,
-            # before proceeding, we will collect from the stream we create (in case the
-            # user did not exhaust it), which ensures we will be expecting a start chunk
-            # again on the next iteration
-            match start_chunk.type:
-                case "text_start_chunk":
-
-                    async def text_stream_iterator() -> AsyncIterator[TextChunk]:
-                        async for chunk in chunk_iter:
-                            if chunk.type == "text_chunk":
-                                yield chunk
-                            else:
-                                return  # Stream finished
-
-                    stream = AsyncTextStream(chunk_iterator=text_stream_iterator())
-                    yield stream
-
-                case "thought_start_chunk":
-
-                    async def thought_stream_iterator() -> AsyncIterator[ThoughtChunk]:
-                        async for chunk in chunk_iter:
-                            if chunk.type == "thought_chunk":
-                                yield chunk
-                            else:
-                                return  # Stream finished
-
-                    stream = AsyncThoughtStream(
-                        chunk_iterator=thought_stream_iterator()
-                    )
-                    yield stream
-
-                case "tool_call_start_chunk":
-                    tool_id = start_chunk.id
-                    tool_name = start_chunk.name
-
-                    async def tool_call_stream_iterator() -> AsyncIterator[
-                        ToolCallChunk
-                    ]:
-                        async for chunk in chunk_iter:
-                            if chunk.type == "tool_call_chunk":
-                                yield chunk
-                            else:
-                                return  # Stream finished
-
-                    stream = AsyncToolCallStream(
-                        tool_id=tool_id,
-                        tool_name=tool_name,
-                        chunk_iterator=tool_call_stream_iterator(),
-                    )
-                    yield stream
-
-                case _:  # pragma: no cover
-                    raise RuntimeError(f"Expected start chunk, got: {start_chunk.type}")
-
-            # Before continuing to the next stream, make sure the last stream is consumed
-            # (If the user did not do so when we yielded it)
-            await stream.collect()
+        async for stream in async_streams(self.chunk_stream()):
+            yield stream
 
     async def chunk_stream(
         self,
@@ -773,10 +638,10 @@ class BaseAsyncStreamResponse(
         printed = False
 
         async for chunk in self.chunk_stream():
-            pretty = self._pretty_chunk(chunk, "\n\n" if printed else "")
-            if pretty != "":
+            formatted = pretty_chunk(chunk, "\n\n" if printed else "")
+            if formatted != "":
                 printed = True
-            yield pretty
+            yield formatted
 
     async def structured_stream(
         self,
