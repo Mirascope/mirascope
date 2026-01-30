@@ -4,6 +4,7 @@ import builtins
 import sys
 from types import ModuleType
 from typing import Any
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -18,6 +19,8 @@ from mirascope.llm.providers.bedrock.provider import (
     _default_routing_scopes,  # pyright: ignore[reportPrivateUsage]
     _is_anthropic_arn,  # pyright: ignore[reportPrivateUsage]
 )
+
+EMPTY_TOOLKIT = llm.Toolkit(None)
 
 
 def test_bedrock_model_name_strips_prefix() -> None:
@@ -196,32 +199,34 @@ def test_bedrock_provider_route_unknown_returns_none() -> None:
     assert route is None
 
 
-def test_bedrock_provider_requires_routing_for_unknown_model() -> None:
-    """Test BedrockProvider raises when routing cannot be determined."""
+def test_bedrock_provider_routes_unknown_model_to_boto3() -> None:
+    """Test BedrockProvider routes unknown models to boto3."""
     provider = BedrockProvider()
 
-    with pytest.raises(ValueError, match="could not determine"):
-        provider.call(
+    with patch("boto3.Session") as mock_session_cls:
+        mock_client = MagicMock()
+        mock_session = MagicMock()
+        mock_session.client.return_value = mock_client
+        mock_session_cls.return_value = mock_session
+
+        mock_client.converse.return_value = {
+            "output": {
+                "message": {
+                    "role": "assistant",
+                    "content": [{"text": "Hello"}],
+                }
+            },
+            "stopReason": "end_turn",
+            "usage": {"inputTokens": 10, "outputTokens": 5},
+        }
+
+        response = provider.call(
             model_id="bedrock/amazon.nova-lite-v1:0",
             messages=[user("hello")],
-            toolkit=llm.Toolkit(None),
+            toolkit=EMPTY_TOOLKIT,
         )
-
-
-def test_bedrock_provider_error_message_includes_guidance() -> None:
-    """Test BedrockProvider error message includes routing guidance."""
-    provider = BedrockProvider()
-
-    with pytest.raises(ValueError) as exc_info:
-        provider.call(
-            model_id="bedrock/unknown-model",
-            messages=[user("hello")],
-            toolkit=llm.Toolkit(None),
-        )
-
-    error_message = str(exc_info.value)
-    assert "routing_scopes" in error_message
-    assert "bedrock/anthropic." in error_message
+        assert "Hello" in response.pretty()
+        mock_client.converse.assert_called_once()
 
 
 def test_bedrock_provider_missing_anthropic_raises_import_error(
@@ -246,7 +251,7 @@ def test_bedrock_provider_missing_anthropic_raises_import_error(
         provider.call(
             model_id="bedrock/anthropic.claude-3-5-sonnet-20241022-v1:0",
             messages=[user("hello")],
-            toolkit=llm.Toolkit(None),
+            toolkit=EMPTY_TOOLKIT,
         )
 
 
@@ -304,10 +309,6 @@ def test_bedrock_provider_route_openai_model() -> None:
 
 def test_bedrock_provider_default_routing_scopes_has_openai() -> None:
     """Test default routing scopes include OpenAI prefixes."""
-    from mirascope.llm.providers.bedrock.provider import (
-        _default_routing_scopes,  # pyright: ignore[reportPrivateUsage]
-    )
-
     scopes = _default_routing_scopes()
     assert "openai" in scopes
     assert len(scopes["openai"]) > 0
@@ -335,6 +336,126 @@ def test_bedrock_provider_initialization_with_openai_api_key() -> None:
     )
     subprovider = provider._get_openai_provider()  # pyright: ignore[reportPrivateUsage]
     assert subprovider.client.api_key == "test-api-key"
+
+
+def test_bedrock_provider_rejects_model_without_bedrock_prefix() -> None:
+    """Test BedrockProvider raises ValueError for model IDs without bedrock/ prefix."""
+    provider = BedrockProvider()
+
+    with pytest.raises(ValueError, match="bedrock/"):
+        provider.call(
+            model_id="anthropic.claude-3-5-sonnet-20241022-v1:0",
+            messages=[user("hello")],
+            toolkit=EMPTY_TOOLKIT,
+        )
+
+
+def test_bedrock_provider_missing_openai_raises_import_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test BedrockProvider raises ImportError when OpenAI is unavailable for OpenAI models."""
+    from mirascope.llm.providers.bedrock.openai.provider import (
+        BedrockOpenAIRoutedProvider,
+    )
+
+    def mock_init(*args: object, **kwargs: object) -> None:  # noqa: ARG001
+        raise ImportError("No module named 'openai'")
+
+    monkeypatch.setattr(BedrockOpenAIRoutedProvider, "__init__", mock_init)
+
+    provider = BedrockProvider()
+
+    with pytest.raises(ImportError, match="openai"):
+        provider.call(
+            model_id="bedrock/openai.gpt-4",
+            messages=[user("hello")],
+            toolkit=EMPTY_TOOLKIT,
+        )
+
+
+def test_bedrock_provider_missing_boto3_raises_import_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test BedrockProvider raises ImportError when boto3 is unavailable for boto3-routed models."""
+    # Clear cached modules
+    modules_to_remove = [
+        "mirascope.llm.providers.bedrock.boto3.provider",
+        "mirascope.llm.providers.bedrock.boto3",
+    ]
+    original_modules = {name: sys.modules.get(name) for name in modules_to_remove}
+    for name in modules_to_remove:
+        sys.modules.pop(name, None)
+
+    original_import = builtins.__import__
+
+    def mock_import(name: str, *args: Any, **kwargs: Any) -> ModuleType:  # noqa: ANN401
+        if name == "boto3" or name.startswith("boto3."):
+            raise ImportError(f"No module named '{name}'")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", mock_import)
+
+    try:
+        provider = BedrockProvider()
+
+        with pytest.raises(ImportError, match="bedrock"):
+            provider.call(
+                model_id="bedrock/amazon.nova-lite-v1:0",
+                messages=[user("hello")],
+                toolkit=EMPTY_TOOLKIT,
+            )
+    finally:
+        # Restore modules
+        for name, module in original_modules.items():
+            if module is None:
+                sys.modules.pop(name, None)
+            else:
+                sys.modules[name] = module
+
+
+def test_bedrock_provider_boto3_fallback_for_unknown_models() -> None:
+    """Test BedrockProvider falls back to boto3 for unknown bedrock/ models."""
+    provider = BedrockProvider()
+
+    # Verify that _route_provider returns None for unknown models
+    route = provider._route_provider("bedrock/some-unknown-model-v1:0")  # pyright: ignore[reportPrivateUsage]
+    assert route is None
+
+    # Now verify _choose_subprovider falls back to boto3
+    with patch("boto3.Session") as mock_session_cls:
+        mock_client = MagicMock()
+        mock_session = MagicMock()
+        mock_session.client.return_value = mock_client
+        mock_session_cls.return_value = mock_session
+
+        subprovider = provider._choose_subprovider(  # pyright: ignore[reportPrivateUsage]
+            "bedrock/some-unknown-model-v1:0", [user("hello")]
+        )
+        assert subprovider.id == "bedrock"  # BedrockBoto3RoutedProvider
+
+
+def test_bedrock_provider_explicit_boto3_routing() -> None:
+    """Test BedrockProvider routes to boto3 when explicitly specified in routing scopes."""
+    # Create provider with explicit boto3 routing scope
+    provider = BedrockProvider(
+        routing_scopes={"boto3": ["bedrock/custom-boto3-model."]},
+    )
+
+    # Verify that _route_provider returns "boto3" for custom prefix
+    route = provider._route_provider("bedrock/custom-boto3-model.test-v1:0")  # pyright: ignore[reportPrivateUsage]
+    assert route == "boto3"
+
+    # Now verify _choose_subprovider returns boto3 provider
+    with patch("boto3.Session") as mock_session_cls:
+        mock_client = MagicMock()
+        mock_session = MagicMock()
+        mock_session.client.return_value = mock_client
+        mock_session_cls.return_value = mock_session
+
+        subprovider = provider._choose_subprovider(  # pyright: ignore[reportPrivateUsage]
+            "bedrock/custom-boto3-model.test-v1:0", [user("hello")]
+        )
+        assert subprovider.id == "bedrock"  # BedrockBoto3RoutedProvider
 
 
 def test_resolve_region_with_aws_profile_botocore_available(

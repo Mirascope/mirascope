@@ -284,7 +284,7 @@ class BedrockOpenAIProvider(BaseOpenAICompletionsProvider):
     def _model_name(self, model_id: str) -> str:
         if model_id.startswith("bedrock/"):
             model_name = model_id.split("/", 1)[1]
-        else:  # pragma: no cover - defensive fallback for direct model names
+        else:  # pragma: no cover
             model_name = model_id
 
         return model_name

@@ -1,0 +1,120 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "Please retrieve the
+      secrets associated with each of these passwords: mellon,radiance"}]}], "inferenceConfig":
+      {"maxTokens": 4096}, "system": [{"text": "Use parallel tool calling."}], "toolConfig":
+      {"tools": [{"toolSpec": {"name": "secret_retrieval_tool", "description": "A
+      tool that requires a password to retrieve a secret.", "inputSchema": {"json":
+      {"properties": {"password": {"title": "Password", "type": "string"}}, "required":
+      ["password"], "additionalProperties": false, "type": "object"}}}}]}}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '554'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9ELFos
+        YixuIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTI1MzI3Wg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        ZTIxNjc2ZDEtMzQ2MC00NzMyLWFjZTAtMWY4NWEzYTk4Yzdm
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse
+  response:
+    body:
+      string: '{"metrics":{"latencyMs":611},"output":{"message":{"content":[{"text":"<thinking>
+        I need to retrieve secrets associated with the passwords \"mellon\" and \"radiance\".
+        To do this, I will need to call the `secret_retrieval_tool` twice, once for
+        each password. I will provide the password argument for each call.</thinking>\n"},{"toolUse":{"input":{"password":"mellon"},"name":"secret_retrieval_tool","toolUseId":"tooluse_nz0CoSg6TyuVDvWTCaatSw"}},{"toolUse":{"input":{"password":"radiance"},"name":"secret_retrieval_tool","toolUseId":"tooluse_KBNwKhm1RwK4iTLuHbyOtg"}}],"role":"assistant"}},"stopReason":"tool_use","usage":{"inputTokens":440,"outputTokens":93,"serverToolUsage":{},"totalTokens":533}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '698'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Jan 2026 12:53:28 GMT
+      x-amzn-RequestId:
+      - 8248a34b-9b43-4ee0-b2d8-06b8ea40ff17
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"text": "Please retrieve the
+      secrets associated with each of these passwords: mellon,radiance"}]}, {"role":
+      "assistant", "content": [{"text": "<thinking> I need to retrieve secrets associated
+      with the passwords \"mellon\" and \"radiance\". To do this, I will need to call
+      the `secret_retrieval_tool` twice, once for each password. I will provide the
+      password argument for each call.</thinking>\n"}, {"toolUse": {"toolUseId": "tooluse_nz0CoSg6TyuVDvWTCaatSw",
+      "name": "secret_retrieval_tool", "input": {"password": "mellon"}}}, {"toolUse":
+      {"toolUseId": "tooluse_KBNwKhm1RwK4iTLuHbyOtg", "name": "secret_retrieval_tool",
+      "input": {"password": "radiance"}}}]}, {"role": "user", "content": [{"toolResult":
+      {"toolUseId": "tooluse_nz0CoSg6TyuVDvWTCaatSw", "content": [{"text": "Welcome
+      to Moria!"}]}}, {"toolResult": {"toolUseId": "tooluse_KBNwKhm1RwK4iTLuHbyOtg",
+      "content": [{"text": "Life before Death"}]}}]}], "inferenceConfig": {"maxTokens":
+      4096}, "system": [{"text": "Use parallel tool calling."}], "toolConfig": {"tools":
+      [{"toolSpec": {"name": "secret_retrieval_tool", "description": "A tool that
+      requires a password to retrieve a secret.", "inputSchema": {"json": {"properties":
+      {"password": {"title": "Password", "type": "string"}}, "required": ["password"],
+      "additionalProperties": false, "type": "object"}}}}]}}'
+    headers:
+      Authorization:
+      - <filtered>
+      Content-Length:
+      - '1363'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24vanNvbg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40Mi4zMiBtZC9Cb3RvY29yZSMxLjQyLjMyIHVhLzIuMSBvcy9tYWNvcyMyNC4xLjAg
+        bWQvYXJjaCNhcm02NCBsYW5nL3B5dGhvbiMzLjEzLjMgbWQvcHlpbXBsI0NQeXRob24gbS9ELFos
+        YixuIGNmZy9yZXRyeS1tb2RlI2xlZ2FjeSBCb3RvY29yZS8xLjQyLjMy
+      X-Amz-Date:
+      - !!binary |
+        MjAyNjAxMjZUMTI1MzI4Wg==
+      amz-sdk-invocation-id:
+      - !!binary |
+        NWE0MDE0ZmUtNjIxMy00NTAwLTllYjQtNTI3MmFiMTRhODdj
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-micro-v1%3A0/converse
+  response:
+    body:
+      string: '{"metrics":{"latencyMs":713},"output":{"message":{"content":[{"text":"<thinking>
+        The `secret_retrieval_tool` has returned the secrets associated with the passwords
+        \"mellon\" and \"radiance\". The secret for the password \"mellon\" is \"Welcome
+        to Moria!\" and for the password \"radiance\" is \"Life before Death\". Now
+        I will provide these secrets to the User.</thinking>\n\nYou have successfully
+        retrieved the secrets associated with the passwords \"mellon\" and \"radiance\".
+        Here are the results:\n- For the password \"mellon\": \"Welcome to Moria!\"\n-
+        For the password \"radiance\": \"Life before Death\""}],"role":"assistant"}},"stopReason":"end_turn","usage":{"inputTokens":591,"outputTokens":123,"serverToolUsage":{},"totalTokens":714}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '746'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Jan 2026 12:53:30 GMT
+      x-amzn-RequestId:
+      - ed409ada-cd50-4de7-bbc2-2dfb9e3104ef
+    status:
+      code: 200
+      message: OK
+version: 1

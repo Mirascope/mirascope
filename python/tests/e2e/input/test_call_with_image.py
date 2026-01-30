@@ -15,7 +15,11 @@ from tests.utils import (
 IMAGE_URL_MODEL_IDS = [
     model_id for model_id in E2E_MODEL_IDS if not model_id.startswith("bedrock/")
 ]
-IMAGE_CONTENT_MODEL_IDS = list(E2E_MODEL_IDS)
+IMAGE_CONTENT_MODEL_IDS = [
+    model_id
+    for model_id in E2E_MODEL_IDS
+    if not model_id.startswith("bedrock/amazon.nova-micro")
+]
 
 WIKIPEDIA_ICON_URL = "https://en.wikipedia.org/static/images/icons/wikipedia.png"
 WIKIPEDIA_ICON_PATH = str(
