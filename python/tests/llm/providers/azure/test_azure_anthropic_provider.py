@@ -413,35 +413,52 @@ def test_azure_provider_missing_anthropic_raises_import_error(
 ) -> None:
     """Test AzureProvider raises ImportError when Anthropic is unavailable."""
     import builtins
+    import importlib
     import sys
     from types import ModuleType
     from typing import Any
 
-    sys.modules.pop("mirascope.llm.providers.azure.anthropic.provider", None)
-    sys.modules.pop("mirascope.llm.providers.azure.anthropic", None)
+    modules_to_remove = [
+        "mirascope.llm.providers.azure.provider",
+        "mirascope.llm.providers.azure.anthropic.provider",
+        "mirascope.llm.providers.azure.anthropic",
+        "mirascope.llm.providers.azure",
+    ]
+    original_modules = {name: sys.modules.get(name) for name in modules_to_remove}
+    for name in modules_to_remove:
+        sys.modules.pop(name, None)
 
     original_import = builtins.__import__
 
     def mock_import(name: str, *args: Any, **kwargs: Any) -> ModuleType:  # noqa: ANN401
-        if name == "anthropic" or name.startswith("anthropic."):
+        level = args[3] if len(args) > 3 else 0
+        if level == 0 and (name == "anthropic" or name.startswith("anthropic.")):
             raise ImportError(f"No module named '{name}'")
         return original_import(name, *args, **kwargs)
 
     monkeypatch.setattr(builtins, "__import__", mock_import)
 
-    provider = AzureProvider(
-        api_key="test-openai-key",
-        base_url="https://test-resource.openai.azure.com/",
-        anthropic_api_key="test-anthropic-key",
-        anthropic_base_url="https://test-resource.services.ai.azure.com/anthropic/",
-    )
-
-    with pytest.raises(ImportError, match="anthropic"):
-        provider.call(
-            model_id="azure/anthropic/claude-sonnet-4-5",
-            messages=[user("hello")],
-            toolkit=Toolkit(None),
+    try:
+        azure_module = importlib.import_module("mirascope.llm.providers.azure")
+        provider = azure_module.AzureProvider(
+            api_key="test-openai-key",
+            base_url="https://test-resource.openai.azure.com/",
+            anthropic_api_key="test-anthropic-key",
+            anthropic_base_url="https://test-resource.services.ai.azure.com/anthropic/",
         )
+
+        with pytest.raises(ImportError, match="anthropic"):
+            provider.call(
+                model_id="azure/anthropic/claude-sonnet-4-5",
+                messages=[user("hello")],
+                toolkit=Toolkit(None),
+            )
+    finally:
+        for name, module in original_modules.items():
+            if module is None:
+                sys.modules.pop(name, None)
+            else:
+                sys.modules[name] = module
 
 
 def test_azure_provider_creates_anthropic_subprovider() -> None:
@@ -459,41 +476,65 @@ def test_azure_provider_routes_custom_anthropic_scope(
 ) -> None:
     """Test AzureProvider routes custom scoped models to Anthropic."""
     import builtins
+    import importlib
+    import sys
     from types import ModuleType
     from typing import Any
-
-    from mirascope.llm.providers.azure.openai.provider import AzureOpenAIRoutedProvider
 
     original_import = builtins.__import__
 
     def mock_import(name: str, *args: Any, **kwargs: Any) -> ModuleType:  # noqa: ANN401
-        if name == "anthropic" or name.startswith("anthropic."):
+        level = args[3] if len(args) > 3 else 0
+        if level == 0 and (name == "anthropic" or name.startswith("anthropic.")):
             raise ImportError(f"No module named '{name}'")
         return original_import(name, *args, **kwargs)
 
+    modules_to_remove = [
+        "mirascope.llm.providers.azure.provider",
+        "mirascope.llm.providers.azure.anthropic.provider",
+        "mirascope.llm.providers.azure.anthropic",
+        "mirascope.llm.providers.azure",
+    ]
+    original_modules = {name: sys.modules.get(name) for name in modules_to_remove}
+    for name in modules_to_remove:
+        sys.modules.pop(name, None)
+
     monkeypatch.setattr(builtins, "__import__", mock_import)
-    monkeypatch.setattr(
-        AzureOpenAIRoutedProvider,
-        "call",
-        lambda *args, **kwargs: (_ for _ in ()).throw(
-            AssertionError("OpenAI route should not be used.")
-        ),
-    )
 
-    provider = AzureProvider(
-        api_key="test-openai-key",
-        base_url="https://test-resource.openai.azure.com/",
-        anthropic_api_key="test-anthropic-key",
-        anthropic_base_url="https://test-resource.services.ai.azure.com/anthropic/",
-        routing_scopes={"anthropic": ["azure/custom-deployment"]},
-    )
-
-    with pytest.raises(ImportError, match="anthropic"):
-        provider.call(
-            model_id="azure/custom-deployment",
-            messages=[user("hello")],
-            toolkit=Toolkit(None),
+    try:
+        azure_module = importlib.import_module("mirascope.llm.providers.azure")
+        azure_openai_module = importlib.import_module(
+            "mirascope.llm.providers.azure.openai.provider"
         )
+
+        monkeypatch.setattr(
+            azure_openai_module.AzureOpenAIRoutedProvider,
+            "call",
+            lambda *args, **kwargs: (_ for _ in ()).throw(
+                AssertionError("OpenAI route should not be used.")
+            ),
+        )
+
+        provider = azure_module.AzureProvider(
+            api_key="test-openai-key",
+            base_url="https://test-resource.openai.azure.com/",
+            anthropic_api_key="test-anthropic-key",
+            anthropic_base_url="https://test-resource.services.ai.azure.com/anthropic/",
+            routing_scopes={"anthropic": ["azure/custom-deployment"]},
+        )
+
+        with pytest.raises(ImportError, match="anthropic"):
+            provider.call(
+                model_id="azure/custom-deployment",
+                messages=[user("hello")],
+                toolkit=Toolkit(None),
+            )
+    finally:
+        for name, module in original_modules.items():
+            if module is None:
+                sys.modules.pop(name, None)
+            else:
+                sys.modules[name] = module
 
 
 def test_azure_provider_requires_routing_for_unknown_model() -> None:
@@ -558,34 +599,42 @@ def test_should_use_beta_with_strict_tools() -> None:
     )
 
 
-def test_azure_provider_eager_init_with_credentials() -> None:
-    """Test AzureProvider eagerly initializes client when credentials are provided."""
+def test_azure_provider_lazy_init_client(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test AzureProvider client is None when credentials are incomplete."""
+    # Clear environment variables to ensure no fallback
+    monkeypatch.delenv("AZURE_OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("AZURE_OPENAI_ENDPOINT", raising=False)
+
+    # When only api_key is provided (base_url missing), client should be None
+    provider_partial = AzureProvider(
+        api_key="test-openai-key",
+    )
+    assert provider_partial.client is None
+
+
+def test_azure_provider_eager_init_client() -> None:
+    """Test AzureProvider eagerly initializes client when both api_key and base_url provided."""
     provider = AzureProvider(
         api_key="test-openai-key",
         base_url="https://test-resource.openai.azure.com/",
     )
 
-    # Client should be eagerly initialized when api_key and base_url are provided
+    # Client should be initialized immediately when both credentials are provided
     assert provider.client is not None
 
 
-def test_azure_provider_lazy_init_without_credentials() -> None:
-    """Test AzureProvider lazily initializes client when no credentials are provided."""
-    original_api_key = os.environ.pop("AZURE_OPENAI_API_KEY", None)
-    original_endpoint = os.environ.pop("AZURE_OPENAI_ENDPOINT", None)
-    try:
-        provider = AzureProvider(
-            anthropic_api_key="test-anthropic-key",
-            anthropic_base_url="https://test-resource.services.ai.azure.com/anthropic/",
-        )
+def test_azure_provider_env_fallback_for_partial_credentials(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test AzureProvider uses env vars to fill in missing credentials."""
+    monkeypatch.setenv(
+        "AZURE_OPENAI_ENDPOINT", "https://env-resource.openai.azure.com/"
+    )
+    monkeypatch.delenv("AZURE_OPENAI_API_KEY", raising=False)
 
-        # Client should be None when no OpenAI credentials are provided
-        assert provider.client is None
-
-        # Access OpenAI subprovider - this should fail without credentials
-        # (We don't test this path here as it would raise an error)
-    finally:
-        if original_api_key is not None:
-            os.environ["AZURE_OPENAI_API_KEY"] = original_api_key
-        if original_endpoint is not None:
-            os.environ["AZURE_OPENAI_ENDPOINT"] = original_endpoint
+    # When api_key is provided and base_url comes from env, client should be initialized
+    provider = AzureProvider(
+        api_key="test-openai-key",
+    )
+    assert provider.client is not None
+    assert provider._openai_base_url == "https://env-resource.openai.azure.com/"  # pyright: ignore[reportPrivateUsage]

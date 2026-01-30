@@ -36,7 +36,9 @@ from ...tools import (
 )
 from ..base import BaseProvider, ProviderErrorMap
 from . import _utils as azure_utils
+from .anthropic import AzureAnthropicRoutedProvider
 from .model_id import AzureModelId
+from .openai.provider import AzureOpenAIRoutedProvider
 
 if TYPE_CHECKING:
     from anthropic import Anthropic
@@ -44,8 +46,6 @@ if TYPE_CHECKING:
     from openai import OpenAI
 
     from ...models import Params
-    from .anthropic import AzureAnthropicRoutedProvider
-    from .openai.provider import AzureOpenAIRoutedProvider
 else:
 
     class Anthropic:  # pragma: no cover - typing-only fallback
@@ -143,20 +143,19 @@ class AzureProvider(BaseProvider["OpenAI | AnthropicFoundry | Anthropic | None"]
             for provider_id, scopes in routing_scopes.items():
                 self._routing_scopes[provider_id].extend(scopes)
 
-        if (api_key or os.environ.get("AZURE_OPENAI_API_KEY")) and (
-            base_url or os.environ.get("AZURE_OPENAI_ENDPOINT")
-        ):
-            # Initialize the OpenAI client eagerly when credentials are available.
+        env_api_key = os.environ.get("AZURE_OPENAI_API_KEY")
+        env_base_url = os.environ.get("AZURE_OPENAI_ENDPOINT")
+
+        if self._openai_api_key is None and env_api_key:
+            self._openai_api_key = env_api_key
+        if self._openai_base_url is None and env_base_url:
+            self._openai_base_url = env_base_url
+
+        if self._openai_api_key and self._openai_base_url:
             self._get_openai_provider()
 
     def _get_openai_provider(self) -> AzureOpenAIRoutedProvider:
         if self._openai_provider is None:
-            try:
-                from .openai.provider import AzureOpenAIRoutedProvider
-            except ImportError:
-                from ...._stubs import make_import_error
-
-                raise make_import_error("openai", "AzureOpenAIProvider") from None
             self._openai_provider = AzureOpenAIRoutedProvider(
                 api_key=self._openai_api_key,
                 base_url=self._openai_base_url,
@@ -203,13 +202,6 @@ class AzureProvider(BaseProvider["OpenAI | AnthropicFoundry | Anthropic | None"]
 
     def _get_anthropic_provider(self) -> AzureAnthropicRoutedProvider:
         if self._anthropic_provider is None:
-            try:
-                from .anthropic import AzureAnthropicRoutedProvider
-            except ImportError:
-                from ...._stubs import make_import_error
-
-                raise make_import_error("anthropic", "AzureAnthropicProvider") from None
-
             self._anthropic_provider = AzureAnthropicRoutedProvider(
                 api_key=self._anthropic_api_key,
                 base_url=self._anthropic_base_url,
