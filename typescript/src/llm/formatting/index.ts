@@ -39,6 +39,7 @@ export {
   defineFormat,
   resolveFormat,
   isFormat,
+  extractSchemaFromZod,
   FORMAT_TYPE,
   FORMAT_TOOL_NAME,
   TOOL_MODE_INSTRUCTIONS,

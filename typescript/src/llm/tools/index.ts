@@ -16,8 +16,8 @@ export type {
 // Tools
 export { TOOL_TYPE, CONTEXT_TOOL_TYPE, isContextTool } from "@/llm/tools/tools";
 export type {
-  FieldDefinition,
   ZodLike,
+  InferZod,
   BaseTool,
   BaseContextTool,
   Tool,
@@ -38,7 +38,12 @@ export {
   defineContextTool,
   isZodLike,
 } from "@/llm/tools/define-tool";
-export type { ToolArgs, ContextToolArgs } from "@/llm/tools/define-tool";
+export type {
+  ToolArgs,
+  ContextToolArgs,
+  ZodToolArgs,
+  ZodContextToolArgs,
+} from "@/llm/tools/define-tool";
 
 // Toolkit
 export type {

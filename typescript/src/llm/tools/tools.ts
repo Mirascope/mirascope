@@ -13,15 +13,6 @@ import type { ToolSchema } from "@/llm/tools/tool-schema";
 import type { Jsonable } from "@/llm/types/jsonable";
 
 /**
- * Field definition can be a string description or a Zod schema.
- *
- * When a string is provided, it's used as the field description.
- * When a Zod schema is provided, description is extracted from `.describe()`
- * and the schema is used for runtime validation.
- */
-export type FieldDefinition = string | ZodLike;
-
-/**
  * Duck-typed Zod schema interface for optional Zod support.
  *
  * This allows accepting Zod schemas without requiring Zod as a dependency.
@@ -37,12 +28,26 @@ export interface ZodLike {
   readonly _def: any;
   /** Description may be at top level in Zod 4 */
   readonly description?: string;
+  /** Output type for type inference (Zod internal) */
+  readonly _output?: unknown;
   safeParse(data: unknown): {
     success: boolean;
     data?: unknown;
     error?: unknown;
   };
 }
+
+/**
+ * Infer the output type from a Zod-like schema.
+ *
+ * Uses Zod's internal `_output` property for type inference.
+ * This allows TypeScript to infer tool argument types from Zod schemas.
+ *
+ * @template Z - The Zod schema type.
+ */
+export type InferZod<Z extends ZodLike> = Z extends { _output: infer T }
+  ? T & Record<string, unknown>
+  : Record<string, unknown>;
 
 /**
  * Type discriminator for regular tools.
@@ -78,10 +83,11 @@ export interface BaseTool extends ToolSchema {
    */
   execute(toolCall: ToolCall): Promise<ToolOutput<Jsonable>>;
 
-  /** The field definitions, if provided. */
-  readonly fieldDefinitions:
-    | Partial<Record<string, FieldDefinition>>
-    | undefined;
+  /**
+   * The Zod validator used for this tool, if any.
+   * Present when tool was created with `validator` option.
+   */
+  readonly validator: ZodLike | undefined;
 }
 
 /**
@@ -131,10 +137,11 @@ export interface BaseContextTool<DepsT = unknown> extends ToolSchema {
     toolCall: ToolCall,
   ): Promise<ToolOutput<Jsonable>>;
 
-  /** The field definitions, if provided. */
-  readonly fieldDefinitions:
-    | Partial<Record<string, FieldDefinition>>
-    | undefined;
+  /**
+   * The Zod validator used for this tool, if any.
+   * Present when tool was created with `validator` option.
+   */
+  readonly validator: ZodLike | undefined;
 }
 
 /**
