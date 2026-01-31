@@ -174,23 +174,38 @@ export function modelFromContext(): Model | undefined {
  * All calls to `defineCall` and `definePrompt` within the callback
  * will use the context model instead of their default model.
  *
- * @param model - The model to set in context.
- * @param fn - The function to execute with the model in context.
+ * @param model - The model to set in context (Model instance or model ID string).
+ * @param paramsOrFn - Either params object (if using string model ID) or the function to execute.
+ * @param fn - The function to execute (if params were provided).
  * @returns The return value of the function.
  *
- * @example Basic usage
+ * @example With Model instance
  * ```typescript
  * const response = await llm.withModel(llm.model("openai/gpt-4o"), async () => {
  *   return await call();
  * });
  * ```
  *
+ * @example With model ID string
+ * ```typescript
+ * const response = await llm.withModel("openai/gpt-4o", async () => {
+ *   return await call();
+ * });
+ * ```
+ *
+ * @example With model ID and params
+ * ```typescript
+ * const response = await llm.withModel("anthropic/claude-sonnet-4-0", { temperature: 0.9 }, async () => {
+ *   return await call();
+ * });
+ * ```
+ *
  * @example Nested contexts
  * ```typescript
- * await llm.withModel(llm.model("anthropic/claude-sonnet-4-0"), async () => {
+ * await llm.withModel("anthropic/claude-sonnet-4-0", async () => {
  *   const model1 = llm.modelFromContext(); // Claude
  *
- *   await llm.withModel(llm.model("openai/gpt-4o"), async () => {
+ *   await llm.withModel("openai/gpt-4o", async () => {
  *     const model2 = llm.modelFromContext(); // GPT-4o
  *   });
  *
@@ -198,8 +213,35 @@ export function modelFromContext(): Model | undefined {
  * });
  * ```
  */
-export function withModel<T>(model: Model, fn: () => T): T {
-  return modelStorage.run(model, fn);
+export function withModel<T>(model: Model, fn: () => T): T;
+export function withModel<T>(modelId: ModelId, fn: () => T): T;
+export function withModel<T>(modelId: ModelId, params: Params, fn: () => T): T;
+export function withModel<T>(
+  modelOrId: Model | ModelId,
+  paramsOrFn: Params | (() => T),
+  fn?: () => T,
+): T {
+  let resolvedModel: Model;
+  let resolvedFn: () => T;
+
+  if (typeof modelOrId === "string") {
+    // String model ID
+    if (typeof paramsOrFn === "function") {
+      // withModel(modelId, fn)
+      resolvedModel = new Model(modelOrId);
+      resolvedFn = paramsOrFn;
+    } else {
+      // withModel(modelId, params, fn)
+      resolvedModel = new Model(modelOrId, paramsOrFn);
+      resolvedFn = fn!;
+    }
+  } else {
+    // Model instance
+    resolvedModel = modelOrId;
+    resolvedFn = paramsOrFn as () => T;
+  }
+
+  return modelStorage.run(resolvedModel, resolvedFn);
 }
 
 /**

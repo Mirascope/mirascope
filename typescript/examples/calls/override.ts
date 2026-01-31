@@ -14,7 +14,8 @@ const recommendBook = llm.defineCall<{ genre: string }>({
 
 // Override the model at runtime
 const response = await llm.withModel(
-  llm.model("anthropic/claude-haiku-4-5", { temperature: 0.9 }),
+  "anthropic/claude-haiku-4-5",
+  { temperature: 0.9 },
   async () => {
     return recommendBook({ genre: "fantasy" });
   },
