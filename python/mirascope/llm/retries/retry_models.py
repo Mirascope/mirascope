@@ -21,33 +21,15 @@ from .retry_responses import (
     AsyncRetryResponse,
     RetryResponse,
 )
+from .utils import with_retry, with_retry_async
 
 
 class RetryModel(Model):
     """Extends Model with retry logic.
 
-    This class wraps a Model (or creates one from a ModelId) and overrides call methods
-    to return RetryResponse instances instead of Response instances. In the future, it
-    will implement actual retry logic for handling failures, rate limits, and validation
-    errors.
-
-    Example:
-        Wrapping an existing Model:
-
-        ```python
-        model = llm.Model("openai/gpt-4o", temperature=0.7)
-        retry_model = llm.RetryModel(model, RetryConfig(max_attempts=3))
-        ```
-
-        Creating from a ModelId:
-
-        ```python
-        retry_model = llm.RetryModel(
-            "openai/gpt-4o",
-            RetryConfig(max_attempts=3),
-            temperature=0.7,
-        )
-        ```
+    This class inherits from Model and overrides call methods to return RetryResponse
+    instances instead of Response instances. It implements retry logic for handling
+    failures, rate limits, and validation errors.
     """
 
     retry_config: RetryConfig
@@ -138,12 +120,18 @@ class RetryModel(Model):
 
         Returns:
             A RetryResponse object containing the LLM-generated content and retry metadata.
+
+        Raises:
+            Exception: The last exception encountered if all retry attempts fail.
         """
-        # TODO: Wire in retry implementation
-        response = super().call(content, tools=tools, format=format)
+        response, retry_state = with_retry(
+            lambda: super(RetryModel, self).call(content, tools=tools, format=format),
+            self.retry_config,
+        )
         return RetryResponse(
-            response=cast(Response[FormattableT], response),
+            response=cast("Response[FormattableT]", response),
             retry_config=self.retry_config,
+            retry_state=retry_state,
         )
 
     @overload
@@ -189,12 +177,20 @@ class RetryModel(Model):
 
         Returns:
             An AsyncRetryResponse object containing the LLM-generated content and retry metadata.
+
+        Raises:
+            Exception: The last exception encountered if all retry attempts fail.
         """
-        # TODO: Wire in retry implementation
-        response = await super().call_async(content, tools=tools, format=format)
+        response, retry_state = await with_retry_async(
+            lambda: super(RetryModel, self).call_async(
+                content, tools=tools, format=format
+            ),
+            self.retry_config,
+        )
         return AsyncRetryResponse(
-            response=cast(AsyncResponse[FormattableT], response),
+            response=cast("AsyncResponse[FormattableT]", response),
             retry_config=self.retry_config,
+            retry_state=retry_state,
         )
 
     # Resume methods
@@ -237,12 +233,18 @@ class RetryModel(Model):
 
         Returns:
             A new RetryResponse containing the extended conversation.
+
+        Raises:
+            Exception: The last exception encountered if all retry attempts fail.
         """
-        # TODO: Wire in retry implementation
-        new_response = super().resume(response=response, content=content)
+        new_response, retry_state = with_retry(
+            lambda: super(RetryModel, self).resume(response=response, content=content),
+            self.retry_config,
+        )
         return RetryResponse(
-            response=cast(Response[FormattableT], new_response),
+            response=cast("Response[FormattableT]", new_response),
             retry_config=self.retry_config,
+            retry_state=retry_state,
         )
 
     @overload
@@ -283,10 +285,18 @@ class RetryModel(Model):
 
         Returns:
             A new AsyncRetryResponse containing the extended conversation.
+
+        Raises:
+            Exception: The last exception encountered if all retry attempts fail.
         """
-        # TODO: Wire in retry implementation
-        new_response = await super().resume_async(response=response, content=content)
+        new_response, retry_state = await with_retry_async(
+            lambda: super(RetryModel, self).resume_async(
+                response=response, content=content
+            ),
+            self.retry_config,
+        )
         return AsyncRetryResponse(
-            response=cast(AsyncResponse[FormattableT], new_response),
+            response=cast("AsyncResponse[FormattableT]", new_response),
             retry_config=self.retry_config,
+            retry_state=retry_state,
         )
