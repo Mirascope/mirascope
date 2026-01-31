@@ -83,7 +83,15 @@ exports[`mirascope provider > [mirascope:anthropic] streams from underlying prov
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "text": "4242",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
     ],
@@ -190,59 +198,20 @@ exports[`mirascope provider > [mirascope:google] streams from underlying provide
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.0-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": "
+              "text": "4",
+            },
+            {
+              "text": "242",
+            },
+            {
+              "text": "
 ",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "STOP",
             },
           ],
-          "modelVersion": "gemini-2.0-flash",
-          "responseId": "aGR8abvwCsi-7dcPptHWiAc",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "connection": "keep-alive",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Fri, 30 Jan 2026 07:57:28 GMT",
-              "keep-alive": "timeout=5",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=407",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-ratelimit-limit": "100",
-              "x-ratelimit-reset": "1769759907",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 5,
-            "candidatesTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 5,
-              },
-            ],
-            "promptTokenCount": 18,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 18,
-              },
-            ],
-            "totalTokenCount": 23,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },

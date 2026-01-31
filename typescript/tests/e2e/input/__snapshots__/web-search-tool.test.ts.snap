@@ -48,7 +48,23 @@ exports[`WebSearchTool > [anthropic] streams with web search tool 1`] = `
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Based on the search results, ",
+              "type": "text",
+            },
+            {
+              "text": "Bitcoin was trading at $87,906 on January 1, 2026",
+              "type": "text",
+            },
+            {
+              "text": ".",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
       {
@@ -80,7 +96,23 @@ exports[`WebSearchTool > [anthropic] streams with web search tool 1`] = `
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "text": "The search results contain price predictions and forecasts for Ethereum on January 1, 2026, but not the actual historical price for that date. However, based on the available information, ",
+              "type": "text",
+            },
+            {
+              "text": "Ethereum price at the start of 2026 had rallied past $3,100, reaching $3,122",
+              "type": "text",
+            },
+            {
+              "text": ".",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
     ],
@@ -227,208 +259,16 @@ exports[`WebSearchTool > [google] streams with web search tool 1`] = `
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": "87,850.",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "STOP",
-              "groundingMetadata": {
-                "groundingChunks": [
-                  {
-                    "web": {
-                      "title": "binance.com",
-                      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEy6v-I0Jw2DoLzihNPQwf85Ar9ZE14np1dgSVHtFwOj9-va3RIp2xzT70Zzyl0-kUPEkgxRilGoDjhJkyhuRHHOUs_dFZcEdUcbOecUrtPzOvgdD7GD53LPbJNDfCVfcbsWDu_zge5WxiFd3SY2iJv",
-                    },
-                  },
-                ],
-                "groundingSupports": [
-                  {
-                    "groundingChunkIndices": [
-                      0,
-                    ],
-                    "segment": {
-                      "endIndex": 53,
-                      "text": "On January 1, 2026, the price of Bitcoin was $87,850.",
-                    },
-                  },
-                ],
-                "searchEntryPoint": {
-                  "renderedContent": "<style>
-.container {
-  align-items: center;
-  border-radius: 8px;
-  display: flex;
-  font-family: Google Sans, Roboto, sans-serif;
-  font-size: 14px;
-  line-height: 20px;
-  padding: 8px 12px;
-}
-.chip {
-  display: inline-block;
-  border: solid 1px;
-  border-radius: 16px;
-  min-width: 14px;
-  padding: 5px 16px;
-  text-align: center;
-  user-select: none;
-  margin: 0 8px;
-  -webkit-tap-highlight-color: transparent;
-}
-.carousel {
-  overflow: auto;
-  scrollbar-width: none;
-  white-space: nowrap;
-  margin-right: -12px;
-}
-.headline {
-  display: flex;
-  margin-right: 4px;
-}
-.gradient-container {
-  position: relative;
-}
-.gradient {
-  position: absolute;
-  transform: translate(3px, -9px);
-  height: 36px;
-  width: 9px;
-}
-@media (prefers-color-scheme: light) {
-  .container {
-    background-color: #fafafa;
-    box-shadow: 0 0 0 1px #0000000f;
-  }
-  .headline-label {
-    color: #1f1f1f;
-  }
-  .chip {
-    background-color: #ffffff;
-    border-color: #d2d2d2;
-    color: #5e5e5e;
-    text-decoration: none;
-  }
-  .chip:hover {
-    background-color: #f2f2f2;
-  }
-  .chip:focus {
-    background-color: #f2f2f2;
-  }
-  .chip:active {
-    background-color: #d8d8d8;
-    border-color: #b6b6b6;
-  }
-  .logo-dark {
-    display: none;
-  }
-  .gradient {
-    background: linear-gradient(90deg, #fafafa 15%, #fafafa00 100%);
-  }
-}
-@media (prefers-color-scheme: dark) {
-  .container {
-    background-color: #1f1f1f;
-    box-shadow: 0 0 0 1px #ffffff26;
-  }
-  .headline-label {
-    color: #fff;
-  }
-  .chip {
-    background-color: #2c2c2c;
-    border-color: #3c4043;
-    color: #fff;
-    text-decoration: none;
-  }
-  .chip:hover {
-    background-color: #353536;
-  }
-  .chip:focus {
-    background-color: #353536;
-  }
-  .chip:active {
-    background-color: #464849;
-    border-color: #53575b;
-  }
-  .logo-light {
-    display: none;
-  }
-  .gradient {
-    background: linear-gradient(90deg, #1f1f1f 15%, #1f1f1f00 100%);
-  }
-}
-</style>
-<div class="container">
-  <div class="headline">
-    <svg class="logo-light" width="18" height="18" viewBox="9 9 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M42.8622 27.0064C42.8622 25.7839 42.7525 24.6084 42.5487 23.4799H26.3109V30.1568H35.5897C35.1821 32.3041 33.9596 34.1222 32.1258 35.3448V39.6864H37.7213C40.9814 36.677 42.8622 32.2571 42.8622 27.0064V27.0064Z" fill="#4285F4"/>
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M26.3109 43.8555C30.9659 43.8555 34.8687 42.3195 37.7213 39.6863L32.1258 35.3447C30.5898 36.3792 28.6306 37.0061 26.3109 37.0061C21.8282 37.0061 18.0195 33.9811 16.6559 29.906H10.9194V34.3573C13.7563 39.9841 19.5712 43.8555 26.3109 43.8555V43.8555Z" fill="#34A853"/>
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M16.6559 29.8904C16.3111 28.8559 16.1074 27.7588 16.1074 26.6146C16.1074 25.4704 16.3111 24.3733 16.6559 23.3388V18.8875H10.9194C9.74388 21.2072 9.06992 23.8247 9.06992 26.6146C9.06992 29.4045 9.74388 32.022 10.9194 34.3417L15.3864 30.8621L16.6559 29.8904V29.8904Z" fill="#FBBC05"/>
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M26.3109 16.2386C28.85 16.2386 31.107 17.1164 32.9095 18.8091L37.8466 13.8719C34.853 11.082 30.9659 9.3736 26.3109 9.3736C19.5712 9.3736 13.7563 13.245 10.9194 18.8875L16.6559 23.3388C18.0195 19.2636 21.8282 16.2386 26.3109 16.2386V16.2386Z" fill="#EA4335"/>
-    </svg>
-    <svg class="logo-dark" width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="24" cy="23" fill="#FFF" r="22"/>
-      <path d="M33.76 34.26c2.75-2.56 4.49-6.37 4.49-11.26 0-.89-.08-1.84-.29-3H24.01v5.99h8.03c-.4 2.02-1.5 3.56-3.07 4.56v.75l3.91 2.97h.88z" fill="#4285F4"/>
-      <path d="M15.58 25.77A8.845 8.845 0 0 0 24 31.86c1.92 0 3.62-.46 4.97-1.31l4.79 3.71C31.14 36.7 27.65 38 24 38c-5.93 0-11.01-3.4-13.45-8.36l.17-1.01 4.06-2.85h.8z" fill="#34A853"/>
-      <path d="M15.59 20.21a8.864 8.864 0 0 0 0 5.58l-5.03 3.86c-.98-2-1.53-4.25-1.53-6.64 0-2.39.55-4.64 1.53-6.64l1-.22 3.81 2.98.22 1.08z" fill="#FBBC05"/>
-      <path d="M24 14.14c2.11 0 4.02.75 5.52 1.98l4.36-4.36C31.22 9.43 27.81 8 24 8c-5.93 0-11.01 3.4-13.45 8.36l5.03 3.85A8.86 8.86 0 0 1 24 14.14z" fill="#EA4335"/>
-    </svg>
-    <div class="gradient-container"><div class="gradient"></div></div>
-  </div>
-  <div class="carousel">
-    <a class="chip" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHmJdLtLSUTcrSgPrbFH0VdF1YxPpTx3LbKXvGVKkyvBA9wQtV7QCFkWskFQOmLZODYsEIG_HuR7iI40UJcCyooJHltnuGHDpZRcQ4BkVn9OyqeVUT5qV6u2p31Qwk_0P-B9eCS9uCFqd7EPx9NoE3sLGzhoD94KEjDycGXfMhy8CLS4w_pBHIdPKbj_5X9SmWqeY4ZWKxqN2mevEjr2ow=">bitcoin price January 1 2026</a>
-  </div>
-</div>
-",
-                },
-                "webSearchQueries": [
-                  "bitcoin price January 1 2026",
-                ],
-              },
-              "index": 0,
+              "text": "On January 1, 2026, the price of Bitcoin was $",
+            },
+            {
+              "text": "87,850.",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "Jzp9aaPMFrjXz7IPmOCvyQ8",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Fri, 30 Jan 2026 23:09:27 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=2242",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 45,
-            "promptTokenCount": 32,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 32,
-              },
-            ],
-            "thoughtsTokenCount": 190,
-            "toolUsePromptTokenCount": 150,
-            "toolUsePromptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 150,
-              },
-            ],
-            "totalTokenCount": 417,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },
@@ -445,9 +285,7 @@ exports[`WebSearchTool > [google] streams with web search tool 1`] = `
       {
         "content": [
           {
-            "text": "On January 1, 2026, the price of Ethereum showed some variation across different sources and times. Robinhood prediction markets indicated prices around $2,970 to $2,990 or above for 11 am EST and 8 pm EST. Another analysis suggested that the price held above $3,000 on January 1-2, 2026.
-
-One report for January 1, 2026, at 9:45 AM, stated Ethereum at $3,291.77, with a likelihood of sideways trading in the $2,950-$3,050 range over the subsequent days, and noted Ethereum trading at $2,984 at that "press time". ChatGPT's central forecast for the same date placed Ethereum at approximately $3,200, with a probable range between $3,000 and $3,300. The Ethereum Rainbow Chart suggested a broader plausible range of roughly $2,500 to $5,200 for January 1, 2026.",
+            "text": "On January 1, 2026, the price of Ethereum was $3,004.18. It opened at $3,004.18, with a high of $3,009.89 and a low of $2,971.69 on that day. Another report indicated Ethereum trading at $2,984 at press time on January 1, 2026.",
             "type": "text",
           },
         ],
@@ -455,288 +293,25 @@ One report for January 1, 2026, at 9:45 AM, stated Ethereum at $3,291.77, with a
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": "200 for January 1, 2026.",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "STOP",
-              "groundingMetadata": {
-                "groundingChunks": [
-                  {
-                    "web": {
-                      "title": "robinhood.com",
-                      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGAZ577QydiTqniYlgbDGLnwlZKE_Ii7w_L-5XTiVyYp8tZ5p3rmb7jeD4K7FVUTGXmY_511hzYbaULhquFa8JRljEqLh8UnpRUszsQ5oNs5Mdhe0JrroaOg7ypTibJTpMYbByjM_ht1WKNtzRCGeVt8AMmCsG27Z3bG8zTgTxF6voXtxGrZXR7JitdOxMrbH723SbYHNsdyPaZhp6JrpAH_iZ-jEIokY6REqYY6w==",
-                    },
-                  },
-                  {
-                    "web": {
-                      "title": "robinhood.com",
-                      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG4vsrvbf8wrTzwGGXfx5oh0XOQh39a66sztW4-48WJ-n0ojciMml0BRoxOijN8CQPXoCZk6McdgA37Mlzl_Gvjkr0zs9ARpPTZmrt-ZcMPPSephzagpAt4sgXZ8t6HLLib9XkI-tOWNIcgGvbClyMN8t7VFHllEzs6slRjdTQZCXlD9dhoBE0MbXuR_tn2ZEBOxe4iBtVLsVrQDU3zTW_clU89YIDN3OFdlq8o",
-                    },
-                  },
-                  {
-                    "web": {
-                      "title": "cryptopolitan.com",
-                      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF_aoKPf5_gXKlkeYGMtnD-EQRXGnh6OuGdJH_-nLa5zBpaa8Vku4Hl2SAWuTGenXylhc2noJ_IJqPX4NSeb0TkF0ra0zA-LcTP4VhiLvKCNObg5YbqfOdHOgfIn1a-K1lc7h_NH9fjELD0XRvm3rFBcpmA",
-                    },
-                  },
-                  {
-                    "web": {
-                      "title": "mexc.com",
-                      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEP9F4buDmLU2tY8Ofdc-ULmAdWFulk9Yz4_8Tk9mf3fImiFHFqanXwH_H69z0e-9DvS4MXWommKFILZS18JFqbzAutyEuEMhri9qhW-JrqVYsrEczbsQzSOX67",
-                    },
-                  },
-                  {
-                    "web": {
-                      "title": "finbold.com",
-                      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEuIPfQSgNU268vk5WFyVyiIpYPWa6rW5yq01Oda1x2H9VcNgUqJJ6OAAZ9r1qvBFZ8BqBHMAw2cBSFyRxhkU-7yzMcQTsszu5kXnqVupMetQIbtzK3MMZb0gMD6bqLREaxSXTVKhPMSlIu8aqV9j-Jbxzr7C29ABLMPas_Cg==",
-                    },
-                  },
-                  {
-                    "web": {
-                      "title": "finbold.com",
-                      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHxC99jdS11R_KFB_N9JiruStOs0Wj5LVwyVgOndRLcMTfKkdB0eCTe6XvBu9aVjEiB1edistU6MySSqZ6zFfEC9p6RTUGCgjOcN00WuA4k4SbcDU1Zz52o1Pnzrrdg6xmBXvapMrYqR38Ax4LrMwrst1qI2OAw6JWIYZ9Kl8wehXtKFCn6XuQbRdilIw==",
-                    },
-                  },
-                ],
-                "groundingSupports": [
-                  {
-                    "groundingChunkIndices": [
-                      0,
-                      1,
-                    ],
-                    "segment": {
-                      "endIndex": 205,
-                      "startIndex": 100,
-                      "text": "Robinhood prediction markets indicated prices around $2,970 to $2,990 or above for 11 am EST and 8 pm EST",
-                    },
-                  },
-                  {
-                    "groundingChunkIndices": [
-                      2,
-                    ],
-                    "segment": {
-                      "endIndex": 287,
-                      "startIndex": 207,
-                      "text": "Another analysis suggested that the price held above $3,000 on January 1-2, 2026",
-                    },
-                  },
-                  {
-                    "groundingChunkIndices": [
-                      3,
-                    ],
-                    "segment": {
-                      "endIndex": 512,
-                      "startIndex": 290,
-                      "text": "One report for January 1, 2026, at 9:45 AM, stated Ethereum at $3,291.77, with a likelihood of sideways trading in the $2,950-$3,050 range over the subsequent days, and noted Ethereum trading at $2,984 at that "press time"",
-                    },
-                  },
-                  {
-                    "groundingChunkIndices": [
-                      4,
-                    ],
-                    "segment": {
-                      "endIndex": 647,
-                      "startIndex": 514,
-                      "text": "ChatGPT's central forecast for the same date placed Ethereum at approximately $3,200, with a probable range between $3,000 and $3,300",
-                    },
-                  },
-                  {
-                    "groundingChunkIndices": [
-                      5,
-                    ],
-                    "segment": {
-                      "endIndex": 759,
-                      "startIndex": 649,
-                      "text": "The Ethereum Rainbow Chart suggested a broader plausible range of roughly $2,500 to $5,200 for January 1, 2026",
-                    },
-                  },
-                ],
-                "searchEntryPoint": {
-                  "renderedContent": "<style>
-.container {
-  align-items: center;
-  border-radius: 8px;
-  display: flex;
-  font-family: Google Sans, Roboto, sans-serif;
-  font-size: 14px;
-  line-height: 20px;
-  padding: 8px 12px;
-}
-.chip {
-  display: inline-block;
-  border: solid 1px;
-  border-radius: 16px;
-  min-width: 14px;
-  padding: 5px 16px;
-  text-align: center;
-  user-select: none;
-  margin: 0 8px;
-  -webkit-tap-highlight-color: transparent;
-}
-.carousel {
-  overflow: auto;
-  scrollbar-width: none;
-  white-space: nowrap;
-  margin-right: -12px;
-}
-.headline {
-  display: flex;
-  margin-right: 4px;
-}
-.gradient-container {
-  position: relative;
-}
-.gradient {
-  position: absolute;
-  transform: translate(3px, -9px);
-  height: 36px;
-  width: 9px;
-}
-@media (prefers-color-scheme: light) {
-  .container {
-    background-color: #fafafa;
-    box-shadow: 0 0 0 1px #0000000f;
-  }
-  .headline-label {
-    color: #1f1f1f;
-  }
-  .chip {
-    background-color: #ffffff;
-    border-color: #d2d2d2;
-    color: #5e5e5e;
-    text-decoration: none;
-  }
-  .chip:hover {
-    background-color: #f2f2f2;
-  }
-  .chip:focus {
-    background-color: #f2f2f2;
-  }
-  .chip:active {
-    background-color: #d8d8d8;
-    border-color: #b6b6b6;
-  }
-  .logo-dark {
-    display: none;
-  }
-  .gradient {
-    background: linear-gradient(90deg, #fafafa 15%, #fafafa00 100%);
-  }
-}
-@media (prefers-color-scheme: dark) {
-  .container {
-    background-color: #1f1f1f;
-    box-shadow: 0 0 0 1px #ffffff26;
-  }
-  .headline-label {
-    color: #fff;
-  }
-  .chip {
-    background-color: #2c2c2c;
-    border-color: #3c4043;
-    color: #fff;
-    text-decoration: none;
-  }
-  .chip:hover {
-    background-color: #353536;
-  }
-  .chip:focus {
-    background-color: #353536;
-  }
-  .chip:active {
-    background-color: #464849;
-    border-color: #53575b;
-  }
-  .logo-light {
-    display: none;
-  }
-  .gradient {
-    background: linear-gradient(90deg, #1f1f1f 15%, #1f1f1f00 100%);
-  }
-}
-</style>
-<div class="container">
-  <div class="headline">
-    <svg class="logo-light" width="18" height="18" viewBox="9 9 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M42.8622 27.0064C42.8622 25.7839 42.7525 24.6084 42.5487 23.4799H26.3109V30.1568H35.5897C35.1821 32.3041 33.9596 34.1222 32.1258 35.3448V39.6864H37.7213C40.9814 36.677 42.8622 32.2571 42.8622 27.0064V27.0064Z" fill="#4285F4"/>
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M26.3109 43.8555C30.9659 43.8555 34.8687 42.3195 37.7213 39.6863L32.1258 35.3447C30.5898 36.3792 28.6306 37.0061 26.3109 37.0061C21.8282 37.0061 18.0195 33.9811 16.6559 29.906H10.9194V34.3573C13.7563 39.9841 19.5712 43.8555 26.3109 43.8555V43.8555Z" fill="#34A853"/>
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M16.6559 29.8904C16.3111 28.8559 16.1074 27.7588 16.1074 26.6146C16.1074 25.4704 16.3111 24.3733 16.6559 23.3388V18.8875H10.9194C9.74388 21.2072 9.06992 23.8247 9.06992 26.6146C9.06992 29.4045 9.74388 32.022 10.9194 34.3417L15.3864 30.8621L16.6559 29.8904V29.8904Z" fill="#FBBC05"/>
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M26.3109 16.2386C28.85 16.2386 31.107 17.1164 32.9095 18.8091L37.8466 13.8719C34.853 11.082 30.9659 9.3736 26.3109 9.3736C19.5712 9.3736 13.7563 13.245 10.9194 18.8875L16.6559 23.3388C18.0195 19.2636 21.8282 16.2386 26.3109 16.2386V16.2386Z" fill="#EA4335"/>
-    </svg>
-    <svg class="logo-dark" width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="24" cy="23" fill="#FFF" r="22"/>
-      <path d="M33.76 34.26c2.75-2.56 4.49-6.37 4.49-11.26 0-.89-.08-1.84-.29-3H24.01v5.99h8.03c-.4 2.02-1.5 3.56-3.07 4.56v.75l3.91 2.97h.88z" fill="#4285F4"/>
-      <path d="M15.58 25.77A8.845 8.845 0 0 0 24 31.86c1.92 0 3.62-.46 4.97-1.31l4.79 3.71C31.14 36.7 27.65 38 24 38c-5.93 0-11.01-3.4-13.45-8.36l.17-1.01 4.06-2.85h.8z" fill="#34A853"/>
-      <path d="M15.59 20.21a8.864 8.864 0 0 0 0 5.58l-5.03 3.86c-.98-2-1.53-4.25-1.53-6.64 0-2.39.55-4.64 1.53-6.64l1-.22 3.81 2.98.22 1.08z" fill="#FBBC05"/>
-      <path d="M24 14.14c2.11 0 4.02.75 5.52 1.98l4.36-4.36C31.22 9.43 27.81 8 24 8c-5.93 0-11.01 3.4-13.45 8.36l5.03 3.85A8.86 8.86 0 0 1 24 14.14z" fill="#EA4335"/>
-    </svg>
-    <div class="gradient-container"><div class="gradient"></div></div>
-  </div>
-  <div class="carousel">
-    <a class="chip" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEUTjf39jW7x-oc9_U-zEOh1-91T9am2Qx6ZsSRDXW07LYdWw2i1GwVU_5cezX9cT5V7d5au0YARI7sdv_9VPqh6VAVaUF7hUxH2MiFnEvhGwGuDBBURh4RLWihrwIUqOS2o8gZYojaSn9hzFvIE-F0ahJfupggw30Wul0kSXQ1EkwOG_LfvGpo3TNFQGCzNe03Kn6sswIQ">ETH price 2026-01-01</a>
-    <a class="chip" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFL771cwN_Lf8851j53ff8jDra2_3Rfe2OCiYpraIz5bQ4vAgF7hfNz-pKW0xKknxJ9gpl7sic2Ybf-nn3RvEenJ4V7hZqg7xMnQpJBCBWm6muE4I1FCx3jAA5p9hep6ZQnyceYYRmFlXh8nNbCcsZJbtw8c2M8tjoqDqDEcVocg0p4SiDOwj9CeQYsK0oKun-c2H5OrVOAFexAuKLwJRdn">Ethereum price January 1 2026</a>
-  </div>
-</div>
-",
-                },
-                "webSearchQueries": [
-                  "Ethereum price January 1 2026",
-                  "ETH price 2026-01-01",
-                ],
-              },
-              "index": 0,
+              "text": "On January 1, 2026, the price of Ethereum was $3,004.18. It opened at $3,004.18, with",
+            },
+            {
+              "text": " a high of $3,009.89 and a low of $2,971.69 on that day. Another report indicated Ethereum trading at $2,984 at press time on January",
+            },
+            {
+              "text": " 1, 2026.",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "LTp9abJB8-PPsg_qobm5CA",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Fri, 30 Jan 2026 23:09:33 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=5425",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 273,
-            "promptTokenCount": 69,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 69,
-              },
-            ],
-            "thoughtsTokenCount": 700,
-            "toolUsePromptTokenCount": 140,
-            "toolUsePromptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 140,
-              },
-            ],
-            "totalTokenCount": 1182,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },
     ],
     "modelId": "google/gemini-2.5-flash",
-    "nChunks": 7,
+    "nChunks": 5,
     "providerId": "google",
     "providerModelName": "gemini-2.5-flash",
     "tools": [
@@ -747,11 +322,11 @@ One report for January 1, 2026, at 9:45 AM, stated Ethereum at $3,291.77, with a
     "usage": {
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
-      "inputTokens": 345,
-      "outputTokens": 4497,
+      "inputTokens": 207,
+      "outputTokens": 2062,
       "raw": "null",
-      "reasoningTokens": 3500,
-      "totalTokens": 4842,
+      "reasoningTokens": 1737,
+      "totalTokens": 2269,
     },
   },
 }

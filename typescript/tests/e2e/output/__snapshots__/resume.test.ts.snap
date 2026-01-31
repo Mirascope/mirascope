@@ -393,7 +393,15 @@ exports[`context resume from stream > [anthropic] resumes context conversation a
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Hello",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
       {
@@ -417,7 +425,15 @@ exports[`context resume from stream > [anthropic] resumes context conversation a
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Goodbye",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
     ],
@@ -466,50 +482,13 @@ exports[`context resume from stream > [google] resumes context conversation afte
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": "Hello",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "STOP",
-              "index": 0,
+              "text": "Hello",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "B2Z6abW4LaThz7IPibCVgAw",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Wed, 28 Jan 2026 19:39:51 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=682",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 1,
-            "promptTokenCount": 7,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 7,
-              },
-            ],
-            "thoughtsTokenCount": 20,
-            "totalTokenCount": 28,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },
@@ -534,50 +513,13 @@ exports[`context resume from stream > [google] resumes context conversation afte
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": "Goodbye",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "STOP",
-              "index": 0,
+              "text": "Goodbye",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "fp17aayqN5jgz7IPzs7tkAk",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Thu, 29 Jan 2026 17:48:47 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=578",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 1,
-            "promptTokenCount": 17,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 17,
-              },
-            ],
-            "thoughtsTokenCount": 17,
-            "totalTokenCount": 35,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },
@@ -1271,7 +1213,15 @@ exports[`resume from stream > [anthropic] resumes conversation after streaming 1
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Hello",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
       {
@@ -1295,7 +1245,15 @@ exports[`resume from stream > [anthropic] resumes conversation after streaming 1
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Goodbye",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
     ],
@@ -1344,50 +1302,13 @@ exports[`resume from stream > [google] resumes conversation after streaming 1`] 
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": "Hello",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "STOP",
-              "index": 0,
+              "text": "Hello",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "Q2V6adbUL8Sgz7IPgbfrwA4",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Wed, 28 Jan 2026 19:36:35 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=639",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 1,
-            "promptTokenCount": 7,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 7,
-              },
-            ],
-            "thoughtsTokenCount": 17,
-            "totalTokenCount": 25,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },
@@ -1412,50 +1333,13 @@ exports[`resume from stream > [google] resumes conversation after streaming 1`] 
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": "Goodbye",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "STOP",
-              "index": 0,
+              "text": "Goodbye",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "dp17aeqLL76Hz7IP_KaW6Qg",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Thu, 29 Jan 2026 17:48:38 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=594",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 1,
-            "promptTokenCount": 17,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 17,
-              },
-            ],
-            "thoughtsTokenCount": 16,
-            "totalTokenCount": 34,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },

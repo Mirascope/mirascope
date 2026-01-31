@@ -27,7 +27,15 @@ exports[`stream output > [anthropic] accumulates content as stream progresses 1`
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "text": "hello",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
     ],
@@ -76,7 +84,15 @@ exports[`stream output > [anthropic] builds assistant message after streaming 1`
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "text": "hello",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
     ],
@@ -127,7 +143,17 @@ How can I help you today?",
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "text": "# Hello! 👋
+
+How can I help you today?",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
     ],
@@ -176,7 +202,15 @@ exports[`stream output > [anthropic] provides usage after streaming 1`] = `
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Hello! How can I help you today?",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
     ],
@@ -227,7 +261,17 @@ Dragons stand as some of humanity's most enduring mythological creatures, captiv
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "text": "# The Evolution of Dragons: From Ancient Mythology to Modern Fantasy
+
+Dragons stand as some of humanity's most enduring mythological creatures, captivating imaginations across cultures and millennia. These powerful, intelligent beings have evolved dramatically throughout history,",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
     ],
@@ -277,7 +321,15 @@ exports[`stream output > [anthropic] streams text response 1`] = `
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "text": "hello world",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
     ],
@@ -326,50 +378,13 @@ exports[`stream output > [google] accumulates content as stream progresses 1`] =
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": "Hello!",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "STOP",
-              "index": 0,
+              "text": "Hello!",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "fM53adu5Ebm9qtsP0pjBuA0",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Mon, 26 Jan 2026 20:28:44 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=681",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 2,
-            "promptTokenCount": 5,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 5,
-              },
-            ],
-            "thoughtsTokenCount": 25,
-            "totalTokenCount": 32,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },
@@ -419,45 +434,13 @@ exports[`stream output > [google] builds assistant message after streaming 1`] =
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "role": "model",
-              },
-              "finishReason": "STOP",
-              "index": 0,
+              "text": "Hello!",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "g853aeizE639qtsP79-SqA8",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Mon, 26 Jan 2026 20:28:51 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=506",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 2,
-            "promptTokenCount": 5,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 5,
-              },
-            ],
-            "thoughtsTokenCount": 16,
-            "totalTokenCount": 23,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },
@@ -507,50 +490,13 @@ exports[`stream output > [google] provides finish reason after streaming 1`] = `
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": "Hi there! How can I help you today?",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "STOP",
-              "index": 0,
+              "text": "Hi there! How can I help you today?",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "a853afSvNaPZqtsP5sSyiAc",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Mon, 26 Jan 2026 20:28:28 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=1474",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 10,
-            "promptTokenCount": 2,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 2,
-              },
-            ],
-            "thoughtsTokenCount": 22,
-            "totalTokenCount": 34,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },
@@ -600,50 +546,13 @@ exports[`stream output > [google] provides usage after streaming 1`] = `
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": "Hi there! How can I help you today?",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "STOP",
-              "index": 0,
+              "text": "Hi there! How can I help you today?",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "dc53acrSKcDVz7IPle7n6QQ",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Mon, 26 Jan 2026 20:28:37 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=601",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 10,
-            "promptTokenCount": 2,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 2,
-              },
-            ],
-            "thoughtsTokenCount": 22,
-            "totalTokenCount": 34,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },
@@ -693,50 +602,13 @@ exports[`stream output > [google] returns max_tokens finish reason 1`] = `
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": "## The",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "MAX_TOKENS",
-              "index": 0,
+              "text": "## The",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "_rB5ae7AH_fpz7IPpcaVqAk",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Wed, 28 Jan 2026 06:47:26 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=547",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 2,
-            "promptTokenCount": 40,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 40,
-              },
-            ],
-            "thoughtsTokenCount": 44,
-            "totalTokenCount": 86,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },
@@ -787,50 +659,16 @@ exports[`stream output > [google] streams text response 1`] = `
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": " world",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "STOP",
-              "index": 0,
+              "text": "hello",
+            },
+            {
+              "text": " world",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "Yc53aYerIrKUmtkP48He8QY",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Mon, 26 Jan 2026 20:28:17 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=1358",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 2,
-            "promptTokenCount": 6,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 6,
-              },
-            ],
-            "thoughtsTokenCount": 17,
-            "totalTokenCount": 25,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },
@@ -1866,7 +1704,20 @@ exports[`stream thinking > [anthropic] completes with text output when thinking 
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-sonnet-4-20250514",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "signature": "EvUBCkYICxgCKkD5niUAZC495agWRJyzeImqN+60IlKHcVvVeVigvFmOqoNqNcNIJC0nrJ/xMebToiSrUlKuA7nMfAFxRIO2bCpBEgz2nG8p6XvsisSQ/0IaDJPTCTmKao9OCjpzqSIwOvWcI+K2Gm5LcW4PwznS4ed1uXxm54Gnq86d2uywCDgLxXt1HFQtdpiyh2R9T/QdKl32vOxPevgaS5uqMbdyQodxCjqkpUKFQ2OTZlSigXCLoRZArh1Vrzf+GHO1dR0Nh5sh8CbU5xilgOUMnLAva09QTHj/Bpy4UfvrMjilhTVgWhEizJq5P6rbC5OI7W4YAQ==",
+              "thinking": "This is a very simple arithmetic question. 2 + 2 = 4. This is basic addition.",
+              "type": "thinking",
+            },
+            {
+              "text": "2 + 2 = 4",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
     ],
@@ -1943,7 +1794,43 @@ You can also think of this as:
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-sonnet-4-20250514",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "signature": "EokFCkYICxgCKkCj1RcArgc5oYsiSTb9ern2XJg64NRH4WcYmYVoG8AQHiL+TaKIEPp1WkaDU735NkJ5tTXiWsiP5/MD4IHdn2DjEgzADUgNz+hDc6Dxw8YaDDAd8tCtzI/XxX9m0yIwPlrDRbO3fVlPQ5lvPUzyQADxdCH1xtxwU+KdEkbtamqGrzVw5wjjKds+psMKcpBVKvAD9bdqPSPAw2SlN77uyOXoylmAECBP9afJdWAM96FScCP3UbIwX0QtqMbyk0BW+ImKfoCV4f8an9YCZ6/v0BOGrBUTUOX4uTCX9jCf0qqMeXsI++pJ1njTK4wDgEd9m/NXL1HA+8q83LilB4eZauQSrRAjFSmQN7360alrYYETvlR9ei8Z30TkzB+RgbuQQPjkHTv4lPmCekp7BdlBlB3QTjUc05oguF4rfzUOh2doSvWNvbERZIDD/Jb6D/ZPE0q72p60VXIB3wqCvoHFKjCVVVTtaIDdlrZIAGdf0Ln6oT7YHeSmm6OTy5sWTDM20XrvtOQEU8jBZTspHLa9rWFikOaWHrXvCJo9XQxrQdLmDsUxUtJa0fGTJp150PqtytSxs+Sb7NDzSJTqvdLylvcoJuGINz3Av1et34nYi2svuoHFx9COw24NdbgU3GKaqJmSHmLcmILszpTXXsWAkn+7Wt7+9ewMSHghNbowcxBmhcUYQmBjvl/0VFYQy1KLdWHGRaz4lW9PNj8KwG9L+GVzS1uYLnWWAjJLhwNY34No4UjUDBDIUkpgiIDAuWx3/7OWgHY+bvt0yglW0+Yu0t2SbQ7fywnOL+6+DNBq+PqYTc+sIMQbnSHfEH0myVA2X0EaIcNw/KJRKGZJfoaK+3GPbxgB",
+              "thinking": "This is a very basic arithmetic question. Let me think through it step by step as requested.
+
+2 + 2
+
+Step 1: I have the number 2
+Step 2: I need to add another 2 to it
+Step 3: When I add 2 + 2, I get 4
+
+This is one of the most fundamental addition problems. I can think of it in several ways:
+- Counting: if I have 2 objects and add 2 more objects, I have 4 objects total
+- On a number line: starting at 2 and moving 2 spaces to the right gets me to 4
+- Basic arithmetic fact: 2 + 2 = 4",
+              "type": "thinking",
+            },
+            {
+              "text": "I'll solve 2 + 2 step by step:
+
+**Step 1:** Start with the first number: 2
+
+**Step 2:** Add the second number: 2
+
+**Step 3:** Combine them: 2 + 2 = 4
+
+**Answer:** 4
+
+You can also think of this as:
+- Having 2 items, then getting 2 more items = 4 items total
+- Or counting: 1, 2 (start here) → 3, 4 (counting up 2 more)",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
     ],
@@ -2002,50 +1889,25 @@ I've identified the core operation: it's a simple addition problem, summing 2 an
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": " 4",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "STOP",
-              "index": 0,
+              "text": "**Calculating the Answer**
+
+I've identified the core operation: it's a simple addition problem, summing 2 and 2. I've recalled that 2 plus 2 equals 4. Now, I'm ready to formulate the final, concise answer to provide.
+
+
+",
+              "thought": true,
+            },
+            {
+              "text": "2 + 2 =",
+            },
+            {
+              "text": " 4",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "lM53aZeTKbSkqtsP__WR2QY",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Mon, 26 Jan 2026 20:29:09 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=1049",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 5,
-            "promptTokenCount": 9,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 9,
-              },
-            ],
-            "thoughtsTokenCount": 62,
-            "totalTokenCount": 76,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },
@@ -2125,52 +1987,59 @@ Therefore, 2 + 2 equals **4**.",
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": ", 4 objects.
+              "text": "**Initiating Calculations**
+
+I've grasped the user's intent: they desire a detailed breakdown of 2 + 2. I've pinpointed addition as the core operation and am now recalling basic arithmetic. The goal is to provide a step-by-step explanation, as requested, to illustrate the thought process involved.
+
+
+",
+              "thought": true,
+            },
+            {
+              "text": "**Formulating the Steps**
+
+I'm now articulating the step-by-step breakdown. I've broken down the process into identifying the numbers, the operation (addition), performing the addition, and stating the result. I've even added an example. I plan on clearly explaining the addition process, aiming for clarity, and I'm organizing the final response now.
+
+
+",
+              "thought": true,
+            },
+            {
+              "text": "**Refining the Explanation**
+
+I'm now honing the step-by-step breakdown. I've broken down the addition process into its core components and I'm ensuring clarity in the answer. The explanation now includes a "visualization" component using apples, and a response that is clearly structured. The language is direct and easy to follow, making sure the final answer is a straightforward conclusion.
+
+
+",
+              "thought": true,
+            },
+            {
+              "text": "Okay, let's think this through step by step:
+
+1.  **Identify the first number:** We start with the number ",
+            },
+            {
+              "text": "2.
+2.  **Identify the operation:** The "+" sign means we need to add.
+3.  **Identify the second number:** We are adding another 2 to the first number.
+4.  **Perform the addition:**
+",
+            },
+            {
+              "text": "    *   Imagine you have two objects (like two apples).
+    *   Now, add two more objects (two more apples).
+    *   If you count them all together, you have 1, 2, 3",
+            },
+            {
+              "text": ", 4 objects.
 
 Therefore, 2 + 2 equals **4**.",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "STOP",
-              "index": 0,
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "S6p5aaGCFObpz7IP7o-6qQ4",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Wed, 28 Jan 2026 06:18:52 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=1280",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 139,
-            "promptTokenCount": 14,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 14,
-              },
-            ],
-            "thoughtsTokenCount": 436,
-            "totalTokenCount": 589,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },

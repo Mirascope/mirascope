@@ -83,7 +83,15 @@ exports[`context prompt output > [anthropic] streams model with context 1`] = `
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "text": "42 * 10 = 420",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
     ],
@@ -187,50 +195,16 @@ exports[`context prompt output > [google] streams model with context 1`] = `
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": " * 10 = 420",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "STOP",
-              "index": 0,
+              "text": "42",
+            },
+            {
+              "text": " * 10 = 420",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "bbt5abHLLL3oz7IP4v2DoQI",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Wed, 28 Jan 2026 07:31:57 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=673",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 11,
-            "promptTokenCount": 11,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 11,
-              },
-            ],
-            "thoughtsTokenCount": 14,
-            "totalTokenCount": 36,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },

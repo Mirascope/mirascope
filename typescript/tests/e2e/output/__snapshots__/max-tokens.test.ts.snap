@@ -1,15 +1,15 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`context call output > [anthropic] decodes text response with context 1`] = `
+exports[`max tokens > [anthropic] returns MAX_TOKENS finish reason for call 1`] = `
 {
   "response": {
-    "finishReason": null,
+    "finishReason": "max_tokens",
     "format": null,
     "messages": [
       {
         "content": [
           {
-            "text": "What is 42 * 10?",
+            "text": "List all U.S. states.",
             "type": "text",
           },
         ],
@@ -19,7 +19,19 @@ exports[`context call output > [anthropic] decodes text response with context 1`
       {
         "content": [
           {
-            "text": "42 * 10 = 420",
+            "text": "# U.S. States
+
+1. Alabama
+2. Alaska
+3. Arizona
+4. Arkansas
+5. California
+6. Colorado
+7. Connecticut
+8. Delaware
+9. Florida
+10. Georgia
+11. Hawaii",
             "type": "text",
           },
         ],
@@ -30,7 +42,19 @@ exports[`context call output > [anthropic] decodes text response with context 1`
         "rawMessage": {
           "content": [
             {
-              "text": "42 * 10 = 420",
+              "text": "# U.S. States
+
+1. Alabama
+2. Alaska
+3. Arizona
+4. Arkansas
+5. California
+6. Colorado
+7. Connecticut
+8. Delaware
+9. Florida
+10. Georgia
+11. Hawaii",
               "type": "text",
             },
           ],
@@ -46,26 +70,26 @@ exports[`context call output > [anthropic] decodes text response with context 1`
     "usage": {
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
-      "inputTokens": 16,
-      "outputTokens": 13,
+      "inputTokens": 15,
+      "outputTokens": 50,
       "raw": "[object Object]",
       "reasoningTokens": 0,
-      "totalTokens": 29,
+      "totalTokens": 65,
     },
   },
 }
 `;
 
-exports[`context call output > [anthropic] streams response with context 1`] = `
+exports[`max tokens > [anthropic] returns MAX_TOKENS finish reason for stream 1`] = `
 {
   "response": {
-    "finishReason": null,
+    "finishReason": "max_tokens",
     "format": null,
     "messages": [
       {
         "content": [
           {
-            "text": "What is 42 * 10?",
+            "text": "List all U.S. states.",
             "type": "text",
           },
         ],
@@ -75,7 +99,18 @@ exports[`context call output > [anthropic] streams response with context 1`] = `
       {
         "content": [
           {
-            "text": "42 * 10 = 420",
+            "text": "# U.S. States (50 total)
+
+1. Alabama
+2. Alaska
+3. Arizona
+4. Arkansas
+5. California
+6. Colorado
+7. Connecticut
+8. Delaware
+9. Florida
+10.",
             "type": "text",
           },
         ],
@@ -86,7 +121,18 @@ exports[`context call output > [anthropic] streams response with context 1`] = `
         "rawMessage": {
           "content": [
             {
-              "text": "42 * 10 = 420",
+              "text": "# U.S. States (50 total)
+
+1. Alabama
+2. Alaska
+3. Arizona
+4. Arkansas
+5. California
+6. Colorado
+7. Connecticut
+8. Delaware
+9. Florida
+10.",
               "type": "text",
             },
           ],
@@ -96,33 +142,33 @@ exports[`context call output > [anthropic] streams response with context 1`] = `
       },
     ],
     "modelId": "anthropic/claude-haiku-4-5",
-    "nChunks": 4,
+    "nChunks": 12,
     "providerId": "anthropic",
     "providerModelName": "claude-haiku-4-5",
     "tools": [],
     "usage": {
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
-      "inputTokens": 16,
-      "outputTokens": 21,
+      "inputTokens": 15,
+      "outputTokens": 51,
       "raw": "null",
       "reasoningTokens": 0,
-      "totalTokens": 37,
+      "totalTokens": 66,
     },
   },
 }
 `;
 
-exports[`context call output > [google] decodes text response with context 1`] = `
+exports[`max tokens > [google] returns MAX_TOKENS finish reason for call 1`] = `
 {
   "response": {
-    "finishReason": null,
+    "finishReason": "max_tokens",
     "format": null,
     "messages": [
       {
         "content": [
           {
-            "text": "What is 42 * 10?",
+            "text": "List all U.S. states.",
             "type": "text",
           },
         ],
@@ -132,9 +178,9 @@ exports[`context call output > [google] decodes text response with context 1`] =
       {
         "content": [
           {
-            "text": "To calculate 42 * 10, you can simply add a zero to the end of 42.
+            "text": "Here are all 50 U.S. states, in alphabetical order:
 
-So, 42 * 10 = **420**.",
+1.  ",
             "type": "text",
           },
         ],
@@ -145,9 +191,9 @@ So, 42 * 10 = **420**.",
         "rawMessage": {
           "parts": [
             {
-              "text": "To calculate 42 * 10, you can simply add a zero to the end of 42.
+              "text": "Here are all 50 U.S. states, in alphabetical order:
 
-So, 42 * 10 = **420**.",
+1.  ",
             },
           ],
           "role": "model",
@@ -162,26 +208,26 @@ So, 42 * 10 = **420**.",
     "usage": {
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
-      "inputTokens": 11,
-      "outputTokens": 94,
+      "inputTokens": 9,
+      "outputTokens": 45,
       "raw": "[object Object]",
-      "reasoningTokens": 54,
-      "totalTokens": 105,
+      "reasoningTokens": 26,
+      "totalTokens": 54,
     },
   },
 }
 `;
 
-exports[`context call output > [google] streams response with context 1`] = `
+exports[`max tokens > [google] returns MAX_TOKENS finish reason for stream 1`] = `
 {
   "response": {
-    "finishReason": null,
+    "finishReason": "max_tokens",
     "format": null,
     "messages": [
       {
         "content": [
           {
-            "text": "What is 42 * 10?",
+            "text": "List all U.S. states.",
             "type": "text",
           },
         ],
@@ -191,7 +237,9 @@ exports[`context call output > [google] streams response with context 1`] = `
       {
         "content": [
           {
-            "text": "42 * 10 = **420**",
+            "text": "Here are all 50 U.S. states:
+
+1",
             "type": "text",
           },
         ],
@@ -202,7 +250,9 @@ exports[`context call output > [google] streams response with context 1`] = `
         "rawMessage": {
           "parts": [
             {
-              "text": "42 * 10 = **420**",
+              "text": "Here are all 50 U.S. states:
+
+1",
             },
           ],
           "role": "model",
@@ -218,26 +268,26 @@ exports[`context call output > [google] streams response with context 1`] = `
     "usage": {
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
-      "inputTokens": 11,
-      "outputTokens": 64,
+      "inputTokens": 9,
+      "outputTokens": 46,
       "raw": "null",
-      "reasoningTokens": 52,
-      "totalTokens": 75,
+      "reasoningTokens": 32,
+      "totalTokens": 55,
     },
   },
 }
 `;
 
-exports[`context call output > [openai:completions] decodes text response with context 1`] = `
+exports[`max tokens > [openai:completions] returns MAX_TOKENS finish reason for call 1`] = `
 {
   "response": {
-    "finishReason": null,
+    "finishReason": "max_tokens",
     "format": null,
     "messages": [
       {
         "content": [
           {
-            "text": "What is 42 * 10?",
+            "text": "List all U.S. states.",
             "type": "text",
           },
         ],
@@ -245,19 +295,14 @@ exports[`context call output > [openai:completions] decodes text response with c
         "role": "user",
       },
       {
-        "content": [
-          {
-            "text": "42 * 10 = 420",
-            "type": "text",
-          },
-        ],
+        "content": [],
         "modelId": "openai/gpt-5-mini:completions",
         "name": null,
         "providerId": "openai",
         "providerModelName": "gpt-5-mini:completions",
         "rawMessage": {
           "annotations": [],
-          "content": "42 * 10 = 420",
+          "content": "",
           "role": "assistant",
         },
         "role": "assistant",
@@ -270,26 +315,26 @@ exports[`context call output > [openai:completions] decodes text response with c
     "usage": {
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
-      "inputTokens": 14,
-      "outputTokens": 16,
+      "inputTokens": 13,
+      "outputTokens": 50,
       "raw": "[object Object]",
-      "reasoningTokens": 0,
-      "totalTokens": 30,
+      "reasoningTokens": 50,
+      "totalTokens": 63,
     },
   },
 }
 `;
 
-exports[`context call output > [openai:completions] streams response with context 1`] = `
+exports[`max tokens > [openai:completions] returns MAX_TOKENS finish reason for stream 1`] = `
 {
   "response": {
-    "finishReason": null,
+    "finishReason": "max_tokens",
     "format": null,
     "messages": [
       {
         "content": [
           {
-            "text": "What is 42 * 10?",
+            "text": "List all U.S. states.",
             "type": "text",
           },
         ],
@@ -299,7 +344,7 @@ exports[`context call output > [openai:completions] streams response with contex
       {
         "content": [
           {
-            "text": "420.",
+            "text": "",
             "type": "text",
           },
         ],
@@ -309,60 +354,60 @@ exports[`context call output > [openai:completions] streams response with contex
         "providerModelName": "gpt-5-mini:completions",
         "rawMessage": {
           "choices": [],
-          "created": 1769585514,
-          "id": "chatcmpl-D2uJmxsEeLlbclib9mnt4DrEIU68i",
+          "created": 1769818340,
+          "id": "chatcmpl-D3st2G0vq1rJUKhXwOQWIUljjn7di",
           "model": "gpt-5-mini-2025-08-07",
-          "obfuscation": "xGvgu",
+          "obfuscation": "qbt2J",
           "object": "chat.completion.chunk",
           "service_tier": "default",
           "system_fingerprint": null,
           "usage": {
-            "completion_tokens": 75,
+            "completion_tokens": 50,
             "completion_tokens_details": {
               "accepted_prediction_tokens": 0,
               "audio_tokens": 0,
-              "reasoning_tokens": 64,
+              "reasoning_tokens": 50,
               "rejected_prediction_tokens": 0,
             },
-            "prompt_tokens": 14,
+            "prompt_tokens": 13,
             "prompt_tokens_details": {
               "audio_tokens": 0,
               "cached_tokens": 0,
             },
-            "total_tokens": 89,
+            "total_tokens": 63,
           },
         },
         "role": "assistant",
       },
     ],
     "modelId": "openai/gpt-5-mini:completions",
-    "nChunks": 5,
+    "nChunks": 3,
     "providerId": "openai",
     "providerModelName": "gpt-5-mini:completions",
     "tools": [],
     "usage": {
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
-      "inputTokens": 14,
-      "outputTokens": 75,
+      "inputTokens": 13,
+      "outputTokens": 50,
       "raw": "null",
-      "reasoningTokens": 64,
-      "totalTokens": 89,
+      "reasoningTokens": 50,
+      "totalTokens": 63,
     },
   },
 }
 `;
 
-exports[`context call output > [openai:responses] decodes text response with context 1`] = `
+exports[`max tokens > [openai:responses] returns MAX_TOKENS finish reason for call 1`] = `
 {
   "response": {
-    "finishReason": null,
+    "finishReason": "max_tokens",
     "format": null,
     "messages": [
       {
         "content": [
           {
-            "text": "What is 42 * 10?",
+            "text": "List all U.S. states.",
             "type": "text",
           },
         ],
@@ -370,35 +415,16 @@ exports[`context call output > [openai:responses] decodes text response with con
         "role": "user",
       },
       {
-        "content": [
-          {
-            "text": "420",
-            "type": "text",
-          },
-        ],
+        "content": [],
         "modelId": "openai/gpt-5-mini:responses",
         "name": null,
         "providerId": "openai",
         "providerModelName": "gpt-5-mini:responses",
         "rawMessage": [
           {
-            "id": "rs_0d0a0b47ca1be28b006979bb68ec04819fb9ed30101068bb1f",
+            "id": "rs_016fafd48a2b770b00697d48e1fb648195ae51f1ae6d5c8af9",
             "summary": [],
             "type": "reasoning",
-          },
-          {
-            "content": [
-              {
-                "annotations": [],
-                "logprobs": [],
-                "text": "420",
-                "type": "output_text",
-              },
-            ],
-            "id": "msg_0d0a0b47ca1be28b006979bb6980b4819f8629d202765162e5",
-            "role": "assistant",
-            "status": "completed",
-            "type": "message",
           },
         ],
         "role": "assistant",
@@ -411,26 +437,26 @@ exports[`context call output > [openai:responses] decodes text response with con
     "usage": {
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
-      "inputTokens": 14,
-      "outputTokens": 54,
+      "inputTokens": 13,
+      "outputTokens": 0,
       "raw": "[object Object]",
       "reasoningTokens": 0,
-      "totalTokens": 68,
+      "totalTokens": 13,
     },
   },
 }
 `;
 
-exports[`context call output > [openai:responses] streams response with context 1`] = `
+exports[`max tokens > [openai:responses] returns MAX_TOKENS finish reason for stream 1`] = `
 {
   "response": {
-    "finishReason": null,
+    "finishReason": "max_tokens",
     "format": null,
     "messages": [
       {
         "content": [
           {
-            "text": "What is 42 * 10?",
+            "text": "List all U.S. states.",
             "type": "text",
           },
         ],
@@ -438,12 +464,7 @@ exports[`context call output > [openai:responses] streams response with context 
         "role": "user",
       },
       {
-        "content": [
-          {
-            "text": "420",
-            "type": "text",
-          },
-        ],
+        "content": [],
         "modelId": "openai/gpt-5-mini:responses",
         "name": null,
         "providerId": "openai",
@@ -451,13 +472,13 @@ exports[`context call output > [openai:responses] streams response with context 
         "rawMessage": {
           "background": false,
           "completed_at": null,
-          "created_at": 1769585516,
+          "created_at": 1769818341,
           "error": null,
           "frequency_penalty": 0,
-          "id": "resp_031fc14956cd2b09006979bb6c3bd0819eb275aceb68de339a",
+          "id": "resp_0171ee5ab776926800697d48e5ee74819e87beaccc067203ae",
           "incomplete_details": null,
           "instructions": null,
-          "max_output_tokens": 100,
+          "max_output_tokens": 50,
           "max_tool_calls": null,
           "metadata": {},
           "model": "gpt-5-mini-2025-08-07",
@@ -495,18 +516,18 @@ exports[`context call output > [openai:responses] streams response with context 
       },
     ],
     "modelId": "openai/gpt-5-mini:responses",
-    "nChunks": 3,
+    "nChunks": 0,
     "providerId": "openai",
     "providerModelName": "gpt-5-mini:responses",
     "tools": [],
     "usage": {
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
-      "inputTokens": 14,
-      "outputTokens": 45,
+      "inputTokens": 13,
+      "outputTokens": 0,
       "raw": "null",
       "reasoningTokens": 0,
-      "totalTokens": 59,
+      "totalTokens": 13,
     },
   },
 }

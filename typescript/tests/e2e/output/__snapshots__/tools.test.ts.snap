@@ -479,7 +479,27 @@ exports[`tool usage with streaming > [anthropic] streams tool calls and resumes 
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01NW9V1YCeF2aaDjiUnTSUH1",
+              "input": {
+                "password": "mellon",
+              },
+              "name": "secret_retrieval_tool",
+              "type": "tool_use",
+            },
+            {
+              "id": "toolu_015k2gzpZWrWT7ZKrmd1sPRg",
+              "input": {
+                "password": "radiance",
+              },
+              "name": "secret_retrieval_tool",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
       {
@@ -516,7 +536,18 @@ exports[`tool usage with streaming > [anthropic] streams tool calls and resumes 
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "text": "I've successfully retrieved the secrets for both passwords:
+
+1. **Password: "mellon"** → Secret: "Welcome to Moria!"
+2. **Password: "radiance"** → Secret: "Life before Death"",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
     ],
@@ -586,56 +617,19 @@ exports[`tool usage with streaming > [google] streams tool calls and resumes wit
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "functionCall": {
-                      "args": {
-                        "password": "mellon",
-                      },
-                      "name": "secret_retrieval_tool",
-                    },
-                    "thoughtSignature": "CiQBcsjafM3unaTwQZC153SKG+3Vhy9hJNu//I6DdAaGHoIjVMwKZgFyyNp8CgZK42ALSOwXSgU9w6rrX739BxTbJdF+es1oWgsWvVNkp3EF+RUThJ20M4WSuTlQbDtM8OQSCXimALHxHzXNqXrNVD7rqvKyKfK3IR3m9ttuUdjCrjJTwm+htg2rp501NwpwAXLI2ny6xquFtXoIYoT5gEfj/fUvE/uXl755xPMrA0iYrJuOmx1QeCyaWedEaVCAtBARyHr0RTovKebK/ihNfpUv/t5lZjxp88D2gXeIZ3vS/e+XMTkdbrZFTUXqd9qQn6as2ycNdwLstHRk/9bNPg==",
-                  },
-                ],
-                "role": "model",
+              "functionCall": {
+                "args": {
+                  "password": "mellon",
+                },
+                "name": "secret_retrieval_tool",
               },
-              "finishReason": "STOP",
-              "index": 0,
+              "thoughtSignature": "CiQBcsjafM3unaTwQZC153SKG+3Vhy9hJNu//I6DdAaGHoIjVMwKZgFyyNp8CgZK42ALSOwXSgU9w6rrX739BxTbJdF+es1oWgsWvVNkp3EF+RUThJ20M4WSuTlQbDtM8OQSCXimALHxHzXNqXrNVD7rqvKyKfK3IR3m9ttuUdjCrjJTwm+htg2rp501NwpwAXLI2ny6xquFtXoIYoT5gEfj/fUvE/uXl755xPMrA0iYrJuOmx1QeCyaWedEaVCAtBARyHr0RTovKebK/ihNfpUv/t5lZjxp88D2gXeIZ3vS/e+XMTkdbrZFTUXqd9qQn6as2ycNdwLstHRk/9bNPg==",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "qyZ9aaXmCbPlz7IPiIKa-A0",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Fri, 30 Jan 2026 21:46:19 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=740",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 20,
-            "promptTokenCount": 85,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 85,
-              },
-            ],
-            "thoughtsTokenCount": 40,
-            "totalTokenCount": 145,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },
@@ -665,54 +659,19 @@ exports[`tool usage with streaming > [google] streams tool calls and resumes wit
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "functionCall": {
-                      "args": {
-                        "password": "radiance",
-                      },
-                      "name": "secret_retrieval_tool",
-                    },
-                  },
-                ],
-                "role": "model",
+              "functionCall": {
+                "args": {
+                  "password": "radiance",
+                },
+                "name": "secret_retrieval_tool",
               },
-              "finishReason": "STOP",
-              "index": 0,
+              "thoughtSignature": "Cm4BcsjafBwT+icnzGpLwpxMUn93E5JDdFqJGN130EARBKdgMBgPlT6XU0cj52Tj314DqW8oW6Yzx2utYZj5GHg6PZz5laIXhbuL46rMoSkNBYNzoGJQ27C82Oh9h9D/PXcOEwL7gl/tERdB9z/HNAp3AXLI2nw4/c/nWWTRQlToE4fCQcYBvnzE5l2mJRzkQNKe03dp/MofEy+qnXQQVEQ4FATBy9FWJ5Wq3MvQm0gSGm93R//6EO9fCplnC7mX6NXLKOuKLMR7S251YG871VZaKsecDklYjFTkPGz7ed9lRH1gsL3AEJU=",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "rCZ9adrQEPjUz7IPqbqT2Q8",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Fri, 30 Jan 2026 21:46:20 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=593",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 20,
-            "promptTokenCount": 128,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 128,
-              },
-            ],
-            "totalTokenCount": 148,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },
@@ -732,9 +691,8 @@ exports[`tool usage with streaming > [google] streams tool calls and resumes wit
       {
         "content": [
           {
-            "text": "The secrets for the provided passwords are:
-* **mellon**: "Welcome to Moria!"
-* **radiance**: "Life before Death"",
+            "text": "The secret for "mellon" is "Welcome to Moria!".
+The secret for "radiance" is "Life before Death".",
             "type": "text",
           },
         ],
@@ -742,55 +700,21 @@ exports[`tool usage with streaming > [google] streams tool calls and resumes wit
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": "radiance**: "Life before Death"",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "STOP",
-              "index": 0,
+              "text": "The secret for "mellon" is "Welcome to Moria!".
+The secret for "radiance" is "Life before Death".",
+              "thoughtSignature": "CiIBcsjafMEEafDDbF52BijUT97n5T1hZ9UXEBIqzOq91MlUCoIBAXLI2nz1cF3XfZ1dmUdQHUNnYmL+HMkt468oDo5HaeZCE34cIOA0qCtyax29ffL8DOpn5yn59Ob6xtLzzlhqEBDMXBNP7QkBTZO+ZpP1iBbUwzM+O521fDAnQlisKWMQgeV3tOO09MqkaRRIsMUovJJPo8hjSHoVoramwIzKz8LQLwouAXLI2nzC2ffr/RtjLJmY4v7g1NWtc9siSq6W9xXlAQkheanFiBpG5DEmsccdkg==",
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "rCZ9aZOIM5biz7IPi_KAsQg",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Fri, 30 Jan 2026 21:46:20 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=532",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 31,
-            "promptTokenCount": 169,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 169,
-              },
-            ],
-            "totalTokenCount": 200,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },
     ],
     "modelId": "google/gemini-2.5-flash",
-    "nChunks": 5,
+    "nChunks": 3,
     "providerId": "google",
     "providerModelName": "gemini-2.5-flash",
     "tools": [
@@ -815,11 +739,11 @@ exports[`tool usage with streaming > [google] streams tool calls and resumes wit
     "usage": {
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
-      "inputTokens": 507,
-      "outputTokens": 58,
+      "inputTokens": 243,
+      "outputTokens": 50,
       "raw": "null",
-      "reasoningTokens": 0,
-      "totalTokens": 565,
+      "reasoningTokens": 22,
+      "totalTokens": 293,
     },
   },
   "toolIterations": 2,

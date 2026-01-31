@@ -83,7 +83,15 @@ exports[`prompt output > [anthropic] streams model with string model id 1`] = `
         "name": null,
         "providerId": "anthropic",
         "providerModelName": "claude-haiku-4-5",
-        "rawMessage": null,
+        "rawMessage": {
+          "content": [
+            {
+              "text": "4200 + 42 = 4242",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
         "role": "assistant",
       },
     ],
@@ -194,52 +202,23 @@ So, 4200 + 42 = **4242**.",
         "name": null,
         "providerId": "google",
         "providerModelName": "gemini-2.5-flash",
-        "rawMessage": GenerateContentResponse {
-          "candidates": [
+        "rawMessage": {
+          "parts": [
             {
-              "content": {
-                "parts": [
-                  {
-                    "text": "2
+              "text": "To find the sum of 4200 and 42, you simply add the numbers:
+
+4200
++ 42
+-----
+424",
+            },
+            {
+              "text": "2
 
 So, 4200 + 42 = **4242**.",
-                  },
-                ],
-                "role": "model",
-              },
-              "finishReason": "STOP",
-              "index": 0,
             },
           ],
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "B7N5adXeGvm7qtsP3_zSsAU",
-          "sdkHttpResponse": {
-            "headers": {
-              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
-              "content-disposition": "attachment",
-              "content-type": "text/event-stream",
-              "date": "Wed, 28 Jan 2026 06:56:08 GMT",
-              "server": "scaffolding on HTTPServer2",
-              "server-timing": "gfet4t7; dur=1102",
-              "transfer-encoding": "chunked",
-              "vary": "Origin, X-Origin, Referer",
-              "x-content-type-options": "nosniff",
-              "x-frame-options": "SAMEORIGIN",
-              "x-xss-protection": "0",
-            },
-          },
-          "usageMetadata": {
-            "candidatesTokenCount": 57,
-            "promptTokenCount": 13,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 13,
-              },
-            ],
-            "thoughtsTokenCount": 78,
-            "totalTokenCount": 148,
-          },
+          "role": "model",
         },
         "role": "assistant",
       },
