@@ -37,6 +37,8 @@ interface DecodeState {
   inThoughtBlock: boolean;
   /** Whether to include thoughts in output */
   includeThoughts: boolean;
+  /** Accumulated parts for raw message */
+  accumulatedParts: unknown[];
 }
 
 /**
@@ -47,6 +49,7 @@ export function createDecodeState(includeThoughts: boolean): DecodeState {
     inTextBlock: false,
     inThoughtBlock: false,
     includeThoughts,
+    accumulatedParts: [],
   };
 }
 
@@ -70,11 +73,13 @@ export function decodeStreamEvent(
   // Always emit raw event chunk
   chunks.push(rawStreamEventChunk(response));
 
-  // Emit raw message chunk
-  chunks.push(rawMessageChunk(response as unknown as Jsonable));
-
   const candidate = response.candidates?.[0];
   const parts = candidate?.content?.parts ?? [];
+
+  // Accumulate parts for raw message (matching Python's accumulated_parts)
+  for (const part of parts) {
+    state.accumulatedParts.push(part);
+  }
 
   for (const part of parts) {
     if (part.thought && part.text !== undefined) {
@@ -191,4 +196,10 @@ export async function* decodeStream(
       yield chunk;
     }
   }
+
+  // Emit raw message chunk with properly structured Content (matching Python)
+  yield rawMessageChunk({
+    role: 'model',
+    parts: state.accumulatedParts,
+  } as unknown as Jsonable);
 }

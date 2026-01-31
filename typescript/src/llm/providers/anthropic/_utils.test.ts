@@ -6,10 +6,17 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import type { Message as AnthropicMessage } from '@anthropic-ai/sdk/resources/messages';
 import { user } from '@/llm/messages';
+import type { AssistantMessage } from '@/llm/messages';
 import { FeatureNotSupportedError } from '@/llm/exceptions';
 import { Audio, Image } from '@/llm/content';
-import { buildRequestParams, computeThinkingBudget } from './_utils';
+import {
+  buildRequestParams,
+  computeThinkingBudget,
+  decodeResponse,
+  encodeMessages,
+} from './_utils';
 
 describe('computeThinkingBudget', () => {
   it('returns 0 for none level (disabled)', () => {
@@ -184,5 +191,169 @@ describe('buildRequestParams', () => {
         )
       ).toThrow(FeatureNotSupportedError);
     });
+  });
+});
+
+describe('raw message round-tripping', () => {
+  // Mock response for testing
+  const mockAnthropicResponse = {
+    id: 'msg_123',
+    type: 'message',
+    role: 'assistant',
+    content: [{ type: 'text', text: 'Hello!' }],
+    model: 'claude-haiku-4-5',
+    stop_reason: 'end_turn',
+    stop_sequence: null,
+    usage: {
+      input_tokens: 10,
+      output_tokens: 5,
+    },
+  } as unknown as AnthropicMessage;
+
+  it('decodeResponse stores serialized message in rawMessage', () => {
+    const { assistantMessage } = decodeResponse(
+      mockAnthropicResponse,
+      'anthropic/claude-haiku-4-5'
+    );
+
+    // rawMessage should be an object with role and content
+    expect(typeof assistantMessage.rawMessage).toBe('object');
+
+    const rawMessage = assistantMessage.rawMessage as unknown as {
+      role: string;
+      content: Array<Record<string, unknown>>;
+    };
+    expect(rawMessage.role).toBe('assistant');
+    expect(Array.isArray(rawMessage.content)).toBe(true);
+    expect(rawMessage.content[0]).toHaveProperty('type', 'text');
+    expect(rawMessage.content[0]).toHaveProperty('text', 'Hello!');
+  });
+
+  it('decodeResponse sets providerModelName from modelName', () => {
+    const { assistantMessage } = decodeResponse(
+      mockAnthropicResponse,
+      'anthropic/claude-haiku-4-5'
+    );
+
+    // Should be the base model name (without provider prefix)
+    expect(assistantMessage.providerModelName).toBe('claude-haiku-4-5');
+  });
+
+  it('encodeMessages reuses rawMessage for matching assistant messages', () => {
+    // Create an assistant message that would have come from decodeResponse
+    const assistantMsg: AssistantMessage = {
+      role: 'assistant',
+      content: [{ type: 'text', text: 'Hello!' }],
+      name: null,
+      providerId: 'anthropic',
+      modelId: 'anthropic/claude-haiku-4-5',
+      providerModelName: 'claude-haiku-4-5',
+      rawMessage: {
+        role: 'assistant',
+        content: [{ type: 'text', text: 'Hello!' }],
+      } as unknown as AssistantMessage['rawMessage'],
+    };
+
+    const messages = [user('Hi'), assistantMsg, user('How are you?')];
+    const { messages: encoded } = encodeMessages(
+      messages,
+      'anthropic/claude-haiku-4-5'
+    );
+
+    // Should have: user message, raw assistant message, user message
+    expect(encoded).toHaveLength(3);
+
+    // First is user message
+    expect(encoded[0]).toEqual({ role: 'user', content: 'Hi' });
+
+    // Second should be the raw message reused directly
+    expect(encoded[1]).toHaveProperty('role', 'assistant');
+    expect(encoded[1]).toHaveProperty('content');
+    expect((encoded[1] as { content: unknown[] }).content[0]).toHaveProperty(
+      'type',
+      'text'
+    );
+
+    // Third is user message
+    expect(encoded[2]).toEqual({ role: 'user', content: 'How are you?' });
+  });
+
+  it('encodeMessages does NOT reuse rawMessage for different provider', () => {
+    // Create an assistant message from a different provider
+    const assistantMsg: AssistantMessage = {
+      role: 'assistant',
+      content: [{ type: 'text', text: 'Hello!' }],
+      name: null,
+      providerId: 'openai', // Different provider
+      modelId: 'openai/gpt-4o',
+      providerModelName: 'gpt-4o',
+      rawMessage: {
+        role: 'assistant',
+        content: 'Hello!',
+      } as unknown as AssistantMessage['rawMessage'],
+    };
+
+    const messages = [user('Hi'), assistantMsg];
+    const { messages: encoded } = encodeMessages(
+      messages,
+      'anthropic/claude-haiku-4-5'
+    );
+
+    // Should encode from content, not raw message
+    expect(encoded).toHaveLength(2);
+    expect(encoded[1]).toEqual({ role: 'assistant', content: 'Hello!' });
+  });
+
+  it('encodeMessages does NOT reuse rawMessage for different model', () => {
+    // Create an assistant message from a different model
+    const assistantMsg: AssistantMessage = {
+      role: 'assistant',
+      content: [{ type: 'text', text: 'Hello!' }],
+      name: null,
+      providerId: 'anthropic',
+      modelId: 'anthropic/claude-sonnet-4-5', // Different model
+      providerModelName: 'claude-sonnet-4-5',
+      rawMessage: {
+        role: 'assistant',
+        content: [{ type: 'text', text: 'Hello!' }],
+      } as unknown as AssistantMessage['rawMessage'],
+    };
+
+    const messages = [user('Hi'), assistantMsg];
+    // Request is for haiku, but message is from sonnet
+    const { messages: encoded } = encodeMessages(
+      messages,
+      'anthropic/claude-haiku-4-5'
+    );
+
+    // Should encode from content, not raw message
+    expect(encoded).toHaveLength(2);
+    expect(encoded[1]).toEqual({ role: 'assistant', content: 'Hello!' });
+  });
+
+  it('encodeMessages reuses rawMessage without structure validation', () => {
+    // Create an assistant message with non-standard rawMessage
+    const assistantMsg: AssistantMessage = {
+      role: 'assistant',
+      content: [{ type: 'text', text: 'Hello!' }],
+      name: null,
+      providerId: 'anthropic',
+      modelId: 'anthropic/claude-haiku-4-5',
+      providerModelName: 'claude-haiku-4-5',
+      rawMessage: {
+        // Even without proper 'role' and 'content' structure
+        id: 'msg_123',
+      } as unknown as AssistantMessage['rawMessage'],
+    };
+
+    const messages = [user('Hi'), assistantMsg];
+    const { messages: encoded } = encodeMessages(
+      messages,
+      'anthropic/claude-haiku-4-5'
+    );
+
+    // rawMessage IS reused
+    expect(encoded).toHaveLength(2);
+    expect(encoded[1]).toEqual({ id: 'msg_123' });
   });
 });

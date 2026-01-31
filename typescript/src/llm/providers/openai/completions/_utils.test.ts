@@ -8,6 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import type { ChatCompletion } from 'openai/resources/chat/completions';
 import { assistant, user } from '@/llm/messages';
+import type { AssistantMessage } from '@/llm/messages';
 import type { Thought } from '@/llm/content';
 import { Audio } from '@/llm/content';
 import { FeatureNotSupportedError } from '@/llm/exceptions';
@@ -244,6 +245,184 @@ describe('decodeResponse', () => {
     const decoded = decodeResponse(response, 'openai/gpt-4o');
 
     expect(decoded.usage).toBeNull();
+  });
+});
+
+describe('raw message round-tripping', () => {
+  const createMockResponse = (
+    overrides: Partial<ChatCompletion> = {}
+  ): ChatCompletion => ({
+    id: 'chatcmpl-123',
+    object: 'chat.completion',
+    created: 1677652288,
+    model: 'gpt-4o',
+    choices: [
+      {
+        index: 0,
+        message: {
+          role: 'assistant',
+          content: 'Hello!',
+          refusal: null,
+        },
+        finish_reason: 'stop',
+        logprobs: null,
+      },
+    ],
+    usage: {
+      prompt_tokens: 5,
+      completion_tokens: 2,
+      total_tokens: 7,
+    },
+    ...overrides,
+  });
+
+  it('decodeResponse stores serialized message in rawMessage', () => {
+    const response = createMockResponse();
+    const { assistantMessage } = decodeResponse(response, 'openai/gpt-4o');
+
+    // rawMessage should be an object with role and content
+    expect(typeof assistantMessage.rawMessage).toBe('object');
+
+    const rawMessage = assistantMessage.rawMessage as unknown as {
+      role: string;
+      content: string;
+    };
+    expect(rawMessage.role).toBe('assistant');
+    expect(rawMessage.content).toBe('Hello!');
+  });
+
+  it('decodeResponse sets providerModelName with completions suffix', () => {
+    const response = createMockResponse();
+    const { assistantMessage } = decodeResponse(response, 'openai/gpt-4o');
+
+    // Should be the base model name with :completions suffix
+    expect(assistantMessage.providerModelName).toBe('gpt-4o:completions');
+  });
+
+  it('encodeMessages reuses rawMessage for matching assistant messages', () => {
+    // Create an assistant message that would have come from decodeResponse
+    const assistantMsg: AssistantMessage = {
+      role: 'assistant',
+      content: [{ type: 'text', text: 'Hello!' }],
+      name: null,
+      providerId: 'openai',
+      modelId: 'openai/gpt-4o',
+      providerModelName: 'gpt-4o:completions',
+      rawMessage: {
+        role: 'assistant',
+        content: 'Hello!',
+      } as unknown as AssistantMessage['rawMessage'],
+    };
+
+    const messages = [user('Hi'), assistantMsg, user('How are you?')];
+    const encoded = encodeMessages(messages, false, 'openai/gpt-4o');
+
+    // Should have: user message, raw assistant message, user message
+    expect(encoded).toHaveLength(3);
+
+    // First is user message
+    expect(encoded[0]).toEqual({ role: 'user', content: 'Hi' });
+
+    // Second should be the raw message reused directly
+    expect(encoded[1]).toHaveProperty('role', 'assistant');
+    expect(encoded[1]).toHaveProperty('content', 'Hello!');
+
+    // Third is user message
+    expect(encoded[2]).toEqual({ role: 'user', content: 'How are you?' });
+  });
+
+  it('encodeMessages does NOT reuse rawMessage for different provider', () => {
+    // Create an assistant message from a different provider
+    const assistantMsg: AssistantMessage = {
+      role: 'assistant',
+      content: [{ type: 'text', text: 'Hello!' }],
+      name: null,
+      providerId: 'anthropic', // Different provider
+      modelId: 'anthropic/claude-haiku-4-5',
+      providerModelName: 'claude-haiku-4-5',
+      rawMessage: {
+        role: 'assistant',
+        content: [{ type: 'text', text: 'Hello!' }],
+      } as unknown as AssistantMessage['rawMessage'],
+    };
+
+    const messages = [user('Hi'), assistantMsg];
+    const encoded = encodeMessages(messages, false, 'openai/gpt-4o');
+
+    // Should encode from content, not raw message
+    expect(encoded).toHaveLength(2);
+    expect(encoded[1]).toEqual({ role: 'assistant', content: 'Hello!' });
+  });
+
+  it('encodeMessages does NOT reuse rawMessage for different model', () => {
+    // Create an assistant message from a different model
+    const assistantMsg: AssistantMessage = {
+      role: 'assistant',
+      content: [{ type: 'text', text: 'Hello!' }],
+      name: null,
+      providerId: 'openai',
+      modelId: 'openai/gpt-4o-mini', // Different model
+      providerModelName: 'gpt-4o-mini:completions',
+      rawMessage: {
+        role: 'assistant',
+        content: 'Hello!',
+      } as unknown as AssistantMessage['rawMessage'],
+    };
+
+    const messages = [user('Hi'), assistantMsg];
+    // Request is for gpt-4o, but message is from gpt-4o-mini
+    const encoded = encodeMessages(messages, false, 'openai/gpt-4o');
+
+    // Should encode from content, not raw message
+    expect(encoded).toHaveLength(2);
+    expect(encoded[1]).toEqual({ role: 'assistant', content: 'Hello!' });
+  });
+
+  it('encodeMessages does NOT reuse rawMessage without proper structure', () => {
+    // Create an assistant message with non-standard rawMessage
+    const assistantMsg: AssistantMessage = {
+      role: 'assistant',
+      content: [{ type: 'text', text: 'Hello!' }],
+      name: null,
+      providerId: 'openai',
+      modelId: 'openai/gpt-4o',
+      providerModelName: 'gpt-4o:completions',
+      rawMessage: {
+        // Missing 'role' key - should not be reused
+        content: 'Hello!',
+      } as unknown as AssistantMessage['rawMessage'],
+    };
+
+    const messages = [user('Hi'), assistantMsg];
+    const encoded = encodeMessages(messages, false, 'openai/gpt-4o');
+
+    // Should encode from content, not raw message
+    expect(encoded).toHaveLength(2);
+    expect(encoded[1]).toEqual({ role: 'assistant', content: 'Hello!' });
+  });
+
+  it('encodeMessages does NOT reuse rawMessage when encodeThoughtsAsText is true', () => {
+    // Create an assistant message with proper structure
+    const assistantMsg: AssistantMessage = {
+      role: 'assistant',
+      content: [{ type: 'text', text: 'Hello!' }],
+      name: null,
+      providerId: 'openai',
+      modelId: 'openai/gpt-4o',
+      providerModelName: 'gpt-4o:completions',
+      rawMessage: {
+        role: 'assistant',
+        content: 'Hello!',
+      } as unknown as AssistantMessage['rawMessage'],
+    };
+
+    const messages = [user('Hi'), assistantMsg];
+    // encodeThoughtsAsText is true - should not reuse raw message
+    const encoded = encodeMessages(messages, true, 'openai/gpt-4o');
+
+    // Should encode from content, not raw message
+    expect(encoded).toHaveLength(2);
+    expect(encoded[1]).toEqual({ role: 'assistant', content: 'Hello!' });
   });
 });
 

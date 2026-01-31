@@ -11,6 +11,7 @@ import type {
   ResponseInputContent,
   ResponseInputImage,
   ResponseInputItem,
+  ResponseOutputItem,
 } from 'openai/resources/responses/responses';
 import type { Reasoning, ReasoningEffort } from 'openai/resources/shared';
 
@@ -134,11 +135,18 @@ export function encodeTools(tools: readonly ToolSchema[]): FunctionTool[] {
  * - Returns flat array of input items (not nested messages)
  * - Assistant messages with multiple text parts are encoded as separate messages
  * - Tool outputs are encoded as function_call_output items
+ *
+ * @param messages - The messages to encode
+ * @param modelId - The model ID for the request (used to check if raw message can be reused)
+ * @param encodeThoughtsAsText - Whether to encode thoughts as text in assistant messages
  */
 export function encodeMessages(
-  messages: readonly Message[]
+  messages: readonly Message[],
+  modelId: OpenAIModelId,
+  encodeThoughtsAsText: boolean = false
 ): ResponseInputItem[] {
   const inputItems: ResponseInputItem[] = [];
+  const expectedProviderModelName = modelName(modelId, 'responses');
 
   for (const message of messages) {
     if (message.role === 'system') {
@@ -160,8 +168,26 @@ export function encodeMessages(
         inputItems.push(userMessage);
       }
     } else if (message.role === 'assistant') {
-      // Assistant messages may produce multiple items (one per text/tool_call part)
-      inputItems.push(...encodeAssistantMessage(message));
+      // Check if we can reuse the raw message (from same provider/model)
+      // Array check is needed because we spread into inputItems
+      if (
+        (message.providerId === 'openai' ||
+          message.providerId === 'openai:responses') &&
+        message.providerModelName === expectedProviderModelName &&
+        message.rawMessage &&
+        Array.isArray(message.rawMessage) &&
+        !encodeThoughtsAsText
+      ) {
+        // Reuse serialized output items directly
+        inputItems.push(
+          ...(message.rawMessage as unknown as ResponseInputItem[])
+        );
+      } else {
+        // Otherwise, encode from content parts
+        inputItems.push(
+          ...encodeAssistantMessage(message, encodeThoughtsAsText)
+        );
+      }
     }
   }
 
@@ -270,10 +296,13 @@ function encodeUserMessage(
  * text as adjacent content within the same Message. Rather than generating fake fields,
  * we encode each text part as a separate EasyInputMessage.
  *
+ * @param message - The assistant message to encode
+ * @param encodeThoughtsAsText - Whether to encode thoughts as text
  * @returns Array of input items (text messages and function calls)
  */
 function encodeAssistantMessage(
-  message: AssistantMessage
+  message: AssistantMessage,
+  encodeThoughtsAsText: boolean
 ): ResponseInputItem[] {
   const result: ResponseInputItem[] = [];
 
@@ -283,9 +312,18 @@ function encodeAssistantMessage(
         role: 'assistant',
         content: part.text,
       });
-    }
-    /* v8 ignore start - tool encoding will be tested via e2e */
-    if (part.type === 'tool_call') {
+      /* v8 ignore start - thought encoding will be tested via e2e */
+    } else if (part.type === 'thought') {
+      // Encode thoughts as text when requested, otherwise drop
+      if (encodeThoughtsAsText) {
+        result.push({
+          role: 'assistant',
+          content: '**Thinking:** ' + part.thought,
+        });
+      }
+      /* v8 ignore stop */
+      /* v8 ignore start - tool call encoding will be tested via e2e */
+    } else if (part.type === 'tool_call') {
       const toolCallItem: ResponseFunctionToolCall = {
         type: 'function_call',
         id: part.id, // Used as the item id
@@ -296,7 +334,6 @@ function encodeAssistantMessage(
       result.push(toolCallItem);
     }
     /* v8 ignore stop */
-    // Note: thought encoding is not yet implemented
   }
 
   return result;
@@ -319,9 +356,12 @@ export function buildRequestParams(
   tools?: readonly ToolSchema[],
   params: Params = {}
 ): ResponseCreateParamsNonStreaming {
-  const inputItems = encodeMessages(messages);
-
   return ParamHandler.with(params, 'openai', modelId, (p) => {
+    const thinkingConfig = p.get('thinking');
+    const encodeThoughtsAsText = thinkingConfig?.encodeThoughtsAsText ?? false;
+
+    const inputItems = encodeMessages(messages, modelId, encodeThoughtsAsText);
+
     const requestParams: ResponseCreateParamsNonStreaming = {
       model: modelName(modelId, null),
       input: inputItems,
@@ -359,7 +399,6 @@ export function buildRequestParams(
       'OpenAI Responses API does not support stop sequences'
     );
 
-    const thinkingConfig = p.get('thinking');
     if (thinkingConfig) {
       const includeThoughts = thinkingConfig.includeThoughts ?? false;
       requestParams.reasoning = computeReasoning(
@@ -391,14 +430,18 @@ export function decodeResponse(
   const content = decodeContent(response.output, includeThoughts);
   const finishReason = decodeFinishReason(response);
 
+  // Store serialized output items for round-tripping in resume operations.
+  // This allows sending the exact output back as input when resuming.
+  const serializedOutput = response.output.map(serializeOutputItem);
+
   const assistantMessage: AssistantMessage = {
     role: 'assistant',
     content,
     name: null,
     providerId: 'openai',
     modelId,
-    providerModelName: response.model,
-    rawMessage: response as unknown as AssistantMessage['rawMessage'],
+    providerModelName: modelName(modelId, 'responses'),
+    rawMessage: serializedOutput as unknown as AssistantMessage['rawMessage'],
   };
 
   /* v8 ignore next - usage is always present in API responses */
@@ -521,4 +564,24 @@ function decodeUsage(usage: NonNullable<OpenAIResponse['usage']>): Usage {
     reasoningTokens: usage.output_tokens_details?.reasoning_tokens ?? 0,
     raw: usage,
   });
+}
+
+/**
+ * Serialize an output item for storage in rawMessage.
+ *
+ * This is used for round-tripping assistant messages through the API.
+ * The serialized items can be sent directly back as input items when
+ * resuming a conversation.
+ */
+function serializeOutputItem(
+  item: ResponseOutputItem
+): Record<string, unknown> {
+  // Copy all non-undefined properties from the item
+  const serialized: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(item)) {
+    if (value !== undefined) {
+      serialized[key] = value;
+    }
+  }
+  return serialized;
 }
