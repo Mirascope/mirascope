@@ -251,6 +251,8 @@ bun run src/cli/main.ts registry add calculator --registry http://localhost:3000
    }
    ```
 
+   **Important**: The `target` should be just the filename (e.g., `my_tool.py`), not a full path. The user's `mirascope.json` config determines where files are installed based on the item type. For example, a `registry:tool` item with `target: "my_tool.py"` will be installed to `ai/tools/my_tool.py` if the user's config has `paths.tools: "ai/tools"`.
+
 3. Add the item to `registry/registry.json`:
    ```json
    {

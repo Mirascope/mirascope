@@ -14,13 +14,13 @@
     "python": [
       {
         "path": "calculator.py",
-        "target": "ai/tools/calculator.py"
+        "target": "calculator.py"
       }
     ],
     "typescript": [
       {
         "path": "calculator.ts",
-        "target": "ai/tools/calculator.ts"
+        "target": "calculator.ts"
       }
     ]
   },
