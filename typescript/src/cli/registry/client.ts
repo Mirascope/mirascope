@@ -2,31 +2,7 @@
  * HTTP client for the Mirascope registry.
  */
 
-interface RegistryItem {
-  name: string;
-  type: string;
-  files: Array<{
-    path: string;
-    target: string;
-    content: string;
-  }>;
-  dependencies: {
-    pip: string[];
-    npm: string[];
-  };
-}
-
-interface RegistryIndex {
-  name: string;
-  version: string;
-  homepage: string;
-  items: Array<{
-    name: string;
-    type: string;
-    path: string;
-    description?: string;
-  }>;
-}
+import type { RegistryIndex, RegistryItem } from "@/cli/registry/types";
 
 export class RegistryClient {
   private baseUrl: string;
