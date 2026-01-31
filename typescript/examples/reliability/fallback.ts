@@ -30,7 +30,7 @@ async function withFallbacks(
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
         // Use withModel to override the default model
-        return await llm.withModel(llm.model(modelId), async () => {
+        return await llm.withModel(modelId, async () => {
           return recommendBook({ genre });
         });
       } catch (e) {
