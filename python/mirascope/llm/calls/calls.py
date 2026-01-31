@@ -1,7 +1,6 @@
 """The Call module for generating responses using LLMs."""
 
 from collections.abc import Callable
-from dataclasses import dataclass, field
 from typing import Any, Generic, TypeVar, overload
 
 from ..._utils import copy_function_metadata
@@ -31,7 +30,6 @@ PromptT = TypeVar("PromptT", bound=BasePrompt[Callable[..., Any]])
 CallT = TypeVar("CallT", bound="BaseCall[Any]")
 
 
-@dataclass(kw_only=True)
 class BaseCall(Generic[PromptT]):
     """Base class for all Call types with shared model functionality."""
 
@@ -41,20 +39,21 @@ class BaseCall(Generic[PromptT]):
     prompt: PromptT
     """The underlying Prompt instance that generates messages with tools and format."""
 
-    __name__: str = field(init=False, repr=False, default="")
+    __name__: str
     """The name of the underlying function (preserved for decorator stacking)."""
+
+    def __init__(self, *, default_model: Model, prompt: PromptT) -> None:
+        self.default_model = default_model
+        self.prompt = prompt
+        self.__name__ = ""
+        copy_function_metadata(self, self.prompt.fn)
 
     @property
     def model(self) -> Model:
         """The model used for generating responses. May be overwritten via `with llm.model(...)`."""
         return use_model(self.default_model)
 
-    def __post_init__(self) -> None:
-        """Preserve standard function attributes for decorator stacking."""
-        copy_function_metadata(self, self.prompt.fn)
 
-
-@dataclass
 class Call(BaseCall[Prompt[P, FormattableT]], Generic[P, FormattableT]):
     """A call that directly generates LLM responses without requiring a model argument.
 
@@ -66,6 +65,14 @@ class Call(BaseCall[Prompt[P, FormattableT]], Generic[P, FormattableT]):
 
     The model can be overridden at runtime using `with llm.model(...)` context manager.
     """
+
+    def __init__(
+        self,
+        *,
+        default_model: Model,
+        prompt: Prompt[P, FormattableT],
+    ) -> None:
+        super().__init__(default_model=default_model, prompt=prompt)
 
     @overload
     def __call__(
@@ -114,7 +121,6 @@ class Call(BaseCall[Prompt[P, FormattableT]], Generic[P, FormattableT]):
         return self.prompt.stream(self.model, *args, **kwargs)
 
 
-@dataclass
 class AsyncCall(BaseCall[AsyncPrompt[P, FormattableT]], Generic[P, FormattableT]):
     """An async call that directly generates LLM responses without requiring a model argument.
 
@@ -126,6 +132,14 @@ class AsyncCall(BaseCall[AsyncPrompt[P, FormattableT]], Generic[P, FormattableT]
 
     The model can be overridden at runtime using `with llm.model(...)` context manager.
     """
+
+    def __init__(
+        self,
+        *,
+        default_model: Model,
+        prompt: AsyncPrompt[P, FormattableT],
+    ) -> None:
+        super().__init__(default_model=default_model, prompt=prompt)
 
     @overload
     async def __call__(
@@ -176,7 +190,6 @@ class AsyncCall(BaseCall[AsyncPrompt[P, FormattableT]], Generic[P, FormattableT]
         return await self.prompt.stream(self.model, *args, **kwargs)
 
 
-@dataclass
 class ContextCall(
     BaseCall[ContextPrompt[P, DepsT, FormattableT]], Generic[P, DepsT, FormattableT]
 ):
@@ -191,6 +204,14 @@ class ContextCall(
 
     The model can be overridden at runtime using `with llm.model(...)` context manager.
     """
+
+    def __init__(
+        self,
+        *,
+        default_model: Model,
+        prompt: ContextPrompt[P, DepsT, FormattableT],
+    ) -> None:
+        super().__init__(default_model=default_model, prompt=prompt)
 
     @overload
     def __call__(
@@ -261,7 +282,6 @@ class ContextCall(
         return self.prompt.stream(self.model, ctx, *args, **kwargs)
 
 
-@dataclass
 class AsyncContextCall(
     BaseCall[AsyncContextPrompt[P, DepsT, FormattableT]],
     Generic[P, DepsT, FormattableT],
@@ -277,6 +297,14 @@ class AsyncContextCall(
 
     The model can be overridden at runtime using `with llm.model(...)` context manager.
     """
+
+    def __init__(
+        self,
+        *,
+        default_model: Model,
+        prompt: AsyncContextPrompt[P, DepsT, FormattableT],
+    ) -> None:
+        super().__init__(default_model=default_model, prompt=prompt)
 
     @overload
     async def __call__(
