@@ -14,7 +14,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     """Main entry point for the Mirascope CLI."""
     parser = argparse.ArgumentParser(
         prog="mirascope",
-        description="Mirascope CLI - Install registry items into your project",
+        description="Mirascope CLI",
     )
     parser.add_argument(
         "--version",
@@ -24,8 +24,17 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
-    # Add command
-    add_parser = subparsers.add_parser(
+    # Registry command group
+    registry_parser = subparsers.add_parser(
+        "registry",
+        help="Manage registry items",
+    )
+    registry_subparsers = registry_parser.add_subparsers(
+        dest="registry_command", help="Registry commands"
+    )
+
+    # Registry add command
+    add_parser = registry_subparsers.add_parser(
         "add",
         help="Add a registry item to your project",
     )
@@ -55,8 +64,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Registry URL to fetch items from",
     )
 
-    # List command
-    list_parser = subparsers.add_parser(
+    # Registry list command
+    list_parser = registry_subparsers.add_parser(
         "list",
         help="List available registry items",
     )
@@ -75,8 +84,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Registry URL to list items from",
     )
 
-    # Init command
-    subparsers.add_parser(
+    # Registry init command
+    registry_subparsers.add_parser(
         "init",
         help="Initialize Mirascope configuration in your project",
     )
@@ -87,26 +96,31 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.print_help()
         return 0
 
-    if args.command == "add":
-        from mirascope.cli.commands.add import run_add
+    if args.command == "registry":
+        if args.registry_command is None:
+            registry_parser.print_help()
+            return 0
 
-        return run_add(
-            items=args.items,
-            path=args.path,
-            overwrite=args.overwrite,
-            registry_url=args.registry,
-        )
-    elif args.command == "list":
-        from mirascope.cli.commands.list import run_list
+        if args.registry_command == "add":
+            from mirascope.cli.commands.add import run_add
 
-        return run_list(
-            item_type=args.type,
-            registry_url=args.registry,
-        )
-    elif args.command == "init":
-        from mirascope.cli.commands.init import run_init
+            return run_add(
+                items=args.items,
+                path=args.path,
+                overwrite=args.overwrite,
+                registry_url=args.registry,
+            )
+        elif args.registry_command == "list":
+            from mirascope.cli.commands.list import run_list
 
-        return run_init()
+            return run_list(
+                item_type=args.type,
+                registry_url=args.registry,
+            )
+        elif args.registry_command == "init":
+            from mirascope.cli.commands.init import run_init
+
+            return run_init()
 
     return 0
 

@@ -14,9 +14,26 @@ const DEFAULT_REGISTRY = "https://mirascope.com/registry";
 
 function printHelp(): void {
   console.log(`
-Mirascope CLI - Install registry items into your project
+Mirascope CLI
 
 Usage: mirascope <command> [options]
+
+Commands:
+  registry          Manage registry items
+
+Options:
+  -h, --help        Show this help message
+  -v, --version     Show version number
+
+Run 'mirascope <command> --help' for more information on a command.
+`);
+}
+
+function printRegistryHelp(): void {
+  console.log(`
+Mirascope Registry - Install registry items into your project
+
+Usage: mirascope registry <command> [options]
 
 Commands:
   add <items...>    Add registry item(s) to your project
@@ -25,13 +42,12 @@ Commands:
 
 Options:
   -h, --help        Show this help message
-  -v, --version     Show version number
 
 Examples:
-  mirascope add calculator
-  mirascope add calculator web-search
-  mirascope list --type tool
-  mirascope init
+  mirascope registry add calculator
+  mirascope registry add calculator web-search
+  mirascope registry list --type tool
+  mirascope registry init
 `);
 }
 
@@ -52,9 +68,30 @@ async function main(): Promise<number> {
   const commandArgs = args.slice(1);
 
   switch (command) {
+    case "registry": {
+      return await handleRegistry(commandArgs);
+    }
+
+    default:
+      console.error(`Error: Unknown command '${command}'`);
+      printHelp();
+      return 1;
+  }
+}
+
+async function handleRegistry(args: string[]): Promise<number> {
+  if (args.length === 0 || args[0] === "-h" || args[0] === "--help") {
+    printRegistryHelp();
+    return 0;
+  }
+
+  const subcommand = args[0];
+  const subcommandArgs = args.slice(1);
+
+  switch (subcommand) {
     case "add": {
       const { values, positionals } = parseArgs({
-        args: commandArgs,
+        args: subcommandArgs,
         options: {
           path: { type: "string", short: "p" },
           overwrite: { type: "boolean", short: "o", default: false },
@@ -65,7 +102,7 @@ async function main(): Promise<number> {
 
       if (positionals.length === 0) {
         console.error(
-          "Error: No items specified. Usage: mirascope add <items...>",
+          "Error: No items specified. Usage: mirascope registry add <items...>",
         );
         return 1;
       }
@@ -80,7 +117,7 @@ async function main(): Promise<number> {
 
     case "list": {
       const { values } = parseArgs({
-        args: commandArgs,
+        args: subcommandArgs,
         options: {
           type: { type: "string", short: "t" },
           registry: { type: "string", short: "r", default: DEFAULT_REGISTRY },
@@ -99,8 +136,8 @@ async function main(): Promise<number> {
     }
 
     default:
-      console.error(`Error: Unknown command '${command}'`);
-      printHelp();
+      console.error(`Error: Unknown registry command '${subcommand}'`);
+      printRegistryHelp();
       return 1;
   }
 }
