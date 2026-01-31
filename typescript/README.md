@@ -10,10 +10,10 @@ The TypeScript implementation of Mirascope: a type-safe, ergonomic library for b
 
 ```bash
 # Using bun
-bun add mirascope
+bun add mirascope@alpha
 
 # Using npm
-npm install mirascope
+npm install mirascope@alpha
 ```
 
 ## Quickstart
