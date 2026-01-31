@@ -49,7 +49,7 @@ dependencies = [
 ]
 
 [project.scripts]
-mirascope = "mirascope.cli:main"
+mirascope = "mirascope.cli:app"
 
 [project.urls]
 Homepage = "https://mirascope.com"
@@ -64,7 +64,7 @@ Changelog = "https://github.com/Mirascope/mirascope/releases"
 [project.optional-dependencies]
 anthropic = ["anthropic>=0.76.0,<1.0"]
 api = ["pydantic-settings>=2.12.0"]
-cli = ["rich>=13.0.0", "tomli>=2.0.0"]
+cli = ["typer>=0.21.1", "rich>=13.0.0", "tomli>=2.0.0"]
 google = ["google-genai>=1.58.0,<2", "pillow>=10.4.0,<11", "proto-plus>=1.24.0"]
 openai = ["openai>=2.15.0,<3"]
 mcp = ["mcp>=1.25.0,<2"]

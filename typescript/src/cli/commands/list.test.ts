@@ -93,7 +93,7 @@ describe("runList", () => {
     expect(mockConsoleLog).toHaveBeenCalledWith("Agents:");
     expect(mockConsoleLog).toHaveBeenCalledWith("Tools:");
     expect(mockConsoleLog).toHaveBeenCalledWith(
-      "Use `mirascope add <name>` to install.",
+      "Use `mirascope registry add <name>` to install.",
     );
   });
 
