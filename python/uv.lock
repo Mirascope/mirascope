@@ -1592,12 +1592,18 @@ all = [
     { name = "pillow" },
     { name = "proto-plus" },
     { name = "pydantic-settings" },
+    { name = "rich" },
+    { name = "tomli" },
 ]
 anthropic = [
     { name = "anthropic" },
 ]
 api = [
     { name = "pydantic-settings" },
+]
+cli = [
+    { name = "rich" },
+    { name = "tomli" },
 ]
 google = [
     { name = "google-genai" },
@@ -1655,7 +1661,7 @@ requires-dist = [
     { name = "jiter", specifier = ">=0.7.0" },
     { name = "libcst", marker = "extra == 'ops'", specifier = ">=1.8.6" },
     { name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.25.0,<2" },
-    { name = "mirascope", extras = ["anthropic", "api", "google", "openai", "mcp", "ops", "mlx"], marker = "extra == 'all'" },
+    { name = "mirascope", extras = ["anthropic", "api", "cli", "google", "openai", "mcp", "ops", "mlx"], marker = "extra == 'all'" },
     { name = "mlx-lm", marker = "extra == 'mlx'", specifier = ">=0.28.4,<1" },
     { name = "openai", marker = "extra == 'openai'", specifier = ">=2.15.0,<3" },
     { name = "opentelemetry-api", marker = "extra == 'ops'", specifier = ">=1.38.0,<2" },
@@ -1674,9 +1680,11 @@ requires-dist = [
     { name = "proto-plus", marker = "extra == 'google'", specifier = ">=1.24.0" },
     { name = "pydantic", specifier = ">=2.0.0" },
     { name = "pydantic-settings", marker = "extra == 'api'", specifier = ">=2.12.0" },
+    { name = "rich", marker = "extra == 'cli'", specifier = ">=13.0.0" },
+    { name = "tomli", marker = "extra == 'cli'", specifier = ">=2.0.0" },
     { name = "typing-extensions", specifier = ">=4.10.0" },
 ]
-provides-extras = ["anthropic", "api", "google", "openai", "mcp", "ops", "mlx", "all"]
+provides-extras = ["anthropic", "api", "cli", "google", "openai", "mcp", "ops", "mlx", "all"]
 
 [package.metadata.requires-dev]
 dev = [
