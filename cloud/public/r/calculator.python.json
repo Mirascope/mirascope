@@ -7,7 +7,7 @@
   "files": [
     {
       "path": "calculator.py",
-      "target": "ai/tools/calculator.py",
+      "target": "calculator.py",
       "content": "\"\"\"Calculator tools for basic arithmetic operations.\"\"\"\n\nfrom mirascope import llm\n\n\n@llm.tool\ndef add(a: float, b: float) -> float:\n    \"\"\"Add two numbers together.\n\n    Args:\n        a: The first number.\n        b: The second number.\n\n    Returns:\n        The sum of a and b.\n    \"\"\"\n    return a + b\n\n\n@llm.tool\ndef subtract(a: float, b: float) -> float:\n    \"\"\"Subtract b from a.\n\n    Args:\n        a: The number to subtract from.\n        b: The number to subtract.\n\n    Returns:\n        The difference of a and b.\n    \"\"\"\n    return a - b\n\n\n@llm.tool\ndef multiply(a: float, b: float) -> float:\n    \"\"\"Multiply two numbers.\n\n    Args:\n        a: The first number.\n        b: The second number.\n\n    Returns:\n        The product of a and b.\n    \"\"\"\n    return a * b\n\n\n@llm.tool\ndef divide(a: float, b: float) -> float:\n    \"\"\"Divide a by b.\n\n    Args:\n        a: The dividend.\n        b: The divisor.\n\n    Returns:\n        The quotient of a divided by b.\n\n    Raises:\n        ValueError: If b is zero.\n    \"\"\"\n    if b == 0:\n        raise ValueError(\"Cannot divide by zero\")\n    return a / b\n"
     }
   ],
