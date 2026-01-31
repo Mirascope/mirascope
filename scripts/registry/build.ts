@@ -13,6 +13,7 @@ import { join, dirname } from "path";
 
 const REGISTRY_DIR = join(import.meta.dir, "../../registry");
 const OUTPUT_DIR = join(import.meta.dir, "../../cloud/public/r");
+const PUBLIC_DIR = join(import.meta.dir, "../../cloud/public");
 
 interface RegistryItemFile {
   path: string;
@@ -115,6 +116,92 @@ async function buildItem(
   };
 }
 
+/**
+ * Generate the registry.md file for human-readable access at /registry.md
+ *
+ * This markdown file is served at mirascope.com/registry.md and provides a
+ * static version of the registry for external access. It should be kept in
+ * sync with the dynamic markdown generated in registry-page.tsx for MACHINE mode.
+ *
+ * Both use the same data source (registry JSON) so they stay in sync automatically.
+ */
+function generateRegistryMarkdown(
+  registry: RegistryIndex,
+  items: RegistryIndexItem[]
+): string {
+  // Group items by type
+  const itemsByType: Record<string, RegistryIndexItem[]> = {};
+  for (const item of items) {
+    if (!itemsByType[item.type]) {
+      itemsByType[item.type] = [];
+    }
+    itemsByType[item.type].push(item);
+  }
+
+  // Generate sections for each type
+  const sections = Object.entries(itemsByType)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([type, typeItems]) => {
+      const itemLines = typeItems
+        .map(
+          (item) =>
+            `- **${item.name}**: ${item.description || "No description"}\n  Install: \`mirascope registry add ${item.name}\``
+        )
+        .join("\n");
+      return `### ${type.charAt(0).toUpperCase() + type.slice(1)}s\n\n${itemLines}`;
+    })
+    .join("\n\n");
+
+  return `---
+title: "Registry"
+description: "Browse and install reusable AI tools, agents, and prompts from the Mirascope Registry"
+url: "https://mirascope.com/registry"
+---
+
+# Mirascope Registry
+
+Version: ${registry.version}
+
+Browse and install reusable AI components for your Mirascope projects.
+
+## Available Items
+
+${sections || "No items available yet."}
+
+## Installation
+
+**Python:**
+\`\`\`bash
+mirascope registry add <item-name>
+\`\`\`
+
+**TypeScript:**
+\`\`\`bash
+npx mirascope registry add <item-name>
+\`\`\`
+
+## Initialize Configuration
+
+Create a \`mirascope.json\` configuration file in your project:
+
+\`\`\`bash
+mirascope registry init
+\`\`\`
+
+This creates a configuration file with default paths for different item types.
+
+## Programmatic Access
+
+- Registry index: ${registry.homepage}/r/index.json
+- Python item: ${registry.homepage}/r/{name}.python.json
+- TypeScript item: ${registry.homepage}/r/{name}.typescript.json
+
+## Questions?
+
+Join our community at https://mirascope.com/discord-invite to ask the team directly.
+`;
+}
+
 async function findItems(dir: string): Promise<string[]> {
   const items: string[] = [];
 
@@ -196,6 +283,12 @@ async function main(): Promise<void> {
   const indexPath = join(OUTPUT_DIR, "index.json");
   await writeJsonFile(indexPath, indexOutput);
   console.log(`\nCreated ${indexPath}`);
+
+  // Write the registry.md file
+  const markdown = generateRegistryMarkdown(registry, indexItems);
+  const markdownPath = join(PUBLIC_DIR, "registry.md");
+  await writeFile(markdownPath, markdown);
+  console.log(`Created ${markdownPath}`);
 
   console.log("\nRegistry build complete!");
 }
