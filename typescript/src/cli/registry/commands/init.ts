@@ -5,14 +5,14 @@
 import { join } from 'path';
 import type { MirascopeConfig } from '@/cli/registry/types';
 
-export async function runInit(): Promise<number> {
+export async function initCommand(): Promise<void> {
   const configPath = join(process.cwd(), 'mirascope.json');
 
   // eslint-disable-next-line no-undef
   const file = Bun.file(configPath);
   if (await file.exists()) {
     console.log(`Configuration already exists at ${configPath}`);
-    return 0;
+    return;
   }
 
   const config: MirascopeConfig = {
@@ -36,8 +36,6 @@ export async function runInit(): Promise<number> {
     );
   } catch (e) {
     console.error(`Error: Failed to create config file: ${String(e)}`);
-    return 1;
+    process.exit(1);
   }
-
-  return 0;
 }
