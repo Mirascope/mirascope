@@ -48,6 +48,7 @@
         "@rollup/plugin-typescript": ">=11.0.0",
         "@traceloop/instrumentation-anthropic": ">=0.10.0",
         "@traceloop/instrumentation-google-generativeai": ">=0.10.0",
+        "citty": ">=0.2.0",
         "esbuild": ">=0.17.0",
         "openai": ">=6.16.0",
         "typescript": ">=5.0.0",
@@ -67,6 +68,7 @@
         "@rollup/plugin-typescript",
         "@traceloop/instrumentation-anthropic",
         "@traceloop/instrumentation-google-generativeai",
+        "citty",
         "esbuild",
         "openai",
         "typescript",
@@ -388,6 +390,8 @@
     "check-error": ["check-error@2.1.3", "", {}, "sha512-PAJdDJusoxnwm1VwW07VWwUN1sl7smmC3OKggvndJFadxxDRyFJBX/ggnu/KE4kQAB7a3Dp8f/YXC1FlUprWmA=="],
 
     "chokidar": ["chokidar@4.0.3", "", { "dependencies": { "readdirp": "^4.0.1" } }, "sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA=="],
+
+    "citty": ["citty@0.2.0", "", {}, "sha512-8csy5IBFI2ex2hTVpaHN2j+LNE199AgiI7y4dMintrr8i0lQiFn+0AWMZrWdHKIgMOer65f8IThysYhoReqjWA=="],
 
     "color-convert": ["color-convert@2.0.1", "", { "dependencies": { "color-name": "~1.1.4" } }, "sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ=="],
 

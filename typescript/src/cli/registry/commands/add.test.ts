@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { runAdd } from "@/cli/commands/add";
+import { addCommand } from "@/cli/registry/commands/add";
 
 const mockFetchItem = vi.fn();
 
@@ -37,16 +37,30 @@ const mockConsoleLog = vi.spyOn(console, "log").mockImplementation(() => {});
 const mockConsoleError = vi
   .spyOn(console, "error")
   .mockImplementation(() => {});
+const mockProcessExit = vi.fn<(code?: number) => never>();
 
-describe("runAdd", () => {
+vi.stubGlobal("process", {
+  ...process,
+  exit: mockProcessExit,
+  cwd: vi.fn().mockReturnValue("/test/project"),
+});
+
+describe("addCommand", () => {
   beforeEach(() => {
-    process.cwd = vi.fn().mockReturnValue("/test/project");
+    vi.stubGlobal("process", {
+      ...process,
+      exit: mockProcessExit,
+      cwd: vi.fn().mockReturnValue("/test/project"),
+    });
     mockLoadConfig.mockResolvedValue(null);
   });
 
   afterEach(() => {
     vi.clearAllMocks();
-    process.cwd = originalCwd;
+    vi.stubGlobal("process", {
+      ...process,
+      cwd: originalCwd,
+    });
   });
 
   describe("fetching from registry", () => {
@@ -66,13 +80,13 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValue(false);
       mockWriteFile.mockResolvedValue(undefined);
 
-      const result = await runAdd({
-        items: ["calculator"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["calculator"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
       expect(mockConsoleLog).toHaveBeenCalledWith("Adding calculator...");
       expect(mockWriteFile).toHaveBeenCalledWith(
         "/test/project/tools/calculator.ts",
@@ -83,31 +97,33 @@ describe("runAdd", () => {
       );
     });
 
-    it("returns 1 when registry fetch fails", async () => {
+    it("exits with 1 when registry fetch fails", async () => {
       mockFetchItem.mockRejectedValue(new Error("Network error"));
 
-      const result = await runAdd({
-        items: ["calculator"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["calculator"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(1);
+      expect(mockProcessExit).toHaveBeenCalledWith(1);
       expect(mockConsoleError).toHaveBeenCalledWith(
         "Error: Failed to fetch 'calculator': Error: Network error",
       );
     });
 
-    it("returns 1 when item not found in registry", async () => {
+    it("exits with 1 when item not found in registry", async () => {
       mockFetchItem.mockResolvedValue(null);
 
-      const result = await runAdd({
-        items: ["nonexistent"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["nonexistent"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(1);
+      expect(mockProcessExit).toHaveBeenCalledWith(1);
       expect(mockConsoleError).toHaveBeenCalledWith(
         "Error: Item 'nonexistent' not found in registry.",
       );
@@ -132,14 +148,15 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValueOnce(false); // Target doesn't exist
       mockWriteFile.mockResolvedValue(undefined);
 
-      const result = await runAdd({
-        items: ["./local-tool.json"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["./local-tool.json"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
       expect(mockFetchItem).not.toHaveBeenCalled();
+      expect(mockProcessExit).not.toHaveBeenCalled();
     });
 
     it("loads item from local JSON file with / prefix", async () => {
@@ -153,14 +170,15 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValueOnce(false);
       mockWriteFile.mockResolvedValue(undefined);
 
-      const result = await runAdd({
-        items: ["/absolute/path/tool.json"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["/absolute/path/tool.json"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
       expect(mockFetchItem).not.toHaveBeenCalled();
+      expect(mockProcessExit).not.toHaveBeenCalled();
     });
 
     it("loads item from file ending with .json", async () => {
@@ -174,42 +192,45 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValueOnce(false);
       mockWriteFile.mockResolvedValue(undefined);
 
-      const result = await runAdd({
-        items: ["tool.json"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["tool.json"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
       expect(mockFetchItem).not.toHaveBeenCalled();
+      expect(mockProcessExit).not.toHaveBeenCalled();
     });
 
-    it("returns 1 when local file not found", async () => {
+    it("exits with 1 when local file not found", async () => {
       mockFileExists.mockResolvedValue(false);
 
-      const result = await runAdd({
-        items: ["./missing.json"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["./missing.json"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(1);
+      expect(mockProcessExit).toHaveBeenCalledWith(1);
       expect(mockConsoleError).toHaveBeenCalledWith(
         "Error: Local file './missing.json' not found.",
       );
     });
 
-    it("returns 1 when local JSON parsing fails", async () => {
+    it("exits with 1 when local JSON parsing fails", async () => {
       mockFileExists.mockResolvedValueOnce(true);
       mockFileJson.mockRejectedValueOnce(new Error("Invalid JSON"));
 
-      const result = await runAdd({
-        items: ["./invalid.json"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["./invalid.json"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(1);
+      expect(mockProcessExit).toHaveBeenCalledWith(1);
       expect(mockConsoleError).toHaveBeenCalledWith(
         "Error: Local file './invalid.json' not found.",
       );
@@ -226,13 +247,13 @@ describe("runAdd", () => {
       });
       mockFileExists.mockResolvedValue(true);
 
-      const result = await runAdd({
-        items: ["calculator"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["calculator"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
       expect(mockWriteFile).not.toHaveBeenCalled();
       expect(mockConsoleError).toHaveBeenCalledWith(
         expect.stringContaining("already exists. Use --overwrite to replace."),
@@ -251,17 +272,17 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValue(true);
       mockWriteFile.mockResolvedValue(undefined);
 
-      const result = await runAdd({
-        items: ["calculator"],
-        overwrite: true,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["calculator"],
+        undefined,
+        true,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
       expect(mockWriteFile).toHaveBeenCalled();
     });
 
-    it("returns 1 when file write fails", async () => {
+    it("exits with 1 when file write fails", async () => {
       mockFetchItem.mockResolvedValue({
         name: "calculator",
         type: "tool",
@@ -271,13 +292,14 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValue(false);
       mockWriteFile.mockRejectedValue(new Error("Permission denied"));
 
-      const result = await runAdd({
-        items: ["calculator"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["calculator"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(1);
+      expect(mockProcessExit).toHaveBeenCalledWith(1);
       expect(mockConsoleError).toHaveBeenCalledWith(
         expect.stringContaining("Failed to write"),
       );
@@ -293,14 +315,13 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValue(false);
       mockWriteFile.mockResolvedValue(undefined);
 
-      const result = await runAdd({
-        items: ["calculator"],
-        path: "/custom/path",
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["calculator"],
+        "/custom/path",
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
       expect(mockWriteFile).toHaveBeenCalledWith(
         "/custom/path/tools/calc.ts",
         "code",
@@ -324,13 +345,13 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValue(false);
       mockWriteFile.mockResolvedValue(undefined);
 
-      const result = await runAdd({
-        items: ["calculator"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["calculator"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
       expect(mockWriteFile).toHaveBeenCalledWith(
         "/test/project/src/ai/tools/calc.ts",
         "code",
@@ -352,13 +373,13 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValue(false);
       mockWriteFile.mockResolvedValue(undefined);
 
-      const result = await runAdd({
-        items: ["simple"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["simple"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
       expect(mockWriteFile).toHaveBeenCalledWith(
         "/test/project/custom/tools/simple.ts",
         "code",
@@ -377,13 +398,13 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValue(false);
       mockWriteFile.mockResolvedValue(undefined);
 
-      const result = await runAdd({
-        items: ["calculator"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["calculator"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
       expect(mockConsoleLog).toHaveBeenCalledWith(
         "\nInstall required npm dependencies:",
       );
@@ -402,11 +423,12 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValue(false);
       mockWriteFile.mockResolvedValue(undefined);
 
-      await runAdd({
-        items: ["calculator"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["calculator"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
       expect(mockConsoleLog).not.toHaveBeenCalledWith(
         "\nInstall required npm dependencies:",
@@ -430,11 +452,12 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValue(false);
       mockWriteFile.mockResolvedValue(undefined);
 
-      await runAdd({
-        items: ["tool1", "tool2"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["tool1", "tool2"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
       // Should deduplicate zod
       expect(mockConsoleLog).toHaveBeenCalledWith("  bun add zod axios");
@@ -457,14 +480,15 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValue(false);
       mockWriteFile.mockResolvedValue(undefined);
 
-      const result = await runAdd({
-        items: ["tool1", "tool2"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["tool1", "tool2"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
       // Pip dependencies are collected but not printed (TypeScript CLI only shows npm)
-      expect(result).toBe(0);
+      expect(mockProcessExit).not.toHaveBeenCalled();
     });
   });
 
@@ -486,13 +510,13 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValue(false);
       mockWriteFile.mockResolvedValue(undefined);
 
-      const result = await runAdd({
-        items: ["tool1", "tool2"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["tool1", "tool2"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
       expect(mockWriteFile).toHaveBeenCalledTimes(2);
       expect(mockConsoleLog).toHaveBeenCalledWith(
         "\nSuccessfully added 2 file(s).",
@@ -508,13 +532,13 @@ describe("runAdd", () => {
         dependencies: { pip: [], npm: [] },
       });
 
-      const result = await runAdd({
-        items: ["empty"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["empty"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
       expect(mockWriteFile).not.toHaveBeenCalled();
     });
 
@@ -527,13 +551,14 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValue(false);
       mockWriteFile.mockResolvedValue(undefined);
 
-      const result = await runAdd({
-        items: ["nodeps"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["nodeps"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
+      expect(mockProcessExit).not.toHaveBeenCalled();
     });
 
     it("handles file with missing target (uses path)", async () => {
@@ -546,13 +571,13 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValue(false);
       mockWriteFile.mockResolvedValue(undefined);
 
-      const result = await runAdd({
-        items: ["notarget"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["notarget"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
       expect(mockWriteFile).toHaveBeenCalledWith(
         "/test/project/tools/file.ts",
         "code",
@@ -569,13 +594,13 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValue(false);
       mockWriteFile.mockResolvedValue(undefined);
 
-      const result = await runAdd({
-        items: ["emptycontent"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["emptycontent"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
       expect(mockWriteFile).toHaveBeenCalledWith("/test/project/e.ts", "");
     });
 
@@ -589,13 +614,13 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValue(false);
       mockWriteFile.mockResolvedValue(undefined);
 
-      const result = await runAdd({
-        items: ["nopath"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["nopath"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
       // Target becomes empty string, path.join handles it
       expect(mockWriteFile).toHaveBeenCalledWith("/test/project", "code");
     });
@@ -614,13 +639,13 @@ describe("runAdd", () => {
       mockFileExists.mockResolvedValue(false);
       mockWriteFile.mockResolvedValue(undefined);
 
-      const result = await runAdd({
-        items: ["notype"],
-        overwrite: false,
-        registryUrl: "https://mirascope.com/registry",
-      });
+      await addCommand(
+        ["notype"],
+        undefined,
+        false,
+        "https://mirascope.com/registry",
+      );
 
-      expect(result).toBe(0);
       // With no type, "s" path lookup will not match, so original target is used
       expect(mockWriteFile).toHaveBeenCalledWith(
         "/test/project/tools/file.ts",
