@@ -1,0 +1,2292 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`stream output > [anthropic] accumulates content as stream progresses 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say "hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": null,
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 3,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 11,
+      "outputTokens": 5,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 16,
+    },
+  },
+}
+`;
+
+exports[`stream output > [anthropic] builds assistant message after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say "hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": null,
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 3,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 11,
+      "outputTokens": 5,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 16,
+    },
+  },
+}
+`;
+
+exports[`stream output > [anthropic] provides finish reason after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Hi",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "# Hello! 👋
+
+How can I help you today?",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": null,
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 6,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 8,
+      "outputTokens": 18,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 26,
+    },
+  },
+}
+`;
+
+exports[`stream output > [anthropic] provides usage after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Hi",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello! How can I help you today?",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": null,
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 4,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 8,
+      "outputTokens": 20,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 28,
+    },
+  },
+}
+`;
+
+exports[`stream output > [anthropic] returns max_tokens finish reason 1`] = `
+{
+  "response": {
+    "finishReason": "max_tokens",
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Write a 1000 word essay about the history of dragons in mythology, covering their origins in ancient civilizations, their role in medieval European folklore, and their depictions in modern fantasy literature.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "# The Evolution of Dragons: From Ancient Mythology to Modern Fantasy
+
+Dragons stand as some of humanity's most enduring mythological creatures, captivating imaginations across cultures and millennia. These powerful, intelligent beings have evolved dramatically throughout history,",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": null,
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 16,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 47,
+      "outputTokens": 53,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 100,
+    },
+  },
+}
+`;
+
+exports[`stream output > [anthropic] streams text response 1`] = `
+{
+  "nChunks": 2,
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say "hello world"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "hello world",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": null,
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 4,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 12,
+      "outputTokens": 6,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 18,
+    },
+  },
+}
+`;
+
+exports[`stream output > [google] accumulates content as stream progresses 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say "hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello!",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": GenerateContentResponse {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "Hello!",
+                  },
+                ],
+                "role": "model",
+              },
+              "finishReason": "STOP",
+              "index": 0,
+            },
+          ],
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "fM53adu5Ebm9qtsP0pjBuA0",
+          "sdkHttpResponse": {
+            "headers": {
+              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
+              "content-disposition": "attachment",
+              "content-type": "text/event-stream",
+              "date": "Mon, 26 Jan 2026 20:28:44 GMT",
+              "server": "scaffolding on HTTPServer2",
+              "server-timing": "gfet4t7; dur=681",
+              "transfer-encoding": "chunked",
+              "vary": "Origin, X-Origin, Referer",
+              "x-content-type-options": "nosniff",
+              "x-frame-options": "SAMEORIGIN",
+              "x-xss-protection": "0",
+            },
+          },
+          "usageMetadata": {
+            "candidatesTokenCount": 2,
+            "promptTokenCount": 5,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 5,
+              },
+            ],
+            "thoughtsTokenCount": 25,
+            "totalTokenCount": 32,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "nChunks": 3,
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 5,
+      "outputTokens": 27,
+      "raw": "null",
+      "reasoningTokens": 25,
+      "totalTokens": 32,
+    },
+  },
+}
+`;
+
+exports[`stream output > [google] builds assistant message after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say "hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello!",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": GenerateContentResponse {
+          "candidates": [
+            {
+              "content": {
+                "role": "model",
+              },
+              "finishReason": "STOP",
+              "index": 0,
+            },
+          ],
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "g853aeizE639qtsP79-SqA8",
+          "sdkHttpResponse": {
+            "headers": {
+              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
+              "content-disposition": "attachment",
+              "content-type": "text/event-stream",
+              "date": "Mon, 26 Jan 2026 20:28:51 GMT",
+              "server": "scaffolding on HTTPServer2",
+              "server-timing": "gfet4t7; dur=506",
+              "transfer-encoding": "chunked",
+              "vary": "Origin, X-Origin, Referer",
+              "x-content-type-options": "nosniff",
+              "x-frame-options": "SAMEORIGIN",
+              "x-xss-protection": "0",
+            },
+          },
+          "usageMetadata": {
+            "candidatesTokenCount": 2,
+            "promptTokenCount": 5,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 5,
+              },
+            ],
+            "thoughtsTokenCount": 16,
+            "totalTokenCount": 23,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "nChunks": 3,
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 10,
+      "outputTokens": 36,
+      "raw": "null",
+      "reasoningTokens": 32,
+      "totalTokens": 46,
+    },
+  },
+}
+`;
+
+exports[`stream output > [google] provides finish reason after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Hi",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hi there! How can I help you today?",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": GenerateContentResponse {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "Hi there! How can I help you today?",
+                  },
+                ],
+                "role": "model",
+              },
+              "finishReason": "STOP",
+              "index": 0,
+            },
+          ],
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "a853afSvNaPZqtsP5sSyiAc",
+          "sdkHttpResponse": {
+            "headers": {
+              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
+              "content-disposition": "attachment",
+              "content-type": "text/event-stream",
+              "date": "Mon, 26 Jan 2026 20:28:28 GMT",
+              "server": "scaffolding on HTTPServer2",
+              "server-timing": "gfet4t7; dur=1474",
+              "transfer-encoding": "chunked",
+              "vary": "Origin, X-Origin, Referer",
+              "x-content-type-options": "nosniff",
+              "x-frame-options": "SAMEORIGIN",
+              "x-xss-protection": "0",
+            },
+          },
+          "usageMetadata": {
+            "candidatesTokenCount": 10,
+            "promptTokenCount": 2,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 2,
+              },
+            ],
+            "thoughtsTokenCount": 22,
+            "totalTokenCount": 34,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "nChunks": 3,
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 2,
+      "outputTokens": 32,
+      "raw": "null",
+      "reasoningTokens": 22,
+      "totalTokens": 34,
+    },
+  },
+}
+`;
+
+exports[`stream output > [google] provides usage after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Hi",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hi there! How can I help you today?",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": GenerateContentResponse {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "Hi there! How can I help you today?",
+                  },
+                ],
+                "role": "model",
+              },
+              "finishReason": "STOP",
+              "index": 0,
+            },
+          ],
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "dc53acrSKcDVz7IPle7n6QQ",
+          "sdkHttpResponse": {
+            "headers": {
+              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
+              "content-disposition": "attachment",
+              "content-type": "text/event-stream",
+              "date": "Mon, 26 Jan 2026 20:28:37 GMT",
+              "server": "scaffolding on HTTPServer2",
+              "server-timing": "gfet4t7; dur=601",
+              "transfer-encoding": "chunked",
+              "vary": "Origin, X-Origin, Referer",
+              "x-content-type-options": "nosniff",
+              "x-frame-options": "SAMEORIGIN",
+              "x-xss-protection": "0",
+            },
+          },
+          "usageMetadata": {
+            "candidatesTokenCount": 10,
+            "promptTokenCount": 2,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 2,
+              },
+            ],
+            "thoughtsTokenCount": 22,
+            "totalTokenCount": 34,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "nChunks": 3,
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 2,
+      "outputTokens": 32,
+      "raw": "null",
+      "reasoningTokens": 22,
+      "totalTokens": 34,
+    },
+  },
+}
+`;
+
+exports[`stream output > [google] returns max_tokens finish reason 1`] = `
+{
+  "response": {
+    "finishReason": "max_tokens",
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Write a 1000 word essay about the history of dragons in mythology, covering their origins in ancient civilizations, their role in medieval European folklore, and their depictions in modern fantasy literature.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "## The",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": GenerateContentResponse {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "## The",
+                  },
+                ],
+                "role": "model",
+              },
+              "finishReason": "MAX_TOKENS",
+              "index": 0,
+            },
+          ],
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "_rB5ae7AH_fpz7IPpcaVqAk",
+          "sdkHttpResponse": {
+            "headers": {
+              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
+              "content-disposition": "attachment",
+              "content-type": "text/event-stream",
+              "date": "Wed, 28 Jan 2026 06:47:26 GMT",
+              "server": "scaffolding on HTTPServer2",
+              "server-timing": "gfet4t7; dur=547",
+              "transfer-encoding": "chunked",
+              "vary": "Origin, X-Origin, Referer",
+              "x-content-type-options": "nosniff",
+              "x-frame-options": "SAMEORIGIN",
+              "x-xss-protection": "0",
+            },
+          },
+          "usageMetadata": {
+            "candidatesTokenCount": 2,
+            "promptTokenCount": 40,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 40,
+              },
+            ],
+            "thoughtsTokenCount": 44,
+            "totalTokenCount": 86,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "nChunks": 3,
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 40,
+      "outputTokens": 46,
+      "raw": "null",
+      "reasoningTokens": 44,
+      "totalTokens": 86,
+    },
+  },
+}
+`;
+
+exports[`stream output > [google] streams text response 1`] = `
+{
+  "nChunks": 2,
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say "hello world"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "hello world",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": GenerateContentResponse {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": " world",
+                  },
+                ],
+                "role": "model",
+              },
+              "finishReason": "STOP",
+              "index": 0,
+            },
+          ],
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "Yc53aYerIrKUmtkP48He8QY",
+          "sdkHttpResponse": {
+            "headers": {
+              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
+              "content-disposition": "attachment",
+              "content-type": "text/event-stream",
+              "date": "Mon, 26 Jan 2026 20:28:17 GMT",
+              "server": "scaffolding on HTTPServer2",
+              "server-timing": "gfet4t7; dur=1358",
+              "transfer-encoding": "chunked",
+              "vary": "Origin, X-Origin, Referer",
+              "x-content-type-options": "nosniff",
+              "x-frame-options": "SAMEORIGIN",
+              "x-xss-protection": "0",
+            },
+          },
+          "usageMetadata": {
+            "candidatesTokenCount": 2,
+            "promptTokenCount": 6,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 6,
+              },
+            ],
+            "thoughtsTokenCount": 17,
+            "totalTokenCount": 25,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "nChunks": 4,
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 12,
+      "outputTokens": 37,
+      "raw": "null",
+      "reasoningTokens": 34,
+      "totalTokens": 49,
+    },
+  },
+}
+`;
+
+exports[`stream output > [openai:completions] accumulates content as stream progresses 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say "hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "choices": [],
+          "created": 1769459325,
+          "id": "chatcmpl-D2NUTAZqdNCNmo6V3lzApSGvc1QYE",
+          "model": "gpt-5-mini-2025-08-07",
+          "obfuscation": "oG1UN",
+          "object": "chat.completion.chunk",
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 74,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 64,
+              "rejected_prediction_tokens": 0,
+            },
+            "prompt_tokens": 10,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0,
+            },
+            "total_tokens": 84,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "nChunks": 4,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 10,
+      "outputTokens": 74,
+      "raw": "null",
+      "reasoningTokens": 64,
+      "totalTokens": 84,
+    },
+  },
+}
+`;
+
+exports[`stream output > [openai:completions] builds assistant message after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say "hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "choices": [],
+          "created": 1769459331,
+          "id": "chatcmpl-D2NUZAaRkqmRP1Iy9RJtCJBS8Agv1",
+          "model": "gpt-5-mini-2025-08-07",
+          "obfuscation": "k650B",
+          "object": "chat.completion.chunk",
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 74,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 64,
+              "rejected_prediction_tokens": 0,
+            },
+            "prompt_tokens": 10,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0,
+            },
+            "total_tokens": 84,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "nChunks": 4,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 10,
+      "outputTokens": 74,
+      "raw": "null",
+      "reasoningTokens": 64,
+      "totalTokens": 84,
+    },
+  },
+}
+`;
+
+exports[`stream output > [openai:completions] provides finish reason after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Hi",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hi — how can I help you today?",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "choices": [],
+          "created": 1769459308,
+          "id": "chatcmpl-D2NUC5XSCU5IESoB0196GGcnE90jD",
+          "model": "gpt-5-mini-2025-08-07",
+          "obfuscation": "iOclptZ",
+          "object": "chat.completion.chunk",
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 18,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0,
+            },
+            "prompt_tokens": 7,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0,
+            },
+            "total_tokens": 25,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "nChunks": 12,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 7,
+      "outputTokens": 18,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 25,
+    },
+  },
+}
+`;
+
+exports[`stream output > [openai:completions] provides usage after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Hi",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hi — how can I help you today?",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "choices": [],
+          "created": 1769459318,
+          "id": "chatcmpl-D2NUMpqH5tTFPIpNYt5vo3b0yleOT",
+          "model": "gpt-5-mini-2025-08-07",
+          "obfuscation": "chZH8Y",
+          "object": "chat.completion.chunk",
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 82,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 64,
+              "rejected_prediction_tokens": 0,
+            },
+            "prompt_tokens": 7,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0,
+            },
+            "total_tokens": 89,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "nChunks": 12,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 7,
+      "outputTokens": 82,
+      "raw": "null",
+      "reasoningTokens": 64,
+      "totalTokens": 89,
+    },
+  },
+}
+`;
+
+exports[`stream output > [openai:completions] returns max_tokens finish reason 1`] = `
+{
+  "response": {
+    "finishReason": "max_tokens",
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Write a 1000 word essay about the history of dragons in mythology, covering their origins in ancient civilizations, their role in medieval European folklore, and their depictions in modern fantasy literature.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "choices": [],
+          "created": 1769582848,
+          "id": "chatcmpl-D2tcmaAXV4PEehNMFxy32yYXnrs2G",
+          "model": "gpt-5-mini-2025-08-07",
+          "obfuscation": "vuevu",
+          "object": "chat.completion.chunk",
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 50,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 50,
+              "rejected_prediction_tokens": 0,
+            },
+            "prompt_tokens": 44,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0,
+            },
+            "total_tokens": 94,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "nChunks": 3,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 44,
+      "outputTokens": 50,
+      "raw": "null",
+      "reasoningTokens": 50,
+      "totalTokens": 94,
+    },
+  },
+}
+`;
+
+exports[`stream output > [openai:completions] streams text response 1`] = `
+{
+  "nChunks": 3,
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say "hello world"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "hello world",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "choices": [],
+          "created": 1769459298,
+          "id": "chatcmpl-D2NU2E4GXLeJaSImzs19wCBGCYSzo",
+          "model": "gpt-5-mini-2025-08-07",
+          "obfuscation": "x9",
+          "object": "chat.completion.chunk",
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 139,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 128,
+              "rejected_prediction_tokens": 0,
+            },
+            "prompt_tokens": 11,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0,
+            },
+            "total_tokens": 150,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "nChunks": 5,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 11,
+      "outputTokens": 139,
+      "raw": "null",
+      "reasoningTokens": 128,
+      "totalTokens": 150,
+    },
+  },
+}
+`;
+
+exports[`stream output > [openai:responses] accumulates content as stream progresses 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say "hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": {
+          "background": false,
+          "completed_at": null,
+          "created_at": 1769459326,
+          "error": null,
+          "frequency_penalty": 0,
+          "id": "resp_01fd0b7495b7d233006977ce7ed5c8819c9dda0935e0b7252c",
+          "incomplete_details": null,
+          "instructions": null,
+          "max_output_tokens": 500,
+          "max_tool_calls": null,
+          "metadata": {},
+          "model": "gpt-5-mini-2025-08-07",
+          "object": "response",
+          "output": [],
+          "parallel_tool_calls": true,
+          "presence_penalty": 0,
+          "previous_response_id": null,
+          "prompt_cache_key": null,
+          "prompt_cache_retention": null,
+          "reasoning": {
+            "effort": "medium",
+            "summary": null,
+          },
+          "safety_identifier": null,
+          "service_tier": "auto",
+          "status": "in_progress",
+          "store": true,
+          "temperature": 1,
+          "text": {
+            "format": {
+              "type": "text",
+            },
+            "verbosity": "medium",
+          },
+          "tool_choice": "auto",
+          "tools": [],
+          "top_logprobs": 0,
+          "top_p": 1,
+          "truncation": "disabled",
+          "usage": null,
+          "user": null,
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "nChunks": 3,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 10,
+      "outputTokens": 71,
+      "raw": "null",
+      "reasoningTokens": 64,
+      "totalTokens": 81,
+    },
+  },
+}
+`;
+
+exports[`stream output > [openai:responses] builds assistant message after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say "hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": {
+          "background": false,
+          "completed_at": null,
+          "created_at": 1769459333,
+          "error": null,
+          "frequency_penalty": 0,
+          "id": "resp_0b1bbe6d57613694006977ce8502ec819681b964a513883ea4",
+          "incomplete_details": null,
+          "instructions": null,
+          "max_output_tokens": 500,
+          "max_tool_calls": null,
+          "metadata": {},
+          "model": "gpt-5-mini-2025-08-07",
+          "object": "response",
+          "output": [],
+          "parallel_tool_calls": true,
+          "presence_penalty": 0,
+          "previous_response_id": null,
+          "prompt_cache_key": null,
+          "prompt_cache_retention": null,
+          "reasoning": {
+            "effort": "medium",
+            "summary": null,
+          },
+          "safety_identifier": null,
+          "service_tier": "auto",
+          "status": "in_progress",
+          "store": true,
+          "temperature": 1,
+          "text": {
+            "format": {
+              "type": "text",
+            },
+            "verbosity": "medium",
+          },
+          "tool_choice": "auto",
+          "tools": [],
+          "top_logprobs": 0,
+          "top_p": 1,
+          "truncation": "disabled",
+          "usage": null,
+          "user": null,
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "nChunks": 3,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 10,
+      "outputTokens": 71,
+      "raw": "null",
+      "reasoningTokens": 64,
+      "totalTokens": 81,
+    },
+  },
+}
+`;
+
+exports[`stream output > [openai:responses] provides finish reason after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Hi",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello! How can I help you today? (You can ask a question, request writing or code help, get ideas, or share a file or image.)",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": {
+          "background": false,
+          "completed_at": null,
+          "created_at": 1769459309,
+          "error": null,
+          "frequency_penalty": 0,
+          "id": "resp_02ba7587e8aaf00a006977ce6d90ec819ea552dd1ce39a80e9",
+          "incomplete_details": null,
+          "instructions": null,
+          "max_output_tokens": 500,
+          "max_tool_calls": null,
+          "metadata": {},
+          "model": "gpt-5-mini-2025-08-07",
+          "object": "response",
+          "output": [],
+          "parallel_tool_calls": true,
+          "presence_penalty": 0,
+          "previous_response_id": null,
+          "prompt_cache_key": null,
+          "prompt_cache_retention": null,
+          "reasoning": {
+            "effort": "medium",
+            "summary": null,
+          },
+          "safety_identifier": null,
+          "service_tier": "auto",
+          "status": "in_progress",
+          "store": true,
+          "temperature": 1,
+          "text": {
+            "format": {
+              "type": "text",
+            },
+            "verbosity": "medium",
+          },
+          "tool_choice": "auto",
+          "tools": [],
+          "top_logprobs": 0,
+          "top_p": 1,
+          "truncation": "disabled",
+          "usage": null,
+          "user": null,
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "nChunks": 34,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 7,
+      "outputTokens": 102,
+      "raw": "null",
+      "reasoningTokens": 64,
+      "totalTokens": 109,
+    },
+  },
+}
+`;
+
+exports[`stream output > [openai:responses] provides usage after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Hi",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hi! How can I help you today?",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": {
+          "background": false,
+          "completed_at": null,
+          "created_at": 1769459319,
+          "error": null,
+          "frequency_penalty": 0,
+          "id": "resp_08ad46561ab2e1c3006977ce778718819699f6f9e1f8dce0d1",
+          "incomplete_details": null,
+          "instructions": null,
+          "max_output_tokens": 500,
+          "max_tool_calls": null,
+          "metadata": {},
+          "model": "gpt-5-mini-2025-08-07",
+          "object": "response",
+          "output": [],
+          "parallel_tool_calls": true,
+          "presence_penalty": 0,
+          "previous_response_id": null,
+          "prompt_cache_key": null,
+          "prompt_cache_retention": null,
+          "reasoning": {
+            "effort": "medium",
+            "summary": null,
+          },
+          "safety_identifier": null,
+          "service_tier": "auto",
+          "status": "in_progress",
+          "store": true,
+          "temperature": 1,
+          "text": {
+            "format": {
+              "type": "text",
+            },
+            "verbosity": "medium",
+          },
+          "tool_choice": "auto",
+          "tools": [],
+          "top_logprobs": 0,
+          "top_p": 1,
+          "truncation": "disabled",
+          "usage": null,
+          "user": null,
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "nChunks": 11,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 7,
+      "outputTokens": 79,
+      "raw": "null",
+      "reasoningTokens": 64,
+      "totalTokens": 86,
+    },
+  },
+}
+`;
+
+exports[`stream output > [openai:responses] returns max_tokens finish reason 1`] = `
+{
+  "response": {
+    "finishReason": "max_tokens",
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Write a 1000 word essay about the history of dragons in mythology, covering their origins in ancient civilizations, their role in medieval European folklore, and their depictions in modern fantasy literature.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": {
+          "background": false,
+          "completed_at": null,
+          "created_at": 1769582849,
+          "error": null,
+          "frequency_penalty": 0,
+          "id": "resp_0faff2e3cb6ebbcc006979b1015b788197972414dc33054142",
+          "incomplete_details": null,
+          "instructions": null,
+          "max_output_tokens": 50,
+          "max_tool_calls": null,
+          "metadata": {},
+          "model": "gpt-5-mini-2025-08-07",
+          "object": "response",
+          "output": [],
+          "parallel_tool_calls": true,
+          "presence_penalty": 0,
+          "previous_response_id": null,
+          "prompt_cache_key": null,
+          "prompt_cache_retention": null,
+          "reasoning": {
+            "effort": "medium",
+            "summary": null,
+          },
+          "safety_identifier": null,
+          "service_tier": "auto",
+          "status": "in_progress",
+          "store": true,
+          "temperature": 1,
+          "text": {
+            "format": {
+              "type": "text",
+            },
+            "verbosity": "medium",
+          },
+          "tool_choice": "auto",
+          "tools": [],
+          "top_logprobs": 0,
+          "top_p": 1,
+          "truncation": "disabled",
+          "usage": null,
+          "user": null,
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "nChunks": 0,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 44,
+      "outputTokens": 0,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 44,
+    },
+  },
+}
+`;
+
+exports[`stream output > [openai:responses] streams text response 1`] = `
+{
+  "nChunks": 2,
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say "hello world"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "hello world",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": {
+          "background": false,
+          "completed_at": null,
+          "created_at": 1769459300,
+          "error": null,
+          "frequency_penalty": 0,
+          "id": "resp_006cd76618abcf3c006977ce64ef98819682a6edbe8a5e6a15",
+          "incomplete_details": null,
+          "instructions": null,
+          "max_output_tokens": 500,
+          "max_tool_calls": null,
+          "metadata": {},
+          "model": "gpt-5-mini-2025-08-07",
+          "object": "response",
+          "output": [],
+          "parallel_tool_calls": true,
+          "presence_penalty": 0,
+          "previous_response_id": null,
+          "prompt_cache_key": null,
+          "prompt_cache_retention": null,
+          "reasoning": {
+            "effort": "medium",
+            "summary": null,
+          },
+          "safety_identifier": null,
+          "service_tier": "auto",
+          "status": "in_progress",
+          "store": true,
+          "temperature": 1,
+          "text": {
+            "format": {
+              "type": "text",
+            },
+            "verbosity": "medium",
+          },
+          "tool_choice": "auto",
+          "tools": [],
+          "top_logprobs": 0,
+          "top_p": 1,
+          "truncation": "disabled",
+          "usage": null,
+          "user": null,
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "nChunks": 4,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 11,
+      "outputTokens": 72,
+      "raw": "null",
+      "reasoningTokens": 64,
+      "totalTokens": 83,
+    },
+  },
+}
+`;
+
+exports[`stream thinking > [anthropic] completes with text output when thinking is enabled 1`] = `
+{
+  "nTextChunks": 2,
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 2 + 2?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "thought": "This is a very simple arithmetic question. 2 + 2 = 4. This is basic addition.",
+            "type": "thought",
+          },
+          {
+            "text": "2 + 2 = 4",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-sonnet-4-20250514",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-sonnet-4-20250514",
+        "rawMessage": null,
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-sonnet-4-20250514",
+    "nChunks": 15,
+    "providerId": "anthropic",
+    "providerModelName": "claude-sonnet-4-20250514",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 45,
+      "outputTokens": 45,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 90,
+    },
+  },
+}
+`;
+
+exports[`stream thinking > [anthropic] streams thought content when includeThoughts is true 1`] = `
+{
+  "nThoughtChunks": 51,
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 2 + 2? Think step by step.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "thought": "This is a very basic arithmetic question. Let me think through it step by step as requested.
+
+2 + 2
+
+Step 1: I have the number 2
+Step 2: I need to add another 2 to it
+Step 3: When I add 2 + 2, I get 4
+
+This is one of the most fundamental addition problems. I can think of it in several ways:
+- Counting: if I have 2 objects and add 2 more objects, I have 4 objects total
+- On a number line: starting at 2 and moving 2 spaces to the right gets me to 4
+- Basic arithmetic fact: 2 + 2 = 4",
+            "type": "thought",
+          },
+          {
+            "text": "I'll solve 2 + 2 step by step:
+
+**Step 1:** Start with the first number: 2
+
+**Step 2:** Add the second number: 2
+
+**Step 3:** Combine them: 2 + 2 = 4
+
+**Answer:** 4
+
+You can also think of this as:
+- Having 2 items, then getting 2 more items = 4 items total
+- Or counting: 1, 2 (start here) → 3, 4 (counting up 2 more)",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-sonnet-4-20250514",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-sonnet-4-20250514",
+        "rawMessage": null,
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-sonnet-4-20250514",
+    "nChunks": 96,
+    "providerId": "anthropic",
+    "providerModelName": "claude-sonnet-4-20250514",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 50,
+      "outputTokens": 298,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 348,
+    },
+  },
+}
+`;
+
+exports[`stream thinking > [google] completes with text output when thinking is enabled 1`] = `
+{
+  "nTextChunks": 2,
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 2 + 2?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "thought": "**Calculating the Answer**
+
+I've identified the core operation: it's a simple addition problem, summing 2 and 2. I've recalled that 2 plus 2 equals 4. Now, I'm ready to formulate the final, concise answer to provide.
+
+
+",
+            "type": "thought",
+          },
+          {
+            "text": "2 + 2 = 4",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": GenerateContentResponse {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": " 4",
+                  },
+                ],
+                "role": "model",
+              },
+              "finishReason": "STOP",
+              "index": 0,
+            },
+          ],
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "lM53aZeTKbSkqtsP__WR2QY",
+          "sdkHttpResponse": {
+            "headers": {
+              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
+              "content-disposition": "attachment",
+              "content-type": "text/event-stream",
+              "date": "Mon, 26 Jan 2026 20:29:09 GMT",
+              "server": "scaffolding on HTTPServer2",
+              "server-timing": "gfet4t7; dur=1049",
+              "transfer-encoding": "chunked",
+              "vary": "Origin, X-Origin, Referer",
+              "x-content-type-options": "nosniff",
+              "x-frame-options": "SAMEORIGIN",
+              "x-xss-protection": "0",
+            },
+          },
+          "usageMetadata": {
+            "candidatesTokenCount": 5,
+            "promptTokenCount": 9,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 9,
+              },
+            ],
+            "thoughtsTokenCount": 62,
+            "totalTokenCount": 76,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "nChunks": 7,
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 27,
+      "outputTokens": 195,
+      "raw": "null",
+      "reasoningTokens": 186,
+      "totalTokens": 222,
+    },
+  },
+}
+`;
+
+exports[`stream thinking > [google] streams thought content when includeThoughts is true 1`] = `
+{
+  "nThoughtChunks": 3,
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 2 + 2? Think step by step.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "thought": "**Initiating Calculations**
+
+I've grasped the user's intent: they desire a detailed breakdown of 2 + 2. I've pinpointed addition as the core operation and am now recalling basic arithmetic. The goal is to provide a step-by-step explanation, as requested, to illustrate the thought process involved.
+
+
+**Formulating the Steps**
+
+I'm now articulating the step-by-step breakdown. I've broken down the process into identifying the numbers, the operation (addition), performing the addition, and stating the result. I've even added an example. I plan on clearly explaining the addition process, aiming for clarity, and I'm organizing the final response now.
+
+
+**Refining the Explanation**
+
+I'm now honing the step-by-step breakdown. I've broken down the addition process into its core components and I'm ensuring clarity in the answer. The explanation now includes a "visualization" component using apples, and a response that is clearly structured. The language is direct and easy to follow, making sure the final answer is a straightforward conclusion.
+
+
+",
+            "type": "thought",
+          },
+          {
+            "text": "Okay, let's think this through step by step:
+
+1.  **Identify the first number:** We start with the number 2.
+2.  **Identify the operation:** The "+" sign means we need to add.
+3.  **Identify the second number:** We are adding another 2 to the first number.
+4.  **Perform the addition:**
+    *   Imagine you have two objects (like two apples).
+    *   Now, add two more objects (two more apples).
+    *   If you count them all together, you have 1, 2, 3, 4 objects.
+
+Therefore, 2 + 2 equals **4**.",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": GenerateContentResponse {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": ", 4 objects.
+
+Therefore, 2 + 2 equals **4**.",
+                  },
+                ],
+                "role": "model",
+              },
+              "finishReason": "STOP",
+              "index": 0,
+            },
+          ],
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "S6p5aaGCFObpz7IP7o-6qQ4",
+          "sdkHttpResponse": {
+            "headers": {
+              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
+              "content-disposition": "attachment",
+              "content-type": "text/event-stream",
+              "date": "Wed, 28 Jan 2026 06:18:52 GMT",
+              "server": "scaffolding on HTTPServer2",
+              "server-timing": "gfet4t7; dur=1280",
+              "transfer-encoding": "chunked",
+              "vary": "Origin, X-Origin, Referer",
+              "x-content-type-options": "nosniff",
+              "x-frame-options": "SAMEORIGIN",
+              "x-xss-protection": "0",
+            },
+          },
+          "usageMetadata": {
+            "candidatesTokenCount": 139,
+            "promptTokenCount": 14,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 14,
+              },
+            ],
+            "thoughtsTokenCount": 436,
+            "totalTokenCount": 589,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "nChunks": 11,
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 98,
+      "outputTokens": 3021,
+      "raw": "null",
+      "reasoningTokens": 2662,
+      "totalTokens": 3119,
+    },
+  },
+}
+`;
+
+exports[`stream thinking > [openai:responses] completes with text output when thinking is enabled 1`] = `
+{
+  "nTextChunks": 8,
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 2 + 2?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "thought": "**Calculating addition**
+
+The user has a simple question: "What is 2 + 2?" I realize the answer is straightforward: it equals 4. To be helpful, I can provide a brief explanation that this is an example of elementary addition. It's pretty direct, so I’ll aim to keep the response clear and concise for the user. It’s nice to be able to help with even the simplest of questions!",
+            "type": "thought",
+          },
+          {
+            "text": "2 + 2 = 4.",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/o4-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "o4-mini:responses",
+        "rawMessage": {
+          "background": false,
+          "completed_at": null,
+          "created_at": 1769459349,
+          "error": null,
+          "frequency_penalty": 0,
+          "id": "resp_0aa12d9607ff97e3006977ce959b288195b8213928c78712de",
+          "incomplete_details": null,
+          "instructions": null,
+          "max_output_tokens": 16000,
+          "max_tool_calls": null,
+          "metadata": {},
+          "model": "o4-mini-2025-04-16",
+          "object": "response",
+          "output": [],
+          "parallel_tool_calls": true,
+          "presence_penalty": 0,
+          "previous_response_id": null,
+          "prompt_cache_key": null,
+          "prompt_cache_retention": null,
+          "reasoning": {
+            "effort": "low",
+            "summary": "detailed",
+          },
+          "safety_identifier": null,
+          "service_tier": "auto",
+          "status": "in_progress",
+          "store": true,
+          "temperature": 1,
+          "text": {
+            "format": {
+              "type": "text",
+            },
+            "verbosity": "medium",
+          },
+          "tool_choice": "auto",
+          "tools": [],
+          "top_logprobs": 0,
+          "top_p": 1,
+          "truncation": "disabled",
+          "usage": null,
+          "user": null,
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/o4-mini:responses",
+    "nChunks": 93,
+    "providerId": "openai",
+    "providerModelName": "o4-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 14,
+      "outputTokens": 14,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 28,
+    },
+  },
+}
+`;

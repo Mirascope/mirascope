@@ -1,0 +1,465 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`call output > [anthropic] decodes text response 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 4200 + 42?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "4200 + 42 = 4242",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "4200 + 42 = 4242",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 17,
+      "outputTokens": 15,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 32,
+    },
+  },
+}
+`;
+
+exports[`call output > [anthropic] returns max_tokens finish reason 1`] = `
+{
+  "response": {
+    "finishReason": "max_tokens",
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Write a long story about a dragon.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "# The Last Dragon of Ashenmoor
+
+## Part One: The Mountain's Shadow
+
+The mountain had not always been silent.
+
+Old Kess remembered the time when Ashenmoor sang with life—when dragons nested in its peaks",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "# The Last Dragon of Ashenmoor
+
+## Part One: The Mountain's Shadow
+
+The mountain had not always been silent.
+
+Old Kess remembered the time when Ashenmoor sang with life—when dragons nested in its peaks",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 15,
+      "outputTokens": 50,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 65,
+    },
+  },
+}
+`;
+
+exports[`call output > [google] decodes text response 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 4200 + 42?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "To find the sum of 4200 + 42, you can add them together:
+
+4200
++   42
+-----
+4242
+
+So, 4200 + 42 = **4242**.",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "To find the sum of 4200 + 42, you can add them together:
+
+4200
++   42
+-----
+4242
+
+So, 4200 + 42 = **4242**.",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 13,
+      "outputTokens": 88,
+      "raw": "[object Object]",
+      "reasoningTokens": 31,
+      "totalTokens": 101,
+    },
+  },
+}
+`;
+
+exports[`call output > [google] returns max_tokens finish reason 1`] = `
+{
+  "response": {
+    "finishReason": "max_tokens",
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Write a long story about a dragon.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "The",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "The",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 9,
+      "outputTokens": 46,
+      "raw": "[object Object]",
+      "reasoningTokens": 45,
+      "totalTokens": 55,
+    },
+  },
+}
+`;
+
+exports[`call output > [openai:completions] decodes text response 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 4200 + 42?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "4242",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "annotations": [],
+          "content": "4242",
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 15,
+      "outputTokens": 11,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 26,
+    },
+  },
+}
+`;
+
+exports[`call output > [openai:completions] returns max_tokens finish reason 1`] = `
+{
+  "response": {
+    "finishReason": "max_tokens",
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Write a long story about a dragon.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "annotations": [],
+          "content": "",
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 14,
+      "outputTokens": 50,
+      "raw": "[object Object]",
+      "reasoningTokens": 50,
+      "totalTokens": 64,
+    },
+  },
+}
+`;
+
+exports[`call output > [openai:responses] decodes text response 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 4200 + 42?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "4242",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": [
+          {
+            "id": "rs_0a0a09ea42bde18a006976fead3bfc81a0aacadff492e27c48",
+            "summary": [],
+            "type": "reasoning",
+          },
+          {
+            "content": [
+              {
+                "annotations": [],
+                "logprobs": [],
+                "text": "4242",
+                "type": "output_text",
+              },
+            ],
+            "id": "msg_0a0a09ea42bde18a006976feae18a881a0897c2103b7834fa7",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message",
+          },
+        ],
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 15,
+      "outputTokens": 8,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 23,
+    },
+  },
+}
+`;
+
+exports[`call output > [openai:responses] returns max_tokens finish reason 1`] = `
+{
+  "response": {
+    "finishReason": "max_tokens",
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Write a long story about a dragon.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": [
+          {
+            "id": "rs_004e718a70fdbebe006976feaeec8c81a29a35f0039cd2ea81",
+            "summary": [],
+            "type": "reasoning",
+          },
+        ],
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 14,
+      "outputTokens": 0,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 14,
+    },
+  },
+}
+`;

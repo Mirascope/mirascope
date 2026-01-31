@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`text encoded thoughts > [anthropic] encodes thoughts as text for model consumption 1`] = `
+{
+  "exception": {
+    "feature": "thought encoding",
+    "message": "Thought content is not yet implemented",
+    "modelId": "null",
+    "name": "FeatureNotSupportedError",
+    "providerId": "anthropic",
+    "type": "FeatureNotSupportedError",
+  },
+}
+`;
+
+exports[`text encoded thoughts > [google] encodes thoughts as text for model consumption 1`] = `
+{
+  "exception": {
+    "feature": "thought encoding",
+    "message": "Thought content is not yet implemented",
+    "modelId": "null",
+    "name": "FeatureNotSupportedError",
+    "providerId": "google",
+    "type": "FeatureNotSupportedError",
+  },
+}
+`;

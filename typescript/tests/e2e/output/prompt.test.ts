@@ -9,7 +9,7 @@ import { resolve } from "node:path";
 
 import { definePrompt } from "@/llm/prompts";
 import { PROVIDERS } from "@/tests/e2e/providers";
-import { createIt, describe, expect } from "@/tests/e2e/utils";
+import { createIt, describe, expect, snapshotTest } from "@/tests/e2e/utils";
 
 const it = createIt(resolve(__dirname, "cassettes"), "prompt");
 
@@ -21,14 +21,19 @@ describe("prompt output", () => {
         template: ({ a, b }) => `What is ${a} + ${b}?`,
       });
 
-      // Call prompt directly with string model ID (not a Model instance)
-      const response = await addNumbers(model, {
-        a: 4200,
-        b: 42,
+      const snap = await snapshotTest(async (s) => {
+        // Call prompt directly with string model ID (not a Model instance)
+        const response = await addNumbers(model, {
+          a: 4200,
+          b: 42,
+        });
+        s.setResponse(response);
+
+        expect(response.text()).toContain("4242");
+        expect(response.usage).not.toBeNull();
       });
 
-      expect(response.text()).toContain("4242");
-      expect(response.usage).not.toBeNull();
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 
@@ -39,16 +44,21 @@ describe("prompt output", () => {
         template: ({ a, b }) => `What is ${a} + ${b}?`,
       });
 
-      // Call prompt directly with string model ID (not a Model instance)
-      const response = await addNumbers.stream(model, {
-        a: 4200,
-        b: 42,
+      const snap = await snapshotTest(async (s) => {
+        // Call prompt directly with string model ID (not a Model instance)
+        const response = await addNumbers.stream(model, {
+          a: 4200,
+          b: 42,
+        });
+
+        await response.consume();
+        s.setResponse(response);
+
+        expect(response.text()).toContain("4242");
+        expect(response.usage).not.toBeNull();
       });
 
-      await response.consume();
-
-      expect(response.text()).toContain("4242");
-      expect(response.usage).not.toBeNull();
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 });

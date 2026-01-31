@@ -14,7 +14,7 @@ import {
   type StreamResponse,
 } from "@/llm";
 import { PROVIDERS_FOR_TOOLS_TESTS } from "@/tests/e2e/providers";
-import { createIt, describe, expect } from "@/tests/e2e/utils";
+import { createIt, describe, expect, snapshotTest } from "@/tests/e2e/utils";
 
 const it = createIt(resolve(__dirname, "cassettes"), "tools");
 
@@ -51,34 +51,43 @@ describe("tool usage", () => {
           "Use the secret_retrieval_tool for each password.",
       });
 
-      // Call with tool - ask LLM to use the tool
-      let response: Response = await retrieveSecrets({
-        passwords: ["mellon", "radiance"],
-      });
+      const snap = await snapshotTest(async (s) => {
+        // Call with tool - ask LLM to use the tool
+        let response: Response = await retrieveSecrets({
+          passwords: ["mellon", "radiance"],
+        });
 
-      // Verify we got tool calls
-      expect(response.toolCalls.length).toBeGreaterThanOrEqual(1);
+        // Verify we got tool calls
+        expect(response.toolCalls.length).toBeGreaterThanOrEqual(1);
 
-      // Loop until no more tool calls (some providers like Google call tools sequentially)
-      while (response.toolCalls.length > 0) {
-        // Execute the tools
-        const toolOutputs = await response.executeTools();
+        let iterations = 0;
+        // Loop until no more tool calls (some providers like Google call tools sequentially)
+        while (response.toolCalls.length > 0) {
+          iterations++;
+          // Execute the tools
+          const toolOutputs = await response.executeTools();
 
-        // Verify tool outputs
-        expect(toolOutputs.length).toBe(response.toolCalls.length);
-        for (const output of toolOutputs) {
-          expect(output.type).toBe("tool_output");
-          expect(output.error).toBeNull();
+          // Verify tool outputs
+          expect(toolOutputs.length).toBe(response.toolCalls.length);
+          for (const output of toolOutputs) {
+            expect(output.type).toBe("tool_output");
+            expect(output.error).toBeNull();
+          }
+
+          // Resume with tool outputs
+          response = await response.resume(toolOutputs);
         }
 
-        // Resume with tool outputs
-        response = await response.resume(toolOutputs);
-      }
+        s.setResponse(response);
+        s.set("toolIterations", iterations);
 
-      // Verify the final response mentions the secrets
-      const text = response.text();
-      expect(text).toMatch(/moria/i);
-      expect(text).toMatch(/life before death/i);
+        // Verify the final response mentions the secrets
+        const text = response.text();
+        expect(text).toMatch(/moria/i);
+        expect(text).toMatch(/life before death/i);
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 });
@@ -96,40 +105,49 @@ describe("tool usage with streaming", () => {
           "Use the secret_retrieval_tool for each password.",
       });
 
-      // Stream with tool - ask LLM to use the tool
-      let response: StreamResponse = await retrieveSecrets.stream({
-        passwords: ["mellon", "radiance"],
-      });
+      const snap = await snapshotTest(async (s) => {
+        // Stream with tool - ask LLM to use the tool
+        let response: StreamResponse = await retrieveSecrets.stream({
+          passwords: ["mellon", "radiance"],
+        });
 
-      // Consume the stream (equivalent to Python's response.finish())
-      await response.consume();
+        // Consume the stream (equivalent to Python's response.finish())
+        await response.consume();
 
-      // Verify we got tool calls
-      expect(response.toolCalls.length).toBeGreaterThanOrEqual(1);
+        // Verify we got tool calls
+        expect(response.toolCalls.length).toBeGreaterThanOrEqual(1);
 
-      // Loop until no more tool calls (some providers like Google call tools sequentially)
-      while (response.toolCalls.length > 0) {
-        // Execute the tools
-        const toolOutputs = await response.executeTools();
+        let iterations = 0;
+        // Loop until no more tool calls (some providers like Google call tools sequentially)
+        while (response.toolCalls.length > 0) {
+          iterations++;
+          // Execute the tools
+          const toolOutputs = await response.executeTools();
 
-        // Verify tool outputs
-        expect(toolOutputs.length).toBe(response.toolCalls.length);
-        for (const output of toolOutputs) {
-          expect(output.type).toBe("tool_output");
-          expect(output.error).toBeNull();
+          // Verify tool outputs
+          expect(toolOutputs.length).toBe(response.toolCalls.length);
+          for (const output of toolOutputs) {
+            expect(output.type).toBe("tool_output");
+            expect(output.error).toBeNull();
+          }
+
+          // Resume with tool outputs - returns StreamResponse to continue streaming
+          response = await response.resume(toolOutputs);
+
+          // Consume the resumed stream
+          await response.consume();
         }
 
-        // Resume with tool outputs - returns StreamResponse to continue streaming
-        response = await response.resume(toolOutputs);
+        s.setResponse(response);
+        s.set("toolIterations", iterations);
 
-        // Consume the resumed stream
-        await response.consume();
-      }
+        // Verify the final response mentions the secrets
+        const text = response.text();
+        expect(text).toMatch(/moria/i);
+        expect(text).toMatch(/life before death/i);
+      });
 
-      // Verify the final response mentions the secrets
-      const text = response.text();
-      expect(text).toMatch(/moria/i);
-      expect(text).toMatch(/life before death/i);
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 });

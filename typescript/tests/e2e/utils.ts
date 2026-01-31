@@ -304,7 +304,8 @@ export interface SnapshotTestOptions {
    * Additional exception types to catch and add to snapshot.
    * By default, catches NotImplementedError and FeatureNotSupportedError.
    */
-  extraExceptions?: Array<new (...args: unknown[]) => Error>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  extraExceptions?: Array<new (...args: any[]) => Error>;
 }
 
 /**

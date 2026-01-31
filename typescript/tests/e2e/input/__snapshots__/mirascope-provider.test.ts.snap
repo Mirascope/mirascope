@@ -1,0 +1,420 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`mirascope provider > [mirascope:anthropic] routes to underlying provider 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 4200 + 42? Answer with just the number.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "4242",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "4242",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 23,
+      "outputTokens": 6,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 29,
+    },
+  },
+}
+`;
+
+exports[`mirascope provider > [mirascope:anthropic] streams from underlying provider 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 4200 + 42? Answer with just the number.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "4242",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": null,
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 3,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 23,
+      "outputTokens": 9,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 32,
+    },
+  },
+}
+`;
+
+exports[`mirascope provider > [mirascope:google] routes to underlying provider 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 4200 + 42? Answer with just the number.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "4242
+",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.0-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.0-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "4242
+",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.0-flash",
+    "providerId": "google",
+    "providerModelName": "gemini-2.0-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 18,
+      "outputTokens": 5,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 23,
+    },
+  },
+}
+`;
+
+exports[`mirascope provider > [mirascope:google] streams from underlying provider 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 4200 + 42? Answer with just the number.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "4242
+",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.0-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.0-flash",
+        "rawMessage": GenerateContentResponse {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "
+",
+                  },
+                ],
+                "role": "model",
+              },
+              "finishReason": "STOP",
+            },
+          ],
+          "modelVersion": "gemini-2.0-flash",
+          "responseId": "aGR8abvwCsi-7dcPptHWiAc",
+          "sdkHttpResponse": {
+            "headers": {
+              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
+              "connection": "keep-alive",
+              "content-disposition": "attachment",
+              "content-type": "text/event-stream",
+              "date": "Fri, 30 Jan 2026 07:57:28 GMT",
+              "keep-alive": "timeout=5",
+              "server": "scaffolding on HTTPServer2",
+              "server-timing": "gfet4t7; dur=407",
+              "transfer-encoding": "chunked",
+              "vary": "Origin, X-Origin, Referer",
+              "x-content-type-options": "nosniff",
+              "x-frame-options": "SAMEORIGIN",
+              "x-ratelimit-limit": "100",
+              "x-ratelimit-reset": "1769759907",
+              "x-xss-protection": "0",
+            },
+          },
+          "usageMetadata": {
+            "candidatesTokenCount": 5,
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 5,
+              },
+            ],
+            "promptTokenCount": 18,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 18,
+              },
+            ],
+            "totalTokenCount": 23,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.0-flash",
+    "nChunks": 5,
+    "providerId": "google",
+    "providerModelName": "gemini-2.0-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 56,
+      "outputTokens": 5,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 61,
+    },
+  },
+}
+`;
+
+exports[`mirascope provider > [mirascope:openai] routes to underlying provider 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 4200 + 42? Answer with just the number.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "4242",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-4o-mini",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-4o-mini:responses",
+        "rawMessage": [
+          {
+            "content": [
+              {
+                "annotations": [],
+                "logprobs": [],
+                "text": "4242",
+                "type": "output_text",
+              },
+            ],
+            "id": "msg_020da01ba7bfef8100697c645e3cc88194851ab7e3b1d24ebc",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message",
+          },
+        ],
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-4o-mini",
+    "providerId": "openai",
+    "providerModelName": "gpt-4o-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 22,
+      "outputTokens": 3,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 25,
+    },
+  },
+}
+`;
+
+exports[`mirascope provider > [mirascope:openai] streams from underlying provider 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 4200 + 42? Answer with just the number.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "4242",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-4o-mini",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-4o-mini:responses",
+        "rawMessage": {
+          "background": false,
+          "completed_at": null,
+          "created_at": 1769759844,
+          "error": null,
+          "frequency_penalty": 0,
+          "id": "resp_063b0ab4208a4ff200697c646406508198ade4c88f4b110b8b",
+          "incomplete_details": null,
+          "instructions": null,
+          "max_output_tokens": 100,
+          "max_tool_calls": null,
+          "metadata": {},
+          "model": "gpt-4o-mini-2024-07-18",
+          "object": "response",
+          "output": [],
+          "parallel_tool_calls": true,
+          "presence_penalty": 0,
+          "previous_response_id": null,
+          "prompt_cache_key": null,
+          "prompt_cache_retention": null,
+          "reasoning": {
+            "effort": null,
+            "summary": null,
+          },
+          "safety_identifier": null,
+          "service_tier": "auto",
+          "status": "in_progress",
+          "store": true,
+          "temperature": 1,
+          "text": {
+            "format": {
+              "type": "text",
+            },
+            "verbosity": "medium",
+          },
+          "tool_choice": "auto",
+          "tools": [],
+          "top_logprobs": 0,
+          "top_p": 1,
+          "truncation": "disabled",
+          "usage": null,
+          "user": null,
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-4o-mini",
+    "nChunks": 4,
+    "providerId": "openai",
+    "providerModelName": "gpt-4o-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 22,
+      "outputTokens": 3,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 25,
+    },
+  },
+}
+`;
