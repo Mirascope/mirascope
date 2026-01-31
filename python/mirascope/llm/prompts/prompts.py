@@ -1,7 +1,6 @@
 """Concrete Prompt classes for generating messages with tools and formatting."""
 
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass, field
 from typing import Any, Generic, TypeVar, overload
 
 from ..._utils import copy_function_metadata
@@ -32,22 +31,20 @@ from .protocols import (
 FunctionT = TypeVar("FunctionT", bound=Callable[..., Any])
 
 
-@dataclass(kw_only=True)
 class BasePrompt(Generic[FunctionT]):
     """Base class for all Prompt types with shared metadata functionality."""
 
     fn: FunctionT
     """The underlying prompt function that generates message content."""
 
-    __name__: str = field(init=False, repr=False, default="")
+    __name__: str = ""
     """The name of the underlying function (preserved for decorator stacking)."""
 
-    def __post_init__(self) -> None:
-        """Preserve standard function attributes for decorator stacking."""
+    def __init__(self, *, fn: FunctionT) -> None:
+        self.fn = fn
         copy_function_metadata(self, self.fn)
 
 
-@dataclass
 class Prompt(BasePrompt[MessageTemplate[P]], Generic[P, FormattableT]):
     """A prompt that can be called with a model to generate a response.
 
@@ -63,6 +60,17 @@ class Prompt(BasePrompt[MessageTemplate[P]], Generic[P, FormattableT]):
 
     format: FormatSpec[FormattableT] | None
     """The response format for the generated response."""
+
+    def __init__(
+        self,
+        *,
+        fn: MessageTemplate[P],
+        toolkit: Toolkit,
+        format: FormatSpec[FormattableT] | None,
+    ) -> None:
+        self.toolkit = toolkit
+        self.format = format
+        super().__init__(fn=fn)
 
     def messages(self, *args: P.args, **kwargs: P.kwargs) -> Sequence[Message]:
         """Return the `Messages` from invoking this prompt."""
@@ -141,7 +149,6 @@ class Prompt(BasePrompt[MessageTemplate[P]], Generic[P, FormattableT]):
         return model.stream(messages, tools=self.toolkit, format=self.format)
 
 
-@dataclass
 class AsyncPrompt(BasePrompt[AsyncMessageTemplate[P]], Generic[P, FormattableT]):
     """An async prompt that can be called with a model to generate a response.
 
@@ -157,6 +164,17 @@ class AsyncPrompt(BasePrompt[AsyncMessageTemplate[P]], Generic[P, FormattableT])
 
     format: FormatSpec[FormattableT] | None
     """The response format for the generated response."""
+
+    def __init__(
+        self,
+        *,
+        fn: AsyncMessageTemplate[P],
+        toolkit: AsyncToolkit,
+        format: FormatSpec[FormattableT] | None,
+    ) -> None:
+        self.toolkit = toolkit
+        self.format = format
+        super().__init__(fn=fn)
 
     async def messages(self, *args: P.args, **kwargs: P.kwargs) -> Sequence[Message]:
         """Return the `Messages` from invoking this prompt."""
@@ -237,7 +255,6 @@ class AsyncPrompt(BasePrompt[AsyncMessageTemplate[P]], Generic[P, FormattableT])
         )
 
 
-@dataclass
 class ContextPrompt(
     BasePrompt[ContextMessageTemplate[P, DepsT]], Generic[P, DepsT, FormattableT]
 ):
@@ -256,6 +273,17 @@ class ContextPrompt(
 
     format: FormatSpec[FormattableT] | None
     """The response format for the generated response."""
+
+    def __init__(
+        self,
+        *,
+        fn: ContextMessageTemplate[P, DepsT],
+        toolkit: ContextToolkit[DepsT],
+        format: FormatSpec[FormattableT] | None,
+    ) -> None:
+        self.toolkit = toolkit
+        self.format = format
+        super().__init__(fn=fn)
 
     def messages(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
@@ -360,7 +388,6 @@ class ContextPrompt(
         )
 
 
-@dataclass
 class AsyncContextPrompt(
     BasePrompt[AsyncContextMessageTemplate[P, DepsT]], Generic[P, DepsT, FormattableT]
 ):
@@ -379,6 +406,17 @@ class AsyncContextPrompt(
 
     format: FormatSpec[FormattableT] | None
     """The response format for the generated response."""
+
+    def __init__(
+        self,
+        *,
+        fn: AsyncContextMessageTemplate[P, DepsT],
+        toolkit: AsyncContextToolkit[DepsT],
+        format: FormatSpec[FormattableT] | None,
+    ) -> None:
+        self.toolkit = toolkit
+        self.format = format
+        super().__init__(fn=fn)
 
     async def messages(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
