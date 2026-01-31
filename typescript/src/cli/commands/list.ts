@@ -2,21 +2,12 @@
  * List command - List available registry items.
  */
 
-import { RegistryClient } from '../registry/client';
+import { RegistryClient } from '@/cli/registry/client';
+import type { RegistryIndex, RegistryIndexItem } from '@/cli/registry/types';
 
 interface ListOptions {
   itemType?: string;
   registryUrl: string;
-}
-
-interface RegistryIndexItem {
-  name: string;
-  type: string;
-  description?: string;
-}
-
-interface RegistryIndex {
-  items: RegistryIndexItem[];
 }
 
 export async function runList(options: ListOptions): Promise<number> {
