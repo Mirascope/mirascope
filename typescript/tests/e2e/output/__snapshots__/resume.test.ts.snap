@@ -1,0 +1,1641 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`context resume from call > [anthropic] resumes context conversation with new content 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say exactly: "Hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Hello",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Now say exactly: "Goodbye"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Goodbye",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Goodbye",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 28,
+      "outputTokens": 5,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 33,
+    },
+  },
+}
+`;
+
+exports[`context resume from call > [google] resumes context conversation with new content 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say exactly: "Hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "Hello",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Now say exactly: "Goodbye"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Goodbye",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "Goodbye",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 17,
+      "outputTokens": 19,
+      "raw": "[object Object]",
+      "reasoningTokens": 18,
+      "totalTokens": 36,
+    },
+  },
+}
+`;
+
+exports[`context resume from call > [openai:completions] resumes context conversation with new content 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say exactly: "Hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "annotations": [],
+          "content": "Hello",
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Now say exactly: "Goodbye"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": ""Goodbye"",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "annotations": [],
+          "content": ""Goodbye"",
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 31,
+      "outputTokens": 205,
+      "raw": "[object Object]",
+      "reasoningTokens": 192,
+      "totalTokens": 236,
+    },
+  },
+}
+`;
+
+exports[`context resume from call > [openai:responses] resumes context conversation with new content 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say exactly: "Hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": ""Hello"",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": [
+          {
+            "id": "rs_0207c13e7b4c0bb100697a65f06008819ea93d80c1f360243a",
+            "summary": [],
+            "type": "reasoning",
+          },
+          {
+            "content": [
+              {
+                "annotations": [],
+                "logprobs": [],
+                "text": ""Hello"",
+                "type": "output_text",
+              },
+            ],
+            "id": "msg_0207c13e7b4c0bb100697a65f38254819e86481b28e818007b",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message",
+          },
+        ],
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Now say exactly: "Goodbye"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": ""Goodbye"",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": [
+          {
+            "id": "rs_0207c13e7b4c0bb100697af403aa5c819eada420262747a192",
+            "summary": [],
+            "type": "reasoning",
+          },
+          {
+            "content": [
+              {
+                "annotations": [],
+                "logprobs": [],
+                "text": ""Goodbye"",
+                "type": "output_text",
+              },
+            ],
+            "id": "msg_0207c13e7b4c0bb100697af40507e8819ea25e5568bf443e3a",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message",
+          },
+        ],
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 33,
+      "outputTokens": 103,
+      "raw": "[object Object]",
+      "reasoningTokens": 64,
+      "totalTokens": 136,
+    },
+  },
+}
+`;
+
+exports[`context resume from stream > [anthropic] resumes context conversation after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say exactly: "Hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Hello",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Now say exactly: "Goodbye"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Goodbye",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Goodbye",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 3,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 28,
+      "outputTokens": 10,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 38,
+    },
+  },
+}
+`;
+
+exports[`context resume from stream > [google] resumes context conversation after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say exactly: "Hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "Hello",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Now say exactly: "Goodbye"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Goodbye",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "Goodbye",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "nChunks": 3,
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 17,
+      "outputTokens": 18,
+      "raw": "null",
+      "reasoningTokens": 17,
+      "totalTokens": 35,
+    },
+  },
+}
+`;
+
+exports[`context resume from stream > [openai:completions] resumes context conversation after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say exactly: "Hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": ""Hello"",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "choices": [],
+          "created": 1769629193,
+          "id": "chatcmpl-D35gHCRGE8Bpo1g6A8Qwki5Cwam8v",
+          "model": "gpt-5-mini-2025-08-07",
+          "obfuscation": "DOIMY",
+          "object": "chat.completion.chunk",
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 76,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 64,
+              "rejected_prediction_tokens": 0,
+            },
+            "prompt_tokens": 12,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0,
+            },
+            "total_tokens": 88,
+          },
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Now say exactly: "Goodbye"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": ""Goodbye"",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "choices": [],
+          "created": 1769708928,
+          "id": "chatcmpl-D3QQKNAsYc9Wvz3sadM4oLrizAL2S",
+          "model": "gpt-5-mini-2025-08-07",
+          "obfuscation": "vLH1",
+          "object": "chat.completion.chunk",
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 77,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 64,
+              "rejected_prediction_tokens": 0,
+            },
+            "prompt_tokens": 33,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0,
+            },
+            "total_tokens": 110,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "nChunks": 7,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 33,
+      "outputTokens": 77,
+      "raw": "null",
+      "reasoningTokens": 64,
+      "totalTokens": 110,
+    },
+  },
+}
+`;
+
+exports[`context resume from stream > [openai:responses] resumes context conversation after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say exactly: "Hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": ""Hello"",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": {
+          "background": false,
+          "completed_at": null,
+          "created_at": 1769629198,
+          "error": null,
+          "frequency_penalty": 0,
+          "id": "resp_069154898afb860300697a660e5328819fa2692bc902fc9723",
+          "incomplete_details": null,
+          "instructions": null,
+          "max_output_tokens": 500,
+          "max_tool_calls": null,
+          "metadata": {},
+          "model": "gpt-5-mini-2025-08-07",
+          "object": "response",
+          "output": [],
+          "parallel_tool_calls": true,
+          "presence_penalty": 0,
+          "previous_response_id": null,
+          "prompt_cache_key": null,
+          "prompt_cache_retention": null,
+          "reasoning": {
+            "effort": "medium",
+            "summary": null,
+          },
+          "safety_identifier": null,
+          "service_tier": "auto",
+          "status": "in_progress",
+          "store": true,
+          "temperature": 1,
+          "text": {
+            "format": {
+              "type": "text",
+            },
+            "verbosity": "medium",
+          },
+          "tool_choice": "auto",
+          "tools": [],
+          "top_logprobs": 0,
+          "top_p": 1,
+          "truncation": "disabled",
+          "usage": null,
+          "user": null,
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Now say exactly: "Goodbye"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": ""Goodbye"",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": {
+          "background": false,
+          "completed_at": null,
+          "created_at": 1769708929,
+          "error": null,
+          "frequency_penalty": 0,
+          "id": "resp_07cf4512fdeb6b8f00697b9d81ef14819ebce75854f10ca302",
+          "incomplete_details": null,
+          "instructions": null,
+          "max_output_tokens": 500,
+          "max_tool_calls": null,
+          "metadata": {},
+          "model": "gpt-5-mini-2025-08-07",
+          "object": "response",
+          "output": [],
+          "parallel_tool_calls": true,
+          "presence_penalty": 0,
+          "previous_response_id": null,
+          "prompt_cache_key": null,
+          "prompt_cache_retention": null,
+          "reasoning": {
+            "effort": "medium",
+            "summary": null,
+          },
+          "safety_identifier": null,
+          "service_tier": "auto",
+          "status": "in_progress",
+          "store": true,
+          "temperature": 1,
+          "text": {
+            "format": {
+              "type": "text",
+            },
+            "verbosity": "medium",
+          },
+          "tool_choice": "auto",
+          "tools": [],
+          "top_logprobs": 0,
+          "top_p": 1,
+          "truncation": "disabled",
+          "usage": null,
+          "user": null,
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "nChunks": 6,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 33,
+      "outputTokens": 106,
+      "raw": "null",
+      "reasoningTokens": 64,
+      "totalTokens": 139,
+    },
+  },
+}
+`;
+
+exports[`resume from call > [anthropic] resumes conversation with new content 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say exactly: "Hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Hello",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Now say exactly: "Goodbye"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Goodbye",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Goodbye",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 28,
+      "outputTokens": 5,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 33,
+    },
+  },
+}
+`;
+
+exports[`resume from call > [google] resumes conversation with new content 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say exactly: "Hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "Hello",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Now say exactly: "Goodbye"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Goodbye",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "Goodbye",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 17,
+      "outputTokens": 18,
+      "raw": "[object Object]",
+      "reasoningTokens": 17,
+      "totalTokens": 35,
+    },
+  },
+}
+`;
+
+exports[`resume from call > [openai:completions] resumes conversation with new content 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say exactly: "Hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": ""Hello"",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "annotations": [],
+          "content": ""Hello"",
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Now say exactly: "Goodbye"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": ""Goodbye"",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "annotations": [],
+          "content": ""Goodbye"",
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 33,
+      "outputTokens": 77,
+      "raw": "[object Object]",
+      "reasoningTokens": 64,
+      "totalTokens": 110,
+    },
+  },
+}
+`;
+
+exports[`resume from call > [openai:responses] resumes conversation with new content 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say exactly: "Hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": ""Hello"",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": [
+          {
+            "id": "rs_0e83e81de2403c1300697a6529da6c8191b9ee4e46ff061814",
+            "summary": [],
+            "type": "reasoning",
+          },
+          {
+            "content": [
+              {
+                "annotations": [],
+                "logprobs": [],
+                "text": ""Hello"",
+                "type": "output_text",
+              },
+            ],
+            "id": "msg_0e83e81de2403c1300697a652bfee481919d4d461b6d66511d",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message",
+          },
+        ],
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Now say exactly: "Goodbye"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": ""Goodbye"",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": [
+          {
+            "id": "rs_0e83e81de2403c1300697af347216c8191b08e8023360137d1",
+            "summary": [],
+            "type": "reasoning",
+          },
+          {
+            "content": [
+              {
+                "annotations": [],
+                "logprobs": [],
+                "text": ""Goodbye"",
+                "type": "output_text",
+              },
+            ],
+            "id": "msg_0e83e81de2403c1300697af3486748819194eb870476c5410a",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message",
+          },
+        ],
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 33,
+      "outputTokens": 112,
+      "raw": "[object Object]",
+      "reasoningTokens": 64,
+      "totalTokens": 145,
+    },
+  },
+}
+`;
+
+exports[`resume from stream > [anthropic] resumes conversation after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say exactly: "Hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Hello",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Now say exactly: "Goodbye"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Goodbye",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Goodbye",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 3,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 28,
+      "outputTokens": 10,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 38,
+    },
+  },
+}
+`;
+
+exports[`resume from stream > [google] resumes conversation after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say exactly: "Hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "Hello",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Now say exactly: "Goodbye"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Goodbye",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "Goodbye",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "nChunks": 3,
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 17,
+      "outputTokens": 17,
+      "raw": "null",
+      "reasoningTokens": 16,
+      "totalTokens": 34,
+    },
+  },
+}
+`;
+
+exports[`resume from stream > [openai:completions] resumes conversation after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say exactly: "Hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": ""Hello"",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "choices": [],
+          "created": 1769628996,
+          "id": "chatcmpl-D35d6aUGXCLmczGPqCSPwkMhZeGW3",
+          "model": "gpt-5-mini-2025-08-07",
+          "obfuscation": "68",
+          "object": "chat.completion.chunk",
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 204,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 192,
+              "rejected_prediction_tokens": 0,
+            },
+            "prompt_tokens": 12,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0,
+            },
+            "total_tokens": 216,
+          },
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Now say exactly: "Goodbye"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": ""Goodbye"",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "choices": [],
+          "created": 1769708920,
+          "id": "chatcmpl-D3QQCaEKPzNdjYBw4eUBh8JMj87WM",
+          "model": "gpt-5-mini-2025-08-07",
+          "obfuscation": "tk",
+          "object": "chat.completion.chunk",
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 141,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 128,
+              "rejected_prediction_tokens": 0,
+            },
+            "prompt_tokens": 33,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0,
+            },
+            "total_tokens": 174,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "nChunks": 7,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 33,
+      "outputTokens": 141,
+      "raw": "null",
+      "reasoningTokens": 128,
+      "totalTokens": 174,
+    },
+  },
+}
+`;
+
+exports[`resume from stream > [openai:responses] resumes conversation after streaming 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say exactly: "Hello"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": ""Hello"",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": {
+          "background": false,
+          "completed_at": null,
+          "created_at": 1769629002,
+          "error": null,
+          "frequency_penalty": 0,
+          "id": "resp_099598b368bbf78600697a654ac018819f9b57def33644ede5",
+          "incomplete_details": null,
+          "instructions": null,
+          "max_output_tokens": 500,
+          "max_tool_calls": null,
+          "metadata": {},
+          "model": "gpt-5-mini-2025-08-07",
+          "object": "response",
+          "output": [],
+          "parallel_tool_calls": true,
+          "presence_penalty": 0,
+          "previous_response_id": null,
+          "prompt_cache_key": null,
+          "prompt_cache_retention": null,
+          "reasoning": {
+            "effort": "medium",
+            "summary": null,
+          },
+          "safety_identifier": null,
+          "service_tier": "auto",
+          "status": "in_progress",
+          "store": true,
+          "temperature": 1,
+          "text": {
+            "format": {
+              "type": "text",
+            },
+            "verbosity": "medium",
+          },
+          "tool_choice": "auto",
+          "tools": [],
+          "top_logprobs": 0,
+          "top_p": 1,
+          "truncation": "disabled",
+          "usage": null,
+          "user": null,
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Now say exactly: "Goodbye"",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": ""Goodbye"",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": {
+          "background": false,
+          "completed_at": null,
+          "created_at": 1769708924,
+          "error": null,
+          "frequency_penalty": 0,
+          "id": "resp_02245ca90b6750e700697b9d7c23888192a119d1e2928c77a0",
+          "incomplete_details": null,
+          "instructions": null,
+          "max_output_tokens": 500,
+          "max_tool_calls": null,
+          "metadata": {},
+          "model": "gpt-5-mini-2025-08-07",
+          "object": "response",
+          "output": [],
+          "parallel_tool_calls": true,
+          "presence_penalty": 0,
+          "previous_response_id": null,
+          "prompt_cache_key": null,
+          "prompt_cache_retention": null,
+          "reasoning": {
+            "effort": "medium",
+            "summary": null,
+          },
+          "safety_identifier": null,
+          "service_tier": "auto",
+          "status": "in_progress",
+          "store": true,
+          "temperature": 1,
+          "text": {
+            "format": {
+              "type": "text",
+            },
+            "verbosity": "medium",
+          },
+          "tool_choice": "auto",
+          "tools": [],
+          "top_logprobs": 0,
+          "top_p": 1,
+          "truncation": "disabled",
+          "usage": null,
+          "user": null,
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "nChunks": 6,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 33,
+      "outputTokens": 88,
+      "raw": "null",
+      "reasoningTokens": 64,
+      "totalTokens": 121,
+    },
+  },
+}
+`;

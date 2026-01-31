@@ -1,0 +1,400 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`empty call handling > [anthropic] handles empty string content 1`] = `
+{
+  "exception": {
+    "cause": "Error: 400 {"type":"error","error":{"type":"invalid_request_error","message":"messages.0: all messages must have non-empty content except for the optional final assistant message"},"request_id":"req_011CXePJ3XLZN1SyGcR9mg4U"}",
+    "message": "400 {"type":"error","error":{"type":"invalid_request_error","message":"messages.0: all messages must have non-empty content except for the optional final assistant message"},"request_id":"req_011CXePJ3XLZN1SyGcR9mg4U"}",
+    "name": "BadRequestError",
+    "originalException": "Error: 400 {"type":"error","error":{"type":"invalid_request_error","message":"messages.0: all messages must have non-empty content except for the optional final assistant message"},"request_id":"req_011CXePJ3XLZN1SyGcR9mg4U"}",
+    "provider": "anthropic",
+    "statusCode": "400",
+    "type": "BadRequestError",
+  },
+}
+`;
+
+exports[`empty call handling > [anthropic] handles user message 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say hello",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello! 👋 How can I help you today?",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Hello! 👋 How can I help you today?",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 9,
+      "outputTokens": 16,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 25,
+    },
+  },
+}
+`;
+
+exports[`empty call handling > [google] handles empty string content 1`] = `
+{
+  "hasText": true,
+  "response": {
+    "finishReason": "max_tokens",
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Okay",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "Okay",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 1,
+      "outputTokens": 96,
+      "raw": "[object Object]",
+      "reasoningTokens": 95,
+      "totalTokens": 97,
+    },
+  },
+}
+`;
+
+exports[`empty call handling > [google] handles user message 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say hello",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello!",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "Hello!",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 3,
+      "outputTokens": 18,
+      "raw": "[object Object]",
+      "reasoningTokens": 16,
+      "totalTokens": 21,
+    },
+  },
+}
+`;
+
+exports[`empty call handling > [openai:completions] handles empty string content 1`] = `
+{
+  "hasText": false,
+  "response": {
+    "finishReason": "max_tokens",
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "annotations": [],
+          "content": "",
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 6,
+      "outputTokens": 100,
+      "raw": "[object Object]",
+      "reasoningTokens": 100,
+      "totalTokens": 106,
+    },
+  },
+}
+`;
+
+exports[`empty call handling > [openai:completions] handles user message 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say hello",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello! How can I help you today?",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "annotations": [],
+          "content": "Hello! How can I help you today?",
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 8,
+      "outputTokens": 82,
+      "raw": "[object Object]",
+      "reasoningTokens": 64,
+      "totalTokens": 90,
+    },
+  },
+}
+`;
+
+exports[`empty call handling > [openai:responses] handles empty string content 1`] = `
+{
+  "hasText": false,
+  "response": {
+    "finishReason": "max_tokens",
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": [
+          {
+            "id": "rs_0aa0369f6e711c5e00697d3691a2988195a2238198b5c90de8",
+            "summary": [],
+            "type": "reasoning",
+          },
+        ],
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 6,
+      "outputTokens": 64,
+      "raw": "[object Object]",
+      "reasoningTokens": 64,
+      "totalTokens": 70,
+    },
+  },
+}
+`;
+
+exports[`empty call handling > [openai:responses] handles user message 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Say hello",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello! How can I help you today?",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": [
+          {
+            "id": "rs_0223973c9f6f32d900697d3a22c32881a1bf15c6be06a56e46",
+            "summary": [],
+            "type": "reasoning",
+          },
+          {
+            "content": [
+              {
+                "annotations": [],
+                "logprobs": [],
+                "text": "Hello! How can I help you today?",
+                "type": "output_text",
+              },
+            ],
+            "id": "msg_0223973c9f6f32d900697d3a237b0881a1bbccfb0f21b00764",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message",
+          },
+        ],
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 8,
+      "outputTokens": 63,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 71,
+    },
+  },
+}
+`;

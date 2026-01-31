@@ -10,7 +10,7 @@ import { resolve } from "node:path";
 import { defineCall } from "@/llm/calls";
 import { createContext, type Context } from "@/llm/context";
 import { PROVIDERS } from "@/tests/e2e/providers";
-import { createIt, describe, expect } from "@/tests/e2e/utils";
+import { createIt, describe, expect, snapshotTest } from "@/tests/e2e/utils";
 
 const it = createIt(resolve(__dirname, "cassettes"), "resume");
 
@@ -24,15 +24,20 @@ describe("resume from call", () => {
         template: () => 'Say exactly: "Hello"',
       });
 
-      const response = await call();
-      expect(response.text()).toMatch(/hello/i);
+      const snap = await snapshotTest(async (s) => {
+        const response = await call();
+        expect(response.text()).toMatch(/hello/i);
 
-      // Resume the conversation
-      const followUp = await response.resume('Now say exactly: "Goodbye"');
+        // Resume the conversation
+        const followUp = await response.resume('Now say exactly: "Goodbye"');
+        s.setResponse(followUp);
 
-      expect(followUp.text()).toMatch(/goodbye/i);
-      // Messages should include the original exchange plus the follow-up
-      expect(followUp.messages.length).toBe(4); // user, assistant, user, assistant
+        expect(followUp.text()).toMatch(/goodbye/i);
+        // Messages should include the original exchange plus the follow-up
+        expect(followUp.messages.length).toBe(4); // user, assistant, user, assistant
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 });
@@ -47,29 +52,35 @@ describe("resume from stream", () => {
         template: () => 'Say exactly: "Hello"',
       });
 
-      const streamResponse = await call.stream();
+      const snap = await snapshotTest(async (s) => {
+        const streamResponse = await call.stream();
 
-      // Consume the stream first
-      for await (const _ of streamResponse.textStream()) {
-        // Just consume
-      }
+        // Consume the stream first
+        for await (const _ of streamResponse.textStream()) {
+          // Just consume
+        }
 
-      expect(streamResponse.text()).toMatch(/hello/i);
+        expect(streamResponse.text()).toMatch(/hello/i);
 
-      // Resume the conversation - returns a StreamResponse
-      const followUp = await streamResponse.resume(
-        'Now say exactly: "Goodbye"',
-      );
+        // Resume the conversation - returns a StreamResponse
+        const followUp = await streamResponse.resume(
+          'Now say exactly: "Goodbye"',
+        );
 
-      // Consume the resumed stream
-      const chunks: string[] = [];
-      for await (const text of followUp.textStream()) {
-        chunks.push(text);
-      }
+        // Consume the resumed stream
+        const chunks: string[] = [];
+        for await (const text of followUp.textStream()) {
+          chunks.push(text);
+        }
 
-      expect(chunks.length).toBeGreaterThan(0);
-      expect(followUp.text()).toMatch(/goodbye/i);
-      expect(followUp.messages.length).toBe(4);
+        s.setResponse(followUp);
+
+        expect(chunks.length).toBeGreaterThan(0);
+        expect(followUp.text()).toMatch(/goodbye/i);
+        expect(followUp.messages.length).toBe(4);
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 });
@@ -88,15 +99,23 @@ describe("context resume from call", () => {
         template: ({ ctx }) => `Say exactly: "${ctx.deps.greeting}"`,
       });
 
-      const ctx = createContext<TestDeps>({ greeting: "Hello" });
-      const response = await call(ctx);
-      expect(response.text()).toMatch(/hello/i);
+      const snap = await snapshotTest(async (s) => {
+        const ctx = createContext<TestDeps>({ greeting: "Hello" });
+        const response = await call(ctx);
+        expect(response.text()).toMatch(/hello/i);
 
-      // Resume the conversation with context
-      const followUp = await response.resume(ctx, 'Now say exactly: "Goodbye"');
+        // Resume the conversation with context
+        const followUp = await response.resume(
+          ctx,
+          'Now say exactly: "Goodbye"',
+        );
+        s.setResponse(followUp);
 
-      expect(followUp.text()).toMatch(/goodbye/i);
-      expect(followUp.messages.length).toBe(4);
+        expect(followUp.text()).toMatch(/goodbye/i);
+        expect(followUp.messages.length).toBe(4);
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 });
@@ -111,31 +130,37 @@ describe("context resume from stream", () => {
         template: ({ ctx }) => `Say exactly: "${ctx.deps.greeting}"`,
       });
 
-      const ctx = createContext<TestDeps>({ greeting: "Hello" });
-      const streamResponse = await call.stream(ctx);
+      const snap = await snapshotTest(async (s) => {
+        const ctx = createContext<TestDeps>({ greeting: "Hello" });
+        const streamResponse = await call.stream(ctx);
 
-      // Consume the stream first
-      for await (const _ of streamResponse.textStream()) {
-        // Just consume
-      }
+        // Consume the stream first
+        for await (const _ of streamResponse.textStream()) {
+          // Just consume
+        }
 
-      expect(streamResponse.text()).toMatch(/hello/i);
+        expect(streamResponse.text()).toMatch(/hello/i);
 
-      // Resume the conversation with context - returns a ContextStreamResponse
-      const followUp = await streamResponse.resume(
-        ctx,
-        'Now say exactly: "Goodbye"',
-      );
+        // Resume the conversation with context - returns a ContextStreamResponse
+        const followUp = await streamResponse.resume(
+          ctx,
+          'Now say exactly: "Goodbye"',
+        );
 
-      // Consume the resumed stream
-      const chunks: string[] = [];
-      for await (const text of followUp.textStream()) {
-        chunks.push(text);
-      }
+        // Consume the resumed stream
+        const chunks: string[] = [];
+        for await (const text of followUp.textStream()) {
+          chunks.push(text);
+        }
 
-      expect(chunks.length).toBeGreaterThan(0);
-      expect(followUp.text()).toMatch(/goodbye/i);
-      expect(followUp.messages.length).toBe(4);
+        s.setResponse(followUp);
+
+        expect(chunks.length).toBeGreaterThan(0);
+        expect(followUp.text()).toMatch(/goodbye/i);
+        expect(followUp.messages.length).toBe(4);
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 });

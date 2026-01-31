@@ -1,0 +1,56 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`prompt caching > [anthropic] caches in multi-turn conversation 1`] = `
+{
+  "response1_text": "I appreciate the creative energy here, but I need to be direct with you: I can't actually operate un",
+  "response2_text": "Ha! I see what you did there—and I appreciate the Han Solo reference as a response to my refusal.
+
+L",
+  "response3_text": "You know what? Fair point. That's actually the right instinct here.
+
+I was being a bit much with my ",
+  "usage1": {
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0,
+    "inputTokens": 3101,
+    "outputTokens": 150,
+  },
+  "usage2": {
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0,
+    "inputTokens": 3266,
+    "outputTokens": 150,
+  },
+  "usage3": {
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0,
+    "inputTokens": 3429,
+    "outputTokens": 150,
+  },
+}
+`;
+
+exports[`prompt caching > [anthropic] caches long system message 1`] = `
+{
+  "response1_text": "General Kenobi!
+
+*Adjusts lightsaber with theatrical flair*
+
+You are a bold one, greeting me with su",
+  "response2_text": "*A holographic projection flickers to life*
+
+Ah, a most practical inquiry! Come, let me consult the ",
+  "usage1": {
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0,
+    "inputTokens": 3103,
+    "outputTokens": 150,
+  },
+  "usage2": {
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0,
+    "inputTokens": 3107,
+    "outputTokens": 150,
+  },
+}
+`;

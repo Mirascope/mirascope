@@ -11,7 +11,7 @@ import { z } from "zod";
 import { defineCall } from "@/llm/calls";
 import { defineFormat } from "@/llm/formatting";
 import { PROVIDERS, type ProviderConfig } from "@/tests/e2e/providers";
-import { createIt, describe, expect } from "@/tests/e2e/utils";
+import { createIt, describe, expect, snapshotTest } from "@/tests/e2e/utils";
 
 // Only Anthropic supports format/structured output currently
 const FORMAT_PROVIDERS: ProviderConfig[] = PROVIDERS.filter(
@@ -41,16 +41,23 @@ describe("format output", () => {
           `Recommend one famous ${genre} book. Return exactly one book.`,
       });
 
-      const response = await recommendBook({ genre: "science fiction" });
-      const book = response.parse();
+      const snap = await snapshotTest(async (s) => {
+        const response = await recommendBook({ genre: "science fiction" });
+        s.setResponse(response);
 
-      expect(book).toBeDefined();
-      expect(typeof book.title).toBe("string");
-      expect(typeof book.author).toBe("string");
-      expect(typeof book.year).toBe("number");
-      expect(book.title.length).toBeGreaterThan(0);
-      expect(book.author.length).toBeGreaterThan(0);
-      expect(book.year).toBeGreaterThan(1800);
+        const book = response.parse();
+        s.set("parsedBook", book);
+
+        expect(book).toBeDefined();
+        expect(typeof book.title).toBe("string");
+        expect(typeof book.author).toBe("string");
+        expect(typeof book.year).toBe("number");
+        expect(book.title.length).toBeGreaterThan(0);
+        expect(book.author.length).toBeGreaterThan(0);
+        expect(book.year).toBeGreaterThan(1800);
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 
@@ -70,13 +77,20 @@ describe("format output", () => {
           `Recommend one famous ${genre} book. Return exactly one book.`,
       });
 
-      const response = await recommendBook({ genre: "mystery" });
-      const book = response.parse();
+      const snap = await snapshotTest(async (s) => {
+        const response = await recommendBook({ genre: "mystery" });
+        s.setResponse(response);
 
-      expect(book).toBeDefined();
-      expect(typeof book.title).toBe("string");
-      expect(typeof book.author).toBe("string");
-      expect(typeof book.year).toBe("number");
+        const book = response.parse();
+        s.set("parsedBook", book);
+
+        expect(book).toBeDefined();
+        expect(typeof book.title).toBe("string");
+        expect(typeof book.author).toBe("string");
+        expect(typeof book.year).toBe("number");
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 });

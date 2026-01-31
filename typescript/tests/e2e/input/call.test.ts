@@ -13,7 +13,7 @@ import { resolve } from "node:path";
 import { defineCall } from "@/llm/calls";
 import { assistant, system, user } from "@/llm/messages";
 import { PROVIDERS, PROVIDERS_FOR_PARAM_TESTS } from "@/tests/e2e/providers";
-import { createIt, describe, expect } from "@/tests/e2e/utils";
+import { createIt, describe, expect, snapshotTest } from "@/tests/e2e/utils";
 
 const it = createIt(resolve(__dirname, "cassettes"), "call");
 
@@ -35,10 +35,15 @@ describe("call input encoding", () => {
         ],
       });
 
-      const response = await call({ topic: "TypeScript" });
+      const snap = await snapshotTest(async (s) => {
+        const response = await call({ topic: "TypeScript" });
+        s.setResponse(response);
 
-      expect(response.text().length).toBeGreaterThan(0);
-      expect(response.usage).not.toBeNull();
+        expect(response.text().length).toBeGreaterThan(0);
+        expect(response.usage).not.toBeNull();
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 
@@ -52,10 +57,15 @@ describe("call input encoding", () => {
       ],
     });
 
-    const response = await call();
+    const snap = await snapshotTest(async (s) => {
+      const response = await call();
+      s.setResponse(response);
 
-    // Model should continue from the assistant prefix
-    expect(response.text()).toContain("4");
+      // Model should continue from the assistant prefix
+      expect(response.text()).toContain("4");
+    });
+
+    expect(snap.toObject()).toMatchSnapshot();
   });
 
   it.record.each(PROVIDERS)(
@@ -72,9 +82,14 @@ describe("call input encoding", () => {
         ],
       });
 
-      const response = await call();
+      const snap = await snapshotTest(async (s) => {
+        const response = await call();
+        s.setResponse(response);
 
-      expect(response.text()).toContain("10");
+        expect(response.text()).toContain("10");
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 });

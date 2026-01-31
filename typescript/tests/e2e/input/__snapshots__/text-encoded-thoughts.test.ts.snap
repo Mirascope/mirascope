@@ -1,0 +1,123 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`text encoded thoughts > [google] encodes thoughts as text for model consumption 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": {
+          "text": "Always answer with extreme concision, giving the answer and no added context.",
+          "type": "text",
+        },
+        "role": "system",
+      },
+      {
+        "content": [
+          {
+            "text": "Is the first fibonacci number to end with the digits 57 prime?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "thought": "Let me see... I have instantaneously remembered this table of fibonacci
+numbers with their prime factorizations. That's sure convenient! Let
+me see if it has the answer:
+0 : 0
+1 : 1
+2 : 1
+3 : 2
+4 : 3
+5 : 5
+6 : 8 = 2^3
+7 : 13
+8 : 21 = 3 x 7
+9 : 34 = 2 x 17
+10 : 55 = 5 x 11
+11 : 89
+12 : 144 = 2^4 x 3^2
+13 : 233
+14 : 377 = 13 x 29
+15 : 610 = 2 x 5 x 61
+16 : 987 = 3 x 7 x 47
+17 : 1597
+18 : 2584 = 2^3 x 17 x 19
+19 : 4181 = 37 x 113
+20 : 6765 = 3 x 5 x 11 x 41
+21 : 10946 = 2 x 13 x 421
+22 : 17711 = 89 x 199
+23 : 28657
+
+There we have it! 28657 is the first fibonacci number ending in 57,
+and it is prime. I'm supposed to answer with extreme concision, so I'll
+just say 'Yes.'",
+            "type": "thought",
+          },
+          {
+            "text": "Yes.",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": null,
+        "rawMessage": {
+          "is_dummy_for_testing_purposes": true,
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "Please tell me what the number is.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "28657",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "28657",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 429,
+      "outputTokens": 50,
+      "raw": "[object Object]",
+      "reasoningTokens": 45,
+      "totalTokens": 479,
+    },
+  },
+}
+`;

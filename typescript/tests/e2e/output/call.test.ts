@@ -11,7 +11,7 @@ import { resolve } from "node:path";
 import { defineCall } from "@/llm/calls";
 import { FinishReason } from "@/llm/responses/finish-reason";
 import { PROVIDERS } from "@/tests/e2e/providers";
-import { createIt, describe, expect } from "@/tests/e2e/utils";
+import { createIt, describe, expect, snapshotTest } from "@/tests/e2e/utils";
 
 const it = createIt(resolve(__dirname, "cassettes"), "call");
 
@@ -23,13 +23,18 @@ describe("call output", () => {
       template: ({ a, b }) => `What is ${a} + ${b}?`,
     });
 
-    const response = await call({ a: 4200, b: 42 });
+    const snap = await snapshotTest(async (s) => {
+      const response = await call({ a: 4200, b: 42 });
+      s.setResponse(response);
 
-    expect(response.text()).toContain("4242");
-    expect(response.usage).not.toBeNull();
-    expect(response.usage?.inputTokens).toBeGreaterThan(0);
-    expect(response.usage?.outputTokens).toBeGreaterThan(0);
-    expect(response.finishReason).toBeNull(); // Normal completion
+      expect(response.text()).toContain("4242");
+      expect(response.usage).not.toBeNull();
+      expect(response.usage?.inputTokens).toBeGreaterThan(0);
+      expect(response.usage?.outputTokens).toBeGreaterThan(0);
+      expect(response.finishReason).toBeNull(); // Normal completion
+    });
+
+    expect(snap.toObject()).toMatchSnapshot();
   });
 
   it.record.each(PROVIDERS)(
@@ -41,9 +46,14 @@ describe("call output", () => {
         template: () => "Write a long story about a dragon.",
       });
 
-      const response = await call();
+      const snap = await snapshotTest(async (s) => {
+        const response = await call();
+        s.setResponse(response);
 
-      expect(response.finishReason).toBe(FinishReason.MAX_TOKENS);
+        expect(response.finishReason).toBe(FinishReason.MAX_TOKENS);
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 });

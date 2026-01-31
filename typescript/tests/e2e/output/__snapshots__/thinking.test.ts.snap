@@ -1,0 +1,607 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`thinking output > [anthropic] excludes thoughts when includeThoughts is false 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 2 + 2? Think step by step.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "I'll solve 2 + 2 step by step:
+
+**Step 1:** Start with the first number: 2
+
+**Step 2:** Add the second number: 2
+
+**Step 3:** Perform the addition:
+- 2 + 2 = 4
+
+**Answer:** 2 + 2 = 4
+
+This is a basic addition problem where we're combining two groups of 2 to get a total of 4.",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-sonnet-4-20250514",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-sonnet-4-20250514",
+        "rawMessage": {
+          "content": [
+            {
+              "signature": "EqQDCkYICxgCKkAwi1Ys66UHdwdzEqblazhYlbvwX6SvJ9QjMuwDoE0aviH6R0kKSyd3cZUOlyVVqvAQrtbZLAox9NCUmysNEHenEgyEbUt7AgZHkrII+38aDClqJt2ioBhAPFy1AiIw44zC/xKnXq3luIKSmcRin7UcUUHpI00ejN35rk8F+JWTjanbwb3N5lBFFD9Z/0qiKosCQBctlwGw0Y6OAK7gJOPHyr9RGYyftsbxlPkEJ8ZYOWjwMfXJeLgAhYB5jJf90s0QcB/huSP6wmgmglWX72nVj4SWUHZxy/bJHziPU4Yvivx6A3VADTkp40neQyeFZOBt4ncNJIf6GAMiBjE3SvEdsuKF8VxXc70jI0tusu3iQ3XN1YnLUsY3yRCVzUyYdbpqwhkM2usw/U4463JV7bM7lrLDdUi3GUr3t+RaIjyYpDOd+XRpdH9dyYMyzr1okrT52ISHoxJTL50tDVVP5uO2636DopBh1qK2Y9UJ6ZOZelu2ypASmIBwzpFX32F2ilES63po3oaUFJj8t80OqmBJpwWv44y+AF6D5r3mGAE=",
+              "thinking": "This is a very simple arithmetic problem. Let me think through it step by step as requested.
+
+2 + 2
+
+Step 1: I have the number 2
+Step 2: I need to add another 2 to it
+Step 3: 2 + 2 = 4
+
+That's really all there is to it for this basic addition problem.",
+              "type": "thinking",
+            },
+            {
+              "text": "I'll solve 2 + 2 step by step:
+
+**Step 1:** Start with the first number: 2
+
+**Step 2:** Add the second number: 2
+
+**Step 3:** Perform the addition:
+- 2 + 2 = 4
+
+**Answer:** 2 + 2 = 4
+
+This is a basic addition problem where we're combining two groups of 2 to get a total of 4.",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-sonnet-4-20250514",
+    "providerId": "anthropic",
+    "providerModelName": "claude-sonnet-4-20250514",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 50,
+      "outputTokens": 195,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 245,
+    },
+  },
+}
+`;
+
+exports[`thinking output > [anthropic] includes thoughts when includeThoughts is true 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 2 + 2? Think step by step.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "thought": "This is a very simple arithmetic problem. Let me think through it step by step as requested.
+
+2 + 2
+
+Step 1: I have the number 2
+Step 2: I'm adding another 2 to it
+Step 3: 2 + 2 = 4
+
+That's the answer: 4",
+            "type": "thought",
+          },
+          {
+            "text": "I'll solve 2 + 2 step by step:
+
+**Step 1:** Start with the first number: 2
+
+**Step 2:** Add the second number: 2
+
+**Step 3:** Combine them: 2 + 2 = 4
+
+**Answer:** 4
+
+This is one of the most basic addition problems - when you have 2 of something and add 2 more of the same thing, you end up with 4 total.",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-sonnet-4-20250514",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-sonnet-4-20250514",
+        "rawMessage": {
+          "content": [
+            {
+              "signature": "EvQCCkYICxgCKkBNh5g2Mpi+xt3srJI0h3pRgZIgks99SKWis7YBe5nokpWwkNGYNXdjPvEEea06ZB9ZR7BtYVufw4jbS1EiA9LLEgwvKGy/FJg3hMGNs8MaDAQoomI7I+p7KRuCeSIw4fTRNkr4Ltty79qord28ZIwSFfnxtYUPZoaZITJer3y20i0zEjvGLKzn7Q/1ylY5KtsBQQqBdMDuEhiCXnq/PTukObT6UgAMswoauWHMhY3jO/8cA52Xd131IANcs4LyLJdL4jqp/SZG09pAXMxbqais6EqJBas4vX8kYduvlpfldjl9hAYngING+WpbaHCjv4/djwz092DPis0+bJ5QSUNHdwEzVQigBPSWAa6KsLAMT5gyI99pL2goge++0bcvxuUOhs03bypeumlCeNMHwcavTYaC2wqbHGGsCnixv4iFRgFIFDMQflG7wq+TQwdy62r0rtcQ/e+RWQtbinGsSyEqDvuZCegjQR36kWoeGAE=",
+              "thinking": "This is a very simple arithmetic problem. Let me think through it step by step as requested.
+
+2 + 2
+
+Step 1: I have the number 2
+Step 2: I'm adding another 2 to it
+Step 3: 2 + 2 = 4
+
+That's the answer: 4",
+              "type": "thinking",
+            },
+            {
+              "text": "I'll solve 2 + 2 step by step:
+
+**Step 1:** Start with the first number: 2
+
+**Step 2:** Add the second number: 2
+
+**Step 3:** Combine them: 2 + 2 = 4
+
+**Answer:** 4
+
+This is one of the most basic addition problems - when you have 2 of something and add 2 more of the same thing, you end up with 4 total.",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-sonnet-4-20250514",
+    "providerId": "anthropic",
+    "providerModelName": "claude-sonnet-4-20250514",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 50,
+      "outputTokens": 190,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 240,
+    },
+  },
+}
+`;
+
+exports[`thinking output > [google] excludes thoughts when includeThoughts is false 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 2 + 2? Think step by step.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "To calculate 2 + 2 step by step:
+
+1.  **Start with the first number:** You have 2 units (imagine two apples).
+2.  **Add the second number:** You are adding another 2 units (two more apples).
+3.  **Combine them:** If you put the first 2 apples and the second 2 apples together, you can count them all.
+4.  **Count the total:** 1, 2, 3, 4.
+
+So, 2 + 2 equals **4**.",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "To calculate 2 + 2 step by step:
+
+1.  **Start with the first number:** You have 2 units (imagine two apples).
+2.  **Add the second number:** You are adding another 2 units (two more apples).
+3.  **Combine them:** If you put the first 2 apples and the second 2 apples together, you can count them all.
+4.  **Count the total:** 1, 2, 3, 4.
+
+So, 2 + 2 equals **4**.",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 14,
+      "outputTokens": 278,
+      "raw": "[object Object]",
+      "reasoningTokens": 161,
+      "totalTokens": 292,
+    },
+  },
+}
+`;
+
+exports[`thinking output > [google] includes thoughts when includeThoughts is true 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 2 + 2? Think step by step.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "thought": "**My Mental Process for a Simple Calculation**
+
+Okay, so the user wants me to explain something incredibly basic – 2 + 2 – but they've explicitly asked for a step-by-step approach. No problem, I can do that. I need to treat this as if they truly are encountering this concept for the first time.
+
+First, I recognize the core operation: addition. That’s the key. Now, to "break it down" for them… it's almost reflexive at this point, but I must deliberately walk through it. I need to make sure I convey this from first principles.
+
+Let's see. I have to make it concrete. While I can see the numbers, I want to show *how* it works. Visualization… right. I'll go with the classic apple example. So, I have two apples, and I'm adding another two to the pile. I can see the *process* of combining those quantities in my mind's eye. And that directly leads to the counting – 1, 2, 3, 4.
+
+The math is, of course, trivial. 2 + 2 = 4. But I have to explain the *how* not just the *what*. So, it needs to be explained as a sequence to them.
+
+Now, how do I actually *word* this? Okay, I'll start by stating the initial number and then explain I'm adding a second number to it. And then, finally, I'll provide the result. Putting it together, here's the explanation: "You start with the number 2. Then, you add another 2 to it. Counting them together, 2 + 2 equals 4. So, 2 + 2 = 4." Simple, clear, and hopefully, helpful.
+",
+            "type": "thought",
+          },
+          {
+            "text": "Let's break it down step by step:
+
+1.  You start with the number **2**.
+2.  Then, you add another **2** to it.
+3.  Counting them together, 2 + 2 equals **4**.
+
+So, 2 + 2 = 4.",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "**My Mental Process for a Simple Calculation**
+
+Okay, so the user wants me to explain something incredibly basic – 2 + 2 – but they've explicitly asked for a step-by-step approach. No problem, I can do that. I need to treat this as if they truly are encountering this concept for the first time.
+
+First, I recognize the core operation: addition. That’s the key. Now, to "break it down" for them… it's almost reflexive at this point, but I must deliberately walk through it. I need to make sure I convey this from first principles.
+
+Let's see. I have to make it concrete. While I can see the numbers, I want to show *how* it works. Visualization… right. I'll go with the classic apple example. So, I have two apples, and I'm adding another two to the pile. I can see the *process* of combining those quantities in my mind's eye. And that directly leads to the counting – 1, 2, 3, 4.
+
+The math is, of course, trivial. 2 + 2 = 4. But I have to explain the *how* not just the *what*. So, it needs to be explained as a sequence to them.
+
+Now, how do I actually *word* this? Okay, I'll start by stating the initial number and then explain I'm adding a second number to it. And then, finally, I'll provide the result. Putting it together, here's the explanation: "You start with the number 2. Then, you add another 2 to it. Counting them together, 2 + 2 equals 4. So, 2 + 2 = 4." Simple, clear, and hopefully, helpful.
+",
+              "thought": true,
+            },
+            {
+              "text": "Let's break it down step by step:
+
+1.  You start with the number **2**.
+2.  Then, you add another **2** to it.
+3.  Counting them together, 2 + 2 equals **4**.
+
+So, 2 + 2 = 4.",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 14,
+      "outputTokens": 391,
+      "raw": "[object Object]",
+      "reasoningTokens": 325,
+      "totalTokens": 405,
+    },
+  },
+}
+`;
+
+exports[`thinking output > [openai:responses] excludes thoughts when includeThoughts is false 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 2 + 2? Think step by step.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Here’s a step-by-step breakdown of 2 + 2:
+
+1. Identify the numbers: 2 and 2.  
+2. Recall that “+” means we are adding (combining) the two quantities.  
+3. Start with the first 2.  
+4. Add the second 2 to it.  
+   - If you have 2 objects and add 2 more objects, you count: 3, 4.  
+5. The total count is 4.  
+
+Therefore, 2 + 2 = 4.",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/o4-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "o4-mini:responses",
+        "rawMessage": [
+          {
+            "id": "rs_00d21c075ed1929d006977a8f1774481909d3a2946359707c4",
+            "summary": [],
+            "type": "reasoning",
+          },
+          {
+            "content": [
+              {
+                "annotations": [],
+                "logprobs": [],
+                "text": "Here’s a step-by-step breakdown of 2 + 2:
+
+1. Identify the numbers: 2 and 2.  
+2. Recall that “+” means we are adding (combining) the two quantities.  
+3. Start with the first 2.  
+4. Add the second 2 to it.  
+   - If you have 2 objects and add 2 more objects, you count: 3, 4.  
+5. The total count is 4.  
+
+Therefore, 2 + 2 = 4.",
+                "type": "output_text",
+              },
+            ],
+            "id": "msg_00d21c075ed1929d006977a8f1c89c81908527162c1afd2462",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message",
+          },
+        ],
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/o4-mini:responses",
+    "providerId": "openai",
+    "providerModelName": "o4-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 19,
+      "outputTokens": 122,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 141,
+    },
+  },
+}
+`;
+
+exports[`thinking output > [openai:responses] includes thoughts when includeThoughts is true 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 2 + 2? Think step by step.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "thought": "**Explaining simple addition**
+
+The user wants me to outline the reasoning behind a simple addition problem. For example, with 2 + 2, I can explain that it means taking two items and adding two more, which gives us four. I’ll ensure the thought process is clear but won’t expose my internal reasoning details. So, I’ll present it step by step: define addition, count the items, and then conclude that 2 + 2 equals 4.",
+            "type": "thought",
+          },
+          {
+            "text": "Here’s a simple step-by-step breakdown:
+
+1. Start with the number 2.  
+2. “Add 2” means count two more units on top of the original 2.  
+   - If you have 2 objects and you add 1 more, you get 3.  
+   - Adding the second object brings you to 4.  
+3. Therefore, 2 + 2 = 4.",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/o4-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "o4-mini:responses",
+        "rawMessage": [
+          {
+            "id": "rs_0e66e25ad86acc33006977a8eb16d48190a43bd5972701abdf",
+            "summary": [
+              {
+                "text": "**Explaining simple addition**
+
+The user wants me to outline the reasoning behind a simple addition problem. For example, with 2 + 2, I can explain that it means taking two items and adding two more, which gives us four. I’ll ensure the thought process is clear but won’t expose my internal reasoning details. So, I’ll present it step by step: define addition, count the items, and then conclude that 2 + 2 equals 4.",
+                "type": "summary_text",
+              },
+            ],
+            "type": "reasoning",
+          },
+          {
+            "content": [
+              {
+                "annotations": [],
+                "logprobs": [],
+                "text": "Here’s a simple step-by-step breakdown:
+
+1. Start with the number 2.  
+2. “Add 2” means count two more units on top of the original 2.  
+   - If you have 2 objects and you add 1 more, you get 3.  
+   - Adding the second object brings you to 4.  
+3. Therefore, 2 + 2 = 4.",
+                "type": "output_text",
+              },
+            ],
+            "id": "msg_0e66e25ad86acc33006977a8f082a08190a89447ad0645a4e7",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message",
+          },
+        ],
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/o4-mini:responses",
+    "providerId": "openai",
+    "providerModelName": "o4-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 19,
+      "outputTokens": 159,
+      "raw": "[object Object]",
+      "reasoningTokens": 64,
+      "totalTokens": 178,
+    },
+  },
+}
+`;
+
+exports[`thinking output > reports reasoning tokens in usage 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 2 + 2?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "thought": "**My Calculation: 2 + 2**
+
+Okay, so the user wants the result of "2 + 2." That's the core of the request – very straightforward. Now, let's see... this is essentially the most basic addition problem imaginable. A foundation. With no ambiguity, I immediately recall that basic arithmetic. The calculation itself is trivial; it's a fundamental fact. Two plus two... equals four. There we have it. The answer is simply "4." I need to state this clearly and directly, without any embellishment or need for further analysis.
+",
+            "type": "thought",
+          },
+          {
+            "text": "2 + 2 = 4",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "**My Calculation: 2 + 2**
+
+Okay, so the user wants the result of "2 + 2." That's the core of the request – very straightforward. Now, let's see... this is essentially the most basic addition problem imaginable. A foundation. With no ambiguity, I immediately recall that basic arithmetic. The calculation itself is trivial; it's a fundamental fact. Two plus two... equals four. There we have it. The answer is simply "4." I need to state this clearly and directly, without any embellishment or need for further analysis.
+",
+              "thought": true,
+            },
+            {
+              "text": "2 + 2 = 4",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 9,
+      "outputTokens": 81,
+      "raw": "[object Object]",
+      "reasoningTokens": 73,
+      "totalTokens": 90,
+    },
+  },
+}
+`;

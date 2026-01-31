@@ -1,0 +1,209 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`structured output streaming > [anthropic] streams partial objects 1`] = `
+{
+  "nPartials": 30,
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "description": "The author of the book",
+            "type": "string",
+          },
+          "rating": {
+            "description": "Rating from 1 to 10",
+            "maximum": 10,
+            "minimum": 1,
+            "type": "integer",
+          },
+          "themes": {
+            "description": "Main themes of the book",
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "title": {
+            "description": "The title of the book",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "themes",
+          "rating",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please recommend a book and provide a detailed review!",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "{"title": "The Midnight Library", "author": "Matt Haig", "themes": ["Regret and second chances","Mental health and depression","Self-discovery","Life choices","Hope and meaning"], "rating": 9}",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01RRsRBXn7m8PFQnKo3zXPsP",
+              "input": {
+                "author": "Matt Haig",
+                "rating": 9,
+                "themes": [
+                  "Regret and second chances",
+                  "Mental health and depression",
+                  "Self-discovery",
+                  "Life choices",
+                  "Hope and meaning",
+                ],
+                "title": "The Midnight Library",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 33,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 820,
+      "outputTokens": 123,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 943,
+    },
+  },
+}
+`;
+
+exports[`structured output with formatting instructions > [anthropic] respects schema descriptions as formatting hints 1`] = `
+{
+  "parsedBook": {
+    "author": "Patrick Rothfuss",
+    "rating": 7,
+    "title": "THE NAME OF THE WIND",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "description": "The author of the book",
+            "type": "string",
+          },
+          "rating": {
+            "description": "Rating should always be 7",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book (use all caps)",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "rating",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Recommend "The Name of the Wind" by Patrick Rothfuss. Follow the field descriptions exactly.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}",
+            "id": "toolu_01Qx2acGALpw2dchb8EZFdpF",
+            "name": "__mirascope_formatted_output_tool__",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01Qx2acGALpw2dchb8EZFdpF",
+              "input": {
+                "author": "Patrick Rothfuss",
+                "rating": 7,
+                "title": "THE NAME OF THE WIND",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 811,
+      "outputTokens": 67,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 878,
+    },
+  },
+}
+`;
