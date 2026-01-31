@@ -1,0 +1,13 @@
+{
+  "name": "mirascope",
+  "version": "2.1.0",
+  "homepage": "https://mirascope.com/registry",
+  "items": [
+    {
+      "name": "calculator",
+      "type": "tool",
+      "path": "tools/calculator",
+      "description": "Basic arithmetic operation tools (add, subtract, multiply, divide) for LLM agents."
+    }
+  ]
+}

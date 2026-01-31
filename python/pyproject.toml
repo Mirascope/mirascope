@@ -48,6 +48,9 @@ dependencies = [
     "typing-extensions>=4.10.0",
 ]
 
+[project.scripts]
+mirascope = "mirascope.cli:main"
+
 [project.urls]
 Homepage = "https://mirascope.com"
 Documentation = "https://mirascope.com/docs/mirascope/v2"
@@ -61,6 +64,7 @@ Changelog = "https://github.com/Mirascope/mirascope/releases"
 [project.optional-dependencies]
 anthropic = ["anthropic>=0.76.0,<1.0"]
 api = ["pydantic-settings>=2.12.0"]
+cli = ["rich>=13.0.0", "tomli>=2.0.0"]
 google = ["google-genai>=1.58.0,<2", "pillow>=10.4.0,<11", "proto-plus>=1.24.0"]
 openai = ["openai>=2.15.0,<3"]
 mcp = ["mcp>=1.25.0,<2"]
@@ -80,7 +84,7 @@ ops = [
     "opentelemetry-instrumentation-google-genai>=0.3b0,<1",
 ]
 mlx = ["mlx-lm>=0.28.4,<1"]
-all = ["mirascope[anthropic,api,google,openai,mcp,ops,mlx]"]
+all = ["mirascope[anthropic,api,cli,google,openai,mcp,ops,mlx]"]
 
 [dependency-groups]
 dev = [
@@ -138,6 +142,7 @@ target-version = "py310"
 "__init__.py" = ["F401"]
 "examples/*.{py}" = ["T201", "ANN"]
 "scripts/*.{py}" = ["T201"]
+"mirascope/cli/**/*.{py}" = ["T201"]
 "typechecking/*.{py}" = ["T201", "ANN"]
 "mirascope/api/_generated/**" = ["ALL"]
 "tests/ops/_internal/closure_test_functions/**" = ["ANN"]

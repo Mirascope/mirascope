@@ -3,6 +3,7 @@
   "version": "2.2.0",
   "private": true,
   "scripts": {
+    "registry:build": "bun run scripts/registry/build.ts",
     "cloud:dev": "cd cloud && bun i && bun run dev",
     "typecheck": "bun run typecheck:typescript && bun run typecheck:python && bun run typecheck:cloud",
     "typecheck:python": "cd python && uv run pyright .",

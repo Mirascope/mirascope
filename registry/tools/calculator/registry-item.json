@@ -1,0 +1,32 @@
+{
+  "$schema": "https://mirascope.com/registry/schema/registry-item.json",
+  "name": "calculator",
+  "type": "registry:tool",
+  "title": "Calculator Tools",
+  "description": "Basic arithmetic operation tools (add, subtract, multiply, divide) for LLM agents.",
+  "version": "1.0.0",
+  "categories": ["tools", "math", "utility"],
+  "mirascope": {
+    "python": { "minVersion": "2.0.0" },
+    "typescript": { "minVersion": "2.0.0-alpha.0" }
+  },
+  "files": {
+    "python": [
+      {
+        "path": "calculator.py",
+        "target": "ai/tools/calculator.py"
+      }
+    ],
+    "typescript": [
+      {
+        "path": "calculator.ts",
+        "target": "ai/tools/calculator.ts"
+      }
+    ]
+  },
+  "dependencies": {
+    "pip": [],
+    "npm": []
+  },
+  "registryDependencies": []
+}
