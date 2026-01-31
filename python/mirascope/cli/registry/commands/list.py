@@ -2,22 +2,14 @@
 
 from __future__ import annotations
 
-import sys
+import typer
 
 
-def run_list(
+def list_command(
     item_type: str | None,
     registry_url: str,
-) -> int:
-    """List available registry items.
-
-    Args:
-        item_type: Filter by item type (tool, agent, prompt, integration).
-        registry_url: URL of the registry to list items from.
-
-    Returns:
-        Exit code (0 for success, non-zero for failure).
-    """
+) -> None:
+    """List available registry items."""
     from mirascope.cli.registry.client import RegistryClient
 
     client = RegistryClient(registry_url)
@@ -25,16 +17,15 @@ def run_list(
     try:
         index = client.fetch_index()
     except Exception as e:
-        print(f"Error: Failed to fetch registry index: {e}", file=sys.stderr)
-        return 1
+        typer.echo(f"Error: Failed to fetch registry index: {e}", err=True)
+        raise typer.Exit(1)
 
     if index is None:
-        print("Error: Could not fetch registry index.", file=sys.stderr)
-        return 1
+        typer.echo("Error: Could not fetch registry index.", err=True)
+        raise typer.Exit(1)
 
     items = index.get("items", [])
 
-    # Filter by type if specified
     if item_type:
         items = [i for i in items if i.get("type") == item_type]
 
@@ -43,7 +34,7 @@ def run_list(
             print(f"No items found with type '{item_type}'.")
         else:
             print("No items found in registry.")
-        return 0
+        return
 
     # Group by type
     by_type: dict[str, list[dict[str, str]]] = {}
@@ -63,5 +54,4 @@ def run_list(
             print(f"  {name:<20} {desc}")
         print()
 
-    print("Use `mirascope add <name>` to install.")
-    return 0
+    print("Use `mirascope registry add <name>` to install.")

@@ -5,18 +5,16 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import typer
 
-def run_init() -> int:
-    """Initialize Mirascope configuration in the current project.
 
-    Returns:
-        Exit code (0 for success, non-zero for failure).
-    """
+def init_command() -> None:
+    """Initialize Mirascope configuration in the current project."""
     config_path = Path.cwd() / "mirascope.json"
 
     if config_path.exists():
         print(f"Configuration already exists at {config_path}")
-        return 0
+        return
 
     config: dict[str, str | dict[str, str]] = {
         "$schema": "https://mirascope.com/registry/schema/config.json",
@@ -33,9 +31,9 @@ def run_init() -> int:
     try:
         config_path.write_text(json.dumps(config, indent=2) + "\n")
         print(f"Created {config_path}")
-        print("\nYou can now use `mirascope add <item>` to add registry items.")
+        print(
+            "\nYou can now use `mirascope registry add <item>` to add registry items."
+        )
     except OSError as e:
-        print(f"Error: Failed to create config file: {e}")
-        return 1
-
-    return 0
+        typer.echo(f"Error: Failed to create config file: {e}", err=True)
+        raise typer.Exit(1)
