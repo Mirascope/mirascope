@@ -358,3 +358,43 @@ class MissingAPIKeyError(Error):
         super().__init__(message)
         self.provider_id = provider_id
         self.env_var = env_var
+
+
+class StreamRestarted(Error):
+    """Raised when a stream restarts due to a retryable error.
+
+    This exception signals that the stream encountered an error and has been
+    reset for a retry attempt. Users should catch this exception and re-iterate
+    the response to continue streaming from the new attempt.
+
+    Example:
+        ```python
+        response = retry_call.stream("fantasy")
+
+        while True:
+            try:
+                for chunk in response.text_stream():
+                    print(chunk, end="", flush=True)
+                break  # Success
+            except llm.StreamRestarted as e:
+                print(f"\\n[Retry {e.attempt} after: {e.error}]")
+                # Loop continues, re-iterates the response
+        ```
+    """
+
+    attempt: int
+    """The attempt number we're now on (2, 3, ...)."""
+
+    error: BaseException
+    """The error that triggered the restart."""
+
+    def __init__(
+        self,
+        attempt: int,
+        error: BaseException,
+    ) -> None:
+        message = f"Stream restarted (attempt {attempt}) due to: {error}"
+        super().__init__(message)
+        self.attempt = attempt
+        self.error = error
+        self.__cause__ = error

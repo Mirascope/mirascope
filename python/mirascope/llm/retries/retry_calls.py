@@ -16,6 +16,10 @@ from .retry_responses import (
     AsyncRetryResponse,
     RetryResponse,
 )
+from .retry_stream_responses import (
+    AsyncRetryStreamResponse,
+    RetryStreamResponse,
+)
 
 RetryPromptT = TypeVar("RetryPromptT", bound=BaseRetryPrompt)
 
@@ -78,6 +82,22 @@ class RetryCall(BaseRetryCall[RetryPrompt[P, FormattableT]], Generic[P, Formatta
         """Generates a retry response using the LLM."""
         return self.prompt.call(self.model, *args, **kwargs)
 
+    @overload
+    def stream(
+        self: "RetryCall[P, None]", *args: P.args, **kwargs: P.kwargs
+    ) -> RetryStreamResponse[None]: ...
+
+    @overload
+    def stream(
+        self: "RetryCall[P, FormattableT]", *args: P.args, **kwargs: P.kwargs
+    ) -> RetryStreamResponse[FormattableT]: ...
+
+    def stream(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> RetryStreamResponse[None] | RetryStreamResponse[FormattableT]:
+        """Generates a retry stream response using the LLM."""
+        return self.prompt.stream(self.model, *args, **kwargs)
+
 
 class AsyncRetryCall(
     BaseRetryCall[AsyncRetryPrompt[P, FormattableT]], Generic[P, FormattableT]
@@ -121,3 +141,19 @@ class AsyncRetryCall(
     ) -> AsyncRetryResponse[None] | AsyncRetryResponse[FormattableT]:
         """Generates a retry response using the LLM asynchronously."""
         return await self.prompt.call(self.model, *args, **kwargs)
+
+    @overload
+    async def stream(
+        self: "AsyncRetryCall[P, None]", *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncRetryStreamResponse[None]: ...
+
+    @overload
+    async def stream(
+        self: "AsyncRetryCall[P, FormattableT]", *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncRetryStreamResponse[FormattableT]: ...
+
+    async def stream(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncRetryStreamResponse[None] | AsyncRetryStreamResponse[FormattableT]:
+        """Generates a retry stream response using the LLM asynchronously."""
+        return await self.prompt.stream(self.model, *args, **kwargs)
