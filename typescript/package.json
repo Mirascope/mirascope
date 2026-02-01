@@ -3,7 +3,7 @@
   "version": "2.0.0-alpha.0",
   "type": "module",
   "bin": {
-    "mirascope": "./src/cli/index.ts"
+    "mirascope": "./src/cli/main.ts"
   },
   "exports": {
     ".": "./src/index.ts"
@@ -27,7 +27,8 @@
   },
   "peerDependencies": {
     "@anthropic-ai/sdk": ">=0.71.0",
-    "@google/genai": ">=1.0.0"
+    "@google/genai": ">=1.0.0",
+    "citty": ">=0.2.0"
   },
   "peerDependenciesMeta": {
     "@anthropic-ai/sdk": {
@@ -35,11 +36,15 @@
     },
     "@google/genai": {
       "optional": true
+    },
+    "citty": {
+      "optional": true
     }
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
     "@google/genai": "^1.0.0",
+    "citty": "^0.2.0",
     "@eslint/js": "^9.37.0",
     "@pollyjs/adapter-fetch": "^6.0.7",
     "@pollyjs/core": "^6.0.6",
