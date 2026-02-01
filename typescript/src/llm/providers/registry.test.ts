@@ -116,6 +116,20 @@ describe('provider registry', () => {
       });
       expect(provider.id).toBe('openai');
     });
+
+    it('registers mirascope provider by ID', () => {
+      vi.stubEnv('MIRASCOPE_API_KEY', 'test-mirascope-key');
+      const provider = registerProvider('mirascope');
+      expect(provider.id).toBe('mirascope');
+    });
+
+    it('registers mirascope provider by ID with options', () => {
+      const provider = registerProvider('mirascope', {
+        apiKey: 'custom-key',
+        baseURL: 'https://custom.mirascope.api.com',
+      });
+      expect(provider.id).toBe('mirascope');
+    });
   });
 
   describe('getProviderForModel', () => {

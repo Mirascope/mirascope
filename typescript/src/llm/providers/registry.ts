@@ -11,6 +11,7 @@ import {
 import type { BaseProvider } from '@/llm/providers/base';
 import { AnthropicProvider } from '@/llm/providers/anthropic';
 import { GoogleProvider } from '@/llm/providers/google';
+import { MirascopeProvider } from '@/llm/providers/mirascope';
 import { OpenAIProvider } from '@/llm/providers/openai/provider';
 import type { ProviderId } from '@/llm/providers/provider-id';
 
@@ -45,6 +46,9 @@ const DEFAULT_AUTO_REGISTER_SCOPES: Record<string, ProviderDefault[]> = {
     { providerId: 'anthropic', apiKeyEnvVar: 'ANTHROPIC_API_KEY' },
   ],
   'google/': [{ providerId: 'google', apiKeyEnvVar: 'GOOGLE_API_KEY' }],
+  'mirascope/': [
+    { providerId: 'mirascope', apiKeyEnvVar: 'MIRASCOPE_API_KEY' },
+  ],
   'openai/': [{ providerId: 'openai', apiKeyEnvVar: 'OPENAI_API_KEY' }],
 };
 
@@ -67,8 +71,9 @@ const providerCache: Map<string, BaseProvider> = new Map();
 
 /**
  * Create a cached provider instance for the specified provider ID.
+ * Uses a cache keyed by providerId + apiKey + baseURL for reuse.
  */
-function getProviderSingleton(
+export function getProviderSingleton(
   providerId: ProviderId,
   options?: { apiKey?: string; baseURL?: string }
 ): BaseProvider {
@@ -88,6 +93,12 @@ function getProviderSingleton(
       break;
     case 'google':
       provider = new GoogleProvider({
+        apiKey: options?.apiKey,
+        baseURL: options?.baseURL,
+      });
+      break;
+    case 'mirascope':
+      provider = new MirascopeProvider({
         apiKey: options?.apiKey,
         baseURL: options?.baseURL,
       });
