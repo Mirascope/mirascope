@@ -161,26 +161,64 @@ export const ANTHROPIC_ERROR_MAP: ProviderErrorMap = [
 // ============================================================================
 
 /**
+ * Cacheable content types that can have cache_control applied.
+ */
+const CACHEABLE_CONTENT_TYPES = new Set([
+  'text',
+  'image',
+  'tool_output',
+  'tool_call',
+]);
+
+/**
  * Process content parts from either user or assistant messages.
  * Converts to Anthropic's ContentBlockParam format.
  *
  * @param content - The content parts to process
  * @param encodeThoughtsAsText - Whether to encode thoughts as text
+ * @param addCacheControl - Whether to add cache_control to the last cacheable content block
  */
 function processContentParts(
   content: readonly (UserContentPart | AssistantContentPart)[],
-  encodeThoughtsAsText: boolean = false
+  encodeThoughtsAsText: boolean = false,
+  addCacheControl: boolean = false
 ): Anthropic.Messages.ContentBlockParam[] {
   const blocks: Anthropic.Messages.ContentBlockParam[] = [];
 
-  for (const part of content) {
+  // Find the last cacheable content index if we need to add cache control
+  let lastCacheableIndex = -1;
+  if (addCacheControl) {
+    for (let i = content.length - 1; i >= 0; i--) {
+      const part = content[i]!;
+      if (CACHEABLE_CONTENT_TYPES.has(part.type)) {
+        // Skip empty text
+        if (part.type === 'text' && !part.text) {
+          continue;
+        }
+        lastCacheableIndex = i;
+        break;
+      }
+    }
+  }
+
+  for (let i = 0; i < content.length; i++) {
+    const part = content[i]!;
+    const shouldAddCache = addCacheControl && i === lastCacheableIndex;
+
     switch (part.type) {
       case 'text':
-        blocks.push({ type: 'text', text: part.text });
+        blocks.push({
+          type: 'text',
+          text: part.text,
+          ...(shouldAddCache && { cache_control: { type: 'ephemeral' } }),
+        });
         break;
 
       case 'image':
-        blocks.push(encodeImage(part));
+        blocks.push({
+          ...encodeImage(part),
+          ...(shouldAddCache && { cache_control: { type: 'ephemeral' } }),
+        });
         break;
 
       case 'audio':
@@ -198,6 +236,7 @@ function processContentParts(
           id: part.id,
           name: part.name,
           input: JSON.parse(part.args) as Record<string, unknown>,
+          ...(shouldAddCache && { cache_control: { type: 'ephemeral' } }),
         });
         break;
 
@@ -210,6 +249,7 @@ function processContentParts(
               ? part.result
               : JSON.stringify(part.result),
           is_error: part.error !== null,
+          ...(shouldAddCache && { cache_control: { type: 'ephemeral' } }),
         });
         break;
       /* v8 ignore stop */
@@ -243,13 +283,18 @@ function processContentParts(
 // ============================================================================
 
 /**
- * Simplify content to string if only a single text part.
- * Anthropic accepts string for simple messages.
+ * Simplify content to string if only a single text part without cache_control.
+ * Anthropic accepts string for simple messages, but not when cache_control is present.
  */
 function simplifyContent(
   blocks: Anthropic.Messages.ContentBlockParam[]
 ): string | Anthropic.Messages.ContentBlockParam[] {
-  if (blocks.length === 1 && blocks[0] && blocks[0].type === 'text') {
+  if (
+    blocks.length === 1 &&
+    blocks[0] &&
+    blocks[0].type === 'text' &&
+    !('cache_control' in blocks[0] && blocks[0].cache_control)
+  ) {
     return blocks[0].text;
   }
   return blocks;
@@ -260,7 +305,67 @@ function simplifyContent(
 // ============================================================================
 
 /**
+ * Encode a single user or assistant message.
+ *
+ * @param message - The message to encode
+ * @param modelId - The model ID for the request
+ * @param encodeThoughtsAsText - Whether to encode thoughts as text
+ * @param addCacheControl - Whether to add cache_control to the last content block
+ */
+function encodeMessage(
+  message: Message,
+  modelId: AnthropicModelId,
+  encodeThoughtsAsText: boolean,
+  addCacheControl: boolean
+): Anthropic.Messages.MessageParam | null {
+  /* v8 ignore next 3 - defensive check: system messages filtered in encodeMessages */
+  if (message.role === 'system') {
+    return null; // System messages are handled separately
+  }
+
+  if (message.role === 'user') {
+    const blocks = processContentParts(
+      message.content,
+      false, // encodeThoughtsAsText not applicable to user messages
+      addCacheControl
+    );
+    return {
+      role: 'user',
+      content: simplifyContent(blocks),
+    };
+  }
+
+  // assistant message
+  // Check if we can reuse the raw message (from same provider/model)
+  // Can only reuse if not adding cache control and not encoding thoughts as text
+  if (
+    !addCacheControl &&
+    !encodeThoughtsAsText &&
+    message.providerId === 'anthropic' &&
+    message.modelId === modelId &&
+    message.rawMessage
+  ) {
+    // Reuse the serialized message directly
+    return message.rawMessage as unknown as Anthropic.Messages.MessageParam;
+  }
+
+  // Otherwise, encode from content parts
+  const blocks = processContentParts(
+    message.content,
+    encodeThoughtsAsText,
+    addCacheControl
+  );
+  return {
+    role: 'assistant',
+    content: simplifyContent(blocks),
+  };
+}
+
+/**
  * Encode Mirascope messages to Anthropic API format.
+ *
+ * If the conversation contains assistant messages (indicating multi-turn),
+ * adds cache_control to the last content block of the last message.
  *
  * @param messages - The messages to encode
  * @param modelId - The model ID for the request (used to check if raw message can be reused)
@@ -277,38 +382,35 @@ export function encodeMessages(
   let system: string | undefined;
   const anthropicMessages: MessageCreateParamsNonStreaming['messages'] = [];
 
+  // Extract system message
+  const nonSystemMessages: Message[] = [];
   for (const message of messages) {
     if (message.role === 'system') {
       system = message.content.text;
-    } else if (message.role === 'user') {
-      const blocks = processContentParts(message.content);
-      anthropicMessages.push({
-        role: 'user',
-        content: simplifyContent(blocks),
-      });
-    } else if (message.role === 'assistant') {
-      // Check if we can reuse the raw message (from same provider/model)
-      if (
-        message.providerId === 'anthropic' &&
-        message.modelId === modelId &&
-        message.rawMessage &&
-        !encodeThoughtsAsText
-      ) {
-        // Reuse the serialized message directly
-        anthropicMessages.push(
-          message.rawMessage as unknown as Anthropic.Messages.MessageParam
-        );
-      } else {
-        // Otherwise, encode from content parts
-        const blocks = processContentParts(
-          message.content,
-          encodeThoughtsAsText
-        );
-        anthropicMessages.push({
-          role: 'assistant',
-          content: simplifyContent(blocks),
-        });
-      }
+    } else {
+      nonSystemMessages.push(message);
+    }
+  }
+
+  // Detect multi-turn conversations by checking for assistant messages
+  const hasAssistantMessage = nonSystemMessages.some(
+    (msg) => msg.role === 'assistant'
+  );
+
+  // Encode messages, adding cache_control to the last message if multi-turn
+  for (let i = 0; i < nonSystemMessages.length; i++) {
+    const message = nonSystemMessages[i]!;
+    const isLast = i === nonSystemMessages.length - 1;
+    const addCacheControl = hasAssistantMessage && isLast;
+
+    const encoded = encodeMessage(
+      message,
+      modelId,
+      encodeThoughtsAsText,
+      addCacheControl
+    );
+    if (encoded) {
+      anthropicMessages.push(encoded);
     }
   }
 
@@ -439,14 +541,25 @@ export function buildRequestParams(
     }
     /* v8 ignore stop */
 
-    // Set system prompt if we have one
+    // Set system prompt if we have one (with cache control for prompt caching)
     if (systemPrompt) {
-      requestParams.system = systemPrompt;
+      requestParams.system = [
+        {
+          type: 'text',
+          text: systemPrompt,
+          cache_control: { type: 'ephemeral' },
+        },
+      ];
     }
 
-    // Set tools if we have any
+    // Set tools if we have any (with cache control on the last tool)
     /* v8 ignore start - tool encoding will be tested via e2e */
     if (allTools.length > 0) {
+      // Add cache control to the last tool for prompt caching
+      const lastTool = allTools[allTools.length - 1]!;
+      (
+        lastTool as Anthropic.Messages.Tool & { cache_control?: object }
+      ).cache_control = { type: 'ephemeral' };
       requestParams.tools = allTools;
     }
     /* v8 ignore stop */

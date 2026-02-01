@@ -270,7 +270,14 @@ describe('format encoding', () => {
       {}
     );
 
-    expect(params.system).toBe(TOOL_MODE_INSTRUCTIONS);
+    // System prompt should be an array with cache_control
+    expect(params.system).toEqual([
+      {
+        type: 'text',
+        text: TOOL_MODE_INSTRUCTIONS,
+        cache_control: { type: 'ephemeral' },
+      },
+    ]);
   });
 
   it('uses type: any when format tool is combined with other tools', () => {
@@ -424,8 +431,17 @@ describe('raw message round-tripping', () => {
       'text'
     );
 
-    // Third is user message
-    expect(encoded[2]).toEqual({ role: 'user', content: 'How are you?' });
+    // Third is user message - with cache_control because this is multi-turn
+    expect(encoded[2]).toEqual({
+      role: 'user',
+      content: [
+        {
+          type: 'text',
+          text: 'How are you?',
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
+    });
   });
 
   it('encodeMessages does NOT reuse rawMessage for different provider', () => {
@@ -450,8 +466,18 @@ describe('raw message round-tripping', () => {
     );
 
     // Should encode from content, not raw message
+    // Last message in multi-turn gets cache_control
     expect(encoded).toHaveLength(2);
-    expect(encoded[1]).toEqual({ role: 'assistant', content: 'Hello!' });
+    expect(encoded[1]).toEqual({
+      role: 'assistant',
+      content: [
+        {
+          type: 'text',
+          text: 'Hello!',
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
+    });
   });
 
   it('encodeMessages does NOT reuse rawMessage for different model', () => {
@@ -477,8 +503,18 @@ describe('raw message round-tripping', () => {
     );
 
     // Should encode from content, not raw message
+    // Last message in multi-turn gets cache_control
     expect(encoded).toHaveLength(2);
-    expect(encoded[1]).toEqual({ role: 'assistant', content: 'Hello!' });
+    expect(encoded[1]).toEqual({
+      role: 'assistant',
+      content: [
+        {
+          type: 'text',
+          text: 'Hello!',
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
+    });
   });
 
   it('encodeMessages reuses rawMessage without structure validation', () => {
@@ -496,14 +532,356 @@ describe('raw message round-tripping', () => {
       } as unknown as AssistantMessage['rawMessage'],
     };
 
-    const messages = [user('Hi'), assistantMsg];
+    // Add a third message so assistant is not last (last message gets cache_control
+    // which would force re-encoding)
+    const messages = [user('Hi'), assistantMsg, user('Bye')];
     const { messages: encoded } = encodeMessages(
       messages,
       'anthropic/claude-haiku-4-5'
     );
 
-    // rawMessage IS reused
-    expect(encoded).toHaveLength(2);
+    // rawMessage IS reused (without structure validation) when provider/model match
+    // and we're not adding cache control (assistant is not the last message)
+    expect(encoded).toHaveLength(3);
     expect(encoded[1]).toEqual({ id: 'msg_123' });
+  });
+});
+
+describe('automatic cache control', () => {
+  describe('system message cache control', () => {
+    it('adds cache_control to system message', () => {
+      const messages = [
+        { role: 'system', content: { type: 'text', text: 'You are helpful' } },
+        user('Hello'),
+      ] as const;
+
+      const params = buildRequestParams(
+        'anthropic/claude-haiku-4-5',
+        messages,
+        undefined,
+        undefined,
+        {}
+      );
+
+      // System should be an array with cache_control
+      expect(Array.isArray(params.system)).toBe(true);
+      expect(params.system).toEqual([
+        {
+          type: 'text',
+          text: 'You are helpful',
+          cache_control: { type: 'ephemeral' },
+        },
+      ]);
+    });
+  });
+
+  describe('tool cache control', () => {
+    it('adds cache_control to the last tool', () => {
+      const messages = [user('Hello')];
+
+      const tool1 = defineTool({
+        name: 'get_weather',
+        description: 'Get weather',
+        tool: () => 'sunny',
+        __schema: {
+          type: 'object',
+          properties: { location: { type: 'string' } },
+          required: ['location'],
+          additionalProperties: false,
+        },
+      });
+
+      const tool2 = defineTool({
+        name: 'get_time',
+        description: 'Get time',
+        tool: () => '12:00',
+        __schema: {
+          type: 'object',
+          properties: { timezone: { type: 'string' } },
+          required: ['timezone'],
+          additionalProperties: false,
+        },
+      });
+
+      const params = buildRequestParams(
+        'anthropic/claude-haiku-4-5',
+        messages,
+        [tool1, tool2],
+        undefined,
+        {}
+      );
+
+      // First tool should NOT have cache_control
+      expect(params.tools?.[0]).not.toHaveProperty('cache_control');
+
+      // Last tool should have cache_control
+      expect(params.tools?.[1]).toHaveProperty('cache_control', {
+        type: 'ephemeral',
+      });
+    });
+
+    it('adds cache_control to format tool when it is the only tool', () => {
+      const messages = [user('Hello')];
+
+      const format = defineFormat({
+        mode: 'tool',
+        __schema: {
+          type: 'object',
+          properties: { name: { type: 'string' } },
+          required: ['name'],
+          additionalProperties: false,
+        },
+      });
+
+      const params = buildRequestParams(
+        'anthropic/claude-haiku-4-5',
+        messages,
+        undefined,
+        format,
+        {}
+      );
+
+      // Format tool should have cache_control
+      expect(params.tools?.[0]).toHaveProperty('cache_control', {
+        type: 'ephemeral',
+      });
+    });
+  });
+
+  describe('multi-turn message cache control', () => {
+    it('does NOT add cache_control for single-turn (user only) conversations', () => {
+      const messages = [user('Hello')];
+
+      const { messages: encoded } = encodeMessages(
+        messages,
+        'anthropic/claude-haiku-4-5'
+      );
+
+      // Single user message should be simplified to string (no cache_control)
+      expect(encoded).toHaveLength(1);
+      expect(encoded[0]).toEqual({ role: 'user', content: 'Hello' });
+    });
+
+    it('adds cache_control to last message in multi-turn conversations', () => {
+      const assistantMsg: AssistantMessage = {
+        role: 'assistant',
+        content: [{ type: 'text', text: 'Hello!' }],
+        name: null,
+        providerId: 'openai', // Different provider to force re-encoding
+        modelId: 'openai/gpt-4o',
+        providerModelName: 'gpt-4o',
+        rawMessage: null,
+      };
+
+      const messages = [user('Hi'), assistantMsg, user('How are you?')];
+
+      const { messages: encoded } = encodeMessages(
+        messages,
+        'anthropic/claude-haiku-4-5'
+      );
+
+      expect(encoded).toHaveLength(3);
+
+      // First user message - no cache_control
+      expect(encoded[0]).toEqual({ role: 'user', content: 'Hi' });
+
+      // Assistant message - no cache_control
+      expect(encoded[1]).toEqual({ role: 'assistant', content: 'Hello!' });
+
+      // Last message should have cache_control (array format, not string)
+      expect(encoded[2]).toEqual({
+        role: 'user',
+        content: [
+          {
+            type: 'text',
+            text: 'How are you?',
+            cache_control: { type: 'ephemeral' },
+          },
+        ],
+      });
+    });
+
+    it('adds cache_control to multi-part content in multi-turn conversations', () => {
+      // Create an image for multi-part content
+      const pngMagicBytes = new Uint8Array([
+        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d,
+      ]);
+      const image = Image.fromBytes(pngMagicBytes);
+
+      const assistantMsg: AssistantMessage = {
+        role: 'assistant',
+        content: [{ type: 'text', text: 'I see an image' }],
+        name: null,
+        providerId: 'openai', // Different provider to force re-encoding
+        modelId: 'openai/gpt-4o',
+        providerModelName: 'gpt-4o',
+        rawMessage: null,
+      };
+
+      const messages = [
+        user('Hi'),
+        assistantMsg,
+        user(['Look at this', image, 'What do you see?']),
+      ];
+
+      const { messages: encoded } = encodeMessages(
+        messages,
+        'anthropic/claude-haiku-4-5'
+      );
+
+      expect(encoded).toHaveLength(3);
+
+      // Last message should be an array with cache_control on the last text block
+      const lastMessage = encoded[2] as {
+        role: string;
+        content: Array<{ type: string; cache_control?: object }>;
+      };
+      expect(lastMessage.role).toBe('user');
+      expect(Array.isArray(lastMessage.content)).toBe(true);
+      expect(lastMessage.content).toHaveLength(3);
+
+      // First text - no cache_control
+      expect(lastMessage.content[0]).not.toHaveProperty('cache_control');
+      // Image - no cache_control
+      expect(lastMessage.content[1]).not.toHaveProperty('cache_control');
+      // Last text - has cache_control
+      expect(lastMessage.content[2]).toHaveProperty('cache_control', {
+        type: 'ephemeral',
+      });
+    });
+
+    it('does not reuse rawMessage when adding cache_control to multi-turn', () => {
+      // Create an assistant message that matches the target model
+      const assistantMsg: AssistantMessage = {
+        role: 'assistant',
+        content: [{ type: 'text', text: 'Hello!' }],
+        name: null,
+        providerId: 'anthropic',
+        modelId: 'anthropic/claude-haiku-4-5',
+        providerModelName: 'claude-haiku-4-5',
+        rawMessage: {
+          role: 'assistant',
+          content: [{ type: 'text', text: 'Hello!' }],
+        } as unknown as AssistantMessage['rawMessage'],
+      };
+
+      // Last message is user, so assistant message should not need cache_control
+      // and can reuse rawMessage
+      const messages = [user('Hi'), assistantMsg, user('Bye')];
+
+      const { messages: encoded } = encodeMessages(
+        messages,
+        'anthropic/claude-haiku-4-5'
+      );
+
+      expect(encoded).toHaveLength(3);
+
+      // Assistant message should be reused from rawMessage
+      expect(encoded[1]).toHaveProperty('content');
+      expect((encoded[1] as { content: unknown[] }).content[0]).toHaveProperty(
+        'text',
+        'Hello!'
+      );
+    });
+
+    it('skips empty text when finding cacheable content in multi-turn', () => {
+      const assistantMsg: AssistantMessage = {
+        role: 'assistant',
+        content: [{ type: 'text', text: 'Hello!' }],
+        name: null,
+        providerId: 'openai', // Different provider to force re-encoding
+        modelId: 'openai/gpt-4o',
+        providerModelName: 'gpt-4o',
+        rawMessage: null,
+      };
+
+      // Last message has text followed by empty text - cache_control should
+      // be added to the non-empty text, skipping the empty text
+      const messages = [
+        user('Hi'),
+        assistantMsg,
+        user(['What is this?', '']), // Non-empty text, then empty text
+      ];
+
+      const { messages: encoded } = encodeMessages(
+        messages,
+        'anthropic/claude-haiku-4-5'
+      );
+
+      expect(encoded).toHaveLength(3);
+
+      // Last message should have cache_control on first (non-empty) text
+      const lastMessage = encoded[2] as {
+        role: string;
+        content: Array<{ type: string; text: string; cache_control?: object }>;
+      };
+      expect(lastMessage.role).toBe('user');
+      expect(Array.isArray(lastMessage.content)).toBe(true);
+
+      // The first text block should have cache_control (empty text was skipped)
+      expect(lastMessage.content[0]?.cache_control).toEqual({
+        type: 'ephemeral',
+      });
+    });
+
+    it('adds cache_control to image when it is the last cacheable content', () => {
+      // PNG magic bytes
+      const pngMagicBytes = new Uint8Array([
+        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d,
+      ]);
+      const image = Image.fromBytes(pngMagicBytes);
+
+      const assistantMsg: AssistantMessage = {
+        role: 'assistant',
+        content: [{ type: 'text', text: 'Hello!' }],
+        name: null,
+        providerId: 'openai', // Different provider to force re-encoding
+        modelId: 'openai/gpt-4o',
+        providerModelName: 'gpt-4o',
+        rawMessage: null,
+      };
+
+      // Last message ends with an image - cache_control should be on the image
+      const messages = [user('Hi'), assistantMsg, user([image])];
+
+      const { messages: encoded } = encodeMessages(
+        messages,
+        'anthropic/claude-haiku-4-5'
+      );
+
+      expect(encoded).toHaveLength(3);
+
+      // Last message should have cache_control on the image
+      const lastMessage = encoded[2] as {
+        role: string;
+        content: Array<{ type: string; cache_control?: object }>;
+      };
+      expect(lastMessage.role).toBe('user');
+      expect(Array.isArray(lastMessage.content)).toBe(true);
+      expect(lastMessage.content[0]?.type).toBe('image');
+      expect(lastMessage.content[0]?.cache_control).toEqual({
+        type: 'ephemeral',
+      });
+    });
+
+    it('filters out system messages when encoding', () => {
+      const messages = [
+        {
+          role: 'system' as const,
+          content: { type: 'text' as const, text: 'Be helpful' },
+        },
+        user('Hi'),
+      ];
+
+      const { messages: encoded, system } = encodeMessages(
+        messages,
+        'anthropic/claude-haiku-4-5'
+      );
+
+      // System message should be extracted, not in encoded messages
+      expect(system).toBe('Be helpful');
+      expect(encoded).toHaveLength(1);
+      expect(encoded[0]).toEqual({ role: 'user', content: 'Hi' });
+    });
   });
 });
