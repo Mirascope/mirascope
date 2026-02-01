@@ -71,6 +71,9 @@
     "@anthropic-ai/sdk": "^0.71.2",
     "@google/genai": "^1.0.0",
     "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/core": "^2.0.0",
+    "@opentelemetry/propagator-b3": "^2.0.0",
+    "@opentelemetry/propagator-jaeger": "^2.0.0",
     "@opentelemetry/sdk-trace-node": "^2.5.0",
     "@pollyjs/adapter-fetch": "^6.0.7",
     "@pollyjs/core": "^6.0.6",
@@ -95,6 +98,9 @@
     "@anthropic-ai/sdk": ">=0.71.0",
     "@google/genai": ">=1.0.0",
     "@opentelemetry/api": ">=1.7.0",
+    "@opentelemetry/core": ">=2.0.0",
+    "@opentelemetry/propagator-b3": ">=2.0.0",
+    "@opentelemetry/propagator-jaeger": ">=2.0.0",
     "@opentelemetry/sdk-trace-node": ">=1.20.0",
     "@rollup/plugin-typescript": ">=11.0.0",
     "esbuild": ">=0.17.0",
@@ -111,6 +117,15 @@
       "optional": true
     },
     "@opentelemetry/api": {
+      "optional": true
+    },
+    "@opentelemetry/core": {
+      "optional": true
+    },
+    "@opentelemetry/propagator-b3": {
+      "optional": true
+    },
+    "@opentelemetry/propagator-jaeger": {
       "optional": true
     },
     "@opentelemetry/sdk-trace-node": {
