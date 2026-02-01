@@ -416,7 +416,7 @@ function createFormat<T>(options: CreateFormatOptions<T>): Format<T> {
  * - Zod 4: Uses toJSONSchema() method if available
  * - Zod 3: Manually extracts from _def structure
  */
-function extractSchemaFromZod(zodSchema: ZodLike): ToolParameterSchema {
+export function extractSchemaFromZod(zodSchema: ZodLike): ToolParameterSchema {
   const schemaAny = zodSchema as unknown as Record<string, unknown>;
 
   // Zod 4: Use toJSONSchema() if available (preferred method)

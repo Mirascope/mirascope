@@ -1,11 +1,12 @@
-import { llm } from "mirascope";
 /**
- * Basic structured output example.
+ * Zod-native structured output example.
  *
  * Demonstrates using Zod schemas to get typed, validated responses from LLMs.
+ * This pattern works WITHOUT the compile-time transformer.
  *
- * Run with: bun run example examples/format/basic.ts
+ * Run with: bun run example examples/format/basic-zod.ts
  */
+import { llm } from "mirascope";
 import { z } from "zod";
 
 // Define a Zod schema for the structured output

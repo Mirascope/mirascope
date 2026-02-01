@@ -1,20 +1,29 @@
 /**
- * Basic structured output example using TypeScript interfaces.
+ * Basic structured output example using TypeScript types with JSDoc.
  *
  * Demonstrates using plain TypeScript types (no Zod) to get typed responses from LLMs.
- * The compile-time transformer injects the JSON schema from the type definition.
+ * The compile-time transformer injects the JSON schema from the type definition,
+ * including JSDoc comments as field descriptions.
  *
  * Run with: bun run example examples/format/basic.ts
  */
 import { llm } from "mirascope";
 
-// Define a TypeScript interface for the structured output
-// (No Zod required - the transformer generates the schema from this type)
+/**
+ * Define a TypeScript type for the structured output.
+ * JSDoc comments on properties become field descriptions in the schema,
+ * helping the LLM understand what each field should contain.
+ */
 type Book = {
+  /** The title of the book */
   title: string;
+  /** The author's full name */
   author: string;
+  /** The year the book was published */
   year: string;
+  /** The literary genre (e.g., science fiction, fantasy, mystery) */
   genre: string;
+  /** A brief 2-3 sentence summary of the book's plot */
   summary: string;
 };
 

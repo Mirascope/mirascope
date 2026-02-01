@@ -1,11 +1,25 @@
+/**
+ * Basic tool usage example - Transformer-based pattern.
+ *
+ * Demonstrates defining tools using TypeScript interfaces with JSDoc comments.
+ * The transformer extracts JSDoc comments as field descriptions automatically.
+ *
+ * Run with: bun run example examples/tools/basic.ts
+ */
 import { llm } from "mirascope";
 
-const sqrtTool = llm.defineTool<{ number: number }>({
+/**
+ * Arguments for the square root tool.
+ * JSDoc comments on properties become field descriptions in the schema.
+ */
+type SqrtArgs = {
+  /** The number to compute the square root of */
+  number: number;
+};
+
+const sqrtTool = llm.defineTool<SqrtArgs>({
   name: "sqrt_tool",
   description: "Computes the square root of a number",
-  fieldDefinitions: {
-    number: "The number to compute the square root of",
-  },
   tool: ({ number }) => Math.sqrt(number),
 });
 

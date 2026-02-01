@@ -31,10 +31,8 @@ const PASSWORD_MAP: Record<string, string> = {
  */
 const secretRetrievalTool = defineTool<{ password: string }>({
   name: "secret_retrieval_tool",
-  description: "A tool that requires a password to retrieve a secret.",
-  fieldDefinitions: {
-    password: "The password to retrieve the secret for.",
-  },
+  description:
+    "A tool that requires a password to retrieve a secret. Takes a 'password' field.",
   tool: ({ password }) => {
     return PASSWORD_MAP[password] ?? "Invalid password!";
   },

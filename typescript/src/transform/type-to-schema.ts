@@ -279,7 +279,16 @@ function handleObjectType(
     const isOptional = (prop.getFlags() & ts.SymbolFlags.Optional) !== 0;
 
     // Convert the property type to schema
-    properties[propName] = typeToJsonSchema(propType, ctx);
+    const propSchema = typeToJsonSchema(propType, ctx);
+
+    // Extract JSDoc description from property declaration
+    const jsDocComment = prop.getDocumentationComment(checker);
+    if (jsDocComment.length > 0) {
+      const description = jsDocComment.map((c) => c.text).join("");
+      propSchema.description = description;
+    }
+
+    properties[propName] = propSchema;
 
     // Add to required if not optional
     if (!isOptional) {
