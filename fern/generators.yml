@@ -17,3 +17,16 @@ groups:
             filename: client.py
           package_name: mirascope.api._generated
           timeout_in_seconds: 180
+
+  typescript-sdk:
+    generators:
+      - name: fernapi/fern-typescript-node-sdk
+        version: 3.46.3
+        output:
+          location: local-file-system
+          path: ../typescript/src/api/_generated
+        config:
+          namespaceExport: Mirascope
+          noSerdeLayer: false
+          includeCredentialsOnCrossOriginRequests: false
+          timeoutInSeconds: 180
