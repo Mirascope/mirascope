@@ -146,6 +146,65 @@ describe("withModel", () => {
 
     expect(modelFromContext()).toBeUndefined();
   });
+
+  it("accepts a model ID string", () => {
+    const result = withModel("openai/gpt-4o", () => {
+      const model = modelFromContext();
+      expect(model).toBeInstanceOf(Model);
+      expect(model?.modelId).toBe("openai/gpt-4o");
+      return "test-result";
+    });
+
+    expect(result).toBe("test-result");
+    expect(modelFromContext()).toBeUndefined();
+  });
+
+  it("accepts a model ID string with params", () => {
+    const result = withModel(
+      "anthropic/claude-sonnet-4-20250514",
+      { temperature: 0.9 },
+      () => {
+        const model = modelFromContext();
+        expect(model).toBeInstanceOf(Model);
+        expect(model?.modelId).toBe("anthropic/claude-sonnet-4-20250514");
+        expect(model?.params).toEqual({ temperature: 0.9 });
+        return "test-with-params";
+      },
+    );
+
+    expect(result).toBe("test-with-params");
+    expect(modelFromContext()).toBeUndefined();
+  });
+
+  it("handles async with model ID string", async () => {
+    const result = await withModel("openai/gpt-4o", async () => {
+      const model = modelFromContext();
+      expect(model?.modelId).toBe("openai/gpt-4o");
+      await Promise.resolve();
+      expect(modelFromContext()?.modelId).toBe("openai/gpt-4o");
+      return "async-string-result";
+    });
+
+    expect(result).toBe("async-string-result");
+    expect(modelFromContext()).toBeUndefined();
+  });
+
+  it("handles async with model ID string and params", async () => {
+    const result = await withModel(
+      "anthropic/claude-sonnet-4-20250514",
+      { temperature: 0.7, maxTokens: 1000 },
+      async () => {
+        const model = modelFromContext();
+        expect(model?.modelId).toBe("anthropic/claude-sonnet-4-20250514");
+        expect(model?.params).toEqual({ temperature: 0.7, maxTokens: 1000 });
+        await Promise.resolve();
+        return "async-params-result";
+      },
+    );
+
+    expect(result).toBe("async-params-result");
+    expect(modelFromContext()).toBeUndefined();
+  });
 });
 
 describe("useModel", () => {
