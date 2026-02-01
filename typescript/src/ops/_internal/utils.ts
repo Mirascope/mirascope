@@ -57,7 +57,7 @@ export function toJsonable(value: unknown): Jsonable {
  * Interface for callable objects with optional name property.
  * Equivalent to Python's Protocol with __call__.
  */
-interface NamedCallable {
+export interface NamedCallable {
   readonly name?: string;
   (...args: never[]): unknown;
 }
