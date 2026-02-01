@@ -20,6 +20,9 @@ import {
   thoughtStart,
   thoughtChunk,
   thoughtEnd,
+  toolCallStartChunk,
+  toolCallChunk,
+  toolCallEndChunk,
   finishReasonChunk,
   usageDeltaChunk,
   rawStreamEventChunk,
@@ -36,6 +39,8 @@ interface DecodeState {
   inTextBlock: boolean;
   /** Whether we're in a thought block */
   inThoughtBlock: boolean;
+  /** ID of current tool call being streamed */
+  currentToolCallId: string | null;
   /** Whether to include thoughts in output */
   includeThoughts: boolean;
 }
@@ -47,6 +52,7 @@ export function createDecodeState(includeThoughts: boolean): DecodeState {
   return {
     inTextBlock: false,
     inThoughtBlock: false,
+    currentToolCallId: null,
     includeThoughts,
   };
 }
@@ -96,6 +102,28 @@ export function decodeStreamEvent(
         state.inThoughtBlock = false;
       }
       break;
+
+    /* v8 ignore start - OpenAI Responses API not in tools test providers */
+    case 'response.output_item.added':
+      if (event.item.type === 'function_call') {
+        state.currentToolCallId = event.item.call_id;
+        chunks.push(toolCallStartChunk(event.item.call_id, event.item.name));
+      }
+      break;
+
+    case 'response.function_call_arguments.delta':
+      if (state.currentToolCallId) {
+        chunks.push(toolCallChunk(state.currentToolCallId, event.delta));
+      }
+      break;
+
+    case 'response.function_call_arguments.done':
+      if (state.currentToolCallId) {
+        chunks.push(toolCallEndChunk(state.currentToolCallId));
+        state.currentToolCallId = null;
+      }
+      break;
+    /* v8 ignore stop */
 
     case 'response.completed':
     case 'response.incomplete':
