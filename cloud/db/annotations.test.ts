@@ -3,6 +3,15 @@
  */
 
 import { Effect, Layer } from "effect";
+
+import { Database } from "@/db/database";
+import {
+  NotFoundError,
+  DatabaseError,
+  PermissionDeniedError,
+  AlreadyExistsError,
+  ClickHouseError,
+} from "@/errors";
 import {
   describe,
   it,
@@ -17,14 +26,6 @@ import {
   createTraceDetailResponse,
   createTraceDetailSpan,
 } from "@/tests/db/clickhouse/fixtures";
-import { Database } from "@/db/database";
-import {
-  NotFoundError,
-  DatabaseError,
-  PermissionDeniedError,
-  AlreadyExistsError,
-  ClickHouseError,
-} from "@/errors";
 
 // =============================================================================
 // Annotations Tests

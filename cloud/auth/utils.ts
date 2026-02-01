@@ -1,10 +1,12 @@
 import { Effect } from "effect";
+
+import type { AuthResult } from "@/auth/context";
+import type { ApiKeyInfo } from "@/db/schema";
+import type { SettingsConfig } from "@/settings";
+
+import { getApiKeyFromRequest } from "@/auth/api-key";
 import { Database } from "@/db/database";
 import { UnauthorizedError } from "@/errors";
-import type { ApiKeyInfo } from "@/db/schema";
-import { getApiKeyFromRequest } from "@/auth/api-key";
-import type { AuthResult } from "@/auth/context";
-import type { SettingsConfig } from "@/settings";
 
 export function isSecure(settings: SettingsConfig): boolean {
   return (

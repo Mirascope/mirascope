@@ -48,6 +48,7 @@
  */
 
 import { Context, Effect, Layer } from "effect";
+
 import { ClickHouse } from "@/db/clickhouse/client";
 import { formatDateTime64 } from "@/db/clickhouse/transform";
 import { ClickHouseError } from "@/errors";

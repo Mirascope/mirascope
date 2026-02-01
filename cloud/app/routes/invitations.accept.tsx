@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Loader2, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
-import { useAuth } from "@/app/contexts/auth";
+
 import { useAcceptInvitation } from "@/app/api/organization-invitations";
+import { Alert, AlertDescription } from "@/app/components/ui/alert";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -10,8 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { Alert, AlertDescription } from "@/app/components/ui/alert";
-import { Loader2, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { useAuth } from "@/app/contexts/auth";
 
 export const Route = createFileRoute("/invitations/accept")({
   component: AcceptInvitationPage,

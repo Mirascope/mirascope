@@ -7,9 +7,10 @@ import {
   primaryKey,
   foreignKey,
 } from "drizzle-orm/pg-core";
+
+import { organizationMemberships } from "./organization-memberships";
 import { projects } from "./projects";
 import { users } from "./users";
-import { organizationMemberships } from "./organization-memberships";
 
 export const projectRoleEnum = pgEnum("project_role", [
   "ADMIN",

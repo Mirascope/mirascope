@@ -6,10 +6,18 @@
  */
 
 import { Effect } from "effect";
+
+import type { TokenUsage } from "@/api/router/pricing";
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
+
+import { estimateCost } from "@/api/router/cost-estimator";
+import {
+  isValidProvider,
+  extractModelId,
+  type ProviderName,
+} from "@/api/router/providers";
 import { authenticate } from "@/auth";
 import { Database } from "@/db/database";
-import { Payments } from "@/payments";
 import {
   InternalError,
   UnauthorizedError,
@@ -17,13 +25,7 @@ import {
   NotFoundError,
   PermissionDeniedError,
 } from "@/errors";
-import {
-  isValidProvider,
-  extractModelId,
-  type ProviderName,
-} from "@/api/router/providers";
-import { estimateCost } from "@/api/router/cost-estimator";
-import type { TokenUsage } from "@/api/router/pricing";
+import { Payments } from "@/payments";
 import {
   RouterMeteringQueueService,
   type RouterMeteringMessage,
@@ -300,7 +302,8 @@ export function handleRouterRequestFailure(
  * @param reservationId - Reservation ID for fund settlement
  * @param request - Router request identifiers
  * @param usage - Token usage data
- * @param costCenticents - Calculated cost in centicents
+ * @param tokenCostCenticents - Token cost in centicents
+ * @param toolCostCenticents - Tool cost in centicents (optional)
  * @returns Effect that completes when message is enqueued
  */
 export function enqueueRouterMetering(
@@ -308,10 +311,14 @@ export function enqueueRouterMetering(
   reservationId: string,
   request: RouterRequestIdentifiers,
   usage: TokenUsage,
-  costCenticents: number,
+  tokenCostCenticents: number,
+  toolCostCenticents?: number,
 ): Effect.Effect<void, Error, RouterMeteringQueueService> {
   return Effect.gen(function* () {
     const queue = yield* RouterMeteringQueueService;
+
+    // Compute total cost (sum of token and tool costs)
+    const costCenticents = tokenCostCenticents + (toolCostCenticents ?? 0);
 
     const message: RouterMeteringMessage = {
       routerRequestId,
@@ -319,6 +326,8 @@ export function enqueueRouterMetering(
       request,
       usage,
       costCenticents,
+      tokenCostCenticents,
+      toolCostCenticents,
       timestamp: Date.now(),
     };
 

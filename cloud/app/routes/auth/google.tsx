@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Effect } from "effect";
-import { AuthService } from "@/auth";
+
 import { runEffectResponse } from "@/app/lib/effect";
+import { AuthService } from "@/auth";
 
 export const Route = createFileRoute("/auth/google")({
   server: {

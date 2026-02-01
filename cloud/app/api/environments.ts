@@ -1,10 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Effect } from "effect";
-import { ApiClient, eq } from "@/app/api/client";
+
 import type {
   CreateEnvironmentRequest,
   UpdateEnvironmentRequest,
 } from "@/api/environments.schemas";
+
+import { ApiClient, eq } from "@/app/api/client";
 
 export const useEnvironments = (
   organizationId: string | null,

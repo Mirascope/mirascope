@@ -1,17 +1,19 @@
 import { describe, it, expect } from "@effect/vitest";
 import { Context, Effect, Layer } from "effect";
+
+import type { PlanTier } from "@/payments/plans";
+
+import { DrizzleORM } from "@/db/client";
+import { organizations } from "@/db/schema/organizations";
+import { NotFoundError, StripeError, PlanLimitExceededError } from "@/errors";
 import { Stripe } from "@/payments/client";
 import { Payments } from "@/payments/service";
-import { DrizzleORM } from "@/db/client";
-import { MockDrizzleORMLayer } from "@/tests/mock-drizzle";
 import { TestDrizzleORM } from "@/tests/db";
+import { MockDrizzleORMLayer } from "@/tests/mock-drizzle";
 import {
   TestSubscriptionWithRealDatabaseFixture,
   MockPayments,
 } from "@/tests/payments";
-import { NotFoundError, StripeError, PlanLimitExceededError } from "@/errors";
-import { organizations } from "@/db/schema/organizations";
-import type { PlanTier } from "@/payments/plans";
 
 // Test constants - use unique IDs per test run to avoid conflicts in parallel execution
 const testRunId = crypto.randomUUID().slice(0, 8);

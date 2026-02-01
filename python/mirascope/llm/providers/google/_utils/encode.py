@@ -15,12 +15,18 @@ from ....content import ContentPart
 from ....exceptions import FeatureNotSupportedError
 from ....formatting import (
     Format,
+    FormatSpec,
     FormattableT,
-    OutputParser,
     resolve_format,
 )
 from ....messages import AssistantMessage, Message, UserMessage
-from ....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit, ProviderTool
+from ....tools import (
+    FORMAT_TOOL_NAME,
+    AnyToolSchema,
+    BaseToolkit,
+    ProviderTool,
+    WebSearchTool,
+)
 from ...base import _utils as _base_utils
 from ..model_id import GoogleModelId, model_name
 from ..model_info import MODELS_WITHOUT_STRUCTURED_OUTPUT_AND_TOOLS_SUPPORT
@@ -275,10 +281,7 @@ def encode_request(
     model_id: GoogleModelId,
     messages: Sequence[Message],
     tools: BaseToolkit[AnyToolSchema],
-    format: type[FormattableT]
-    | Format[FormattableT]
-    | OutputParser[FormattableT]
-    | None,
+    format: FormatSpec[FormattableT] | None,
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, GoogleKwargs]:
     """Prepares a request for the genai `Client.models.generate_content` method."""
@@ -377,12 +380,22 @@ def encode_request(
             )
 
     if tools.tools:
-        function_declarations = [
-            _convert_tool_to_function_declaration(tool) for tool in tools.tools
-        ]
-        google_tools.append(
-            genai_types.ToolDict(function_declarations=function_declarations)
-        )
+        # Separate web search tools from function tools
+        function_tools = [t for t in tools.tools if not isinstance(t, WebSearchTool)]
+        has_web_search = any(isinstance(t, WebSearchTool) for t in tools.tools)
+
+        if function_tools:
+            function_declarations = [
+                _convert_tool_to_function_declaration(tool) for tool in function_tools
+            ]
+            google_tools.append(
+                genai_types.ToolDict(function_declarations=function_declarations)
+            )
+
+        if has_web_search:
+            google_tools.append(
+                genai_types.ToolDict(google_search=genai_types.GoogleSearchDict())
+            )
 
     if google_tools:
         google_config["tools"] = cast(genai_types.ToolListUnionDict, google_tools)

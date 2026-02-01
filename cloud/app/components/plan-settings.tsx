@@ -1,4 +1,7 @@
+import { Check, Loader2 } from "lucide-react";
+
 import { useSubscription } from "@/app/api/organizations";
+import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -6,9 +9,7 @@ import {
   CardTitle,
   CardContent,
 } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
 import { PlanBadge, planLabels } from "@/app/components/ui/plan-badge";
-import { Check, Loader2 } from "lucide-react";
 import {
   formatPaymentMethod,
   isUpgrade,

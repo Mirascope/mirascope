@@ -36,8 +36,8 @@
  */
 
 import { Effect } from "effect";
+
 import { DrizzleORM } from "@/db/client";
-import { Payments } from "@/payments";
 import {
   type AlreadyExistsError,
   type DatabaseError,
@@ -49,6 +49,7 @@ import {
   StripeError,
   SubscriptionPastDueError,
 } from "@/errors";
+import { Payments } from "@/payments";
 
 // =============================================================================
 // Path Parameter Utility Types

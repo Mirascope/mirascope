@@ -1,4 +1,5 @@
 import { Effect } from "effect";
+
 import { InternalError } from "@/errors";
 
 /**

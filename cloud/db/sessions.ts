@@ -19,23 +19,25 @@
  * ```
  */
 
-import { Effect } from "effect";
 import { and, eq } from "drizzle-orm";
+import { Effect } from "effect";
+
+import type { PublicUser } from "@/db/schema/users";
+
 import { BaseEffectService } from "@/db/base";
-import {
-  DatabaseError,
-  DeletedUserError,
-  InvalidSessionError,
-  NotFoundError,
-} from "@/errors";
+import { DrizzleORM } from "@/db/client";
 import {
   sessions,
   users,
   type PublicSession,
   type NewSession,
 } from "@/db/schema";
-import type { PublicUser } from "@/db/schema/users";
-import { DrizzleORM } from "@/db/client";
+import {
+  DatabaseError,
+  DeletedUserError,
+  InvalidSessionError,
+  NotFoundError,
+} from "@/errors";
 
 /**
  * Update type for sessions - only expiresAt can be updated.

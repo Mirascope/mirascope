@@ -1,5 +1,7 @@
 import { Context, Effect } from "effect";
+
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
+
 import { UnauthorizedError } from "@/errors";
 
 /** Auth result including optional API key info. */

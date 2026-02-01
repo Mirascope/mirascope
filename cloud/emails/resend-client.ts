@@ -48,8 +48,10 @@
 
 import { Effect, Layer, Context } from "effect";
 import { Resend as ResendAPI } from "resend";
-import { ResendError } from "@/errors";
+
 import type { ResendConfig } from "@/settings";
+
+import { ResendError } from "@/errors";
 
 /**
  * Type helper to unwrap Resend's Response<T> format to just T.

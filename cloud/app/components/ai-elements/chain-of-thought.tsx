@@ -1,6 +1,16 @@
 "use client";
 
+import type { ComponentProps, ReactNode } from "react";
+
 import { useControllableState } from "@radix-ui/react-use-controllable-state";
+import {
+  BrainIcon,
+  ChevronDownIcon,
+  DotIcon,
+  type LucideIcon,
+} from "lucide-react";
+import { createContext, memo, useContext, useMemo } from "react";
+
 import { Badge } from "@/app/components/ui/badge";
 import {
   Collapsible,
@@ -8,14 +18,6 @@ import {
   CollapsibleTrigger,
 } from "@/app/components/ui/collapsible";
 import { cn } from "@/app/lib/utils";
-import {
-  BrainIcon,
-  ChevronDownIcon,
-  DotIcon,
-  type LucideIcon,
-} from "lucide-react";
-import type { ComponentProps, ReactNode } from "react";
-import { createContext, memo, useContext, useMemo } from "react";
 
 type ChainOfThoughtContextValue = {
   isOpen: boolean;

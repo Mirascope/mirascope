@@ -27,6 +27,7 @@ from .....responses import (
     ChunkIterator,
     FinishReason,
     FinishReasonChunk,
+    ProviderToolUsage,
     RawMessageChunk,
     RawStreamEventChunk,
     Usage,
@@ -40,8 +41,21 @@ INCOMPLETE_DETAILS_TO_FINISH_REASON = {
 }
 
 
+def _extract_tool_usage(
+    output: list[openai_types.ResponseOutputItem],
+) -> list[ProviderToolUsage] | None:
+    """Extract provider tool usage from OpenAI Responses output."""
+    web_search_count = sum(1 for item in output if item.type == "web_search_call")
+
+    if web_search_count == 0:
+        return None
+
+    return [ProviderToolUsage(name="web_search", call_count=web_search_count)]
+
+
 def _decode_usage(
     usage: openai_types.ResponseUsage | None,
+    output: list[openai_types.ResponseOutputItem] | None = None,
 ) -> Usage | None:
     """Convert OpenAI ResponseUsage to Mirascope Usage."""
     if usage is None:  # pragma: no cover
@@ -63,6 +77,7 @@ def _decode_usage(
             else None
         )
         or 0,
+        provider_tool_usage=_extract_tool_usage(output) if output else None,
         raw=usage,
     )
 
@@ -112,7 +127,8 @@ def decode_response(
                 for reasoning_content in output_item.content:
                     if reasoning_content.type == "reasoning_text":
                         parts.append(Thought(thought=reasoning_content.text))
-
+        elif output_item.type == "web_search_call":
+            pass  # Skip, preserved in raw_message
         else:
             raise NotImplementedError(f"Unsupported output item: {output_item.type}")
 
@@ -134,7 +150,7 @@ def decode_response(
         ],
     )
 
-    usage = _decode_usage(response.usage)
+    usage = _decode_usage(response.usage, response.output)
     return assistant_message, finish_reason, usage
 
 
@@ -145,6 +161,7 @@ class _OpenAIResponsesChunkProcessor:
         self.current_content_type: Literal["text", "tool_call", "thought"] | None = None
         self.refusal_encountered = False
         self.include_thoughts = include_thoughts
+        self.web_search_count = 0
 
     def process_chunk(self, event: ResponseStreamEvent) -> ChunkIterator:
         """Process a single OpenAI Responses stream event and yield the appropriate content chunks."""
@@ -178,6 +195,8 @@ class _OpenAIResponsesChunkProcessor:
                         name=item.name,
                     )
                     self.current_content_type = "tool_call"
+                elif item.type == "web_search_call":
+                    self.web_search_count += 1
             elif event.type == "response.function_call_arguments.delta":
                 yield ToolCallChunk(id=self.current_tool_call_id, delta=event.delta)
             elif event.type == "response.function_call_arguments.done":
@@ -218,6 +237,15 @@ class _OpenAIResponsesChunkProcessor:
                 # Emit usage delta if present
                 if event.response.usage:
                     usage = event.response.usage
+                    provider_tool_usage = (
+                        [
+                            ProviderToolUsage(
+                                name="web_search", call_count=self.web_search_count
+                            )
+                        ]
+                        if self.web_search_count > 0
+                        else None
+                    )
                     yield UsageDeltaChunk(
                         input_tokens=usage.input_tokens,
                         output_tokens=usage.output_tokens,
@@ -234,6 +262,7 @@ class _OpenAIResponsesChunkProcessor:
                             else None
                         )
                         or 0,
+                        provider_tool_usage=provider_tool_usage,
                     )
 
 

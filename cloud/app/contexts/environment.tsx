@@ -5,7 +5,9 @@ import {
   useEffect,
   type ReactNode,
 } from "react";
+
 import type { PublicEnvironment } from "@/db/schema";
+
 import { useEnvironments } from "@/app/api/environments";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";

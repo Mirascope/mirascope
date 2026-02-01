@@ -5,7 +5,9 @@ import {
   useEffect,
   type ReactNode,
 } from "react";
+
 import type { PublicOrganizationWithMembership } from "@/db/schema";
+
 import { useOrganizations } from "@/app/api/organizations";
 
 const STORAGE_KEY = "mirascope:selectedOrganizationId";

@@ -1,10 +1,12 @@
-import { describe, it, expect, vi } from "vitest";
 import { Effect, Layer } from "effect";
+import { describe, it, expect, vi } from "vitest";
+
+import type { CronTriggerEnv } from "@/workers/reservationExpiryCron";
+
 import { DrizzleORM } from "@/db/client";
 import reservationExpiryCron, {
   expireStaleReservations,
 } from "@/workers/reservationExpiryCron";
-import type { CronTriggerEnv } from "@/workers/reservationExpiryCron";
 
 describe("reservationExpiryCron", () => {
   const mockEnv: CronTriggerEnv = {

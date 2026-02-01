@@ -1,12 +1,14 @@
 import { Effect } from "effect";
-import { Database } from "@/db/database";
-import { ClickHouseSearch } from "@/db/clickhouse/search";
-import { AuthenticatedUser } from "@/auth";
+
 import type {
   CreateEnvironmentRequest,
   EnvironmentAnalyticsRequest,
   UpdateEnvironmentRequest,
 } from "@/api/environments.schemas";
+
+import { AuthenticatedUser } from "@/auth";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
+import { Database } from "@/db/database";
 
 export * from "@/api/environments.schemas";
 

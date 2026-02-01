@@ -1,4 +1,10 @@
+import { Plus } from "lucide-react";
 import { useState } from "react";
+
+import { useAllApiKeys } from "@/app/api/api-keys";
+import { ApiKeysTable } from "@/app/components/api-keys-table";
+import { CreateApiKeyModal } from "@/app/components/create-api-key-modal";
+import { Button } from "@/app/components/ui/button";
 import {
   Card,
   CardContent,
@@ -6,11 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { Button } from "@/app/components/ui/button";
-import { Plus } from "lucide-react";
-import { ApiKeysTable } from "@/app/components/api-keys-table";
-import { CreateApiKeyModal } from "@/app/components/create-api-key-modal";
-import { useAllApiKeys } from "@/app/api/api-keys";
 
 interface ApiKeysSectionProps {
   organizationId: string;

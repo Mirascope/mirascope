@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+
 import { organizationMemberships } from "./organization-memberships";
 
 export const organizations = pgTable("organizations", {

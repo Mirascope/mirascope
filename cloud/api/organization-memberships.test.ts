@@ -1,10 +1,11 @@
 import { Effect, Schema } from "effect";
-import { describe, it, expect, TestApiContext } from "@/tests/api";
+
 import {
   UpdateMemberRoleRequestSchema,
   OrganizationMemberWithUserSchema,
   MembershipResponseSchema,
 } from "@/api/organization-memberships.schemas";
+import { describe, it, expect, TestApiContext } from "@/tests/api";
 
 describe("UpdateMemberRoleRequestSchema validation", () => {
   it("accepts ADMIN role", () => {

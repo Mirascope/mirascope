@@ -1,21 +1,27 @@
+import {
+  MoreHorizontal,
+  RefreshCw,
+  UserMinus,
+  Shield,
+  Loader2,
+} from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+
+import type { OrganizationInvitation } from "@/api/organization-invitations.schemas";
+import type {
+  OrganizationMemberWithUser,
+  OrganizationRole,
+} from "@/api/organization-memberships.schemas";
+
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/app/components/ui/table";
-import { Badge } from "@/app/components/ui/badge";
-import { Button } from "@/app/components/ui/button";
+  useResendInvitation,
+  useRevokeInvitation,
+} from "@/app/api/organization-invitations";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
+  useUpdateMemberRole,
+  useRemoveMember,
+} from "@/app/api/organization-memberships";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,27 +32,23 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/app/components/ui/alert-dialog";
+import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/app/components/ui/button";
 import {
-  MoreHorizontal,
-  RefreshCw,
-  UserMinus,
-  Shield,
-  Loader2,
-} from "lucide-react";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/app/components/ui/dropdown-menu";
 import {
-  useUpdateMemberRole,
-  useRemoveMember,
-} from "@/app/api/organization-memberships";
-import {
-  useResendInvitation,
-  useRevokeInvitation,
-} from "@/app/api/organization-invitations";
-import { toast } from "sonner";
-import type {
-  OrganizationMemberWithUser,
-  OrganizationRole,
-} from "@/api/organization-memberships.schemas";
-import type { OrganizationInvitation } from "@/api/organization-invitations.schemas";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/app/components/ui/table";
 
 interface TeamMembersTableProps {
   members: readonly OrganizationMemberWithUser[];

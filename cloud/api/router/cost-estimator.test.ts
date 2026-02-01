@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Effect } from "effect";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { estimateCost } from "@/api/router/cost-estimator";
-import { PricingUnavailableError } from "@/errors";
 import * as pricing from "@/api/router/pricing";
+import { PricingUnavailableError } from "@/errors";
 
 describe("cost-estimator", () => {
   describe("estimateCost", () => {

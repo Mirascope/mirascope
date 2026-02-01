@@ -1,5 +1,9 @@
-import { useState, type FormEvent } from "react";
 import { AlertTriangle } from "lucide-react";
+import { useState, type FormEvent } from "react";
+
+import type { ApiKeyWithContext } from "@/api/api-keys.schemas";
+
+import { useDeleteApiKey } from "@/app/api/api-keys";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -11,9 +15,7 @@ import {
 } from "@/app/components/ui/dialog";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
-import { useDeleteApiKey } from "@/app/api/api-keys";
 import { getErrorMessage } from "@/app/lib/errors";
-import type { ApiKeyWithContext } from "@/api/api-keys.schemas";
 
 export function DeleteApiKeyModal({
   open,

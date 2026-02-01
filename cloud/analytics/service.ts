@@ -65,12 +65,14 @@
  */
 
 import { Effect, Layer, Context } from "effect";
+
+import type { GoogleAnalyticsConfig, PostHogConfig } from "@/settings";
+
 import {
   GoogleAnalytics,
   type GoogleAnalyticsClient,
 } from "@/analytics/google-client";
 import { PostHog, type PostHogClient } from "@/analytics/posthog-client";
-import type { GoogleAnalyticsConfig, PostHogConfig } from "@/settings";
 
 /**
  * Analytics service configuration options.

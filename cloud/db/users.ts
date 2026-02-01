@@ -16,13 +16,14 @@
  * ```
  */
 
-import { Effect } from "effect";
 import { and, eq, isNull, sql } from "drizzle-orm";
+import { Effect } from "effect";
+
 import { BaseEffectService } from "@/db/base";
 import { DrizzleORM } from "@/db/client";
-import { AlreadyExistsError, DatabaseError, NotFoundError } from "@/errors";
 import { users, type PublicUser, type NewUser } from "@/db/schema/users";
 import { isUniqueConstraintError } from "@/db/utils";
+import { AlreadyExistsError, DatabaseError, NotFoundError } from "@/errors";
 
 /**
  * Type for user updates - excludes fields that shouldn't be directly updated.

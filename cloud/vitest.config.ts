@@ -38,7 +38,13 @@ export default defineConfig({
         statements: 100,
       },
     },
-    exclude: ["**/node_modules/**", "dist", ".git", ".cache"],
+    exclude: [
+      "**/node_modules/**",
+      "dist",
+      ".git",
+      ".cache",
+      ".build-cache/**",
+    ],
   },
   resolve: {
     alias: {

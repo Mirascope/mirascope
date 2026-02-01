@@ -44,7 +44,7 @@ from ....responses import (
     UsageDeltaChunk,
 )
 from ..model_id import model_name
-from .decode import decode_usage
+from .decode import decode_usage, extract_tool_usage
 
 BETA_FINISH_REASON_MAP = {
     "max_tokens": FinishReason.MAX_TOKENS,
@@ -53,7 +53,9 @@ BETA_FINISH_REASON_MAP = {
 }
 
 
-def _decode_beta_assistant_content(content: BetaContentBlock) -> AssistantContentPart:
+def _decode_beta_assistant_content(
+    content: BetaContentBlock,
+) -> AssistantContentPart | None:
     """Convert Beta content block to mirascope AssistantContentPart."""
     if content.type == "text":
         return Text(text=content.text)
@@ -65,6 +67,8 @@ def _decode_beta_assistant_content(content: BetaContentBlock) -> AssistantConten
         )
     elif content.type == "thinking":
         return Thought(thought=content.thinking)
+    elif content.type in ("server_tool_use", "web_search_tool_result"):
+        return None  # Skip server-side tool content, preserved in raw_message
     else:
         raise NotImplementedError(
             f"Support for beta content type `{content.type}` is not yet implemented."
@@ -78,7 +82,13 @@ def beta_decode_response(
     include_thoughts: bool,
 ) -> tuple[AssistantMessage, FinishReason | None, Usage]:
     """Convert Beta message to mirascope AssistantMessage and usage."""
-    content = [_decode_beta_assistant_content(part) for part in response.content]
+    content = [
+        part
+        for part in (
+            _decode_beta_assistant_content(block) for block in response.content
+        )
+        if part is not None
+    ]
     if not include_thoughts:
         content = [part for part in content if part.type != "thought"]
     assistant_message = AssistantMessage(
@@ -157,6 +167,8 @@ class _BetaChunkProcessor:
                     "type": "redacted_thinking",
                     "data": content_block.data,
                 }
+            elif content_block.type in ("server_tool_use", "web_search_tool_result"):
+                pass  # Skip server-side tool content
             else:
                 raise NotImplementedError(
                     f"Support for beta content block type `{content_block.type}` "
@@ -164,8 +176,8 @@ class _BetaChunkProcessor:
                 )
 
         elif event.type == "content_block_delta":
-            if self.current_block_param is None:  # pragma: no cover
-                raise RuntimeError("Received delta without a current block")
+            if self.current_block_param is None:
+                return  # Skip deltas for server-side tool content
 
             delta = event.delta
             if delta.type == "text_delta":
@@ -198,14 +210,16 @@ class _BetaChunkProcessor:
                         f"Received signature_delta for {self.current_block_param['type']} block"
                     )
                 self.current_block_param["signature"] += delta.signature
+            elif delta.type == "citations_delta":
+                pass  # Skip citations delta, preserved in raw_message
             else:
                 raise RuntimeError(
                     f"Received unsupported delta type: {delta.type}"
                 )  # pragma: no cover
 
         elif event.type == "content_block_stop":
-            if self.current_block_param is None:  # pragma: no cover
-                raise RuntimeError("Received stop without a current block")
+            if self.current_block_param is None:
+                return  # Skip stop for server-side tool content
 
             block_type = self.current_block_param["type"]
 
@@ -245,6 +259,7 @@ class _BetaChunkProcessor:
                 cache_read_tokens=usage.cache_read_input_tokens or 0,
                 cache_write_tokens=usage.cache_creation_input_tokens or 0,
                 reasoning_tokens=0,
+                provider_tool_usage=extract_tool_usage(usage),
             )
 
     def raw_message_chunk(self) -> RawMessageChunk:

@@ -1,9 +1,8 @@
 import { Link } from "@tanstack/react-router";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import { type BlogMeta } from "@/app/lib/content/types";
-import LoadingContent from "@/app/components/blocks/loading-content";
 
-import { useIsMobile } from "@/app/hooks/is-mobile";
+import LoadingContent from "@/app/components/blocks/loading-content";
 import {
   Pagination,
   PaginationContent,
@@ -13,7 +12,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/app/components/ui/pagination";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useIsMobile } from "@/app/hooks/is-mobile";
+import { type BlogMeta } from "@/app/lib/content/types";
 
 export interface BlogPaginationProps {
   currentPage: number;

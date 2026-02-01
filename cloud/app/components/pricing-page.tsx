@@ -1,9 +1,129 @@
-import React from "react";
-import { cn } from "@/app/lib/utils";
-import { ButtonLink } from "@/app/components/ui/button-link";
-import { Badge } from "@/app/components/ui/badge";
 import { Check, X } from "lucide-react";
+import React, { useEffect, useState } from "react";
+
+import ViewModeSwitcher from "@/app/components/blocks/navigation/view-mode-switcher";
+import { useViewMode } from "@/app/components/blocks/theme-provider";
+import { Badge } from "@/app/components/ui/badge";
+import { ButtonLink } from "@/app/components/ui/button-link";
+import { highlightCode, fallbackHighlighter } from "@/app/lib/code-highlight";
+import { cn } from "@/app/lib/utils";
 import { PLAN_LIMITS, type PlanTier } from "@/payments/plans";
+
+/**
+ * Markdown content for MACHINE mode view of the pricing page.
+ *
+ * IMPORTANT: This content must be kept in sync with TWO other places:
+ * 1. `cloudHostedDetails` below (the human-readable pricing table)
+ * 2. `public/pricing.md` (the static markdown file served at /pricing.md)
+ */
+const PRICING_MARKDOWN = `# Mirascope Cloud Pricing
+
+Get started with the Free plan today. No credit card required.
+
+## Plans Overview
+
+### Free - $0/month
+For individuals just getting started.
+
+- **Seats:** 1
+- **Projects:** 1
+- **Tracing:** 1M spans/month (hard limit, no overages)
+- **Data Retention:** 30 days
+- **API Rate Limit:** 100 requests/minute
+- **Support:** Community only
+
+### Pro - $49/month
+For professionals with growing projects.
+
+- **Seats:** 5
+- **Projects:** 5
+- **Tracing:** 1M spans/month included, then $5 per additional million
+- **Data Retention:** 90 days
+- **API Rate Limit:** 1,000 requests/minute
+- **Support:** Community + Chat/Email
+
+### Team - $199/month
+For organizations requiring dedicated support.
+
+- **Seats:** Unlimited
+- **Projects:** Unlimited
+- **Tracing:** 1M spans/month included, then $5 per additional million
+- **Data Retention:** 180 days
+- **API Rate Limit:** 10,000 requests/minute
+- **Support:** Community + Chat/Email + Private Slack
+
+## Plan Comparison Table
+
+| Feature | Free | Pro | Team |
+|---------|------|-----|------|
+| Seats | 1 | 5 | Unlimited |
+| Projects | 1 | 5 | Unlimited |
+| Tracing | 1M spans/month (no overages) | 1M spans/month + $5/additional M | 1M spans/month + $5/additional M |
+| Data Retention | 30 days | 90 days | 180 days |
+| API Rate Limits | 100/minute | 1,000/minute | 10,000/minute |
+| Community Support | Yes | Yes | Yes |
+| Chat/Email Support | No | Yes | Yes |
+| Private Slack Support | No | No | Yes |
+
+## Getting Started
+
+Visit https://mirascope.com/cloud/login to create your free account.
+
+## Questions?
+
+Join our community at https://mirascope.com/discord-invite to ask the team directly.
+`;
+
+/**
+ * Machine-readable pricing content with syntax highlighting
+ */
+function MachinePricingContent() {
+  const [highlightedHtml, setHighlightedHtml] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    highlightCode(PRICING_MARKDOWN, "markdown")
+      .then((result) => {
+        if (!cancelled) {
+          setHighlightedHtml(result.themeHtml);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          const fallback = fallbackHighlighter(PRICING_MARKDOWN, "markdown");
+          setHighlightedHtml(fallback.themeHtml);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (!highlightedHtml) {
+    const fallback = fallbackHighlighter(PRICING_MARKDOWN, "markdown");
+    return (
+      <div className="mx-auto max-w-4xl px-4 py-4">
+        <div
+          className="machine-mode-code highlight-container w-full overflow-auto rounded-md border text-sm [&>pre]:overflow-x-auto [&>pre]:py-3 [&>pre]:pr-5 [&>pre]:pl-4"
+          dangerouslySetInnerHTML={{ __html: fallback.themeHtml }}
+        />
+        <ViewModeSwitcher />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-4xl px-4 py-4">
+      <div
+        className="machine-mode-code highlight-container w-full overflow-auto rounded-md border text-sm [&>pre]:overflow-x-auto [&>pre]:py-3 [&>pre]:pr-5 [&>pre]:pl-4"
+        dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+      />
+      <ViewModeSwitcher />
+    </div>
+  );
+}
 
 interface PlanDetailsRowProps {
   detail: string;
@@ -248,7 +368,13 @@ interface PricingActions {
   };
 }
 
-// Cloud hosted details
+/**
+ * Cloud hosted plan details for the comparison table.
+ *
+ * IMPORTANT: This content must be kept in sync with TWO other places:
+ * 1. `PRICING_MARKDOWN` above (the machine-readable markdown view)
+ * 2. `public/pricing.md` (the static markdown file served at /pricing.md)
+ */
 export const cloudHostedDetails = [
   { detail: "Seats", free: "1", pro: "5", team: "Unlimited" },
   { detail: "Projects", free: "1", pro: "5", team: "Unlimited" },
@@ -300,6 +426,14 @@ interface PricingProps {
 }
 
 export function PricingPage({ actions, currentPlan, usage }: PricingProps) {
+  const viewMode = useViewMode();
+
+  // In MACHINE mode, render markdown content for AI agents
+  if (viewMode === "machine") {
+    return <MachinePricingContent />;
+  }
+
+  // In HUMAN mode, render the full interactive pricing page
   return (
     <div className="px-4 py-4">
       <div className="mx-auto max-w-4xl">
@@ -341,6 +475,7 @@ export function PricingPage({ actions, currentPlan, usage }: PricingProps) {
           </p>
         </div>
       </div>
+      <ViewModeSwitcher />
     </div>
   );
 }

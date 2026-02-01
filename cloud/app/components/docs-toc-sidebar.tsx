@@ -1,10 +1,11 @@
-import React from "react";
 import { useRouter } from "@tanstack/react-router";
-import { ContentTOC } from "@/app/components/content-toc";
 import { Server } from "lucide-react";
+import React from "react";
+
+import { CopyMarkdownButton } from "@/app/components/blocks/copy-markdown-button";
+import { ContentTOC } from "@/app/components/content-toc";
 import { ModelProviderDropdown } from "@/app/components/mdx/elements/model-provider-dropdown";
 import { type DocContent } from "@/app/lib/content/types";
-import { CopyMarkdownButton } from "@/app/components/blocks/copy-markdown-button";
 
 interface TocSidebarProps {
   document?: DocContent | null;

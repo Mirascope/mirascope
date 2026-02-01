@@ -6,11 +6,7 @@
  */
 
 import { DurableObject } from "cloudflare:workers";
-import type { SpanInput, SpansBatchRequest } from "@/db/clickhouse/types";
-import {
-  createSpanCacheKey,
-  type RealtimeSpanExistsInput,
-} from "@/workers/realtimeSpans/client";
+
 import type {
   SearchResponse,
   SpanSearchInput,
@@ -19,6 +15,12 @@ import type {
   TraceDetailResponse,
   AttributeFilter,
 } from "@/db/clickhouse/search";
+import type { SpanInput, SpansBatchRequest } from "@/db/clickhouse/types";
+
+import {
+  createSpanCacheKey,
+  type RealtimeSpanExistsInput,
+} from "@/workers/realtimeSpans/client";
 
 /**
  * Raw JSON input for span search (dates come as ISO strings from API).

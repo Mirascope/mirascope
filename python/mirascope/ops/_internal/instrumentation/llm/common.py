@@ -21,6 +21,7 @@ from .....llm import (
     AnyToolSchema,
     BaseToolkit,
     Format,
+    FormatSpec,
     FormattableT,
     Jsonable,
     Message,
@@ -65,7 +66,7 @@ else:
     Tracer = None
 
 
-FormatParam: TypeAlias = Format[FormattableT] | None
+FormatParam: TypeAlias = FormatSpec[FormattableT] | None
 ParamsDict: TypeAlias = Mapping[str, str | int | float | bool | Sequence[str] | None]
 SpanAttributes: TypeAlias = Mapping[str, AttributeValue]
 AttributeSetter: TypeAlias = Callable[[str, AttributeValue], None]

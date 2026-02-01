@@ -75,6 +75,7 @@ from .exceptions import (
 )
 from .formatting import (
     Format,
+    FormatSpec,
     FormattableT,
     FormattingMode,
     OutputParser,
@@ -130,6 +131,7 @@ from .responses import (
     ContextResponse,
     ContextStreamResponse,
     FinishReason,
+    ProviderToolUsage,
     RawMessageChunk,
     Response,
     RootResponse,
@@ -162,6 +164,7 @@ from .tools import (
     ToolkitT,
     Tools,
     ToolSchema,
+    WebSearchTool,
     tool,
 )
 from .types import Jsonable
@@ -219,6 +222,7 @@ __all__ = [
     "FeatureNotSupportedError",
     "FinishReason",
     "Format",
+    "FormatSpec",
     "FormattableT",
     "FormattingMode",
     "Image",
@@ -240,6 +244,7 @@ __all__ = [
     "ProviderError",
     "ProviderId",
     "ProviderTool",
+    "ProviderToolUsage",
     "RateLimitError",
     "RawMessageChunk",
     "Response",
@@ -284,6 +289,8 @@ __all__ = [
     "UserContent",
     "UserContentPart",
     "UserMessage",
+    "WebSearchTool",
+    "WebSearchTool",
     "call",
     "calls",
     "content",

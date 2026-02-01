@@ -22,13 +22,14 @@
  * - After build, CONFIG.distAssetsDir is scanned to ensure only WebP images exist
  */
 
-import { resolve } from "path";
+import type { IncomingMessage, ServerResponse } from "http";
+import type { Connect, Plugin } from "vite";
+
 import fs from "fs";
 import fsp from "fs/promises";
-import sharp from "sharp";
-import type { Connect, Plugin } from "vite";
-import type { IncomingMessage, ServerResponse } from "http";
+import { resolve } from "path";
 import path from "path";
+import sharp from "sharp";
 
 // Responsive image configuration by path pattern
 interface ResponsiveConfig {

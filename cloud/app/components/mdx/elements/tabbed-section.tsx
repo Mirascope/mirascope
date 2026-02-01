@@ -1,14 +1,15 @@
 import React from "react";
+
+import ProductLogo from "@/app/components/blocks/branding/mirascope-logo";
+import { useTabMemory } from "@/app/components/blocks/tabbed-section-provider";
 import {
   Tabs,
   TabsList,
   TabsTrigger,
   TabsContent,
 } from "@/app/components/ui/tabs";
-import ProductLogo from "@/app/components/blocks/branding/mirascope-logo";
-import { cn } from "@/app/lib/utils";
 import { temporarilyEnableSyncHighlighting } from "@/app/lib/code-highlight";
-import { useTabMemory } from "@/app/components/blocks/tabbed-section-provider";
+import { cn } from "@/app/lib/utils";
 
 /**
  * A Tab component to be used within TabbedSection

@@ -1,5 +1,9 @@
 "use client";
 
+import type { ComponentProps, HTMLAttributes } from "react";
+
+import { BookmarkIcon, type LucideProps } from "lucide-react";
+
 import { Button } from "@/app/components/ui/button";
 import { Separator } from "@/app/components/ui/separator";
 import {
@@ -8,8 +12,6 @@ import {
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
 import { cn } from "@/app/lib/utils";
-import { BookmarkIcon, type LucideProps } from "lucide-react";
-import type { ComponentProps, HTMLAttributes } from "react";
 
 export type CheckpointProps = HTMLAttributes<HTMLDivElement>;
 

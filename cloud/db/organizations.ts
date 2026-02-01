@@ -48,25 +48,15 @@
  * ```
  */
 
-import { Effect } from "effect";
 import { eq } from "drizzle-orm";
+import { Effect } from "effect";
+
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
 } from "@/db/base";
 import { DrizzleORM } from "@/db/client";
-import {
-  AlreadyExistsError,
-  DatabaseError,
-  NotFoundError,
-  PermissionDeniedError,
-  StripeError,
-  SubscriptionPastDueError,
-} from "@/errors";
-import { isUniqueConstraintError } from "@/db/utils";
 import { OrganizationMemberships } from "@/db/organization-memberships";
-import { Payments } from "@/payments";
-
 import {
   users,
   organizations,
@@ -77,6 +67,16 @@ import {
   type PublicOrganizationWithMembership,
   type OrganizationRole,
 } from "@/db/schema";
+import { isUniqueConstraintError } from "@/db/utils";
+import {
+  AlreadyExistsError,
+  DatabaseError,
+  NotFoundError,
+  PermissionDeniedError,
+  StripeError,
+  SubscriptionPastDueError,
+} from "@/errors";
+import { Payments } from "@/payments";
 
 /**
  * Public fields to select from the organizations table.
@@ -243,13 +243,12 @@ export class Organizations extends BaseAuthenticatedEffectService<
       const organizationId = crypto.randomUUID();
 
       // Create Stripe customer and subscription for organization
-      const { stripeCustomerId: stripeCustomerId } =
-        yield* payments.customers.create({
-          organizationId,
-          organizationName: data.name,
-          organizationSlug: data.slug,
-          email: user.email,
-        });
+      const { stripeCustomerId } = yield* payments.customers.create({
+        organizationId,
+        organizationName: data.name,
+        organizationSlug: data.slug,
+        email: user.email,
+      });
 
       // Create organization in transaction with membership creation
       return yield* client

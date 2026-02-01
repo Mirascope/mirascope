@@ -1,9 +1,10 @@
-import { describe, it, expect } from "@/tests/payments";
-import { vi, beforeEach } from "vitest";
 import { Effect, Layer } from "effect";
-import { Stripe, wrapStripeClient } from "@/payments/client";
-import { StripeError } from "@/errors";
 import OriginalStripe from "stripe";
+import { vi, beforeEach } from "vitest";
+
+import { StripeError } from "@/errors";
+import { Stripe, wrapStripeClient } from "@/payments/client";
+import { describe, it, expect } from "@/tests/payments";
 
 // Mock the Stripe SDK
 vi.mock("stripe", () => {

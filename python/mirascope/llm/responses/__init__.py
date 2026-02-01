@@ -29,7 +29,7 @@ from .streams import (
     ThoughtStream,
     ToolCallStream,
 )
-from .usage import Usage, UsageDeltaChunk
+from .usage import ProviderToolUsage, Usage, UsageDeltaChunk
 
 __all__ = [
     "AnyResponse",
@@ -47,6 +47,7 @@ __all__ = [
     "ContextStreamResponse",
     "FinishReason",
     "FinishReasonChunk",
+    "ProviderToolUsage",
     "RawMessageChunk",
     "RawStreamEventChunk",
     "Response",

@@ -2,9 +2,10 @@
  * @fileoverview Tests for RealtimeSpans client global layer and setter.
  */
 
-import { describe, expect, it, vi } from "vitest";
-import { Effect, Layer } from "effect";
 import type { DurableObjectNamespace } from "@cloudflare/workers-types";
+
+import { Effect, Layer } from "effect";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   RealtimeSpans,

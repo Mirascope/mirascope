@@ -1,8 +1,9 @@
-import { describe, it, expect } from "vitest";
 import { Effect } from "effect";
 import * as React from "react";
-import { InvitationEmail } from "@/emails/templates/invitation";
+import { describe, it, expect } from "vitest";
+
 import { renderReactElement } from "@/emails/render";
+import { InvitationEmail } from "@/emails/templates/invitation";
 
 describe("InvitationEmail", () => {
   const baseProps = {

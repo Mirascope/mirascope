@@ -34,6 +34,7 @@ test_snapshot = snapshot(
                     "cache_read_tokens": 0,
                     "cache_write_tokens": 0,
                     "reasoning_tokens": 0,
+                    "provider_tool_usage": None,
                     "raw": "MLXCassetteResponse(text=' is', token=374, prompt_tokens=20, generation_tokens=500, finish_reason='length')",
                     "total_tokens": 520,
                 },

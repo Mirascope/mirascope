@@ -1,5 +1,6 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
+
 import { PricingUnavailableError, UnauthorizedError } from "@/errors";
 
 /**

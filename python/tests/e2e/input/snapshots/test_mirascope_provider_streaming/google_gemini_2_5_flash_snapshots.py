@@ -83,6 +83,7 @@ So, 4200 + 4\
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 23,
+                "provider_tool_usage": None,
                 "raw": "None",
                 "total_tokens": 70,
             },

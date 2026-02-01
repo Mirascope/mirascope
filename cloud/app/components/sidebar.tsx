@@ -1,7 +1,11 @@
-import * as React from "react";
-import { useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
+import * as React from "react";
+import { useState } from "react";
+
+import { CreateEnvironmentModal } from "@/app/components/create-environment-modal";
+import { CreateOrganizationModal } from "@/app/components/create-organization-modal";
+import { CreateProjectModal } from "@/app/components/create-project-modal";
 import {
   Select,
   SelectContent,
@@ -9,13 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
-import { CreateOrganizationModal } from "@/app/components/create-organization-modal";
-import { CreateProjectModal } from "@/app/components/create-project-modal";
-import { CreateEnvironmentModal } from "@/app/components/create-environment-modal";
+import { useAuth } from "@/app/contexts/auth";
+import { useEnvironment } from "@/app/contexts/environment";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
-import { useEnvironment } from "@/app/contexts/environment";
-import { useAuth } from "@/app/contexts/auth";
 
 const icons = {
   dashboard: (

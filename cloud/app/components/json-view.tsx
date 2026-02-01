@@ -1,7 +1,9 @@
 import type { CSSProperties } from "react";
+
 import ReactJsonView from "@uiw/react-json-view";
-import { vscodeTheme } from "@uiw/react-json-view/vscode";
 import { githubLightTheme } from "@uiw/react-json-view/githubLight";
+import { vscodeTheme } from "@uiw/react-json-view/vscode";
+
 import { useTheme } from "@/app/components/blocks/theme-provider";
 
 interface JsonViewProps {

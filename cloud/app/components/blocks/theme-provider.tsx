@@ -1,3 +1,4 @@
+import { useRouterState } from "@tanstack/react-router";
 import {
   createContext,
   useContext,
@@ -5,9 +6,9 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { useRouterState } from "@tanstack/react-router";
 
 export type Theme = "light" | "dark" | "system";
+export type ViewMode = "human" | "machine";
 
 // Simple theme API interface
 interface ThemeAPI {
@@ -17,6 +18,10 @@ interface ThemeAPI {
   current: "light" | "dark";
   // Set specific theme
   set: (theme: Theme) => void;
+  // Current view mode (human/machine)
+  viewMode: ViewMode;
+  // Set view mode
+  setViewMode: (mode: ViewMode) => void;
   // Whether the current page is the landing page
   isLandingPage: boolean;
   // Whether the current page is the router waitlist page
@@ -28,6 +33,8 @@ const ThemeContext = createContext<ThemeAPI>({
   theme: "system",
   current: "light",
   set: () => {},
+  viewMode: "human",
+  setViewMode: () => {},
   isLandingPage: false,
   isRouterWaitlistPage: false,
 });
@@ -35,6 +42,11 @@ const ThemeContext = createContext<ThemeAPI>({
 // Hook for components to use the theme
 export function useTheme() {
   return useContext(ThemeContext);
+}
+
+// Hook specifically for view mode
+export function useViewMode() {
+  return useContext(ThemeContext).viewMode;
 }
 
 // Hook specifically for landing page status
@@ -51,6 +63,12 @@ export function useIsRouterWaitlistPage() {
 function getStoredTheme(): Theme {
   if (typeof window === "undefined") return "system";
   return (localStorage.getItem("theme") as Theme) || "system";
+}
+
+// Get stored view mode preference from localStorage
+function getStoredViewMode(): ViewMode {
+  if (typeof window === "undefined") return "human";
+  return (localStorage.getItem("viewMode") as ViewMode) || "human";
 }
 
 // Determine effective theme based on preference and system settings
@@ -81,6 +99,8 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>("system");
   // Actual theme being applied (light/dark)
   const [current, setCurrent] = useState<"light" | "dark">("light");
+  // View mode (human/machine)
+  const [viewMode, setViewMode] = useState<ViewMode>("human");
   // Track if client-side code has run
   const [isHydrated, setIsHydrated] = useState(false);
 
@@ -89,13 +109,15 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   const isLandingPage = router.location.pathname === "/";
   const isRouterWaitlistPage = router.location.pathname === "/router-waitlist";
 
-  // Initialize theme on mount
+  // Initialize theme and view mode on mount
   useEffect(() => {
     const savedTheme = getStoredTheme();
     const effectiveTheme = getEffectiveTheme(savedTheme);
+    const savedViewMode = getStoredViewMode();
 
     setTheme(savedTheme);
     setCurrent(effectiveTheme);
+    setViewMode(savedViewMode);
     applyTheme(effectiveTheme);
     setIsHydrated(true);
   }, []);
@@ -137,6 +159,16 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     }
   };
 
+  // Update view mode handler
+  const setViewModeHandler = (newViewMode: ViewMode) => {
+    setViewMode(newViewMode);
+
+    // Store preference
+    if (typeof window !== "undefined") {
+      localStorage.setItem("viewMode", newViewMode);
+    }
+  };
+
   // todo(sebastian): why won't hydration work?
   // Don't render anything during SSR to avoid hydration mismatches
   if (!isHydrated) {
@@ -158,6 +190,8 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
         theme,
         current,
         set: setThemeHandler,
+        viewMode,
+        setViewMode: setViewModeHandler,
         isLandingPage,
         isRouterWaitlistPage,
       }}
@@ -172,6 +206,7 @@ interface StorybookThemeProviderProps {
   children: ReactNode;
   initialTheme?: Theme;
   initialCurrent?: "light" | "dark";
+  initialViewMode?: ViewMode;
   isLandingPage?: boolean;
   isRouterWaitlistPage?: boolean;
 }
@@ -188,11 +223,13 @@ export function StorybookThemeProvider({
   children,
   initialTheme = "system",
   initialCurrent = "light",
+  initialViewMode = "human",
   isLandingPage = false,
   isRouterWaitlistPage = false,
 }: StorybookThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(initialTheme);
   const [current, setCurrent] = useState<"light" | "dark">(initialCurrent);
+  const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode);
 
   // Theme switching handler - just update state
   const setThemeHandler = (newTheme: Theme) => {
@@ -214,6 +251,8 @@ export function StorybookThemeProvider({
         theme,
         current,
         set: setThemeHandler,
+        viewMode,
+        setViewMode,
         isLandingPage,
         isRouterWaitlistPage,
       }}

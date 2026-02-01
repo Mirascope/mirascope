@@ -1,4 +1,10 @@
+import { UserPlus } from "lucide-react";
 import { useState } from "react";
+
+import { useProjectMembers } from "@/app/api/project-memberships";
+import { AddProjectMemberDialog } from "@/app/components/add-project-member-dialog";
+import { ProjectMembersTable } from "@/app/components/project-members-table";
+import { Button } from "@/app/components/ui/button";
 import {
   Card,
   CardContent,
@@ -6,11 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { Button } from "@/app/components/ui/button";
-import { UserPlus } from "lucide-react";
-import { ProjectMembersTable } from "@/app/components/project-members-table";
-import { AddProjectMemberDialog } from "@/app/components/add-project-member-dialog";
-import { useProjectMembers } from "@/app/api/project-memberships";
 
 interface ProjectMembersSectionProps {
   organizationId: string;

@@ -11,6 +11,7 @@
 // is imported by vite.config.ts during Vite's config processing phase, before
 // the alias resolution is set up. Using the alias would cause module resolution errors.
 import type { FileRouteTypes } from "../../routeTree.gen";
+
 import { createPageHead, type HeadResult } from "./head";
 import { STATIC_ROUTE_REGISTRY, type StaticRouteMeta } from "./static-routes";
 

@@ -1,12 +1,14 @@
 import { readFile } from "fs/promises";
 import { join, resolve, normalize } from "path";
+
+import type { PreprocessedMDX } from "../mdx/types";
+
+import { extractHeadings } from "../mdx/heading-utils";
 // NOTE: All imports in this file must use relative paths.
 // Vite plugins cannot resolve path aliases such as "@/app/...",
 // so using aliases here will cause module resolution failures.
 // This ensures compatibility in both the vite plugin and other consumers.
 import { parseFrontmatter } from "./frontmatter";
-import { extractHeadings } from "../mdx/heading-utils";
-import type { PreprocessedMDX } from "../mdx/types";
 
 /**
  * Options for MDX preprocessing

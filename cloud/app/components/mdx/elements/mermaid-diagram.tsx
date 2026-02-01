@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from "react";
 import DOMPurify from "dompurify";
-import LoadingContent from "@/app/components/blocks/loading-content";
 import mermaid, { type MermaidConfig } from "mermaid";
+import { useEffect, useRef, useState } from "react";
+
+import LoadingContent from "@/app/components/blocks/loading-content";
+
 import styles from "./mermaid-diagram.module.css";
 
 interface MermaidDiagramProps {

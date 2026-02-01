@@ -81,21 +81,22 @@
  * ```
  */
 
-import { Effect } from "effect";
 import { eq, and, desc } from "drizzle-orm";
+import { Effect } from "effect";
+
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
 } from "@/db/base";
 import { DrizzleORM } from "@/db/client";
 import { ProjectMemberships } from "@/db/project-memberships";
-import { DatabaseError, NotFoundError, PermissionDeniedError } from "@/errors";
 import {
   routerRequests,
   type NewRouterRequest,
   type RouterRequest,
   type ProjectRole,
 } from "@/db/schema";
+import { DatabaseError, NotFoundError, PermissionDeniedError } from "@/errors";
 
 /**
  * Public fields to select from the router_requests table.
@@ -110,7 +111,10 @@ const publicFields = {
   cacheReadTokens: routerRequests.cacheReadTokens,
   cacheWriteTokens: routerRequests.cacheWriteTokens,
   cacheWriteBreakdown: routerRequests.cacheWriteBreakdown,
+  toolUsage: routerRequests.toolUsage,
   costCenticents: routerRequests.costCenticents,
+  tokenCostCenticents: routerRequests.tokenCostCenticents,
+  toolCostCenticents: routerRequests.toolCostCenticents,
   status: routerRequests.status,
   errorMessage: routerRequests.errorMessage,
   organizationId: routerRequests.organizationId,
@@ -152,7 +156,10 @@ export type UpdateRouterRequest = Partial<
     | "cacheReadTokens"
     | "cacheWriteTokens"
     | "cacheWriteBreakdown"
+    | "toolUsage"
     | "costCenticents"
+    | "tokenCostCenticents"
+    | "toolCostCenticents"
     | "errorMessage"
     | "completedAt"
   >

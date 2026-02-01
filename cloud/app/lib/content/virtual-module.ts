@@ -4,13 +4,14 @@ import {
   policyMetadata,
   // @ts-expect-error - virtual module resolved by vite plugin
 } from "virtual:content-meta";
-import type { PreprocessedMDX } from "@/app/lib/mdx/types";
+
 import type {
   BlogMeta,
   ContentMeta,
   DocMeta,
   PolicyMeta,
 } from "@/app/lib/content/types";
+import type { PreprocessedMDX } from "@/app/lib/mdx/types";
 
 export function getAllBlogMeta(): BlogMeta[] {
   return blogMetadata as BlogMeta[];

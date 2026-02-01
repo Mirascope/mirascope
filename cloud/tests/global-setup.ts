@@ -1,22 +1,22 @@
-import { Effect, Data, Scope } from "effect";
 import {
   PostgreSqlContainer,
   type StartedPostgreSqlContainer,
 } from "@testcontainers/postgresql";
+import { drizzle } from "drizzle-orm/postgres-js";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
+import { Effect, Data, Scope } from "effect";
+import fs from "fs";
+import { execFileSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
+import os from "os";
+import path from "path";
+import postgres from "postgres";
 import {
   GenericContainer,
   type StartedTestContainer,
   Wait,
 } from "testcontainers";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
-import path from "path";
-import fs from "fs";
-import os from "os";
 import { fileURLToPath } from "url";
-import { execFileSync } from "node:child_process";
-import { randomUUID } from "node:crypto";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

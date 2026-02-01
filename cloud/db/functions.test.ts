@@ -1,11 +1,7 @@
-import {
-  describe,
-  it,
-  expect,
-  TestEnvironmentFixture,
-  MockDrizzleORM,
-} from "@/tests/db";
 import { Effect } from "effect";
+
+import type { FunctionCreateData } from "@/db/functions";
+
 import { Database } from "@/db/database";
 import {
   AlreadyExistsError,
@@ -14,7 +10,13 @@ import {
   PermissionDeniedError,
   ImmutableResourceError,
 } from "@/errors";
-import type { FunctionCreateData } from "@/db/functions";
+import {
+  describe,
+  it,
+  expect,
+  TestEnvironmentFixture,
+  MockDrizzleORM,
+} from "@/tests/db";
 
 describe("Functions", () => {
   const createFunctionInput = (

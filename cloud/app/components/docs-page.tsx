@@ -1,10 +1,12 @@
 import React from "react";
-import ContentLayout from "@/app/components/content-layout";
-import { ModelProviderProvider } from "@/app/components/mdx/elements/model-provider-provider";
-import DocsTocSidebar from "@/app/components/docs-toc-sidebar";
-import MainContent from "@/app/components/blocks/docs/main-content";
-import DocsSidebar from "@/app/components/docs-sidebar";
+
 import type { DocContent } from "@/app/lib/content/types";
+
+import MainContent from "@/app/components/blocks/docs/main-content";
+import ContentLayout from "@/app/components/content-layout";
+import DocsSidebar from "@/app/components/docs-sidebar";
+import DocsTocSidebar from "@/app/components/docs-toc-sidebar";
+import { ModelProviderProvider } from "@/app/components/mdx/elements/model-provider-provider";
 
 type DocsPageProps = {
   content: DocContent;

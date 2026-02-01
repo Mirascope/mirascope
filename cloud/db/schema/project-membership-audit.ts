@@ -1,9 +1,10 @@
 import { relations } from "drizzle-orm";
 import { pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
+
+import { auditActionEnum } from "./organization-membership-audit";
+import { projectRoleEnum } from "./project-memberships";
 import { projects } from "./projects";
 import { users } from "./users";
-import { projectRoleEnum } from "./project-memberships";
-import { auditActionEnum } from "./organization-membership-audit";
 
 export const projectMembershipAudit = pgTable("project_membership_audit", {
   id: uuid("id").primaryKey().defaultRandom(),

@@ -1,8 +1,9 @@
-import { describe, it, expect } from "vitest";
 import { Effect } from "effect";
 import * as React from "react";
-import { WelcomeEmail } from "@/emails/templates/welcome";
+import { describe, it, expect } from "vitest";
+
 import { renderReactElement } from "@/emails/render";
+import { WelcomeEmail } from "@/emails/templates/welcome";
 
 describe("WelcomeEmail", () => {
   it("renders with user name", () => {

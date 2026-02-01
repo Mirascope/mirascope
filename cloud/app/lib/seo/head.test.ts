@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { describe, it, expect } from "vitest";
+
 import {
   canonicalizePath,
   routeToImagePath,

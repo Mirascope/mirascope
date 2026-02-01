@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { Html, Body } from "@react-email/components";
 import { Effect } from "effect";
 import * as React from "react";
-import { Html, Body } from "@react-email/components";
-import { Logo } from "@/emails/templates/components/logo";
+import { describe, it, expect } from "vitest";
+
 import { renderReactElement } from "@/emails/render";
+import { Logo } from "@/emails/templates/components/logo";
 
 describe("Logo", () => {
   it("renders logo image with correct attributes", () => {

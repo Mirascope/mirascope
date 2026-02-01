@@ -1,10 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+
+import DocsPage from "@/app/components/docs-page";
 import { createContentRouteConfig } from "@/app/lib/content/route-config";
 import {
   getAllDocsMeta,
   DOCS_MODULE_MAP,
 } from "@/app/lib/content/virtual-module";
-import DocsPage from "@/app/components/docs-page";
 
 /**
  * Legacy path redirects for restructured documentation.

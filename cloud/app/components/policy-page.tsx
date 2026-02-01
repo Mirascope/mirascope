@@ -1,4 +1,5 @@
 import React from "react";
+
 import { MDXRenderer } from "@/app/components/mdx/renderer";
 import { type PolicyContent } from "@/app/lib/content/types";
 

@@ -45,14 +45,16 @@
  */
 
 import { Context, Layer, Effect } from "effect";
-import { Stripe } from "@/payments/client";
+
 import type { StripeConfig } from "@/settings";
+
+import { DrizzleORM } from "@/db/client";
+import { Stripe } from "@/payments/client";
 import { Customers } from "@/payments/customers";
-import { Subscriptions } from "@/payments/subscriptions";
+import { PaymentIntents } from "@/payments/payment-intents";
 import { Router } from "@/payments/products/router";
 import { Spans } from "@/payments/products/spans";
-import { PaymentIntents } from "@/payments/payment-intents";
-import { DrizzleORM } from "@/db/client";
+import { Subscriptions } from "@/payments/subscriptions";
 import { dependencyProvider, type Ready } from "@/utils";
 
 /**

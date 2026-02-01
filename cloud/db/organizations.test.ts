@@ -1,15 +1,6 @@
-import {
-  describe,
-  it,
-  expect,
-  assert,
-  TestOrganizationFixture,
-  TestDrizzleORM,
-  MockDrizzleORM,
-} from "@/tests/db";
-import { MockPayments } from "@/tests/payments";
-import { Database } from "@/db/database";
 import { Effect, Layer } from "effect";
+
+import { Database } from "@/db/database";
 import {
   type PublicOrganizationWithMembership,
   type PublicOrganizationMembershipAudit,
@@ -21,6 +12,16 @@ import {
   PermissionDeniedError,
   StripeError,
 } from "@/errors";
+import {
+  describe,
+  it,
+  expect,
+  assert,
+  TestOrganizationFixture,
+  TestDrizzleORM,
+  MockDrizzleORM,
+} from "@/tests/db";
+import { MockPayments } from "@/tests/payments";
 
 describe("Organizations", () => {
   // ===========================================================================

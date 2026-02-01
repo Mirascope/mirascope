@@ -1,5 +1,17 @@
 "use client";
 
+import type { FileUIPart, UIMessage } from "ai";
+import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
+
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  PaperclipIcon,
+  XIcon,
+} from "lucide-react";
+import { createContext, memo, useContext, useEffect, useState } from "react";
+import { Streamdown } from "streamdown";
+
 import { Button } from "@/app/components/ui/button";
 import { ButtonGroup, ButtonGroupText } from "@/app/components/ui/button-group";
 import {
@@ -9,16 +21,6 @@ import {
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
 import { cn } from "@/app/lib/utils";
-import type { FileUIPart, UIMessage } from "ai";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  PaperclipIcon,
-  XIcon,
-} from "lucide-react";
-import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
-import { createContext, memo, useContext, useEffect, useState } from "react";
-import { Streamdown } from "streamdown";
 
 export type MessageProps = HTMLAttributes<HTMLDivElement> & {
   from: UIMessage["role"];

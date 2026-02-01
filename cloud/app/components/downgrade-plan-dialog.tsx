@@ -1,4 +1,18 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { AlertTriangle, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
+
+import type {
+  DowngradeValidationError,
+  SubscriptionChangePreview,
+} from "@/api/organizations.schemas";
+import type { PlanTier } from "@/payments/plans";
+
+import {
+  useUpdateSubscription,
+  usePreviewSubscriptionChange,
+} from "@/app/api/organizations";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -8,18 +22,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/app/components/ui/dialog";
-import {
-  useUpdateSubscription,
-  usePreviewSubscriptionChange,
-} from "@/app/api/organizations";
-import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
-import type { PlanTier } from "@/payments/plans";
-import type {
-  DowngradeValidationError,
-  SubscriptionChangePreview,
-} from "@/api/organizations.schemas";
-import { AlertTriangle, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { planLabels } from "@/app/components/ui/plan-badge";
 
 interface DowngradePlanDialogProps {

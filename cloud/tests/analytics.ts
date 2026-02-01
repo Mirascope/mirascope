@@ -5,8 +5,9 @@
  * clients with vi.fn() spies for testing the Analytics service.
  */
 
-import { vi } from "vitest";
 import { Effect } from "effect";
+import { vi } from "vitest";
+
 import type { GoogleAnalyticsClient } from "@/analytics/google-client";
 import type { PostHogClient } from "@/analytics/posthog-client";
 

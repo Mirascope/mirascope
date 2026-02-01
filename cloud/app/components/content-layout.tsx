@@ -1,12 +1,14 @@
 import type { ReactNode, RefObject } from "react";
-import { createContext, useContext, useEffect } from "react";
-import { cn } from "@/app/lib/utils";
-import { Button } from "@/app/components/ui/button";
+
 import { ChevronLeft, ChevronRight, X, type LucideIcon } from "lucide-react";
+import { createContext, useContext, useEffect } from "react";
+
 import {
   useSidebar,
   isMobileView,
 } from "@/app/components/blocks/navigation/sidebar";
+import { Button } from "@/app/components/ui/button";
+import { cn } from "@/app/lib/utils";
 
 // Shared positioning for sidebar toggle buttons
 const SIDEBAR_TOGGLE_POSITION = "calc(var(--header-height) - 1.63rem)";

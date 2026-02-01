@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+
+import DocsPage from "@/app/components/docs-page";
 import { createContentRouteConfig } from "@/app/lib/content/route-config";
 import {
   DOCS_MODULE_MAP,
   getAllDocsMeta,
 } from "@/app/lib/content/virtual-module";
-import DocsPage from "@/app/components/docs-page";
 
 export const Route = createFileRoute("/docs/v1/$")(
   createContentRouteConfig("/docs/v1/$", {

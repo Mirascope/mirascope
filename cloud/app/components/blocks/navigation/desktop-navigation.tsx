@@ -1,6 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import React from "react";
+
 import { cn } from "@/app/lib/utils";
+
 import { NAV_LINK_STYLES, DESKTOP_NAV_STYLES } from "./styles";
 
 // Reusable navigation link component

@@ -1,5 +1,6 @@
-import { visit } from "unist-util-visit";
 import type { Element, Root, RootContent } from "hast";
+
+import { visit } from "unist-util-visit";
 
 /**
  * Type definition for a hast element with data property

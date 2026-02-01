@@ -1,8 +1,10 @@
-import { useNavigate } from "@tanstack/react-router";
-import { useAuth } from "@/app/contexts/auth";
-import { useEffect } from "react";
 import type { ReactNode } from "react";
+
+import { useNavigate } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
+import { useEffect } from "react";
+
+import { useAuth } from "@/app/contexts/auth";
 
 export function Protected({ children }: { children: ReactNode }) {
   const { user, isLoading } = useAuth();

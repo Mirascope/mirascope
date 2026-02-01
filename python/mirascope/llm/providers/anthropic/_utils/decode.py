@@ -5,7 +5,7 @@ from typing import Any, TypeAlias, cast
 
 from anthropic import types as anthropic_types
 from anthropic.lib.streaming import AsyncMessageStreamManager, MessageStreamManager
-from anthropic.types.beta import BetaUsage
+from anthropic.types.beta import BetaMessageDeltaUsage, BetaUsage
 
 from ....content import (
     AssistantContentPart,
@@ -28,6 +28,7 @@ from ....responses import (
     ChunkIterator,
     FinishReason,
     FinishReasonChunk,
+    ProviderToolUsage,
     RawMessageChunk,
     RawStreamEventChunk,
     Usage,
@@ -43,7 +44,7 @@ ANTHROPIC_FINISH_REASON_MAP = {
 
 def _decode_assistant_content(
     content: anthropic_types.ContentBlock,
-) -> AssistantContentPart:
+) -> AssistantContentPart | None:
     """Convert Anthropic content block to mirascope AssistantContentPart."""
     if content.type == "text":
         return Text(text=content.text)
@@ -55,10 +56,37 @@ def _decode_assistant_content(
         )
     elif content.type == "thinking":
         return Thought(thought=content.thinking)
+    elif content.type in ("server_tool_use", "web_search_tool_result"):
+        return None  # Skip server-side tool content, preserved in raw_message
     else:
         raise NotImplementedError(
             f"Support for content type `{content.type}` is not yet implemented."
         )
+
+
+def extract_tool_usage(
+    usage: (
+        anthropic_types.Usage
+        | anthropic_types.MessageDeltaUsage
+        | BetaUsage
+        | BetaMessageDeltaUsage
+    ),
+) -> list[ProviderToolUsage] | None:
+    """Extract provider tool usage from Anthropic usage object."""
+    server_tool_use = getattr(usage, "server_tool_use", None)
+    if server_tool_use is None:
+        return None
+
+    tools: list[ProviderToolUsage] = []
+
+    # Web search
+    web_search_requests = getattr(server_tool_use, "web_search_requests", None)
+    if web_search_requests and web_search_requests > 0:
+        tools.append(
+            ProviderToolUsage(name="web_search", call_count=web_search_requests)
+        )
+
+    return tools if tools else None
 
 
 def decode_usage(
@@ -76,6 +104,7 @@ def decode_usage(
         cache_read_tokens=cache_read_tokens,
         cache_write_tokens=cache_write_tokens,
         reasoning_tokens=0,
+        provider_tool_usage=extract_tool_usage(usage),
         raw=usage,
     )
 
@@ -87,7 +116,11 @@ def decode_response(
     include_thoughts: bool,
 ) -> tuple[AssistantMessage, FinishReason | None, Usage]:
     """Convert Anthropic message to mirascope AssistantMessage and usage."""
-    content = [_decode_assistant_content(part) for part in response.content]
+    content = [
+        part
+        for part in (_decode_assistant_content(block) for block in response.content)
+        if part is not None
+    ]
     if not include_thoughts:
         content = [part for part in content if part.type != "thought"]
     assistant_message = AssistantMessage(
@@ -166,12 +199,14 @@ class _AnthropicChunkProcessor:
                     "type": "redacted_thinking",
                     "data": content_block.data,
                 }
+            elif content_block.type in ("server_tool_use", "web_search_tool_result"):
+                pass  # Skip server-side tool content
             else:
                 raise NotImplementedError
 
         elif event.type == "content_block_delta":
-            if self.current_block_param is None:  # pragma: no cover
-                raise RuntimeError("Received delta without a current block")
+            if self.current_block_param is None:
+                return  # Skip deltas for server-side tool content
 
             delta = event.delta
             if delta.type == "text_delta":
@@ -204,14 +239,16 @@ class _AnthropicChunkProcessor:
                         f"Received signature_delta for {self.current_block_param['type']} block"
                     )
                 self.current_block_param["signature"] += delta.signature
+            elif delta.type == "citations_delta":
+                pass  # Skip citations delta, preserved in raw_message
             else:
                 raise RuntimeError(
                     f"Received unsupported delta type: {delta.type}"
                 )  # pragma: no cover
 
         elif event.type == "content_block_stop":
-            if self.current_block_param is None:  # pragma: no cover
-                raise RuntimeError("Received stop without a current block")
+            if self.current_block_param is None:
+                return  # Skip stop for server-side tool content
 
             block_type = self.current_block_param["type"]
 
@@ -251,6 +288,7 @@ class _AnthropicChunkProcessor:
                 cache_read_tokens=usage.cache_read_input_tokens or 0,
                 cache_write_tokens=usage.cache_creation_input_tokens or 0,
                 reasoning_tokens=0,
+                provider_tool_usage=extract_tool_usage(usage),
             )
 
     def raw_message_chunk(self) -> RawMessageChunk:

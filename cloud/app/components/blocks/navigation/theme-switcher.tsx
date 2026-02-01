@@ -1,4 +1,11 @@
 import { Sun, Moon, Monitor } from "lucide-react";
+
+import {
+  useTheme,
+  useIsLandingPage,
+  useIsRouterWaitlistPage,
+  type Theme,
+} from "@/app/components/blocks/theme-provider";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,12 +13,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/app/components/ui/dropdown-menu";
-import {
-  useTheme,
-  useIsLandingPage,
-  useIsRouterWaitlistPage,
-  type Theme,
-} from "@/app/components/blocks/theme-provider";
+
 import { THEME_SWITCHER_STYLES } from "./styles";
 
 export default function ThemeSwitcher() {
