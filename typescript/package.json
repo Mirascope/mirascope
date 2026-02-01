@@ -99,10 +99,13 @@
     "@google/genai": ">=1.0.0",
     "@opentelemetry/api": ">=1.7.0",
     "@opentelemetry/core": ">=2.0.0",
+    "@opentelemetry/instrumentation-openai": ">=0.1.0",
     "@opentelemetry/propagator-b3": ">=2.0.0",
     "@opentelemetry/propagator-jaeger": ">=2.0.0",
     "@opentelemetry/sdk-trace-node": ">=1.20.0",
     "@rollup/plugin-typescript": ">=11.0.0",
+    "@traceloop/instrumentation-anthropic": ">=0.10.0",
+    "@traceloop/instrumentation-google-generativeai": ">=0.10.0",
     "esbuild": ">=0.17.0",
     "openai": ">=6.16.0",
     "typescript": ">=5.0.0",
@@ -122,6 +125,9 @@
     "@opentelemetry/core": {
       "optional": true
     },
+    "@opentelemetry/instrumentation-openai": {
+      "optional": true
+    },
     "@opentelemetry/propagator-b3": {
       "optional": true
     },
@@ -129,6 +135,12 @@
       "optional": true
     },
     "@opentelemetry/sdk-trace-node": {
+      "optional": true
+    },
+    "@traceloop/instrumentation-anthropic": {
+      "optional": true
+    },
+    "@traceloop/instrumentation-google-generativeai": {
       "optional": true
     },
     "openai": {
