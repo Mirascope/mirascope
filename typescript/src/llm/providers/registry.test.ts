@@ -130,6 +130,19 @@ describe('provider registry', () => {
       });
       expect(provider.id).toBe('mirascope');
     });
+
+    it('registers ollama provider by ID', () => {
+      const provider = registerProvider('ollama');
+      expect(provider.id).toBe('ollama');
+    });
+
+    it('registers ollama provider by ID with options', () => {
+      const provider = registerProvider('ollama', {
+        apiKey: 'custom-key',
+        baseURL: 'http://custom.ollama.example.com/v1/',
+      });
+      expect(provider.id).toBe('ollama');
+    });
   });
 
   describe('getProviderForModel', () => {
@@ -157,6 +170,12 @@ describe('provider registry', () => {
         'anthropic/claude-sonnet-4-20250514'
       );
       expect(provider.id).toBe('anthropic');
+    });
+
+    it('auto-registers ollama provider without API key requirement', () => {
+      // Ollama doesn't require an API key (apiKeyEnvVar is null)
+      const provider = getProviderForModel('ollama/llama2');
+      expect(provider.id).toBe('ollama');
     });
 
     it('throws NoRegisteredProviderError for unknown model prefix', () => {

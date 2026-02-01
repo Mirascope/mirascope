@@ -12,6 +12,7 @@ import type { BaseProvider } from '@/llm/providers/base';
 import { AnthropicProvider } from '@/llm/providers/anthropic';
 import { GoogleProvider } from '@/llm/providers/google';
 import { MirascopeProvider } from '@/llm/providers/mirascope';
+import { OllamaProvider } from '@/llm/providers/ollama';
 import { OpenAIProvider } from '@/llm/providers/openai/provider';
 import type { ProviderId } from '@/llm/providers/provider-id';
 
@@ -49,6 +50,7 @@ const DEFAULT_AUTO_REGISTER_SCOPES: Record<string, ProviderDefault[]> = {
   'mirascope/': [
     { providerId: 'mirascope', apiKeyEnvVar: 'MIRASCOPE_API_KEY' },
   ],
+  'ollama/': [{ providerId: 'ollama', apiKeyEnvVar: null }],
   'openai/': [{ providerId: 'openai', apiKeyEnvVar: 'OPENAI_API_KEY' }],
 };
 
@@ -99,6 +101,12 @@ export function getProviderSingleton(
       break;
     case 'mirascope':
       provider = new MirascopeProvider({
+        apiKey: options?.apiKey,
+        baseURL: options?.baseURL,
+      });
+      break;
+    case 'ollama':
+      provider = new OllamaProvider({
         apiKey: options?.apiKey,
         baseURL: options?.baseURL,
       });
