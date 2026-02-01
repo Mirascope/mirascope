@@ -1,0 +1,1793 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`structured output with tools (default mode) > [anthropic] calls tool then parses structured output (default) 1`] = `
+{
+  "parsedBook": {
+    "author": "Brandon Sanderson",
+    "pages": 544,
+    "publicationYear": 2006,
+    "title": "Mistborn: The Final Empire",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "description": "The author of the book",
+            "type": "string",
+          },
+          "pages": {
+            "description": "Number of pages",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "publicationYear": {
+            "description": "Year of publication",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "pages",
+          "publicationYear",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please look up the book with ISBN 0-7653-1178-X and provide detailed info",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"isbn":"0-7653-1178-X"}",
+            "id": "toolu_011hY35rfEQi1NMGfyi4i617",
+            "name": "get_book_info",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_011hY35rfEQi1NMGfyi4i617",
+              "input": {
+                "isbn": "0-7653-1178-X",
+              },
+              "name": "get_book_info",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "toolu_011hY35rfEQi1NMGfyi4i617",
+            "name": "get_book_info",
+            "result": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publicationYear":2006}",
+            "id": "toolu_01VbAYvAzCjmGBpJkYcpS6kX",
+            "name": "__mirascope_formatted_output_tool__",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01VbAYvAzCjmGBpJkYcpS6kX",
+              "input": {
+                "author": "Brandon Sanderson",
+                "pages": 544,
+                "publicationYear": 2006,
+                "title": "Mistborn: The Final Empire",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [
+      {
+        "description": "Look up book information by ISBN.",
+        "name": "get_book_info",
+        "parameters": "{
+  "type": "object",
+  "properties": {
+    "isbn": {
+      "type": "string",
+      "description": "The ISBN of the book to look up"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false
+}",
+        "strict": undefined,
+      },
+    ],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 1011,
+      "outputTokens": 109,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 1120,
+    },
+  },
+}
+`;
+
+exports[`structured output with tools (default mode) > [anthropic] calls tool with context then parses (default) 1`] = `
+{
+  "parsedBook": {
+    "author": "Brandon Sanderson",
+    "pages": 544,
+    "publicationYear": 2006,
+    "title": "Mistborn: The Final Empire",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "description": "The author of the book",
+            "type": "string",
+          },
+          "pages": {
+            "description": "Number of pages",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "publicationYear": {
+            "description": "Year of publication",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "pages",
+          "publicationYear",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please look up the book with ISBN 0-7653-1178-X and provide detailed info",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"isbn":"0-7653-1178-X"}",
+            "id": "toolu_01HEnwRBNxBNwJoNMpmg2NMT",
+            "name": "get_book_info",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01HEnwRBNxBNwJoNMpmg2NMT",
+              "input": {
+                "isbn": "0-7653-1178-X",
+              },
+              "name": "get_book_info",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "toolu_01HEnwRBNxBNwJoNMpmg2NMT",
+            "name": "get_book_info",
+            "result": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publicationYear":2006}",
+            "id": "toolu_01MT1WTPY2ANQXmqtuXUHsV1",
+            "name": "__mirascope_formatted_output_tool__",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01MT1WTPY2ANQXmqtuXUHsV1",
+              "input": {
+                "author": "Brandon Sanderson",
+                "pages": 544,
+                "publicationYear": 2006,
+                "title": "Mistborn: The Final Empire",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [
+      {
+        "description": "Look up book information by ISBN.",
+        "name": "get_book_info",
+        "parameters": "{
+  "type": "object",
+  "properties": {
+    "isbn": {
+      "type": "string",
+      "description": "The ISBN of the book to look up"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false
+}",
+        "strict": undefined,
+      },
+    ],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 1011,
+      "outputTokens": 109,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 1120,
+    },
+  },
+}
+`;
+
+exports[`structured output with tools (json mode) > [anthropic] calls tool then parses structured output (json) 1`] = `
+{
+  "parsedBook": {
+    "author": "Brandon Sanderson",
+    "pages": 544,
+    "publicationYear": 2006,
+    "title": "Mistborn: The Final Empire",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Respond only with valid JSON that matches this exact schema:
+{
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The title of the book"
+    },
+    "author": {
+      "type": "string",
+      "description": "The author of the book"
+    },
+    "pages": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991,
+      "description": "Number of pages"
+    },
+    "publicationYear": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991,
+      "description": "Year of publication"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publicationYear"
+  ],
+  "additionalProperties": false
+}",
+      "mode": "json",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "description": "The author of the book",
+            "type": "string",
+          },
+          "pages": {
+            "description": "Number of pages",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "publicationYear": {
+            "description": "Year of publication",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "pages",
+          "publicationYear",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please look up the book with ISBN 0-7653-1178-X and provide detailed info",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"isbn":"0-7653-1178-X"}",
+            "id": "toolu_019HBESgCGEJv9uXU3ogDYCF",
+            "name": "get_book_info",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_019HBESgCGEJv9uXU3ogDYCF",
+              "input": {
+                "isbn": "0-7653-1178-X",
+              },
+              "name": "get_book_info",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "toolu_019HBESgCGEJv9uXU3ogDYCF",
+            "name": "get_book_info",
+            "result": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Based on the lookup results, here are the detailed information for the book with ISBN 0-7653-1178-X:
+
+\`\`\`json
+{
+  "title": "Mistborn: The Final Empire",
+  "author": "Brandon Sanderson",
+  "pages": 544,
+  "publicationYear": 2006
+}
+\`\`\`
+
+**Summary:**
+- **Title:** Mistborn: The Final Empire
+- **Author:** Brandon Sanderson
+- **Pages:** 544
+- **Publication Year:** 2006
+
+This is the first book in Brandon Sanderson's acclaimed Mistborn series, published by Tor Books. It's a fantasy novel featuring a unique magic system based on the ingestion of metals and is known for its intricate world-building and compelling narrative.",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Based on the lookup results, here are the detailed information for the book with ISBN 0-7653-1178-X:
+
+\`\`\`json
+{
+  "title": "Mistborn: The Final Empire",
+  "author": "Brandon Sanderson",
+  "pages": 544,
+  "publicationYear": 2006
+}
+\`\`\`
+
+**Summary:**
+- **Title:** Mistborn: The Final Empire
+- **Author:** Brandon Sanderson
+- **Pages:** 544
+- **Publication Year:** 2006
+
+This is the first book in Brandon Sanderson's acclaimed Mistborn series, published by Tor Books. It's a fantasy novel featuring a unique magic system based on the ingestion of metals and is known for its intricate world-building and compelling narrative.",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [
+      {
+        "description": "Look up book information by ISBN.",
+        "name": "get_book_info",
+        "parameters": "{
+  "type": "object",
+  "properties": {
+    "isbn": {
+      "type": "string",
+      "description": "The ISBN of the book to look up"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false
+}",
+        "strict": undefined,
+      },
+    ],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 939,
+      "outputTokens": 178,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 1117,
+    },
+  },
+}
+`;
+
+exports[`structured output with tools (json mode) > [anthropic] calls tool with context then parses (json) 1`] = `
+{
+  "parsedBook": {
+    "author": "Brandon Sanderson",
+    "pages": 544,
+    "publicationYear": 2006,
+    "title": "Mistborn: The Final Empire",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Respond only with valid JSON that matches this exact schema:
+{
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The title of the book"
+    },
+    "author": {
+      "type": "string",
+      "description": "The author of the book"
+    },
+    "pages": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991,
+      "description": "Number of pages"
+    },
+    "publicationYear": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991,
+      "description": "Year of publication"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publicationYear"
+  ],
+  "additionalProperties": false
+}",
+      "mode": "json",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "description": "The author of the book",
+            "type": "string",
+          },
+          "pages": {
+            "description": "Number of pages",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "publicationYear": {
+            "description": "Year of publication",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "pages",
+          "publicationYear",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please look up the book with ISBN 0-7653-1178-X and provide detailed info",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"isbn":"0-7653-1178-X"}",
+            "id": "toolu_014rty1RDPdY8M4nor6LzAwv",
+            "name": "get_book_info",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_014rty1RDPdY8M4nor6LzAwv",
+              "input": {
+                "isbn": "0-7653-1178-X",
+              },
+              "name": "get_book_info",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "toolu_014rty1RDPdY8M4nor6LzAwv",
+            "name": "get_book_info",
+            "result": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Based on the ISBN lookup, here are the detailed book information:
+
+\`\`\`json
+{
+  "title": "Mistborn: The Final Empire",
+  "author": "Brandon Sanderson",
+  "pages": 544,
+  "publicationYear": 2006
+}
+\`\`\`
+
+**Summary:**
+- **Title:** Mistborn: The Final Empire
+- **Author:** Brandon Sanderson
+- **Pages:** 544
+- **Publication Year:** 2006
+- **Publication Date:** July 25, 2006
+
+This is the first book in Brandon Sanderson's Mistborn trilogy. It's an epic fantasy novel featuring a unique magic system involving the use of metals and their allomantic properties. The story follows Vin, a street urchin who discovers she has special powers, and takes place in an empire ruled by the immortal Lord Ruler. The novel is known for its intricate worldbuilding and creative approach to magic systems.",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "Based on the ISBN lookup, here are the detailed book information:
+
+\`\`\`json
+{
+  "title": "Mistborn: The Final Empire",
+  "author": "Brandon Sanderson",
+  "pages": 544,
+  "publicationYear": 2006
+}
+\`\`\`
+
+**Summary:**
+- **Title:** Mistborn: The Final Empire
+- **Author:** Brandon Sanderson
+- **Pages:** 544
+- **Publication Year:** 2006
+- **Publication Date:** July 25, 2006
+
+This is the first book in Brandon Sanderson's Mistborn trilogy. It's an epic fantasy novel featuring a unique magic system involving the use of metals and their allomantic properties. The story follows Vin, a street urchin who discovers she has special powers, and takes place in an empire ruled by the immortal Lord Ruler. The novel is known for its intricate worldbuilding and creative approach to magic systems.",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [
+      {
+        "description": "Look up book information by ISBN.",
+        "name": "get_book_info",
+        "parameters": "{
+  "type": "object",
+  "properties": {
+    "isbn": {
+      "type": "string",
+      "description": "The ISBN of the book to look up"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false
+}",
+        "strict": undefined,
+      },
+    ],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 939,
+      "outputTokens": 214,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 1153,
+    },
+  },
+}
+`;
+
+exports[`structured output with tools (tool mode) > [anthropic] calls tool then parses structured output (tool) 1`] = `
+{
+  "parsedBook": {
+    "author": "Brandon Sanderson",
+    "pages": 544,
+    "publicationYear": 2006,
+    "title": "Mistborn: The Final Empire",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "description": "The author of the book",
+            "type": "string",
+          },
+          "pages": {
+            "description": "Number of pages",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "publicationYear": {
+            "description": "Year of publication",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "pages",
+          "publicationYear",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please look up the book with ISBN 0-7653-1178-X and provide detailed info",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"isbn":"0-7653-1178-X"}",
+            "id": "toolu_01GJS573sYRKcGCEj52cWaiW",
+            "name": "get_book_info",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01GJS573sYRKcGCEj52cWaiW",
+              "input": {
+                "isbn": "0-7653-1178-X",
+              },
+              "name": "get_book_info",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "toolu_01GJS573sYRKcGCEj52cWaiW",
+            "name": "get_book_info",
+            "result": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publicationYear":2006}",
+            "id": "toolu_01N83rEG4eMsAh2qbUXuTMto",
+            "name": "__mirascope_formatted_output_tool__",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01N83rEG4eMsAh2qbUXuTMto",
+              "input": {
+                "author": "Brandon Sanderson",
+                "pages": 544,
+                "publicationYear": 2006,
+                "title": "Mistborn: The Final Empire",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [
+      {
+        "description": "Look up book information by ISBN.",
+        "name": "get_book_info",
+        "parameters": "{
+  "type": "object",
+  "properties": {
+    "isbn": {
+      "type": "string",
+      "description": "The ISBN of the book to look up"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false
+}",
+        "strict": undefined,
+      },
+    ],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 1011,
+      "outputTokens": 109,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 1120,
+    },
+  },
+}
+`;
+
+exports[`structured output with tools (tool mode) > [anthropic] calls tool with context then parses (tool) 1`] = `
+{
+  "parsedBook": {
+    "author": "Brandon Sanderson",
+    "pages": 544,
+    "publicationYear": 2006,
+    "title": "Mistborn: The Final Empire",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "description": "The author of the book",
+            "type": "string",
+          },
+          "pages": {
+            "description": "Number of pages",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "publicationYear": {
+            "description": "Year of publication",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "pages",
+          "publicationYear",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please look up the book with ISBN 0-7653-1178-X and provide detailed info",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"isbn":"0-7653-1178-X"}",
+            "id": "toolu_01McgfEuZcDuiiL19BaHapam",
+            "name": "get_book_info",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01McgfEuZcDuiiL19BaHapam",
+              "input": {
+                "isbn": "0-7653-1178-X",
+              },
+              "name": "get_book_info",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "toolu_01McgfEuZcDuiiL19BaHapam",
+            "name": "get_book_info",
+            "result": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publicationYear":2006}",
+            "id": "toolu_01PorDaFeVmDVro2Aeo7do2x",
+            "name": "__mirascope_formatted_output_tool__",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01PorDaFeVmDVro2Aeo7do2x",
+              "input": {
+                "author": "Brandon Sanderson",
+                "pages": 544,
+                "publicationYear": 2006,
+                "title": "Mistborn: The Final Empire",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [
+      {
+        "description": "Look up book information by ISBN.",
+        "name": "get_book_info",
+        "parameters": "{
+  "type": "object",
+  "properties": {
+    "isbn": {
+      "type": "string",
+      "description": "The ISBN of the book to look up"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false
+}",
+        "strict": undefined,
+      },
+    ],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 1011,
+      "outputTokens": 109,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 1120,
+    },
+  },
+}
+`;
+
+exports[`structured output with tools streaming (default mode) > [anthropic] streams tool call then parses structured output (default) 1`] = `
+{
+  "parsedBook": {
+    "author": "Brandon Sanderson",
+    "pages": 544,
+    "publicationYear": 2006,
+    "title": "Mistborn: The Final Empire",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "description": "The author of the book",
+            "type": "string",
+          },
+          "pages": {
+            "description": "Number of pages",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "publicationYear": {
+            "description": "Year of publication",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "pages",
+          "publicationYear",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please look up the book with ISBN 0-7653-1178-X and provide detailed info",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"isbn": "0-7653-1178-X"}",
+            "id": "toolu_01HHaVLaFEpKasFi5YqsFhCa",
+            "name": "get_book_info",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01HHaVLaFEpKasFi5YqsFhCa",
+              "input": {
+                "isbn": "0-7653-1178-X",
+              },
+              "name": "get_book_info",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "toolu_01HHaVLaFEpKasFi5YqsFhCa",
+            "name": "get_book_info",
+            "result": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publicationYear": 2006}",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01T5zvxa1zms18jzkQg4aZEE",
+              "input": {
+                "author": "Brandon Sanderson",
+                "pages": 544,
+                "publicationYear": 2006,
+                "title": "Mistborn: The Final Empire",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 19,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [
+      {
+        "description": "Look up book information by ISBN.",
+        "name": "get_book_info",
+        "parameters": "{
+  "type": "object",
+  "properties": {
+    "isbn": {
+      "type": "string",
+      "description": "The ISBN of the book to look up"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false
+}",
+        "strict": undefined,
+      },
+    ],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 1011,
+      "outputTokens": 127,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 1138,
+    },
+  },
+}
+`;
+
+exports[`structured output with tools streaming (default mode) > [anthropic] streams tool call with context then parses (default) 1`] = `
+{
+  "parsedBook": {
+    "author": "Brandon Sanderson",
+    "pages": 544,
+    "publicationYear": 2006,
+    "title": "Mistborn: The Final Empire",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "description": "The author of the book",
+            "type": "string",
+          },
+          "pages": {
+            "description": "Number of pages",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "publicationYear": {
+            "description": "Year of publication",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "pages",
+          "publicationYear",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please look up the book with ISBN 0-7653-1178-X and provide detailed info",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"isbn": "0-7653-1178-X"}",
+            "id": "toolu_014SwnbxYMFZdquVsQd1gK2b",
+            "name": "get_book_info",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_014SwnbxYMFZdquVsQd1gK2b",
+              "input": {
+                "isbn": "0-7653-1178-X",
+              },
+              "name": "get_book_info",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "toolu_014SwnbxYMFZdquVsQd1gK2b",
+            "name": "get_book_info",
+            "result": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publicationYear": 2006}",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01GLkDqebi3gWtyTvuk9KND6",
+              "input": {
+                "author": "Brandon Sanderson",
+                "pages": 544,
+                "publicationYear": 2006,
+                "title": "Mistborn: The Final Empire",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 21,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [
+      {
+        "description": "Look up book information by ISBN.",
+        "name": "get_book_info",
+        "parameters": "{
+  "type": "object",
+  "properties": {
+    "isbn": {
+      "type": "string",
+      "description": "The ISBN of the book to look up"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false
+}",
+        "strict": undefined,
+      },
+    ],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 1011,
+      "outputTokens": 127,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 1138,
+    },
+  },
+}
+`;
+
+exports[`structured output with tools streaming (tool mode) > [anthropic] streams tool call then parses structured output (tool) 1`] = `
+{
+  "parsedBook": {
+    "author": "Brandon Sanderson",
+    "pages": 544,
+    "publicationYear": 2006,
+    "title": "Mistborn: The Final Empire",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "description": "The author of the book",
+            "type": "string",
+          },
+          "pages": {
+            "description": "Number of pages",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "publicationYear": {
+            "description": "Year of publication",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "pages",
+          "publicationYear",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please look up the book with ISBN 0-7653-1178-X and provide detailed info",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"isbn": "0-7653-1178-X"}",
+            "id": "toolu_012qRerJoEw6vNMiYVBVRXmd",
+            "name": "get_book_info",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_012qRerJoEw6vNMiYVBVRXmd",
+              "input": {
+                "isbn": "0-7653-1178-X",
+              },
+              "name": "get_book_info",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "toolu_012qRerJoEw6vNMiYVBVRXmd",
+            "name": "get_book_info",
+            "result": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publicationYear": 2006}",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01Sm681gHdLyYMCWxgfRCVZj",
+              "input": {
+                "author": "Brandon Sanderson",
+                "pages": 544,
+                "publicationYear": 2006,
+                "title": "Mistborn: The Final Empire",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 24,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [
+      {
+        "description": "Look up book information by ISBN.",
+        "name": "get_book_info",
+        "parameters": "{
+  "type": "object",
+  "properties": {
+    "isbn": {
+      "type": "string",
+      "description": "The ISBN of the book to look up"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false
+}",
+        "strict": undefined,
+      },
+    ],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 1011,
+      "outputTokens": 127,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 1138,
+    },
+  },
+}
+`;
+
+exports[`structured output with tools streaming (tool mode) > [anthropic] streams tool call with context then parses (tool) 1`] = `
+{
+  "parsedBook": {
+    "author": "Brandon Sanderson",
+    "pages": 544,
+    "publicationYear": 2006,
+    "title": "Mistborn: The Final Empire",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "description": "The author of the book",
+            "type": "string",
+          },
+          "pages": {
+            "description": "Number of pages",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "publicationYear": {
+            "description": "Year of publication",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "pages",
+          "publicationYear",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please look up the book with ISBN 0-7653-1178-X and provide detailed info",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"isbn": "0-7653-1178-X"}",
+            "id": "toolu_014YgVaNj9ru1Nm4KMBZTM85",
+            "name": "get_book_info",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_014YgVaNj9ru1Nm4KMBZTM85",
+              "input": {
+                "isbn": "0-7653-1178-X",
+              },
+              "name": "get_book_info",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "toolu_014YgVaNj9ru1Nm4KMBZTM85",
+            "name": "get_book_info",
+            "result": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publicationYear": 2006}",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_018mFi6RBeSoyapLLa9czvdx",
+              "input": {
+                "author": "Brandon Sanderson",
+                "pages": 544,
+                "publicationYear": 2006,
+                "title": "Mistborn: The Final Empire",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 21,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [
+      {
+        "description": "Look up book information by ISBN.",
+        "name": "get_book_info",
+        "parameters": "{
+  "type": "object",
+  "properties": {
+    "isbn": {
+      "type": "string",
+      "description": "The ISBN of the book to look up"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false
+}",
+        "strict": undefined,
+      },
+    ],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 1011,
+      "outputTokens": 127,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 1138,
+    },
+  },
+}
+`;

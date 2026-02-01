@@ -91,7 +91,7 @@ describe("text encoded thoughts", () => {
     async ({ model }) => {
       const callWithThoughts = defineCall({
         model,
-        maxTokens: 500,
+        maxTokens: 2048,
         thinking: {
           level: "minimal",
           encodeThoughtsAsText: true,

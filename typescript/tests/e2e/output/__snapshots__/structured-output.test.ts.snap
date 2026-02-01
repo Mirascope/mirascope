@@ -1,0 +1,1627 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`structured output (default mode) > [anthropic] parses stream with context (default) 1`] = `
+{
+  "parsedBook": {
+    "author": {
+      "firstName": "Patrick",
+      "lastName": "Rothfuss",
+    },
+    "rating": 7,
+    "title": "THE NAME OF THE WIND",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "additionalProperties": false,
+            "description": "The author of the book",
+            "properties": {
+              "firstName": {
+                "description": "The author's first name",
+                "type": "string",
+              },
+              "lastName": {
+                "description": "The author's last name",
+                "type": "string",
+              },
+            },
+            "required": [
+              "firstName",
+              "lastName",
+            ],
+            "type": "object",
+          },
+          "rating": {
+            "description": "For testing purposes, the rating should be 7",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book (should be in all caps)",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "rating",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please recommend the most popular book by Patrick Rothfuss",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "{"title": "THE NAME OF THE WIND", "author": {"firstName":"Patrick","lastName":"Rothfuss"}, "rating": 7}",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_017GS3AMijmvVuqhP4E1KbrH",
+              "input": {
+                "author": {
+                  "firstName": "Patrick",
+                  "lastName": "Rothfuss",
+                },
+                "rating": 7,
+                "title": "THE NAME OF THE WIND",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 18,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 866,
+      "outputTokens": 88,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 954,
+    },
+  },
+}
+`;
+
+exports[`structured output (default mode) > [anthropic] parses stream with nested schema (default) 1`] = `
+{
+  "parsedBook": {
+    "author": {
+      "firstName": "Patrick",
+      "lastName": "Rothfuss",
+    },
+    "rating": 7,
+    "title": "THE NAME OF THE WIND",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "additionalProperties": false,
+            "description": "The author of the book",
+            "properties": {
+              "firstName": {
+                "description": "The author's first name",
+                "type": "string",
+              },
+              "lastName": {
+                "description": "The author's last name",
+                "type": "string",
+              },
+            },
+            "required": [
+              "firstName",
+              "lastName",
+            ],
+            "type": "object",
+          },
+          "rating": {
+            "description": "For testing purposes, the rating should be 7",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book (should be in all caps)",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "rating",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please recommend the most popular book by Patrick Rothfuss",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "{"title": "THE NAME OF THE WIND", "author": {"firstName":"Patrick","lastName":"Rothfuss"}, "rating": 7}",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_012AZJm2z2Hy6ieVatwsfvqG",
+              "input": {
+                "author": {
+                  "firstName": "Patrick",
+                  "lastName": "Rothfuss",
+                },
+                "rating": 7,
+                "title": "THE NAME OF THE WIND",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 18,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 866,
+      "outputTokens": 88,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 954,
+    },
+  },
+}
+`;
+
+exports[`structured output (default mode) > [anthropic] parses with context (default) 1`] = `
+{
+  "parsedBook": {
+    "author": {
+      "firstName": "Patrick",
+      "lastName": "Rothfuss",
+    },
+    "rating": 7,
+    "title": "THE NAME OF THE WIND",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "additionalProperties": false,
+            "description": "The author of the book",
+            "properties": {
+              "firstName": {
+                "description": "The author's first name",
+                "type": "string",
+              },
+              "lastName": {
+                "description": "The author's last name",
+                "type": "string",
+              },
+            },
+            "required": [
+              "firstName",
+              "lastName",
+            ],
+            "type": "object",
+          },
+          "rating": {
+            "description": "For testing purposes, the rating should be 7",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book (should be in all caps)",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "rating",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please recommend the most popular book by Patrick Rothfuss",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"title":"THE NAME OF THE WIND","author":{"firstName":"Patrick","lastName":"Rothfuss"},"rating":7}",
+            "id": "toolu_014Cop6SGLrGiBF8pfDQyULX",
+            "name": "__mirascope_formatted_output_tool__",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_014Cop6SGLrGiBF8pfDQyULX",
+              "input": {
+                "author": {
+                  "firstName": "Patrick",
+                  "lastName": "Rothfuss",
+                },
+                "rating": 7,
+                "title": "THE NAME OF THE WIND",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 866,
+      "outputTokens": 77,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 943,
+    },
+  },
+}
+`;
+
+exports[`structured output (default mode) > [anthropic] parses with nested schema (default) 1`] = `
+{
+  "parsedBook": {
+    "author": {
+      "firstName": "Patrick",
+      "lastName": "Rothfuss",
+    },
+    "rating": 7,
+    "title": "THE NAME OF THE WIND",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "additionalProperties": false,
+            "description": "The author of the book",
+            "properties": {
+              "firstName": {
+                "description": "The author's first name",
+                "type": "string",
+              },
+              "lastName": {
+                "description": "The author's last name",
+                "type": "string",
+              },
+            },
+            "required": [
+              "firstName",
+              "lastName",
+            ],
+            "type": "object",
+          },
+          "rating": {
+            "description": "For testing purposes, the rating should be 7",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book (should be in all caps)",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "rating",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please recommend the most popular book by Patrick Rothfuss",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"title":"THE NAME OF THE WIND","author":{"firstName":"Patrick","lastName":"Rothfuss"},"rating":7}",
+            "id": "toolu_011LALVXPkCvgVAcTywTPgSs",
+            "name": "__mirascope_formatted_output_tool__",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_011LALVXPkCvgVAcTywTPgSs",
+              "input": {
+                "author": {
+                  "firstName": "Patrick",
+                  "lastName": "Rothfuss",
+                },
+                "rating": 7,
+                "title": "THE NAME OF THE WIND",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 866,
+      "outputTokens": 77,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 943,
+    },
+  },
+}
+`;
+
+exports[`structured output (json mode) > [anthropic] parses stream with context (json) 1`] = `
+{
+  "parsedBook": {
+    "author": {
+      "firstName": "Patrick",
+      "lastName": "Rothfuss",
+    },
+    "rating": 7,
+    "title": "THE NAME OF THE WIND",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Respond only with valid JSON that matches this exact schema:
+{
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The title of the book (should be in all caps)"
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "description": "The author's first name"
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The author's last name"
+        }
+      },
+      "required": [
+        "firstName",
+        "lastName"
+      ],
+      "additionalProperties": false,
+      "description": "The author of the book"
+    },
+    "rating": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991,
+      "description": "For testing purposes, the rating should be 7"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "rating"
+  ],
+  "additionalProperties": false
+}",
+      "mode": "json",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "additionalProperties": false,
+            "description": "The author of the book",
+            "properties": {
+              "firstName": {
+                "description": "The author's first name",
+                "type": "string",
+              },
+              "lastName": {
+                "description": "The author's last name",
+                "type": "string",
+              },
+            },
+            "required": [
+              "firstName",
+              "lastName",
+            ],
+            "type": "object",
+          },
+          "rating": {
+            "description": "For testing purposes, the rating should be 7",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book (should be in all caps)",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "rating",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please recommend the most popular book by Patrick Rothfuss",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "\`\`\`json
+{
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "firstName": "Patrick",
+    "lastName": "Rothfuss"
+  },
+  "rating": 7
+}
+\`\`\`",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "\`\`\`json
+{
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "firstName": "Patrick",
+    "lastName": "Rothfuss"
+  },
+  "rating": 7
+}
+\`\`\`",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 12,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 303,
+      "outputTokens": 60,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 363,
+    },
+  },
+}
+`;
+
+exports[`structured output (json mode) > [anthropic] parses stream with nested schema (json) 1`] = `
+{
+  "parsedBook": {
+    "author": {
+      "firstName": "Patrick",
+      "lastName": "Rothfuss",
+    },
+    "rating": 7,
+    "title": "THE NAME OF THE WIND",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Respond only with valid JSON that matches this exact schema:
+{
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The title of the book (should be in all caps)"
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "description": "The author's first name"
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The author's last name"
+        }
+      },
+      "required": [
+        "firstName",
+        "lastName"
+      ],
+      "additionalProperties": false,
+      "description": "The author of the book"
+    },
+    "rating": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991,
+      "description": "For testing purposes, the rating should be 7"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "rating"
+  ],
+  "additionalProperties": false
+}",
+      "mode": "json",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "additionalProperties": false,
+            "description": "The author of the book",
+            "properties": {
+              "firstName": {
+                "description": "The author's first name",
+                "type": "string",
+              },
+              "lastName": {
+                "description": "The author's last name",
+                "type": "string",
+              },
+            },
+            "required": [
+              "firstName",
+              "lastName",
+            ],
+            "type": "object",
+          },
+          "rating": {
+            "description": "For testing purposes, the rating should be 7",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book (should be in all caps)",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "rating",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please recommend the most popular book by Patrick Rothfuss",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "\`\`\`json
+{
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "firstName": "Patrick",
+    "lastName": "Rothfuss"
+  },
+  "rating": 7
+}
+\`\`\`",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "\`\`\`json
+{
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "firstName": "Patrick",
+    "lastName": "Rothfuss"
+  },
+  "rating": 7
+}
+\`\`\`",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 12,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 303,
+      "outputTokens": 60,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 363,
+    },
+  },
+}
+`;
+
+exports[`structured output (json mode) > [anthropic] parses with context (json) 1`] = `
+{
+  "parsedBook": {
+    "author": {
+      "firstName": "Patrick",
+      "lastName": "Rothfuss",
+    },
+    "rating": 7,
+    "title": "THE NAME OF THE WIND",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Respond only with valid JSON that matches this exact schema:
+{
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The title of the book (should be in all caps)"
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "description": "The author's first name"
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The author's last name"
+        }
+      },
+      "required": [
+        "firstName",
+        "lastName"
+      ],
+      "additionalProperties": false,
+      "description": "The author of the book"
+    },
+    "rating": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991,
+      "description": "For testing purposes, the rating should be 7"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "rating"
+  ],
+  "additionalProperties": false
+}",
+      "mode": "json",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "additionalProperties": false,
+            "description": "The author of the book",
+            "properties": {
+              "firstName": {
+                "description": "The author's first name",
+                "type": "string",
+              },
+              "lastName": {
+                "description": "The author's last name",
+                "type": "string",
+              },
+            },
+            "required": [
+              "firstName",
+              "lastName",
+            ],
+            "type": "object",
+          },
+          "rating": {
+            "description": "For testing purposes, the rating should be 7",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book (should be in all caps)",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "rating",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please recommend the most popular book by Patrick Rothfuss",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "\`\`\`json
+{
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "firstName": "Patrick",
+    "lastName": "Rothfuss"
+  },
+  "rating": 7
+}
+\`\`\`",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "\`\`\`json
+{
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "firstName": "Patrick",
+    "lastName": "Rothfuss"
+  },
+  "rating": 7
+}
+\`\`\`",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 303,
+      "outputTokens": 59,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 362,
+    },
+  },
+}
+`;
+
+exports[`structured output (json mode) > [anthropic] parses with nested schema (json) 1`] = `
+{
+  "parsedBook": {
+    "author": {
+      "firstName": "Patrick",
+      "lastName": "Rothfuss",
+    },
+    "rating": 7,
+    "title": "THE NAME OF THE WIND",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Respond only with valid JSON that matches this exact schema:
+{
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The title of the book (should be in all caps)"
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "description": "The author's first name"
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The author's last name"
+        }
+      },
+      "required": [
+        "firstName",
+        "lastName"
+      ],
+      "additionalProperties": false,
+      "description": "The author of the book"
+    },
+    "rating": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991,
+      "description": "For testing purposes, the rating should be 7"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "rating"
+  ],
+  "additionalProperties": false
+}",
+      "mode": "json",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "additionalProperties": false,
+            "description": "The author of the book",
+            "properties": {
+              "firstName": {
+                "description": "The author's first name",
+                "type": "string",
+              },
+              "lastName": {
+                "description": "The author's last name",
+                "type": "string",
+              },
+            },
+            "required": [
+              "firstName",
+              "lastName",
+            ],
+            "type": "object",
+          },
+          "rating": {
+            "description": "For testing purposes, the rating should be 7",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book (should be in all caps)",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "rating",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please recommend the most popular book by Patrick Rothfuss",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "\`\`\`json
+{
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "firstName": "Patrick",
+    "lastName": "Rothfuss"
+  },
+  "rating": 7
+}
+\`\`\`",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "\`\`\`json
+{
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "firstName": "Patrick",
+    "lastName": "Rothfuss"
+  },
+  "rating": 7
+}
+\`\`\`",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 303,
+      "outputTokens": 59,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 362,
+    },
+  },
+}
+`;
+
+exports[`structured output (tool mode) > [anthropic] parses stream with context (tool) 1`] = `
+{
+  "parsedBook": {
+    "author": {
+      "firstName": "Patrick",
+      "lastName": "Rothfuss",
+    },
+    "rating": 7,
+    "title": "THE NAME OF THE WIND",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "additionalProperties": false,
+            "description": "The author of the book",
+            "properties": {
+              "firstName": {
+                "description": "The author's first name",
+                "type": "string",
+              },
+              "lastName": {
+                "description": "The author's last name",
+                "type": "string",
+              },
+            },
+            "required": [
+              "firstName",
+              "lastName",
+            ],
+            "type": "object",
+          },
+          "rating": {
+            "description": "For testing purposes, the rating should be 7",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book (should be in all caps)",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "rating",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please recommend the most popular book by Patrick Rothfuss",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "{"title": "THE NAME OF THE WIND", "author": {"firstName":"Patrick","lastName":"Rothfuss"}, "rating": 7}",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01VUo9yp7nstCQJBAEr1W3BV",
+              "input": {
+                "author": {
+                  "firstName": "Patrick",
+                  "lastName": "Rothfuss",
+                },
+                "rating": 7,
+                "title": "THE NAME OF THE WIND",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 19,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 866,
+      "outputTokens": 88,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 954,
+    },
+  },
+}
+`;
+
+exports[`structured output (tool mode) > [anthropic] parses stream with nested schema (tool) 1`] = `
+{
+  "parsedBook": {
+    "author": {
+      "firstName": "Patrick",
+      "lastName": "Rothfuss",
+    },
+    "rating": 7,
+    "title": "THE NAME OF THE WIND",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "additionalProperties": false,
+            "description": "The author of the book",
+            "properties": {
+              "firstName": {
+                "description": "The author's first name",
+                "type": "string",
+              },
+              "lastName": {
+                "description": "The author's last name",
+                "type": "string",
+              },
+            },
+            "required": [
+              "firstName",
+              "lastName",
+            ],
+            "type": "object",
+          },
+          "rating": {
+            "description": "For testing purposes, the rating should be 7",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book (should be in all caps)",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "rating",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please recommend the most popular book by Patrick Rothfuss",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "{"title": "THE NAME OF THE WIND", "author": {"firstName":"Patrick","lastName":"Rothfuss"}, "rating": 7}",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_017PVoRH6YSWkHKj5TtxHqgg",
+              "input": {
+                "author": {
+                  "firstName": "Patrick",
+                  "lastName": "Rothfuss",
+                },
+                "rating": 7,
+                "title": "THE NAME OF THE WIND",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 17,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 866,
+      "outputTokens": 88,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 954,
+    },
+  },
+}
+`;
+
+exports[`structured output (tool mode) > [anthropic] parses with context (tool) 1`] = `
+{
+  "parsedBook": {
+    "author": {
+      "firstName": "Patrick",
+      "lastName": "Rothfuss",
+    },
+    "rating": 7,
+    "title": "THE NAME OF THE WIND",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "additionalProperties": false,
+            "description": "The author of the book",
+            "properties": {
+              "firstName": {
+                "description": "The author's first name",
+                "type": "string",
+              },
+              "lastName": {
+                "description": "The author's last name",
+                "type": "string",
+              },
+            },
+            "required": [
+              "firstName",
+              "lastName",
+            ],
+            "type": "object",
+          },
+          "rating": {
+            "description": "For testing purposes, the rating should be 7",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book (should be in all caps)",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "rating",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please recommend the most popular book by Patrick Rothfuss",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"title":"THE NAME OF THE WIND","author":{"firstName":"Patrick","lastName":"Rothfuss"},"rating":7}",
+            "id": "toolu_01PTzfz8fJGL1p6F9vVHsHpn",
+            "name": "__mirascope_formatted_output_tool__",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01PTzfz8fJGL1p6F9vVHsHpn",
+              "input": {
+                "author": {
+                  "firstName": "Patrick",
+                  "lastName": "Rothfuss",
+                },
+                "rating": 7,
+                "title": "THE NAME OF THE WIND",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 866,
+      "outputTokens": 77,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 943,
+    },
+  },
+}
+`;
+
+exports[`structured output (tool mode) > [anthropic] parses with nested schema (tool) 1`] = `
+{
+  "parsedBook": {
+    "author": {
+      "firstName": "Patrick",
+      "lastName": "Rothfuss",
+    },
+    "rating": 7,
+    "title": "THE NAME OF THE WIND",
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "additionalProperties": false,
+            "description": "The author of the book",
+            "properties": {
+              "firstName": {
+                "description": "The author's first name",
+                "type": "string",
+              },
+              "lastName": {
+                "description": "The author's last name",
+                "type": "string",
+              },
+            },
+            "required": [
+              "firstName",
+              "lastName",
+            ],
+            "type": "object",
+          },
+          "rating": {
+            "description": "For testing purposes, the rating should be 7",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "title": {
+            "description": "The title of the book (should be in all caps)",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "rating",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please recommend the most popular book by Patrick Rothfuss",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"title":"THE NAME OF THE WIND","author":{"firstName":"Patrick","lastName":"Rothfuss"},"rating":7}",
+            "id": "toolu_018Ys4ZLLeLo22dpvv5jk9B3",
+            "name": "__mirascope_formatted_output_tool__",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_018Ys4ZLLeLo22dpvv5jk9B3",
+              "input": {
+                "author": {
+                  "firstName": "Patrick",
+                  "lastName": "Rothfuss",
+                },
+                "rating": 7,
+                "title": "THE NAME OF THE WIND",
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 866,
+      "outputTokens": 77,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 943,
+    },
+  },
+}
+`;
