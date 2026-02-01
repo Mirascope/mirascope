@@ -53,3 +53,10 @@ export type { Trace, AnnotateOptions } from "@/ops/_internal/traced-functions";
 
 // Exporters
 export { MirascopeOTLPExporter } from "@/ops/_internal/exporters";
+
+// LLM Instrumentation
+export {
+  instrumentLlm,
+  uninstrumentLlm,
+  isLlmInstrumented,
+} from "@/ops/_internal/instrumentation";
