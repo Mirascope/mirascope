@@ -20,6 +20,7 @@ test_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "provider_tool_usage": None,
                 "raw": "CompletionUsage(completion_tokens=2, prompt_tokens=12, total_tokens=14, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=None, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=None), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0), cost=5e-05, is_byok=False, cost_details={'upstream_inference_cost': 5e-05, 'upstream_inference_prompt_cost': 3e-05, 'upstream_inference_completions_cost': 2e-05})",
                 "total_tokens": 14,
             },
