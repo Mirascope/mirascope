@@ -103,8 +103,10 @@ export class Span {
   set(attributes: Record<string, unknown>): void {
     if (this._span && !this._finished) {
       for (const [key, value] of Object.entries(attributes)) {
+        // Arrays can be passed directly to OpenTelemetry
+        // Only JSON-stringify non-array objects
         const attrValue =
-          typeof value === "object" && value !== null
+          typeof value === "object" && value !== null && !Array.isArray(value)
             ? jsonStringify(value)
             : value;
         this._span.setAttribute(

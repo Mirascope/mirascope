@@ -23,7 +23,6 @@ export default defineConfig({
         "src/**/index.ts",
         "src/bun.ts",
         "src/ops/_internal/types.ts",
-        "src/ops/_internal/exporters", // exclude until implemented (currently stub)
         // generated Fern code
         "src/api/_generated",
         "src/globals.d.ts",

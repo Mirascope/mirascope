@@ -38,3 +38,18 @@ export {
   injectContext,
   propagatedContext,
 } from "@/ops/_internal/propagation";
+
+// Tracing
+export { trace } from "@/ops/_internal/tracing";
+export type { TracedFunction } from "@/ops/_internal/tracing";
+
+// Traced Calls
+export { traceCall } from "@/ops/_internal/traced-calls";
+export type { TracedCall } from "@/ops/_internal/traced-calls";
+
+// Trace Result
+export { createTrace } from "@/ops/_internal/traced-functions";
+export type { Trace, AnnotateOptions } from "@/ops/_internal/traced-functions";
+
+// Exporters
+export { MirascopeOTLPExporter } from "@/ops/_internal/exporters";
