@@ -14,7 +14,6 @@ import {
   BaseResponse,
   type BaseResponseInit,
 } from '@/llm/responses/base-response';
-import type { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 import { ContextToolkit, type ContextTools } from '@/llm/tools';
 
 /**
@@ -123,35 +122,5 @@ export class ContextResponse<DepsT = unknown> extends BaseResponse {
   ): Promise<ContextResponse<DepsT>> {
     const model = await this.model;
     return model.contextResume(ctx, this, content);
-  }
-
-  /**
-   * Generate a new ContextStreamResponse using this response's messages with additional user content.
-   *
-   * Uses this response's tools and format type. Also uses this response's provider,
-   * model, and params. Returns a streaming response for incremental consumption.
-   *
-   * @param ctx - A Context with the required deps type.
-   * @param content - The new user message content to append to the message history.
-   * @returns A new ContextStreamResponse instance generated from the extended message history.
-   *
-   * @example
-   * ```typescript
-   * const response = await myPrompt(model, ctx);
-   * console.log(response.text());
-   *
-   * // Continue the conversation with streaming
-   * const followUp = await response.resumeStream(ctx, 'Tell me more about that');
-   * for await (const text of followUp.textStream()) {
-   *   process.stdout.write(text);
-   * }
-   * ```
-   */
-  async resumeStream(
-    ctx: Context<DepsT>,
-    content: UserContent
-  ): Promise<ContextStreamResponse<DepsT>> {
-    const model = await this.model;
-    return model.contextResumeStream(ctx, this, content);
   }
 }

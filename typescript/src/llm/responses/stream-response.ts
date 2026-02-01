@@ -11,7 +11,6 @@ import {
   BaseStreamResponse,
   type BaseStreamResponseInit,
 } from '@/llm/responses/base-stream-response';
-import type { Response } from '@/llm/responses/response';
 import { Toolkit, type Tools } from '@/llm/tools';
 
 /**
@@ -98,43 +97,12 @@ export class StreamResponse extends BaseStreamResponse {
   // ===== Resume Methods =====
 
   /**
-   * Generate a new Response using this response's messages with additional user content.
+   * Generate a new StreamResponse using this response's messages with additional user content.
    *
    * Uses this response's tools and format type. Also uses this response's provider,
    * model, and params.
    *
    * Note: The stream must be consumed before calling resume() to ensure
-   * the assistant message is complete.
-   *
-   * @param content - The new user message content to append to the message history.
-   * @returns A new Response instance generated from the extended message history.
-   *
-   * @example
-   * ```typescript
-   * const response = await model.stream('Hello!');
-   *
-   * // Consume the stream first
-   * for await (const text of response.textStream()) {
-   *   process.stdout.write(text);
-   * }
-   *
-   * // Then resume with a non-streaming response
-   * const followUp = await response.resume('Tell me more about that');
-   * console.log(followUp.text());
-   * ```
-   */
-  async resume(content: UserContent): Promise<Response> {
-    const model = await this.model;
-    return model.resume(this, content);
-  }
-
-  /**
-   * Generate a new StreamResponse using this response's messages with additional user content.
-   *
-   * Uses this response's tools and format type. Also uses this response's provider,
-   * model, and params. Returns a streaming response for incremental consumption.
-   *
-   * Note: The current stream must be consumed before calling resumeStream() to ensure
    * the assistant message is complete.
    *
    * @param content - The new user message content to append to the message history.
@@ -150,13 +118,13 @@ export class StreamResponse extends BaseStreamResponse {
    * }
    *
    * // Then resume with streaming
-   * const followUp = await response.resumeStream('Tell me more about that');
+   * const followUp = await response.resume('Tell me more about that');
    * for await (const text of followUp.textStream()) {
    *   process.stdout.write(text);
    * }
    * ```
    */
-  async resumeStream(content: UserContent): Promise<StreamResponse> {
+  async resume(content: UserContent): Promise<StreamResponse> {
     const model = await this.model;
     return model.resumeStream(this, content);
   }

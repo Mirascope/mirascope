@@ -120,8 +120,8 @@ describe('tool usage with streaming', () => {
           expect(output.error).toBeNull();
         }
 
-        // Resume with tool outputs using resumeStream to continue streaming
-        response = await response.resumeStream(toolOutputs);
+        // Resume with tool outputs - returns StreamResponse to continue streaming
+        response = await response.resume(toolOutputs);
 
         // Consume the resumed stream
         await response.consume();
