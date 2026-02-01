@@ -13,6 +13,7 @@ export default defineConfig({
     globals: false,
     environment: "node",
     include: ["src/**/*.test.ts", "tests/**/*.test.ts"],
+    setupFiles: ["./tests/setup.ts"],
     testTimeout: 30000, // 30s for API calls in e2e tests
     coverage: {
       provider: "v8",
