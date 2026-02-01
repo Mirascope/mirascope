@@ -9,7 +9,7 @@
  * Symbol marker used to identify Context objects at runtime.
  * This enables reliable detection of Context instances in unified call/prompt functions.
  */
-export const CONTEXT_MARKER = Symbol('mirascope.Context');
+export const CONTEXT_MARKER = Symbol("mirascope.Context");
 
 /**
  * Context for LLM calls with dependency injection.
@@ -55,7 +55,7 @@ export interface Context<DepsT> {
  * ```
  */
 export function isContext(value: unknown): value is Context<unknown> {
-  return value !== null && typeof value === 'object' && CONTEXT_MARKER in value;
+  return value !== null && typeof value === "object" && CONTEXT_MARKER in value;
 }
 
 /**

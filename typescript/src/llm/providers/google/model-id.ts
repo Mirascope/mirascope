@@ -2,7 +2,7 @@
  * Google registered LLM models.
  */
 
-import type { GoogleKnownModels } from '@/llm/providers/google/model-info';
+import type { GoogleKnownModels } from "@/llm/providers/google/model-info";
 
 /**
  * The Google model IDs registered with Mirascope.
@@ -16,5 +16,5 @@ export type GoogleModelId = GoogleKnownModels | (string & {});
  * @returns Provider-specific model ID (e.g. "gemini-2.5-flash")
  */
 export function modelName(modelId: GoogleModelId): string {
-  return modelId.replace(/^google\//, '');
+  return modelId.replace(/^google\//, "");
 }

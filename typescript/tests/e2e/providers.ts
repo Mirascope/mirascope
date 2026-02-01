@@ -20,10 +20,10 @@ export interface ProviderConfig {
  * We test both APIs explicitly to ensure coverage.
  */
 export const PROVIDERS: ProviderConfig[] = [
-  { providerId: 'anthropic', model: 'anthropic/claude-haiku-4-5' },
-  { providerId: 'google', model: 'google/gemini-2.5-flash' },
-  { providerId: 'openai:completions', model: 'openai/gpt-5-mini:completions' },
-  { providerId: 'openai:responses', model: 'openai/gpt-5-mini:responses' },
+  { providerId: "anthropic", model: "anthropic/claude-haiku-4-5" },
+  { providerId: "google", model: "google/gemini-2.5-flash" },
+  { providerId: "openai:completions", model: "openai/gpt-5-mini:completions" },
+  { providerId: "openai:responses", model: "openai/gpt-5-mini:responses" },
 ];
 
 /**
@@ -33,10 +33,10 @@ export const PROVIDERS: ProviderConfig[] = [
  * (top_p on Responses API, stop sequences on Completions API).
  */
 export const PROVIDERS_FOR_PARAM_TESTS: ProviderConfig[] = [
-  { providerId: 'anthropic', model: 'anthropic/claude-haiku-4-5' },
-  { providerId: 'google', model: 'google/gemini-2.5-flash' },
-  { providerId: 'openai:completions', model: 'openai/gpt-4o-mini:completions' },
-  { providerId: 'openai:responses', model: 'openai/gpt-4o-mini:responses' },
+  { providerId: "anthropic", model: "anthropic/claude-haiku-4-5" },
+  { providerId: "google", model: "google/gemini-2.5-flash" },
+  { providerId: "openai:completions", model: "openai/gpt-4o-mini:completions" },
+  { providerId: "openai:responses", model: "openai/gpt-4o-mini:responses" },
 ];
 
 /**
@@ -45,9 +45,9 @@ export const PROVIDERS_FOR_PARAM_TESTS: ProviderConfig[] = [
  * These models support extended thinking/reasoning capabilities.
  */
 export const PROVIDERS_FOR_THINKING_TESTS: ProviderConfig[] = [
-  { providerId: 'anthropic', model: 'anthropic/claude-sonnet-4-20250514' },
-  { providerId: 'google', model: 'google/gemini-2.5-flash' },
-  { providerId: 'openai:responses', model: 'openai/o4-mini:responses' },
+  { providerId: "anthropic", model: "anthropic/claude-sonnet-4-20250514" },
+  { providerId: "google", model: "google/gemini-2.5-flash" },
+  { providerId: "openai:responses", model: "openai/o4-mini:responses" },
 ];
 
 /**
@@ -59,7 +59,7 @@ export const PROVIDERS_FOR_THINKING_TESTS: ProviderConfig[] = [
  * further investigation.
  */
 export const PROVIDERS_FOR_TOOLS_TESTS: ProviderConfig[] = [
-  { providerId: 'anthropic', model: 'anthropic/claude-haiku-4-5' },
-  { providerId: 'google', model: 'google/gemini-2.5-flash' },
-  { providerId: 'openai:completions', model: 'openai/gpt-4o-mini:completions' },
+  { providerId: "anthropic", model: "anthropic/claude-haiku-4-5" },
+  { providerId: "google", model: "google/gemini-2.5-flash" },
+  { providerId: "openai:completions", model: "openai/gpt-4o-mini:completions" },
 ];

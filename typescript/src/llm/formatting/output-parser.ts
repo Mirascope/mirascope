@@ -6,14 +6,14 @@
  * text structure.
  */
 
-import type { AnyResponse } from '@/llm/responses/root-response';
+import type { AnyResponse } from "@/llm/responses/root-response";
 export type { AnyResponse };
 
 /**
  * Type discriminator symbol for OutputParser.
  * Used at runtime to distinguish OutputParsers from other format types.
  */
-export const OUTPUT_PARSER_TYPE = Symbol('OUTPUT_PARSER_TYPE');
+export const OUTPUT_PARSER_TYPE = Symbol("OUTPUT_PARSER_TYPE");
 
 /**
  * Represents a custom output parser for non-JSON formats.
@@ -157,7 +157,7 @@ export interface OutputParserArgs<T> {
  * ```
  */
 export function defineOutputParser<T>(
-  args: OutputParserArgs<T>
+  args: OutputParserArgs<T>,
 ): OutputParser<T> {
   const { formattingInstructions, parser } = args;
 
@@ -167,18 +167,18 @@ export function defineOutputParser<T>(
   }) as OutputParser<T>;
 
   // Add OutputParser properties
-  Object.defineProperty(outputParser, '__outputParserType', {
+  Object.defineProperty(outputParser, "__outputParserType", {
     value: OUTPUT_PARSER_TYPE,
     enumerable: false,
     writable: false,
   });
-  Object.defineProperty(outputParser, 'name', {
+  Object.defineProperty(outputParser, "name", {
     /* v8 ignore next */ // Fallback name rarely needed with named functions
-    value: parser.name || 'outputParser',
+    value: parser.name || "outputParser",
     enumerable: true,
     writable: false,
   });
-  Object.defineProperty(outputParser, 'formattingInstructions', {
+  Object.defineProperty(outputParser, "formattingInstructions", {
     value: formattingInstructions,
     enumerable: true,
     writable: false,
@@ -198,8 +198,8 @@ export function defineOutputParser<T>(
  */
 export function isOutputParser(obj: unknown): obj is OutputParser<unknown> {
   return (
-    typeof obj === 'function' &&
-    '__outputParserType' in obj &&
+    typeof obj === "function" &&
+    "__outputParserType" in obj &&
     (obj as OutputParser).__outputParserType === OUTPUT_PARSER_TYPE
   );
 }

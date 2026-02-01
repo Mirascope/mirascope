@@ -2,9 +2,9 @@
  * Union of all provider model IDs.
  */
 
-import type { AnthropicModelId } from '@/llm/providers/anthropic';
-import type { GoogleModelId } from '@/llm/providers/google';
-import type { OpenAIModelId } from '@/llm/providers/openai';
+import type { AnthropicModelId } from "@/llm/providers/anthropic";
+import type { GoogleModelId } from "@/llm/providers/google";
+import type { OpenAIModelId } from "@/llm/providers/openai";
 
 /**
  * Model identifier for any supported provider.

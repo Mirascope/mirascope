@@ -6,7 +6,7 @@
  *
  * Run with: bun run example examples/format/output-parser.ts
  */
-import { llm } from 'mirascope';
+import { llm } from "mirascope";
 
 // Define the target type
 interface Person {
@@ -39,10 +39,10 @@ Do not include any text before or after the XML.
     const cityMatch = text.match(/<city>([^<]+)<\/city>/);
 
     return {
-      name: nameMatch?.[1] ?? 'Unknown',
-      age: parseInt(ageMatch?.[1] ?? '0', 10),
-      occupation: occupationMatch?.[1] ?? 'Unknown',
-      city: cityMatch?.[1] ?? 'Unknown',
+      name: nameMatch?.[1] ?? "Unknown",
+      age: parseInt(ageMatch?.[1] ?? "0", 10),
+      occupation: occupationMatch?.[1] ?? "Unknown",
+      city: cityMatch?.[1] ?? "Unknown",
     };
   },
 });
@@ -50,7 +50,7 @@ Do not include any text before or after the XML.
 // Create a call using the custom output parser
 // Use defineCall<VarsType>()({...}) to specify variables type while inferring format type.
 const generatePerson = llm.defineCall<{ description: string }>()({
-  model: 'anthropic/claude-haiku-4-5',
+  model: "anthropic/claude-haiku-4-5",
   maxTokens: 512,
   format: xmlPersonParser,
   template: ({ description }) =>
@@ -58,17 +58,17 @@ const generatePerson = llm.defineCall<{ description: string }>()({
 });
 
 const response = await generatePerson({
-  description: 'is a software engineer living in a major tech hub',
+  description: "is a software engineer living in a major tech hub",
 });
 
 const person = response.parse();
 
-console.log('Generated Person (from XML):');
-console.log('============================\n');
+console.log("Generated Person (from XML):");
+console.log("============================\n");
 console.log(`Name: ${person.name}`);
 console.log(`Age: ${person.age}`);
 console.log(`Occupation: ${person.occupation}`);
 console.log(`City: ${person.city}`);
 
-console.log('\n--- Raw Response ---');
+console.log("\n--- Raw Response ---");
 console.log(response.text());

@@ -11,7 +11,7 @@ import type {
   ChatCompletionCreateParamsNonStreaming,
   ChatCompletionMessageParam,
   ChatCompletionToolMessageParam,
-} from 'openai/resources/chat/completions';
+} from "openai/resources/chat/completions";
 
 import type {
   AssistantContentPart,
@@ -20,19 +20,20 @@ import type {
   Image,
   Text,
   ToolCall,
-} from '@/llm/content';
-import type { ToolSchema, Tools } from '@/llm/tools';
-import { isProviderTool } from '@/llm/tools';
-import { FeatureNotSupportedError } from '@/llm/exceptions';
-import type { AssistantMessage, Message } from '@/llm/messages';
-import type { Params } from '@/llm/models';
-import { ParamHandler } from '@/llm/providers/base';
-import type { OpenAIModelId } from '@/llm/providers/openai/model-id';
-import { modelName } from '@/llm/providers/openai/model-id';
-import { MODELS_WITHOUT_AUDIO_SUPPORT } from '@/llm/providers/openai/model-info';
-import { FinishReason } from '@/llm/responses/finish-reason';
-import type { Usage } from '@/llm/responses/usage';
-import { createUsage } from '@/llm/responses/usage';
+} from "@/llm/content";
+import type { AssistantMessage, Message } from "@/llm/messages";
+import type { Params } from "@/llm/models";
+import type { OpenAIModelId } from "@/llm/providers/openai/model-id";
+import type { Usage } from "@/llm/responses/usage";
+import type { ToolSchema, Tools } from "@/llm/tools";
+
+import { FeatureNotSupportedError } from "@/llm/exceptions";
+import { ParamHandler } from "@/llm/providers/base";
+import { modelName } from "@/llm/providers/openai/model-id";
+import { MODELS_WITHOUT_AUDIO_SUPPORT } from "@/llm/providers/openai/model-info";
+import { FinishReason } from "@/llm/responses/finish-reason";
+import { createUsage } from "@/llm/responses/usage";
+import { isProviderTool } from "@/llm/tools";
 
 // ============================================================================
 // Content Part Encoding
@@ -52,21 +53,21 @@ type UserContentPartOpenAI =
  */
 function encodeImage(image: Image): ChatCompletionContentPartImage {
   let url: string;
-  if (image.source.type === 'url_image_source') {
+  if (image.source.type === "url_image_source") {
     url = image.source.url;
   } else {
     url = `data:${image.source.mimeType};base64,${image.source.data}`;
   }
   return {
-    type: 'image_url',
-    image_url: { url, detail: 'auto' },
+    type: "image_url",
+    image_url: { url, detail: "auto" },
   };
 }
 
 /**
  * OpenAI-supported audio formats for input.
  */
-type OpenAIAudioFormat = 'wav' | 'mp3';
+type OpenAIAudioFormat = "wav" | "mp3";
 
 /**
  * Extract the audio format from a MIME type.
@@ -74,15 +75,15 @@ type OpenAIAudioFormat = 'wav' | 'mp3';
  * @throws FeatureNotSupportedError if the format is not supported by OpenAI
  */
 function toOpenAIAudioFormat(mimeType: AudioMimeType): OpenAIAudioFormat {
-  const format = mimeType.split('/')[1];
-  if (format === 'wav' || format === 'mp3') {
+  const format = mimeType.split("/")[1];
+  if (format === "wav" || format === "mp3") {
     return format;
   }
   throw new FeatureNotSupportedError(
     `audio format: ${mimeType}`,
-    'openai',
+    "openai",
     null,
-    `OpenAI only supports 'wav' and 'mp3' audio formats, got '${format}'.`
+    `OpenAI only supports 'wav' and 'mp3' audio formats, got '${format}'.`,
   );
 }
 
@@ -93,24 +94,24 @@ function toOpenAIAudioFormat(mimeType: AudioMimeType): OpenAIAudioFormat {
  */
 function encodeAudio(
   audio: Audio,
-  modelId: OpenAIModelId | undefined
+  modelId: OpenAIModelId | undefined,
 ): ChatCompletionContentPartInputAudio {
   // Check if model supports audio
   if (modelId) {
     const baseModelName = modelName(modelId, null);
     if (MODELS_WITHOUT_AUDIO_SUPPORT.has(baseModelName)) {
       throw new FeatureNotSupportedError(
-        'audio input',
-        'openai',
+        "audio input",
+        "openai",
         modelId,
-        `Model '${modelId}' does not support audio inputs.`
+        `Model '${modelId}' does not support audio inputs.`,
       );
     }
   }
 
   const format = toOpenAIAudioFormat(audio.source.mimeType);
   return {
-    type: 'input_audio',
+    type: "input_audio",
     input_audio: {
       data: audio.source.data,
       format,
@@ -127,19 +128,19 @@ function encodeAudio(
  * Convert a ToolSchema to OpenAI's ChatCompletionTool format.
  */
 export function encodeToolSchema(
-  tool: ToolSchema
-): ChatCompletionCreateParamsNonStreaming['tools'] extends
+  tool: ToolSchema,
+): ChatCompletionCreateParamsNonStreaming["tools"] extends
   | (infer T)[]
   | undefined
   ? T
   : never {
   return {
-    type: 'function',
+    type: "function",
     function: {
       name: tool.name,
       description: tool.description,
       parameters: {
-        type: 'object',
+        type: "object",
         properties: tool.parameters.properties,
         required: tool.parameters.required,
       },
@@ -152,8 +153,8 @@ export function encodeToolSchema(
  * Encode an array of tool schemas to OpenAI's format.
  */
 export function encodeTools(
-  tools: readonly ToolSchema[]
-): NonNullable<ChatCompletionCreateParamsNonStreaming['tools']> {
+  tools: readonly ToolSchema[],
+): NonNullable<ChatCompletionCreateParamsNonStreaming["tools"]> {
   return tools.map(encodeToolSchema);
 }
 /* v8 ignore stop */
@@ -172,20 +173,20 @@ export function encodeTools(
 export function encodeMessages(
   messages: readonly Message[],
   encodeThoughtsAsText: boolean = false,
-  modelId?: OpenAIModelId
+  modelId?: OpenAIModelId,
 ): ChatCompletionMessageParam[] {
   const openaiMessages: ChatCompletionMessageParam[] = [];
   const expectedProviderModelName = modelId
-    ? modelName(modelId, 'completions')
+    ? modelName(modelId, "completions")
     : null;
 
   for (const message of messages) {
-    if (message.role === 'system') {
+    if (message.role === "system") {
       openaiMessages.push({
-        role: 'system',
+        role: "system",
         content: message.content.text,
       });
-    } else if (message.role === 'user') {
+    } else if (message.role === "user") {
       /* v8 ignore start - tool encoding will be tested via e2e */
       // First add any tool output messages (OpenAI uses separate "tool" role)
       const toolMessages = encodeToolOutputs(message);
@@ -197,25 +198,25 @@ export function encodeMessages(
       if (userMessage) {
         openaiMessages.push(userMessage);
       }
-    } else if (message.role === 'assistant') {
+    } else if (message.role === "assistant") {
       // Check if we can reuse the raw message (from same provider/model)
       if (
-        message.providerId === 'openai' &&
+        message.providerId === "openai" &&
         expectedProviderModelName &&
         message.providerModelName === expectedProviderModelName &&
         message.rawMessage &&
-        typeof message.rawMessage === 'object' &&
-        'role' in message.rawMessage &&
+        typeof message.rawMessage === "object" &&
+        "role" in message.rawMessage &&
         !encodeThoughtsAsText
       ) {
         // Reuse the serialized message directly
         openaiMessages.push(
-          message.rawMessage as unknown as ChatCompletionAssistantMessageParam
+          message.rawMessage as unknown as ChatCompletionAssistantMessageParam,
         );
       } else {
         // Otherwise, encode from content parts
         openaiMessages.push(
-          encodeAssistantMessage(message, encodeThoughtsAsText)
+          encodeAssistantMessage(message, encodeThoughtsAsText),
         );
       }
     }
@@ -232,37 +233,37 @@ export function encodeMessages(
  * Returns null if the message only contains tool outputs (which are handled separately).
  */
 function encodeUserMessage(
-  message: Extract<Message, { role: 'user' }>,
-  modelId?: OpenAIModelId
+  message: Extract<Message, { role: "user" }>,
+  modelId?: OpenAIModelId,
 ): ChatCompletionMessageParam | null {
   const contentParts: UserContentPartOpenAI[] = [];
 
   for (const part of message.content) {
     switch (part.type) {
-      case 'text':
-        contentParts.push({ type: 'text', text: part.text });
+      case "text":
+        contentParts.push({ type: "text", text: part.text });
         break;
 
-      case 'image':
+      case "image":
         contentParts.push(encodeImage(part));
         break;
 
-      case 'audio':
+      case "audio":
         contentParts.push(encodeAudio(part, modelId));
         break;
 
       /* v8 ignore start - content types not yet implemented */
-      case 'document':
+      case "document":
         throw new FeatureNotSupportedError(
-          'document content encoding',
-          'openai',
+          "document content encoding",
+          "openai",
           null,
-          'Document content is not yet implemented'
+          "Document content is not yet implemented",
         );
       /* v8 ignore stop */
 
       /* v8 ignore start - tool encoding will be tested via e2e */
-      case 'tool_output':
+      case "tool_output":
         // tool_output is handled separately in encodeMessages
         // by creating tool role messages
         break;
@@ -279,12 +280,12 @@ function encodeUserMessage(
 
   // Simplify to string if only a single text part
   let content: string | UserContentPartOpenAI[] = contentParts;
-  if (contentParts.length === 1 && contentParts[0]?.type === 'text') {
+  if (contentParts.length === 1 && contentParts[0]?.type === "text") {
     content = contentParts[0].text;
   }
 
   return {
-    role: 'user',
+    role: "user",
     content,
     ...(message.name && { name: message.name }),
   };
@@ -295,17 +296,17 @@ function encodeUserMessage(
  * Extract tool outputs from a user message and encode as tool role messages.
  */
 function encodeToolOutputs(
-  message: Extract<Message, { role: 'user' }>
+  message: Extract<Message, { role: "user" }>,
 ): ChatCompletionToolMessageParam[] {
   const toolMessages: ChatCompletionToolMessageParam[] = [];
 
   for (const part of message.content) {
-    if (part.type === 'tool_output') {
+    if (part.type === "tool_output") {
       toolMessages.push({
-        role: 'tool',
+        role: "tool",
         tool_call_id: part.id,
         content:
-          typeof part.result === 'string'
+          typeof part.result === "string"
             ? part.result
             : JSON.stringify(part.result),
       });
@@ -325,32 +326,32 @@ function encodeToolOutputs(
  */
 function encodeAssistantMessage(
   message: AssistantMessage,
-  encodeThoughtsAsText: boolean
+  encodeThoughtsAsText: boolean,
 ): ChatCompletionAssistantMessageParam {
   const textParts: ChatCompletionContentPartText[] = [];
-  const toolCalls: ChatCompletionAssistantMessageParam['tool_calls'] = [];
+  const toolCalls: ChatCompletionAssistantMessageParam["tool_calls"] = [];
 
   for (const part of message.content) {
     switch (part.type) {
-      case 'text':
-        textParts.push({ type: 'text', text: part.text });
+      case "text":
+        textParts.push({ type: "text", text: part.text });
         break;
 
-      case 'thought':
+      case "thought":
         // Encode thoughts as text when requested, otherwise drop
         if (encodeThoughtsAsText) {
           textParts.push({
-            type: 'text',
-            text: '**Thinking:** ' + part.thought,
+            type: "text",
+            text: "**Thinking:** " + part.thought,
           });
         }
         break;
 
       /* v8 ignore start - tool encoding will be tested via e2e */
-      case 'tool_call': {
+      case "tool_call": {
         toolCalls.push({
           id: part.id,
-          type: 'function',
+          type: "function",
           function: {
             name: part.name,
             arguments: part.args,
@@ -372,7 +373,7 @@ function encodeAssistantMessage(
   }
 
   const result: ChatCompletionAssistantMessageParam = {
-    role: 'assistant',
+    role: "assistant",
     content,
     ...(message.name && { name: message.name }),
   };
@@ -401,16 +402,16 @@ export function buildRequestParams(
   modelId: OpenAIModelId,
   messages: readonly Message[],
   tools?: Tools,
-  params: Params = {}
+  params: Params = {},
 ): ChatCompletionCreateParamsNonStreaming {
-  return ParamHandler.with(params, 'openai', modelId, (p) => {
-    const thinkingConfig = p.get('thinking');
+  return ParamHandler.with(params, "openai", modelId, (p) => {
+    const thinkingConfig = p.get("thinking");
     const encodeThoughtsAsText = thinkingConfig?.encodeThoughtsAsText ?? false;
 
     const openaiMessages = encodeMessages(
       messages,
       encodeThoughtsAsText,
-      modelId
+      modelId,
     );
 
     const requestParams: ChatCompletionCreateParamsNonStreaming = {
@@ -426,9 +427,9 @@ export function buildRequestParams(
         if (isProviderTool(tool)) {
           throw new FeatureNotSupportedError(
             `Provider tool ${tool.name}`,
-            'openai:completions',
+            "openai:completions",
             modelId,
-            `Provider tool '${tool.name}' is not supported by OpenAI Completions API. Try using the Responses API instead (append ':responses' to your model ID).`
+            `Provider tool '${tool.name}' is not supported by OpenAI Completions API. Try using the Responses API instead (append ':responses' to your model ID).`,
           );
         }
         regularTools.push(tool);
@@ -439,34 +440,34 @@ export function buildRequestParams(
     }
     /* v8 ignore stop */
 
-    const maxTokens = p.get('maxTokens');
+    const maxTokens = p.get("maxTokens");
     if (maxTokens !== undefined) {
       // max_completion_tokens is the preferred parameter (max_tokens is deprecated)
       requestParams.max_completion_tokens = maxTokens;
     }
 
-    const temperature = p.get('temperature');
+    const temperature = p.get("temperature");
     if (temperature !== undefined) {
       requestParams.temperature = temperature;
     }
 
-    const topP = p.get('topP');
+    const topP = p.get("topP");
     if (topP !== undefined) {
       requestParams.top_p = topP;
     }
 
-    const seed = p.get('seed');
+    const seed = p.get("seed");
     if (seed !== undefined) {
       requestParams.seed = seed;
     }
 
-    const stopSequences = p.get('stopSequences');
+    const stopSequences = p.get("stopSequences");
     if (stopSequences !== undefined) {
       requestParams.stop = stopSequences;
     }
 
     // OpenAI doesn't support topK
-    p.warnUnsupported('topK', 'OpenAI does not support the top_k parameter');
+    p.warnUnsupported("topK", "OpenAI does not support the top_k parameter");
 
     return requestParams;
   });
@@ -478,7 +479,7 @@ export function buildRequestParams(
  * This mirrors Python's `message.model_dump(exclude_none=True)` pattern.
  */
 function serializeMessage(
-  message: ChatCompletion.Choice['message']
+  message: ChatCompletion.Choice["message"],
 ): Record<string, unknown> {
   const serialized: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(message)) {
@@ -494,7 +495,7 @@ function serializeMessage(
  */
 export function decodeResponse(
   response: ChatCompletion,
-  modelId: OpenAIModelId
+  modelId: OpenAIModelId,
 ): {
   assistantMessage: AssistantMessage;
   finishReason: FinishReason | null;
@@ -503,7 +504,7 @@ export function decodeResponse(
   const choice = response.choices[0];
   /* v8 ignore start - defensive check for empty choices */
   if (!choice) {
-    throw new Error('No choices in response');
+    throw new Error("No choices in response");
   }
   /* v8 ignore stop */
 
@@ -514,14 +515,14 @@ export function decodeResponse(
   const serializedRawMessage = serializeMessage(choice.message);
 
   const assistantMessage: AssistantMessage = {
-    role: 'assistant',
+    role: "assistant",
     content,
     name: null,
-    providerId: 'openai',
+    providerId: "openai",
     modelId,
-    providerModelName: modelName(modelId, 'completions'),
+    providerModelName: modelName(modelId, "completions"),
     rawMessage:
-      serializedRawMessage as unknown as AssistantMessage['rawMessage'],
+      serializedRawMessage as unknown as AssistantMessage["rawMessage"],
   };
 
   const finishReason = decodeFinishReason(choice.finish_reason);
@@ -533,20 +534,20 @@ export function decodeResponse(
 }
 
 function decodeContent(
-  message: ChatCompletion.Choice['message']
+  message: ChatCompletion.Choice["message"],
 ): AssistantContentPart[] {
   const parts: AssistantContentPart[] = [];
 
   // Handle text content
   if (message.content) {
-    const text: Text = { type: 'text', text: message.content };
+    const text: Text = { type: "text", text: message.content };
     parts.push(text);
   }
 
   // Handle refusal as text (OpenAI returns refusal as separate field)
   /* v8 ignore start - refusals are difficult to trigger reliably */
   if (message.refusal) {
-    const text: Text = { type: 'text', text: message.refusal };
+    const text: Text = { type: "text", text: message.refusal };
     parts.push(text);
   }
   /* v8 ignore end */
@@ -556,9 +557,9 @@ function decodeContent(
   if (message.tool_calls && message.tool_calls.length > 0) {
     for (const tc of message.tool_calls) {
       // Only handle function type tool calls
-      if (tc.type === 'function') {
+      if (tc.type === "function") {
         const toolCall: ToolCall = {
-          type: 'tool_call',
+          type: "tool_call",
           id: tc.id,
           name: tc.function.name,
           args: tc.function.arguments,
@@ -573,18 +574,18 @@ function decodeContent(
 }
 
 function decodeFinishReason(
-  finishReason: ChatCompletion.Choice['finish_reason']
+  finishReason: ChatCompletion.Choice["finish_reason"],
 ): FinishReason | null {
   switch (finishReason) {
-    case 'length':
+    case "length":
       return FinishReason.MAX_TOKENS;
     /* v8 ignore start - refusals are difficult to trigger reliably */
-    case 'content_filter':
+    case "content_filter":
       return FinishReason.REFUSAL;
     /* v8 ignore end */
-    case 'stop':
-    case 'tool_calls':
-    case 'function_call':
+    case "stop":
+    case "tool_calls":
+    case "function_call":
       return null; // Normal completion
     /* v8 ignore next 2 - defensive default case */
     default:
@@ -592,7 +593,7 @@ function decodeFinishReason(
   }
 }
 
-function decodeUsage(usage: NonNullable<ChatCompletion['usage']>): Usage {
+function decodeUsage(usage: NonNullable<ChatCompletion["usage"]>): Usage {
   return createUsage({
     inputTokens: usage.prompt_tokens,
     outputTokens: usage.completion_tokens,

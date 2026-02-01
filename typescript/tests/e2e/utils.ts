@@ -4,14 +4,15 @@
  * Provides `it.record` for tests that need HTTP recording/playback.
  */
 
-import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { it as vitestIt, describe, expect } from 'vitest';
-import { Polly } from '@pollyjs/core';
-import Persister, { type Har } from '@pollyjs/persister';
-import FetchAdapter from '@pollyjs/adapter-fetch';
-import { resetProviderRegistry } from '@/llm/providers/registry';
-import { ProviderConfig } from '@/tests/e2e/providers';
+import FetchAdapter from "@pollyjs/adapter-fetch";
+import { Polly } from "@pollyjs/core";
+import Persister, { type Har } from "@pollyjs/persister";
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { it as vitestIt, describe, expect } from "vitest";
+
+import { resetProviderRegistry } from "@/llm/providers/registry";
+import { ProviderConfig } from "@/tests/e2e/providers";
 
 // Register adapter
 Polly.register(FetchAdapter);
@@ -26,16 +27,16 @@ interface FlatFSPersisterOptions {
  */
 class FlatFSPersister extends Persister<FlatFSPersisterOptions> {
   static override get id() {
-    return 'flat-fs';
+    return "flat-fs";
   }
 
   override readonly defaultOptions: FlatFSPersisterOptions = {
-    recordingsDir: './recordings',
+    recordingsDir: "./recordings",
   };
 
   private filePath(recordingId: string): string {
     // Strip the hash suffix (e.g., "test-name_12345" -> "test-name")
-    const name = recordingId.replace(/_\d+$/, '');
+    const name = recordingId.replace(/_\d+$/, "");
     return join(this.options.recordingsDir, `${name}.har`);
   }
 
@@ -43,7 +44,7 @@ class FlatFSPersister extends Persister<FlatFSPersisterOptions> {
     const filePath = this.filePath(recordingId);
     if (existsSync(filePath)) {
       return Promise.resolve(
-        JSON.parse(readFileSync(filePath, 'utf-8')) as Har
+        JSON.parse(readFileSync(filePath, "utf-8")) as Har,
       );
     }
     return Promise.resolve(null);
@@ -68,11 +69,11 @@ Polly.register(FlatFSPersister);
 export { describe, expect };
 
 const SENSITIVE_HEADERS = [
-  'authorization',
-  'x-api-key',
-  'x-goog-api-key',
-  'anthropic-organization-id',
-  'cookie',
+  "authorization",
+  "x-api-key",
+  "x-goog-api-key",
+  "anthropic-organization-id",
+  "cookie",
 ];
 
 /**
@@ -82,8 +83,8 @@ const SENSITIVE_HEADERS = [
 function toRecordingName(testName: string): string {
   return testName
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 /**
@@ -91,10 +92,10 @@ function toRecordingName(testName: string): string {
  */
 function createPolly(recordingName: string, cassettesDir: string): Polly {
   const polly = new Polly(recordingName, {
-    adapters: ['fetch'],
-    persister: 'flat-fs',
+    adapters: ["fetch"],
+    persister: "flat-fs",
     persisterOptions: {
-      'flat-fs': {
+      "flat-fs": {
         recordingsDir: cassettesDir,
       },
     },
@@ -109,7 +110,7 @@ function createPolly(recordingName: string, cassettesDir: string): Polly {
   });
 
   // Sanitize sensitive headers in recordings
-  polly.server.any().on('beforePersist', (_req, recording) => {
+  polly.server.any().on("beforePersist", (_req, recording) => {
     const requestHeaders = (
       recording as {
         request?: { headers?: Array<{ name: string; value: string }> };
@@ -118,7 +119,7 @@ function createPolly(recordingName: string, cassettesDir: string): Polly {
     if (requestHeaders) {
       for (const header of requestHeaders) {
         if (SENSITIVE_HEADERS.includes(header.name.toLowerCase())) {
-          header.value = '[REDACTED]';
+          header.value = "[REDACTED]";
         }
       }
     }
@@ -130,13 +131,13 @@ function createPolly(recordingName: string, cassettesDir: string): Polly {
 type RecordTestFn = (
   name: string,
   fn: () => Promise<void>,
-  timeout?: number
+  timeout?: number,
 ) => void;
 
 type ParameterizedTestFn<T> = (
   name: string,
   fn: (config: T) => Promise<void>,
-  timeout?: number
+  timeout?: number,
 ) => void;
 
 interface RecordIt extends RecordTestFn {
@@ -164,7 +165,7 @@ interface RecordIt extends RecordTestFn {
 function createRecordTestFn(
   cassettesDir: string,
   namespace: string,
-  original: typeof vitestIt
+  original: typeof vitestIt,
 ): RecordTestFn {
   return (name: string, fn: () => Promise<void>, timeout?: number) => {
     original(
@@ -181,7 +182,7 @@ function createRecordTestFn(
           resetProviderRegistry();
         }
       },
-      timeout
+      timeout,
     );
   };
 }
@@ -192,13 +193,13 @@ function createRecordTestFn(
 function createRecordEachFn(
   cassettesDir: string,
   namespace: string,
-  original: typeof vitestIt
+  original: typeof vitestIt,
 ): (providers: ProviderConfig[]) => ParameterizedTestFn<ProviderConfig> {
   return (providers: ProviderConfig[]) => {
     return (
       name: string,
       fn: (config: ProviderConfig) => Promise<void>,
-      timeout?: number
+      timeout?: number,
     ) => {
       for (const provider of providers) {
         const testName = `[${provider.providerId}] ${name}`;
@@ -210,7 +211,7 @@ function createRecordEachFn(
             const namespacedDir = join(
               cassettesDir,
               namespace,
-              provider.providerId
+              provider.providerId,
             );
             const polly = createPolly(recordingName, namespacedDir);
             resetProviderRegistry();
@@ -221,7 +222,7 @@ function createRecordEachFn(
               resetProviderRegistry();
             }
           },
-          timeout
+          timeout,
         );
       }
     };
@@ -257,20 +258,20 @@ export function createIt(cassettesDir: string, namespace: string) {
       skip: createRecordTestFn(
         cassettesDir,
         namespace,
-        vitestIt.skip as typeof vitestIt
+        vitestIt.skip as typeof vitestIt,
       ),
       only: createRecordTestFn(
         cassettesDir,
         namespace,
-        vitestIt.only as typeof vitestIt
+        vitestIt.only as typeof vitestIt,
       ),
       each: createRecordEachFn(cassettesDir, namespace, vitestIt),
-    }
+    },
   );
 
   return new Proxy(vitestIt, {
     get(target, prop) {
-      if (prop === 'record') {
+      if (prop === "record") {
         return recordIt;
       }
       return Reflect.get(target, prop) as unknown;

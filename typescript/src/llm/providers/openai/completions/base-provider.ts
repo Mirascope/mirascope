@@ -6,24 +6,25 @@
  * and provide their specific configuration.
  */
 
-import OpenAI from 'openai';
+import OpenAI from "openai";
 
-import type { Context } from '@/llm/context';
-import type { Format } from '@/llm/formatting';
-import type { Message } from '@/llm/messages';
-import type { Params } from '@/llm/models';
-import { BaseProvider } from '@/llm/providers/base';
-import type { Tools, ContextTools } from '@/llm/tools';
-import { OPENAI_ERROR_MAP } from '@/llm/providers/openai/_utils/errors';
+import type { Context } from "@/llm/context";
+import type { Format } from "@/llm/formatting";
+import type { Message } from "@/llm/messages";
+import type { Params } from "@/llm/models";
+import type { Tools, ContextTools } from "@/llm/tools";
+
+import { BaseProvider } from "@/llm/providers/base";
+import { OPENAI_ERROR_MAP } from "@/llm/providers/openai/_utils/errors";
 import {
   buildRequestParams,
   decodeResponse,
-} from '@/llm/providers/openai/completions/_utils';
-import { decodeStream } from '@/llm/providers/openai/completions/decode-stream';
-import { Response } from '@/llm/responses';
-import { ContextResponse } from '@/llm/responses/context-response';
-import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
-import { StreamResponse } from '@/llm/responses/stream-response';
+} from "@/llm/providers/openai/completions/_utils";
+import { decodeStream } from "@/llm/providers/openai/completions/decode-stream";
+import { Response } from "@/llm/responses";
+import { ContextResponse } from "@/llm/responses/context-response";
+import { ContextStreamResponse } from "@/llm/responses/context-stream-response";
+import { StreamResponse } from "@/llm/responses/stream-response";
 
 /**
  * Configuration for initializing an OpenAI-compatible provider.
@@ -66,7 +67,7 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
     let effectiveApiKey = config.apiKey;
     /* v8 ignore start - tested via E2E with custom base URLs */
     if (config.baseURL !== undefined && !effectiveApiKey) {
-      effectiveApiKey = 'not-needed';
+      effectiveApiKey = "not-needed";
     }
     /* v8 ignore stop */
 
@@ -109,7 +110,7 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
       apiModelName,
       args.messages,
       args.tools,
-      args.params
+      args.params,
     );
 
     const openaiResponse =
@@ -117,7 +118,7 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
 
     const { assistantMessage, finishReason, usage } = decodeResponse(
       openaiResponse,
-      apiModelName
+      apiModelName,
     );
 
     return new Response({
@@ -150,7 +151,7 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
       apiModelName,
       args.messages,
       args.tools,
-      args.params
+      args.params,
     );
 
     const stream = await this.client.chat.completions.create({
@@ -189,7 +190,7 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
       apiModelName,
       args.messages,
       args.tools,
-      args.params
+      args.params,
     );
 
     const openaiResponse =
@@ -197,7 +198,7 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
 
     const { assistantMessage, finishReason, usage } = decodeResponse(
       openaiResponse,
-      apiModelName
+      apiModelName,
     );
 
     return new ContextResponse({
@@ -231,7 +232,7 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
       apiModelName,
       args.messages,
       args.tools,
-      args.params
+      args.params,
     );
 
     const stream = await this.client.chat.completions.create({

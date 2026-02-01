@@ -6,7 +6,7 @@
  *
  * Run with: bun run example examples/format/basic.ts
  */
-import { llm } from 'mirascope';
+import { llm } from "mirascope";
 
 // Define a TypeScript interface for the structured output
 // (No Zod required - the transformer generates the schema from this type)
@@ -21,21 +21,21 @@ type Book = {
 // Create a call with the format
 // Use defineCall<VarsType>()({...}) to specify variables type while inferring format type.
 const recommendBook = llm.defineCall<{ genre: string }>()({
-  model: 'anthropic/claude-haiku-4-5',
+  model: "anthropic/claude-haiku-4-5",
   maxTokens: 1024,
-  format: llm.defineFormat<Book>({ mode: 'tool' }),
+  format: llm.defineFormat<Book>({ mode: "tool" }),
   template: ({ genre }) =>
     `Recommend a classic ${genre} book. Provide structured information about the book.`,
 });
 
 // Call the LLM and parse the response
-const response = await recommendBook({ genre: 'science fiction' });
+const response = await recommendBook({ genre: "science fiction" });
 
 // Parse the structured response (fully typed)
 const book = response.parse();
 
-console.log('Recommended Book:');
-console.log('================');
+console.log("Recommended Book:");
+console.log("================");
 console.log(`Title: ${book.title}`);
 console.log(`Author: ${book.author}`);
 console.log(`Year: ${book.year}`);

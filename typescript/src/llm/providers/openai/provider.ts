@@ -2,22 +2,23 @@
  * OpenAI provider implementation with routing between Completions and Responses APIs.
  */
 
-import OpenAI from 'openai';
+import OpenAI from "openai";
 
-import type { Context } from '@/llm/context';
-import type { Message } from '@/llm/messages';
-import type { Params } from '@/llm/models';
-import { BaseProvider } from '@/llm/providers/base';
-import type { Tools, ContextTools } from '@/llm/tools';
-import { OPENAI_ERROR_MAP } from '@/llm/providers/openai/_utils/errors';
-import { OpenAICompletionsProvider } from '@/llm/providers/openai/completions/provider';
-import { OpenAIResponsesProvider } from '@/llm/providers/openai/responses/provider';
-import type { ApiMode, OpenAIModelId } from '@/llm/providers/openai/model-id';
-import { OPENAI_KNOWN_MODELS } from '@/llm/providers/openai/model-info';
-import { Response } from '@/llm/responses';
-import type { ContextResponse } from '@/llm/responses/context-response';
-import type { ContextStreamResponse } from '@/llm/responses/context-stream-response';
-import { StreamResponse } from '@/llm/responses/stream-response';
+import type { Context } from "@/llm/context";
+import type { Message } from "@/llm/messages";
+import type { Params } from "@/llm/models";
+import type { ApiMode, OpenAIModelId } from "@/llm/providers/openai/model-id";
+import type { ContextResponse } from "@/llm/responses/context-response";
+import type { ContextStreamResponse } from "@/llm/responses/context-stream-response";
+import type { Tools, ContextTools } from "@/llm/tools";
+
+import { BaseProvider } from "@/llm/providers/base";
+import { OPENAI_ERROR_MAP } from "@/llm/providers/openai/_utils/errors";
+import { OpenAICompletionsProvider } from "@/llm/providers/openai/completions/provider";
+import { OPENAI_KNOWN_MODELS } from "@/llm/providers/openai/model-info";
+import { OpenAIResponsesProvider } from "@/llm/providers/openai/responses/provider";
+import { Response } from "@/llm/responses";
+import { StreamResponse } from "@/llm/responses/stream-response";
 
 /**
  * Check if messages contain any audio content.
@@ -26,11 +27,11 @@ import { StreamResponse } from '@/llm/responses/stream-response';
  */
 function hasAudioContent(messages: readonly Message[]): boolean {
   for (const message of messages) {
-    if (message.role === 'system') {
+    if (message.role === "system") {
       continue;
     }
     for (const part of message.content) {
-      if (part.type === 'audio') {
+      if (part.type === "audio") {
         return true;
       }
     }
@@ -55,30 +56,30 @@ function hasAudioContent(messages: readonly Message[]): boolean {
  */
 export function chooseApiMode(
   modelId: OpenAIModelId,
-  messages: readonly Message[]
+  messages: readonly Message[],
 ): ApiMode {
   // Check explicit suffix
-  if (modelId.endsWith(':completions')) {
-    return 'completions';
+  if (modelId.endsWith(":completions")) {
+    return "completions";
   }
-  if (modelId.endsWith(':responses')) {
-    return 'responses';
+  if (modelId.endsWith(":responses")) {
+    return "responses";
   }
 
   // Audio content requires completions API
   if (hasAudioContent(messages)) {
-    return 'completions';
+    return "completions";
   }
 
   // Prefer responses API when we know it is available
   if (OPENAI_KNOWN_MODELS.has(`${modelId}:responses`)) {
-    return 'responses';
+    return "responses";
   }
 
   // If we know from testing that the completions API is available, and
   // (implied by above) that responses wasn't, then we should use completions
   if (OPENAI_KNOWN_MODELS.has(`${modelId}:completions`)) {
-    return 'completions';
+    return "completions";
   }
 
   // If we don't have either :responses or :completions in the known models, it's
@@ -86,11 +87,11 @@ export function chooseApiMode(
   // openai/ models (on the assumption that they are new models and OpenAI prefers
   // the responses API) but completions for other models (on the assumption that they
   // are other models routing through the OpenAI completions API)
-  if (modelId.startsWith('openai/')) {
-    return 'responses';
+  if (modelId.startsWith("openai/")) {
+    return "responses";
   }
 
-  return 'completions';
+  return "completions";
 }
 
 /**
@@ -122,7 +123,7 @@ export function chooseApiMode(
  * ```
  */
 export class OpenAIProvider extends BaseProvider {
-  readonly id = 'openai' as const;
+  readonly id = "openai" as const;
   protected readonly errorMap = OPENAI_ERROR_MAP;
 
   private readonly completionsProvider: OpenAICompletionsProvider;
@@ -160,7 +161,7 @@ export class OpenAIProvider extends BaseProvider {
     const modelId = args.modelId as OpenAIModelId;
     const apiMode = chooseApiMode(modelId, args.messages);
 
-    if (apiMode === 'responses') {
+    if (apiMode === "responses") {
       // Delegate to the responses provider
       return this.responsesProvider.call({
         modelId: args.modelId,
@@ -198,7 +199,7 @@ export class OpenAIProvider extends BaseProvider {
     const modelId = args.modelId as OpenAIModelId;
     const apiMode = chooseApiMode(modelId, args.messages);
 
-    if (apiMode === 'responses') {
+    if (apiMode === "responses") {
       return this.responsesProvider.stream({
         modelId: args.modelId,
         messages: args.messages,
@@ -240,7 +241,7 @@ export class OpenAIProvider extends BaseProvider {
     const modelId = args.modelId as OpenAIModelId;
     const apiMode = chooseApiMode(modelId, args.messages);
 
-    if (apiMode === 'responses') {
+    if (apiMode === "responses") {
       // Delegate to the responses provider's context call
       return this.responsesProvider.contextCall({
         ctx: args.ctx,
@@ -286,7 +287,7 @@ export class OpenAIProvider extends BaseProvider {
     const modelId = args.modelId as OpenAIModelId;
     const apiMode = chooseApiMode(modelId, args.messages);
 
-    if (apiMode === 'responses') {
+    if (apiMode === "responses") {
       return this.responsesProvider.contextStream({
         ctx: args.ctx,
         modelId: args.modelId,

@@ -7,6 +7,14 @@
  * a regular Prompt is returned.
  */
 
+import type { Message, UserContent } from "@/llm/messages";
+import type { ModelId } from "@/llm/providers/model-id";
+import type { Response } from "@/llm/responses";
+import type { StreamResponse } from "@/llm/responses/stream-response";
+import type { ContextTools, Tools, ZodLike } from "@/llm/tools";
+import type { NoVars } from "@/llm/types";
+
+import { type Context, isContext } from "@/llm/context";
 import {
   resolveFormat,
   type AnyFormatInput,
@@ -15,18 +23,11 @@ import {
   type Format,
   type FormatSpec,
   type OutputParser,
-} from '@/llm/formatting';
-import type { Message, UserContent } from '@/llm/messages';
-import { promoteToMessages } from '@/llm/messages';
-import { Model, useModel } from '@/llm/models';
-import type { ModelId } from '@/llm/providers/model-id';
-import type { Response } from '@/llm/responses';
-import { ContextResponse } from '@/llm/responses/context-response';
-import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
-import type { StreamResponse } from '@/llm/responses/stream-response';
-import type { ContextTools, Tools, ZodLike } from '@/llm/tools';
-import type { NoVars } from '@/llm/types';
-import { type Context, isContext } from '@/llm/context';
+} from "@/llm/formatting";
+import { promoteToMessages } from "@/llm/messages";
+import { Model, useModel } from "@/llm/models";
+import { ContextResponse } from "@/llm/responses/context-response";
+import { ContextStreamResponse } from "@/llm/responses/context-stream-response";
 
 // ============================================================================
 // Type Utilities for Context Detection
@@ -41,7 +42,7 @@ export type ExtractDeps<T> = T extends { ctx: Context<infer D> } ? D : never;
 /**
  * Extract the variables type from T by removing the `ctx` property.
  */
-export type ExtractVars<T> = Omit<T, 'ctx'>;
+export type ExtractVars<T> = Omit<T, "ctx">;
 
 // ============================================================================
 // Template Types
@@ -76,7 +77,7 @@ export type ContextMessageTemplate<T, DepsT> = { ctx: Context<DepsT> } & T;
  * @template DepsT - The type of dependencies in the context.
  */
 export type ContextTemplateFunc<T, DepsT> = (
-  args: ContextMessageTemplate<T, DepsT>
+  args: ContextMessageTemplate<T, DepsT>,
 ) => UserContent | readonly Message[];
 
 // ============================================================================
@@ -425,7 +426,7 @@ export function definePrompt<T, F extends AnyFormatInput>({
   template,
 }: PromptArgs<T, F> | ContextPromptArgs<T, F>): UnifiedPrompt<T, F> {
   // Resolve format at definition time (uses 'tool' as default mode)
-  const resolvedFormat = resolveFormat(format, 'tool');
+  const resolvedFormat = resolveFormat(format, "tool");
 
   // Create messages function that handles both context and non-context cases
   const messagesImpl = (...args: unknown[]): readonly Message[] => {
@@ -441,7 +442,7 @@ export function definePrompt<T, F extends AnyFormatInput>({
         template.length === 0
           ? (template as () => UserContent | readonly Message[])()
           : (template as (args: T) => UserContent | readonly Message[])(
-              templateArgs
+              templateArgs,
             );
       return promoteToMessages(content);
     } else {
@@ -451,7 +452,7 @@ export function definePrompt<T, F extends AnyFormatInput>({
         template.length === 0
           ? (template as () => UserContent | readonly Message[])()
           : (template as (vars: T) => UserContent | readonly Message[])(
-              vars as T
+              vars as T,
             );
       return promoteToMessages(content);
     }

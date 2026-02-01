@@ -1,2 +1,2 @@
-import { mirascope } from 'mirascope/bun';
+import { mirascope } from "mirascope/bun";
 mirascope();

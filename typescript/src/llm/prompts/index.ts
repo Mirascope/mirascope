@@ -20,4 +20,4 @@ export {
   type ExtractDeps,
   type ExtractVars,
   type UnifiedPrompt,
-} from '@/llm/prompts/prompt';
+} from "@/llm/prompts/prompt";

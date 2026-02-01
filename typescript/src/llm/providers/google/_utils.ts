@@ -12,12 +12,13 @@ import type {
   Part,
   ThinkingConfig as GoogleThinkingConfig,
   FinishReason as GoogleFinishReasonType,
-} from '@google/genai';
+} from "@google/genai";
+
 import {
   ApiError,
   FinishReason as GoogleFinishReason,
   ThinkingLevel as GoogleThinkingLevel,
-} from '@google/genai';
+} from "@google/genai";
 
 import type {
   AssistantContentPart,
@@ -27,9 +28,17 @@ import type {
   Thought,
   ToolCall,
   UserContentPart,
-} from '@/llm/content';
-import type { ToolSchema, Tools } from '@/llm/tools';
-import { ProviderTool, isProviderTool, isWebSearchTool } from '@/llm/tools';
+} from "@/llm/content";
+import type { AssistantMessage, Message } from "@/llm/messages";
+import type { Params } from "@/llm/models";
+import type {
+  ThinkingConfig,
+  ThinkingLevel,
+} from "@/llm/models/thinking-config";
+import type { GoogleModelId } from "@/llm/providers/google/model-id";
+import type { Usage } from "@/llm/responses/usage";
+import type { ToolSchema, Tools } from "@/llm/tools";
+
 import {
   APIError,
   AuthenticationError,
@@ -39,19 +48,12 @@ import {
   PermissionError,
   RateLimitError,
   ServerError,
-} from '@/llm/exceptions';
-import type { AssistantMessage, Message } from '@/llm/messages';
-import type { Params } from '@/llm/models';
-import type {
-  ThinkingConfig,
-  ThinkingLevel,
-} from '@/llm/models/thinking-config';
-import { ParamHandler, type ProviderErrorMap } from '@/llm/providers/base';
-import type { GoogleModelId } from '@/llm/providers/google/model-id';
-import { modelName } from '@/llm/providers/google/model-id';
-import { FinishReason } from '@/llm/responses/finish-reason';
-import type { Usage } from '@/llm/responses/usage';
-import { createUsage } from '@/llm/responses/usage';
+} from "@/llm/exceptions";
+import { ParamHandler, type ProviderErrorMap } from "@/llm/providers/base";
+import { modelName } from "@/llm/providers/google/model-id";
+import { FinishReason } from "@/llm/responses/finish-reason";
+import { createUsage } from "@/llm/responses/usage";
+import { ProviderTool, isProviderTool, isWebSearchTool } from "@/llm/tools";
 
 /**
  * Error mapping from Google SDK exceptions to Mirascope error types.
@@ -97,12 +99,12 @@ export function mapGoogleErrorByStatus(status: number): typeof APIError {
  * @throws FeatureNotSupportedError if the image uses a URL source
  */
 function encodeImage(image: Image): Part {
-  if (image.source.type === 'url_image_source') {
+  if (image.source.type === "url_image_source") {
     throw new FeatureNotSupportedError(
-      'url_image_source',
-      'google',
+      "url_image_source",
+      "google",
       null,
-      'Google does not support URL-referenced images. Try `Image.download(...)` instead.'
+      "Google does not support URL-referenced images. Try `Image.download(...)` instead.",
     );
   }
   const inlineData: GoogleBlob = {
@@ -132,26 +134,26 @@ function encodeAudio(audio: Audio): Part {
  */
 function processContentParts(
   content: readonly (UserContentPart | AssistantContentPart)[],
-  encodeThoughtsAsText: boolean = false
+  encodeThoughtsAsText: boolean = false,
 ): Part[] {
   const parts: Part[] = [];
 
   for (const part of content) {
     switch (part.type) {
-      case 'text':
+      case "text":
         parts.push({ text: part.text });
         break;
 
-      case 'image':
+      case "image":
         parts.push(encodeImage(part));
         break;
 
-      case 'audio':
+      case "audio":
         parts.push(encodeAudio(part));
         break;
 
       /* v8 ignore start - tool encoding will be tested via e2e */
-      case 'tool_call':
+      case "tool_call":
         parts.push({
           functionCall: {
             name: part.name,
@@ -160,10 +162,10 @@ function processContentParts(
         });
         break;
 
-      case 'tool_output': {
+      case "tool_output": {
         // Google expects the result to be an object
         const response =
-          typeof part.result === 'string'
+          typeof part.result === "string"
             ? { result: part.result }
             : (part.result as Record<string, unknown>);
         parts.push({
@@ -177,19 +179,19 @@ function processContentParts(
       /* v8 ignore stop */
 
       /* v8 ignore start - content types not yet implemented */
-      case 'document':
+      case "document":
         throw new FeatureNotSupportedError(
-          'document content encoding',
-          'google',
+          "document content encoding",
+          "google",
           null,
-          'Document content is not yet implemented'
+          "Document content is not yet implemented",
         );
       /* v8 ignore start - thought encoding will be tested via e2e */
 
-      case 'thought':
+      case "thought":
         // Encode thoughts as text when requested, otherwise drop
         if (encodeThoughtsAsText) {
-          parts.push({ text: '**Thinking:** ' + part.thought });
+          parts.push({ text: "**Thinking:** " + part.thought });
         }
         break;
       /* v8 ignore stop */
@@ -212,7 +214,7 @@ const DEFAULT_MAX_TOKENS = 8192;
  * Thinking level to budget multiplier for Gemini 2.5 models.
  */
 const THINKING_LEVEL_TO_BUDGET_MULTIPLIER: Record<
-  Exclude<ThinkingLevel, 'none' | 'default'>,
+  Exclude<ThinkingLevel, "none" | "default">,
   number
 > = {
   minimal: 0.1,
@@ -265,7 +267,7 @@ const THINKING_LEVEL_FOR_GEMINI_3_FLASH: Record<
 export function computeGoogleThinkingConfig(
   thinkingConfig: ThinkingConfig,
   maxTokens: number,
-  modelId: GoogleModelId
+  modelId: GoogleModelId,
 ): GoogleThinkingConfig {
   const level = thinkingConfig.level;
   const result: GoogleThinkingConfig = {};
@@ -277,20 +279,20 @@ export function computeGoogleThinkingConfig(
 
   // Determine thinking config based on model
   if (
-    modelId.includes('gemini-3-flash') ||
-    modelId.includes('gemini-3.0-flash')
+    modelId.includes("gemini-3-flash") ||
+    modelId.includes("gemini-3.0-flash")
   ) {
     result.thinkingLevel = THINKING_LEVEL_FOR_GEMINI_3_FLASH[level];
   } else if (
-    modelId.includes('gemini-3-pro') ||
-    modelId.includes('gemini-3.0-pro')
+    modelId.includes("gemini-3-pro") ||
+    modelId.includes("gemini-3.0-pro")
   ) {
     result.thinkingLevel = THINKING_LEVEL_FOR_GEMINI_3_PRO[level];
   } else {
     // Gemini 2.5 and earlier use thinking_budget
-    if (level === 'default') {
+    if (level === "default") {
       result.thinkingBudget = -1; // Dynamic/automatic budget
-    } else if (level === 'none') {
+    } else if (level === "none") {
       result.thinkingBudget = 0; // Disable thinking
     } else {
       const multiplier = THINKING_LEVEL_TO_BUDGET_MULTIPLIER[level];
@@ -319,7 +321,7 @@ export function encodeToolSchema(tool: ToolSchema): {
     description: tool.description,
     // Use parametersJsonSchema for raw JSON schema compatibility
     parametersJsonSchema: {
-      type: 'object',
+      type: "object",
       properties: tool.parameters.properties,
       required: tool.parameters.required,
     },
@@ -331,8 +333,8 @@ export function encodeToolSchema(tool: ToolSchema): {
  * Google wraps all function declarations in a single Tool object.
  */
 export function encodeTools(
-  tools: readonly ToolSchema[]
-): NonNullable<GenerateContentConfig['tools']> {
+  tools: readonly ToolSchema[],
+): NonNullable<GenerateContentConfig["tools"]> {
   return [
     {
       functionDeclarations: tools.map(encodeToolSchema),
@@ -355,7 +357,7 @@ export function encodeTools(
 export function encodeMessages(
   messages: readonly Message[],
   modelId: GoogleModelId,
-  encodeThoughtsAsText: boolean = false
+  encodeThoughtsAsText: boolean = false,
 ): {
   systemInstruction: ContentUnion | undefined;
   contents: Content[];
@@ -364,17 +366,17 @@ export function encodeMessages(
   const contents: Content[] = [];
 
   for (const message of messages) {
-    if (message.role === 'system') {
+    if (message.role === "system") {
       systemInstruction = message.content.text;
-    } else if (message.role === 'user') {
+    } else if (message.role === "user") {
       contents.push({
-        role: 'user',
+        role: "user",
         parts: processContentParts(message.content),
       });
-    } else if (message.role === 'assistant') {
+    } else if (message.role === "assistant") {
       // Check if we can reuse the raw message (from same provider/model)
       if (
-        message.providerId === 'google' &&
+        message.providerId === "google" &&
         message.modelId === modelId &&
         message.rawMessage &&
         !encodeThoughtsAsText
@@ -384,7 +386,7 @@ export function encodeMessages(
       } else {
         // Otherwise, encode from content parts
         contents.push({
-          role: 'model',
+          role: "model",
           parts: processContentParts(message.content, encodeThoughtsAsText),
         });
       }
@@ -409,19 +411,19 @@ export function buildRequestParams(
   modelId: GoogleModelId,
   messages: readonly Message[],
   tools?: Tools,
-  params: Params = {}
+  params: Params = {},
 ): GenerateContentParameters {
-  return ParamHandler.with(params, 'google', modelId, (p) => {
-    const thinkingConfig = p.get('thinking');
+  return ParamHandler.with(params, "google", modelId, (p) => {
+    const thinkingConfig = p.get("thinking");
     const encodeThoughtsAsText = thinkingConfig?.encodeThoughtsAsText ?? false;
 
     const { systemInstruction, contents } = encodeMessages(
       messages,
       modelId,
-      encodeThoughtsAsText
+      encodeThoughtsAsText,
     );
 
-    const maxTokens = p.getOrDefault('maxTokens', DEFAULT_MAX_TOKENS);
+    const maxTokens = p.getOrDefault("maxTokens", DEFAULT_MAX_TOKENS);
     const config: GenerateContentConfig = {
       maxOutputTokens: maxTokens,
     };
@@ -446,9 +448,9 @@ export function buildRequestParams(
             const unsupportedTool = tool as ProviderTool;
             throw new FeatureNotSupportedError(
               `Provider tool ${unsupportedTool.name}`,
-              'google',
+              "google",
               modelId,
-              `Provider tool '${unsupportedTool.name}' is not supported by Google`
+              `Provider tool '${unsupportedTool.name}' is not supported by Google`,
             );
           }
         } else {
@@ -457,7 +459,7 @@ export function buildRequestParams(
         }
       }
 
-      const googleTools: NonNullable<GenerateContentConfig['tools']> = [];
+      const googleTools: NonNullable<GenerateContentConfig["tools"]> = [];
 
       if (regularTools.length > 0) {
         googleTools.push(...encodeTools(regularTools));
@@ -473,27 +475,27 @@ export function buildRequestParams(
     }
     /* v8 ignore stop */
 
-    const temperature = p.get('temperature');
+    const temperature = p.get("temperature");
     if (temperature !== undefined) {
       config.temperature = temperature;
     }
 
-    const topP = p.get('topP');
+    const topP = p.get("topP");
     if (topP !== undefined) {
       config.topP = topP;
     }
 
-    const topK = p.get('topK');
+    const topK = p.get("topK");
     if (topK !== undefined) {
       config.topK = topK;
     }
 
-    const stopSequences = p.get('stopSequences');
+    const stopSequences = p.get("stopSequences");
     if (stopSequences !== undefined) {
       config.stopSequences = stopSequences;
     }
 
-    const seed = p.get('seed');
+    const seed = p.get("seed");
     if (seed !== undefined) {
       config.seed = seed;
     }
@@ -502,7 +504,7 @@ export function buildRequestParams(
       config.thinkingConfig = computeGoogleThinkingConfig(
         thinkingConfig,
         maxTokens,
-        modelId
+        modelId,
       );
     }
 
@@ -520,11 +522,11 @@ export function buildRequestParams(
  * This mirrors Python's `content.model_dump()` pattern for round-tripping.
  */
 function serializeContent(
-  content: Content | undefined
+  content: Content | undefined,
 ): Record<string, unknown> {
   /* v8 ignore start - defensive fallback for missing content */
   if (!content) {
-    return { role: 'model', parts: [] };
+    return { role: "model", parts: [] };
   }
   /* v8 ignore stop */
   // Copy all non-undefined properties
@@ -551,7 +553,7 @@ function serializeContent(
 export function decodeResponse(
   response: GenerateContentResponse,
   modelId: GoogleModelId,
-  includeThoughts: boolean = false
+  includeThoughts: boolean = false,
 ): {
   assistantMessage: AssistantMessage;
   finishReason: FinishReason | null;
@@ -567,14 +569,14 @@ export function decodeResponse(
   const serializedRawMessage = serializeContent(candidate?.content);
 
   const assistantMessage: AssistantMessage = {
-    role: 'assistant',
+    role: "assistant",
     content: decodedContent,
     name: null,
-    providerId: 'google',
+    providerId: "google",
     modelId,
     providerModelName: modelName(modelId),
     rawMessage:
-      serializedRawMessage as unknown as AssistantMessage['rawMessage'],
+      serializedRawMessage as unknown as AssistantMessage["rawMessage"],
   };
 
   const finishReason = decodeFinishReason(candidate?.finishReason);
@@ -593,25 +595,25 @@ export function decodeResponse(
  */
 function decodeContent(
   parts: Part[],
-  includeThoughts: boolean
+  includeThoughts: boolean,
 ): AssistantContentPart[] {
   const content: AssistantContentPart[] = [];
 
   for (const part of parts) {
     if (part.thought && part.text !== undefined) {
       if (includeThoughts) {
-        const thought: Thought = { type: 'thought', thought: part.text };
+        const thought: Thought = { type: "thought", thought: part.text };
         content.push(thought);
       }
     } else if (part.text !== undefined) {
-      const text: Text = { type: 'text', text: part.text };
+      const text: Text = { type: "text", text: part.text };
       content.push(text);
       /* v8 ignore start - tool decoding will be tested via e2e */
     } else if (part.functionCall) {
       // Google doesn't provide IDs for function calls, so we generate one
-      const name = part.functionCall.name ?? '';
+      const name = part.functionCall.name ?? "";
       const toolCall: ToolCall = {
-        type: 'tool_call',
+        type: "tool_call",
         id: `google_${name}_${Date.now()}`,
         name,
         args: JSON.stringify(part.functionCall.args ?? {}),
@@ -622,13 +624,13 @@ function decodeContent(
     } else {
       // Unknown part type - be strict so we know what we're missing
       const partKeys = Object.keys(part).filter(
-        (k) => part[k as keyof Part] !== undefined
+        (k) => part[k as keyof Part] !== undefined,
       );
       throw new FeatureNotSupportedError(
-        `unknown part type: ${partKeys.join(', ')}`,
-        'google',
+        `unknown part type: ${partKeys.join(", ")}`,
+        "google",
         null,
-        `Unknown content part in response is not yet implemented`
+        `Unknown content part in response is not yet implemented`,
       );
     }
     /* v8 ignore stop */
@@ -649,7 +651,7 @@ function decodeContent(
  * @returns Mirascope FinishReason or null for normal completion
  */
 function decodeFinishReason(
-  finishReason: GoogleFinishReasonType | undefined
+  finishReason: GoogleFinishReasonType | undefined,
 ): FinishReason | null {
   switch (finishReason) {
     case GoogleFinishReason.MAX_TOKENS:

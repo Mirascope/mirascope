@@ -5,9 +5,9 @@
  * This file only contains metadata chunks.
  */
 
-import type { FinishReason } from '@/llm/responses/finish-reason';
-import type { Jsonable } from '@/llm/types/jsonable';
-import type { AssistantContentChunk } from '@/llm/content';
+import type { AssistantContentChunk } from "@/llm/content";
+import type { FinishReason } from "@/llm/responses/finish-reason";
+import type { Jsonable } from "@/llm/types/jsonable";
 
 // ============================================================================
 // Metadata Chunks
@@ -17,7 +17,7 @@ import type { AssistantContentChunk } from '@/llm/content';
  * Contains the finish reason when the stream completes.
  */
 export interface FinishReasonChunk {
-  readonly type: 'finish_reason_chunk';
+  readonly type: "finish_reason_chunk";
   /** The reason the stream finished */
   readonly finishReason: FinishReason;
 }
@@ -26,7 +26,7 @@ export interface FinishReasonChunk {
  * Contains incremental token usage information.
  */
 export interface UsageDeltaChunk {
-  readonly type: 'usage_delta_chunk';
+  readonly type: "usage_delta_chunk";
   /** Delta in input tokens */
   readonly inputTokens: number;
   /** Delta in output tokens */
@@ -43,7 +43,7 @@ export interface UsageDeltaChunk {
  * Contains a raw stream event from the underlying provider.
  */
 export interface RawStreamEventChunk {
-  readonly type: 'raw_stream_event_chunk';
+  readonly type: "raw_stream_event_chunk";
   /** The raw stream event from the underlying provider */
   readonly rawStreamEvent: unknown;
 }
@@ -52,7 +52,7 @@ export interface RawStreamEventChunk {
  * Contains provider-specific raw message content.
  */
 export interface RawMessageChunk {
-  readonly type: 'raw_message_chunk';
+  readonly type: "raw_message_chunk";
   /** Provider-specific raw content */
   readonly rawMessage: Jsonable;
 }
@@ -82,9 +82,9 @@ export type AsyncChunkIterator = AsyncIterator<StreamResponseChunk>;
 
 /** Create a FinishReasonChunk */
 export function finishReasonChunk(
-  finishReason: FinishReason
+  finishReason: FinishReason,
 ): FinishReasonChunk {
-  return { type: 'finish_reason_chunk', finishReason };
+  return { type: "finish_reason_chunk", finishReason };
 }
 
 /** Create a UsageDeltaChunk */
@@ -97,7 +97,7 @@ export function usageDeltaChunk(usage: {
   reasoningTokens?: number;
 }): UsageDeltaChunk {
   return {
-    type: 'usage_delta_chunk',
+    type: "usage_delta_chunk",
     inputTokens: usage.inputTokens ?? 0,
     outputTokens: usage.outputTokens ?? 0,
     cacheReadTokens: usage.cacheReadTokens ?? 0,
@@ -109,12 +109,12 @@ export function usageDeltaChunk(usage: {
 
 /** Create a RawStreamEventChunk */
 export function rawStreamEventChunk(
-  rawStreamEvent: unknown
+  rawStreamEvent: unknown,
 ): RawStreamEventChunk {
-  return { type: 'raw_stream_event_chunk', rawStreamEvent };
+  return { type: "raw_stream_event_chunk", rawStreamEvent };
 }
 
 /** Create a RawMessageChunk */
 export function rawMessageChunk(rawMessage: Jsonable): RawMessageChunk {
-  return { type: 'raw_message_chunk', rawMessage };
+  return { type: "raw_message_chunk", rawMessage };
 }

@@ -5,17 +5,18 @@
  * Tests run against multiple providers via parameterization.
  */
 
-import { resolve } from 'node:path';
-import { createIt, describe, expect } from '@/tests/e2e/utils';
-import { PROVIDERS } from '@/tests/e2e/providers';
-import { defineCall } from '@/llm/calls';
-import { createContext, type Context } from '@/llm/context';
+import { resolve } from "node:path";
 
-const it = createIt(resolve(__dirname, 'cassettes'), 'resume');
+import { defineCall } from "@/llm/calls";
+import { createContext, type Context } from "@/llm/context";
+import { PROVIDERS } from "@/tests/e2e/providers";
+import { createIt, describe, expect } from "@/tests/e2e/utils";
 
-describe('resume from call', () => {
+const it = createIt(resolve(__dirname, "cassettes"), "resume");
+
+describe("resume from call", () => {
   it.record.each(PROVIDERS)(
-    'resumes conversation with new content',
+    "resumes conversation with new content",
     async ({ model }) => {
       const call = defineCall({
         model,
@@ -32,13 +33,13 @@ describe('resume from call', () => {
       expect(followUp.text()).toMatch(/goodbye/i);
       // Messages should include the original exchange plus the follow-up
       expect(followUp.messages.length).toBe(4); // user, assistant, user, assistant
-    }
+    },
   );
 });
 
-describe('resume from stream', () => {
+describe("resume from stream", () => {
   it.record.each(PROVIDERS)(
-    'resumes conversation after streaming',
+    "resumes conversation after streaming",
     async ({ model }) => {
       const call = defineCall({
         model,
@@ -57,7 +58,7 @@ describe('resume from stream', () => {
 
       // Resume the conversation - returns a StreamResponse
       const followUp = await streamResponse.resume(
-        'Now say exactly: "Goodbye"'
+        'Now say exactly: "Goodbye"',
       );
 
       // Consume the resumed stream
@@ -69,7 +70,7 @@ describe('resume from stream', () => {
       expect(chunks.length).toBeGreaterThan(0);
       expect(followUp.text()).toMatch(/goodbye/i);
       expect(followUp.messages.length).toBe(4);
-    }
+    },
   );
 });
 
@@ -77,9 +78,9 @@ interface TestDeps {
   greeting: string;
 }
 
-describe('context resume from call', () => {
+describe("context resume from call", () => {
   it.record.each(PROVIDERS)(
-    'resumes context conversation with new content',
+    "resumes context conversation with new content",
     async ({ model }) => {
       const call = defineCall<{ ctx: Context<TestDeps> }>({
         model,
@@ -87,7 +88,7 @@ describe('context resume from call', () => {
         template: ({ ctx }) => `Say exactly: "${ctx.deps.greeting}"`,
       });
 
-      const ctx = createContext<TestDeps>({ greeting: 'Hello' });
+      const ctx = createContext<TestDeps>({ greeting: "Hello" });
       const response = await call(ctx);
       expect(response.text()).toMatch(/hello/i);
 
@@ -96,13 +97,13 @@ describe('context resume from call', () => {
 
       expect(followUp.text()).toMatch(/goodbye/i);
       expect(followUp.messages.length).toBe(4);
-    }
+    },
   );
 });
 
-describe('context resume from stream', () => {
+describe("context resume from stream", () => {
   it.record.each(PROVIDERS)(
-    'resumes context conversation after streaming',
+    "resumes context conversation after streaming",
     async ({ model }) => {
       const call = defineCall<{ ctx: Context<TestDeps> }>({
         model,
@@ -110,7 +111,7 @@ describe('context resume from stream', () => {
         template: ({ ctx }) => `Say exactly: "${ctx.deps.greeting}"`,
       });
 
-      const ctx = createContext<TestDeps>({ greeting: 'Hello' });
+      const ctx = createContext<TestDeps>({ greeting: "Hello" });
       const streamResponse = await call.stream(ctx);
 
       // Consume the stream first
@@ -123,7 +124,7 @@ describe('context resume from stream', () => {
       // Resume the conversation with context - returns a ContextStreamResponse
       const followUp = await streamResponse.resume(
         ctx,
-        'Now say exactly: "Goodbye"'
+        'Now say exactly: "Goodbye"',
       );
 
       // Consume the resumed stream
@@ -135,6 +136,6 @@ describe('context resume from stream', () => {
       expect(chunks.length).toBeGreaterThan(0);
       expect(followUp.text()).toMatch(/goodbye/i);
       expect(followUp.messages.length).toBe(4);
-    }
+    },
   );
 });

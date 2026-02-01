@@ -1,0 +1,21 @@
+# Build outputs
+dist
+build
+
+# Generated files
+node_modules
+.DS_Store
+package-lock.json
+bun.lock
+yarn.lock
+pnpm-lock.yaml
+
+# Markdown/MDX files (to preserve emphasis styles)
+*.md
+*.mdx
+
+# Large text files
+LICENSE
+
+# Coverage
+coverage

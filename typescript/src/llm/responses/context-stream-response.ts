@@ -6,15 +6,16 @@
  * - resume(): Continue the conversation with additional user content
  */
 
-import type { Context } from '@/llm/context';
-import type { ToolOutput } from '@/llm/content/tool-output';
-import type { Jsonable } from '@/llm/types/jsonable';
-import type { UserContent } from '@/llm/messages';
+import type { ToolOutput } from "@/llm/content/tool-output";
+import type { Context } from "@/llm/context";
+import type { UserContent } from "@/llm/messages";
+import type { Jsonable } from "@/llm/types/jsonable";
+
 import {
   BaseStreamResponse,
   type BaseStreamResponseInit,
-} from '@/llm/responses/base-stream-response';
-import { ContextToolkit, type ContextTools } from '@/llm/tools';
+} from "@/llm/responses/base-stream-response";
+import { ContextToolkit, type ContextTools } from "@/llm/tools";
 
 /**
  * Arguments for constructing a ContextStreamResponse.
@@ -27,8 +28,10 @@ import { ContextToolkit, type ContextTools } from '@/llm/tools';
  *
  * @template DepsT - The type of dependencies in the context.
  */
-export interface ContextStreamResponseInit<DepsT = unknown>
-  extends Omit<BaseStreamResponseInit, 'toolkit'> {
+export interface ContextStreamResponseInit<DepsT = unknown> extends Omit<
+  BaseStreamResponseInit,
+  "toolkit"
+> {
   /**
    * The tools available for this response.
    * Can be a ContextToolkit instance or an array of tools.
@@ -147,7 +150,7 @@ export class ContextStreamResponse<
    */
   async resume(
     ctx: Context<DepsT>,
-    content: UserContent
+    content: UserContent,
   ): Promise<ContextStreamResponse<DepsT, F>> {
     const model = await this.model;
     return model.contextResumeStream(ctx, this, content) as Promise<

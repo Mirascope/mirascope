@@ -4,18 +4,19 @@
  * Provides automatic provider resolution based on model ID prefixes.
  */
 
+import type { BaseProvider } from "@/llm/providers/base";
+import type { ProviderId } from "@/llm/providers/provider-id";
+
 import {
   MissingAPIKeyError,
   NoRegisteredProviderError,
-} from '@/llm/exceptions';
-import type { BaseProvider } from '@/llm/providers/base';
-import { AnthropicProvider } from '@/llm/providers/anthropic';
-import { GoogleProvider } from '@/llm/providers/google';
-import { MirascopeProvider } from '@/llm/providers/mirascope';
-import { OllamaProvider } from '@/llm/providers/ollama';
-import { OpenAIProvider } from '@/llm/providers/openai/provider';
-import { TogetherProvider } from '@/llm/providers/together';
-import type { ProviderId } from '@/llm/providers/provider-id';
+} from "@/llm/exceptions";
+import { AnthropicProvider } from "@/llm/providers/anthropic";
+import { GoogleProvider } from "@/llm/providers/google";
+import { MirascopeProvider } from "@/llm/providers/mirascope";
+import { OllamaProvider } from "@/llm/providers/ollama";
+import { OpenAIProvider } from "@/llm/providers/openai/provider";
+import { TogetherProvider } from "@/llm/providers/together";
 
 /**
  * Global registry mapping scopes to providers.
@@ -44,16 +45,16 @@ interface ProviderDefault {
  * Default auto-registration scopes with fallback chains.
  */
 const DEFAULT_AUTO_REGISTER_SCOPES: Record<string, ProviderDefault[]> = {
-  'anthropic/': [
-    { providerId: 'anthropic', apiKeyEnvVar: 'ANTHROPIC_API_KEY' },
+  "anthropic/": [
+    { providerId: "anthropic", apiKeyEnvVar: "ANTHROPIC_API_KEY" },
   ],
-  'google/': [{ providerId: 'google', apiKeyEnvVar: 'GOOGLE_API_KEY' }],
-  'mirascope/': [
-    { providerId: 'mirascope', apiKeyEnvVar: 'MIRASCOPE_API_KEY' },
+  "google/": [{ providerId: "google", apiKeyEnvVar: "GOOGLE_API_KEY" }],
+  "mirascope/": [
+    { providerId: "mirascope", apiKeyEnvVar: "MIRASCOPE_API_KEY" },
   ],
-  'ollama/': [{ providerId: 'ollama', apiKeyEnvVar: null }],
-  'openai/': [{ providerId: 'openai', apiKeyEnvVar: 'OPENAI_API_KEY' }],
-  'together/': [{ providerId: 'together', apiKeyEnvVar: 'TOGETHER_API_KEY' }],
+  "ollama/": [{ providerId: "ollama", apiKeyEnvVar: null }],
+  "openai/": [{ providerId: "openai", apiKeyEnvVar: "OPENAI_API_KEY" }],
+  "together/": [{ providerId: "together", apiKeyEnvVar: "TOGETHER_API_KEY" }],
 };
 
 /**
@@ -79,9 +80,9 @@ const providerCache: Map<string, BaseProvider> = new Map();
  */
 export function getProviderSingleton(
   providerId: ProviderId,
-  options?: { apiKey?: string; baseURL?: string }
+  options?: { apiKey?: string; baseURL?: string },
 ): BaseProvider {
-  const cacheKey = `${providerId}:${options?.apiKey ?? ''}:${options?.baseURL ?? ''}`;
+  const cacheKey = `${providerId}:${options?.apiKey ?? ""}:${options?.baseURL ?? ""}`;
   const cached = providerCache.get(cacheKey);
   if (cached) {
     return cached;
@@ -89,37 +90,37 @@ export function getProviderSingleton(
 
   let provider: BaseProvider;
   switch (providerId) {
-    case 'anthropic':
+    case "anthropic":
       provider = new AnthropicProvider({
         apiKey: options?.apiKey,
         baseURL: options?.baseURL,
       });
       break;
-    case 'google':
+    case "google":
       provider = new GoogleProvider({
         apiKey: options?.apiKey,
         baseURL: options?.baseURL,
       });
       break;
-    case 'mirascope':
+    case "mirascope":
       provider = new MirascopeProvider({
         apiKey: options?.apiKey,
         baseURL: options?.baseURL,
       });
       break;
-    case 'ollama':
+    case "ollama":
       provider = new OllamaProvider({
         apiKey: options?.apiKey,
         baseURL: options?.baseURL,
       });
       break;
-    case 'openai':
+    case "openai":
       provider = new OpenAIProvider({
         apiKey: options?.apiKey,
         baseURL: options?.baseURL,
       });
       break;
-    case 'together':
+    case "together":
       provider = new TogetherProvider({
         apiKey: options?.apiKey,
         baseURL: options?.baseURL,
@@ -161,11 +162,11 @@ export function registerProvider(
     scope?: string | string[];
     apiKey?: string;
     baseURL?: string;
-  }
+  },
 ): BaseProvider {
   let providerInstance: BaseProvider;
 
-  if (typeof provider === 'string') {
+  if (typeof provider === "string") {
     providerInstance = getProviderSingleton(provider, {
       apiKey: options?.apiKey,
       baseURL: options?.baseURL,
@@ -212,26 +213,26 @@ export function registerProvider(
 export function getProviderForModel(modelId: string): BaseProvider {
   // Try explicit registry first (longest match wins)
   const matchingScopes = [...PROVIDER_REGISTRY.keys()].filter((scope) =>
-    modelId.startsWith(scope)
+    modelId.startsWith(scope),
   );
 
   if (matchingScopes.length > 0) {
     /* v8 ignore next 3 - reduce comparison for multiple scope matches, only Anthropic implemented */
     const bestScope = matchingScopes.reduce((a, b) =>
-      a.length > b.length ? a : b
+      a.length > b.length ? a : b,
     );
     return PROVIDER_REGISTRY.get(bestScope)!;
   }
 
   // Fall back to auto-registration
   const matchingDefaults = Object.keys(DEFAULT_AUTO_REGISTER_SCOPES).filter(
-    (scope) => modelId.startsWith(scope)
+    (scope) => modelId.startsWith(scope),
   );
 
   if (matchingDefaults.length > 0) {
     /* v8 ignore next 3 - reduce only runs with multiple scope matches, only Anthropic implemented */
     const bestScope = matchingDefaults.reduce((a, b) =>
-      a.length > b.length ? a : b
+      a.length > b.length ? a : b,
     );
     const fallbackChain = DEFAULT_AUTO_REGISTER_SCOPES[bestScope]!;
 
@@ -250,8 +251,8 @@ export function getProviderForModel(modelId: string): BaseProvider {
     throw new MissingAPIKeyError(
       primary.providerId,
       /* v8 ignore next - apiKeyEnvVar always defined for current providers */
-      primary.apiKeyEnvVar ?? '',
-      false
+      primary.apiKeyEnvVar ?? "",
+      false,
     );
   }
 

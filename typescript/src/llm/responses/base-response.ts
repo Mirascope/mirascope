@@ -7,16 +7,17 @@ import type {
   Text,
   Thought,
   ToolCall,
-} from '@/llm/content';
-import type { Format } from '@/llm/formatting';
-import { FORMAT_TOOL_NAME } from '@/llm/formatting';
-import type { AssistantMessage, Message } from '@/llm/messages';
-import type { Params } from '@/llm/models';
-import type { ModelId, ProviderId } from '@/llm/providers';
-import type { FinishReason } from '@/llm/responses/finish-reason';
-import { RootResponse } from '@/llm/responses/root-response';
-import type { Usage } from '@/llm/responses/usage';
-import type { BaseToolkit } from '@/llm/tools';
+} from "@/llm/content";
+import type { Format } from "@/llm/formatting";
+import type { AssistantMessage, Message } from "@/llm/messages";
+import type { Params } from "@/llm/models";
+import type { ModelId, ProviderId } from "@/llm/providers";
+import type { FinishReason } from "@/llm/responses/finish-reason";
+import type { Usage } from "@/llm/responses/usage";
+import type { BaseToolkit } from "@/llm/tools";
+
+import { FORMAT_TOOL_NAME } from "@/llm/formatting";
+import { RootResponse } from "@/llm/responses/root-response";
 
 /**
  * Initialization options for creating a BaseResponse.
@@ -123,22 +124,22 @@ export class BaseResponse<F = unknown> extends RootResponse<F> {
     const content: AssistantContentPart[] = [];
 
     for (const part of init.assistantMessage.content) {
-      if (part.type === 'text') {
+      if (part.type === "text") {
         texts.push(part);
         content.push(part);
         /* v8 ignore start - tool_call and thought content not yet implemented */
-      } else if (part.type === 'tool_call') {
+      } else if (part.type === "tool_call") {
         // Transform FORMAT_TOOL calls to text content
         // The tool call args contain the JSON structured output
         if (part.name.startsWith(FORMAT_TOOL_NAME)) {
-          const textPart: Text = { type: 'text', text: part.args };
+          const textPart: Text = { type: "text", text: part.args };
           texts.push(textPart);
           content.push(textPart);
         } else {
           toolCalls.push(part);
           content.push(part);
         }
-      } else if (part.type === 'thought') {
+      } else if (part.type === "thought") {
         thoughts.push(part);
         content.push(part);
       }

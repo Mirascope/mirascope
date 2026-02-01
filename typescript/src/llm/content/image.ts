@@ -2,18 +2,18 @@
  * Supported image MIME types.
  */
 export type ImageMimeType =
-  | 'image/png'
-  | 'image/jpeg'
-  | 'image/webp'
-  | 'image/gif'
-  | 'image/heic'
-  | 'image/heif';
+  | "image/png"
+  | "image/jpeg"
+  | "image/webp"
+  | "image/gif"
+  | "image/heic"
+  | "image/heif";
 
 /**
  * Image data encoded as base64.
  */
 export type Base64ImageSource = {
-  readonly type: 'base64_image_source';
+  readonly type: "base64_image_source";
 
   /** The image data, as a base64 encoded string. */
   readonly data: string;
@@ -26,7 +26,7 @@ export type Base64ImageSource = {
  * Image referenced by URL.
  */
 export type URLImageSource = {
-  readonly type: 'url_image_source';
+  readonly type: "url_image_source";
 
   /** The url of the image (e.g. https://example.com/image.png). */
   readonly url: string;
@@ -39,7 +39,7 @@ export type URLImageSource = {
  * The source can be either base64-encoded data or a URL reference.
  */
 export type Image = {
-  readonly type: 'image';
+  readonly type: "image";
 
   readonly source: Base64ImageSource | URLImageSource;
 };
@@ -55,13 +55,13 @@ export const MAX_IMAGE_SIZE = 20 * 1024 * 1024;
 export function inferImageType(data: Uint8Array): ImageMimeType {
   if (data.length < 12) {
     throw new Error(
-      'Image data too small to determine type (minimum 12 bytes)'
+      "Image data too small to determine type (minimum 12 bytes)",
     );
   }
 
   // JPEG: starts with 0xFF 0xD8 0xFF
   if (data[0] === 0xff && data[1] === 0xd8 && data[2] === 0xff) {
-    return 'image/jpeg';
+    return "image/jpeg";
   }
 
   // PNG: starts with 0x89 PNG\r\n\x1a\n
@@ -75,7 +75,7 @@ export function inferImageType(data: Uint8Array): ImageMimeType {
     data[6] === 0x1a &&
     data[7] === 0x0a
   ) {
-    return 'image/png';
+    return "image/png";
   }
 
   // GIF: starts with GIF87a or GIF89a
@@ -87,7 +87,7 @@ export function inferImageType(data: Uint8Array): ImageMimeType {
     (data[4] === 0x37 || data[4] === 0x39) &&
     data[5] === 0x61
   ) {
-    return 'image/gif';
+    return "image/gif";
   }
 
   // WebP: starts with RIFF....WEBP
@@ -101,7 +101,7 @@ export function inferImageType(data: Uint8Array): ImageMimeType {
     data[10] === 0x42 &&
     data[11] === 0x50
   ) {
-    return 'image/webp';
+    return "image/webp";
   }
 
   // HEIC/HEIF: check ftyp box at offset 4
@@ -116,24 +116,24 @@ export function inferImageType(data: Uint8Array): ImageMimeType {
       data[8]!,
       data[9]!,
       data[10]!,
-      data[11]!
+      data[11]!,
     );
-    if (subtype === 'heic' || subtype === 'heix') {
-      return 'image/heic';
+    if (subtype === "heic" || subtype === "heix") {
+      return "image/heic";
     }
-    if (['mif1', 'msf1', 'hevc', 'hevx'].includes(subtype)) {
-      return 'image/heif';
+    if (["mif1", "msf1", "hevc", "hevx"].includes(subtype)) {
+      return "image/heif";
     }
   }
 
-  throw new Error('Unsupported image type');
+  throw new Error("Unsupported image type");
 }
 
 /**
  * Convert a Uint8Array to a base64 string.
  */
 export function uint8ArrayToBase64(data: Uint8Array): string {
-  let binary = '';
+  let binary = "";
   for (let i = 0; i < data.length; i++) {
     binary += String.fromCharCode(data[i]!);
   }
@@ -148,8 +148,8 @@ export const Image = {
    * Create an Image from a URL reference (no download).
    */
   fromUrl: (url: string): Image => ({
-    type: 'image',
-    source: { type: 'url_image_source', url },
+    type: "image",
+    source: { type: "url_image_source", url },
   }),
 
   /**
@@ -161,7 +161,7 @@ export const Image = {
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(
-        `Failed to download image: ${response.status} ${response.statusText}`
+        `Failed to download image: ${response.status} ${response.statusText}`,
       );
     }
     const buffer = await response.arrayBuffer();
@@ -176,14 +176,14 @@ export const Image = {
   fromBytes: (data: Uint8Array, maxSize = MAX_IMAGE_SIZE): Image => {
     if (data.length > maxSize) {
       throw new Error(
-        `Image size (${data.length} bytes) exceeds maximum (${maxSize} bytes)`
+        `Image size (${data.length} bytes) exceeds maximum (${maxSize} bytes)`,
       );
     }
     const mimeType = inferImageType(data);
     const base64 = uint8ArrayToBase64(data);
     return {
-      type: 'image',
-      source: { type: 'base64_image_source', data: base64, mimeType },
+      type: "image",
+      source: { type: "base64_image_source", data: base64, mimeType },
     };
   },
 };

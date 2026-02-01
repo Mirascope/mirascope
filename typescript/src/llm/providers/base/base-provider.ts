@@ -2,30 +2,31 @@
  * Base abstract interface for provider clients.
  */
 
-import type { Context } from '@/llm/context';
-import type { Format } from '@/llm/formatting';
-import type { Message, UserContent } from '@/llm/messages';
-import { user } from '@/llm/messages';
-import type { Params } from '@/llm/models';
-import type { ProviderId } from '@/llm/providers/provider-id';
+import type { Context } from "@/llm/context";
+import type { Format } from "@/llm/formatting";
+import type { Message, UserContent } from "@/llm/messages";
+import type { Params } from "@/llm/models";
+import type { ProviderId } from "@/llm/providers/provider-id";
+import type { StreamResponseChunk } from "@/llm/responses/chunks";
+import type { RootResponse } from "@/llm/responses/root-response";
 import type {
   Tools,
   ContextTools,
   BaseTool,
   AnyContextTool,
-} from '@/llm/tools';
-import { Response } from '@/llm/responses';
-import type { StreamResponseChunk } from '@/llm/responses/chunks';
-import { ContextResponse } from '@/llm/responses/context-response';
-import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
-import type { RootResponse } from '@/llm/responses/root-response';
-import { StreamResponse } from '@/llm/responses/stream-response';
+} from "@/llm/tools";
+
 import {
   APIError,
   ProviderError,
   type APIErrorOptions,
   type ProviderErrorOptions,
-} from '@/llm/exceptions';
+} from "@/llm/exceptions";
+import { user } from "@/llm/messages";
+import { Response } from "@/llm/responses";
+import { ContextResponse } from "@/llm/responses/context-response";
+import { ContextStreamResponse } from "@/llm/responses/context-stream-response";
+import { StreamResponse } from "@/llm/responses/stream-response";
 
 /**
  * A Mirascope error class constructor.
@@ -115,7 +116,7 @@ export abstract class BaseProvider {
 
     // Wrap the iterator to catch errors during iteration
     response.wrapChunkIterator((iterator) =>
-      this._wrapIteratorErrors(iterator)
+      this._wrapIteratorErrors(iterator),
     );
 
     return response;
@@ -126,7 +127,7 @@ export abstract class BaseProvider {
    * Converts provider SDK exceptions to Mirascope error types.
    */
   private async *_wrapIteratorErrors(
-    iterator: AsyncIterator<StreamResponseChunk>
+    iterator: AsyncIterator<StreamResponseChunk>,
   ): AsyncGenerator<StreamResponseChunk> {
     try {
       let result = await iterator.next();
@@ -217,7 +218,7 @@ export abstract class BaseProvider {
 
     // Wrap the iterator to catch errors during iteration
     response.wrapChunkIterator((iterator) =>
-      this._wrapIteratorErrors(iterator)
+      this._wrapIteratorErrors(iterator),
     );
 
     return response;
@@ -393,7 +394,7 @@ export abstract class BaseProvider {
         if (MirascopeErrorClass.prototype instanceof APIError) {
           return new (MirascopeErrorClass as new (
             message: string,
-            options: APIErrorOptions
+            options: APIErrorOptions,
           ) => APIError)(e.message, {
             provider: this.id,
             statusCode,

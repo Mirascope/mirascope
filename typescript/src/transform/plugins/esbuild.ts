@@ -5,11 +5,13 @@
  * TypeScript support to ensure access to type information for schema generation.
  */
 
-import type { Plugin, OnLoadArgs, OnLoadResult, PluginBuild } from 'esbuild';
-import ts from 'typescript';
-import path from 'path';
-import fs from 'fs';
-import { createToolSchemaTransformer } from '@/transform/transformer';
+import type { Plugin, OnLoadArgs, OnLoadResult, PluginBuild } from "esbuild";
+
+import fs from "fs";
+import path from "path";
+import ts from "typescript";
+
+import { createToolSchemaTransformer } from "@/transform/transformer";
 
 export interface MirascopeEsbuildPluginOptions {
   /**
@@ -49,7 +51,7 @@ export interface MirascopeEsbuildPluginOptions {
  */
 export function mirascope(options: MirascopeEsbuildPluginOptions = {}): Plugin {
   const {
-    tsconfig = './tsconfig.json',
+    tsconfig = "./tsconfig.json",
     filter = /\.(ts|tsx)$/,
     compilerOptions: extraOptions = {},
   } = options;
@@ -61,7 +63,7 @@ export function mirascope(options: MirascopeEsbuildPluginOptions = {}): Plugin {
   let cachedCompilerOptions: ts.CompilerOptions | undefined;
 
   return {
-    name: 'mirascope',
+    name: "mirascope",
 
     setup(build: PluginBuild) {
       const cwd = process.cwd();
@@ -71,21 +73,21 @@ export function mirascope(options: MirascopeEsbuildPluginOptions = {}): Plugin {
       let parsedConfig: ts.ParsedCommandLine;
       if (fs.existsSync(configPath)) {
         const configFile = ts.readConfigFile(configPath, (path) =>
-          ts.sys.readFile(path)
+          ts.sys.readFile(path),
         );
         if (configFile.error) {
           throw new Error(
             `Error reading tsconfig.json: ${ts.flattenDiagnosticMessageText(
               configFile.error.messageText,
-              '\n'
-            )}`
+              "\n",
+            )}`,
           );
         }
 
         parsedConfig = ts.parseJsonConfigFileContent(
           configFile.config,
           ts.sys,
-          path.dirname(configPath)
+          path.dirname(configPath),
         );
       } else {
         // Use default config if tsconfig.json doesn't exist
@@ -111,17 +113,17 @@ export function mirascope(options: MirascopeEsbuildPluginOptions = {}): Plugin {
           const fileName = args.path;
 
           // Read the source file
-          const sourceText = await fs.promises.readFile(fileName, 'utf-8');
+          const sourceText = await fs.promises.readFile(fileName, "utf-8");
 
           // Check if this file contains defineTool or defineContextTool
           // If not, we can skip the expensive transformation
           if (
-            !sourceText.includes('defineTool') &&
-            !sourceText.includes('defineContextTool')
+            !sourceText.includes("defineTool") &&
+            !sourceText.includes("defineContextTool")
           ) {
             return {
               contents: sourceText,
-              loader: fileName.endsWith('.tsx') ? 'tsx' : 'ts',
+              loader: fileName.endsWith(".tsx") ? "tsx" : "ts",
             };
           }
 
@@ -152,7 +154,7 @@ export function mirascope(options: MirascopeEsbuildPluginOptions = {}): Plugin {
             // File not in program, create a minimal program for just this file
             const singleFileProgram = ts.createProgram(
               [fileName],
-              compilerOptions
+              compilerOptions,
             );
             const transformer = createToolSchemaTransformer(singleFileProgram);
             const sf = singleFileProgram.getSourceFile(fileName);
@@ -178,7 +180,7 @@ export function mirascope(options: MirascopeEsbuildPluginOptions = {}): Plugin {
 
             return {
               contents: outputText,
-              loader: fileName.endsWith('.tsx') ? 'tsx' : 'ts',
+              loader: fileName.endsWith(".tsx") ? "tsx" : "ts",
             };
           }
           /* v8 ignore end */
@@ -199,9 +201,9 @@ export function mirascope(options: MirascopeEsbuildPluginOptions = {}): Plugin {
 
           return {
             contents: outputText,
-            loader: fileName.endsWith('.tsx') ? 'tsx' : 'ts',
+            loader: fileName.endsWith(".tsx") ? "tsx" : "ts",
           };
-        }
+        },
       );
     },
   };

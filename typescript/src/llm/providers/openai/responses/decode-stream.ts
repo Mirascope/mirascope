@@ -10,7 +10,10 @@ import type {
   ResponseTextDeltaEvent,
   ResponseCompletedEvent,
   ResponseIncompleteEvent,
-} from 'openai/resources/responses/responses';
+} from "openai/resources/responses/responses";
+
+import type { StreamResponseChunk } from "@/llm/responses/chunks";
+import type { Jsonable } from "@/llm/types/jsonable";
 
 import {
   textStart,
@@ -22,16 +25,14 @@ import {
   toolCallStart,
   toolCallChunk,
   toolCallEnd,
-} from '@/llm/content';
-import type { StreamResponseChunk } from '@/llm/responses/chunks';
+} from "@/llm/content";
 import {
   finishReasonChunk,
   usageDeltaChunk,
   rawStreamEventChunk,
   rawMessageChunk,
-} from '@/llm/responses/chunks';
-import { FinishReason } from '@/llm/responses/finish-reason';
-import type { Jsonable } from '@/llm/types/jsonable';
+} from "@/llm/responses/chunks";
+import { FinishReason } from "@/llm/responses/finish-reason";
 
 /**
  * State tracking for stream decoding.
@@ -68,7 +69,7 @@ export function createDecodeState(includeThoughts: boolean): DecodeState {
  */
 export function decodeStreamEvent(
   event: ResponseStreamEvent,
-  state: DecodeState
+  state: DecodeState,
 ): StreamResponseChunk[] {
   const chunks: StreamResponseChunk[] = [];
 
@@ -76,29 +77,29 @@ export function decodeStreamEvent(
   chunks.push(rawStreamEventChunk(event));
 
   switch (event.type) {
-    case 'response.created':
+    case "response.created":
       // Emit raw message chunk with initial response data
       chunks.push(rawMessageChunk(event.response as unknown as Jsonable));
       break;
 
-    case 'response.output_text.delta':
+    case "response.output_text.delta":
       handleTextDelta(event, state, chunks);
       break;
 
-    case 'response.output_text.done':
+    case "response.output_text.done":
       if (state.inTextBlock) {
         chunks.push(textEnd());
         state.inTextBlock = false;
       }
       break;
 
-    case 'response.reasoning_summary_text.delta':
+    case "response.reasoning_summary_text.delta":
       if (state.includeThoughts) {
         handleThoughtDelta(event, state, chunks);
       }
       break;
 
-    case 'response.reasoning_summary_text.done':
+    case "response.reasoning_summary_text.done":
       if (state.inThoughtBlock && state.includeThoughts) {
         chunks.push(thoughtEnd());
         state.inThoughtBlock = false;
@@ -106,20 +107,20 @@ export function decodeStreamEvent(
       break;
 
     /* v8 ignore start - OpenAI Responses API not in tools test providers */
-    case 'response.output_item.added':
-      if (event.item.type === 'function_call') {
+    case "response.output_item.added":
+      if (event.item.type === "function_call") {
         state.currentToolCallId = event.item.call_id;
         chunks.push(toolCallStart(event.item.call_id, event.item.name));
       }
       break;
 
-    case 'response.function_call_arguments.delta':
+    case "response.function_call_arguments.delta":
       if (state.currentToolCallId) {
         chunks.push(toolCallChunk(state.currentToolCallId, event.delta));
       }
       break;
 
-    case 'response.function_call_arguments.done':
+    case "response.function_call_arguments.done":
       if (state.currentToolCallId) {
         chunks.push(toolCallEnd(state.currentToolCallId));
         state.currentToolCallId = null;
@@ -127,8 +128,8 @@ export function decodeStreamEvent(
       break;
     /* v8 ignore stop */
 
-    case 'response.completed':
-    case 'response.incomplete':
+    case "response.completed":
+    case "response.incomplete":
       // Close any open blocks
       /* v8 ignore start - blocks typically closed before completion event */
       if (state.inTextBlock) {
@@ -146,12 +147,12 @@ export function decodeStreamEvent(
 
     // Handle other events we might want to process
     /* v8 ignore start - refusal events are rare edge cases */
-    case 'response.refusal.delta':
+    case "response.refusal.delta":
       // Treat refusal as text
       handleRefusalDelta(event, state, chunks);
       break;
 
-    case 'response.refusal.done':
+    case "response.refusal.done":
       // Close text block and emit refusal finish reason
       if (state.inTextBlock) {
         chunks.push(textEnd());
@@ -175,7 +176,7 @@ export function decodeStreamEvent(
 function handleTextDelta(
   event: ResponseTextDeltaEvent,
   state: DecodeState,
-  chunks: StreamResponseChunk[]
+  chunks: StreamResponseChunk[],
 ): void {
   if (!state.inTextBlock) {
     // Close thought block if transitioning from thoughts to text
@@ -195,9 +196,9 @@ function handleTextDelta(
  * Handle reasoning summary delta event (thoughts).
  */
 function handleThoughtDelta(
-  event: { type: 'response.reasoning_summary_text.delta'; delta: string },
+  event: { type: "response.reasoning_summary_text.delta"; delta: string },
   state: DecodeState,
-  chunks: StreamResponseChunk[]
+  chunks: StreamResponseChunk[],
 ): void {
   if (!state.inThoughtBlock) {
     // Close text block if transitioning from text to thoughts
@@ -218,9 +219,9 @@ function handleThoughtDelta(
  */
 /* v8 ignore start - refusal events are rare edge cases */
 function handleRefusalDelta(
-  event: { type: 'response.refusal.delta'; delta: string },
+  event: { type: "response.refusal.delta"; delta: string },
   state: DecodeState,
-  chunks: StreamResponseChunk[]
+  chunks: StreamResponseChunk[],
 ): void {
   // Treat refusal as text content
   if (!state.inTextBlock) {
@@ -236,7 +237,7 @@ function handleRefusalDelta(
  */
 function handleCompleted(
   event: ResponseCompletedEvent | ResponseIncompleteEvent,
-  chunks: StreamResponseChunk[]
+  chunks: StreamResponseChunk[],
 ): void {
   const response = event.response;
 
@@ -244,9 +245,9 @@ function handleCompleted(
   /* v8 ignore start - incomplete_details only present when stream is incomplete */
   if (response.incomplete_details) {
     const reason = response.incomplete_details.reason;
-    if (reason === 'max_output_tokens') {
+    if (reason === "max_output_tokens") {
       chunks.push(finishReasonChunk(FinishReason.MAX_TOKENS));
-    } else if (reason === 'content_filter') {
+    } else if (reason === "content_filter") {
       chunks.push(finishReasonChunk(FinishReason.REFUSAL));
     }
   }
@@ -264,7 +265,7 @@ function handleCompleted(
         reasoningTokens:
           /* v8 ignore next 1 */
           response.usage.output_tokens_details?.reasoning_tokens ?? 0,
-      })
+      }),
     );
   }
 }
@@ -278,7 +279,7 @@ function handleCompleted(
  */
 export async function* decodeStream(
   stream: AsyncIterable<ResponseStreamEvent>,
-  includeThoughts: boolean
+  includeThoughts: boolean,
 ): AsyncGenerator<StreamResponseChunk> {
   const state = createDecodeState(includeThoughts);
 

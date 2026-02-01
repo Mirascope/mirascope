@@ -14,7 +14,7 @@ import {
   generateFileHeader,
   generateKnownModelsExports,
   generateFeatureSet,
-} from './utils';
+} from "./utils";
 
 interface FeatureResult {
   status?: string;
@@ -50,7 +50,7 @@ function collectModelData(data: YamlData): {
   for (const [modelId, modelInfo] of Object.entries(modelsData)) {
     const features = modelInfo.features ?? {};
     const strictResult = features.strict_structured_output ?? {};
-    const supportsStrict = strictResult.status === 'supported';
+    const supportsStrict = strictResult.status === "supported";
 
     const dateMatch = modelId.match(datePattern);
 
@@ -119,48 +119,48 @@ function collectModelData(data: YamlData): {
  */
 function generateModelInfoContent(
   modelIds: string[],
-  modelsWithoutStrict: string[]
+  modelsWithoutStrict: string[],
 ): string {
   const lines: string[] = [
     ...generateFileHeader(
-      'Anthropic',
-      'typescript/scripts/codegen/anthropic.ts'
+      "Anthropic",
+      "typescript/scripts/codegen/anthropic.ts",
     ),
-    '',
+    "",
     ...generateKnownModelsExports(
-      'ANTHROPIC',
-      'Anthropic',
+      "ANTHROPIC",
+      "Anthropic",
       modelIds,
-      'Valid Anthropic model IDs.'
+      "Valid Anthropic model IDs.",
     ),
-    '',
+    "",
     ...generateFeatureSet(
-      'MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS',
-      'Models that do not support strict structured outputs (strict mode tools).',
+      "MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS",
+      "Models that do not support strict structured outputs (strict mode tools).",
       null,
-      modelsWithoutStrict
+      modelsWithoutStrict,
     ),
-    '',
+    "",
   ];
 
-  return lines.join('\n');
+  return lines.join("\n");
 }
 
 /**
  * Generate Anthropic model info from YAML test data.
  */
 export function generateAnthropicModelInfo(): void {
-  const { inputPath, outputPath } = getPaths('anthropic', import.meta.dirname);
+  const { inputPath, outputPath } = getPaths("anthropic", import.meta.dirname);
 
   // Load YAML
-  const data = readYamlData<YamlData>(inputPath, 'anthropic');
+  const data = readYamlData<YamlData>(inputPath, "anthropic");
 
   // Collect model data
-  console.log('Collecting model data...');
+  console.log("Collecting model data...");
   const { modelIds, modelsWithoutStrict } = collectModelData(data);
 
   // Generate TypeScript code
-  console.log('Generating TypeScript model info...');
+  console.log("Generating TypeScript model info...");
   const content = generateModelInfoContent(modelIds, modelsWithoutStrict);
 
   // Write file
@@ -170,13 +170,13 @@ export function generateAnthropicModelInfo(): void {
   const modelsData = data.models ?? {};
   const discoveredModelCount = Object.keys(modelsData).length;
   const modelsWithoutStrictCount = Object.values(modelsData).filter(
-    (info) => info.features?.strict_structured_output?.status !== 'supported'
+    (info) => info.features?.strict_structured_output?.status !== "supported",
   ).length;
 
   console.log(`  Discovered models: ${discoveredModelCount}`);
   console.log(`  Generated model IDs: ${modelIds.length}`);
   console.log(
-    `  Models without strict structured outputs: ${modelsWithoutStrictCount}`
+    `  Models without strict structured outputs: ${modelsWithoutStrictCount}`,
   );
 }
 

@@ -21,6 +21,6 @@
  * between the test infrastructure and the codegen scripts.
  */
 
-export { generateAnthropicModelInfo } from './anthropic';
-export { generateGoogleModelInfo } from './google';
-export { generateOpenAIModelInfo } from './openai';
+export { generateAnthropicModelInfo } from "./anthropic";
+export { generateGoogleModelInfo } from "./google";
+export { generateOpenAIModelInfo } from "./openai";

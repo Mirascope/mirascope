@@ -5,18 +5,20 @@
  * access to TypeScript's type checker for schema generation.
  */
 
-import type { Plugin } from 'vite';
-import type ts from 'typescript';
-import typescript from '@rollup/plugin-typescript';
-import type { RollupTypescriptOptions } from '@rollup/plugin-typescript';
-import { createToolSchemaTransformer } from '../transformer';
+import type { RollupTypescriptOptions } from "@rollup/plugin-typescript";
+import type ts from "typescript";
+import type { Plugin } from "vite";
+
+import typescript from "@rollup/plugin-typescript";
+
+import { createToolSchemaTransformer } from "../transformer";
 
 export interface MirascopeVitePluginOptions {
   /**
    * Options to pass to @rollup/plugin-typescript.
    * Note: The 'transformers' option will be merged with the Mirascope transformer.
    */
-  typescript?: Omit<RollupTypescriptOptions, 'transformers'>;
+  typescript?: Omit<RollupTypescriptOptions, "transformers">;
 
   /**
    * Additional transformers to run alongside the Mirascope transformer.
@@ -76,8 +78,8 @@ export function mirascope(options: MirascopeVitePluginOptions = {}): Plugin[] {
 
   return [
     {
-      name: 'mirascope:pre',
-      enforce: 'pre',
+      name: "mirascope:pre",
+      enforce: "pre",
       config() {
         return {
           esbuild: {

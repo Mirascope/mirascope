@@ -57,9 +57,10 @@
  * ```
  */
 
-import type { Params } from '@/llm/models/params';
-import type { ModelId } from '@/llm/providers/model-id';
-import { Model } from '@/llm/models/model';
+import type { Params } from "@/llm/models/params";
+import type { ModelId } from "@/llm/providers/model-id";
+
+import { Model } from "@/llm/models/model";
 
 /**
  * Cross-platform context storage interface.
@@ -78,7 +79,7 @@ export interface ContextStorage<T> {
 function createNodeStorage<T>(): ContextStorage<T> {
   // Dynamic require to avoid issues in browser bundlers
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { AsyncLocalStorage } = require('node:async_hooks') as {
+  const { AsyncLocalStorage } = require("node:async_hooks") as {
     AsyncLocalStorage: new <T>() => {
       getStore(): T | undefined;
       run<R>(store: T, callback: () => R): R;
@@ -229,7 +230,7 @@ export function useModel(model: Model | ModelId, params?: Params): Model {
   if (contextModel !== undefined) {
     return contextModel;
   }
-  if (typeof model === 'string') {
+  if (typeof model === "string") {
     return new Model(model, params);
   }
   return model;

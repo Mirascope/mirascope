@@ -5,12 +5,13 @@
  * with type-safe argument inference and optional Zod validation.
  */
 
-import type { Context } from '@/llm/context';
-import { ToolExecutionError } from '@/llm/exceptions';
-import type { ToolCall } from '@/llm/content/tool-call';
-import { ToolOutput } from '@/llm/content/tool-output';
-import type { Jsonable } from '@/llm/types/jsonable';
-import type { ToolParameterSchema } from '@/llm/tools/tool-schema';
+import type { ToolCall } from "@/llm/content/tool-call";
+import type { Context } from "@/llm/context";
+import type { ToolParameterSchema } from "@/llm/tools/tool-schema";
+import type { Jsonable } from "@/llm/types/jsonable";
+
+import { ToolOutput } from "@/llm/content/tool-output";
+import { ToolExecutionError } from "@/llm/exceptions";
 import {
   TOOL_TYPE,
   CONTEXT_TOOL_TYPE,
@@ -18,17 +19,17 @@ import {
   type ZodLike,
   type Tool,
   type ContextTool,
-} from '@/llm/tools/tools';
+} from "@/llm/tools/tools";
 
 /**
  * Check if a value is a Zod-like schema.
  */
 export function isZodLike(value: unknown): value is ZodLike {
   return (
-    typeof value === 'object' &&
+    typeof value === "object" &&
     value !== null &&
-    '_def' in value &&
-    typeof (value as ZodLike).safeParse === 'function'
+    "_def" in value &&
+    typeof (value as ZodLike).safeParse === "function"
   );
 }
 
@@ -36,7 +37,7 @@ export function isZodLike(value: unknown): value is ZodLike {
  * Get description from a field definition.
  */
 function getFieldDescription(field: FieldDefinition): string | undefined {
-  if (typeof field === 'string') {
+  if (typeof field === "string") {
     return field;
   }
   if (isZodLike(field)) {
@@ -135,7 +136,7 @@ export interface ContextToolArgs<
  */
 function validateArgs<T extends Record<string, unknown>>(
   args: T,
-  fieldDefinitions: Partial<Record<keyof T, FieldDefinition>> | undefined
+  fieldDefinitions: Partial<Record<keyof T, FieldDefinition>> | undefined,
 ): T {
   if (!fieldDefinitions) {
     return args;
@@ -148,7 +149,7 @@ function validateArgs<T extends Record<string, unknown>>(
       const result = definition.safeParse(args[key as keyof T]);
       if (!result.success) {
         throw new Error(
-          `Validation failed for field '${key}': ${JSON.stringify(result.error)}`
+          `Validation failed for field '${key}': ${JSON.stringify(result.error)}`,
         );
       }
       validated[key as keyof T] = result.data as T[keyof T];
@@ -167,7 +168,7 @@ function validateArgs<T extends Record<string, unknown>>(
  */
 function mergeDescriptions(
   schema: ToolParameterSchema,
-  fieldDefinitions: Partial<Record<string, FieldDefinition>> | undefined
+  fieldDefinitions: Partial<Record<string, FieldDefinition>> | undefined,
 ): ToolParameterSchema {
   if (!fieldDefinitions) {
     return schema;
@@ -227,7 +228,7 @@ function mergeDescriptions(
  * ```
  */
 export function defineTool<T extends Record<string, unknown>>(
-  args: ToolArgs<T>
+  args: ToolArgs<T>,
 ): Tool<T> {
   const { name, description, fieldDefinitions, tool, strict, __schema } = args;
 
@@ -238,7 +239,7 @@ export function defineTool<T extends Record<string, unknown>>(
   if (!__schema) {
     throw new Error(
       `Tool '${name}' is missing __schema. ` +
-        'Either use the Mirascope TypeScript transformer, or provide __schema explicitly.'
+        "Either use the Mirascope TypeScript transformer, or provide __schema explicitly.",
     );
   }
   /* v8 ignore end */
@@ -263,7 +264,7 @@ export function defineTool<T extends Record<string, unknown>>(
   };
 
   // Note: We need to use defineProperty for 'name' since Function.name is read-only
-  Object.defineProperty(callable, 'name', { value: name, writable: false });
+  Object.defineProperty(callable, "name", { value: name, writable: false });
   return Object.assign(callable, {
     __toolType: TOOL_TYPE,
     description,
@@ -311,7 +312,7 @@ export function defineContextTool<
   if (!__schema) {
     throw new Error(
       `Tool '${name}' is missing __schema. ` +
-        'Either use the Mirascope TypeScript transformer, or provide __schema explicitly.'
+        "Either use the Mirascope TypeScript transformer, or provide __schema explicitly.",
     );
   }
   /* v8 ignore end */
@@ -320,7 +321,7 @@ export function defineContextTool<
 
   const callable = async (
     ctx: Context<DepsT>,
-    toolArgs: T
+    toolArgs: T,
   ): Promise<Jsonable> => {
     const validatedArgs = validateArgs(toolArgs, fieldDefinitions);
     const result = tool(ctx, validatedArgs);
@@ -329,7 +330,7 @@ export function defineContextTool<
 
   const execute = async (
     ctx: Context<DepsT>,
-    toolCall: ToolCall
+    toolCall: ToolCall,
   ): Promise<ToolOutput<Jsonable>> => {
     try {
       const parsedArgs = JSON.parse(toolCall.args) as T;
@@ -342,7 +343,7 @@ export function defineContextTool<
   };
 
   // Note: We need to use defineProperty for 'name' since Function.name is read-only
-  Object.defineProperty(callable, 'name', { value: name, writable: false });
+  Object.defineProperty(callable, "name", { value: name, writable: false });
   return Object.assign(callable, {
     __toolType: CONTEXT_TOOL_TYPE,
     description,

@@ -1,6 +1,9 @@
 {
   "name": "mirascope",
   "version": "2.0.0-alpha.0",
+  "workspaces": [
+    "examples"
+  ],
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -9,32 +12,54 @@
     "./esbuild": "./src/transform/plugins/esbuild.ts",
     "./bun": "./src/bun.ts"
   },
-  "workspaces": [
-    "examples"
-  ],
   "scripts": {
     "build": "bun x tsc --build tsconfig.json",
     "typecheck": "bun x tsc --build tsconfig.json",
-    "lint": "bun run typecheck && bun run lint:eslint && bun run format:check",
-    "lint:eslint": "eslint .",
-    "lint:eslint:fix": "eslint . --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "fix": "bun run format && bun run lint:eslint:fix",
+    "lint": "bun run typecheck && bun run lint:oxlint && bun run format:check",
+    "lint:oxlint": "oxlint .",
+    "lint:oxlint:fix": "oxlint --fix .",
+    "format": "oxfmt --ignore-path .oxfmtignore .",
+    "format:check": "oxfmt --ignore-path .oxfmtignore --check .",
+    "fix": "bun run format && bun run lint:oxlint:fix",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "codegen": "bun run scripts/codegen/run.ts",
     "example": "bun run scripts/run-example.ts"
   },
+  "dependencies": {
+    "partial-json": "^0.1.7"
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "^0.71.2",
+    "@google/genai": "^1.0.0",
+    "@pollyjs/adapter-fetch": "^6.0.7",
+    "@pollyjs/core": "^6.0.6",
+    "@pollyjs/persister": "^6.0.6",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@types/bun": "latest",
+    "@vitest/coverage-v8": "^3.0.0",
+    "dotenv": "^17.2.3",
+    "esbuild": "^0.25.5",
+    "jiti": "^2.4.2",
+    "openai": "^6.16.0",
+    "oxfmt": "^0.27.0",
+    "oxlint": "^1.42.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5",
+    "vite": "^6.3.5",
+    "vitest": "^3.0.0",
+    "yaml": "^2.7.0",
+    "zod": "^4.0.0"
+  },
   "peerDependencies": {
     "@anthropic-ai/sdk": ">=0.71.0",
     "@google/genai": ">=1.0.0",
-    "openai": "^6.16.0",
-    "zod": ">=4.0.0",
     "@rollup/plugin-typescript": ">=11.0.0",
     "esbuild": ">=0.17.0",
-    "vite": ">=4.0.0"
+    "openai": "^6.16.0",
+    "vite": ">=4.0.0",
+    "zod": ">=4.0.0"
   },
   "peerDependenciesMeta": {
     "@anthropic-ai/sdk": {
@@ -58,35 +83,5 @@
     "vite": {
       "optional": true
     }
-  },
-  "dependencies": {
-    "partial-json": "^0.1.7"
-  },
-  "devDependencies": {
-    "@anthropic-ai/sdk": "^0.71.2",
-    "zod": "^4.0.0",
-    "@eslint/js": "^9.37.0",
-    "@google/genai": "^1.0.0",
-    "@pollyjs/adapter-fetch": "^6.0.7",
-    "@pollyjs/core": "^6.0.6",
-    "@pollyjs/persister": "^6.0.6",
-    "@rollup/plugin-typescript": "^12.1.2",
-    "@types/bun": "latest",
-    "@typescript-eslint/eslint-plugin": "^8.35.0",
-    "@typescript-eslint/parser": "^8.35.0",
-    "@vitest/coverage-v8": "^3.0.0",
-    "dotenv": "^17.2.3",
-    "esbuild": "^0.25.5",
-    "eslint": "^9.29.0",
-    "eslint-config-prettier": "^10.1.5",
-    "globals": "^16.2.0",
-    "jiti": "^2.4.2",
-    "openai": "^6.16.0",
-    "prettier": "^3.6.0",
-    "tslib": "^2.8.1",
-    "typescript": "^5",
-    "vite": "^6.3.5",
-    "vitest": "^3.0.0",
-    "yaml": "^2.7.0"
   }
 }

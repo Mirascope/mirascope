@@ -2,7 +2,7 @@
  * OpenAI model IDs and related utilities.
  */
 
-import type { OpenAIKnownModels } from '@/llm/providers/openai/model-info';
+import type { OpenAIKnownModels } from "@/llm/providers/openai/model-info";
 
 /**
  * The OpenAI model IDs registered with Mirascope.
@@ -12,7 +12,7 @@ export type OpenAIModelId = OpenAIKnownModels | (string & {});
 /**
  * API mode for OpenAI requests.
  */
-export type ApiMode = 'responses' | 'completions';
+export type ApiMode = "responses" | "completions";
 
 /**
  * Extract the OpenAI model name from the ModelId.
@@ -24,12 +24,12 @@ export type ApiMode = 'responses' | 'completions';
  */
 export function modelName(
   modelId: OpenAIModelId,
-  apiMode: ApiMode | null
+  apiMode: ApiMode | null,
 ): string {
-  const modelPart = modelId.replace(/^openai\//, '');
+  const modelPart = modelId.replace(/^openai\//, "");
   const baseName = modelPart
-    .replace(/:responses$/, '')
-    .replace(/:completions$/, '');
+    .replace(/:responses$/, "")
+    .replace(/:completions$/, "");
 
   if (apiMode === null) {
     return baseName;

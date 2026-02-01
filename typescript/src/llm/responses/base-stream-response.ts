@@ -25,25 +25,26 @@ import type {
   ThoughtChunk,
   ToolCall,
   ToolCallChunk,
-} from '@/llm/content';
-import type { DeepPartial, Format } from '@/llm/formatting';
-import { FORMAT_TOOL_NAME } from '@/llm/formatting';
-import type { AssistantMessage, Message } from '@/llm/messages';
-import type { Params } from '@/llm/models';
-import type { ModelId, ProviderId } from '@/llm/providers';
-import type { StreamResponseChunk } from '@/llm/responses/chunks';
-import type { FinishReason } from '@/llm/responses/finish-reason';
-import { RootResponse } from '@/llm/responses/root-response';
+} from "@/llm/content";
+import type { DeepPartial, Format } from "@/llm/formatting";
+import type { AssistantMessage, Message } from "@/llm/messages";
+import type { Params } from "@/llm/models";
+import type { ModelId, ProviderId } from "@/llm/providers";
+import type { StreamResponseChunk } from "@/llm/responses/chunks";
+import type { FinishReason } from "@/llm/responses/finish-reason";
+import type { Usage } from "@/llm/responses/usage";
+import type { BaseToolkit } from "@/llm/tools";
+import type { Jsonable } from "@/llm/types/jsonable";
+
+import { FORMAT_TOOL_NAME } from "@/llm/formatting";
+import { RootResponse } from "@/llm/responses/root-response";
 import {
   TextStream,
   ThoughtStream,
   ToolCallStream,
   type Stream,
-} from '@/llm/responses/streams';
-import type { Usage } from '@/llm/responses/usage';
-import { createUsage } from '@/llm/responses/usage';
-import type { BaseToolkit } from '@/llm/tools';
-import type { Jsonable } from '@/llm/types/jsonable';
+} from "@/llm/responses/streams";
+import { createUsage } from "@/llm/responses/usage";
 
 /**
  * Arguments for constructing a BaseStreamResponse.
@@ -203,7 +204,7 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
    * Get the accumulated thought content.
    * Joins all thought parts with the specified separator.
    */
-  thought(separator = '\n'): string {
+  thought(separator = "\n"): string {
     return this._thoughts.map((t) => t.thought).join(separator);
   }
 
@@ -212,7 +213,7 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
    */
   get assistantMessage(): AssistantMessage {
     return {
-      role: 'assistant',
+      role: "assistant",
       content: [...this._content],
       name: null,
       providerId: this.providerId,
@@ -261,7 +262,7 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
    */
   async *textStream(): AsyncGenerator<string> {
     for await (const chunk of this.chunkStream()) {
-      if (chunk.type === 'text_chunk') {
+      if (chunk.type === "text_chunk") {
         yield chunk.delta;
       }
     }
@@ -274,7 +275,7 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
    */
   async *thoughtStream(): AsyncGenerator<string> {
     for await (const chunk of this.chunkStream()) {
-      if (chunk.type === 'thought_chunk') {
+      if (chunk.type === "thought_chunk") {
         yield chunk.delta;
       }
     }
@@ -309,14 +310,14 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
    */
   async *structuredStream(): AsyncGenerator<DeepPartial<F>> {
     if (!this.format) {
-      throw new Error('structuredStream() requires format parameter');
+      throw new Error("structuredStream() requires format parameter");
     }
     if (this.format.outputParser) {
-      throw new Error('structuredStream() is not supported for OutputParser');
+      throw new Error("structuredStream() is not supported for OutputParser");
     }
 
     for await (const chunk of this.chunkStream()) {
-      if (chunk.type === 'text_chunk') {
+      if (chunk.type === "text_chunk") {
         const partial = this.parse({ partial: true });
         if (partial !== null) {
           yield partial as DeepPartial<F>;
@@ -367,15 +368,15 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
       let stream: Stream;
 
       switch (startChunk.type) {
-        case 'text_start_chunk': {
+        case "text_start_chunk": {
           const textStreamIterator = async function* (
-            iter: AsyncGenerator<AssistantContentChunk>
+            iter: AsyncGenerator<AssistantContentChunk>,
           ): AsyncGenerator<TextChunk> {
             // Use manual iteration to avoid closing the outer iterator
             let innerResult = await iter.next();
             while (!innerResult.done) {
               const chunk = innerResult.value;
-              if (chunk.type === 'text_chunk') {
+              if (chunk.type === "text_chunk") {
                 yield chunk;
                 innerResult = await iter.next();
               } else {
@@ -388,15 +389,15 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
           break;
         }
 
-        case 'thought_start_chunk': {
+        case "thought_start_chunk": {
           const thoughtStreamIterator = async function* (
-            iter: AsyncGenerator<AssistantContentChunk>
+            iter: AsyncGenerator<AssistantContentChunk>,
           ): AsyncGenerator<ThoughtChunk> {
             // Use manual iteration to avoid closing the outer iterator
             let innerResult = await iter.next();
             while (!innerResult.done) {
               const chunk = innerResult.value;
-              if (chunk.type === 'thought_chunk') {
+              if (chunk.type === "thought_chunk") {
                 yield chunk;
                 innerResult = await iter.next();
               } else {
@@ -409,18 +410,18 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
           break;
         }
 
-        case 'tool_call_start_chunk': {
+        case "tool_call_start_chunk": {
           const toolId = startChunk.id;
           const toolName = startChunk.name;
 
           const toolCallStreamIterator = async function* (
-            iter: AsyncGenerator<AssistantContentChunk>
+            iter: AsyncGenerator<AssistantContentChunk>,
           ): AsyncGenerator<ToolCallChunk> {
             // Use manual iteration to avoid closing the outer iterator
             let innerResult = await iter.next();
             while (!innerResult.done) {
               const chunk = innerResult.value;
-              if (chunk.type === 'tool_call_chunk') {
+              if (chunk.type === "tool_call_chunk") {
                 yield chunk;
                 innerResult = await iter.next();
               } else {
@@ -431,7 +432,7 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
           stream = new ToolCallStream(
             toolId,
             toolName,
-            toolCallStreamIterator(chunkIter)
+            toolCallStreamIterator(chunkIter),
           );
           yield stream;
           break;
@@ -456,8 +457,8 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
    */
   wrapChunkIterator(
     wrapper: (
-      iterator: AsyncIterator<StreamResponseChunk>
-    ) => AsyncIterator<StreamResponseChunk>
+      iterator: AsyncIterator<StreamResponseChunk>,
+    ) => AsyncIterator<StreamResponseChunk>,
   ): void {
     this._chunkIterator = wrapper(this._chunkIterator);
   }
@@ -475,26 +476,26 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
    * @returns The transformed chunk (tool_call → text) or the original chunk.
    */
   private _transformFormatToolChunk(
-    chunk: StreamResponseChunk
+    chunk: StreamResponseChunk,
   ): StreamResponseChunk {
     // Handle tool_call_start_chunk: Transform FORMAT_TOOL start to text_start
     if (
-      chunk.type === 'tool_call_start_chunk' &&
+      chunk.type === "tool_call_start_chunk" &&
       chunk.name.startsWith(FORMAT_TOOL_NAME)
     ) {
       this._processingFormatTool = true;
-      return { type: 'text_start_chunk', contentType: 'text' };
+      return { type: "text_start_chunk", contentType: "text" };
     }
 
     // Handle tool_call_chunk: Transform FORMAT_TOOL chunk to text_chunk
-    if (this._processingFormatTool && chunk.type === 'tool_call_chunk') {
-      return { type: 'text_chunk', contentType: 'text', delta: chunk.delta };
+    if (this._processingFormatTool && chunk.type === "tool_call_chunk") {
+      return { type: "text_chunk", contentType: "text", delta: chunk.delta };
     }
 
     // Handle tool_call_end_chunk: Transform FORMAT_TOOL end to text_end
-    if (this._processingFormatTool && chunk.type === 'tool_call_end_chunk') {
+    if (this._processingFormatTool && chunk.type === "tool_call_end_chunk") {
       this._processingFormatTool = false;
-      return { type: 'text_end_chunk', contentType: 'text' };
+      return { type: "text_end_chunk", contentType: "text" };
     }
 
     return chunk;
@@ -505,42 +506,42 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
    * Returns the content chunk if it should be yielded, null otherwise.
    */
   private _processChunk(
-    chunk: StreamResponseChunk
+    chunk: StreamResponseChunk,
   ): AssistantContentChunk | null {
     // Transform FORMAT_TOOL chunks to text chunks
     const transformedChunk = this._transformFormatToolChunk(chunk);
 
     switch (transformedChunk.type) {
       // Metadata chunks - handle internally, don't yield
-      case 'raw_stream_event_chunk':
+      case "raw_stream_event_chunk":
         this._rawStreamEvents.push(transformedChunk.rawStreamEvent);
         return null;
 
-      case 'raw_message_chunk':
+      case "raw_message_chunk":
         this._rawMessage = transformedChunk.rawMessage;
         return null;
 
-      case 'finish_reason_chunk':
+      case "finish_reason_chunk":
         this._finishReason = transformedChunk.finishReason;
         return null;
 
-      case 'usage_delta_chunk':
+      case "usage_delta_chunk":
         this._accumulateUsage(transformedChunk);
         return null;
 
-      case 'text_start_chunk':
-      case 'text_chunk':
-      case 'text_end_chunk':
+      case "text_start_chunk":
+      case "text_chunk":
+      case "text_end_chunk":
         return this._handleTextChunk(transformedChunk);
 
-      case 'thought_start_chunk':
-      case 'thought_chunk':
-      case 'thought_end_chunk':
+      case "thought_start_chunk":
+      case "thought_chunk":
+      case "thought_end_chunk":
         return this._handleThoughtChunk(transformedChunk);
 
-      case 'tool_call_start_chunk':
-      case 'tool_call_chunk':
-      case 'tool_call_end_chunk':
+      case "tool_call_start_chunk":
+      case "tool_call_chunk":
+      case "tool_call_end_chunk":
         return this._handleToolCallChunk(transformedChunk);
     }
   }
@@ -550,22 +551,22 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
    */
   private _handleTextChunk(
     chunk:
-      | { type: 'text_start_chunk'; contentType: 'text' }
-      | { type: 'text_chunk'; contentType: 'text'; delta: string }
-      | { type: 'text_end_chunk'; contentType: 'text' }
+      | { type: "text_start_chunk"; contentType: "text" }
+      | { type: "text_chunk"; contentType: "text"; delta: string }
+      | { type: "text_end_chunk"; contentType: "text" },
   ): AssistantContentChunk {
-    if (chunk.type === 'text_start_chunk') {
+    if (chunk.type === "text_start_chunk") {
       // Create new Text object and add to content immediately
-      const text: Text & { text: string } = { type: 'text', text: '' };
+      const text: Text & { text: string } = { type: "text", text: "" };
       this._currentContent = text;
       this._content.push(text);
       this._texts.push(text);
-    } else if (chunk.type === 'text_chunk') {
+    } else if (chunk.type === "text_chunk") {
       // Mutate the existing Text object in place
-      if (this._currentContent && 'text' in this._currentContent) {
+      if (this._currentContent && "text" in this._currentContent) {
         this._currentContent.text += chunk.delta;
       }
-    } else if (chunk.type === 'text_end_chunk') {
+    } else if (chunk.type === "text_end_chunk") {
       // Mark text as complete
       this._currentContent = null;
     }
@@ -580,25 +581,25 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
    */
   private _handleThoughtChunk(
     chunk:
-      | { type: 'thought_start_chunk'; contentType: 'thought' }
-      | { type: 'thought_chunk'; contentType: 'thought'; delta: string }
-      | { type: 'thought_end_chunk'; contentType: 'thought' }
+      | { type: "thought_start_chunk"; contentType: "thought" }
+      | { type: "thought_chunk"; contentType: "thought"; delta: string }
+      | { type: "thought_end_chunk"; contentType: "thought" },
   ): AssistantContentChunk {
-    if (chunk.type === 'thought_start_chunk') {
+    if (chunk.type === "thought_start_chunk") {
       // Create new Thought object and add to content immediately
       const thought: Thought & { thought: string } = {
-        type: 'thought',
-        thought: '',
+        type: "thought",
+        thought: "",
       };
       this._currentContent = thought;
       this._content.push(thought);
       this._thoughts.push(thought);
-    } else if (chunk.type === 'thought_chunk') {
+    } else if (chunk.type === "thought_chunk") {
       // Mutate the existing Thought object in place
-      if (this._currentContent && 'thought' in this._currentContent) {
+      if (this._currentContent && "thought" in this._currentContent) {
         this._currentContent.thought += chunk.delta;
       }
-    } else if (chunk.type === 'thought_end_chunk') {
+    } else if (chunk.type === "thought_end_chunk") {
       // Mark thought as complete
       this._currentContent = null;
     }
@@ -618,53 +619,53 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
   private _handleToolCallChunk(
     chunk:
       | {
-          type: 'tool_call_start_chunk';
-          contentType: 'tool_call';
+          type: "tool_call_start_chunk";
+          contentType: "tool_call";
           id: string;
           name: string;
         }
       | {
-          type: 'tool_call_chunk';
-          contentType: 'tool_call';
+          type: "tool_call_chunk";
+          contentType: "tool_call";
           id: string;
           delta: string;
         }
-      | { type: 'tool_call_end_chunk'; contentType: 'tool_call'; id: string }
+      | { type: "tool_call_end_chunk"; contentType: "tool_call"; id: string },
   ): AssistantContentChunk {
-    if (chunk.type === 'tool_call_start_chunk') {
+    if (chunk.type === "tool_call_start_chunk") {
       // Create new ToolCall and track by ID
       if (this._currentToolCalls.has(chunk.id)) {
         throw new Error(
-          `Received tool_call_start_chunk with duplicate id: ${chunk.id}`
+          `Received tool_call_start_chunk with duplicate id: ${chunk.id}`,
         );
       }
       const toolCall: ToolCall & { args: string } = {
-        type: 'tool_call',
+        type: "tool_call",
         id: chunk.id,
         name: chunk.name,
-        args: '',
+        args: "",
       };
       this._currentToolCalls.set(chunk.id, toolCall);
-    } else if (chunk.type === 'tool_call_chunk') {
+    } else if (chunk.type === "tool_call_chunk") {
       // Append delta to existing tool call's args
       const toolCall = this._currentToolCalls.get(chunk.id);
       if (!toolCall) {
         throw new Error(
-          `Received tool_call_chunk for unknown tool call ID: ${chunk.id}`
+          `Received tool_call_chunk for unknown tool call ID: ${chunk.id}`,
         );
       }
       toolCall.args += chunk.delta;
-    } else if (chunk.type === 'tool_call_end_chunk') {
+    } else if (chunk.type === "tool_call_end_chunk") {
       // Finalize tool call and add to content
       const toolCall = this._currentToolCalls.get(chunk.id);
       if (!toolCall) {
         throw new Error(
-          `Received tool_call_end_chunk for unknown tool call ID: ${chunk.id}`
+          `Received tool_call_end_chunk for unknown tool call ID: ${chunk.id}`,
         );
       }
       // Default empty args to empty object (matches Python behavior)
       if (!toolCall.args) {
-        toolCall.args = '{}';
+        toolCall.args = "{}";
       }
       this._content.push(toolCall);
       this._toolCalls.push(toolCall);
@@ -680,7 +681,7 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
    * Accumulate usage statistics from a usage delta chunk.
    */
   private _accumulateUsage(chunk: {
-    type: 'usage_delta_chunk';
+    type: "usage_delta_chunk";
     inputTokens: number;
     outputTokens: number;
     cacheReadTokens: number;

@@ -2,7 +2,9 @@
  * OpenAI error mapping from SDK exceptions to Mirascope error types.
  */
 
-import OpenAI from 'openai';
+import OpenAI from "openai";
+
+import type { ProviderErrorMap } from "@/llm/providers/base";
 
 import {
   APIError,
@@ -14,8 +16,7 @@ import {
   RateLimitError,
   ServerError,
   TimeoutError,
-} from '@/llm/exceptions';
-import type { ProviderErrorMap } from '@/llm/providers/base';
+} from "@/llm/exceptions";
 
 /**
  * Error mapping from OpenAI SDK exceptions to Mirascope error types.

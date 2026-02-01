@@ -2,28 +2,29 @@
  * Anthropic provider implementation with routing between standard and beta APIs.
  */
 
-import Anthropic from '@anthropic-ai/sdk';
+import Anthropic from "@anthropic-ai/sdk";
 
-import type { Context } from '@/llm/context';
-import type { Format } from '@/llm/formatting';
-import type { Message } from '@/llm/messages';
-import type { Params } from '@/llm/models';
-import { BaseProvider } from '@/llm/providers/base';
-import type { Tools, ContextTools } from '@/llm/tools';
-import { getIncludeThoughts } from '@/llm/providers/_utils';
-import type { AnthropicModelId } from '@/llm/providers/anthropic/model-id';
-import { modelName } from '@/llm/providers/anthropic/model-id';
-import { Response } from '@/llm/responses';
-import { ContextResponse } from '@/llm/responses/context-response';
-import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
-import { StreamResponse } from '@/llm/responses/stream-response';
+import type { Context } from "@/llm/context";
+import type { Format } from "@/llm/formatting";
+import type { Message } from "@/llm/messages";
+import type { Params } from "@/llm/models";
+import type { AnthropicModelId } from "@/llm/providers/anthropic/model-id";
+import type { Tools, ContextTools } from "@/llm/tools";
+
+import { getIncludeThoughts } from "@/llm/providers/_utils";
 import {
   ANTHROPIC_ERROR_MAP,
   buildRequestParams,
   decodeResponse,
-} from '@/llm/providers/anthropic/_utils';
-import { decodeStream } from '@/llm/providers/anthropic/decode-stream';
-import { AnthropicBetaProvider } from '@/llm/providers/anthropic/beta-provider';
+} from "@/llm/providers/anthropic/_utils";
+import { AnthropicBetaProvider } from "@/llm/providers/anthropic/beta-provider";
+import { decodeStream } from "@/llm/providers/anthropic/decode-stream";
+import { modelName } from "@/llm/providers/anthropic/model-id";
+import { BaseProvider } from "@/llm/providers/base";
+import { Response } from "@/llm/responses";
+import { ContextResponse } from "@/llm/responses/context-response";
+import { ContextStreamResponse } from "@/llm/responses/context-stream-response";
+import { StreamResponse } from "@/llm/responses/stream-response";
 
 /**
  * Determine whether to use the beta API based on format mode or strict tools.
@@ -66,7 +67,7 @@ function shouldUseBeta(_modelId: AnthropicModelId, _params?: Params): boolean {
  * ```
  */
 export class AnthropicProvider extends BaseProvider {
-  readonly id = 'anthropic' as const;
+  readonly id = "anthropic" as const;
   protected readonly errorMap = ANTHROPIC_ERROR_MAP;
 
   private readonly client: Anthropic;
@@ -126,7 +127,7 @@ export class AnthropicProvider extends BaseProvider {
       args.messages,
       args.tools,
       args.format,
-      args.params
+      args.params,
     );
 
     const anthropicResponse = await this.client.messages.create(requestParams);
@@ -136,12 +137,12 @@ export class AnthropicProvider extends BaseProvider {
     const { assistantMessage, finishReason, usage } = decodeResponse(
       anthropicResponse,
       modelId,
-      includeThoughts
+      includeThoughts,
     );
 
     return new Response({
       raw: anthropicResponse,
-      providerId: 'anthropic',
+      providerId: "anthropic",
       modelId,
       providerModelName: modelName(modelId),
       params: args.params ?? /* v8 ignore next 1 */ {},
@@ -192,7 +193,7 @@ export class AnthropicProvider extends BaseProvider {
       args.messages,
       args.tools,
       args.format,
-      args.params
+      args.params,
     );
 
     const includeThoughts = getIncludeThoughts(args.params);
@@ -202,7 +203,7 @@ export class AnthropicProvider extends BaseProvider {
     const chunkIterator = decodeStream(stream, includeThoughts);
 
     return new StreamResponse({
-      providerId: 'anthropic',
+      providerId: "anthropic",
       modelId,
       providerModelName: modelName(modelId),
       params: args.params ?? /* v8 ignore next 1 */ {},
@@ -258,7 +259,7 @@ export class AnthropicProvider extends BaseProvider {
       args.messages,
       args.tools,
       args.format,
-      args.params
+      args.params,
     );
 
     const anthropicResponse = await this.client.messages.create(requestParams);
@@ -268,12 +269,12 @@ export class AnthropicProvider extends BaseProvider {
     const { assistantMessage, finishReason, usage } = decodeResponse(
       anthropicResponse,
       modelId,
-      includeThoughts
+      includeThoughts,
     );
 
     return new ContextResponse({
       raw: anthropicResponse,
-      providerId: 'anthropic',
+      providerId: "anthropic",
       modelId,
       providerModelName: modelName(modelId),
       params: args.params ?? /* v8 ignore next 1 */ {},
@@ -331,7 +332,7 @@ export class AnthropicProvider extends BaseProvider {
       args.messages,
       args.tools,
       args.format,
-      args.params
+      args.params,
     );
 
     const includeThoughts = getIncludeThoughts(args.params);
@@ -341,7 +342,7 @@ export class AnthropicProvider extends BaseProvider {
     const chunkIterator = decodeStream(stream, includeThoughts);
 
     return new ContextStreamResponse({
-      providerId: 'anthropic',
+      providerId: "anthropic",
       modelId,
       providerModelName: modelName(modelId),
       params: args.params ?? /* v8 ignore next 1 */ {},

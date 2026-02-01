@@ -2,17 +2,17 @@
  * The `Message` types and utility constructors.
  */
 
-import type { Text } from '@/llm/content/text';
-import type { AssistantContentPart, UserContentPart } from '@/llm/content';
-import type { ModelId, ProviderId } from '@/llm/providers';
-import type { Jsonable } from '@/llm/types';
+import type { AssistantContentPart, UserContentPart } from "@/llm/content";
+import type { Text } from "@/llm/content/text";
+import type { ModelId, ProviderId } from "@/llm/providers";
+import type { Jsonable } from "@/llm/types";
 
 /**
  * A system message that sets context and instructions for the conversation.
  */
 export type SystemMessage = {
   /** The role of this message. Always "system". */
-  readonly role: 'system';
+  readonly role: "system";
 
   /** The content of this SystemMessage. */
   readonly content: Text;
@@ -23,7 +23,7 @@ export type SystemMessage = {
  */
 export type UserMessage = {
   /** The role of this message. Always "user". */
-  readonly role: 'user';
+  readonly role: "user";
 
   /** The content of the user message. */
   readonly content: readonly UserContentPart[];
@@ -37,7 +37,7 @@ export type UserMessage = {
  */
 export type AssistantMessage = {
   /** The role of this message. Always "assistant". */
-  readonly role: 'assistant';
+  readonly role: "assistant";
 
   /** The content of the assistant message. */
   readonly content: readonly AssistantContentPart[];
@@ -124,9 +124,9 @@ export type SystemContent = string | Text;
  */
 export function system(content: SystemContent): SystemMessage {
   const promotedContent: Text =
-    typeof content === 'string' ? { type: 'text', text: content } : content;
+    typeof content === "string" ? { type: "text", text: content } : content;
   return {
-    role: 'system',
+    role: "system",
     content: promotedContent,
   };
 }
@@ -142,20 +142,19 @@ export function system(content: SystemContent): SystemMessage {
  */
 export function user(
   content: UserContent,
-  options?: { name?: string | null }
+  options?: { name?: string | null },
 ): UserMessage {
   const contentArray: readonly (string | UserContentPart)[] =
-    typeof content === 'string' || !Array.isArray(content)
+    typeof content === "string" || !Array.isArray(content)
       ? [content as string | UserContentPart]
       : content;
 
-  const promotedContent: readonly UserContentPart[] = contentArray.map(
-    (part) =>
-      typeof part === 'string' ? { type: 'text' as const, text: part } : part
+  const promotedContent: readonly UserContentPart[] = contentArray.map((part) =>
+    typeof part === "string" ? { type: "text" as const, text: part } : part,
   );
 
   return {
-    role: 'user',
+    role: "user",
     content: promotedContent,
     name: options?.name ?? null,
   };
@@ -182,20 +181,20 @@ export function assistant(
     providerModelName?: string | null;
     rawMessage?: Jsonable | null;
     name?: string | null;
-  }
+  },
 ): AssistantMessage {
   const contentArray: readonly (string | AssistantContentPart)[] =
-    typeof content === 'string' || !Array.isArray(content)
+    typeof content === "string" || !Array.isArray(content)
       ? [content as string | AssistantContentPart]
       : content;
 
   const promotedContent: readonly AssistantContentPart[] = contentArray.map(
     (part) =>
-      typeof part === 'string' ? { type: 'text' as const, text: part } : part
+      typeof part === "string" ? { type: "text" as const, text: part } : part,
   );
 
   return {
-    role: 'assistant',
+    role: "assistant",
     content: promotedContent,
     name: options.name ?? null,
     providerId: options.providerId,

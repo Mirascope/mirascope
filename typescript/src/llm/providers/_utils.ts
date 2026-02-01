@@ -2,7 +2,7 @@
  * Shared utilities for provider implementations.
  */
 
-import type { Params } from '@/llm/models';
+import type { Params } from "@/llm/models";
 
 /**
  * Extract includeThoughts setting from params.

@@ -5,9 +5,10 @@
  * misconfiguration.
  */
 
-import { FeatureNotSupportedError } from '@/llm/exceptions';
-import type { Params } from '@/llm/models';
-import type { ProviderId } from '@/llm/providers/provider-id';
+import type { Params } from "@/llm/models";
+import type { ProviderId } from "@/llm/providers/provider-id";
+
+import { FeatureNotSupportedError } from "@/llm/exceptions";
 
 /**
  * Helper for safely accessing and tracking params.
@@ -39,7 +40,7 @@ export class ParamHandler {
     params: Params,
     providerId: ProviderId,
     modelId: string,
-    fn: (handler: ParamHandler) => T
+    fn: (handler: ParamHandler) => T,
   ): T {
     const handler = new ParamHandler(params, providerId, modelId);
     const result = fn(handler);
@@ -70,7 +71,7 @@ export class ParamHandler {
    */
   getOrDefault<K extends keyof Params, D>(
     key: K,
-    defaultValue: D
+    defaultValue: D,
   ): NonNullable<Params[K]> | D {
     this.handled.add(key as string);
     const value = this.params[key];
@@ -92,14 +93,14 @@ export class ParamHandler {
    */
   warnNotImplemented<K extends keyof Params>(
     key: K,
-    featureName: string
+    featureName: string,
   ): void {
     this.handled.add(key as string);
     const value = this.params[key];
     if (value !== undefined && value !== null) {
       console.warn(
         `[mirascope] Warning: ${featureName} is not yet implemented for ${this.providerId} provider. ` +
-          `The '${key as string}' parameter will be ignored.`
+          `The '${key as string}' parameter will be ignored.`,
       );
     }
   }
@@ -115,7 +116,7 @@ export class ParamHandler {
     if (this.params[key] !== undefined) {
       console.warn(
         `[mirascope] Warning: ${message ?? `${this.providerId} does not support the '${key as string}' parameter`}. ` +
-          `The '${key as string}' parameter will be ignored.`
+          `The '${key as string}' parameter will be ignored.`,
       );
     }
   }
@@ -133,7 +134,7 @@ export class ParamHandler {
           `unknown param: ${key}`,
           this.providerId,
           this.modelId,
-          `Unknown parameter '${key}' is not supported by ${this.providerId}`
+          `Unknown parameter '${key}' is not supported by ${this.providerId}`,
         );
       }
     }

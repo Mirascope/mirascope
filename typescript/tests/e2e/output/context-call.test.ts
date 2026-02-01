@@ -6,21 +6,22 @@
  * context-aware tools are implemented.
  */
 
-import { resolve } from 'node:path';
-import { createIt, describe, expect } from '@/tests/e2e/utils';
-import { PROVIDERS } from '@/tests/e2e/providers';
-import { defineCall } from '@/llm/calls';
-import { createContext, type Context } from '@/llm/context';
+import { resolve } from "node:path";
 
-const it = createIt(resolve(__dirname, 'cassettes'), 'context-call');
+import { defineCall } from "@/llm/calls";
+import { createContext, type Context } from "@/llm/context";
+import { PROVIDERS } from "@/tests/e2e/providers";
+import { createIt, describe, expect } from "@/tests/e2e/utils";
+
+const it = createIt(resolve(__dirname, "cassettes"), "context-call");
 
 interface TestDeps {
   multiplier: number;
 }
 
-describe('context call output', () => {
+describe("context call output", () => {
   it.record.each(PROVIDERS)(
-    'decodes text response with context',
+    "decodes text response with context",
     async ({ model }) => {
       const call = defineCall<{ ctx: Context<TestDeps>; value: number }>({
         model,
@@ -32,15 +33,15 @@ describe('context call output', () => {
       const ctx = createContext<TestDeps>({ multiplier: 10 });
       const response = await call(ctx, { value: 42 });
 
-      expect(response.text()).toContain('420');
+      expect(response.text()).toContain("420");
       expect(response.usage).not.toBeNull();
       expect(response.usage?.inputTokens).toBeGreaterThan(0);
       expect(response.usage?.outputTokens).toBeGreaterThan(0);
-    }
+    },
   );
 
   it.record.each(PROVIDERS)(
-    'streams response with context',
+    "streams response with context",
     async ({ model }) => {
       const call = defineCall<{ ctx: Context<TestDeps>; value: number }>({
         model,
@@ -57,8 +58,8 @@ describe('context call output', () => {
         chunks.push(text);
       }
 
-      expect(stream.text()).toContain('420');
+      expect(stream.text()).toContain("420");
       expect(chunks.length).toBeGreaterThan(0);
-    }
+    },
   );
 });

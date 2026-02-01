@@ -2,7 +2,7 @@
  * Anthropic registered LLM models.
  */
 
-import type { AnthropicKnownModels } from '@/llm/providers/anthropic/model-info';
+import type { AnthropicKnownModels } from "@/llm/providers/anthropic/model-info";
 
 /**
  * The Anthropic model IDs registered with Mirascope.
@@ -16,5 +16,5 @@ export type AnthropicModelId = AnthropicKnownModels | (string & {});
  * @returns Provider-specific model ID (e.g. "claude-sonnet-4-5")
  */
 export function modelName(modelId: AnthropicModelId): string {
-  return modelId.replace(/^anthropic-beta\//, '').replace(/^anthropic\//, '');
+  return modelId.replace(/^anthropic-beta\//, "").replace(/^anthropic\//, "");
 }

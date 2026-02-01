@@ -1,4 +1,4 @@
-import type { Jsonable } from '@/llm/types/jsonable';
+import type { Jsonable } from "@/llm/types/jsonable";
 
 /**
  * Tool output content representing the result of a tool call.
@@ -7,7 +7,7 @@ import type { Jsonable } from '@/llm/types/jsonable';
  * The generic type T allows for typed results when the tool output type is known.
  */
 export type ToolOutput<T extends Jsonable = Jsonable> = {
-  readonly type: 'tool_output';
+  readonly type: "tool_output";
 
   /** The ID of the tool call that this output is for. */
   readonly id: string;
@@ -38,9 +38,9 @@ export const ToolOutput = {
     id: string,
     name: string,
     result: T | string,
-    error: Error | null = null
+    error: Error | null = null,
   ): ToolOutput<T> => ({
-    type: 'tool_output',
+    type: "tool_output",
     id,
     name,
     result,
@@ -53,9 +53,9 @@ export const ToolOutput = {
   success: <T extends Jsonable>(
     id: string,
     name: string,
-    result: T
+    result: T,
   ): ToolOutput<T> => ({
-    type: 'tool_output',
+    type: "tool_output",
     id,
     name,
     result,
@@ -66,7 +66,7 @@ export const ToolOutput = {
    * Create a failed ToolOutput.
    */
   failure: (id: string, name: string, error: Error): ToolOutput => ({
-    type: 'tool_output',
+    type: "tool_output",
     id,
     name,
     result: error.message,

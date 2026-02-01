@@ -2,13 +2,14 @@
  * Tests for type-to-JSON-schema conversion.
  */
 
-import { describe, it, expect } from 'vitest';
-import ts from 'typescript';
+import ts from "typescript";
+import { describe, it, expect } from "vitest";
+
 import {
   typeToJsonSchema,
   typeToToolParameterSchema,
   createConversionContext,
-} from './type-to-schema';
+} from "./type-to-schema";
 
 /**
  * Minimal lib.d.ts definitions for testing.
@@ -37,39 +38,39 @@ declare var Array: {
  */
 function getTypeFromSource(
   source: string,
-  typeName: string = 'TestType',
-  options: { noLib?: boolean } = {}
+  typeName: string = "TestType",
+  options: { noLib?: boolean } = {},
 ): { type: ts.Type; checker: ts.TypeChecker } {
-  const fileName = 'test.ts';
-  const libFileName = 'lib.d.ts';
+  const fileName = "test.ts";
+  const libFileName = "lib.d.ts";
 
   const sourceFile = ts.createSourceFile(
     fileName,
     source,
     ts.ScriptTarget.Latest,
-    true
+    true,
   );
 
   const libFile = ts.createSourceFile(
     libFileName,
     LIB_DTS,
     ts.ScriptTarget.Latest,
-    true
+    true,
   );
 
   const host: ts.CompilerHost = {
     getSourceFile: (name) => {
       if (name === fileName) return sourceFile;
-      if (!options.noLib && (name === libFileName || name.includes('lib.')))
+      if (!options.noLib && (name === libFileName || name.includes("lib.")))
         return libFile;
       return undefined;
     },
     getDefaultLibFileName: () => libFileName,
     writeFile: () => {},
-    getCurrentDirectory: () => '/',
+    getCurrentDirectory: () => "/",
     getCanonicalFileName: (f) => f,
     useCaseSensitiveFileNames: () => true,
-    getNewLine: () => '\n',
+    getNewLine: () => "\n",
     fileExists: (name) =>
       name === fileName || (!options.noLib && name === libFileName),
     readFile: () => undefined,
@@ -77,8 +78,8 @@ function getTypeFromSource(
 
   const program = ts.createProgram(
     [fileName],
-    options.noLib ? { noLib: true } : { lib: ['lib.d.ts'], noLib: false },
-    host
+    options.noLib ? { noLib: true } : { lib: ["lib.d.ts"], noLib: false },
+    host,
   );
   const checker = program.getTypeChecker();
 
@@ -97,106 +98,106 @@ function getTypeFromSource(
   return { type: foundType, checker };
 }
 
-describe('typeToJsonSchema', () => {
-  describe('primitive types', () => {
-    it('converts string type', () => {
-      const { type, checker } = getTypeFromSource('type TestType = string;');
+describe("typeToJsonSchema", () => {
+  describe("primitive types", () => {
+    it("converts string type", () => {
+      const { type, checker } = getTypeFromSource("type TestType = string;");
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
-      expect(schema).toEqual({ type: 'string' });
+      expect(schema).toEqual({ type: "string" });
     });
 
-    it('converts number type', () => {
-      const { type, checker } = getTypeFromSource('type TestType = number;');
+    it("converts number type", () => {
+      const { type, checker } = getTypeFromSource("type TestType = number;");
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
-      expect(schema).toEqual({ type: 'number' });
+      expect(schema).toEqual({ type: "number" });
     });
 
-    it('converts boolean type', () => {
-      const { type, checker } = getTypeFromSource('type TestType = boolean;');
+    it("converts boolean type", () => {
+      const { type, checker } = getTypeFromSource("type TestType = boolean;");
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
       // Boolean is a union of true | false in TypeScript
-      expect(schema.type).toBe('boolean');
+      expect(schema.type).toBe("boolean");
     });
   });
 
-  describe('literal types', () => {
-    it('converts string literal type', () => {
+  describe("literal types", () => {
+    it("converts string literal type", () => {
       const { type, checker } = getTypeFromSource('type TestType = "hello";');
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
-      expect(schema).toEqual({ type: 'string', enum: ['hello'] });
+      expect(schema).toEqual({ type: "string", enum: ["hello"] });
     });
 
-    it('converts number literal type', () => {
-      const { type, checker } = getTypeFromSource('type TestType = 42;');
+    it("converts number literal type", () => {
+      const { type, checker } = getTypeFromSource("type TestType = 42;");
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
-      expect(schema).toEqual({ type: 'number', enum: [42] });
+      expect(schema).toEqual({ type: "number", enum: [42] });
     });
 
-    it('converts true literal type', () => {
-      const { type, checker } = getTypeFromSource('type TestType = true;');
+    it("converts true literal type", () => {
+      const { type, checker } = getTypeFromSource("type TestType = true;");
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
-      expect(schema).toEqual({ type: 'boolean', enum: [true] });
+      expect(schema).toEqual({ type: "boolean", enum: [true] });
     });
 
-    it('converts false literal type', () => {
-      const { type, checker } = getTypeFromSource('type TestType = false;');
+    it("converts false literal type", () => {
+      const { type, checker } = getTypeFromSource("type TestType = false;");
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
-      expect(schema).toEqual({ type: 'boolean', enum: [false] });
+      expect(schema).toEqual({ type: "boolean", enum: [false] });
     });
   });
 
-  describe('union types', () => {
-    it('converts string literal union to enum', () => {
+  describe("union types", () => {
+    it("converts string literal union to enum", () => {
       const { type, checker } = getTypeFromSource(
-        'type TestType = "a" | "b" | "c";'
+        'type TestType = "a" | "b" | "c";',
       );
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
-      expect(schema.type).toBe('string');
-      expect(schema.enum).toContain('a');
-      expect(schema.enum).toContain('b');
-      expect(schema.enum).toContain('c');
+      expect(schema.type).toBe("string");
+      expect(schema.enum).toContain("a");
+      expect(schema.enum).toContain("b");
+      expect(schema.enum).toContain("c");
     });
 
-    it('converts number literal union to enum', () => {
-      const { type, checker } = getTypeFromSource('type TestType = 1 | 2 | 3;');
+    it("converts number literal union to enum", () => {
+      const { type, checker } = getTypeFromSource("type TestType = 1 | 2 | 3;");
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
-      expect(schema.type).toBe('number');
+      expect(schema.type).toBe("number");
       expect(schema.enum).toContain(1);
       expect(schema.enum).toContain(2);
       expect(schema.enum).toContain(3);
     });
 
-    it('handles optional type (T | undefined)', () => {
+    it("handles optional type (T | undefined)", () => {
       const { type, checker } = getTypeFromSource(
-        'type TestType = string | undefined;'
+        "type TestType = string | undefined;",
       );
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
-      expect(schema).toEqual({ type: 'string' });
+      expect(schema).toEqual({ type: "string" });
     });
 
-    it('handles object | undefined union', () => {
+    it("handles object | undefined union", () => {
       const { type, checker } = getTypeFromSource(
-        'type TestType = { name: string } | undefined;'
+        "type TestType = { name: string } | undefined;",
       );
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
-      expect(schema.type).toBe('object');
-      expect(schema.properties).toHaveProperty('name');
+      expect(schema.type).toBe("object");
+      expect(schema.properties).toHaveProperty("name");
     });
 
-    it('handles mixed union with oneOf', () => {
+    it("handles mixed union with oneOf", () => {
       const { type, checker } = getTypeFromSource(
-        'type TestType = string | number;'
+        "type TestType = string | number;",
       );
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
@@ -205,129 +206,129 @@ describe('typeToJsonSchema', () => {
     });
   });
 
-  describe('array types', () => {
-    it('converts string array', () => {
-      const { type, checker } = getTypeFromSource('type TestType = string[];');
+  describe("array types", () => {
+    it("converts string array", () => {
+      const { type, checker } = getTypeFromSource("type TestType = string[];");
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
       expect(schema).toEqual({
-        type: 'array',
-        items: { type: 'string' },
+        type: "array",
+        items: { type: "string" },
       });
     });
 
-    it('converts number array', () => {
-      const { type, checker } = getTypeFromSource('type TestType = number[];');
+    it("converts number array", () => {
+      const { type, checker } = getTypeFromSource("type TestType = number[];");
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
       expect(schema).toEqual({
-        type: 'array',
-        items: { type: 'number' },
+        type: "array",
+        items: { type: "number" },
       });
     });
 
-    it('converts Array<T> syntax', () => {
+    it("converts Array<T> syntax", () => {
       const { type, checker } = getTypeFromSource(
-        'type TestType = Array<string>;'
+        "type TestType = Array<string>;",
       );
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
       expect(schema).toEqual({
-        type: 'array',
-        items: { type: 'string' },
+        type: "array",
+        items: { type: "string" },
       });
     });
 
-    it('converts nested array in object', () => {
+    it("converts nested array in object", () => {
       const { type, checker } = getTypeFromSource(
-        'type TestType = { items: string[] };'
+        "type TestType = { items: string[] };",
       );
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
-      expect(schema.type).toBe('object');
+      expect(schema.type).toBe("object");
       expect(schema.properties?.items).toEqual({
-        type: 'array',
-        items: { type: 'string' },
+        type: "array",
+        items: { type: "string" },
       });
     });
   });
 
-  describe('object types', () => {
-    it('converts simple object type', () => {
+  describe("object types", () => {
+    it("converts simple object type", () => {
       const { type, checker } = getTypeFromSource(
-        'type TestType = { name: string; age: number; };'
+        "type TestType = { name: string; age: number; };",
       );
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
-      expect(schema.type).toBe('object');
+      expect(schema.type).toBe("object");
       expect(schema.properties).toEqual({
-        name: { type: 'string' },
-        age: { type: 'number' },
+        name: { type: "string" },
+        age: { type: "number" },
       });
-      expect(schema.required).toContain('name');
-      expect(schema.required).toContain('age');
+      expect(schema.required).toContain("name");
+      expect(schema.required).toContain("age");
     });
 
-    it('handles optional properties', () => {
+    it("handles optional properties", () => {
       const { type, checker } = getTypeFromSource(
-        'type TestType = { name: string; age?: number; };'
+        "type TestType = { name: string; age?: number; };",
       );
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
-      expect(schema.type).toBe('object');
-      expect(schema.properties).toHaveProperty('name');
-      expect(schema.properties).toHaveProperty('age');
-      expect(schema.required).toContain('name');
-      expect(schema.required).not.toContain('age');
+      expect(schema.type).toBe("object");
+      expect(schema.properties).toHaveProperty("name");
+      expect(schema.properties).toHaveProperty("age");
+      expect(schema.required).toContain("name");
+      expect(schema.required).not.toContain("age");
     });
 
-    it('handles nested objects', () => {
+    it("handles nested objects", () => {
       const { type, checker } = getTypeFromSource(
-        'type TestType = { user: { name: string; }; };'
+        "type TestType = { user: { name: string; }; };",
       );
       const ctx = createConversionContext(checker);
       const schema = typeToJsonSchema(type, ctx);
-      expect(schema.type).toBe('object');
+      expect(schema.type).toBe("object");
       expect(schema.properties?.user).toEqual({
-        type: 'object',
-        properties: { name: { type: 'string' } },
-        required: ['name'],
+        type: "object",
+        properties: { name: { type: "string" } },
+        required: ["name"],
       });
     });
   });
 });
 
-describe('typeToJsonSchema - additional types', () => {
-  it('converts null type', () => {
-    const { type, checker } = getTypeFromSource('type TestType = null;');
+describe("typeToJsonSchema - additional types", () => {
+  it("converts null type", () => {
+    const { type, checker } = getTypeFromSource("type TestType = null;");
     const ctx = createConversionContext(checker);
     const schema = typeToJsonSchema(type, ctx);
-    expect(schema).toEqual({ type: 'null' });
+    expect(schema).toEqual({ type: "null" });
   });
 
-  it('converts undefined type', () => {
-    const { type, checker } = getTypeFromSource('type TestType = undefined;');
+  it("converts undefined type", () => {
+    const { type, checker } = getTypeFromSource("type TestType = undefined;");
     const ctx = createConversionContext(checker);
     const schema = typeToJsonSchema(type, ctx);
     expect(schema).toEqual({});
   });
 
-  it('handles intersection of object types', () => {
+  it("handles intersection of object types", () => {
     const { type, checker } = getTypeFromSource(
-      'type A = { name: string }; type B = { age: number }; type TestType = A & B;'
+      "type A = { name: string }; type B = { age: number }; type TestType = A & B;",
     );
     const ctx = createConversionContext(checker);
     const schema = typeToJsonSchema(type, ctx);
-    expect(schema.type).toBe('object');
-    expect(schema.properties).toHaveProperty('name');
-    expect(schema.properties).toHaveProperty('age');
-    expect(schema.required).toContain('name');
-    expect(schema.required).toContain('age');
+    expect(schema.type).toBe("object");
+    expect(schema.properties).toHaveProperty("name");
+    expect(schema.properties).toHaveProperty("age");
+    expect(schema.required).toContain("name");
+    expect(schema.required).toContain("age");
   });
 
-  it('handles intersection of non-object types', () => {
+  it("handles intersection of non-object types", () => {
     const { type, checker } = getTypeFromSource(
-      'type TestType = { name: string } & { age: number } & string;'
+      "type TestType = { name: string } & { age: number } & string;",
     );
     const ctx = createConversionContext(checker);
     const schema = typeToJsonSchema(type, ctx);
@@ -335,52 +336,52 @@ describe('typeToJsonSchema - additional types', () => {
     expect(schema.allOf).toBeDefined();
   });
 
-  it('handles object with no required properties', () => {
+  it("handles object with no required properties", () => {
     const { type, checker } = getTypeFromSource(
-      'type TestType = { name?: string; age?: number };'
+      "type TestType = { name?: string; age?: number };",
     );
     const ctx = createConversionContext(checker);
     const schema = typeToJsonSchema(type, ctx);
-    expect(schema.type).toBe('object');
-    expect(schema.properties).toHaveProperty('name');
-    expect(schema.properties).toHaveProperty('age');
+    expect(schema.type).toBe("object");
+    expect(schema.properties).toHaveProperty("name");
+    expect(schema.properties).toHaveProperty("age");
     expect(schema.required).toBeUndefined();
   });
 
-  it('handles ReadonlyArray<T>', () => {
+  it("handles ReadonlyArray<T>", () => {
     const { type, checker } = getTypeFromSource(
-      'type TestType = ReadonlyArray<number>;'
+      "type TestType = ReadonlyArray<number>;",
     );
     const ctx = createConversionContext(checker);
     const schema = typeToJsonSchema(type, ctx);
     expect(schema).toEqual({
-      type: 'array',
-      items: { type: 'number' },
+      type: "array",
+      items: { type: "number" },
     });
   });
 });
 
-describe('typeToToolParameterSchema', () => {
-  it('converts object type to ToolParameterSchema', () => {
+describe("typeToToolParameterSchema", () => {
+  it("converts object type to ToolParameterSchema", () => {
     const { type, checker } = getTypeFromSource(
-      'type TestType = { city: string; units?: "celsius" | "fahrenheit"; };'
+      'type TestType = { city: string; units?: "celsius" | "fahrenheit"; };',
     );
     const schema = typeToToolParameterSchema(type, checker);
 
-    expect(schema.type).toBe('object');
+    expect(schema.type).toBe("object");
     expect(schema.additionalProperties).toBe(false);
-    expect(schema.properties.city).toEqual({ type: 'string' });
-    expect(schema.properties.units?.type).toBe('string');
-    expect(schema.properties.units?.enum).toContain('celsius');
-    expect(schema.properties.units?.enum).toContain('fahrenheit');
-    expect(schema.required).toContain('city');
-    expect(schema.required).not.toContain('units');
+    expect(schema.properties.city).toEqual({ type: "string" });
+    expect(schema.properties.units?.type).toBe("string");
+    expect(schema.properties.units?.enum).toContain("celsius");
+    expect(schema.properties.units?.enum).toContain("fahrenheit");
+    expect(schema.required).toContain("city");
+    expect(schema.required).not.toContain("units");
   });
 
-  it('throws error for non-object types', () => {
-    const { type, checker } = getTypeFromSource('type TestType = string;');
+  it("throws error for non-object types", () => {
+    const { type, checker } = getTypeFromSource("type TestType = string;");
     expect(() => typeToToolParameterSchema(type, checker)).toThrow(
-      'Tool parameter type must be an object type'
+      "Tool parameter type must be an object type",
     );
   });
 });

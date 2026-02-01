@@ -14,7 +14,7 @@ import type {
   ThoughtChunk,
   ToolCall,
   ToolCallChunk,
-} from '@/llm/content';
+} from "@/llm/content";
 
 /**
  * Stream for text content.
@@ -23,11 +23,11 @@ import type {
  * Accumulates text in partialText as chunks are consumed.
  */
 export class TextStream {
-  readonly type = 'text_stream' as const;
-  readonly contentType = 'text' as const;
+  readonly type = "text_stream" as const;
+  readonly contentType = "text" as const;
 
   /** The accumulated text content as chunks are received. */
-  partialText: string = '';
+  partialText: string = "";
 
   private _chunkIterator: AsyncIterator<TextChunk>;
 
@@ -55,7 +55,7 @@ export class TextStream {
     for await (const _ of this) {
       // Just consume
     }
-    return { type: 'text', text: this.partialText };
+    return { type: "text", text: this.partialText };
   }
 }
 
@@ -66,11 +66,11 @@ export class TextStream {
  * Accumulates thought in partialThought as chunks are consumed.
  */
 export class ThoughtStream {
-  readonly type = 'thought_stream' as const;
-  readonly contentType = 'thought' as const;
+  readonly type = "thought_stream" as const;
+  readonly contentType = "thought" as const;
 
   /** The accumulated thought content as chunks are received. */
-  partialThought: string = '';
+  partialThought: string = "";
 
   private _chunkIterator: AsyncIterator<ThoughtChunk>;
 
@@ -98,7 +98,7 @@ export class ThoughtStream {
     for await (const _ of this) {
       // Just consume
     }
-    return { type: 'thought', thought: this.partialThought };
+    return { type: "thought", thought: this.partialThought };
   }
 }
 
@@ -109,8 +109,8 @@ export class ThoughtStream {
  * Accumulates args in partialArgs as chunks are consumed.
  */
 export class ToolCallStream {
-  readonly type = 'tool_call_stream' as const;
-  readonly contentType = 'tool_call' as const;
+  readonly type = "tool_call_stream" as const;
+  readonly contentType = "tool_call" as const;
 
   /** A unique identifier for this tool call. */
   readonly toolId: string;
@@ -119,14 +119,14 @@ export class ToolCallStream {
   readonly toolName: string;
 
   /** The accumulated tool arguments as chunks are received. */
-  partialArgs: string = '';
+  partialArgs: string = "";
 
   private _chunkIterator: AsyncIterator<ToolCallChunk>;
 
   constructor(
     toolId: string,
     toolName: string,
-    chunkIterator: AsyncIterator<ToolCallChunk>
+    chunkIterator: AsyncIterator<ToolCallChunk>,
   ) {
     this.toolId = toolId;
     this.toolName = toolName;
@@ -154,7 +154,7 @@ export class ToolCallStream {
       // Just consume
     }
     return {
-      type: 'tool_call',
+      type: "tool_call",
       id: this.toolId,
       name: this.toolName,
       args: this.partialArgs,

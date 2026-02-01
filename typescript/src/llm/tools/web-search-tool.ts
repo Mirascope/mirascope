@@ -2,7 +2,7 @@
  * Web search tool for provider-native web search capabilities.
  */
 
-import { ProviderTool } from './provider-tool';
+import { ProviderTool } from "./provider-tool";
 
 /**
  * Web search tool that allows the model to search the internet.
@@ -28,7 +28,7 @@ import { ProviderTool } from './provider-tool';
  */
 export class WebSearchTool extends ProviderTool {
   constructor() {
-    super('web_search');
+    super("web_search");
   }
 }
 

@@ -2,27 +2,28 @@
  * OpenAI Responses provider implementation.
  */
 
-import OpenAI from 'openai';
+import OpenAI from "openai";
 
-import type { Context } from '@/llm/context';
-import type { Format } from '@/llm/formatting';
-import type { Message } from '@/llm/messages';
-import type { Params } from '@/llm/models';
-import { BaseProvider } from '@/llm/providers/base';
-import type { Tools, ContextTools } from '@/llm/tools';
-import { getIncludeThoughts } from '@/llm/providers/_utils';
-import { OPENAI_ERROR_MAP } from '@/llm/providers/openai/_utils/errors';
-import type { OpenAIModelId } from '@/llm/providers/openai/model-id';
-import { modelName } from '@/llm/providers/openai/model-id';
+import type { Context } from "@/llm/context";
+import type { Format } from "@/llm/formatting";
+import type { Message } from "@/llm/messages";
+import type { Params } from "@/llm/models";
+import type { OpenAIModelId } from "@/llm/providers/openai/model-id";
+import type { Tools, ContextTools } from "@/llm/tools";
+
+import { getIncludeThoughts } from "@/llm/providers/_utils";
+import { BaseProvider } from "@/llm/providers/base";
+import { OPENAI_ERROR_MAP } from "@/llm/providers/openai/_utils/errors";
+import { modelName } from "@/llm/providers/openai/model-id";
 import {
   buildRequestParams,
   decodeResponse,
-} from '@/llm/providers/openai/responses/_utils';
-import { decodeStream } from '@/llm/providers/openai/responses/decode-stream';
-import { Response } from '@/llm/responses';
-import { ContextResponse } from '@/llm/responses/context-response';
-import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
-import { StreamResponse } from '@/llm/responses/stream-response';
+} from "@/llm/providers/openai/responses/_utils";
+import { decodeStream } from "@/llm/providers/openai/responses/decode-stream";
+import { Response } from "@/llm/responses";
+import { ContextResponse } from "@/llm/responses/context-response";
+import { ContextStreamResponse } from "@/llm/responses/context-stream-response";
+import { StreamResponse } from "@/llm/responses/stream-response";
 
 /**
  * Provider for the OpenAI Responses API.
@@ -41,7 +42,7 @@ import { StreamResponse } from '@/llm/responses/stream-response';
  * ```
  */
 export class OpenAIResponsesProvider extends BaseProvider {
-  readonly id = 'openai' as const;
+  readonly id = "openai" as const;
   protected readonly errorMap = OPENAI_ERROR_MAP;
 
   private readonly client: OpenAI;
@@ -84,7 +85,7 @@ export class OpenAIResponsesProvider extends BaseProvider {
       modelIdTyped,
       args.messages,
       args.tools,
-      args.params
+      args.params,
     );
 
     const openaiResponse = await this.client.responses.create(requestParams);
@@ -94,14 +95,14 @@ export class OpenAIResponsesProvider extends BaseProvider {
     const { assistantMessage, finishReason, usage } = decodeResponse(
       openaiResponse,
       modelIdTyped,
-      includeThoughts
+      includeThoughts,
     );
 
     return new Response({
       raw: openaiResponse,
-      providerId: 'openai',
+      providerId: "openai",
       modelId: modelIdTyped,
-      providerModelName: modelName(modelIdTyped, 'responses'),
+      providerModelName: modelName(modelIdTyped, "responses"),
       params: args.params ?? /* v8 ignore next 1 */ {},
       tools: args.tools,
       format: args.format,
@@ -135,7 +136,7 @@ export class OpenAIResponsesProvider extends BaseProvider {
       modelIdTyped,
       args.messages,
       args.tools,
-      args.params
+      args.params,
     );
 
     const includeThoughts = getIncludeThoughts(args.params);
@@ -148,9 +149,9 @@ export class OpenAIResponsesProvider extends BaseProvider {
     const chunkIterator = decodeStream(stream, includeThoughts);
 
     return new StreamResponse({
-      providerId: 'openai',
+      providerId: "openai",
       modelId: modelIdTyped,
-      providerModelName: modelName(modelIdTyped, 'responses'),
+      providerModelName: modelName(modelIdTyped, "responses"),
       params: args.params ?? /* v8 ignore next 1 */ {},
       tools: args.tools,
       format: args.format,
@@ -188,7 +189,7 @@ export class OpenAIResponsesProvider extends BaseProvider {
       modelIdTyped,
       args.messages,
       args.tools,
-      args.params
+      args.params,
     );
 
     const openaiResponse = await this.client.responses.create(requestParams);
@@ -198,14 +199,14 @@ export class OpenAIResponsesProvider extends BaseProvider {
     const { assistantMessage, finishReason, usage } = decodeResponse(
       openaiResponse,
       modelIdTyped,
-      includeThoughts
+      includeThoughts,
     );
 
     return new ContextResponse({
       raw: openaiResponse,
-      providerId: 'openai',
+      providerId: "openai",
       modelId: modelIdTyped,
-      providerModelName: modelName(modelIdTyped, 'responses'),
+      providerModelName: modelName(modelIdTyped, "responses"),
       params: args.params ?? /* v8 ignore next 1 */ {},
       tools: args.tools,
       format: args.format,
@@ -245,7 +246,7 @@ export class OpenAIResponsesProvider extends BaseProvider {
       modelIdTyped,
       args.messages,
       args.tools,
-      args.params
+      args.params,
     );
 
     const includeThoughts = getIncludeThoughts(args.params);
@@ -258,9 +259,9 @@ export class OpenAIResponsesProvider extends BaseProvider {
     const chunkIterator = decodeStream(stream, includeThoughts);
 
     return new ContextStreamResponse({
-      providerId: 'openai',
+      providerId: "openai",
       modelId: modelIdTyped,
-      providerModelName: modelName(modelIdTyped, 'responses'),
+      providerModelName: modelName(modelIdTyped, "responses"),
       params: args.params ?? /* v8 ignore next 1 */ {},
       tools: args.tools,
       format: args.format,

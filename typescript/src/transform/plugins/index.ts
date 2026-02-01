@@ -5,10 +5,10 @@
  * build tools, ensuring type information is available during compilation.
  */
 
-export { mirascope as vitePlugin } from './vite';
-export type { MirascopeVitePluginOptions } from './vite';
+export { mirascope as vitePlugin } from "./vite";
+export type { MirascopeVitePluginOptions } from "./vite";
 
-export { mirascope as esbuildPlugin } from './esbuild';
-export type { MirascopeEsbuildPluginOptions } from './esbuild';
+export { mirascope as esbuildPlugin } from "./esbuild";
+export type { MirascopeEsbuildPluginOptions } from "./esbuild";
 
-export type { TransformerConfig } from './types';
+export type { TransformerConfig } from "./types";

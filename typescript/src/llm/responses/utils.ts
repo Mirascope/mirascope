@@ -5,8 +5,9 @@
  * including support for partial JSON parsing during streaming.
  */
 
-import { parse as parsePartialJson } from 'partial-json';
-import type { ZodLike } from '@/llm/tools';
+import { parse as parsePartialJson } from "partial-json";
+
+import type { ZodLike } from "@/llm/tools";
 
 /**
  * Strip preamble text before JSON content.
@@ -21,19 +22,19 @@ import type { ZodLike } from '@/llm/tools';
  */
 function stripJsonPreamble(text: string): string | null {
   // Handle markdown code blocks
-  const codeBlockStart = text.indexOf('```json');
+  const codeBlockStart = text.indexOf("```json");
   if (codeBlockStart > -1) {
     // Skip past the ```json marker
     text = text.slice(codeBlockStart + 7);
     // Also handle closing ``` if present
-    const codeBlockEnd = text.indexOf('```');
+    const codeBlockEnd = text.indexOf("```");
     if (codeBlockEnd > -1) {
       text = text.slice(0, codeBlockEnd);
     }
   }
 
   // Find the start of the JSON object
-  const jsonStart = text.indexOf('{');
+  const jsonStart = text.indexOf("{");
   if (jsonStart === -1) {
     return null;
   }
@@ -78,7 +79,7 @@ export function extractSerializedJson(text: string): string {
       continue;
     }
 
-    if (char === '\\') {
+    if (char === "\\") {
       escaped = true;
       continue;
     }
@@ -89,9 +90,9 @@ export function extractSerializedJson(text: string): string {
     }
 
     if (!inString) {
-      if (char === '{') {
+      if (char === "{") {
         braceCount++;
-      } else if (char === '}') {
+      } else if (char === "}") {
         braceCount--;
         if (braceCount === 0) {
           return stripped.slice(0, i + 1);
@@ -127,7 +128,7 @@ export function extractSerializedJson(text: string): string {
  */
 export function parsePartial<T>(
   jsonText: string,
-  validator?: ZodLike
+  validator?: ZodLike,
 ): T | null {
   const stripped = stripJsonPreamble(jsonText);
   if (!stripped) {

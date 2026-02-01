@@ -8,22 +8,22 @@
  *   bun run codegen
  */
 
-import { generateAnthropicModelInfo } from './anthropic';
-import { generateGoogleModelInfo } from './google';
-import { generateOpenAIModelInfo } from './openai';
+import { generateAnthropicModelInfo } from "./anthropic";
+import { generateGoogleModelInfo } from "./google";
+import { generateOpenAIModelInfo } from "./openai";
 
-console.log('=== Generating TypeScript model info ===\n');
+console.log("=== Generating TypeScript model info ===\n");
 
-console.log('--- Anthropic ---');
+console.log("--- Anthropic ---");
 generateAnthropicModelInfo();
-console.log('');
+console.log("");
 
-console.log('--- Google ---');
+console.log("--- Google ---");
 generateGoogleModelInfo();
-console.log('');
+console.log("");
 
-console.log('--- OpenAI ---');
+console.log("--- OpenAI ---");
 generateOpenAIModelInfo();
-console.log('');
+console.log("");
 
-console.log('=== Done ===');
+console.log("=== Done ===");

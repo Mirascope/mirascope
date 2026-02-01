@@ -7,15 +7,16 @@ import type {
   Text,
   Thought,
   ToolCall,
-} from '@/llm/content';
-import { ParseError } from '@/llm/exceptions';
-import type { DeepPartial, Format } from '@/llm/formatting';
-import type { Message } from '@/llm/messages';
-import type { Model, Params } from '@/llm/models';
-import type { ModelId, ProviderId } from '@/llm/providers';
-import type { FinishReason } from '@/llm/responses/finish-reason';
-import type { Usage } from '@/llm/responses/usage';
-import { extractSerializedJson, parsePartial } from '@/llm/responses/utils';
+} from "@/llm/content";
+import type { DeepPartial, Format } from "@/llm/formatting";
+import type { Message } from "@/llm/messages";
+import type { Model, Params } from "@/llm/models";
+import type { ModelId, ProviderId } from "@/llm/providers";
+import type { FinishReason } from "@/llm/responses/finish-reason";
+import type { Usage } from "@/llm/responses/usage";
+
+import { ParseError } from "@/llm/exceptions";
+import { extractSerializedJson, parsePartial } from "@/llm/responses/utils";
 
 /**
  * Type alias for RootResponse with any format type.
@@ -125,7 +126,7 @@ export abstract class RootResponse<F = unknown> {
    * response.text("")      // Concatenate directly: "HelloWorld"
    * ```
    */
-  text(sep: string = '\n'): string {
+  text(sep: string = "\n"): string {
     return this.texts.map((t) => t.text).join(sep);
   }
 
@@ -150,20 +151,20 @@ export abstract class RootResponse<F = unknown> {
     const parts: string[] = [];
 
     for (const part of this.content) {
-      if (part.type === 'text') {
+      if (part.type === "text") {
         parts.push(part.text);
-      } else if (part.type === 'tool_call') {
+      } else if (part.type === "tool_call") {
         parts.push(`**ToolCall (${part.name}):** ${part.args}`);
-      } else if (part.type === 'thought') {
+      } else if (part.type === "thought") {
         const indented = part.thought
-          .split('\n')
+          .split("\n")
           .map((line) => `  ${line}`)
-          .join('\n');
+          .join("\n");
         parts.push(`**Thinking:**\n${indented}`);
       }
     }
 
-    return parts.join('\n\n');
+    return parts.join("\n\n");
   }
 
   /**
@@ -186,7 +187,7 @@ export abstract class RootResponse<F = unknown> {
    */
   get model(): Promise<Model> {
     return (async () => {
-      const { Model: ModelClass } = await import('@/llm/models/model');
+      const { Model: ModelClass } = await import("@/llm/models/model");
       return new ModelClass(this.modelId, this.params);
     })();
   }
@@ -247,7 +248,7 @@ export abstract class RootResponse<F = unknown> {
     if (this.format.outputParser) {
       if (options?.partial) {
         throw new Error(
-          'parse({ partial: true }) is not supported with OutputParser'
+          "parse({ partial: true }) is not supported with OutputParser",
         );
       }
       try {
@@ -259,13 +260,13 @@ export abstract class RootResponse<F = unknown> {
     }
 
     // Get text content
-    const textContent = this.text('');
+    const textContent = this.text("");
 
     // Partial parsing for streaming
     if (options?.partial) {
       return parsePartial<DeepPartial<F>>(
         textContent,
-        this.format.validator ?? undefined
+        this.format.validator ?? undefined,
       );
     }
 

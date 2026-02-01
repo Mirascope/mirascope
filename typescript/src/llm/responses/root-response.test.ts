@@ -2,23 +2,25 @@
  * Tests for RootResponse.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
+import { z } from "zod";
+
 import type {
   AssistantContentPart,
   Text,
   Thought,
   ToolCall,
-} from '@/llm/content';
-import type { Message } from '@/llm/messages';
-import type { Params } from '@/llm/models';
-import type { ModelId, ProviderId } from '@/llm/providers';
-import type { Format, FormattingMode } from '@/llm/formatting';
-import { FORMAT_TYPE, defineOutputParser } from '@/llm/formatting';
-import type { FinishReason } from '@/llm/responses/finish-reason';
-import type { Usage } from '@/llm/responses/usage';
-import { RootResponse } from '@/llm/responses/root-response';
-import { ParseError } from '@/llm/exceptions';
-import { z } from 'zod';
+} from "@/llm/content";
+import type { Format, FormattingMode } from "@/llm/formatting";
+import type { Message } from "@/llm/messages";
+import type { Params } from "@/llm/models";
+import type { ModelId, ProviderId } from "@/llm/providers";
+import type { FinishReason } from "@/llm/responses/finish-reason";
+import type { Usage } from "@/llm/responses/usage";
+
+import { ParseError } from "@/llm/exceptions";
+import { FORMAT_TYPE, defineOutputParser } from "@/llm/formatting";
+import { RootResponse } from "@/llm/responses/root-response";
 
 /** Helper to create mock Format objects for testing */
 function createMockFormat(
@@ -26,24 +28,24 @@ function createMockFormat(
     mode?: FormattingMode;
     validator?: z.ZodType | null;
     outputParser?: ((resp: RootResponse) => unknown) | null;
-  } = {}
+  } = {},
 ): Format {
-  const { mode = 'json', validator = null, outputParser = null } = options;
+  const { mode = "json", validator = null, outputParser = null } = options;
 
   // If outputParser is provided, wrap it in a proper OutputParser
   const wrappedOutputParser = outputParser
     ? defineOutputParser({
-        formattingInstructions: 'test',
+        formattingInstructions: "test",
         parser: outputParser,
       })
     : null;
 
   return {
     __formatType: FORMAT_TYPE,
-    name: 'TestFormat',
+    name: "TestFormat",
     description: null,
     schema: {
-      type: 'object',
+      type: "object",
       properties: {},
       required: [],
       additionalProperties: false,
@@ -53,10 +55,10 @@ function createMockFormat(
     outputParser: wrappedOutputParser,
     formattingInstructions: null,
     createToolSchema: () => ({
-      name: 'test',
-      description: 'test',
+      name: "test",
+      description: "test",
       parameters: {
-        type: 'object',
+        type: "object",
         properties: {},
         required: [],
         additionalProperties: false,
@@ -83,141 +85,141 @@ class TestResponse extends RootResponse {
 
   constructor(
     content: readonly AssistantContentPart[],
-    format: Format | null = null
+    format: Format | null = null,
   ) {
     super();
     this.raw = {};
-    this.providerId = 'anthropic';
-    this.modelId = 'anthropic/claude-sonnet-4-20250514';
-    this.providerModelName = 'claude-sonnet-4-20250514';
+    this.providerId = "anthropic";
+    this.modelId = "anthropic/claude-sonnet-4-20250514";
+    this.providerModelName = "claude-sonnet-4-20250514";
     this.params = {};
     this.messages = [];
     this.content = content;
-    this.texts = content.filter((c): c is Text => c.type === 'text');
+    this.texts = content.filter((c): c is Text => c.type === "text");
     this.toolCalls = content.filter(
-      (c): c is ToolCall => c.type === 'tool_call'
+      (c): c is ToolCall => c.type === "tool_call",
     );
-    this.thoughts = content.filter((c): c is Thought => c.type === 'thought');
+    this.thoughts = content.filter((c): c is Thought => c.type === "thought");
     this.finishReason = null;
     this.usage = null;
     this.format = format;
   }
 }
 
-describe('RootResponse', () => {
-  describe('text()', () => {
-    it('returns empty string when no text content', () => {
+describe("RootResponse", () => {
+  describe("text()", () => {
+    it("returns empty string when no text content", () => {
       const response = new TestResponse([]);
-      expect(response.text()).toBe('');
+      expect(response.text()).toBe("");
     });
 
-    it('returns single text content', () => {
-      const response = new TestResponse([{ type: 'text', text: 'Hello!' }]);
-      expect(response.text()).toBe('Hello!');
+    it("returns single text content", () => {
+      const response = new TestResponse([{ type: "text", text: "Hello!" }]);
+      expect(response.text()).toBe("Hello!");
     });
 
-    it('joins multiple text parts with newline by default', () => {
+    it("joins multiple text parts with newline by default", () => {
       const response = new TestResponse([
-        { type: 'text', text: 'Hello' },
-        { type: 'text', text: 'World' },
+        { type: "text", text: "Hello" },
+        { type: "text", text: "World" },
       ]);
-      expect(response.text()).toBe('Hello\nWorld');
+      expect(response.text()).toBe("Hello\nWorld");
     });
 
-    it('joins with custom separator', () => {
+    it("joins with custom separator", () => {
       const response = new TestResponse([
-        { type: 'text', text: 'Hello' },
-        { type: 'text', text: 'World' },
+        { type: "text", text: "Hello" },
+        { type: "text", text: "World" },
       ]);
-      expect(response.text(' ')).toBe('Hello World');
-      expect(response.text('')).toBe('HelloWorld');
+      expect(response.text(" ")).toBe("Hello World");
+      expect(response.text("")).toBe("HelloWorld");
     });
   });
 
-  describe('pretty()', () => {
-    it('returns empty string for empty content', () => {
+  describe("pretty()", () => {
+    it("returns empty string for empty content", () => {
       const response = new TestResponse([]);
-      expect(response.pretty()).toBe('');
+      expect(response.pretty()).toBe("");
     });
 
-    it('formats text content', () => {
-      const response = new TestResponse([{ type: 'text', text: 'Hello!' }]);
-      expect(response.pretty()).toBe('Hello!');
+    it("formats text content", () => {
+      const response = new TestResponse([{ type: "text", text: "Hello!" }]);
+      expect(response.pretty()).toBe("Hello!");
     });
 
-    it('formats tool call content', () => {
+    it("formats tool call content", () => {
       const response = new TestResponse([
         {
-          type: 'tool_call',
-          id: 'call_1',
-          name: 'calculator',
+          type: "tool_call",
+          id: "call_1",
+          name: "calculator",
           args: '{"a": 1, "b": 2}',
         },
       ]);
       expect(response.pretty()).toBe(
-        '**ToolCall (calculator):** {"a": 1, "b": 2}'
+        '**ToolCall (calculator):** {"a": 1, "b": 2}',
       );
     });
 
-    it('formats thought content with indentation', () => {
+    it("formats thought content with indentation", () => {
       const response = new TestResponse([
         {
-          type: 'thought',
-          thought: 'Let me think about this.\nIt seems complex.',
+          type: "thought",
+          thought: "Let me think about this.\nIt seems complex.",
         },
       ]);
       expect(response.pretty()).toBe(
-        '**Thinking:**\n  Let me think about this.\n  It seems complex.'
+        "**Thinking:**\n  Let me think about this.\n  It seems complex.",
       );
     });
 
-    it('formats mixed content with double newlines', () => {
+    it("formats mixed content with double newlines", () => {
       const response = new TestResponse([
-        { type: 'thought', thought: 'Thinking first' },
+        { type: "thought", thought: "Thinking first" },
         {
-          type: 'tool_call',
-          id: 'call_1',
-          name: 'calc',
+          type: "tool_call",
+          id: "call_1",
+          name: "calc",
           args: '{"op": "add"}',
         },
-        { type: 'text', text: 'Here is my answer!' },
+        { type: "text", text: "Here is my answer!" },
       ]);
 
       const expected = [
-        '**Thinking:**\n  Thinking first',
+        "**Thinking:**\n  Thinking first",
         '**ToolCall (calc):** {"op": "add"}',
-        'Here is my answer!',
-      ].join('\n\n');
+        "Here is my answer!",
+      ].join("\n\n");
 
       expect(response.pretty()).toBe(expected);
     });
   });
 
-  describe('parse()', () => {
-    it('returns null when no format is specified', () => {
-      const response = new TestResponse([{ type: 'text', text: 'Hello!' }]);
+  describe("parse()", () => {
+    it("returns null when no format is specified", () => {
+      const response = new TestResponse([{ type: "text", text: "Hello!" }]);
       expect(response.parse()).toBeNull();
     });
 
-    it('parses JSON response with format', () => {
+    it("parses JSON response with format", () => {
       const format = createMockFormat();
       const response = new TestResponse(
-        [{ type: 'text', text: '{"title": "Test Book"}' }],
-        format
+        [{ type: "text", text: '{"title": "Test Book"}' }],
+        format,
       );
-      expect(response.parse()).toEqual({ title: 'Test Book' });
+      expect(response.parse()).toEqual({ title: "Test Book" });
     });
 
-    it('parses JSON with surrounding text', () => {
+    it("parses JSON with surrounding text", () => {
       const format = createMockFormat();
       const response = new TestResponse(
-        [{ type: 'text', text: 'Here is the data: {"name": "Alice"}' }],
-        format
+        [{ type: "text", text: 'Here is the data: {"name": "Alice"}' }],
+        format,
       );
-      expect(response.parse()).toEqual({ name: 'Alice' });
+      expect(response.parse()).toEqual({ name: "Alice" });
     });
 
-    it('validates with Zod when validator is provided', () => {
+    it("validates with Zod when validator is provided", () => {
       const BookSchema = z.object({
         title: z.string(),
         author: z.string(),
@@ -226,114 +228,114 @@ describe('RootResponse', () => {
       const response = new TestResponse(
         [
           {
-            type: 'text',
+            type: "text",
             text: '{"title": "1984", "author": "George Orwell"}',
           },
         ],
-        format
+        format,
       );
       expect(response.parse()).toEqual({
-        title: '1984',
-        author: 'George Orwell',
+        title: "1984",
+        author: "George Orwell",
       });
     });
 
-    it('throws ParseError when validation fails', () => {
+    it("throws ParseError when validation fails", () => {
       const BookSchema = z.object({
         title: z.string(),
         author: z.string(),
       });
       const format = createMockFormat({ validator: BookSchema });
       const response = new TestResponse(
-        [{ type: 'text', text: '{"title": "1984"}' }], // missing author
-        format
+        [{ type: "text", text: '{"title": "1984"}' }], // missing author
+        format,
       );
       expect(() => response.parse()).toThrow(ParseError);
-      expect(() => response.parse()).toThrow('Validation failed');
+      expect(() => response.parse()).toThrow("Validation failed");
     });
 
-    it('throws ParseError when JSON is invalid', () => {
+    it("throws ParseError when JSON is invalid", () => {
       const format = createMockFormat();
       const response = new TestResponse(
-        [{ type: 'text', text: 'not valid json' }],
-        format
+        [{ type: "text", text: "not valid json" }],
+        format,
       );
       expect(() => response.parse()).toThrow(ParseError);
     });
 
-    it('uses OutputParser when provided', () => {
+    it("uses OutputParser when provided", () => {
       const format = createMockFormat({
-        mode: 'parser',
+        mode: "parser",
         outputParser: (resp: RootResponse) => ({
           custom: resp.text().toUpperCase(),
         }),
       });
       const response = new TestResponse(
-        [{ type: 'text', text: 'hello world' }],
-        format
+        [{ type: "text", text: "hello world" }],
+        format,
       );
-      expect(response.parse()).toEqual({ custom: 'HELLO WORLD' });
+      expect(response.parse()).toEqual({ custom: "HELLO WORLD" });
     });
 
-    it('throws when OutputParser fails', () => {
+    it("throws when OutputParser fails", () => {
       const format = createMockFormat({
-        mode: 'parser',
+        mode: "parser",
         outputParser: () => {
-          throw new Error('Parser error');
+          throw new Error("Parser error");
         },
       });
       const response = new TestResponse(
-        [{ type: 'text', text: 'hello' }],
-        format
+        [{ type: "text", text: "hello" }],
+        format,
       );
       expect(() => response.parse()).toThrow(ParseError);
-      expect(() => response.parse()).toThrow('OutputParser failed');
+      expect(() => response.parse()).toThrow("OutputParser failed");
     });
 
-    it('throws when OutputParser fails with non-Error', () => {
+    it("throws when OutputParser fails with non-Error", () => {
       const format = createMockFormat({
-        mode: 'parser',
+        mode: "parser",
         outputParser: () => {
-          throw 'string error'; // eslint-disable-line @typescript-eslint/only-throw-error
+          throw "string error"; // eslint-disable-line @typescript-eslint/only-throw-error
         },
       });
       const response = new TestResponse(
-        [{ type: 'text', text: 'hello' }],
-        format
+        [{ type: "text", text: "hello" }],
+        format,
       );
       expect(() => response.parse()).toThrow(ParseError);
     });
 
-    it('throws when partial parsing with OutputParser', () => {
+    it("throws when partial parsing with OutputParser", () => {
       const format = createMockFormat({
-        mode: 'parser',
+        mode: "parser",
         outputParser: () => ({}),
       });
       const response = new TestResponse(
-        [{ type: 'text', text: 'hello' }],
-        format
+        [{ type: "text", text: "hello" }],
+        format,
       );
       expect(() => response.parse({ partial: true })).toThrow(
-        'parse({ partial: true }) is not supported with OutputParser'
+        "parse({ partial: true }) is not supported with OutputParser",
       );
     });
 
-    it('returns partial object when partial: true', () => {
+    it("returns partial object when partial: true", () => {
       const format = createMockFormat();
       // Incomplete JSON
       const response = new TestResponse(
-        [{ type: 'text', text: '{"title": "Test' }],
-        format
+        [{ type: "text", text: '{"title": "Test' }],
+        format,
       );
       const partial = response.parse({ partial: true });
-      expect(partial).toEqual({ title: 'Test' });
+      expect(partial).toEqual({ title: "Test" });
     });
 
-    it('handles non-Error exceptions during JSON parsing', () => {
+    it("handles non-Error exceptions during JSON parsing", () => {
       const format = createMockFormat();
       const response = new TestResponse(
-        [{ type: 'text', text: 'no json here at all' }],
-        format
+        [{ type: "text", text: "no json here at all" }],
+        format,
       );
       expect(() => response.parse()).toThrow(ParseError);
     });

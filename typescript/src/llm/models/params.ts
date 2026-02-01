@@ -2,7 +2,7 @@
  * Base parameters for LLM providers.
  */
 
-import type { ThinkingConfig } from '@/llm/models/thinking-config';
+import type { ThinkingConfig } from "@/llm/models/thinking-config";
 
 /**
  * Common parameters shared across LLM providers.

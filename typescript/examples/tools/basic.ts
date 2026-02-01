@@ -1,16 +1,16 @@
-import { llm } from 'mirascope';
+import { llm } from "mirascope";
 
 const sqrtTool = llm.defineTool<{ number: number }>({
-  name: 'sqrt_tool',
-  description: 'Computes the square root of a number',
+  name: "sqrt_tool",
+  description: "Computes the square root of a number",
   fieldDefinitions: {
-    number: 'The number to compute the square root of',
+    number: "The number to compute the square root of",
   },
   tool: ({ number }) => Math.sqrt(number),
 });
 
 const mathAssistant = llm.defineCall<{ query: string }>({
-  model: 'openai/gpt-4o-mini',
+  model: "openai/gpt-4o-mini",
   tools: [sqrtTool],
   template: ({ query }) => query,
 });
