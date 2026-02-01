@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegistryRouteImport } from './routes/registry'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as OrganizationsRouteImport } from './routes/organizations'
@@ -53,6 +54,11 @@ import { Route as ApiV2SplatRouteImport } from './routes/api.v2.$'
 import { Route as RouterV2ProviderSplatRouteImport } from './routes/router.v2.$provider.$'
 import { Route as CloudTraceViewTraceIdSpanIdRouteImport } from './routes/cloud/trace-view.$traceId.$spanId'
 
+const RegistryRoute = RegistryRouteImport.update({
+  id: '/registry',
+  path: '/registry',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -280,6 +286,7 @@ export interface FileRoutesByFullPath {
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/registry': typeof RegistryRoute
   '/api/analytics': typeof ApiAnalyticsRoute
   '/auth/github': typeof AuthGithubRouteWithChildren
   '/auth/google': typeof AuthGoogleRouteWithChildren
@@ -323,6 +330,7 @@ export interface FileRoutesByTo {
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/registry': typeof RegistryRoute
   '/api/analytics': typeof ApiAnalyticsRoute
   '/auth/github': typeof AuthGithubRouteWithChildren
   '/auth/google': typeof AuthGoogleRouteWithChildren
@@ -368,6 +376,7 @@ export interface FileRoutesById {
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/registry': typeof RegistryRoute
   '/api/analytics': typeof ApiAnalyticsRoute
   '/auth/github': typeof AuthGithubRouteWithChildren
   '/auth/google': typeof AuthGoogleRouteWithChildren
@@ -415,6 +424,7 @@ export interface FileRouteTypes {
     | '/organizations'
     | '/pricing'
     | '/privacy'
+    | '/registry'
     | '/api/analytics'
     | '/auth/github'
     | '/auth/google'
@@ -458,6 +468,7 @@ export interface FileRouteTypes {
     | '/organizations'
     | '/pricing'
     | '/privacy'
+    | '/registry'
     | '/api/analytics'
     | '/auth/github'
     | '/auth/google'
@@ -502,6 +513,7 @@ export interface FileRouteTypes {
     | '/organizations'
     | '/pricing'
     | '/privacy'
+    | '/registry'
     | '/api/analytics'
     | '/auth/github'
     | '/auth/google'
@@ -548,6 +560,7 @@ export interface RootRouteChildren {
   OrganizationsRoute: typeof OrganizationsRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
+  RegistryRoute: typeof RegistryRoute
   ApiAnalyticsRoute: typeof ApiAnalyticsRoute
   AuthGithubRoute: typeof AuthGithubRouteWithChildren
   AuthGoogleRoute: typeof AuthGoogleRouteWithChildren
@@ -563,6 +576,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/registry': {
+      id: '/registry'
+      path: '/registry'
+      fullPath: '/registry'
+      preLoaderRoute: typeof RegistryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
@@ -979,6 +999,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrganizationsRoute: OrganizationsRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
+  RegistryRoute: RegistryRoute,
   ApiAnalyticsRoute: ApiAnalyticsRoute,
   AuthGithubRoute: AuthGithubRouteWithChildren,
   AuthGoogleRoute: AuthGoogleRouteWithChildren,
