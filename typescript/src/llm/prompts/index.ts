@@ -1,5 +1,8 @@
 /**
  * Prompt utilities for defining reusable LLM prompts.
+ *
+ * The unified `definePrompt` function automatically detects whether a prompt
+ * is context-aware based on whether the template type T includes `ctx: Context<DepsT>`.
  */
 
 export {
@@ -8,12 +11,13 @@ export {
   type Prompt,
   type PromptArgs,
   type TemplateFunc,
-} from '@/llm/prompts/prompt';
-
-export {
-  defineContextPrompt,
+  // Context-aware types (now in unified prompt.ts)
   type ContextMessageTemplate,
   type ContextPrompt,
   type ContextPromptArgs,
   type ContextTemplateFunc,
-} from '@/llm/prompts/context-prompt';
+  // Type utilities
+  type ExtractDeps,
+  type ExtractVars,
+  type UnifiedPrompt,
+} from '@/llm/prompts/prompt';

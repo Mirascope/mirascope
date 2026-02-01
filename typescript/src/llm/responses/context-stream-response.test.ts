@@ -4,7 +4,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import type { ToolCall } from '@/llm/content/tool-call';
-import type { Context } from '@/llm/context';
+import { createContext, type Context } from '@/llm/context';
 import { user } from '@/llm/messages';
 import { ContextStreamResponse } from '@/llm/responses/context-stream-response';
 import {
@@ -145,7 +145,7 @@ describe('ContextStreamResponse', () => {
       // Consume stream first
       await response.consume();
 
-      const ctx: Context<TestDeps> = { deps: { userId: 'user-123' } };
+      const ctx = createContext<TestDeps>({ userId: 'user-123' });
       const outputs = await response.executeTools(ctx);
 
       expect(outputs).toHaveLength(1);
@@ -214,7 +214,7 @@ describe('ContextStreamResponse', () => {
       // Consume stream first
       await response.consume();
 
-      const ctx: Context<TestDeps> = { deps: { userId: '10' } };
+      const ctx = createContext<TestDeps>({ userId: '10' });
       const outputs = await response.executeTools(ctx);
 
       expect(outputs).toHaveLength(2);

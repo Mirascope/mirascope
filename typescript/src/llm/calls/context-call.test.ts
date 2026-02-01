@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createContext, type Context } from '@/llm/context';
-import { defineContextCall } from '@/llm/calls/context-call';
+import { defineCall } from '@/llm/calls/call';
 import { Model } from '@/llm/models';
 import { system, user } from '@/llm/messages';
 
@@ -9,10 +9,13 @@ interface TestDeps {
   userName: string;
 }
 
-describe('defineContextCall', () => {
+describe('defineCall (context-aware)', () => {
   describe('with variables', () => {
     it('creates a call with messages method', () => {
-      const greetUser = defineContextCall<{ greeting: string }, TestDeps>({
+      const greetUser = defineCall<{
+        ctx: Context<TestDeps>;
+        greeting: string;
+      }>({
         model: 'anthropic/claude-sonnet-4-20250514',
         template: ({ ctx, greeting }) =>
           `${greeting}, ${ctx.deps.userName}! (ID: ${ctx.deps.userId})`,
@@ -29,7 +32,7 @@ describe('defineContextCall', () => {
     });
 
     it('stores the model', () => {
-      const call = defineContextCall<{ name: string }, TestDeps>({
+      const call = defineCall<{ ctx: Context<TestDeps>; name: string }>({
         model: 'anthropic/claude-sonnet-4-20250514',
         template: ({ ctx, name }) => `Hello, ${name} from ${ctx.deps.userId}!`,
       });
@@ -46,7 +49,7 @@ describe('defineContextCall', () => {
         ctx: Context<TestDeps>;
         name: string;
       }) => `Hello, ${name} from ${ctx.deps.userId}!`;
-      const call = defineContextCall<{ name: string }, TestDeps>({
+      const call = defineCall<{ ctx: Context<TestDeps>; name: string }>({
         model: 'anthropic/claude-sonnet-4-20250514',
         template,
       });
@@ -55,7 +58,7 @@ describe('defineContextCall', () => {
     });
 
     it('exposes the underlying prompt', () => {
-      const call = defineContextCall<{ name: string }, TestDeps>({
+      const call = defineCall<{ ctx: Context<TestDeps>; name: string }>({
         model: 'anthropic/claude-sonnet-4-20250514',
         template: ({ ctx, name }) => `Hello, ${name} from ${ctx.deps.userId}!`,
       });
@@ -71,7 +74,10 @@ describe('defineContextCall', () => {
         systemPrompt: string;
       }
 
-      const chatBot = defineContextCall<{ question: string }, SystemDeps>({
+      const chatBot = defineCall<{
+        ctx: Context<SystemDeps>;
+        question: string;
+      }>({
         model: 'anthropic/claude-sonnet-4-20250514',
         template: ({ ctx, question }) => [
           system(ctx.deps.systemPrompt),
@@ -98,7 +104,7 @@ describe('defineContextCall', () => {
       const model = new Model('anthropic/claude-sonnet-4-20250514', {
         temperature: 0.7,
       });
-      const call = defineContextCall<{ topic: string }, TestDeps>({
+      const call = defineCall<{ ctx: Context<TestDeps>; topic: string }>({
         model,
         template: ({ ctx, topic }) =>
           `Write about ${topic} for ${ctx.deps.userName}`,
@@ -109,7 +115,7 @@ describe('defineContextCall', () => {
     });
 
     it('accepts params as top-level properties', () => {
-      const call = defineContextCall<{ query: string }, TestDeps>({
+      const call = defineCall<{ ctx: Context<TestDeps>; query: string }>({
         model: 'anthropic/claude-sonnet-4-20250514',
         temperature: 0,
         maxTokens: 100,
@@ -123,7 +129,7 @@ describe('defineContextCall', () => {
       const model = new Model('anthropic/claude-sonnet-4-20250514');
 
       expect(() =>
-        defineContextCall<{ query: string }, TestDeps>({
+        defineCall<{ ctx: Context<TestDeps>; query: string }>({
           model,
           temperature: 0.5,
           template: ({ ctx, query }) => `${ctx.deps.userName}: ${query}`,
@@ -134,7 +140,7 @@ describe('defineContextCall', () => {
     });
 
     it('has a stream method', () => {
-      const call = defineContextCall<{ greeting: string }, TestDeps>({
+      const call = defineCall<{ ctx: Context<TestDeps>; greeting: string }>({
         model: 'anthropic/claude-sonnet-4-20250514',
         template: ({ ctx, greeting }) => `${greeting}, ${ctx.deps.userName}!`,
       });
@@ -143,7 +149,7 @@ describe('defineContextCall', () => {
     });
 
     it('has a call method', () => {
-      const call = defineContextCall<{ greeting: string }, TestDeps>({
+      const call = defineCall<{ ctx: Context<TestDeps>; greeting: string }>({
         model: 'anthropic/claude-sonnet-4-20250514',
         template: ({ ctx, greeting }) => `${greeting}, ${ctx.deps.userName}!`,
       });
@@ -154,7 +160,7 @@ describe('defineContextCall', () => {
 
   describe('without variables', () => {
     it('creates a call that can be called without vars', () => {
-      const sayHello = defineContextCall<TestDeps>({
+      const sayHello = defineCall<{ ctx: Context<TestDeps> }>({
         model: 'anthropic/claude-sonnet-4-20250514',
         template: ({ ctx }) => `Hello, ${ctx.deps.userName}!`,
       });
@@ -175,7 +181,7 @@ describe('defineContextCall', () => {
         defaultQuestion: string;
       }
 
-      const call = defineContextCall<SystemDeps>({
+      const call = defineCall<{ ctx: Context<SystemDeps> }>({
         model: 'anthropic/claude-sonnet-4-20250514',
         template: ({ ctx }) => [
           system(ctx.deps.systemPrompt),
@@ -193,7 +199,7 @@ describe('defineContextCall', () => {
     });
 
     it('accepts params without variables', () => {
-      const call = defineContextCall<TestDeps>({
+      const call = defineCall<{ ctx: Context<TestDeps> }>({
         model: 'anthropic/claude-sonnet-4-20250514',
         temperature: 0.5,
         template: ({ ctx }) => `Hello, ${ctx.deps.userName}!`,
@@ -203,7 +209,7 @@ describe('defineContextCall', () => {
     });
 
     it('has a stream method', () => {
-      const call = defineContextCall<TestDeps>({
+      const call = defineCall<{ ctx: Context<TestDeps> }>({
         model: 'anthropic/claude-sonnet-4-20250514',
         template: ({ ctx }) => `Hello, ${ctx.deps.userName}!`,
       });
@@ -212,7 +218,7 @@ describe('defineContextCall', () => {
     });
 
     it('has a call method', () => {
-      const call = defineContextCall<TestDeps>({
+      const call = defineCall<{ ctx: Context<TestDeps> }>({
         model: 'anthropic/claude-sonnet-4-20250514',
         template: ({ ctx }) => `Hello, ${ctx.deps.userName}!`,
       });

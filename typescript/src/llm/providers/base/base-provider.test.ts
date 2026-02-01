@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { type Context } from '@/llm/context';
+import { createContext, type Context } from '@/llm/context';
 import { user, type Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import type { ProviderId } from '@/llm/providers/provider-id';
@@ -179,7 +179,7 @@ describe('BaseProvider', () => {
 
       await expect(
         provider.contextCall({
-          ctx: { deps: {} },
+          ctx: createContext({}),
           modelId: 'test-model',
           messages: [user('Hi')],
         })
@@ -194,7 +194,7 @@ describe('BaseProvider', () => {
 
       await expect(
         provider.contextStream({
-          ctx: { deps: {} },
+          ctx: createContext({}),
           modelId: 'test-model',
           messages: [user('Hi')],
         })

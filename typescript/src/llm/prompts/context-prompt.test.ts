@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createContext, type Context } from '@/llm/context';
-import { defineContextPrompt } from '@/llm/prompts/context-prompt';
+import { definePrompt } from '@/llm/prompts/prompt';
 import { system, user } from '@/llm/messages';
 
 interface TestDeps {
@@ -8,10 +8,13 @@ interface TestDeps {
   userName: string;
 }
 
-describe('defineContextPrompt', () => {
+describe('definePrompt (context-aware)', () => {
   describe('with variables', () => {
     it('creates a prompt with messages method', () => {
-      const greetUser = defineContextPrompt<{ greeting: string }, TestDeps>({
+      const greetUser = definePrompt<{
+        ctx: Context<TestDeps>;
+        greeting: string;
+      }>({
         template: ({ ctx, greeting }) =>
           `${greeting}, ${ctx.deps.userName}! (ID: ${ctx.deps.userId})`,
       });
@@ -34,7 +37,7 @@ describe('defineContextPrompt', () => {
         ctx: Context<TestDeps>;
         name: string;
       }) => `Hello, ${name} from ${ctx.deps.userId}!`;
-      const greet = defineContextPrompt<{ name: string }, TestDeps>({
+      const greet = definePrompt<{ ctx: Context<TestDeps>; name: string }>({
         template,
       });
 
@@ -42,7 +45,10 @@ describe('defineContextPrompt', () => {
     });
 
     it('has a stream method', () => {
-      const prompt = defineContextPrompt<{ greeting: string }, TestDeps>({
+      const prompt = definePrompt<{
+        ctx: Context<TestDeps>;
+        greeting: string;
+      }>({
         template: ({ ctx, greeting }) => `${greeting}, ${ctx.deps.userName}!`,
       });
 
@@ -50,7 +56,10 @@ describe('defineContextPrompt', () => {
     });
 
     it('has a call method', () => {
-      const prompt = defineContextPrompt<{ greeting: string }, TestDeps>({
+      const prompt = definePrompt<{
+        ctx: Context<TestDeps>;
+        greeting: string;
+      }>({
         template: ({ ctx, greeting }) => `${greeting}, ${ctx.deps.userName}!`,
       });
 
@@ -62,7 +71,10 @@ describe('defineContextPrompt', () => {
         systemPrompt: string;
       }
 
-      const chatBot = defineContextPrompt<{ question: string }, SystemDeps>({
+      const chatBot = definePrompt<{
+        ctx: Context<SystemDeps>;
+        question: string;
+      }>({
         template: ({ ctx, question }) => [
           system(ctx.deps.systemPrompt),
           user(question),
@@ -88,10 +100,11 @@ describe('defineContextPrompt', () => {
     });
 
     it('supports multiple variables', () => {
-      const prompt = defineContextPrompt<
-        { author: string; genre: string },
-        TestDeps
-      >({
+      const prompt = definePrompt<{
+        ctx: Context<TestDeps>;
+        author: string;
+        genre: string;
+      }>({
         template: ({ ctx, author, genre }) =>
           `${ctx.deps.userName} wants a ${genre} book by ${author}`,
       });
@@ -120,7 +133,10 @@ describe('defineContextPrompt', () => {
         };
       }
 
-      const prompt = defineContextPrompt<{ greeting: string }, NestedDeps>({
+      const prompt = definePrompt<{
+        ctx: Context<NestedDeps>;
+        greeting: string;
+      }>({
         template: ({ ctx, greeting }) =>
           `${greeting}, ${ctx.deps.user.profile.name}!`,
       });
@@ -139,7 +155,7 @@ describe('defineContextPrompt', () => {
 
   describe('without variables', () => {
     it('creates a prompt that can be called without vars', () => {
-      const sayHello = defineContextPrompt<TestDeps>({
+      const sayHello = definePrompt<{ ctx: Context<TestDeps> }>({
         template: ({ ctx }) => `Hello, ${ctx.deps.userName}!`,
       });
 
@@ -159,7 +175,7 @@ describe('defineContextPrompt', () => {
         defaultQuestion: string;
       }
 
-      const prompt = defineContextPrompt<SystemDeps>({
+      const prompt = definePrompt<{ ctx: Context<SystemDeps> }>({
         template: ({ ctx }) => [
           system(ctx.deps.systemPrompt),
           user(ctx.deps.defaultQuestion),
@@ -176,7 +192,7 @@ describe('defineContextPrompt', () => {
     });
 
     it('has a stream method', () => {
-      const prompt = defineContextPrompt<TestDeps>({
+      const prompt = definePrompt<{ ctx: Context<TestDeps> }>({
         template: ({ ctx }) => `Hello, ${ctx.deps.userName}!`,
       });
 
@@ -184,11 +200,28 @@ describe('defineContextPrompt', () => {
     });
 
     it('has a call method', () => {
-      const prompt = defineContextPrompt<TestDeps>({
+      const prompt = definePrompt<{ ctx: Context<TestDeps> }>({
         template: ({ ctx }) => `Hello, ${ctx.deps.userName}!`,
       });
 
       expect(typeof prompt.call).toBe('function');
+    });
+
+    it('supports zero-arity template with context type', () => {
+      // Edge case: template takes no args but context type is specified
+      // This tests the template.length === 0 branch in context handling
+      const prompt = definePrompt<{ ctx: Context<TestDeps> }>({
+        template: () => 'Static message',
+      });
+
+      const ctx = createContext<TestDeps>({ userId: '123', userName: 'Alice' });
+      const messages = prompt.messages(ctx);
+
+      expect(messages).toHaveLength(1);
+      expect(messages[0]).toMatchObject({
+        role: 'user',
+        content: [{ type: 'text', text: 'Static message' }],
+      });
     });
   });
 });
