@@ -7,8 +7,6 @@
 
 import type { MessageStreamEvent } from '@anthropic-ai/sdk/resources/messages';
 
-import type { Jsonable } from '@/llm/types/jsonable';
-import type { StreamResponseChunk } from '@/llm/responses/chunks';
 import {
   textStart,
   textChunk,
@@ -16,9 +14,13 @@ import {
   thoughtStart,
   thoughtChunk,
   thoughtEnd,
-  toolCallStartChunk,
+  toolCallStart,
   toolCallChunk,
-  toolCallEndChunk,
+  toolCallEnd,
+} from '@/llm/content';
+import type { Jsonable } from '@/llm/types/jsonable';
+import type { StreamResponseChunk } from '@/llm/responses/chunks';
+import {
   finishReasonChunk,
   usageDeltaChunk,
   rawStreamEventChunk,
@@ -141,7 +143,7 @@ export function decodeStreamEvent(
         };
         state.accumulatedToolJson = '';
         chunks.push(
-          toolCallStartChunk(event.content_block.id, event.content_block.name)
+          toolCallStart(event.content_block.id, event.content_block.name)
         );
       } else if (event.content_block.type === 'redacted_thinking') {
         state.currentBlockType = 'redacted_thinking';
@@ -223,7 +225,7 @@ export function decodeStreamEvent(
           } catch {
             state.currentBlock.input = {};
           }
-          chunks.push(toolCallEndChunk(state.currentBlock.id));
+          chunks.push(toolCallEnd(state.currentBlock.id));
         }
       } else if (
         /* v8 ignore stop */

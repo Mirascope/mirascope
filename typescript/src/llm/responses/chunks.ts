@@ -1,114 +1,13 @@
 /**
- * Streaming chunk types for provider-agnostic streaming responses.
+ * Streaming metadata chunk types for provider-agnostic streaming responses.
  *
- * Chunks follow a three-phase streaming pattern:
- * - Start: Signals beginning of a content block
- * - Delta: Contains incremental content updates
- * - End: Signals completion of a content block
- *
- * All chunks use discriminated unions via the `type` field.
+ * Content-specific chunks (Text, Thought, ToolCall) are defined in content/.
+ * This file only contains metadata chunks.
  */
 
 import type { FinishReason } from '@/llm/responses/finish-reason';
 import type { Jsonable } from '@/llm/types/jsonable';
-
-// ============================================================================
-// Text Chunks
-// ============================================================================
-
-/**
- * Signals the start of a text content block in the stream.
- */
-export interface TextStartChunk {
-  readonly type: 'text_start_chunk';
-  readonly contentType: 'text';
-}
-
-/**
- * Contains incremental text content.
- */
-export interface TextChunk {
-  readonly type: 'text_chunk';
-  readonly contentType: 'text';
-  /** The incremental text added in this chunk */
-  readonly delta: string;
-}
-
-/**
- * Signals the end of a text content block in the stream.
- */
-export interface TextEndChunk {
-  readonly type: 'text_end_chunk';
-  readonly contentType: 'text';
-}
-
-// ============================================================================
-// Thought Chunks
-// ============================================================================
-
-/**
- * Signals the start of a thought/reasoning content block in the stream.
- */
-export interface ThoughtStartChunk {
-  readonly type: 'thought_start_chunk';
-  readonly contentType: 'thought';
-}
-
-/**
- * Contains incremental thought/reasoning content.
- */
-export interface ThoughtChunk {
-  readonly type: 'thought_chunk';
-  readonly contentType: 'thought';
-  /** The incremental thought text added in this chunk */
-  readonly delta: string;
-}
-
-/**
- * Signals the end of a thought/reasoning content block in the stream.
- */
-export interface ThoughtEndChunk {
-  readonly type: 'thought_end_chunk';
-  readonly contentType: 'thought';
-}
-
-// ============================================================================
-// Tool Call Chunks (for future tools support)
-// ============================================================================
-
-/**
- * Signals the start of a tool call in the stream.
- */
-export interface ToolCallStartChunk {
-  readonly type: 'tool_call_start_chunk';
-  readonly contentType: 'tool_call';
-  /** Unique identifier for this tool call */
-  readonly id: string;
-  /** The name of the tool to call */
-  readonly name: string;
-}
-
-/**
- * Contains incremental tool call arguments (JSON).
- */
-export interface ToolCallChunk {
-  readonly type: 'tool_call_chunk';
-  readonly contentType: 'tool_call';
-  /** Unique identifier for this tool call */
-  readonly id: string;
-  /** The incremental JSON args added in this chunk */
-  readonly delta: string;
-}
-
-/**
- * Signals the end of a tool call in the stream.
- */
-export interface ToolCallEndChunk {
-  readonly type: 'tool_call_end_chunk';
-  readonly contentType: 'tool_call';
-  /** Unique identifier for this tool call */
-  readonly id: string;
-}
+import type { AssistantContentChunk } from '@/llm/content';
 
 // ============================================================================
 // Metadata Chunks
@@ -163,20 +62,6 @@ export interface RawMessageChunk {
 // ============================================================================
 
 /**
- * Content chunks that can appear in assistant messages.
- */
-export type AssistantContentChunk =
-  | TextStartChunk
-  | TextChunk
-  | TextEndChunk
-  | ThoughtStartChunk
-  | ThoughtChunk
-  | ThoughtEndChunk
-  | ToolCallStartChunk
-  | ToolCallChunk
-  | ToolCallEndChunk;
-
-/**
  * All possible chunk types in a streaming response.
  */
 export type StreamResponseChunk =
@@ -194,56 +79,6 @@ export type AsyncChunkIterator = AsyncIterator<StreamResponseChunk>;
 // ============================================================================
 // Factory Functions
 // ============================================================================
-
-/** Create a TextStartChunk */
-export function textStart(): TextStartChunk {
-  return { type: 'text_start_chunk', contentType: 'text' };
-}
-
-/** Create a TextChunk */
-export function textChunk(delta: string): TextChunk {
-  return { type: 'text_chunk', contentType: 'text', delta };
-}
-
-/** Create a TextEndChunk */
-export function textEnd(): TextEndChunk {
-  return { type: 'text_end_chunk', contentType: 'text' };
-}
-
-/** Create a ThoughtStartChunk */
-export function thoughtStart(): ThoughtStartChunk {
-  return { type: 'thought_start_chunk', contentType: 'thought' };
-}
-
-/** Create a ThoughtChunk */
-export function thoughtChunk(delta: string): ThoughtChunk {
-  return { type: 'thought_chunk', contentType: 'thought', delta };
-}
-
-/** Create a ThoughtEndChunk */
-export function thoughtEnd(): ThoughtEndChunk {
-  return { type: 'thought_end_chunk', contentType: 'thought' };
-}
-
-/* v8 ignore start - tool chunk factories will be tested via e2e */
-/** Create a ToolCallStartChunk */
-export function toolCallStartChunk(
-  id: string,
-  name: string
-): ToolCallStartChunk {
-  return { type: 'tool_call_start_chunk', contentType: 'tool_call', id, name };
-}
-
-/** Create a ToolCallChunk */
-export function toolCallChunk(id: string, delta: string): ToolCallChunk {
-  return { type: 'tool_call_chunk', contentType: 'tool_call', id, delta };
-}
-
-/** Create a ToolCallEndChunk */
-export function toolCallEndChunk(id: string): ToolCallEndChunk {
-  return { type: 'tool_call_end_chunk', contentType: 'tool_call', id };
-}
-/* v8 ignore stop */
 
 /** Create a FinishReasonChunk */
 export function finishReasonChunk(

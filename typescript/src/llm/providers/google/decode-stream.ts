@@ -11,7 +11,6 @@ import type {
 } from '@google/genai';
 import { FinishReason as GoogleFinishReason } from '@google/genai';
 
-import type { StreamResponseChunk } from '@/llm/responses/chunks';
 import {
   textStart,
   textChunk,
@@ -19,9 +18,12 @@ import {
   thoughtStart,
   thoughtChunk,
   thoughtEnd,
-  toolCallStartChunk,
+  toolCallStart,
   toolCallChunk,
-  toolCallEndChunk,
+  toolCallEnd,
+} from '@/llm/content';
+import type { StreamResponseChunk } from '@/llm/responses/chunks';
+import {
   finishReasonChunk,
   usageDeltaChunk,
   rawStreamEventChunk,
@@ -144,7 +146,7 @@ export function decodeStreamEvent(
       /* v8 ignore stop */
 
       // Google sends complete function calls, so we emit start/chunk/end together
-      chunks.push(toolCallStartChunk(toolId, toolName));
+      chunks.push(toolCallStart(toolId, toolName));
       chunks.push(
         toolCallChunk(
           toolId,
@@ -152,7 +154,7 @@ export function decodeStreamEvent(
           functionCall.args ? JSON.stringify(functionCall.args) : '{}'
         )
       );
-      chunks.push(toolCallEndChunk(toolId));
+      chunks.push(toolCallEnd(toolId));
     }
   }
 
