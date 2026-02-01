@@ -21,7 +21,8 @@ import type {
   Text,
   ToolCall,
 } from '@/llm/content';
-import type { ToolSchema } from '@/llm/tools';
+import type { ToolSchema, Tools } from '@/llm/tools';
+import { isProviderTool } from '@/llm/tools';
 import { FeatureNotSupportedError } from '@/llm/exceptions';
 import type { AssistantMessage, Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
@@ -399,7 +400,7 @@ function encodeAssistantMessage(
 export function buildRequestParams(
   modelId: OpenAIModelId,
   messages: readonly Message[],
-  tools?: readonly ToolSchema[],
+  tools?: Tools,
   params: Params = {}
 ): ChatCompletionCreateParamsNonStreaming {
   return ParamHandler.with(params, 'openai', modelId, (p) => {
@@ -419,7 +420,22 @@ export function buildRequestParams(
 
     /* v8 ignore start - tool encoding will be tested via e2e */
     if (tools !== undefined && tools.length > 0) {
-      requestParams.tools = encodeTools(tools);
+      // Filter out provider tools (not supported by Completions API)
+      const regularTools: ToolSchema[] = [];
+      for (const tool of tools) {
+        if (isProviderTool(tool)) {
+          throw new FeatureNotSupportedError(
+            `Provider tool ${tool.name}`,
+            'openai:completions',
+            modelId,
+            `Provider tool '${tool.name}' is not supported by OpenAI Completions API. Try using the Responses API instead (append ':responses' to your model ID).`
+          );
+        }
+        regularTools.push(tool);
+      }
+      if (regularTools.length > 0) {
+        requestParams.tools = encodeTools(regularTools);
+      }
     }
     /* v8 ignore stop */
 

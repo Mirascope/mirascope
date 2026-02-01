@@ -22,7 +22,8 @@ import type {
   UserContentPart,
 } from '@/llm/content';
 import type { Format } from '@/llm/formatting';
-import type { ToolSchema } from '@/llm/tools';
+import type { ToolSchema, Tools } from '@/llm/tools';
+import { ProviderTool, isProviderTool, isWebSearchTool } from '@/llm/tools';
 import {
   APIError,
   AuthenticationError,
@@ -465,7 +466,7 @@ export function encodeTools(
 export function buildRequestParams(
   modelId: AnthropicModelId,
   messages: readonly Message[],
-  tools?: readonly ToolSchema[],
+  tools?: Tools,
   format?: Format | null,
   params: Params = {}
 ): MessageCreateParamsNonStreaming {
@@ -490,11 +491,39 @@ export function buildRequestParams(
     let systemPrompt = system;
 
     // Collect tools from both explicit tools and format tool
-    const allTools: Anthropic.Messages.Tool[] = [];
+    const allTools: Anthropic.Messages.ToolUnion[] = [];
 
     /* v8 ignore start - tool encoding will be tested via e2e */
     if (tools !== undefined && tools.length > 0) {
-      allTools.push(...encodeTools(tools));
+      // Separate regular tools from provider tools
+      const regularTools: ToolSchema[] = [];
+      for (const tool of tools) {
+        // Check for provider tools first (WebSearchTool extends ProviderTool)
+        if (isProviderTool(tool)) {
+          if (isWebSearchTool(tool)) {
+            // Anthropic's web search tool
+            allTools.push({
+              type: 'web_search_20250305',
+              name: 'web_search',
+            });
+          } else {
+            // Cast needed because TS narrows to never after WebSearchTool check
+            const unsupportedTool = tool as ProviderTool;
+            throw new FeatureNotSupportedError(
+              `Provider tool ${unsupportedTool.name}`,
+              'anthropic',
+              modelId,
+              `Provider tool '${unsupportedTool.name}' is not supported by Anthropic`
+            );
+          }
+        } else {
+          // Regular tool (BaseTool extends ToolSchema)
+          regularTools.push(tool as ToolSchema);
+        }
+      }
+      if (regularTools.length > 0) {
+        allTools.push(...encodeTools(regularTools));
+      }
     }
     /* v8 ignore stop */
 

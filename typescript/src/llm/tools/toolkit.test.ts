@@ -12,6 +12,8 @@ import type { ToolCall } from '@/llm/content/tool-call';
 import { createContext, type Context } from '@/llm/context';
 import { FORMAT_TOOL_NAME } from '@/llm/tools/tool-schema';
 import { ToolNotFoundError } from '@/llm/exceptions';
+import { ProviderTool } from '@/llm/tools/provider-tool';
+import { WebSearchTool } from '@/llm/tools/web-search-tool';
 
 // Helper to create a mock ToolCall
 function createToolCall(name: string, args: Record<string, unknown>): ToolCall {
@@ -481,5 +483,131 @@ describe('normalizeContextTools', () => {
     expect(result).toBeInstanceOf(ContextToolkit);
     expect(result.tools).toHaveLength(1);
     expect(result.toolMap.has('test_context_tool')).toBe(true);
+  });
+});
+
+describe('Toolkit with provider tools', () => {
+  const regularTool = defineTool<{ x: string }>({
+    name: 'regular_tool',
+    description: 'A regular tool',
+    tool: ({ x }) => `result: ${x}`,
+  });
+
+  it('accepts provider tools alongside regular tools', () => {
+    const providerTool = new ProviderTool('custom_provider');
+    const webSearch = new WebSearchTool();
+
+    const toolkit = new Toolkit([regularTool, providerTool, webSearch]);
+
+    expect(toolkit.tools).toHaveLength(3);
+    // schemas only includes regular tools, not provider tools
+    expect(toolkit.schemas).toHaveLength(1);
+    expect(toolkit.providerTools).toHaveLength(2);
+  });
+
+  it('returns only regular tools in schemas', () => {
+    const webSearch = new WebSearchTool();
+    const toolkit = new Toolkit([regularTool, webSearch]);
+
+    expect(toolkit.schemas).toHaveLength(1);
+    expect(toolkit.schemas[0]?.name).toBe('regular_tool');
+  });
+
+  it('returns only provider tools in providerTools', () => {
+    const webSearch = new WebSearchTool();
+    const customProvider = new ProviderTool('custom');
+    const toolkit = new Toolkit([regularTool, webSearch, customProvider]);
+
+    expect(toolkit.providerTools).toHaveLength(2);
+    expect(toolkit.providerTools.map((t) => t.name)).toContain('web_search');
+    expect(toolkit.providerTools.map((t) => t.name)).toContain('custom');
+  });
+
+  it('throws on duplicate provider tool names', () => {
+    const tool1 = new ProviderTool('duplicate');
+    const tool2 = new ProviderTool('duplicate');
+
+    expect(() => new Toolkit([tool1, tool2])).toThrow(
+      'Multiple provider tools with name: duplicate'
+    );
+  });
+
+  it('allows same name for regular and provider tools', () => {
+    // This matches Python behavior where tools_dict and provider_tools_dict are separate
+    const regularWithSameName = defineTool<{ x: string }>({
+      name: 'same_name',
+      description: 'Regular tool',
+      tool: () => 'regular',
+    });
+    const providerWithSameName = new ProviderTool('same_name');
+
+    const toolkit = new Toolkit([regularWithSameName, providerWithSameName]);
+
+    expect(toolkit.tools).toHaveLength(2);
+    expect(toolkit.schemas).toHaveLength(1);
+    expect(toolkit.providerTools).toHaveLength(1);
+  });
+
+  it('get() only finds regular tools, not provider tools', () => {
+    const webSearch = new WebSearchTool();
+    const toolkit = new Toolkit([regularTool, webSearch]);
+
+    expect(toolkit.get(createToolCall('regular_tool', {}))).toBe(regularTool);
+    expect(toolkit.get(createToolCall('web_search', {}))).toBeUndefined();
+  });
+
+  it('toolMap.has() only checks regular tools, not provider tools', () => {
+    const webSearch = new WebSearchTool();
+    const toolkit = new Toolkit([regularTool, webSearch]);
+
+    expect(toolkit.toolMap.has('regular_tool')).toBe(true);
+    expect(toolkit.toolMap.has('web_search')).toBe(false);
+  });
+});
+
+describe('ContextToolkit with provider tools', () => {
+  interface TestDeps {
+    value: number;
+  }
+
+  const contextTool = defineContextTool<{ x: string }, TestDeps>({
+    name: 'context_tool',
+    description: 'A context tool',
+    tool: (ctx, { x }) => `result: ${x}, value: ${ctx.deps.value}`,
+  });
+
+  it('accepts provider tools alongside context tools', () => {
+    const webSearch = new WebSearchTool();
+
+    const toolkit = new ContextToolkit<TestDeps>([contextTool, webSearch]);
+
+    expect(toolkit.tools).toHaveLength(2);
+    expect(toolkit.schemas).toHaveLength(1);
+    expect(toolkit.providerTools).toHaveLength(1);
+  });
+
+  it('returns only context tools in schemas', () => {
+    const webSearch = new WebSearchTool();
+    const toolkit = new ContextToolkit<TestDeps>([contextTool, webSearch]);
+
+    expect(toolkit.schemas).toHaveLength(1);
+    expect(toolkit.schemas[0]?.name).toBe('context_tool');
+  });
+
+  it('throws on duplicate provider tool names', () => {
+    const tool1 = new ProviderTool('duplicate');
+    const tool2 = new ProviderTool('duplicate');
+
+    expect(() => new ContextToolkit<TestDeps>([tool1, tool2])).toThrow(
+      'Multiple provider tools with name: duplicate'
+    );
+  });
+
+  it('get() only finds context tools, not provider tools', () => {
+    const webSearch = new WebSearchTool();
+    const toolkit = new ContextToolkit<TestDeps>([contextTool, webSearch]);
+
+    expect(toolkit.get(createToolCall('context_tool', {}))).toBe(contextTool);
+    expect(toolkit.get(createToolCall('web_search', {}))).toBeUndefined();
   });
 });
