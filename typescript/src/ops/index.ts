@@ -54,9 +54,33 @@ export type { Trace, AnnotateOptions } from "@/ops/_internal/traced-functions";
 // Exporters
 export { MirascopeOTLPExporter } from "@/ops/_internal/exporters";
 
-// LLM Instrumentation
+// LLM Instrumentation (Mirascope Model class)
 export {
   instrumentLlm,
   uninstrumentLlm,
   isLlmInstrumented,
+} from "@/ops/_internal/instrumentation";
+
+// Provider SDK Instrumentation
+export type { ContentCaptureMode } from "@/ops/_internal/instrumentation";
+
+// OpenAI SDK Instrumentation
+export {
+  instrumentOpenai,
+  uninstrumentOpenai,
+  isOpenaiInstrumented,
+} from "@/ops/_internal/instrumentation";
+
+// Anthropic SDK Instrumentation
+export {
+  instrumentAnthropic,
+  uninstrumentAnthropic,
+  isAnthropicInstrumented,
+} from "@/ops/_internal/instrumentation";
+
+// Google GenAI SDK Instrumentation
+export {
+  instrumentGoogleGenai,
+  uninstrumentGoogleGenai,
+  isGoogleGenaiInstrumented,
 } from "@/ops/_internal/instrumentation";

@@ -30,6 +30,7 @@ export default defineConfig({
         "src/transform/transformer.ts",
         // type files with nothing to cover
         "src/transform/plugins/types.ts",
+        "src/ops/_internal/instrumentation/providers/types.d.ts",
         "src/llm/models/params.ts",
         "src/llm/models/thinking-config.ts",
         "src/llm/providers/model-id.ts",
