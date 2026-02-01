@@ -4,11 +4,14 @@ import {
   ContextToolkit,
   createToolkit,
   createContextToolkit,
+  normalizeTools,
+  normalizeContextTools,
 } from '@/llm/tools/toolkit';
 import { defineTool, defineContextTool } from '@/llm/tools/define-tool';
 import type { ToolCall } from '@/llm/content/tool-call';
 import type { Context } from '@/llm/context';
 import type { ToolParameterSchema } from '@/llm/tools/tool-schema';
+import { FORMAT_TOOL_NAME } from '@/llm/tools/tool-schema';
 import { ToolNotFoundError } from '@/llm/exceptions';
 
 // Helper to create a mock schema
@@ -248,5 +251,291 @@ describe('createContextToolkit', () => {
 
     expect(toolkit).toBeInstanceOf(ContextToolkit);
     expect(toolkit.toolMap.has('test')).toBe(true);
+  });
+});
+
+describe('ContextToolkit with mixed tools', () => {
+  interface TestDeps {
+    multiplier: number;
+  }
+
+  const addSchema = createMockSchema(
+    { a: { type: 'number' }, b: { type: 'number' } },
+    ['a', 'b']
+  );
+  const multiplySchema = createMockSchema({ value: { type: 'number' } }, [
+    'value',
+  ]);
+
+  // Regular tool - no context needed
+  const addNumbers = defineTool<{ a: number; b: number }>({
+    name: 'add_numbers',
+    description: 'Add two numbers',
+    tool: ({ a, b }) => a + b,
+    __schema: addSchema,
+  });
+
+  // Context tool - needs context for multiplier
+  const multiplyWithContext = defineContextTool<{ value: number }, TestDeps>({
+    name: 'multiply_with_context',
+    description: 'Multiply by context multiplier',
+    tool: (ctx, { value }) => value * ctx.deps.multiplier,
+    __schema: multiplySchema,
+  });
+
+  const createMockContext = (multiplier: number): Context<TestDeps> => ({
+    deps: { multiplier },
+  });
+
+  it('accepts both regular and context tools', () => {
+    // This is the key Python-like pattern: ContextToolkit accepts Tool | ContextTool
+    const toolkit = new ContextToolkit<TestDeps>([
+      addNumbers,
+      multiplyWithContext,
+    ]);
+
+    expect(toolkit.tools).toHaveLength(2);
+    expect(toolkit.toolMap.has('add_numbers')).toBe(true);
+    expect(toolkit.toolMap.has('multiply_with_context')).toBe(true);
+  });
+
+  it('executes regular tool without passing context to it', async () => {
+    const ctx = createMockContext(10);
+    const toolkit = new ContextToolkit<TestDeps>([addNumbers]);
+    const toolCall = createToolCall('add_numbers', { a: 5, b: 3 });
+
+    const output = await toolkit.execute(ctx, toolCall);
+
+    // Regular tool should work - context is NOT passed to it
+    expect(output.result).toBe(8);
+    expect(output.error).toBeNull();
+  });
+
+  it('executes context tool with context', async () => {
+    const ctx = createMockContext(10);
+    const toolkit = new ContextToolkit<TestDeps>([multiplyWithContext]);
+    const toolCall = createToolCall('multiply_with_context', { value: 5 });
+
+    const output = await toolkit.execute(ctx, toolCall);
+
+    // Context tool should receive context
+    expect(output.result).toBe(50); // 5 * 10
+    expect(output.error).toBeNull();
+  });
+
+  it('polymorphically dispatches mixed tools correctly', async () => {
+    const ctx = createMockContext(3);
+    const toolkit = new ContextToolkit<TestDeps>([
+      addNumbers,
+      multiplyWithContext,
+    ]);
+
+    // Execute regular tool
+    const addCall = createToolCall('add_numbers', { a: 10, b: 20 });
+    const addOutput = await toolkit.execute(ctx, addCall);
+    expect(addOutput.result).toBe(30);
+
+    // Execute context tool
+    const multiplyCall = createToolCall('multiply_with_context', { value: 7 });
+    const multiplyOutput = await toolkit.execute(ctx, multiplyCall);
+    expect(multiplyOutput.result).toBe(21); // 7 * 3
+  });
+
+  it('executeAll works with mixed tools', async () => {
+    const ctx = createMockContext(2);
+    const toolkit = new ContextToolkit<TestDeps>([
+      addNumbers,
+      multiplyWithContext,
+    ]);
+
+    const toolCalls = [
+      createToolCall('add_numbers', { a: 1, b: 2 }),
+      createToolCall('multiply_with_context', { value: 10 }),
+    ];
+
+    const outputs = await toolkit.executeAll(ctx, toolCalls);
+
+    expect(outputs).toHaveLength(2);
+    expect(outputs[0]?.result).toBe(3); // 1 + 2
+    expect(outputs[1]?.result).toBe(20); // 10 * 2
+  });
+
+  it('returns schemas for mixed tools', () => {
+    const toolkit = new ContextToolkit<TestDeps>([
+      addNumbers,
+      multiplyWithContext,
+    ]);
+
+    const schemas = toolkit.schemas;
+    expect(schemas).toHaveLength(2);
+    expect(schemas.map((s) => s.name)).toContain('add_numbers');
+    expect(schemas.map((s) => s.name)).toContain('multiply_with_context');
+  });
+});
+
+describe('FORMAT_TOOL_NAME', () => {
+  it('has the expected value', () => {
+    expect(FORMAT_TOOL_NAME).toBe('__mirascope_formatted_output_tool__');
+  });
+});
+
+describe('Duplicate name validation', () => {
+  const schema = createMockSchema({ x: { type: 'string' } });
+
+  it('Toolkit throws on duplicate tool names', () => {
+    const tool1 = defineTool<{ x: string }>({
+      name: 'duplicate_name',
+      description: 'First tool',
+      tool: () => 'first',
+      __schema: schema,
+    });
+    const tool2 = defineTool<{ x: string }>({
+      name: 'duplicate_name',
+      description: 'Second tool',
+      tool: () => 'second',
+      __schema: schema,
+    });
+
+    expect(() => new Toolkit([tool1, tool2])).toThrow(
+      'Multiple tools with name: duplicate_name'
+    );
+  });
+
+  it('ContextToolkit throws on duplicate tool names', () => {
+    interface Deps {
+      value: number;
+    }
+    const tool1 = defineContextTool<{ x: string }, Deps>({
+      name: 'duplicate_name',
+      description: 'First tool',
+      tool: () => 'first',
+      __schema: schema,
+    });
+    const tool2 = defineContextTool<{ x: string }, Deps>({
+      name: 'duplicate_name',
+      description: 'Second tool',
+      tool: () => 'second',
+      __schema: schema,
+    });
+
+    expect(() => new ContextToolkit<Deps>([tool1, tool2])).toThrow(
+      'Multiple tools with name: duplicate_name'
+    );
+  });
+});
+
+describe('Toolkit with null/undefined', () => {
+  it('accepts null and creates empty toolkit', () => {
+    const toolkit = new Toolkit(null);
+
+    expect(toolkit.tools).toHaveLength(0);
+    expect(toolkit.schemas).toHaveLength(0);
+  });
+
+  it('accepts undefined and creates empty toolkit', () => {
+    const toolkit = new Toolkit(undefined);
+
+    expect(toolkit.tools).toHaveLength(0);
+    expect(toolkit.schemas).toHaveLength(0);
+  });
+});
+
+describe('ContextToolkit with null/undefined', () => {
+  it('accepts null and creates empty toolkit', () => {
+    const toolkit = new ContextToolkit(null);
+
+    expect(toolkit.tools).toHaveLength(0);
+    expect(toolkit.schemas).toHaveLength(0);
+  });
+
+  it('accepts undefined and creates empty toolkit', () => {
+    const toolkit = new ContextToolkit(undefined);
+
+    expect(toolkit.tools).toHaveLength(0);
+    expect(toolkit.schemas).toHaveLength(0);
+  });
+});
+
+describe('normalizeTools', () => {
+  const schema = createMockSchema({ x: { type: 'string' } });
+  const tool = defineTool<{ x: string }>({
+    name: 'test_tool',
+    description: 'Test',
+    tool: () => 'result',
+    __schema: schema,
+  });
+
+  it('returns empty toolkit for null', () => {
+    const toolkit = normalizeTools(null);
+
+    expect(toolkit).toBeInstanceOf(Toolkit);
+    expect(toolkit.tools).toHaveLength(0);
+  });
+
+  it('returns empty toolkit for undefined', () => {
+    const toolkit = normalizeTools(undefined);
+
+    expect(toolkit).toBeInstanceOf(Toolkit);
+    expect(toolkit.tools).toHaveLength(0);
+  });
+
+  it('passes through existing Toolkit', () => {
+    const original = new Toolkit([tool]);
+    const result = normalizeTools(original);
+
+    expect(result).toBe(original); // Same reference
+    expect(result.tools).toHaveLength(1);
+  });
+
+  it('wraps array in new Toolkit', () => {
+    const result = normalizeTools([tool]);
+
+    expect(result).toBeInstanceOf(Toolkit);
+    expect(result.tools).toHaveLength(1);
+    expect(result.toolMap.has('test_tool')).toBe(true);
+  });
+});
+
+describe('normalizeContextTools', () => {
+  interface TestDeps {
+    value: number;
+  }
+
+  const schema = createMockSchema({ x: { type: 'string' } });
+  const tool = defineContextTool<{ x: string }, TestDeps>({
+    name: 'test_context_tool',
+    description: 'Test',
+    tool: (ctx) => ctx.deps.value,
+    __schema: schema,
+  });
+
+  it('returns empty ContextToolkit for null', () => {
+    const toolkit = normalizeContextTools<TestDeps>(null);
+
+    expect(toolkit).toBeInstanceOf(ContextToolkit);
+    expect(toolkit.tools).toHaveLength(0);
+  });
+
+  it('returns empty ContextToolkit for undefined', () => {
+    const toolkit = normalizeContextTools<TestDeps>(undefined);
+
+    expect(toolkit).toBeInstanceOf(ContextToolkit);
+    expect(toolkit.tools).toHaveLength(0);
+  });
+
+  it('passes through existing ContextToolkit', () => {
+    const original = new ContextToolkit<TestDeps>([tool]);
+    const result = normalizeContextTools<TestDeps>(original);
+
+    expect(result).toBe(original); // Same reference
+    expect(result.tools).toHaveLength(1);
+  });
+
+  it('wraps array in new ContextToolkit', () => {
+    const result = normalizeContextTools<TestDeps>([tool]);
+
+    expect(result).toBeInstanceOf(ContextToolkit);
+    expect(result.tools).toHaveLength(1);
+    expect(result.toolMap.has('test_context_tool')).toBe(true);
   });
 });

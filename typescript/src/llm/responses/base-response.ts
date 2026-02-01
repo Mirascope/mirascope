@@ -14,6 +14,7 @@ import type { ModelId, ProviderId } from '@/llm/providers';
 import type { FinishReason } from '@/llm/responses/finish-reason';
 import { RootResponse } from '@/llm/responses/root-response';
 import type { Usage } from '@/llm/responses/usage';
+import type { BaseToolkit } from '@/llm/tools';
 
 /**
  * Initialization options for creating a BaseResponse.
@@ -43,6 +44,14 @@ export interface BaseResponseInit {
    * The parameters used to generate this response.
    */
   params: Params;
+
+  /**
+   * The toolkit containing all tools available for this response.
+   * Can be a Toolkit or ContextToolkit.
+   */
+  toolkit: BaseToolkit;
+
+  // Note: format will go here when implemented
 
   /**
    * The input messages (before the assistant response).
@@ -84,6 +93,7 @@ export class BaseResponse extends RootResponse {
   readonly thoughts: readonly Thought[];
   readonly finishReason: FinishReason | null;
   readonly usage: Usage | null;
+  readonly toolkit: BaseToolkit;
 
   constructor(init: BaseResponseInit) {
     super();
@@ -126,5 +136,8 @@ export class BaseResponse extends RootResponse {
 
     // Build full message history
     this.messages = [...init.inputMessages, init.assistantMessage];
+
+    // Store the toolkit directly (conversion from tools happens in child classes)
+    this.toolkit = init.toolkit;
   }
 }
