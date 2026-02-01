@@ -70,6 +70,8 @@
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
     "@google/genai": "^1.0.0",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/sdk-trace-node": "^2.5.0",
     "@pollyjs/adapter-fetch": "^6.0.7",
     "@pollyjs/core": "^6.0.6",
     "@pollyjs/persister": "^6.0.6",
@@ -92,6 +94,8 @@
   "peerDependencies": {
     "@anthropic-ai/sdk": ">=0.71.0",
     "@google/genai": ">=1.0.0",
+    "@opentelemetry/api": ">=1.7.0",
+    "@opentelemetry/sdk-trace-node": ">=1.20.0",
     "@rollup/plugin-typescript": ">=11.0.0",
     "esbuild": ">=0.17.0",
     "openai": ">=6.16.0",
@@ -104,6 +108,12 @@
       "optional": true
     },
     "@google/genai": {
+      "optional": true
+    },
+    "@opentelemetry/api": {
+      "optional": true
+    },
+    "@opentelemetry/sdk-trace-node": {
       "optional": true
     },
     "openai": {
