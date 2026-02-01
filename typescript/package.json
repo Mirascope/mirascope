@@ -3,7 +3,11 @@
   "version": "2.0.0-alpha.0",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./transform": "./src/transform/index.ts",
+    "./vite": "./src/transform/plugins/vite.ts",
+    "./esbuild": "./src/transform/plugins/esbuild.ts",
+    "./bun": "./src/bun.ts"
   },
   "workspaces": [
     "examples"
@@ -20,12 +24,16 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "codegen": "bun run scripts/codegen/run.ts"
+    "codegen": "bun run scripts/codegen/run.ts",
+    "example": "bun run scripts/run-example.ts"
   },
   "peerDependencies": {
     "@anthropic-ai/sdk": ">=0.71.0",
     "@google/genai": ">=1.0.0",
-    "openai": "^6.16.0"
+    "openai": "^6.16.0",
+    "@rollup/plugin-typescript": ">=11.0.0",
+    "esbuild": ">=0.17.0",
+    "vite": ">=4.0.0"
   },
   "peerDependenciesMeta": {
     "@anthropic-ai/sdk": {
@@ -36,27 +44,40 @@
     },
     "openai": {
       "optional": true
+    },
+    "@rollup/plugin-typescript": {
+      "optional": true
+    },
+    "esbuild": {
+      "optional": true
+    },
+    "vite": {
+      "optional": true
     }
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
-    "@google/genai": "^1.0.0",
-    "openai": "^6.16.0",
     "@eslint/js": "^9.37.0",
+    "@google/genai": "^1.0.0",
     "@pollyjs/adapter-fetch": "^6.0.7",
     "@pollyjs/core": "^6.0.6",
     "@pollyjs/persister": "^6.0.6",
+    "@rollup/plugin-typescript": "^12.1.2",
     "@types/bun": "latest",
     "@typescript-eslint/eslint-plugin": "^8.35.0",
     "@typescript-eslint/parser": "^8.35.0",
     "@vitest/coverage-v8": "^3.0.0",
     "dotenv": "^17.2.3",
+    "esbuild": "^0.25.5",
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
     "globals": "^16.2.0",
     "jiti": "^2.4.2",
+    "openai": "^6.16.0",
     "prettier": "^3.6.0",
+    "tslib": "^2.8.1",
     "typescript": "^5",
+    "vite": "^6.3.5",
     "vitest": "^3.0.0",
     "yaml": "^2.7.0"
   }

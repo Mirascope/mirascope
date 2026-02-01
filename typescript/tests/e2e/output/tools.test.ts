@@ -8,7 +8,12 @@
 import { resolve } from 'node:path';
 import { createIt, describe, expect } from '@/tests/e2e/utils';
 import { PROVIDERS_FOR_TOOLS_TESTS } from '@/tests/e2e/providers';
-import { Model, defineTool, type Response, type StreamResponse } from '@/llm';
+import {
+  defineCall,
+  defineTool,
+  type Response,
+  type StreamResponse,
+} from '@/llm';
 
 const it = createIt(resolve(__dirname, 'cassettes'), 'tools');
 
@@ -22,10 +27,6 @@ const PASSWORD_MAP: Record<string, string> = {
 
 /**
  * A simple tool for testing that retrieves secrets based on passwords.
- *
- * Note: The __schema is provided explicitly here because the TypeScript
- * transformer is not yet integrated into the test build process. In
- * production usage, __schema would be injected by the transformer.
  */
 const secretRetrievalTool = defineTool<{ password: string }>({
   name: 'secret_retrieval_tool',
@@ -36,31 +37,25 @@ const secretRetrievalTool = defineTool<{ password: string }>({
   tool: ({ password }) => {
     return PASSWORD_MAP[password] ?? 'Invalid password!';
   },
-  __schema: {
-    type: 'object',
-    properties: {
-      password: {
-        type: 'string',
-        description: 'The password to retrieve the secret for.',
-      },
-    },
-    required: ['password'],
-    additionalProperties: false,
-  },
 });
 
 describe('tool usage', () => {
   it.record.each(PROVIDERS_FOR_TOOLS_TESTS)(
     'calls tool and resumes with results',
-    async ({ model: modelId }) => {
-      const model = new Model(modelId, { maxTokens: 1000 });
+    async ({ model }) => {
+      const retrieveSecrets = defineCall<{ passwords: string[] }>({
+        model,
+        maxTokens: 1000,
+        tools: [secretRetrievalTool],
+        template: ({ passwords }) =>
+          `Please retrieve the secrets for these passwords: ${passwords.map((p) => `"${p}"`).join(' and ')}. ` +
+          'Use the secret_retrieval_tool for each password.',
+      });
 
       // Call with tool - ask LLM to use the tool
-      let response: Response = await model.call(
-        'Please retrieve the secrets for these passwords: "mellon" and "radiance". ' +
-          'Use the secret_retrieval_tool for each password.',
-        [secretRetrievalTool]
-      );
+      let response: Response = await retrieveSecrets({
+        passwords: ['mellon', 'radiance'],
+      });
 
       // Verify we got tool calls
       expect(response.toolCalls.length).toBeGreaterThanOrEqual(1);
@@ -96,15 +91,20 @@ describe('tool usage', () => {
 describe.skip('tool usage with streaming', () => {
   it.record.each(PROVIDERS_FOR_TOOLS_TESTS)(
     'streams tool calls and resumes with results',
-    async ({ model: modelId }) => {
-      const model = new Model(modelId, { maxTokens: 1000 });
+    async ({ model }) => {
+      const retrieveSecrets = defineCall<{ passwords: string[] }>({
+        model,
+        maxTokens: 1000,
+        tools: [secretRetrievalTool],
+        template: ({ passwords }) =>
+          `Please retrieve the secrets for these passwords: ${passwords.map((p) => `"${p}"`).join(' and ')}. ` +
+          'Use the secret_retrieval_tool for each password.',
+      });
 
       // Stream with tool - ask LLM to use the tool
-      let response: StreamResponse = await model.stream(
-        'Please retrieve the secrets for these passwords: "mellon" and "radiance". ' +
-          'Use the secret_retrieval_tool for each password.',
-        [secretRetrievalTool]
-      );
+      let response: StreamResponse = await retrieveSecrets.stream({
+        passwords: ['mellon', 'radiance'],
+      });
 
       // Consume the stream (equivalent to Python's response.finish())
       await response.consume();
