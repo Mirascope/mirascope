@@ -68,7 +68,8 @@
     "**/node_modules/",
     "*.js",
     "**/coverage/",
-    "**/vitest.config.ts"
+    "**/vitest.config.ts",
+    "**/_generated/"
   ],
   "overrides": [
     {

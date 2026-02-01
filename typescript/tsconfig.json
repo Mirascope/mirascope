@@ -15,7 +15,7 @@
       "@/tests/*": ["tests/*"],
       "@/*": ["src/*"]
     },
-    "types": ["node"]
+    "types": ["node", "bun"]
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"],
   "exclude": ["node_modules"]

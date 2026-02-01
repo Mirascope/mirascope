@@ -22,6 +22,9 @@ export default defineConfig({
         "src/**/*.test.ts",
         "src/**/index.ts",
         "src/bun.ts",
+        // generated Fern code
+        "src/api/_generated",
+        "src/globals.d.ts",
         // compile-time transformer runs in build plugins, difficult to unit test
         "src/transform/transformer.ts",
         // type files with nothing to cover
