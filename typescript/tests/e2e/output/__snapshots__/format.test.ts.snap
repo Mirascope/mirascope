@@ -1,0 +1,195 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`format output > [anthropic] parses structured output with Zod schema 1`] = `
+{
+  "parsedBook": {
+    "author": "Frank Herbert",
+    "title": "Dune",
+    "year": 1965,
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "description": "The author of the book",
+            "type": "string",
+          },
+          "title": {
+            "description": "The title of the book",
+            "type": "string",
+          },
+          "year": {
+            "description": "The year published",
+            "type": "number",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "year",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Recommend one famous science fiction book. Return exactly one book.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"title":"Dune","author":"Frank Herbert","year":1965}",
+            "id": "toolu_01TRw2U6BRFNHodhCfRdXKKM",
+            "name": "__mirascope_formatted_output_tool__",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01TRw2U6BRFNHodhCfRdXKKM",
+              "input": {
+                "author": "Frank Herbert",
+                "title": "Dune",
+                "year": 1965,
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 773,
+      "outputTokens": 62,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 835,
+    },
+  },
+}
+`;
+
+exports[`format output > [anthropic] parses structured output with defineFormat 1`] = `
+{
+  "parsedBook": {
+    "author": "Agatha Christie",
+    "title": "And Then There Were None",
+    "year": 1939,
+  },
+  "response": {
+    "finishReason": null,
+    "format": {
+      "description": null,
+      "formattingInstructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+      "mode": "tool",
+      "name": "FormattedOutput",
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "description": "The author of the book",
+            "type": "string",
+          },
+          "title": {
+            "description": "The title of the book",
+            "type": "string",
+          },
+          "year": {
+            "description": "The year published",
+            "type": "number",
+          },
+        },
+        "required": [
+          "title",
+          "author",
+          "year",
+        ],
+        "type": "object",
+      },
+    },
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Recommend one famous mystery book. Return exactly one book.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"title":"And Then There Were None","author":"Agatha Christie","year":1939}",
+            "id": "toolu_01Sj43pjVBBRb4wh1yK5hmMT",
+            "name": "__mirascope_formatted_output_tool__",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01Sj43pjVBBRb4wh1yK5hmMT",
+              "input": {
+                "author": "Agatha Christie",
+                "title": "And Then There Were None",
+                "year": 1939,
+              },
+              "name": "__mirascope_formatted_output_tool__",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 772,
+      "outputTokens": 66,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 838,
+    },
+  },
+}
+`;

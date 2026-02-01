@@ -18,7 +18,7 @@ import type { ProviderConfig } from "@/tests/e2e/providers";
 import { defineCall } from "@/llm/calls";
 import { Audio } from "@/llm/content";
 import { user } from "@/llm/messages";
-import { createIt, describe, expect } from "@/tests/e2e/utils";
+import { createIt, describe, expect, snapshotTest } from "@/tests/e2e/utils";
 
 const it = createIt(resolve(__dirname, "cassettes"), "audio");
 
@@ -61,10 +61,15 @@ describe("audio content", () => {
         ],
       });
 
-      const response = await call();
+      const snap = await snapshotTest(async (s) => {
+        const response = await call();
+        s.setResponse(response);
 
-      // Response should transcribe the audio
-      expect(response.text().length).toBeGreaterThan(0);
+        // Response should transcribe the audio
+        expect(response.text().length).toBeGreaterThan(0);
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 });

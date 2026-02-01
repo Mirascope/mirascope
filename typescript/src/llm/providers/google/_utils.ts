@@ -56,6 +56,12 @@ import { createUsage } from "@/llm/responses/usage";
 import { ProviderTool, isProviderTool, isWebSearchTool } from "@/llm/tools";
 
 /**
+ * Default tool ID for Google function calls when no ID is provided.
+ * Google doesn't always provide tool IDs, so we use this as a fallback.
+ */
+const UNKNOWN_TOOL_ID = "google_unknown_tool_id";
+
+/**
  * Error mapping from Google SDK exceptions to Mirascope error types.
  * Google SDK uses a single ApiError class with status codes.
  */
@@ -610,11 +616,11 @@ function decodeContent(
       content.push(text);
       /* v8 ignore start - tool decoding will be tested via e2e */
     } else if (part.functionCall) {
-      // Google doesn't provide IDs for function calls, so we generate one
+      // Google doesn't always provide IDs for function calls
       const name = part.functionCall.name ?? "";
       const toolCall: ToolCall = {
         type: "tool_call",
-        id: `google_${name}_${Date.now()}`,
+        id: part.functionCall.id ?? UNKNOWN_TOOL_ID,
         name,
         args: JSON.stringify(part.functionCall.args ?? {}),
       };

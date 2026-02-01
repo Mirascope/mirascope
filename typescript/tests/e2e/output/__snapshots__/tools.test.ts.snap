@@ -1,0 +1,988 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`tool usage > [anthropic] calls tool and resumes with results 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please retrieve the secrets for these passwords: "mellon" and "radiance". Use the secret_retrieval_tool for each password.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"password":"mellon"}",
+            "id": "toolu_01THTjQUiAECUZQcoCz1k4kW",
+            "name": "secret_retrieval_tool",
+            "type": "tool_call",
+          },
+          {
+            "args": "{"password":"radiance"}",
+            "id": "toolu_01B7tcV3MwDtehZDSs5PYEpz",
+            "name": "secret_retrieval_tool",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "id": "toolu_01THTjQUiAECUZQcoCz1k4kW",
+              "input": {
+                "password": "mellon",
+              },
+              "name": "secret_retrieval_tool",
+              "type": "tool_use",
+            },
+            {
+              "id": "toolu_01B7tcV3MwDtehZDSs5PYEpz",
+              "input": {
+                "password": "radiance",
+              },
+              "name": "secret_retrieval_tool",
+              "type": "tool_use",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "toolu_01THTjQUiAECUZQcoCz1k4kW",
+            "name": "secret_retrieval_tool",
+            "result": "Welcome to Moria!",
+            "type": "tool_output",
+          },
+          {
+            "error": null,
+            "id": "toolu_01B7tcV3MwDtehZDSs5PYEpz",
+            "name": "secret_retrieval_tool",
+            "result": "Life before Death",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "I've successfully retrieved the secrets for both passwords:
+
+1. **Password: "mellon"** → Secret: \`Welcome to Moria!\`
+2. **Password: "radiance"** → Secret: \`Life before Death\`",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "I've successfully retrieved the secrets for both passwords:
+
+1. **Password: "mellon"** → Secret: \`Welcome to Moria!\`
+2. **Password: "radiance"** → Secret: \`Life before Death\`",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [
+      {
+        "description": "A tool that requires a password to retrieve a secret. Takes a 'password' field.",
+        "name": "secret_retrieval_tool",
+        "parameters": "{
+  "type": "object",
+  "properties": {
+    "password": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false
+}",
+        "strict": undefined,
+      },
+    ],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 776,
+      "outputTokens": 54,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 830,
+    },
+  },
+  "toolIterations": 1,
+}
+`;
+
+exports[`tool usage > [google] calls tool and resumes with results 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please retrieve the secrets for these passwords: "mellon" and "radiance". Use the secret_retrieval_tool for each password.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"password":"mellon"}",
+            "id": "google_unknown_tool_id",
+            "name": "secret_retrieval_tool",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "functionCall": {
+                "args": {
+                  "password": "mellon",
+                },
+                "name": "secret_retrieval_tool",
+              },
+              "thoughtSignature": "Cu8BAXLI2nzzFjmecAFTu/N/PzJYyjWveKOqKLkqnOU5bRcZ1CHocle0cUOh/bGFd+tIJtG58KC7esmdzK30KtDZp13QlB9GU5LsI8RsVSwOeRuSnytCDD3EZm4a6IN8vB83N0UV7BzdPhObtvdIpfiI+Bjo1pXTi3DH0oUDrivApHDHFBHr26Nsu6R5L8BGWQM/q11KJewzb44dhHvb9MnlrmESxJQOL8Uw3c1z3ThRcLCKPnT1dOzZqKuPmrNAxhz1OKLQmUkBqkIqfTHRnyoMfqUhYBDTljp1Po0xxsL15nrQtQ9eWfbNzdsKlhrDhdE=",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "google_unknown_tool_id",
+            "name": "secret_retrieval_tool",
+            "result": "Welcome to Moria!",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"password":"radiance"}",
+            "id": "google_unknown_tool_id",
+            "name": "secret_retrieval_tool",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "functionCall": {
+                "args": {
+                  "password": "radiance",
+                },
+                "name": "secret_retrieval_tool",
+              },
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "google_unknown_tool_id",
+            "name": "secret_retrieval_tool",
+            "result": "Life before Death",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "The secrets for the provided passwords are:
+* For "mellon": "Welcome to Moria!"
+* For "radiance": "Life before Death"",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "The secrets for the provided passwords are:
+* For "mellon": "Welcome to Moria!"
+* For "radiance": "Life before Death"",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [
+      {
+        "description": "A tool that requires a password to retrieve a secret. Takes a 'password' field.",
+        "name": "secret_retrieval_tool",
+        "parameters": "{
+  "type": "object",
+  "properties": {
+    "password": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false
+}",
+        "strict": undefined,
+      },
+    ],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 169,
+      "outputTokens": 33,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 202,
+    },
+  },
+  "toolIterations": 2,
+}
+`;
+
+exports[`tool usage > [openai:completions] calls tool and resumes with results 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please retrieve the secrets for these passwords: "mellon" and "radiance". Use the secret_retrieval_tool for each password.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"password": "mellon"}",
+            "id": "call_SE0PTRjN6OKtlSByGkLyJjJ0",
+            "name": "secret_retrieval_tool",
+            "type": "tool_call",
+          },
+          {
+            "args": "{"password": "radiance"}",
+            "id": "call_BnLDrTOL0yoQU74ap3fIqIzm",
+            "name": "secret_retrieval_tool",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "openai/gpt-4o-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-4o-mini:completions",
+        "rawMessage": {
+          "annotations": [],
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{"password": "mellon"}",
+                "name": "secret_retrieval_tool",
+              },
+              "id": "call_SE0PTRjN6OKtlSByGkLyJjJ0",
+              "type": "function",
+            },
+            {
+              "function": {
+                "arguments": "{"password": "radiance"}",
+                "name": "secret_retrieval_tool",
+              },
+              "id": "call_BnLDrTOL0yoQU74ap3fIqIzm",
+              "type": "function",
+            },
+          ],
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "call_SE0PTRjN6OKtlSByGkLyJjJ0",
+            "name": "secret_retrieval_tool",
+            "result": "Welcome to Moria!",
+            "type": "tool_output",
+          },
+          {
+            "error": null,
+            "id": "call_BnLDrTOL0yoQU74ap3fIqIzm",
+            "name": "secret_retrieval_tool",
+            "result": "Life before Death",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "The secrets retrieved for the passwords are as follows:
+
+- For "mellon": **Welcome to Moria!**
+- For "radiance": **Life before Death**",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-4o-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-4o-mini:completions",
+        "rawMessage": {
+          "annotations": [],
+          "content": "The secrets retrieved for the passwords are as follows:
+
+- For "mellon": **Welcome to Moria!**
+- For "radiance": **Life before Death**",
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-4o-mini:completions",
+    "providerId": "openai",
+    "providerModelName": "gpt-4o-mini:completions",
+    "tools": [
+      {
+        "description": "A tool that requires a password to retrieve a secret. Takes a 'password' field.",
+        "name": "secret_retrieval_tool",
+        "parameters": "{
+  "type": "object",
+  "properties": {
+    "password": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false
+}",
+        "strict": undefined,
+      },
+    ],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 161,
+      "outputTokens": 36,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 197,
+    },
+  },
+  "toolIterations": 1,
+}
+`;
+
+exports[`tool usage with streaming > [anthropic] streams tool calls and resumes with results 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please retrieve the secrets for these passwords: "mellon" and "radiance". Use the secret_retrieval_tool for each password.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"password": "mellon"}",
+            "id": "toolu_01NW9V1YCeF2aaDjiUnTSUH1",
+            "name": "secret_retrieval_tool",
+            "type": "tool_call",
+          },
+          {
+            "args": "{"password": "radiance"}",
+            "id": "toolu_015k2gzpZWrWT7ZKrmd1sPRg",
+            "name": "secret_retrieval_tool",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": null,
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "toolu_01NW9V1YCeF2aaDjiUnTSUH1",
+            "name": "secret_retrieval_tool",
+            "result": "Welcome to Moria!",
+            "type": "tool_output",
+          },
+          {
+            "error": null,
+            "id": "toolu_015k2gzpZWrWT7ZKrmd1sPRg",
+            "name": "secret_retrieval_tool",
+            "result": "Life before Death",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "I've successfully retrieved the secrets for both passwords:
+
+1. **Password: "mellon"** → Secret: "Welcome to Moria!"
+2. **Password: "radiance"** → Secret: "Life before Death"",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": null,
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 13,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [
+      {
+        "description": "A tool that requires a password to retrieve a secret. Takes a 'password' field.",
+        "name": "secret_retrieval_tool",
+        "parameters": "{
+  "type": "object",
+  "properties": {
+    "password": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false
+}",
+        "strict": undefined,
+      },
+    ],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 776,
+      "outputTokens": 61,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 837,
+    },
+  },
+  "toolIterations": 1,
+}
+`;
+
+exports[`tool usage with streaming > [google] streams tool calls and resumes with results 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please retrieve the secrets for these passwords: "mellon" and "radiance". Use the secret_retrieval_tool for each password.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"password":"mellon"}",
+            "id": "google_unknown_tool_id",
+            "name": "secret_retrieval_tool",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": GenerateContentResponse {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "functionCall": {
+                      "args": {
+                        "password": "mellon",
+                      },
+                      "name": "secret_retrieval_tool",
+                    },
+                    "thoughtSignature": "CiQBcsjafM3unaTwQZC153SKG+3Vhy9hJNu//I6DdAaGHoIjVMwKZgFyyNp8CgZK42ALSOwXSgU9w6rrX739BxTbJdF+es1oWgsWvVNkp3EF+RUThJ20M4WSuTlQbDtM8OQSCXimALHxHzXNqXrNVD7rqvKyKfK3IR3m9ttuUdjCrjJTwm+htg2rp501NwpwAXLI2ny6xquFtXoIYoT5gEfj/fUvE/uXl755xPMrA0iYrJuOmx1QeCyaWedEaVCAtBARyHr0RTovKebK/ihNfpUv/t5lZjxp88D2gXeIZ3vS/e+XMTkdbrZFTUXqd9qQn6as2ycNdwLstHRk/9bNPg==",
+                  },
+                ],
+                "role": "model",
+              },
+              "finishReason": "STOP",
+              "index": 0,
+            },
+          ],
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "qyZ9aaXmCbPlz7IPiIKa-A0",
+          "sdkHttpResponse": {
+            "headers": {
+              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
+              "content-disposition": "attachment",
+              "content-type": "text/event-stream",
+              "date": "Fri, 30 Jan 2026 21:46:19 GMT",
+              "server": "scaffolding on HTTPServer2",
+              "server-timing": "gfet4t7; dur=740",
+              "transfer-encoding": "chunked",
+              "vary": "Origin, X-Origin, Referer",
+              "x-content-type-options": "nosniff",
+              "x-frame-options": "SAMEORIGIN",
+              "x-xss-protection": "0",
+            },
+          },
+          "usageMetadata": {
+            "candidatesTokenCount": 20,
+            "promptTokenCount": 85,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 85,
+              },
+            ],
+            "thoughtsTokenCount": 40,
+            "totalTokenCount": 145,
+          },
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "google_unknown_tool_id",
+            "name": "secret_retrieval_tool",
+            "result": "Welcome to Moria!",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"password":"radiance"}",
+            "id": "google_unknown_tool_id",
+            "name": "secret_retrieval_tool",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": GenerateContentResponse {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "functionCall": {
+                      "args": {
+                        "password": "radiance",
+                      },
+                      "name": "secret_retrieval_tool",
+                    },
+                  },
+                ],
+                "role": "model",
+              },
+              "finishReason": "STOP",
+              "index": 0,
+            },
+          ],
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "rCZ9adrQEPjUz7IPqbqT2Q8",
+          "sdkHttpResponse": {
+            "headers": {
+              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
+              "content-disposition": "attachment",
+              "content-type": "text/event-stream",
+              "date": "Fri, 30 Jan 2026 21:46:20 GMT",
+              "server": "scaffolding on HTTPServer2",
+              "server-timing": "gfet4t7; dur=593",
+              "transfer-encoding": "chunked",
+              "vary": "Origin, X-Origin, Referer",
+              "x-content-type-options": "nosniff",
+              "x-frame-options": "SAMEORIGIN",
+              "x-xss-protection": "0",
+            },
+          },
+          "usageMetadata": {
+            "candidatesTokenCount": 20,
+            "promptTokenCount": 128,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 128,
+              },
+            ],
+            "totalTokenCount": 148,
+          },
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "google_unknown_tool_id",
+            "name": "secret_retrieval_tool",
+            "result": "Life before Death",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "The secrets for the provided passwords are:
+* **mellon**: "Welcome to Moria!"
+* **radiance**: "Life before Death"",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": GenerateContentResponse {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "radiance**: "Life before Death"",
+                  },
+                ],
+                "role": "model",
+              },
+              "finishReason": "STOP",
+              "index": 0,
+            },
+          ],
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "rCZ9aZOIM5biz7IPi_KAsQg",
+          "sdkHttpResponse": {
+            "headers": {
+              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
+              "content-disposition": "attachment",
+              "content-type": "text/event-stream",
+              "date": "Fri, 30 Jan 2026 21:46:20 GMT",
+              "server": "scaffolding on HTTPServer2",
+              "server-timing": "gfet4t7; dur=532",
+              "transfer-encoding": "chunked",
+              "vary": "Origin, X-Origin, Referer",
+              "x-content-type-options": "nosniff",
+              "x-frame-options": "SAMEORIGIN",
+              "x-xss-protection": "0",
+            },
+          },
+          "usageMetadata": {
+            "candidatesTokenCount": 31,
+            "promptTokenCount": 169,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 169,
+              },
+            ],
+            "totalTokenCount": 200,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "nChunks": 5,
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [
+      {
+        "description": "A tool that requires a password to retrieve a secret. Takes a 'password' field.",
+        "name": "secret_retrieval_tool",
+        "parameters": "{
+  "type": "object",
+  "properties": {
+    "password": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false
+}",
+        "strict": undefined,
+      },
+    ],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 507,
+      "outputTokens": 58,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 565,
+    },
+  },
+  "toolIterations": 2,
+}
+`;
+
+exports[`tool usage with streaming > [openai:completions] streams tool calls and resumes with results 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Please retrieve the secrets for these passwords: "mellon" and "radiance". Use the secret_retrieval_tool for each password.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "args": "{"password": "mellon"}",
+            "id": "call_KfqqY0CqapxDWHLEiw251OiT",
+            "name": "secret_retrieval_tool",
+            "type": "tool_call",
+          },
+          {
+            "args": "{"password": "radiance"}",
+            "id": "call_y9ieKDj0XgZ0FXzBRGjVatj1",
+            "name": "secret_retrieval_tool",
+            "type": "tool_call",
+          },
+        ],
+        "modelId": "openai/gpt-4o-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-4o-mini:completions",
+        "rawMessage": {
+          "choices": [],
+          "created": 1769809582,
+          "id": "chatcmpl-D3qbmX992IJqA0OczJ38Z1F7fk081",
+          "model": "gpt-4o-mini-2024-07-18",
+          "obfuscation": "LI1dl4IOy",
+          "object": "chat.completion.chunk",
+          "service_tier": "default",
+          "system_fingerprint": "fp_1590f93f9d",
+          "usage": {
+            "completion_tokens": 53,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0,
+            },
+            "prompt_tokens": 87,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0,
+            },
+            "total_tokens": 140,
+          },
+        },
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "error": null,
+            "id": "call_KfqqY0CqapxDWHLEiw251OiT",
+            "name": "secret_retrieval_tool",
+            "result": "Welcome to Moria!",
+            "type": "tool_output",
+          },
+          {
+            "error": null,
+            "id": "call_y9ieKDj0XgZ0FXzBRGjVatj1",
+            "name": "secret_retrieval_tool",
+            "result": "Life before Death",
+            "type": "tool_output",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "The secrets retrieved are as follows:
+
+- For the password **"mellon"**: "Welcome to Moria!"
+- For the password **"radiance"**: "Life before Death"",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-4o-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-4o-mini:completions",
+        "rawMessage": {
+          "choices": [],
+          "created": 1769809584,
+          "id": "chatcmpl-D3qbonSDc7ANQWuUbKZZyWeGrrvWg",
+          "model": "gpt-4o-mini-2024-07-18",
+          "obfuscation": "i0LKHWfP",
+          "object": "chat.completion.chunk",
+          "service_tier": "default",
+          "system_fingerprint": "fp_1590f93f9d",
+          "usage": {
+            "completion_tokens": 42,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0,
+            },
+            "prompt_tokens": 161,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0,
+            },
+            "total_tokens": 203,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-4o-mini:completions",
+    "nChunks": 44,
+    "providerId": "openai",
+    "providerModelName": "gpt-4o-mini:completions",
+    "tools": [
+      {
+        "description": "A tool that requires a password to retrieve a secret. Takes a 'password' field.",
+        "name": "secret_retrieval_tool",
+        "parameters": "{
+  "type": "object",
+  "properties": {
+    "password": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false
+}",
+        "strict": undefined,
+      },
+    ],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 161,
+      "outputTokens": 42,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 203,
+    },
+  },
+  "toolIterations": 1,
+}
+`;

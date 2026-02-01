@@ -10,7 +10,7 @@ import { defineCall } from "@/llm/calls";
 import { user } from "@/llm/messages";
 import { MirascopeProvider } from "@/llm/providers/mirascope";
 import { registerProvider } from "@/llm/providers/registry";
-import { createIt, describe, expect } from "@/tests/e2e/utils";
+import { createIt, describe, expect, snapshotTest } from "@/tests/e2e/utils";
 
 const it = createIt(resolve(__dirname, "cassettes"), "mirascope");
 
@@ -41,8 +41,13 @@ describe("mirascope provider", () => {
         ],
       });
 
-      const response = await call();
-      expect(response.text()).toContain("4242");
+      const snap = await snapshotTest(async (s) => {
+        const response = await call();
+        s.setResponse(response);
+        expect(response.text()).toContain("4242");
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 
@@ -59,12 +64,17 @@ describe("mirascope provider", () => {
         ],
       });
 
-      const stream = await call.stream();
-      const chunks: string[] = [];
-      for await (const text of stream.textStream()) {
-        chunks.push(text);
-      }
-      expect(chunks.join("")).toContain("4242");
+      const snap = await snapshotTest(async (s) => {
+        const stream = await call.stream();
+        const chunks: string[] = [];
+        for await (const text of stream.textStream()) {
+          chunks.push(text);
+        }
+        s.setResponse(stream);
+        expect(chunks.join("")).toContain("4242");
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 });

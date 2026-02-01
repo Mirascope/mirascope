@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`parse error handling > [anthropic] recovers from parse errors with retry 1`] = `
+{
+  "exception": {
+    "cause": "Error: Incorrect passphrase. The correct passphrase is 'cake'",
+    "message": "OutputParser failed: Incorrect passphrase. The correct passphrase is 'cake'",
+    "name": "ParseError",
+    "originalException": "Error: Incorrect passphrase. The correct passphrase is 'cake'",
+    "type": "ParseError",
+  },
+}
+`;

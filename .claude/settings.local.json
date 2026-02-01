@@ -33,7 +33,8 @@
       "Bash(bun run test:*)",
       "Bash(uv run pytest:*)",
       "Bash(uv run rg:*)",
-      "Bash(bun run lint:eslint:*)"
+      "Bash(bun run lint:eslint:*)",
+      "Bash(bun run format:*)"
     ],
     "deny": []
   }

@@ -10,7 +10,7 @@ import { resolve } from "node:path";
 import { createContext, type Context } from "@/llm/context";
 import { definePrompt } from "@/llm/prompts";
 import { PROVIDERS } from "@/tests/e2e/providers";
-import { createIt, describe, expect } from "@/tests/e2e/utils";
+import { createIt, describe, expect, snapshotTest } from "@/tests/e2e/utils";
 
 const it = createIt(resolve(__dirname, "cassettes"), "context-prompt");
 
@@ -25,11 +25,16 @@ describe("context prompt output", () => {
         `What is ${value} * ${ctx.deps.multiplier}?`,
     });
 
-    const ctx = createContext<TestDeps>({ multiplier: 10 });
-    const response = await multiply(model, ctx, { value: 42 });
+    const snap = await snapshotTest(async (s) => {
+      const ctx = createContext<TestDeps>({ multiplier: 10 });
+      const response = await multiply(model, ctx, { value: 42 });
+      s.setResponse(response);
 
-    expect(response.text()).toContain("420");
-    expect(response.usage).not.toBeNull();
+      expect(response.text()).toContain("420");
+      expect(response.usage).not.toBeNull();
+    });
+
+    expect(snap.toObject()).toMatchSnapshot();
   });
 
   it.record.each(PROVIDERS)("streams model with context", async ({ model }) => {
@@ -38,12 +43,17 @@ describe("context prompt output", () => {
         `What is ${value} * ${ctx.deps.multiplier}?`,
     });
 
-    const ctx = createContext<TestDeps>({ multiplier: 10 });
-    const response = await multiply.stream(model, ctx, { value: 42 });
+    const snap = await snapshotTest(async (s) => {
+      const ctx = createContext<TestDeps>({ multiplier: 10 });
+      const response = await multiply.stream(model, ctx, { value: 42 });
 
-    await response.consume();
+      await response.consume();
+      s.setResponse(response);
 
-    expect(response.text()).toContain("420");
-    expect(response.usage).not.toBeNull();
+      expect(response.text()).toContain("420");
+      expect(response.usage).not.toBeNull();
+    });
+
+    expect(snap.toObject()).toMatchSnapshot();
   });
 });

@@ -1,0 +1,542 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`context call output > [anthropic] decodes text response with context 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 42 * 10?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "42 * 10 = 420",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "42 * 10 = 420",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 16,
+      "outputTokens": 13,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 29,
+    },
+  },
+}
+`;
+
+exports[`context call output > [anthropic] streams response with context 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 42 * 10?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "42 * 10 = 420",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": null,
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "nChunks": 4,
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 16,
+      "outputTokens": 21,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 37,
+    },
+  },
+}
+`;
+
+exports[`context call output > [google] decodes text response with context 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 42 * 10?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "To calculate 42 * 10, you can simply add a zero to the end of 42.
+
+So, 42 * 10 = **420**.",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "To calculate 42 * 10, you can simply add a zero to the end of 42.
+
+So, 42 * 10 = **420**.",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 11,
+      "outputTokens": 94,
+      "raw": "[object Object]",
+      "reasoningTokens": 54,
+      "totalTokens": 105,
+    },
+  },
+}
+`;
+
+exports[`context call output > [google] streams response with context 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 42 * 10?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "42 * 10 = **420**",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": GenerateContentResponse {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "42 * 10 = **420**",
+                  },
+                ],
+                "role": "model",
+              },
+              "finishReason": "STOP",
+              "index": 0,
+            },
+          ],
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "art5aZ6dErrjz7IPur-ksAQ",
+          "sdkHttpResponse": {
+            "headers": {
+              "alt-svc": "h3=":443"; ma=2592000,h3-29=":443"; ma=2592000",
+              "content-disposition": "attachment",
+              "content-type": "text/event-stream",
+              "date": "Wed, 28 Jan 2026 07:31:54 GMT",
+              "server": "scaffolding on HTTPServer2",
+              "server-timing": "gfet4t7; dur=917",
+              "transfer-encoding": "chunked",
+              "vary": "Origin, X-Origin, Referer",
+              "x-content-type-options": "nosniff",
+              "x-frame-options": "SAMEORIGIN",
+              "x-xss-protection": "0",
+            },
+          },
+          "usageMetadata": {
+            "candidatesTokenCount": 12,
+            "promptTokenCount": 11,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 11,
+              },
+            ],
+            "thoughtsTokenCount": 52,
+            "totalTokenCount": 75,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "nChunks": 3,
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 11,
+      "outputTokens": 64,
+      "raw": "null",
+      "reasoningTokens": 52,
+      "totalTokens": 75,
+    },
+  },
+}
+`;
+
+exports[`context call output > [openai:completions] decodes text response with context 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 42 * 10?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "42 * 10 = 420",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "annotations": [],
+          "content": "42 * 10 = 420",
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 14,
+      "outputTokens": 16,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 30,
+    },
+  },
+}
+`;
+
+exports[`context call output > [openai:completions] streams response with context 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 42 * 10?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "420.",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "choices": [],
+          "created": 1769585514,
+          "id": "chatcmpl-D2uJmxsEeLlbclib9mnt4DrEIU68i",
+          "model": "gpt-5-mini-2025-08-07",
+          "obfuscation": "xGvgu",
+          "object": "chat.completion.chunk",
+          "service_tier": "default",
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 75,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 64,
+              "rejected_prediction_tokens": 0,
+            },
+            "prompt_tokens": 14,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0,
+            },
+            "total_tokens": 89,
+          },
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "nChunks": 5,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 14,
+      "outputTokens": 75,
+      "raw": "null",
+      "reasoningTokens": 64,
+      "totalTokens": 89,
+    },
+  },
+}
+`;
+
+exports[`context call output > [openai:responses] decodes text response with context 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 42 * 10?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "420",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": [
+          {
+            "id": "rs_0d0a0b47ca1be28b006979bb68ec04819fb9ed30101068bb1f",
+            "summary": [],
+            "type": "reasoning",
+          },
+          {
+            "content": [
+              {
+                "annotations": [],
+                "logprobs": [],
+                "text": "420",
+                "type": "output_text",
+              },
+            ],
+            "id": "msg_0d0a0b47ca1be28b006979bb6980b4819f8629d202765162e5",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message",
+          },
+        ],
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 14,
+      "outputTokens": 54,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 68,
+    },
+  },
+}
+`;
+
+exports[`context call output > [openai:responses] streams response with context 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 42 * 10?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "420",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": {
+          "background": false,
+          "completed_at": null,
+          "created_at": 1769585516,
+          "error": null,
+          "frequency_penalty": 0,
+          "id": "resp_031fc14956cd2b09006979bb6c3bd0819eb275aceb68de339a",
+          "incomplete_details": null,
+          "instructions": null,
+          "max_output_tokens": 100,
+          "max_tool_calls": null,
+          "metadata": {},
+          "model": "gpt-5-mini-2025-08-07",
+          "object": "response",
+          "output": [],
+          "parallel_tool_calls": true,
+          "presence_penalty": 0,
+          "previous_response_id": null,
+          "prompt_cache_key": null,
+          "prompt_cache_retention": null,
+          "reasoning": {
+            "effort": "medium",
+            "summary": null,
+          },
+          "safety_identifier": null,
+          "service_tier": "auto",
+          "status": "in_progress",
+          "store": true,
+          "temperature": 1,
+          "text": {
+            "format": {
+              "type": "text",
+            },
+            "verbosity": "medium",
+          },
+          "tool_choice": "auto",
+          "tools": [],
+          "top_logprobs": 0,
+          "top_p": 1,
+          "truncation": "disabled",
+          "usage": null,
+          "user": null,
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "nChunks": 3,
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 14,
+      "outputTokens": 45,
+      "raw": "null",
+      "reasoningTokens": 0,
+      "totalTokens": 59,
+    },
+  },
+}
+`;

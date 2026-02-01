@@ -9,7 +9,7 @@ import { resolve } from "node:path";
 
 import { defineCall } from "@/llm/calls";
 import { PROVIDERS_FOR_THINKING_TESTS } from "@/tests/e2e/providers";
-import { createIt, describe, expect } from "@/tests/e2e/utils";
+import { createIt, describe, expect, snapshotTest } from "@/tests/e2e/utils";
 
 const it = createIt(resolve(__dirname, "cassettes"), "thinking");
 
@@ -29,17 +29,22 @@ describe("thinking output", () => {
         template: () => "What is 2 + 2? Think step by step.",
       });
 
-      const response = await call();
+      const snap = await snapshotTest(async (s) => {
+        const response = await call();
+        s.setResponse(response);
 
-      // Should have at least one thought block
-      expect(response.thoughts.length).toBeGreaterThan(0);
+        // Should have at least one thought block
+        expect(response.thoughts.length).toBeGreaterThan(0);
 
-      // Thought content should be non-empty
-      const firstThought = response.thoughts[0];
-      expect(firstThought?.thought.length).toBeGreaterThan(0);
+        // Thought content should be non-empty
+        const firstThought = response.thoughts[0];
+        expect(firstThought?.thought.length).toBeGreaterThan(0);
 
-      // Should also have text content with the answer
-      expect(response.text()).toBeTruthy();
+        // Should also have text content with the answer
+        expect(response.text()).toBeTruthy();
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 
@@ -53,13 +58,18 @@ describe("thinking output", () => {
         template: () => "What is 2 + 2? Think step by step.",
       });
 
-      const response = await call();
+      const snap = await snapshotTest(async (s) => {
+        const response = await call();
+        s.setResponse(response);
 
-      // Should have no thought blocks
-      expect(response.thoughts.length).toBe(0);
+        // Should have no thought blocks
+        expect(response.thoughts.length).toBe(0);
 
-      // Should still have text content
-      expect(response.text()).toBeTruthy();
+        // Should still have text content
+        expect(response.text()).toBeTruthy();
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 
@@ -74,10 +84,15 @@ describe("thinking output", () => {
       template: () => "What is 2 + 2?",
     });
 
-    const response = await call();
+    const snap = await snapshotTest(async (s) => {
+      const response = await call();
+      s.setResponse(response);
 
-    // Usage should include reasoning tokens
-    expect(response.usage).not.toBeNull();
-    expect(response.usage?.reasoningTokens).toBeGreaterThan(0);
+      // Usage should include reasoning tokens
+      expect(response.usage).not.toBeNull();
+      expect(response.usage?.reasoningTokens).toBeGreaterThan(0);
+    });
+
+    expect(snap.toObject()).toMatchSnapshot();
   });
 });

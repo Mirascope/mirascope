@@ -1,0 +1,789 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`call input encoding > [anthropic] encodes assistant message 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 2+2?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "The answer is",
+            "type": "text",
+          },
+        ],
+        "modelId": null,
+        "name": null,
+        "providerId": null,
+        "providerModelName": null,
+        "rawMessage": null,
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": " 4.",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": " 4.",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 17,
+      "outputTokens": 6,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 23,
+    },
+  },
+}
+`;
+
+exports[`call input encoding > [anthropic] encodes messages and all params 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": {
+          "text": "You are a helpful assistant. Be very concise.",
+          "type": "text",
+        },
+        "role": "system",
+      },
+      {
+        "content": [
+          {
+            "text": "What is TypeScript? Answer in one sentence.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "TypeScript is a superset of JavaScript that adds static typing and other features to help catch errors at compile-time before running code.",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "TypeScript is a superset of JavaScript that adds static typing and other features to help catch errors at compile-time before running code.",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 28,
+      "outputTokens": 30,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 58,
+    },
+  },
+}
+`;
+
+exports[`call input encoding > [anthropic] encodes multi-part user content 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is ",
+            "type": "text",
+          },
+          {
+            "text": "5 + 5?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "5 + 5 = 10",
+            "type": "text",
+          },
+        ],
+        "modelId": "anthropic/claude-haiku-4-5",
+        "name": null,
+        "providerId": "anthropic",
+        "providerModelName": "claude-haiku-4-5",
+        "rawMessage": {
+          "content": [
+            {
+              "text": "5 + 5 = 10",
+              "type": "text",
+            },
+          ],
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "anthropic/claude-haiku-4-5",
+    "providerId": "anthropic",
+    "providerModelName": "claude-haiku-4-5",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 16,
+      "outputTokens": 13,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 29,
+    },
+  },
+}
+`;
+
+exports[`call input encoding > [google] encodes assistant message 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 2+2?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "The answer is",
+            "type": "text",
+          },
+        ],
+        "modelId": null,
+        "name": null,
+        "providerId": null,
+        "providerModelName": null,
+        "rawMessage": null,
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": " 4.",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": " 4.",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 12,
+      "outputTokens": 2,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 14,
+    },
+  },
+}
+`;
+
+exports[`call input encoding > [google] encodes messages and all params 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": {
+          "text": "You are a helpful assistant. Be very concise.",
+          "type": "text",
+        },
+        "role": "system",
+      },
+      {
+        "content": [
+          {
+            "text": "What is TypeScript? Answer in one sentence.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "TypeScript is an open-source programming language that builds on JavaScript by adding static type definitions, allowing for early error detection and improved code maintainability.",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "TypeScript is an open-source programming language that builds on JavaScript by adding static type definitions, allowing for early error detection and improved code maintainability.",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 21,
+      "outputTokens": 57,
+      "raw": "[object Object]",
+      "reasoningTokens": 28,
+      "totalTokens": 78,
+    },
+  },
+}
+`;
+
+exports[`call input encoding > [google] encodes multi-part user content 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is ",
+            "type": "text",
+          },
+          {
+            "text": "5 + 5?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "5 + 5 = **10**",
+            "type": "text",
+          },
+        ],
+        "modelId": "google/gemini-2.5-flash",
+        "name": null,
+        "providerId": "google",
+        "providerModelName": "gemini-2.5-flash",
+        "rawMessage": {
+          "parts": [
+            {
+              "text": "5 + 5 = **10**",
+            },
+          ],
+          "role": "model",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "google/gemini-2.5-flash",
+    "providerId": "google",
+    "providerModelName": "gemini-2.5-flash",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 9,
+      "outputTokens": 39,
+      "raw": "[object Object]",
+      "reasoningTokens": 30,
+      "totalTokens": 48,
+    },
+  },
+}
+`;
+
+exports[`call input encoding > [openai:completions] encodes assistant message 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 2+2?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "The answer is",
+            "type": "text",
+          },
+        ],
+        "modelId": null,
+        "name": null,
+        "providerId": null,
+        "providerModelName": null,
+        "rawMessage": null,
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "2+2 = 4.",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "annotations": [],
+          "content": "2+2 = 4.",
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 22,
+      "outputTokens": 80,
+      "raw": "[object Object]",
+      "reasoningTokens": 64,
+      "totalTokens": 102,
+    },
+  },
+}
+`;
+
+exports[`call input encoding > [openai:completions] encodes messages and all params 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": {
+          "text": "You are a helpful assistant. Be very concise.",
+          "type": "text",
+        },
+        "role": "system",
+      },
+      {
+        "content": [
+          {
+            "text": "What is TypeScript? Answer in one sentence.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "TypeScript is a superset of JavaScript that adds static typing and other features to enhance development and improve code quality.",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-4o-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-4o-mini:completions",
+        "rawMessage": {
+          "annotations": [],
+          "content": "TypeScript is a superset of JavaScript that adds static typing and other features to enhance development and improve code quality.",
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-4o-mini:completions",
+    "providerId": "openai",
+    "providerModelName": "gpt-4o-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 31,
+      "outputTokens": 24,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 55,
+    },
+  },
+}
+`;
+
+exports[`call input encoding > [openai:completions] encodes multi-part user content 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is ",
+            "type": "text",
+          },
+          {
+            "text": "5 + 5?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "5 + 5 = 10",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:completions",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:completions",
+        "rawMessage": {
+          "annotations": [],
+          "content": "5 + 5 = 10",
+          "role": "assistant",
+        },
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:completions",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:completions",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 14,
+      "outputTokens": 16,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 30,
+    },
+  },
+}
+`;
+
+exports[`call input encoding > [openai:responses] encodes assistant message 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is 2+2?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "The answer is",
+            "type": "text",
+          },
+        ],
+        "modelId": null,
+        "name": null,
+        "providerId": null,
+        "providerModelName": null,
+        "rawMessage": null,
+        "role": "assistant",
+      },
+      {
+        "content": [
+          {
+            "text": "2 + 2 = 4",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": [
+          {
+            "id": "rs_07dc68ebeaa9451d006976feaeeae081a09f195e7cbd1cb7c5",
+            "summary": [],
+            "type": "reasoning",
+          },
+          {
+            "content": [
+              {
+                "annotations": [],
+                "logprobs": [],
+                "text": "2 + 2 = 4",
+                "type": "output_text",
+              },
+            ],
+            "id": "msg_07dc68ebeaa9451d006976feaf937c81a0ae1c24e45512aa4a",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message",
+          },
+        ],
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 22,
+      "outputTokens": 13,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 35,
+    },
+  },
+}
+`;
+
+exports[`call input encoding > [openai:responses] encodes messages and all params 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": {
+          "text": "You are a helpful assistant. Be very concise.",
+          "type": "text",
+        },
+        "role": "system",
+      },
+      {
+        "content": [
+          {
+            "text": "What is TypeScript? Answer in one sentence.",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "TypeScript is a superset of JavaScript that adds static typing and other features to enhance development and maintainability.",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-4o-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-4o-mini:responses",
+        "rawMessage": [
+          {
+            "content": [
+              {
+                "annotations": [],
+                "logprobs": [],
+                "text": "TypeScript is a superset of JavaScript that adds static typing and other features to enhance development and maintainability.",
+                "type": "output_text",
+              },
+            ],
+            "id": "msg_0e0ea35e0e6df980006976fead3b5c8191a5208590f76711ec",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message",
+          },
+        ],
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-4o-mini:responses",
+    "providerId": "openai",
+    "providerModelName": "gpt-4o-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 31,
+      "outputTokens": 24,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 55,
+    },
+  },
+}
+`;
+
+exports[`call input encoding > [openai:responses] encodes multi-part user content 1`] = `
+{
+  "response": {
+    "finishReason": null,
+    "format": null,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "What is ",
+            "type": "text",
+          },
+          {
+            "text": "5 + 5?",
+            "type": "text",
+          },
+        ],
+        "name": null,
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "10",
+            "type": "text",
+          },
+        ],
+        "modelId": "openai/gpt-5-mini:responses",
+        "name": null,
+        "providerId": "openai",
+        "providerModelName": "gpt-5-mini:responses",
+        "rawMessage": [
+          {
+            "id": "rs_0967449549f56bae00697a1faca010819e83fe28dcc31c7ca4",
+            "summary": [],
+            "type": "reasoning",
+          },
+          {
+            "content": [
+              {
+                "annotations": [],
+                "logprobs": [],
+                "text": "10",
+                "type": "output_text",
+              },
+            ],
+            "id": "msg_0967449549f56bae00697a1fad7020819e86fa851469450fbd",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message",
+          },
+        ],
+        "role": "assistant",
+      },
+    ],
+    "modelId": "openai/gpt-5-mini:responses",
+    "providerId": "openai",
+    "providerModelName": "gpt-5-mini:responses",
+    "tools": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "inputTokens": 14,
+      "outputTokens": 55,
+      "raw": "[object Object]",
+      "reasoningTokens": 0,
+      "totalTokens": 69,
+    },
+  },
+}
+`;

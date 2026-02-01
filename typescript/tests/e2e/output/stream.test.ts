@@ -11,7 +11,7 @@ import { defineCall } from "@/llm/calls";
 import { NotFoundError, BadRequestError } from "@/llm/exceptions";
 import { FinishReason } from "@/llm/responses/finish-reason";
 import { PROVIDERS, PROVIDERS_FOR_THINKING_TESTS } from "@/tests/e2e/providers";
-import { createIt, describe, expect } from "@/tests/e2e/utils";
+import { createIt, describe, expect, snapshotTest } from "@/tests/e2e/utils";
 
 const it = createIt(resolve(__dirname, "cassettes"), "stream");
 
@@ -32,16 +32,23 @@ describe("stream output", () => {
       template: () => 'Say "hello world"',
     });
 
-    const response = await call.stream();
+    const snap = await snapshotTest(async (s) => {
+      const response = await call.stream();
 
-    const chunks: string[] = [];
-    for await (const text of response.textStream()) {
-      chunks.push(text);
-    }
+      const chunks: string[] = [];
+      for await (const text of response.textStream()) {
+        chunks.push(text);
+      }
 
-    expect(chunks.length).toBeGreaterThan(0);
-    expect(chunks.join("")).toMatch(/hello\s*world/i);
-    expect(response.text()).toMatch(/hello\s*world/i);
+      s.setResponse(response);
+      s.set("nChunks", chunks.length);
+
+      expect(chunks.length).toBeGreaterThan(0);
+      expect(chunks.join("")).toMatch(/hello\s*world/i);
+      expect(response.text()).toMatch(/hello\s*world/i);
+    });
+
+    expect(snap.toObject()).toMatchSnapshot();
   });
 
   it.record.each(PROVIDERS)(
@@ -53,15 +60,21 @@ describe("stream output", () => {
         template: () => "Hi",
       });
 
-      const response = await call.stream();
+      const snap = await snapshotTest(async (s) => {
+        const response = await call.stream();
 
-      // Consume the stream
-      for await (const _ of response.textStream()) {
-        // Just consume
-      }
+        // Consume the stream
+        for await (const _ of response.textStream()) {
+          // Just consume
+        }
 
-      // Normal completion returns null finish reason
-      expect(response.finishReason).toBeNull();
+        s.setResponse(response);
+
+        // Normal completion returns null finish reason
+        expect(response.finishReason).toBeNull();
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 
@@ -79,14 +92,20 @@ describe("stream output", () => {
           "European folklore, and their depictions in modern fantasy literature.",
       });
 
-      const response = await call.stream();
+      const snap = await snapshotTest(async (s) => {
+        const response = await call.stream();
 
-      // Consume the stream
-      for await (const _ of response.textStream()) {
-        // Just consume
-      }
+        // Consume the stream
+        for await (const _ of response.textStream()) {
+          // Just consume
+        }
 
-      expect(response.finishReason).toBe(FinishReason.MAX_TOKENS);
+        s.setResponse(response);
+
+        expect(response.finishReason).toBe(FinishReason.MAX_TOKENS);
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 
@@ -99,16 +118,22 @@ describe("stream output", () => {
         template: () => "Hi",
       });
 
-      const response = await call.stream();
+      const snap = await snapshotTest(async (s) => {
+        const response = await call.stream();
 
-      // Consume the stream
-      for await (const _ of response.textStream()) {
-        // Just consume
-      }
+        // Consume the stream
+        for await (const _ of response.textStream()) {
+          // Just consume
+        }
 
-      expect(response.usage).not.toBeNull();
-      expect(response.usage?.inputTokens).toBeGreaterThan(0);
-      expect(response.usage?.outputTokens).toBeGreaterThan(0);
+        s.setResponse(response);
+
+        expect(response.usage).not.toBeNull();
+        expect(response.usage?.inputTokens).toBeGreaterThan(0);
+        expect(response.usage?.outputTokens).toBeGreaterThan(0);
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 
@@ -121,19 +146,25 @@ describe("stream output", () => {
         template: () => 'Say "hello"',
       });
 
-      const response = await call.stream();
+      const snap = await snapshotTest(async (s) => {
+        const response = await call.stream();
 
-      // Content should be empty initially
-      expect(response.content.length).toBe(0);
+        // Content should be empty initially
+        expect(response.content.length).toBe(0);
 
-      // Consume the stream
-      for await (const _ of response.textStream()) {
-        // Just consume
-      }
+        // Consume the stream
+        for await (const _ of response.textStream()) {
+          // Just consume
+        }
 
-      // After consuming, content should be populated
-      expect(response.content.length).toBeGreaterThan(0);
-      expect(response.content[0]?.type).toBe("text");
+        s.setResponse(response);
+
+        // After consuming, content should be populated
+        expect(response.content.length).toBeGreaterThan(0);
+        expect(response.content[0]?.type).toBe("text");
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 
@@ -146,17 +177,23 @@ describe("stream output", () => {
         template: () => 'Say "hello"',
       });
 
-      const response = await call.stream();
+      const snap = await snapshotTest(async (s) => {
+        const response = await call.stream();
 
-      // Consume the stream
-      for await (const _ of response.textStream()) {
-        // Just consume
-      }
+        // Consume the stream
+        for await (const _ of response.textStream()) {
+          // Just consume
+        }
 
-      const msg = response.assistantMessage;
-      expect(msg.role).toBe("assistant");
-      expect(msg.content.length).toBeGreaterThan(0);
-      expect(msg.providerId).toBeDefined();
+        s.setResponse(response);
+
+        const msg = response.assistantMessage;
+        expect(msg.role).toBe("assistant");
+        expect(msg.content.length).toBeGreaterThan(0);
+        expect(msg.providerId).toBeDefined();
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 });
@@ -175,16 +212,23 @@ describe("stream thinking", () => {
         template: () => "What is 2 + 2? Think step by step.",
       });
 
-      const response = await call.stream();
+      const snap = await snapshotTest(async (s) => {
+        const response = await call.stream();
 
-      const thoughts: string[] = [];
-      for await (const thought of response.thoughtStream()) {
-        thoughts.push(thought);
-      }
+        const thoughts: string[] = [];
+        for await (const thought of response.thoughtStream()) {
+          thoughts.push(thought);
+        }
 
-      // At least some thought content should be streamed
-      expect(thoughts.length).toBeGreaterThan(0);
-      expect(response.thought()).toBeTruthy();
+        s.setResponse(response);
+        s.set("nThoughtChunks", thoughts.length);
+
+        // At least some thought content should be streamed
+        expect(thoughts.length).toBeGreaterThan(0);
+        expect(response.thought()).toBeTruthy();
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 
@@ -198,19 +242,26 @@ describe("stream thinking", () => {
         template: () => "What is 2 + 2?",
       });
 
-      const response = await call.stream();
+      const snap = await snapshotTest(async (s) => {
+        const response = await call.stream();
 
-      // Consume the stream
-      const texts: string[] = [];
-      for await (const chunk of response.chunkStream()) {
-        if (chunk.type === "text_chunk") {
-          texts.push(chunk.delta);
+        // Consume the stream
+        const texts: string[] = [];
+        for await (const chunk of response.chunkStream()) {
+          if (chunk.type === "text_chunk") {
+            texts.push(chunk.delta);
+          }
         }
-      }
 
-      // Should always have text content
-      expect(texts.length).toBeGreaterThan(0);
-      expect(response.text()).toMatch(/4/);
+        s.setResponse(response);
+        s.set("nTextChunks", texts.length);
+
+        // Should always have text content
+        expect(texts.length).toBeGreaterThan(0);
+        expect(response.text()).toMatch(/4/);
+      });
+
+      expect(snap.toObject()).toMatchSnapshot();
     },
   );
 });
