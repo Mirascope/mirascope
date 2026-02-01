@@ -10,6 +10,7 @@ KnownProviderId: TypeAlias = Literal[
     "mlx",  # Local inference powered by `mlx-lm`, via MLXProvider
     "ollama",  # Ollama provider via OllamaProvider
     "openai",  # OpenAI provider via OpenAIProvider (prefers Responses routing when available)
+    "openrouter",  # OpenRouter provider via OpenRouterProvider
     "together",  # Together AI provider via TogetherProvider
 ]
 KNOWN_PROVIDER_IDS = get_args(KnownProviderId)
@@ -20,5 +21,6 @@ OpenAICompletionsCompatibleProviderId: TypeAlias = Literal[
     "ollama",  # Ollama (OpenAI-compatible)
     "openai",  # OpenAI via OpenAIProvider (routes to completions)
     "openai:completions",  # OpenAI Completions API directly
+    "openrouter",  # OpenRouter (OpenAI-compatible)
     "together",  # Together AI (OpenAI-compatible)
 ]

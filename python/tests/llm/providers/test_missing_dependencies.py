@@ -390,6 +390,13 @@ class TestProviderStubs:
         # Should be importable without error
         assert TogetherProvider is not None
 
+    def test_openrouter_provider_is_importable(self) -> None:
+        """Test that OpenRouterProvider can be imported (will be real or stub)."""
+        from mirascope.llm.providers import OpenRouterProvider
+
+        # Should be importable without error
+        assert OpenRouterProvider is not None
+
     def test_ollama_provider_is_importable(self) -> None:
         """Test that OllamaProvider can be imported (will be real or stub)."""
         from mirascope.llm.providers import OllamaProvider
