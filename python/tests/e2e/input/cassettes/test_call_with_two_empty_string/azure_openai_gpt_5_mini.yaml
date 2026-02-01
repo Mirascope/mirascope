@@ -1,0 +1,101 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":[{"text":"","type":"text"},{"text":"","type":"text"}]}],"model":"gpt-5-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '115'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/v1/chat/completions
+  response:
+    body:
+      string: "{\"choices\":[{\"content_filter_results\":{\"hate\":{\"filtered\":false,\"\
+        severity\":\"safe\"},\"protected_material_code\":{\"filtered\":false,\"detected\"\
+        :false},\"protected_material_text\":{\"filtered\":false,\"detected\":false},\"\
+        self_harm\":{\"filtered\":false,\"severity\":\"safe\"},\"sexual\":{\"filtered\"\
+        :false,\"severity\":\"safe\"},\"violence\":{\"filtered\":false,\"severity\"\
+        :\"safe\"}},\"finish_reason\":\"stop\",\"index\":0,\"logprobs\":null,\"message\"\
+        :{\"annotations\":[],\"content\":\"Hi \u2014 how can I help you today? Here\
+        \ are a few things I can do if you\u2019re not sure:\\n\\n- Answer a question\
+        \ or explain a topic\\n- Help write or edit text (emails, essays, resumes,\
+        \ stories)\\n- Debug or write code (show language and goal)\\n- Solve math\
+        \ or science problems\\n- Summarize or translate documents\\n- Plan projects,\
+        \ schedules, or trips\\n- Provide creative ideas (names, prompts, outlines)\\\
+        n\\nTell me what you need and any important details.\",\"refusal\":null,\"\
+        role\":\"assistant\"}}],\"created\":1766400469,\"id\":\"chatcmpl-CpXk5nLY60YH6HjPyYC1H3RQX1XGW\"\
+        ,\"model\":\"gpt-5-mini-2025-08-07\",\"object\":\"chat.completion\",\"prompt_filter_results\"\
+        :[{\"prompt_index\":0,\"content_filter_results\":{}}],\"system_fingerprint\"\
+        :null,\"usage\":{\"completion_tokens\":177,\"completion_tokens_details\":{\"\
+        accepted_prediction_tokens\":0,\"audio_tokens\":0,\"reasoning_tokens\":64,\"\
+        rejected_prediction_tokens\":0},\"prompt_tokens\":6,\"prompt_tokens_details\"\
+        :{\"audio_tokens\":0,\"cached_tokens\":0},\"total_tokens\":183}}\n"
+    headers:
+      Content-Length:
+      - '1417'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 10:47:50 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      apim-request-id:
+      - dad3df30-8b49-4453-863a-d7a6ab9876d8
+      azureml-model-session:
+      - d20251213051038-f19b4ffce7bb4412
+      x-accel-buffering:
+      - 'no'
+      x-content-type-options:
+      - nosniff
+      x-ms-client-request-id:
+      - Not-Set
+      x-ms-deployment-name:
+      - gpt-5-mini
+      x-ms-rai-invoked:
+      - 'true'
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '100'
+      x-ratelimit-limit-tokens:
+      - '100000'
+      x-ratelimit-remaining-requests:
+      - '91'
+      x-ratelimit-remaining-tokens:
+      - '83211'
+      x-request-id:
+      - 580b7980-347e-4288-a8f2-422d9cbded29
+    status:
+      code: 200
+      message: OK
+version: 1

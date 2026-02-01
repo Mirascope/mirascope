@@ -296,12 +296,26 @@ def _compute_reasoning(
 def encode_request(
     *,
     model_id: OpenAIModelId,
+    model_name: str,
     messages: Sequence[Message],
     tools: BaseToolkit[AnyToolSchema],
     format: FormatSpec[FormattableT] | None,
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ResponseCreateKwargs]:
-    """Prepares a request for the `OpenAI.responses.create` method."""
+    """Prepares a request for the `OpenAI.responses.create` method.
+
+    Args:
+        model_id: The model identifier used for error messages and validation.
+        model_name: The model name to send to the API (may differ from model_id
+            for providers like Azure that use deployment names).
+        messages: The messages to send.
+        tools: The toolkit containing available tools.
+        format: Optional response format specifier.
+        params: Additional parameters for the request.
+
+    Returns:
+        A tuple of (messages, format, kwargs) for the API call.
+    """
     if model_id.endswith(":completions"):
         raise FeatureNotSupportedError(
             feature="completions API",
@@ -310,11 +324,9 @@ def encode_request(
             message=f"Cannot use completions model with responses client: {model_id}",
         )
 
-    base_model_name = model_name(model_id, None)
-
     kwargs: ResponseCreateKwargs = ResponseCreateKwargs(
         {
-            "model": base_model_name,
+            "model": model_name,
         }
     )
     encode_thoughts = False
@@ -332,7 +344,7 @@ def encode_request(
             kwargs["top_p"] = param_accessor.top_p
         if param_accessor.thinking is not None:
             thinking_config = param_accessor.thinking
-            if base_model_name in NON_REASONING_MODELS:
+            if model_name in NON_REASONING_MODELS:
                 param_accessor.emit_warning_for_unused_param(
                     "thinking", thinking_config, "openai", model_id
                 )

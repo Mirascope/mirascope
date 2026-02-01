@@ -79,8 +79,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
+        base_model_name = model_name(model_id, None)
         messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            model_name=base_model_name,
             messages=messages,
             tools=toolkit,
             format=format,
@@ -129,8 +131,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         Returns:
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
+        base_model_name = model_name(model_id, None)
         messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            model_name=base_model_name,
             messages=messages,
             tools=toolkit,
             format=format,
@@ -179,8 +183,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         Returns:
             A `llm.StreamResponse` object containing the LLM-generated content stream.
         """
+        base_model_name = model_name(model_id, None)
         messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            model_name=base_model_name,
             messages=messages,
             tools=toolkit,
             format=format,
@@ -229,8 +235,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         Returns:
             A `llm.AsyncStreamResponse` object containing the LLM-generated content stream.
         """
+        base_model_name = model_name(model_id, None)
         messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            model_name=base_model_name,
             messages=messages,
             tools=toolkit,
             format=format,
@@ -281,8 +289,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         Returns:
             A `llm.ContextResponse` object containing the LLM-generated content and context.
         """
+        base_model_name = model_name(model_id, None)
         messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            model_name=base_model_name,
             messages=messages,
             tools=toolkit,
             format=format,
@@ -333,8 +343,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         Returns:
             A `llm.AsyncContextResponse` object containing the LLM-generated content and context.
         """
+        base_model_name = model_name(model_id, None)
         messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            model_name=base_model_name,
             messages=messages,
             tools=toolkit,
             format=format,
@@ -385,8 +397,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         Returns:
             A `llm.ContextStreamResponse` object containing the LLM-generated content stream and context.
         """
+        base_model_name = model_name(model_id, None)
         messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            model_name=base_model_name,
             messages=messages,
             tools=toolkit,
             format=format,
@@ -441,8 +455,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         Returns:
             A `llm.AsyncContextStreamResponse` object containing the LLM-generated content stream and context.
         """
+        base_model_name = model_name(model_id, None)
         messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            model_name=base_model_name,
             messages=messages,
             tools=toolkit,
             format=format,

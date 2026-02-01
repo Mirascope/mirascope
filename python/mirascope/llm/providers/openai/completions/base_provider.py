@@ -110,12 +110,12 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         """
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            model_name=self._model_name(model_id),
             messages=messages,
             tools=toolkit,
             format=format,
             params=params,
         )
-        kwargs["model"] = self._model_name(model_id)
         openai_response = self.client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
@@ -164,12 +164,12 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         """
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            model_name=self._model_name(model_id),
             messages=messages,
             tools=toolkit,
             format=format,
             params=params,
         )
-        kwargs["model"] = self._model_name(model_id)
         openai_response = self.client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
@@ -216,12 +216,12 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         """
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            model_name=self._model_name(model_id),
             params=params,
             messages=messages,
             tools=toolkit,
             format=format,
         )
-        kwargs["model"] = self._model_name(model_id)
         openai_response = await self.async_client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
@@ -270,12 +270,12 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         """
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            model_name=self._model_name(model_id),
             params=params,
             messages=messages,
             tools=toolkit,
             format=format,
         )
-        kwargs["model"] = self._model_name(model_id)
         openai_response = await self.async_client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
@@ -322,12 +322,12 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         """
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            model_name=self._model_name(model_id),
             messages=messages,
             tools=toolkit,
             format=format,
             params=params,
         )
-        kwargs["model"] = self._model_name(model_id)
         openai_stream = self.client.chat.completions.create(
             **kwargs,
             stream=True,
@@ -372,12 +372,12 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         """
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            model_name=self._model_name(model_id),
             messages=messages,
             tools=toolkit,
             format=format,
             params=params,
         )
-        kwargs["model"] = self._model_name(model_id)
 
         openai_stream = self.client.chat.completions.create(
             **kwargs,
@@ -421,12 +421,12 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         """
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            model_name=self._model_name(model_id),
             messages=messages,
             tools=toolkit,
             format=format,
             params=params,
         )
-        kwargs["model"] = self._model_name(model_id)
         openai_stream = await self.async_client.chat.completions.create(
             **kwargs,
             stream=True,
@@ -474,12 +474,12 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         """
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            model_name=self._model_name(model_id),
             messages=messages,
             tools=toolkit,
             format=format,
             params=params,
         )
-        kwargs["model"] = self._model_name(model_id)
 
         openai_stream = await self.async_client.chat.completions.create(
             **kwargs,

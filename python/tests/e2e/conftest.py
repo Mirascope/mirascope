@@ -5,6 +5,7 @@ Includes setting up VCR for HTTP recording/playback.
 
 from __future__ import annotations
 
+import re
 import sys
 from collections.abc import Callable
 from copy import deepcopy
@@ -24,12 +25,12 @@ def _(value: llm.ToolExecutionError) -> str:
 
 SENSITIVE_HEADERS = [
     "authorization",  # OpenAI Bearer tokens
+    "api-key",  # Azure OpenAI API keys
     "x-api-key",  # Anthropic API keys
     "x-goog-api-key",  # Google/Gemini API keys
     "anthropic-organization-id",  # Anthropic org identifiers
     "cookie",  # Session cookies
 ]
-
 
 E2E_MODEL_IDS: list[llm.ModelId] = [
     "anthropic/claude-sonnet-4-0",
@@ -116,6 +117,13 @@ def sanitize_request(request: Any) -> Any:  # noqa: ANN401
                 request.headers[req_header] = ["<filtered>"]
             else:
                 request.headers[req_header] = "<filtered>"
+
+    if ".openai.azure.com" in request.uri:
+        request.uri = re.sub(
+            r"https://[^/]+\.openai\.azure\.com",
+            "https://dummy.openai.azure.com",
+            request.uri,
+        )
 
     return request
 

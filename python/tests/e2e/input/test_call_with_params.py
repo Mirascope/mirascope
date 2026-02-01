@@ -12,12 +12,18 @@ from tests.utils import (
     snapshot_test,
 )
 
+# Azure models are excluded because they require different test setup
 PARAMS_MODEL_IDS: list[llm.ModelId] = [
-    *E2E_MODEL_IDS,
-    # Include reasoning models to verify unsupported params (temperature, top_p) are logged
-    "openai/gpt-5-mini:completions",
-    "openai/gpt-5:completions",
+    model_id
+    for model_id in [
+        *E2E_MODEL_IDS,
+        # Include reasoning models to verify unsupported params (temperature, top_p) are logged
+        "openai/gpt-5-mini:completions",
+        "openai/gpt-5:completions",
+    ]
+    if not model_id.startswith("azure/openai/")
 ]
+
 
 # ============= ALL PARAMS TESTS =============
 ALL_PARAMS: llm.Params = {
