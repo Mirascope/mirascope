@@ -1,20 +1,52 @@
 {
   "name": "mirascope",
   "version": "2.0.0-alpha.0",
+  "private": false,
   "workspaces": [
     "examples"
   ],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./transform": "./src/transform/index.ts",
-    "./vite": "./src/transform/plugins/vite.ts",
-    "./esbuild": "./src/transform/plugins/esbuild.ts",
-    "./bun": "./src/bun.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./transform": {
+      "types": "./dist/transform/index.d.ts",
+      "import": "./dist/transform/index.js",
+      "require": "./dist/transform/index.cjs"
+    },
+    "./vite": {
+      "types": "./dist/transform/plugins/vite.d.ts",
+      "import": "./dist/transform/plugins/vite.js",
+      "require": "./dist/transform/plugins/vite.cjs"
+    },
+    "./esbuild": {
+      "types": "./dist/transform/plugins/esbuild.d.ts",
+      "import": "./dist/transform/plugins/esbuild.js",
+      "require": "./dist/transform/plugins/esbuild.cjs"
+    },
+    "./bun": {
+      "types": "./dist/bun.d.ts",
+      "import": "./dist/bun.js",
+      "require": "./dist/bun.cjs"
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "bun x tsc --build tsconfig.json",
-    "typecheck": "bun x tsc --build tsconfig.json",
+    "clean": "rm -rf dist .packs .tmp-install-test",
+    "build": "bun run clean && tsup src/index.ts src/transform/index.ts src/transform/plugins/vite.ts src/transform/plugins/esbuild.ts src/bun.ts --format esm,cjs --dts --sourcemap --out-dir dist --treeshake --external bun --external typescript",
+    "typecheck": "bunx tsc --noEmit",
     "lint": "bun run typecheck && bun run lint:oxlint && bun run format:check",
     "lint:oxlint": "oxlint .",
     "lint:oxlint:fix": "oxlint --fix .",
@@ -25,7 +57,11 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "codegen": "bun run scripts/codegen/run.ts",
-    "example": "bun run scripts/run-example.ts"
+    "example": "bun run scripts/run-example.ts",
+    "prepublishOnly": "bun run build",
+    "pack:dry": "npm pack --dry-run",
+    "verify": "bun run build && bun run pack:dry",
+    "release:alpha": "bun run verify && npm publish --tag alpha"
   },
   "dependencies": {
     "partial-json": "^0.1.7"
@@ -36,7 +72,6 @@
     "@pollyjs/adapter-fetch": "^6.0.7",
     "@pollyjs/core": "^6.0.6",
     "@pollyjs/persister": "^6.0.6",
-    "@rollup/plugin-typescript": "^12.1.2",
     "@types/bun": "latest",
     "@vitest/coverage-v8": "^3.0.0",
     "dotenv": "^17.2.3",
@@ -46,6 +81,7 @@
     "oxfmt": "^0.27.0",
     "oxlint": "^1.42.0",
     "tslib": "^2.8.1",
+    "tsup": "^8.0.0",
     "typescript": "^5",
     "vite": "^6.3.5",
     "vitest": "^3.0.0",
@@ -57,7 +93,8 @@
     "@google/genai": ">=1.0.0",
     "@rollup/plugin-typescript": ">=11.0.0",
     "esbuild": ">=0.17.0",
-    "openai": "^6.16.0",
+    "openai": ">=6.16.0",
+    "typescript": ">=5.0.0",
     "vite": ">=4.0.0",
     "zod": ">=4.0.0"
   },
@@ -78,6 +115,9 @@
       "optional": true
     },
     "esbuild": {
+      "optional": true
+    },
+    "typescript": {
       "optional": true
     },
     "vite": {
