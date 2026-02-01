@@ -2,6 +2,9 @@
   "name": "mirascope",
   "version": "2.0.0-alpha.0",
   "type": "module",
+  "bin": {
+    "mirascope": "./src/cli/index.ts"
+  },
   "exports": {
     ".": "./src/index.ts"
   },
