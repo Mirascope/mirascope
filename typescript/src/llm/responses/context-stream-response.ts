@@ -45,6 +45,7 @@ export interface ContextStreamResponseInit<DepsT = unknown>
  * - `resume()`: Continue the conversation with additional user content
  *
  * @template DepsT - The type of dependencies in the context.
+ * @template F - The type of the formatted output when using structured outputs.
  *
  * @example
  * ```typescript
@@ -61,7 +62,10 @@ export interface ContextStreamResponseInit<DepsT = unknown>
  * const followUp = await response.resume(ctx, 'Tell me more');
  * ```
  */
-export class ContextStreamResponse<DepsT = unknown> extends BaseStreamResponse {
+export class ContextStreamResponse<
+  DepsT = unknown,
+  F = unknown,
+> extends BaseStreamResponse<F> {
   /**
    * The context toolkit containing tools that can receive context.
    */
@@ -144,8 +148,10 @@ export class ContextStreamResponse<DepsT = unknown> extends BaseStreamResponse {
   async resume(
     ctx: Context<DepsT>,
     content: UserContent
-  ): Promise<ContextStreamResponse<DepsT>> {
+  ): Promise<ContextStreamResponse<DepsT, F>> {
     const model = await this.model;
-    return model.contextResumeStream(ctx, this, content);
+    return model.contextResumeStream(ctx, this, content) as Promise<
+      ContextStreamResponse<DepsT, F>
+    >;
   }
 }

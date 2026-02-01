@@ -112,6 +112,26 @@ export {
 } from '@/llm/exceptions';
 
 export type { Params, ThinkingConfig, ThinkingLevel } from '@/llm/models';
+
+export {
+  defineFormat,
+  defineOutputParser,
+  isFormat,
+  isOutputParser,
+  resolveFormat,
+  FORMAT_TOOL_NAME,
+  TOOL_MODE_INSTRUCTIONS,
+  JSON_MODE_INSTRUCTIONS,
+} from '@/llm/formatting';
+
+export type {
+  Format,
+  FormatSpec,
+  FormattingMode,
+  OutputParser,
+  OutputParserArgs,
+  DeepPartial,
+} from '@/llm/formatting';
 export {
   Model,
   model,

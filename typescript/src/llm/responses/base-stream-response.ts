@@ -6,6 +6,7 @@
  * - chunkStream(): Raw chunks as async iterator (with caching for replay)
  * - textStream(): Text deltas only
  * - thoughtStream(): Thought deltas only
+ * - structuredStream(): Partial parsed objects for structured output streaming
  *
  * Accumulates content as chunks arrive, with final state accessible via
  * the standard RootResponse interface (text(), content, finishReason, usage, etc.).
@@ -21,13 +22,11 @@ import type {
   Thought,
   ToolCall,
 } from '@/llm/content';
+import type { DeepPartial, Format } from '@/llm/formatting';
+import { FORMAT_TOOL_NAME } from '@/llm/formatting';
 import type { AssistantMessage, Message } from '@/llm/messages';
 import type { Params } from '@/llm/models';
 import type { ModelId, ProviderId } from '@/llm/providers';
-import type { FinishReason } from '@/llm/responses/finish-reason';
-import { RootResponse } from '@/llm/responses/root-response';
-import type { Usage } from '@/llm/responses/usage';
-import { createUsage } from '@/llm/responses/usage';
 import type {
   AssistantContentChunk,
   StreamResponseChunk,
@@ -35,14 +34,18 @@ import type {
   ThoughtChunk,
   ToolCallChunk,
 } from '@/llm/responses/chunks';
+import type { FinishReason } from '@/llm/responses/finish-reason';
+import { RootResponse } from '@/llm/responses/root-response';
 import {
   TextStream,
   ThoughtStream,
   ToolCallStream,
   type Stream,
 } from '@/llm/responses/streams';
-import type { Jsonable } from '@/llm/types/jsonable';
+import type { Usage } from '@/llm/responses/usage';
+import { createUsage } from '@/llm/responses/usage';
 import type { BaseToolkit } from '@/llm/tools';
+import type { Jsonable } from '@/llm/types/jsonable';
 
 /**
  * Arguments for constructing a BaseStreamResponse.
@@ -63,6 +66,9 @@ export interface BaseStreamResponseInit {
   /** The toolkit containing all tools available for this response */
   toolkit: BaseToolkit;
 
+  /** The Format describing the structured response format, if any */
+  format?: Format | null;
+
   /** Input messages sent in the request */
   inputMessages: readonly Message[];
 
@@ -79,8 +85,10 @@ export interface BaseStreamResponseInit {
  *
  * This class contains all streaming logic but no resume methods. Subclasses
  * (StreamResponse, ContextStreamResponse) add their own resume methods.
+ *
+ * @template F - The type of the formatted output when using structured outputs.
  */
-export class BaseStreamResponse extends RootResponse {
+export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
   // ===== RootResponse Implementation =====
 
   /** Raw stream events from provider */
@@ -93,6 +101,7 @@ export class BaseStreamResponse extends RootResponse {
   readonly providerModelName: string;
   readonly params: Params;
   readonly toolkit: BaseToolkit;
+  readonly format: Format | null;
 
   /** Input messages sent in the request */
   readonly inputMessages: readonly Message[];
@@ -154,6 +163,8 @@ export class BaseStreamResponse extends RootResponse {
   >();
   /** Whether the iterator has been fully consumed */
   private _consumed = false;
+  /** Whether we're currently processing a FORMAT_TOOL call (transforming to text) */
+  private _processingFormatTool = false;
 
   /** Finish reason once stream is complete */
   private _finishReason: FinishReason | null = null;
@@ -169,6 +180,7 @@ export class BaseStreamResponse extends RootResponse {
     this.providerModelName = args.providerModelName;
     this.params = args.params;
     this.toolkit = args.toolkit;
+    this.format = args.format ?? null;
     this.inputMessages = args.inputMessages;
     this._chunkIterator = args.chunkIterator;
   }
@@ -266,6 +278,51 @@ export class BaseStreamResponse extends RootResponse {
     for await (const chunk of this.chunkStream()) {
       if (chunk.type === 'thought_chunk') {
         yield chunk.delta;
+      }
+    }
+  }
+
+  /**
+   * Stream partial parsed objects as they arrive during structured output streaming.
+   *
+   * This method drives the stream forward, parsing the accumulated text content
+   * as partial JSON after each text chunk arrives. The yielded objects may have
+   * missing or incomplete fields early in the stream, gradually becoming complete.
+   *
+   * @yields DeepPartial<F> - Partial objects with fields populated as they arrive.
+   * @throws Error if format was not specified or uses OutputParser.
+   *
+   * @example
+   * ```typescript
+   * interface Book { title: string; author: string; }
+   *
+   * const stream = await model.stream<Book>('Recommend a book', {
+   *   format: BookSchema
+   * });
+   *
+   * for await (const partial of stream.structuredStream()) {
+   *   console.log(partial.title); // May be undefined initially
+   *   console.log(partial.author); // Populated as it arrives
+   * }
+   *
+   * // After stream completes, get the final validated result
+   * const book = stream.parse();
+   * ```
+   */
+  async *structuredStream(): AsyncGenerator<DeepPartial<F>> {
+    if (!this.format) {
+      throw new Error('structuredStream() requires format parameter');
+    }
+    if (this.format.outputParser) {
+      throw new Error('structuredStream() is not supported for OutputParser');
+    }
+
+    for await (const chunk of this.chunkStream()) {
+      if (chunk.type === 'text_chunk') {
+        const partial = this.parse({ partial: true });
+        if (partial !== null) {
+          yield partial as DeepPartial<F>;
+        }
       }
     }
   }
@@ -410,44 +467,83 @@ export class BaseStreamResponse extends RootResponse {
   // ===== Private Helpers =====
 
   /**
+   * Transform FORMAT_TOOL chunks to text chunks.
+   *
+   * When the format uses tool mode, the LLM generates tool calls to the
+   * FORMAT_TOOL. These chunks are transformed to text chunks so that the
+   * structured output appears as text content for parse() to consume.
+   *
+   * @param chunk - The original chunk from the provider.
+   * @returns The transformed chunk (tool_call → text) or the original chunk.
+   */
+  private _transformFormatToolChunk(
+    chunk: StreamResponseChunk
+  ): StreamResponseChunk {
+    // Handle tool_call_start_chunk: Transform FORMAT_TOOL start to text_start
+    if (
+      chunk.type === 'tool_call_start_chunk' &&
+      chunk.name.startsWith(FORMAT_TOOL_NAME)
+    ) {
+      this._processingFormatTool = true;
+      return { type: 'text_start_chunk', contentType: 'text' };
+    }
+
+    // Handle tool_call_chunk: Transform FORMAT_TOOL chunk to text_chunk
+    if (this._processingFormatTool && chunk.type === 'tool_call_chunk') {
+      return { type: 'text_chunk', contentType: 'text', delta: chunk.delta };
+    }
+
+    // Handle tool_call_end_chunk: Transform FORMAT_TOOL end to text_end
+    if (this._processingFormatTool && chunk.type === 'tool_call_end_chunk') {
+      this._processingFormatTool = false;
+      return { type: 'text_end_chunk', contentType: 'text' };
+    }
+
+    return chunk;
+  }
+
+  /**
    * Process a single chunk, handling metadata and content accumulation.
    * Returns the content chunk if it should be yielded, null otherwise.
    */
   private _processChunk(
     chunk: StreamResponseChunk
   ): AssistantContentChunk | null {
-    switch (chunk.type) {
+    // Transform FORMAT_TOOL chunks to text chunks
+    const transformedChunk = this._transformFormatToolChunk(chunk);
+
+    switch (transformedChunk.type) {
       // Metadata chunks - handle internally, don't yield
       case 'raw_stream_event_chunk':
-        this._rawStreamEvents.push(chunk.rawStreamEvent);
+        this._rawStreamEvents.push(transformedChunk.rawStreamEvent);
         return null;
 
       case 'raw_message_chunk':
-        this._rawMessage = chunk.rawMessage;
+        this._rawMessage = transformedChunk.rawMessage;
         return null;
 
       case 'finish_reason_chunk':
-        this._finishReason = chunk.finishReason;
+        this._finishReason = transformedChunk.finishReason;
         return null;
 
       case 'usage_delta_chunk':
-        this._accumulateUsage(chunk);
+        this._accumulateUsage(transformedChunk);
         return null;
 
       case 'text_start_chunk':
       case 'text_chunk':
       case 'text_end_chunk':
-        return this._handleTextChunk(chunk);
+        return this._handleTextChunk(transformedChunk);
 
       case 'thought_start_chunk':
       case 'thought_chunk':
       case 'thought_end_chunk':
-        return this._handleThoughtChunk(chunk);
+        return this._handleThoughtChunk(transformedChunk);
 
       case 'tool_call_start_chunk':
       case 'tool_call_chunk':
       case 'tool_call_end_chunk':
-        return this._handleToolCallChunk(chunk);
+        return this._handleToolCallChunk(transformedChunk);
     }
   }
 

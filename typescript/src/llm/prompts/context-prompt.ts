@@ -6,13 +6,19 @@
  */
 
 import type { Context } from '@/llm/context';
+import {
+  resolveFormat,
+  type Format,
+  type FormatSpec,
+  type OutputParser,
+} from '@/llm/formatting';
 import type { Message, UserContent } from '@/llm/messages';
 import { promoteToMessages } from '@/llm/messages';
 import { Model, useModel } from '@/llm/models';
 import type { ModelId } from '@/llm/providers/model-id';
 import type { ContextResponse } from '@/llm/responses/context-response';
 import type { ContextStreamResponse } from '@/llm/responses/context-stream-response';
-import type { ContextTools } from '@/llm/tools';
+import type { ContextTools, ZodLike } from '@/llm/tools';
 import type { NoVars } from '@/llm/types';
 
 /**
@@ -47,10 +53,16 @@ export type ContextTemplateFunc<T, DepsT> = (
  *
  * @template T - The type of variables the template accepts. Defaults to NoVars.
  * @template DepsT - The type of dependencies in the context.
+ * @template F - The type of the formatted output when using structured outputs.
  */
-export interface ContextPromptArgs<T = NoVars, DepsT = unknown> {
+export interface ContextPromptArgs<T = NoVars, DepsT = unknown, F = unknown> {
   /** Optional tools to make available to the model. */
   tools?: ContextTools<DepsT>;
+  /**
+   * Optional format specification for structured output.
+   * Can be a Zod schema, Format, FormatSpec, or OutputParser.
+   */
+  format?: Format<F> | FormatSpec<F> | ZodLike | OutputParser<F> | null;
   /** A function that generates message content from context (and optionally variables). */
   template: ContextTemplateFunc<T, DepsT>;
 }
@@ -63,6 +75,7 @@ export interface ContextPromptArgs<T = NoVars, DepsT = unknown> {
  *
  * @template T - The type of variables the prompt accepts. Defaults to empty object.
  * @template DepsT - The type of dependencies in the context.
+ * @template F - The type of the formatted output when using structured outputs.
  *
  * @example With variables
  * ```typescript
@@ -88,7 +101,7 @@ export interface ContextPromptArgs<T = NoVars, DepsT = unknown> {
  * const response = await sayHello(model, ctx);
  * ```
  */
-export interface ContextPrompt<T = NoVars, DepsT = unknown> {
+export interface ContextPrompt<T = NoVars, DepsT = unknown, F = unknown> {
   /**
    * Call the prompt with a model, context, and variables to generate a response.
    *
@@ -101,7 +114,7 @@ export interface ContextPrompt<T = NoVars, DepsT = unknown> {
     model: Model | ModelId,
     ctx: Context<DepsT>,
     ...args: keyof T extends never ? [] : [vars: T]
-  ): Promise<ContextResponse<DepsT>>;
+  ): Promise<ContextResponse<DepsT, F>>;
 
   /**
    * Call the prompt with a model, context, and variables to generate a response.
@@ -116,7 +129,7 @@ export interface ContextPrompt<T = NoVars, DepsT = unknown> {
     model: Model | ModelId,
     ctx: Context<DepsT>,
     ...args: keyof T extends never ? [] : [vars: T]
-  ): Promise<ContextResponse<DepsT>>;
+  ): Promise<ContextResponse<DepsT, F>>;
 
   /**
    * Stream the prompt with a model, context, and variables to generate a streaming response.
@@ -138,7 +151,7 @@ export interface ContextPrompt<T = NoVars, DepsT = unknown> {
     model: Model | ModelId,
     ctx: Context<DepsT>,
     ...args: keyof T extends never ? [] : [vars: T]
-  ): Promise<ContextStreamResponse<DepsT>>;
+  ): Promise<ContextStreamResponse<DepsT, F>>;
 
   /**
    * Get the messages for this prompt without calling the LLM.
@@ -158,6 +171,17 @@ export interface ContextPrompt<T = NoVars, DepsT = unknown> {
   readonly tools: ContextTools<DepsT> | undefined;
 
   /**
+   * The format specification for structured output, if any.
+   */
+  readonly format:
+    | Format<F>
+    | FormatSpec<F>
+    | ZodLike
+    | OutputParser<F>
+    | null
+    | undefined;
+
+  /**
    * The underlying template function.
    */
   readonly template: ContextTemplateFunc<T, DepsT>;
@@ -174,7 +198,7 @@ export interface ContextPrompt<T = NoVars, DepsT = unknown> {
  * ```typescript
  * interface MyDeps { userId: string; }
  *
- * const sayHello = defineContextPrompt<NoVars, MyDeps>({
+ * const sayHello = defineContextPrompt<MyDeps>({
  *   template: ({ ctx }) => `Hello, user ${ctx.deps.userId}!`,
  * });
  *
@@ -194,6 +218,7 @@ export function defineContextPrompt<DepsT>(
  *
  * @template T - The type of variables the template accepts.
  * @template DepsT - The type of dependencies in the context.
+ * @template F - The type of the formatted output when using structured outputs.
  * @param args - The prompt arguments including the template.
  * @returns A callable context prompt that can be invoked with a model, context, and variables.
  *
@@ -230,22 +255,27 @@ export function defineContextPrompt<DepsT>(
 export function defineContextPrompt<
   T extends Record<string, unknown>,
   DepsT = unknown,
->(args: ContextPromptArgs<T, DepsT>): ContextPrompt<T, DepsT>;
+  F = unknown,
+>(args: ContextPromptArgs<T, DepsT, F>): ContextPrompt<T, DepsT, F>;
 
 /**
  * Generic overload for internal use (e.g., from defineContextCall).
  * Accepts any T without constraints.
  * @internal
  */
-export function defineContextPrompt<T, DepsT>(
-  args: ContextPromptArgs<T, DepsT>
-): ContextPrompt<T, DepsT>;
+export function defineContextPrompt<T, DepsT, F = unknown>(
+  args: ContextPromptArgs<T, DepsT, F>
+): ContextPrompt<T, DepsT, F>;
 
 // Implementation
-export function defineContextPrompt<T, DepsT>({
+export function defineContextPrompt<T, DepsT, F>({
   tools,
+  format,
   template,
-}: ContextPromptArgs<T, DepsT>): ContextPrompt<T, DepsT> {
+}: ContextPromptArgs<T, DepsT, F>): ContextPrompt<T, DepsT, F> {
+  // Resolve format at definition time (uses 'tool' as default mode)
+  const resolvedFormat = resolveFormat(format, 'tool');
+
   const messages = (ctx: Context<DepsT>, vars?: T): readonly Message[] => {
     const content = template({ ctx, ...(vars as T) });
     return promoteToMessages(content);
@@ -255,15 +285,18 @@ export function defineContextPrompt<T, DepsT>({
     modelOrId: Model | ModelId,
     ctx: Context<DepsT>,
     vars?: T
-  ): Promise<ContextResponse<DepsT>> => {
-    return useModel(modelOrId).contextCall(ctx, messages(ctx, vars), tools);
+  ): Promise<ContextResponse<DepsT, F>> => {
+    return useModel(modelOrId).contextCall(ctx, messages(ctx, vars), {
+      tools,
+      format: resolvedFormat,
+    }) as Promise<ContextResponse<DepsT, F>>;
   };
 
   const callable = async (
     modelOrId: Model | ModelId,
     ctx: Context<DepsT>,
     vars?: T
-  ): Promise<ContextResponse<DepsT>> => {
+  ): Promise<ContextResponse<DepsT, F>> => {
     return call(modelOrId, ctx, vars);
   };
 
@@ -271,8 +304,11 @@ export function defineContextPrompt<T, DepsT>({
     modelOrId: Model | ModelId,
     ctx: Context<DepsT>,
     vars?: T
-  ): Promise<ContextStreamResponse<DepsT>> => {
-    return useModel(modelOrId).contextStream(ctx, messages(ctx, vars), tools);
+  ): Promise<ContextStreamResponse<DepsT, F>> => {
+    return useModel(modelOrId).contextStream(ctx, messages(ctx, vars), {
+      tools,
+      format: resolvedFormat,
+    }) as Promise<ContextStreamResponse<DepsT, F>>;
   };
 
   return Object.assign(callable, {
@@ -280,6 +316,7 @@ export function defineContextPrompt<T, DepsT>({
     stream,
     messages,
     tools,
+    format,
     template,
-  }) as ContextPrompt<T, DepsT>;
+  }) as ContextPrompt<T, DepsT, F>;
 }

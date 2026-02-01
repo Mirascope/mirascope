@@ -21,6 +21,7 @@ import type {
   ToolCall,
   UserContentPart,
 } from '@/llm/content';
+import type { Format } from '@/llm/formatting';
 import type { ToolSchema } from '@/llm/tools';
 import {
   APIError,
@@ -355,13 +356,15 @@ export function encodeTools(
  *
  * @param modelId - The model ID to use
  * @param messages - The messages to send
- * @param params - Optional parameters (temperature, maxTokens, etc.)
  * @param tools - Optional tools to make available to the model
+ * @param format - Optional format for structured output
+ * @param params - Optional parameters (temperature, maxTokens, etc.)
  */
 export function buildRequestParams(
   modelId: AnthropicModelId,
   messages: readonly Message[],
   tools?: readonly ToolSchema[],
+  format?: Format | null,
   params: Params = {}
 ): MessageCreateParamsNonStreaming {
   return ParamHandler.with(params, 'anthropic', modelId, (p) => {
@@ -381,13 +384,70 @@ export function buildRequestParams(
       max_tokens: maxTokens,
     };
 
-    if (system) {
-      requestParams.system = system;
-    }
+    // Start with the system prompt from messages
+    let systemPrompt = system;
+
+    // Collect tools from both explicit tools and format tool
+    const allTools: Anthropic.Messages.Tool[] = [];
 
     /* v8 ignore start - tool encoding will be tested via e2e */
     if (tools !== undefined && tools.length > 0) {
-      requestParams.tools = encodeTools(tools);
+      allTools.push(...encodeTools(tools));
+    }
+    /* v8 ignore stop */
+
+    // Handle format-based tool and instructions
+    /* v8 ignore start - format encoding will be tested via e2e */
+    if (format) {
+      // Check mode support
+      if (format.mode === 'strict') {
+        throw new FeatureNotSupportedError(
+          'formatting_mode:strict',
+          'anthropic',
+          modelId,
+          'Anthropic standard API does not support strict mode formatting. Use beta API or tool mode.'
+        );
+      }
+
+      // Add format tool if mode is 'tool'
+      if (format.mode === 'tool') {
+        const formatToolSchema = format.createToolSchema();
+        allTools.push(encodeToolSchema(formatToolSchema));
+
+        // Set tool_choice based on whether we have other tools
+        if (tools && tools.length > 0) {
+          // When we have other tools, use 'any' to require a tool call
+          requestParams.tool_choice = { type: 'any' };
+        } else {
+          // When only format tool, force that specific tool
+          requestParams.tool_choice = {
+            type: 'tool',
+            name: formatToolSchema.name,
+            disable_parallel_tool_use: true,
+          };
+        }
+      }
+
+      // Add formatting instructions to system prompt
+      if (format.formattingInstructions) {
+        if (systemPrompt) {
+          systemPrompt = `${systemPrompt}\n\n${format.formattingInstructions}`;
+        } else {
+          systemPrompt = format.formattingInstructions;
+        }
+      }
+    }
+    /* v8 ignore stop */
+
+    // Set system prompt if we have one
+    if (systemPrompt) {
+      requestParams.system = systemPrompt;
+    }
+
+    // Set tools if we have any
+    /* v8 ignore start - tool encoding will be tested via e2e */
+    if (allTools.length > 0) {
+      requestParams.tools = allTools;
     }
     /* v8 ignore stop */
 

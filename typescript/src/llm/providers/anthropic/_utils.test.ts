@@ -12,6 +12,12 @@ import type { AssistantMessage } from '@/llm/messages';
 import { FeatureNotSupportedError } from '@/llm/exceptions';
 import { Audio, Image } from '@/llm/content';
 import {
+  defineFormat,
+  FORMAT_TOOL_NAME,
+  TOOL_MODE_INSTRUCTIONS,
+} from '@/llm/formatting';
+import { defineTool } from '@/llm/tools';
+import {
   buildRequestParams,
   computeThinkingBudget,
   decodeResponse,
@@ -63,10 +69,16 @@ describe('buildRequestParams', () => {
     const messages = [user('Hello')];
 
     expect(() =>
-      buildRequestParams('anthropic/claude-haiku-4-5', messages, undefined, {
-        temperature: 0.7,
-        topP: 0.9,
-      })
+      buildRequestParams(
+        'anthropic/claude-haiku-4-5',
+        messages,
+        undefined,
+        undefined,
+        {
+          temperature: 0.7,
+          topP: 0.9,
+        }
+      )
     ).toThrow(FeatureNotSupportedError);
   });
 
@@ -77,6 +89,7 @@ describe('buildRequestParams', () => {
       const params = buildRequestParams(
         'anthropic/claude-haiku-4-5',
         messages,
+        undefined,
         undefined,
         {
           thinking: { level: 'none' },
@@ -92,6 +105,7 @@ describe('buildRequestParams', () => {
       const params = buildRequestParams(
         'anthropic/claude-haiku-4-5',
         messages,
+        undefined,
         undefined,
         {
           thinking: { level: 'medium' },
@@ -112,6 +126,7 @@ describe('buildRequestParams', () => {
       const params = buildRequestParams(
         'anthropic/claude-haiku-4-5',
         messages,
+        undefined,
         undefined,
         {
           thinking: { level: 'default' },
@@ -138,6 +153,7 @@ describe('buildRequestParams', () => {
           'anthropic/claude-haiku-4-5',
           messages,
           undefined,
+          undefined,
           {}
         )
       ).toThrow(FeatureNotSupportedError);
@@ -155,6 +171,7 @@ describe('buildRequestParams', () => {
         buildRequestParams(
           'anthropic/claude-haiku-4-5',
           messages,
+          undefined,
           undefined,
           {}
         )
@@ -187,10 +204,143 @@ describe('buildRequestParams', () => {
           'anthropic/claude-haiku-4-5',
           messages,
           undefined,
+          undefined,
           {}
         )
       ).toThrow(FeatureNotSupportedError);
     });
+  });
+});
+
+describe('format encoding', () => {
+  it('adds format tool when format mode is tool', () => {
+    const messages = [user('Recommend a book')];
+
+    const format = defineFormat({
+      mode: 'tool',
+      __schema: {
+        type: 'object',
+        properties: {
+          title: { type: 'string' },
+          author: { type: 'string' },
+        },
+        required: ['title', 'author'],
+        additionalProperties: false,
+      },
+    });
+
+    const params = buildRequestParams(
+      'anthropic/claude-haiku-4-5',
+      messages,
+      undefined,
+      format,
+      {}
+    );
+
+    // Should have the format tool
+    expect(params.tools).toHaveLength(1);
+    expect(params.tools?.[0]?.name).toBe(FORMAT_TOOL_NAME);
+
+    // Should force the format tool via tool_choice
+    expect(params.tool_choice).toEqual({
+      type: 'tool',
+      name: FORMAT_TOOL_NAME,
+      disable_parallel_tool_use: true,
+    });
+  });
+
+  it('adds formatting instructions to system prompt for tool mode', () => {
+    const messages = [user('Recommend a book')];
+
+    const format = defineFormat({
+      mode: 'tool',
+      __schema: {
+        type: 'object',
+        properties: { title: { type: 'string' } },
+        required: ['title'],
+        additionalProperties: false,
+      },
+    });
+
+    const params = buildRequestParams(
+      'anthropic/claude-haiku-4-5',
+      messages,
+      undefined,
+      format,
+      {}
+    );
+
+    expect(params.system).toBe(TOOL_MODE_INSTRUCTIONS);
+  });
+
+  it('uses type: any when format tool is combined with other tools', () => {
+    const messages = [user('Search and recommend a book')];
+
+    const format = defineFormat({
+      mode: 'tool',
+      __schema: {
+        type: 'object',
+        properties: { title: { type: 'string' } },
+        required: ['title'],
+        additionalProperties: false,
+      },
+    });
+
+    const searchTool = defineTool({
+      name: 'search',
+      description: 'Search for books',
+      tool: () => 'results',
+      __schema: {
+        type: 'object',
+        properties: { query: { type: 'string' } },
+        required: ['query'],
+        additionalProperties: false,
+      },
+    });
+
+    const params = buildRequestParams(
+      'anthropic/claude-haiku-4-5',
+      messages,
+      [searchTool],
+      format,
+      {}
+    );
+
+    // Should have both tools
+    expect(params.tools).toHaveLength(2);
+    const toolNames = params.tools?.map((t) => t.name);
+    expect(toolNames).toContain('search');
+    expect(toolNames).toContain(FORMAT_TOOL_NAME);
+
+    // Should use 'any' tool_choice to allow either tool
+    expect(params.tool_choice).toEqual({ type: 'any' });
+  });
+
+  it('throws FeatureNotSupportedError for strict mode', () => {
+    const messages = [user('Hello')];
+
+    // Create a format with strict mode manually
+    const format = defineFormat({
+      mode: 'tool',
+      __schema: {
+        type: 'object',
+        properties: {},
+        required: [],
+        additionalProperties: false,
+      },
+    });
+    // Override mode to strict (this would normally come from defineFormat with mode: 'strict')
+    (format as { mode: string }).mode = 'strict';
+
+    expect(() =>
+      buildRequestParams(
+        'anthropic/claude-haiku-4-5',
+        messages,
+        undefined,
+        format,
+        {}
+      )
+    ).toThrow(FeatureNotSupportedError);
   });
 });
 

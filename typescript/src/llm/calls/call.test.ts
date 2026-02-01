@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { z } from 'zod';
 import { defineCall } from '@/llm/calls/call';
+import { defineFormat } from '@/llm/formatting';
 import { Model } from '@/llm/models';
 import { system, user } from '@/llm/messages';
 
@@ -184,6 +186,72 @@ describe('defineCall', () => {
       });
 
       expect(typeof call.call).toBe('function');
+    });
+  });
+
+  describe('curried syntax', () => {
+    it('returns a builder when called without arguments', () => {
+      const builder = defineCall<{ genre: string }>();
+
+      expect(typeof builder).toBe('function');
+    });
+
+    it('creates a call when builder is invoked with args', () => {
+      const recommendBook = defineCall<{ genre: string }>()({
+        model: 'anthropic/claude-sonnet-4-20250514',
+        template: ({ genre }) => `Recommend a ${genre} book`,
+      });
+
+      const messages = recommendBook.prompt.messages({ genre: 'fantasy' });
+
+      expect(messages).toHaveLength(1);
+      expect(messages[0]).toMatchObject({
+        role: 'user',
+        content: [{ type: 'text', text: 'Recommend a fantasy book' }],
+      });
+    });
+
+    it('stores format when using curried syntax', () => {
+      const BookSchema = z.object({
+        title: z.string(),
+        author: z.string(),
+      });
+
+      const recommendBook = defineCall<{ genre: string }>()({
+        model: 'anthropic/claude-sonnet-4-20250514',
+        format: BookSchema,
+        template: ({ genre }) => `Recommend a ${genre} book`,
+      });
+
+      expect(recommendBook.format).toBe(BookSchema);
+    });
+
+    it('works with defineFormat', () => {
+      type Book = { title: string; author: string };
+
+      const bookFormat = defineFormat<Book>({
+        mode: 'tool',
+        validator: z.object({ title: z.string(), author: z.string() }),
+      });
+
+      const recommendBook = defineCall<{ genre: string }>()({
+        model: 'anthropic/claude-sonnet-4-20250514',
+        format: bookFormat,
+        template: ({ genre }) => `Recommend a ${genre} book`,
+      });
+
+      expect(recommendBook.format).toBe(bookFormat);
+    });
+
+    it('stores model params when using curried syntax', () => {
+      const call = defineCall<{ query: string }>()({
+        model: 'anthropic/claude-sonnet-4-20250514',
+        temperature: 0.7,
+        maxTokens: 500,
+        template: ({ query }) => query,
+      });
+
+      expect(call.model.params).toEqual({ temperature: 0.7, maxTokens: 500 });
     });
   });
 });

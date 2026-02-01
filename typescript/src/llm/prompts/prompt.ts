@@ -2,6 +2,12 @@
  * Prompt definition and creation utilities.
  */
 
+import {
+  resolveFormat,
+  type AnyFormatInput,
+  type ExtractFormatType,
+  type FormatInput,
+} from '@/llm/formatting';
 import type { Message, UserContent } from '@/llm/messages';
 import { promoteToMessages } from '@/llm/messages';
 import { Model, useModel } from '@/llm/models';
@@ -29,10 +35,17 @@ export type TemplateFunc<T> =
  * Arguments for defining a prompt.
  *
  * @template T - The type of variables the template accepts. Defaults to NoVars.
+ * @template F - The format input type. The output type F is derived via ExtractFormatType<F>.
  */
-export interface PromptArgs<T = NoVars> {
+export interface PromptArgs<T = NoVars, F extends AnyFormatInput = undefined> {
   /** Optional tools to make available to the model. */
   tools?: Tools;
+  /**
+   * Optional format specification for structured output.
+   * Can be a Zod schema, Format, FormatSpec, or OutputParser.
+   * The output type is automatically inferred from this format.
+   */
+  format?: F;
   /** A function that generates message content (optionally from variables). */
   template: TemplateFunc<T>;
 }
@@ -44,6 +57,7 @@ export interface PromptArgs<T = NoVars> {
  * `messages()` method for getting the raw messages without calling the LLM.
  *
  * @template T - The type of variables the prompt accepts. Defaults to empty object.
+ * @template F - The format input type. The output type F is derived via ExtractFormatType<F>.
  *
  * @example With variables
  * ```typescript
@@ -63,7 +77,7 @@ export interface PromptArgs<T = NoVars> {
  * const response = await sayHello(model);
  * ```
  */
-export interface Prompt<T = NoVars> {
+export interface Prompt<T = NoVars, F extends AnyFormatInput = undefined> {
   /**
    * Call the prompt with a model and variables to generate a response.
    *
@@ -74,7 +88,7 @@ export interface Prompt<T = NoVars> {
   (
     model: Model | ModelId,
     ...args: keyof T extends never ? [] : [vars: T]
-  ): Promise<Response>;
+  ): Promise<Response<ExtractFormatType<F>>>;
 
   /**
    * Call the prompt with a model and variables to generate a response.
@@ -87,7 +101,7 @@ export interface Prompt<T = NoVars> {
   call(
     model: Model | ModelId,
     ...args: keyof T extends never ? [] : [vars: T]
-  ): Promise<Response>;
+  ): Promise<Response<ExtractFormatType<F>>>;
 
   /**
    * Stream the prompt with a model and variables to generate a streaming response.
@@ -107,7 +121,7 @@ export interface Prompt<T = NoVars> {
   stream(
     model: Model | ModelId,
     ...args: keyof T extends never ? [] : [vars: T]
-  ): Promise<StreamResponse>;
+  ): Promise<StreamResponse<ExtractFormatType<F>>>;
 
   /**
    * Get the messages for this prompt without calling the LLM.
@@ -123,6 +137,11 @@ export interface Prompt<T = NoVars> {
   readonly tools: Tools | undefined;
 
   /**
+   * The format specification for structured output, if any.
+   */
+  readonly format: FormatInput<ExtractFormatType<F>>;
+
+  /**
    * The underlying template function.
    */
   readonly template: TemplateFunc<T>;
@@ -131,6 +150,7 @@ export interface Prompt<T = NoVars> {
 /**
  * Define a prompt without variables.
  *
+ * @template F - The format input type. The output type is derived via ExtractFormatType<F>.
  * @param args - The prompt arguments including the template.
  * @returns A callable prompt that can be invoked with just a model.
  *
@@ -142,7 +162,9 @@ export interface Prompt<T = NoVars> {
  * const response = await sayHello(model);
  * ```
  */
-export function definePrompt(args: PromptArgs<NoVars>): Prompt<NoVars>;
+export function definePrompt<F extends AnyFormatInput = undefined>(
+  args: PromptArgs<NoVars, F>
+): Prompt<NoVars, F>;
 
 /**
  * Define a prompt with variables that can be called with a model to generate a response.
@@ -151,6 +173,7 @@ export function definePrompt(args: PromptArgs<NoVars>): Prompt<NoVars>;
  * (converted to a user message), UserContent, or a sequence of Messages.
  *
  * @template T - The type of variables the template accepts.
+ * @template F - The format input type. The output type is derived via ExtractFormatType<F>.
  * @param args - The prompt arguments including the template.
  * @returns A callable prompt that can be invoked with a model and variables.
  *
@@ -186,19 +209,29 @@ export function definePrompt(args: PromptArgs<NoVars>): Prompt<NoVars>;
  * );
  * ```
  */
-export function definePrompt<T extends Record<string, unknown>>(
-  args: PromptArgs<T>
-): Prompt<T>;
+export function definePrompt<
+  T extends Record<string, unknown>,
+  F extends AnyFormatInput = undefined,
+>(args: PromptArgs<T, F>): Prompt<T, F>;
 
 /**
  * Generic overload for internal use (e.g., from defineCall).
  * Accepts any T without constraints.
  * @internal
  */
-export function definePrompt<T>(args: PromptArgs<T>): Prompt<T>;
+export function definePrompt<T, F extends AnyFormatInput = undefined>(
+  args: PromptArgs<T, F>
+): Prompt<T, F>;
 
 // Implementation
-export function definePrompt<T>({ tools, template }: PromptArgs<T>): Prompt<T> {
+export function definePrompt<T, F extends AnyFormatInput>({
+  tools,
+  format,
+  template,
+}: PromptArgs<T, F>): Prompt<T, F> {
+  // Resolve format at definition time (uses 'tool' as default mode)
+  const resolvedFormat = resolveFormat(format, 'tool');
+
   const messages = (vars?: T): readonly Message[] => {
     const content =
       template.length === 0
@@ -209,22 +242,31 @@ export function definePrompt<T>({ tools, template }: PromptArgs<T>): Prompt<T> {
     return promoteToMessages(content);
   };
 
-  const call = async (model: Model | ModelId, vars?: T): Promise<Response> => {
-    return useModel(model).call(messages(vars), tools);
+  const call = async (
+    model: Model | ModelId,
+    vars?: T
+  ): Promise<Response<ExtractFormatType<F>>> => {
+    return useModel(model).call(messages(vars), {
+      tools,
+      format: resolvedFormat,
+    }) as Promise<Response<ExtractFormatType<F>>>;
   };
 
   const callable = async (
     model: Model | ModelId,
     vars?: T
-  ): Promise<Response> => {
+  ): Promise<Response<ExtractFormatType<F>>> => {
     return call(model, vars);
   };
 
   const stream = async (
     model: Model | ModelId,
     vars?: T
-  ): Promise<StreamResponse> => {
-    return useModel(model).stream(messages(vars), tools);
+  ): Promise<StreamResponse<ExtractFormatType<F>>> => {
+    return useModel(model).stream(messages(vars), {
+      tools,
+      format: resolvedFormat,
+    }) as Promise<StreamResponse<ExtractFormatType<F>>>;
   };
 
   return Object.assign(callable, {
@@ -232,6 +274,7 @@ export function definePrompt<T>({ tools, template }: PromptArgs<T>): Prompt<T> {
     stream,
     messages,
     tools,
+    format,
     template,
-  }) as Prompt<T>;
+  }) as Prompt<T, F>;
 }

@@ -8,19 +8,24 @@ import type {
   Thought,
   ToolCall,
 } from '@/llm/content';
+import { ParseError } from '@/llm/exceptions';
+import type { DeepPartial, Format } from '@/llm/formatting';
 import type { Message } from '@/llm/messages';
 import type { Model, Params } from '@/llm/models';
 import type { ModelId, ProviderId } from '@/llm/providers';
 import type { FinishReason } from '@/llm/responses/finish-reason';
 import type { Usage } from '@/llm/responses/usage';
+import { extractSerializedJson, parsePartial } from '@/llm/responses/utils';
 
 /**
  * Base class for LLM responses.
  *
  * This abstract class defines the core interface that all response types must implement.
  * It provides the common properties and methods shared across all response variants.
+ *
+ * @template F - The type of the formatted output when using structured outputs.
  */
-export abstract class RootResponse {
+export abstract class RootResponse<F = unknown> {
   /**
    * The raw response from the LLM.
    */
@@ -87,6 +92,14 @@ export abstract class RootResponse {
    * Token usage statistics for this response, if available.
    */
   abstract readonly usage: Usage | null;
+
+  /**
+   * The Format describing the structured response format, if available.
+   *
+   * When a format is specified in the call, this contains the resolved Format
+   * with schema and validator information used for parsing.
+   */
+  abstract readonly format: Format | null;
 
   /**
    * Return all text content from this response as a single string.
@@ -172,5 +185,103 @@ export abstract class RootResponse {
     })();
   }
 
-  // Note: parse() method is not implemented yet as it requires Format infrastructure.
+  /**
+   * Parse the response with partial parsing enabled (for streaming).
+   *
+   * Use this during streaming to parse incomplete JSON as it arrives.
+   * Returns a DeepPartial version where all fields are optional.
+   *
+   * @returns The partially parsed response with optional fields.
+   *
+   * @example
+   * ```typescript
+   * for await (const chunk of streamResponse.chunkStream()) {
+   *   const partial = streamResponse.parse({ partial: true });
+   *   // partial.title may be undefined initially
+   * }
+   * ```
+   */
+  parse(options: { partial: true }): DeepPartial<F>;
+
+  /**
+   * Parse the response according to the response format.
+   *
+   * If a format was specified in the call, parses the response content
+   * according to that format. For JSON-based formats, extracts and parses
+   * the JSON. For OutputParser formats, calls the custom parser.
+   *
+   * When a format is specified, returns the parsed value of type F.
+   * When no format is specified (F = unknown), returns null at runtime.
+   *
+   * @returns The parsed response.
+   * @throws ParseError if parsing fails.
+   *
+   * @example
+   * ```typescript
+   * interface Book { title: string; author: string; }
+   *
+   * const response = await model.call<Book>('Recommend a book', {
+   *   format: BookSchema
+   * });
+   *
+   * const book = response.parse(); // Type: Book
+   * console.log(book.title);
+   * ```
+   */
+  parse(options?: { partial?: false }): F;
+
+  // Implementation
+  parse(options?: { partial?: boolean }): F | DeepPartial<F> | null {
+    // No format specified - return null
+    if (!this.format) {
+      return null;
+    }
+
+    // Handle OutputParser
+    if (this.format.outputParser) {
+      if (options?.partial) {
+        throw new Error(
+          'parse({ partial: true }) is not supported with OutputParser'
+        );
+      }
+      try {
+        return this.format.outputParser(this) as F;
+      } catch (e) {
+        const error = e instanceof Error ? e : new Error(String(e));
+        throw new ParseError(`OutputParser failed: ${error.message}`, error);
+      }
+    }
+
+    // Get text content
+    const textContent = this.text('');
+
+    // Partial parsing for streaming
+    if (options?.partial) {
+      return parsePartial<DeepPartial<F>>(
+        textContent,
+        this.format.validator ?? undefined
+      );
+    }
+
+    // Full parsing
+    try {
+      const jsonText = extractSerializedJson(textContent);
+      const parsed = JSON.parse(jsonText) as F;
+
+      // Validate with Zod if validator provided
+      if (this.format.validator) {
+        const result = this.format.validator.safeParse(parsed);
+        if (!result.success) {
+          throw new Error(`Validation failed: ${JSON.stringify(result.error)}`);
+        }
+        return result.data as F;
+      }
+
+      return parsed;
+    } catch (e) {
+      /* v8 ignore next -- defensive: JSON.parse always throws Error */
+      const error = e instanceof Error ? e : new Error(String(e));
+      throw new ParseError(`Failed to parse response: ${error.message}`, error);
+    }
+  }
 }
