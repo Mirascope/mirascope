@@ -9,6 +9,7 @@ export { createUsage, totalTokens } from '@/llm/responses/usage';
 export type { Usage } from '@/llm/responses/usage';
 
 export { RootResponse } from '@/llm/responses/root-response';
+export type { AnyResponse } from '@/llm/responses/root-response';
 
 export { BaseResponse } from '@/llm/responses/base-response';
 export type { BaseResponseInit } from '@/llm/responses/base-response';

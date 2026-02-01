@@ -5,6 +5,7 @@
 export { BaseProvider } from '@/llm/providers/base/base-provider';
 export type {
   MirascopeErrorClass,
+  Provider,
   ProviderErrorMap,
 } from '@/llm/providers/base/base-provider';
 

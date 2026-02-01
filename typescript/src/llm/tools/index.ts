@@ -25,9 +25,11 @@ export type {
   AnyTool,
   AnyContextTool,
   AnyToolSchema,
-  // Array type aliases (matching Python's Sequence types)
   Tools,
   ContextTools,
+  ToolFn,
+  ContextToolFn,
+  AnyToolFn,
 } from '@/llm/tools/tools';
 
 // Tool definition

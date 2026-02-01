@@ -7,6 +7,7 @@ export type {
   ApiMode,
   KnownProviderId,
   ModelId,
+  Provider,
   ProviderId,
 } from '@/llm/providers';
 export { KNOWN_PROVIDER_IDS } from '@/llm/providers';
@@ -106,6 +107,9 @@ export type {
   AnyContextTool,
   Tools,
   ContextTools,
+  ToolFn,
+  ContextToolFn,
+  AnyToolFn,
 } from '@/llm/tools';
 
 export type {
@@ -217,6 +221,7 @@ export {
   createUsage,
   totalTokens,
 } from '@/llm/responses';
+export type { AnyResponse } from '@/llm/responses';
 export type {
   FinishReasonType,
   Usage,

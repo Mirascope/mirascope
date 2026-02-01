@@ -203,6 +203,23 @@ export type Tools = readonly BaseTool[];
 export type ContextTools<DepsT = unknown> = readonly AnyContextTool<DepsT>[];
 
 // =============================================================================
+// Tool Function Types
+// =============================================================================
+
+export type ToolFn<
+  T extends Record<string, unknown> = Record<string, unknown>,
+  R extends Jsonable = Jsonable,
+> = (args: T) => Promise<R> | R;
+
+export type ContextToolFn<
+  T extends Record<string, unknown> = Record<string, unknown>,
+  DepsT = unknown,
+  R extends Jsonable = Jsonable,
+> = (ctx: Context<DepsT>, args: T) => Promise<R> | R;
+
+export type AnyToolFn = ToolFn | ContextToolFn;
+
+// =============================================================================
 // Type Guards
 // =============================================================================
 

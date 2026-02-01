@@ -423,3 +423,9 @@ export abstract class BaseProvider {
    */
   protected abstract getErrorStatus(e: Error): number | undefined;
 }
+
+/**
+ * Type alias for any provider instance.
+ * Equivalent to Python's `Provider = BaseProvider[Any]`.
+ */
+export type Provider = BaseProvider;
