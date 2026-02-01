@@ -31,7 +31,16 @@ import { createUsage } from '@/llm/responses/usage';
 import type {
   AssistantContentChunk,
   StreamResponseChunk,
+  TextChunk,
+  ThoughtChunk,
+  ToolCallChunk,
 } from '@/llm/responses/chunks';
+import {
+  TextStream,
+  ThoughtStream,
+  ToolCallStream,
+  type Stream,
+} from '@/llm/responses/streams';
 import type { Jsonable } from '@/llm/types/jsonable';
 import type { BaseToolkit } from '@/llm/tools';
 
@@ -268,6 +277,120 @@ export class BaseStreamResponse extends RootResponse {
   async consume(): Promise<void> {
     for await (const _ of this.chunkStream()) {
       // Just consume
+    }
+  }
+
+  /**
+   * Returns an async iterator that yields streams for each content part in the response.
+   *
+   * Each content part in the response will correspond to one stream, which will yield
+   * chunks of content as they come in from the underlying LLM.
+   *
+   * Fully iterating through this iterator will fully consume the underlying stream,
+   * updating the Response with all collected content.
+   *
+   * As content is consumed, it is cached on the StreamResponse. If a new iterator
+   * is constructed via calling `streams()`, it will start by replaying the cached
+   * content from the response, and (if there is still more content to consume from
+   * the LLM), it will proceed to consume it once it has iterated through all the
+   * cached chunks.
+   */
+  async *streams(): AsyncGenerator<Stream> {
+    const chunkIter = this.chunkStream();
+
+    // Use manual iteration to avoid closing the iterator on early return.
+    // Using for-await-of would call iter.return() when the inner generator
+    // returns, which would close chunkIter and prevent _consumed from being set.
+    let result = await chunkIter.next();
+    while (!result.done) {
+      const startChunk = result.value;
+
+      // At the start of this loop, we always expect to find a start chunk. Then,
+      // before proceeding, we will collect from the stream we create (in case the
+      // user did not exhaust it), which ensures we will be expecting a start chunk
+      // again on the next iteration
+      let stream: Stream;
+
+      switch (startChunk.type) {
+        case 'text_start_chunk': {
+          const textStreamIterator = async function* (
+            iter: AsyncGenerator<AssistantContentChunk>
+          ): AsyncGenerator<TextChunk> {
+            // Use manual iteration to avoid closing the outer iterator
+            let innerResult = await iter.next();
+            while (!innerResult.done) {
+              const chunk = innerResult.value;
+              if (chunk.type === 'text_chunk') {
+                yield chunk;
+                innerResult = await iter.next();
+              } else {
+                return; // Stream finished
+              }
+            }
+          };
+          stream = new TextStream(textStreamIterator(chunkIter));
+          yield stream;
+          break;
+        }
+
+        case 'thought_start_chunk': {
+          const thoughtStreamIterator = async function* (
+            iter: AsyncGenerator<AssistantContentChunk>
+          ): AsyncGenerator<ThoughtChunk> {
+            // Use manual iteration to avoid closing the outer iterator
+            let innerResult = await iter.next();
+            while (!innerResult.done) {
+              const chunk = innerResult.value;
+              if (chunk.type === 'thought_chunk') {
+                yield chunk;
+                innerResult = await iter.next();
+              } else {
+                return; // Stream finished
+              }
+            }
+          };
+          stream = new ThoughtStream(thoughtStreamIterator(chunkIter));
+          yield stream;
+          break;
+        }
+
+        case 'tool_call_start_chunk': {
+          const toolId = startChunk.id;
+          const toolName = startChunk.name;
+
+          const toolCallStreamIterator = async function* (
+            iter: AsyncGenerator<AssistantContentChunk>
+          ): AsyncGenerator<ToolCallChunk> {
+            // Use manual iteration to avoid closing the outer iterator
+            let innerResult = await iter.next();
+            while (!innerResult.done) {
+              const chunk = innerResult.value;
+              if (chunk.type === 'tool_call_chunk') {
+                yield chunk;
+                innerResult = await iter.next();
+              } else {
+                return; // Stream finished
+              }
+            }
+          };
+          stream = new ToolCallStream(
+            toolId,
+            toolName,
+            toolCallStreamIterator(chunkIter)
+          );
+          yield stream;
+          break;
+        }
+
+        default:
+          throw new Error(`Expected start chunk, got: ${startChunk.type}`);
+      }
+
+      // Before continuing to the next stream, make sure the last stream is consumed
+      // (If the user did not do so when we yielded it)
+      await stream.collect();
+
+      result = await chunkIter.next();
     }
   }
 
