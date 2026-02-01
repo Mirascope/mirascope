@@ -1,7 +1,5 @@
 "use client";
 
-import { Button } from "@/app/components/ui/button";
-import { cn } from "@/app/lib/utils";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import {
   type ComponentProps,
@@ -13,6 +11,9 @@ import {
   useState,
 } from "react";
 import { type BundledLanguage, codeToHtml, type ShikiTransformer } from "shiki";
+
+import { Button } from "@/app/components/ui/button";
+import { cn } from "@/app/lib/utils";
 
 type CodeBlockProps = HTMLAttributes<HTMLDivElement> & {
   code: string;

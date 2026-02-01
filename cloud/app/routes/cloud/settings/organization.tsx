@@ -1,7 +1,9 @@
-import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Loader2, Plus, Trash2 } from "lucide-react";
-import { useOrganization } from "@/app/contexts/organization";
+import { useState } from "react";
+
+import { CreateOrganizationModal } from "@/app/components/create-organization-modal";
+import { DeleteOrganizationModal } from "@/app/components/delete-organization-modal";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -10,10 +12,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { CreateOrganizationModal } from "@/app/components/create-organization-modal";
-import { DeleteOrganizationModal } from "@/app/components/delete-organization-modal";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import { useOrganization } from "@/app/contexts/organization";
 
 function OrganizationSettingsPage() {
   const { selectedOrganization, isLoading } = useOrganization();

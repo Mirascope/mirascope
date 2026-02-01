@@ -6,19 +6,12 @@
  * two-phase reservation pattern to prevent overdraft in concurrent scenarios.
  */
 
-import { Effect, Schedule } from "effect";
-import { Stripe } from "@/payments/client";
-import { DrizzleORM } from "@/db/client";
-import {
-  StripeError,
-  DatabaseError,
-  InsufficientFundsError,
-  ReservationStateError,
-  NotFoundError,
-} from "@/errors";
 import Decimal from "decimal.js";
 import { eq, and, sql } from "drizzle-orm";
-import { creditReservations } from "@/db/schema";
+import { Effect, Schedule } from "effect";
+
+import type { TokenUsage } from "@/api/router/pricing";
+
 import {
   type CostInCenticents,
   centicentsToDollars,
@@ -28,7 +21,16 @@ import {
   isValidProvider,
   type ProviderName,
 } from "@/api/router/providers";
-import type { TokenUsage } from "@/api/router/pricing";
+import { DrizzleORM } from "@/db/client";
+import { creditReservations } from "@/db/schema";
+import {
+  StripeError,
+  DatabaseError,
+  InsufficientFundsError,
+  ReservationStateError,
+  NotFoundError,
+} from "@/errors";
+import { Stripe } from "@/payments/client";
 import { Subscriptions } from "@/payments/subscriptions";
 
 /**

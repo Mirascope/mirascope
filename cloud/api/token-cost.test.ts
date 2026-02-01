@@ -1,6 +1,10 @@
 import { Effect } from "effect";
-import { vi, beforeEach } from "vitest";
 import assert from "node:assert";
+import { vi, beforeEach } from "vitest";
+
+import { clearPricingCache } from "@/api/router/pricing";
+import { tokenCostHandler } from "@/api/token-cost.handlers";
+import { PricingUnavailableError } from "@/errors";
 import {
   describe,
   it,
@@ -9,9 +13,6 @@ import {
   TestApiContext,
 } from "@/tests/api";
 import { TEST_DATABASE_URL } from "@/tests/db";
-import { tokenCostHandler } from "@/api/token-cost.handlers";
-import { clearPricingCache } from "@/api/router/pricing";
-import { PricingUnavailableError } from "@/errors";
 
 describe("Token Cost Handler", () => {
   beforeEach(() => {

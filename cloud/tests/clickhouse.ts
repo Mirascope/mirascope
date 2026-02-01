@@ -1,10 +1,11 @@
-import { Effect, Layer } from "effect";
 import { describe, expect, it as vitestIt } from "@effect/vitest";
-import { createCustomIt } from "@/tests/shared";
+import { Effect, Layer } from "effect";
+
 import { ClickHouse } from "@/db/clickhouse/client";
 import { Settings, type SettingsConfig } from "@/settings";
-import { createMockSettings } from "@/tests/settings";
 import { getTestClickHouseConfig } from "@/tests/global-setup";
+import { createMockSettings } from "@/tests/settings";
+import { createCustomIt } from "@/tests/shared";
 
 // Re-export describe and expect for convenience
 export { describe, expect };

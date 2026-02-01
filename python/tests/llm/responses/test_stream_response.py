@@ -1764,6 +1764,63 @@ class TestUsageTracking:
         assert stream_response.usage.cache_write_tokens == 12
         assert stream_response.usage.reasoning_tokens == 18
 
+    def test_sync_provider_tool_usage_accumulation(self) -> None:
+        """Test that provider_tool_usage is accumulated correctly in sync streams."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="test"),
+            llm.TextEndChunk(),
+            llm.UsageDeltaChunk(input_tokens=10, output_tokens=5),
+            llm.UsageDeltaChunk(
+                output_tokens=3,
+                provider_tool_usage=[
+                    llm.ProviderToolUsage(name="web_search", call_count=2)
+                ],
+            ),
+        ]
+        stream_response = create_sync_stream_response(chunks)
+
+        assert stream_response.usage is None
+
+        stream_response.finish()
+
+        assert stream_response.usage is not None
+        assert stream_response.usage.input_tokens == 10
+        assert stream_response.usage.output_tokens == 8
+        assert stream_response.usage.provider_tool_usage is not None
+        assert len(stream_response.usage.provider_tool_usage) == 1
+        assert stream_response.usage.provider_tool_usage[0].name == "web_search"
+        assert stream_response.usage.provider_tool_usage[0].call_count == 2
+
+    @pytest.mark.asyncio
+    async def test_async_provider_tool_usage_accumulation(self) -> None:
+        """Test that provider_tool_usage is accumulated correctly in async streams."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="test"),
+            llm.TextEndChunk(),
+            llm.UsageDeltaChunk(input_tokens=10, output_tokens=5),
+            llm.UsageDeltaChunk(
+                output_tokens=3,
+                provider_tool_usage=[
+                    llm.ProviderToolUsage(name="web_search", call_count=2)
+                ],
+            ),
+        ]
+        stream_response = create_async_stream_response(chunks)
+
+        assert stream_response.usage is None
+
+        await stream_response.finish()
+
+        assert stream_response.usage is not None
+        assert stream_response.usage.input_tokens == 10
+        assert stream_response.usage.output_tokens == 8
+        assert stream_response.usage.provider_tool_usage is not None
+        assert len(stream_response.usage.provider_tool_usage) == 1
+        assert stream_response.usage.provider_tool_usage[0].name == "web_search"
+        assert stream_response.usage.provider_tool_usage[0].call_count == 2
+
 
 class TestStreams:
     """Test streams() method that yields content-part streams."""

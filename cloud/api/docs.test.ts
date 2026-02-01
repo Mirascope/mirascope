@@ -1,8 +1,9 @@
 import { describe, it, expect } from "@effect/vitest";
 import { Effect } from "effect";
-import { TestApiClient, TestClient } from "@/tests/api";
 import fs from "fs/promises";
 import path from "path";
+
+import { TestApiClient, TestClient } from "@/tests/api";
 
 describe("OpenAPI Docs API", () => {
   it.effect("GET /openapi", () =>

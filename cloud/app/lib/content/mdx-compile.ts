@@ -10,6 +10,7 @@
 // This ensures compatibility in both the vite plugin and other consumers.
 import { compile, type CompileOptions } from "@mdx-js/mdx";
 import remarkGfm from "remark-gfm";
+
 import { rehypeCodeMeta } from "./rehype-code-meta";
 
 /**

@@ -17,6 +17,8 @@ from openai.types.responses import (
     ResponseTextConfigParam,
     ToolChoiceAllowedParam,
     ToolChoiceFunctionParam,
+    ToolParam,
+    WebSearchToolParam,
     response_create_params,
 )
 from openai.types.responses.easy_input_message_param import EasyInputMessageParam
@@ -34,12 +36,18 @@ from openai.types.shared_params.responses_model import ResponsesModel
 from .....exceptions import FeatureNotSupportedError
 from .....formatting import (
     Format,
+    FormatSpec,
     FormattableT,
-    OutputParser,
     resolve_format,
 )
 from .....messages import AssistantMessage, Message, UserMessage
-from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit, ProviderTool
+from .....tools import (
+    FORMAT_TOOL_NAME,
+    AnyToolSchema,
+    BaseToolkit,
+    ProviderTool,
+    WebSearchTool,
+)
 from ....base import _utils as _base_utils
 from ...model_id import OpenAIModelId, model_name
 from ...model_info import (
@@ -72,7 +80,7 @@ class ResponseCreateKwargs(TypedDict, total=False):
     temperature: float
     max_output_tokens: int
     top_p: float
-    tools: list[FunctionToolParam] | Omit
+    tools: list[ToolParam] | Omit
     tool_choice: response_create_params.ToolChoice | Omit
     text: ResponseTextConfigParam
     reasoning: Reasoning | Omit
@@ -212,10 +220,12 @@ def _encode_message(
         return _encode_user_message(message)
 
 
-def _convert_tool_to_function_tool_param(
+def _convert_tool_to_tool_param(
     tool: AnyToolSchema | ProviderTool,
-) -> FunctionToolParam:
-    """Convert a Mirascope ToolSchema to OpenAI Responses FunctionToolParam."""
+) -> ToolParam:
+    """Convert a Mirascope ToolSchema to OpenAI Responses ToolParam."""
+    if isinstance(tool, WebSearchTool):
+        return WebSearchToolParam(type="web_search")
     if isinstance(tool, ProviderTool):
         raise FeatureNotSupportedError(
             f"Provider tool {tool.name}", provider_id="openai:responses"
@@ -288,10 +298,7 @@ def encode_request(
     model_id: OpenAIModelId,
     messages: Sequence[Message],
     tools: BaseToolkit[AnyToolSchema],
-    format: type[FormattableT]
-    | Format[FormattableT]
-    | OutputParser[FormattableT]
-    | None,
+    format: FormatSpec[FormattableT] | None,
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ResponseCreateKwargs]:
     """Prepares a request for the `OpenAI.responses.create` method."""
@@ -340,7 +347,7 @@ def encode_request(
             if thinking_config.get("encode_thoughts_as_text"):
                 encode_thoughts = True
 
-    openai_tools = [_convert_tool_to_function_tool_param(tool) for tool in tools.tools]
+    openai_tools = [_convert_tool_to_tool_param(tool) for tool in tools.tools]
 
     model_supports_strict = model_id not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
     default_mode = "strict" if model_supports_strict else "tool"
@@ -351,16 +358,19 @@ def encode_request(
             kwargs["text"] = {"format": _create_strict_response_format(format)}
         elif format.mode == "tool":
             format_tool_schema = format.create_tool_schema()
-            openai_tools.append(
-                _convert_tool_to_function_tool_param(format_tool_schema)
-            )
+            openai_tools.append(_convert_tool_to_tool_param(format_tool_schema))
             if tools.tools:
+                # Only include function tools in tool_choice (filter out web search, etc.)
+                function_tools = cast(
+                    list[FunctionToolParam],
+                    [t for t in openai_tools if t.get("type") == "function"],
+                )
                 kwargs["tool_choice"] = ToolChoiceAllowedParam(
                     type="allowed_tools",
                     mode="required",
                     tools=[
                         {"type": "function", "name": tool["name"]}
-                        for tool in openai_tools
+                        for tool in function_tools
                     ],
                 )
             else:

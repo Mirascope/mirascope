@@ -1,3 +1,5 @@
+import type * as React from "react";
+
 import {
   type EmojiPickerListCategoryHeaderProps,
   type EmojiPickerListEmojiProps,
@@ -5,7 +7,6 @@ import {
   EmojiPicker as EmojiPickerPrimitive,
 } from "frimousse";
 import { LoaderIcon, SearchIcon } from "lucide-react";
-import type * as React from "react";
 
 import { cn } from "@/app/lib/utils";
 

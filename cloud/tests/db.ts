@@ -1,29 +1,30 @@
-import { Config, Context, Effect, Layer } from "effect";
+import { SqlClient } from "@effect/sql";
+import { PgClient } from "@effect/sql-pg";
 import { describe, expect } from "@effect/vitest";
-import { createCustomIt, withRollback } from "@/tests/shared";
+import { Config, Context, Effect, Layer } from "effect";
+import fs from "fs";
+import assert from "node:assert";
+
+import { ClickHouse } from "@/db/clickhouse/client";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
 import { Database } from "@/db/database";
-import { PgClient } from "@effect/sql-pg";
-import { SqlClient } from "@effect/sql";
-import { CONNECTION_FILE } from "@/tests/global-setup";
-import { createTestClickHouseSettings } from "@/tests/clickhouse";
 import { Payments } from "@/payments";
+import { Settings } from "@/settings";
+import { createTestClickHouseSettings } from "@/tests/clickhouse";
+import { CONNECTION_FILE } from "@/tests/global-setup";
 import { MockStripe } from "@/tests/payments";
+import { createCustomIt, withRollback } from "@/tests/shared";
+import {
+  MockRealtimeSpansLayer,
+  createRealtimeSpansLayer,
+} from "@/tests/workers/realtimeSpans";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
 import {
   SpansIngestQueue,
   ingestSpansMessage,
   type SpansIngestMessage,
 } from "@/workers/spanIngestQueue";
-import { RealtimeSpans } from "@/workers/realtimeSpans";
-import {
-  MockRealtimeSpansLayer,
-  createRealtimeSpansLayer,
-} from "@/tests/workers/realtimeSpans";
-import { ClickHouse } from "@/db/clickhouse/client";
-import { ClickHouseSearch } from "@/db/clickhouse/search";
-import { Settings } from "@/settings";
-import fs from "fs";
-import assert from "node:assert";
 
 // Re-export describe, expect, and assert for convenience
 export { describe, expect, assert };

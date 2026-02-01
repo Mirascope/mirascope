@@ -1,6 +1,5 @@
 import { Effect } from "effect";
-import { describe, it, expect, TestAuthFixture } from "@/tests/auth";
-import { Database } from "@/db/database";
+
 import {
   getSessionIdFromCookie,
   getOAuthStateFromCookie,
@@ -11,7 +10,9 @@ import {
   authenticate,
   type PathParameters,
 } from "@/auth/utils";
+import { Database } from "@/db/database";
 import { UnauthorizedError } from "@/errors";
+import { describe, it, expect, TestAuthFixture } from "@/tests/auth";
 import { createMockSettings } from "@/tests/settings";
 
 describe("getSessionIdFromCookie", () => {

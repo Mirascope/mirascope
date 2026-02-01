@@ -1,9 +1,10 @@
-import { describe, it, expect } from "@/tests/db";
 import { Effect, Layer, Context } from "effect";
+import StripeSDK from "stripe";
+
 import { StripeError } from "@/errors";
 import { Stripe } from "@/payments/client";
 import { Payments } from "@/payments/service";
-import StripeSDK from "stripe";
+import { describe, it, expect } from "@/tests/db";
 
 describe("payment intents", () => {
   describe("createRouterCreditsPurchaseIntent", () => {

@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Effect, Layer } from "effect";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { parseStreamingResponse } from "@/api/router/streaming";
 import { ProxyError } from "@/errors";
 import { MockMeteringContext } from "@/tests/api";

@@ -1,8 +1,12 @@
-import { describe, it, expect, vi } from "vitest";
 import { Effect, Layer } from "effect";
+import { describe, it, expect, vi } from "vitest";
+
+import type { CronTriggerEnv } from "@/workers/billingReconciliationCron";
+
 import { DrizzleORM } from "@/db/client";
-import { Payments } from "@/payments";
 import { DatabaseError } from "@/errors";
+import { Payments } from "@/payments";
+import { createMockEnv } from "@/tests/settings";
 import billingReconciliationCron, {
   reconcileSuccessfulRequests,
   reconcileFailedRequests,
@@ -11,8 +15,6 @@ import billingReconciliationCron, {
   detectInvalidState,
   reconcileBilling,
 } from "@/workers/billingReconciliationCron";
-import type { CronTriggerEnv } from "@/workers/billingReconciliationCron";
-import { createMockEnv } from "@/tests/settings";
 
 describe("billingReconciliationCron", () => {
   // Create a complete mock environment with all required vars including HYPERDRIVE

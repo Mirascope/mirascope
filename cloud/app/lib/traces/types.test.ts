@@ -1,5 +1,7 @@
 import { describe, it, expect } from "@effect/vitest";
+
 import type { SpanDetail } from "@/api/traces-search.schemas";
+
 import { buildSpanTree } from "./types";
 
 // Helper to create a minimal SpanDetail for testing

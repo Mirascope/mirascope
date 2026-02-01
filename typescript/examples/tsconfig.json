@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "..",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/tests/*": ["tests/*"],
+      "mirascope": ["src/index.ts"]
+    },
+    "types": []
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
+}

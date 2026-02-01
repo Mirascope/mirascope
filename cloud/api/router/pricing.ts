@@ -9,14 +9,15 @@
  */
 
 import { Effect } from "effect";
-import {
-  getModelsDotDevProviderIds,
-  type ProviderName,
-} from "@/api/router/providers";
+
 import {
   type CostInCenticents,
   dollarsToCenticents,
 } from "@/api/router/cost-utils";
+import {
+  getModelsDotDevProviderIds,
+  type ProviderName,
+} from "@/api/router/providers";
 
 /**
  * Pricing information for a model (fetched from models.dev in dollars).
@@ -203,6 +204,23 @@ export function getModelPricing(
 }
 
 /**
+ * Native tool usage data for cost calculation.
+ *
+ * Tracks usage of provider server-side tools that have separate pricing
+ * beyond standard token costs (e.g., web search, code execution).
+ */
+export interface NativeToolUsage {
+  /** Tool type identifier (e.g., "anthropic_web_search", "google_grounding_search") */
+  toolType: string;
+  /** Number of invocations/calls */
+  callCount: number;
+  /** Duration in seconds (for time-based tools like code execution) */
+  durationSeconds?: number;
+  /** Provider-specific metadata for debugging/analytics */
+  metadata?: Record<string, unknown>;
+}
+
+/**
  * Usage data for cost calculation.
  */
 export interface TokenUsage {
@@ -219,6 +237,14 @@ export interface TokenUsage {
    * - OpenAI/Google: Not needed (no breakdown required)
    */
   cacheWriteBreakdown?: Record<string, number>;
+  /**
+   * Native tool usage data for tools with separate pricing.
+   *
+   * Examples:
+   * - Anthropic web search: [{ toolType: "anthropic_web_search", callCount: 2 }]
+   * - Google grounding: [{ toolType: "google_grounding_search", callCount: 3 }]
+   */
+  toolUsage?: NativeToolUsage[];
 }
 
 /**
@@ -229,5 +255,12 @@ export interface CostBreakdown {
   outputCost: CostInCenticents;
   cacheReadCost?: CostInCenticents;
   cacheWriteCost?: CostInCenticents;
+  /** Sum of input, output, and cache costs (excludes tool costs) */
+  tokenCost: CostInCenticents;
+  /** Total cost from native tool usage */
+  toolCost?: CostInCenticents;
+  /** Detailed tool cost breakdown by tool type */
+  toolCostBreakdown?: Record<string, CostInCenticents>;
+  /** Total cost (tokenCost + toolCost) */
   totalCost: CostInCenticents;
 }

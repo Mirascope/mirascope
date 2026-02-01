@@ -1,5 +1,6 @@
-import { CloudLayout } from "@/app/components/cloud-layout";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
+
+import { CloudLayout } from "@/app/components/cloud-layout";
 import { Protected } from "@/app/components/protected";
 import { SettingsSidebar } from "@/app/components/settings-sidebar";
 

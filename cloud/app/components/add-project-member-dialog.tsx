@@ -1,4 +1,13 @@
+import { Loader2, AlertTriangle } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+
+import type { ProjectRole } from "@/api/project-memberships.schemas";
+import type { ProjectMemberWithUser } from "@/api/project-memberships.schemas";
+
+import { useOrganizationMembers } from "@/app/api/organization-memberships";
+import { useAddProjectMember } from "@/app/api/project-memberships";
+import { Alert, AlertDescription } from "@/app/components/ui/alert";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -16,13 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
-import { Alert, AlertDescription } from "@/app/components/ui/alert";
-import { Loader2, AlertTriangle } from "lucide-react";
-import { useOrganizationMembers } from "@/app/api/organization-memberships";
-import { useAddProjectMember } from "@/app/api/project-memberships";
-import { toast } from "sonner";
-import type { ProjectRole } from "@/api/project-memberships.schemas";
-import type { ProjectMemberWithUser } from "@/api/project-memberships.schemas";
 
 interface AddProjectMemberDialogProps {
   open: boolean;

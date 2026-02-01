@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Effect } from "effect";
-import { Settings } from "@/settings";
+
 import { settingsLayer } from "@/server-entry";
+import { Settings } from "@/settings";
 
 export const Route = createFileRoute("/api/v2/health")({
   server: {

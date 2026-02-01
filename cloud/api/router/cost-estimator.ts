@@ -8,10 +8,12 @@
  */
 
 import { Effect } from "effect";
-import { getModelPricing } from "@/api/router/pricing";
-import type { ProviderName } from "@/api/router/providers";
-import { PricingUnavailableError } from "@/errors";
+
 import type { CostInCenticents } from "@/api/router/cost-utils";
+import type { ProviderName } from "@/api/router/providers";
+
+import { getModelPricing } from "@/api/router/pricing";
+import { PricingUnavailableError } from "@/errors";
 
 /**
  * Default estimate for output tokens when not specified.

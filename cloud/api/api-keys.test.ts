@@ -1,11 +1,5 @@
 import { Effect, Schema } from "effect";
-import { describe, it, expect, TestApiContext } from "@/tests/api";
-import {
-  toApiKey,
-  toApiKeyCreateResponse,
-  toApiKeyWithContext,
-} from "@/api/api-keys.handlers";
-import { CreateApiKeyRequestSchema } from "@/api/api-keys.schemas";
+
 import type {
   PublicApiKey,
   ApiKeyCreateResponse,
@@ -13,6 +7,14 @@ import type {
   PublicProject,
   PublicEnvironment,
 } from "@/db/schema";
+
+import {
+  toApiKey,
+  toApiKeyCreateResponse,
+  toApiKeyWithContext,
+} from "@/api/api-keys.handlers";
+import { CreateApiKeyRequestSchema } from "@/api/api-keys.schemas";
+import { describe, it, expect, TestApiContext } from "@/tests/api";
 
 describe("toApiKey helper", () => {
   it("should convert dates to ISO strings", () => {

@@ -1,6 +1,10 @@
-import { useState, type FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle } from "lucide-react";
+import { useState, type FormEvent } from "react";
+
+import type { PublicProject } from "@/db/schema";
+
+import { useDeleteProject } from "@/app/api/projects";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -14,9 +18,7 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
-import { useDeleteProject } from "@/app/api/projects";
 import { getErrorMessage } from "@/app/lib/errors";
-import type { PublicProject } from "@/db/schema";
 
 export function DeleteProjectModal({
   open,

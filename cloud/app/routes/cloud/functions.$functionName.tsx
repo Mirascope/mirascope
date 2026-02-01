@@ -1,5 +1,5 @@
-import { useState, useMemo, useEffect } from "react";
 import { DragHandleDots2Icon } from "@radix-ui/react-icons";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Loader2,
   ArrowLeft,
@@ -8,21 +8,20 @@ import {
   GitCompare,
   X,
 } from "lucide-react";
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { CloudLayout } from "@/app/components/cloud-layout";
-import { Protected } from "@/app/components/protected";
-import { useOrganization } from "@/app/contexts/organization";
-import { useProject } from "@/app/contexts/project";
-import { useEnvironment } from "@/app/contexts/environment";
+import { useState, useMemo, useEffect } from "react";
+
+import type { SpanDetail, SpanSearchResult } from "@/api/traces-search.schemas";
+
 import { useFunctionsList } from "@/app/api/functions";
 import { useTracesSearch, useTraceDetail } from "@/app/api/traces";
-import { TracesTable } from "@/app/components/traces/traces-table";
-import { SpanDetailPanel } from "@/app/components/traces/span-detail-panel";
 import { CodeBlock } from "@/app/components/blocks/code-block/code-block";
 import { DiffTool } from "@/app/components/blocks/diff-tool";
+import { CloudLayout } from "@/app/components/cloud-layout";
+import { Protected } from "@/app/components/protected";
+import { SpanDetailPanel } from "@/app/components/traces/span-detail-panel";
+import { TracesTable } from "@/app/components/traces/traces-table";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -35,7 +34,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
-import type { SpanDetail, SpanSearchResult } from "@/api/traces-search.schemas";
+import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
+import { useEnvironment } from "@/app/contexts/environment";
+import { useOrganization } from "@/app/contexts/organization";
+import { useProject } from "@/app/contexts/project";
 
 /**
  * Compare semantic versions (e.g., "1.0", "1.1", "2.0").

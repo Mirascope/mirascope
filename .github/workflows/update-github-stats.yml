@@ -1,0 +1,64 @@
+name: Update GitHub Stats
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: "0 */6 * * *"
+
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  update-stats:
+    name: Update Repository Stats
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.REPO_STATS_APP_ID }}
+          private-key: ${{ secrets.REPO_STATS_APP_PRIVATE_KEY }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+        working-directory: cloud
+
+      - name: Run GitHub stats fetcher
+        run: bun run fetch-github-stats
+        working-directory: cloud
+        env:
+          # Use GitHub token for API rate limits
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check for changes in stats file
+        id: git-check
+        run: |
+          if [[ -n $(git status --porcelain cloud/app/lib/github-stats.json) ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "No changes to GitHub stats detected"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push if stats changed
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        if: steps.git-check.outputs.changed == 'true'
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add cloud/app/lib/github-stats.json
+          git commit -m "chore: update GitHub repository stats [skip ci]"
+          git push

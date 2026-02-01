@@ -1,4 +1,10 @@
+import { Plus } from "lucide-react";
 import { useState } from "react";
+
+import { useEnvironments } from "@/app/api/environments";
+import { CreateEnvironmentModal } from "@/app/components/create-environment-modal";
+import { EnvironmentsTable } from "@/app/components/environments-table";
+import { Button } from "@/app/components/ui/button";
 import {
   Card,
   CardContent,
@@ -6,11 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { Button } from "@/app/components/ui/button";
-import { Plus } from "lucide-react";
-import { EnvironmentsTable } from "@/app/components/environments-table";
-import { CreateEnvironmentModal } from "@/app/components/create-environment-modal";
-import { useEnvironments } from "@/app/api/environments";
 
 interface EnvironmentsSectionProps {
   organizationId: string;

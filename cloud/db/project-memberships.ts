@@ -48,24 +48,15 @@
  * ```
  */
 
-import { Effect } from "effect";
 import { and, eq, isNull } from "drizzle-orm";
+import { Effect } from "effect";
+
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
 } from "@/db/base";
 import { DrizzleORM } from "@/db/client";
 import { OrganizationMemberships } from "@/db/organization-memberships";
-import {
-  AlreadyExistsError,
-  DatabaseError,
-  NotFoundError,
-  PermissionDeniedError,
-} from "@/errors";
-import {
-  isUniqueConstraintError,
-  isForeignKeyConstraintError,
-} from "@/db/utils";
 import {
   projects,
   projectMemberships,
@@ -75,6 +66,16 @@ import {
   type PublicProjectMembershipAudit,
   type ProjectRole,
 } from "@/db/schema";
+import {
+  isUniqueConstraintError,
+  isForeignKeyConstraintError,
+} from "@/db/utils";
+import {
+  AlreadyExistsError,
+  DatabaseError,
+  NotFoundError,
+  PermissionDeniedError,
+} from "@/errors";
 
 /**
  * Public fields to select from the project_memberships table.

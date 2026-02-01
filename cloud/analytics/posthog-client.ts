@@ -35,6 +35,7 @@
  */
 
 import { Effect, Layer, Context } from "effect";
+
 import type { PostHogConfig } from "@/settings";
 
 /**

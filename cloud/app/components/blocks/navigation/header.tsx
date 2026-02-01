@@ -1,20 +1,22 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
-import GitHubMirascopeButton from "@/app/components/blocks/branding/github-mirascope-button";
+import { useState, useEffect } from "react";
+
 import DiscordLink from "@/app/components/blocks/branding/discord-link";
+import GitHubMirascopeButton from "@/app/components/blocks/branding/github-mirascope-button";
 import MirascopeLogo from "@/app/components/blocks/branding/mirascope-logo";
-import ThemeSwitcher from "@/app/components/blocks/navigation/theme-switcher";
 import DesktopNavigation from "@/app/components/blocks/navigation/desktop-navigation";
+import DocsSubNavbar from "@/app/components/blocks/navigation/docs-sub-navbar";
 import MobileNavigation from "@/app/components/blocks/navigation/mobile-navigation";
 import ResponsiveSearchWrapper from "@/app/components/blocks/navigation/responsive-search-wrapper";
-import DocsSubNavbar from "@/app/components/blocks/navigation/docs-sub-navbar";
+import ThemeSwitcher from "@/app/components/blocks/navigation/theme-switcher";
 import {
   useIsLandingPage,
   useIsRouterWaitlistPage,
 } from "@/app/components/blocks/theme-provider";
-import { HEADER_STYLES } from "./styles";
 import { cn } from "@/app/lib/utils";
+
+import { HEADER_STYLES } from "./styles";
 
 export default function Header() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);

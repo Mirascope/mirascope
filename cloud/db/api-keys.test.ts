@@ -1,11 +1,7 @@
-import {
-  describe,
-  it,
-  expect,
-  MockDrizzleORM,
-  TestEnvironmentFixture,
-} from "@/tests/db";
 import { Effect } from "effect";
+
+import type { PublicApiKey, ApiKeyCreateResponse } from "@/db/schema";
+
 import { Database } from "@/db/database";
 import {
   AlreadyExistsError,
@@ -13,7 +9,13 @@ import {
   NotFoundError,
   PermissionDeniedError,
 } from "@/errors";
-import type { PublicApiKey, ApiKeyCreateResponse } from "@/db/schema";
+import {
+  describe,
+  it,
+  expect,
+  MockDrizzleORM,
+  TestEnvironmentFixture,
+} from "@/tests/db";
 
 describe("ApiKeys", () => {
   // ===========================================================================

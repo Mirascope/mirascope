@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+
 import { createAuthService } from "@/auth/service";
 
 describe("createAuthService", () => {

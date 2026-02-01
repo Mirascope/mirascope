@@ -1,11 +1,12 @@
-import { cn } from "@/app/lib/utils";
-import { useSunsetTime } from "@/app/hooks/sunset-time";
 import { BookOpen } from "lucide-react";
-import { ButtonLink } from "@/app/components/ui/button-link";
+
 import DiscordInviteButton from "@/app/components/blocks/branding/discord-invite-button";
-import homeStyles from "@/app/components/home-page.module.css";
 import { ResponsiveTextBlock } from "@/app/components/blocks/responsive-text-block";
+import homeStyles from "@/app/components/home-page.module.css";
 import { UnifiedDemo } from "@/app/components/landing/unified-demo";
+import { ButtonLink } from "@/app/components/ui/button-link";
+import { useSunsetTime } from "@/app/hooks/sunset-time";
+import { cn } from "@/app/lib/utils";
 
 // Shared styling constants for logo and hero components
 // This ensures we maintain consistency and makes future updates easier

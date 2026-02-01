@@ -1,7 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { Html, Head, Body, Text } from "@react-email/components";
 import { Effect } from "effect";
 import * as React from "react";
-import { Html, Head, Body, Text } from "@react-email/components";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+
 import { EmailRenderError } from "@/errors";
 
 // Mock the render function
@@ -15,8 +16,9 @@ vi.mock("@react-email/render", async () => {
   };
 });
 
-import { renderReactElement, renderEmailTemplate } from "@/emails/render";
 import { render } from "@react-email/render";
+
+import { renderReactElement, renderEmailTemplate } from "@/emails/render";
 
 describe("renderReactElement", () => {
   beforeEach(() => {

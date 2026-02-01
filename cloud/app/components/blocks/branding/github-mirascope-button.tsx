@@ -1,6 +1,7 @@
 import React from "react";
-import { cn } from "@/app/lib/utils";
+
 import { MIRASCOPE } from "@/app/lib/site";
+import { cn } from "@/app/lib/utils";
 
 /**
  * Format star count with appropriate suffix

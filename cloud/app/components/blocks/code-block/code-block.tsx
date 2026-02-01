@@ -1,4 +1,6 @@
+import { useLocation } from "@tanstack/react-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+
 import { CopyButton } from "@/app/components/blocks/copy-button";
 import { useAnalytics } from "@/app/contexts/analytics";
 import {
@@ -8,7 +10,6 @@ import {
   initialHighlight,
 } from "@/app/lib/code-highlight";
 import { cn } from "@/app/lib/utils";
-import { useLocation } from "@tanstack/react-router";
 
 interface CodeBlockProps {
   code: string;

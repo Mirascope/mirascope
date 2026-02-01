@@ -15,6 +15,12 @@
  */
 
 import { Effect, Option } from "effect";
+
+import type {
+  SearchRequest,
+  AnalyticsSummaryRequest,
+} from "@/api/traces-search.schemas";
+
 import { Authentication } from "@/auth";
 import {
   ClickHouseSearch,
@@ -26,10 +32,6 @@ import {
   type TraceDetailResponse,
 } from "@/db/clickhouse/search";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
-import type {
-  SearchRequest,
-  AnalyticsSummaryRequest,
-} from "@/api/traces-search.schemas";
 
 export * from "@/api/traces-search.schemas";
 

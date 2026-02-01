@@ -1,4 +1,5 @@
 import { OpenApi } from "@effect/platform";
+
 import { MirascopeCloudApi } from "@/api/api";
 
 type OpenApiSpec = {

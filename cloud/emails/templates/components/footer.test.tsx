@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { Html, Body } from "@react-email/components";
 import { Effect } from "effect";
 import * as React from "react";
-import { Html, Body } from "@react-email/components";
-import { Footer } from "@/emails/templates/components/footer";
+import { describe, it, expect } from "vitest";
+
 import { renderReactElement } from "@/emails/render";
+import { Footer } from "@/emails/templates/components/footer";
 
 describe("Footer", () => {
   it("renders footer with copyright and links", () => {

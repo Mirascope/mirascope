@@ -1,8 +1,10 @@
 import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp, uuid, unique } from "drizzle-orm/pg-core";
-import { users } from "./users";
-import { organizations } from "./organizations";
+
 import { projectMemberships } from "@/db/schema/project-memberships";
+
+import { organizations } from "./organizations";
+import { users } from "./users";
 
 export const projects = pgTable(
   "projects",

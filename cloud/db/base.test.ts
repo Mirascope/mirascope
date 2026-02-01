@@ -1,8 +1,9 @@
-import { describe, it, expect } from "vitest";
 import { Context, Effect } from "effect";
-import { dependencyProvider } from "@/utils";
+import { describe, it, expect } from "vitest";
+
 import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
 import { Payments } from "@/payments";
+import { dependencyProvider } from "@/utils";
 
 describe("dependencyProvider", () => {
   const mockClient = {} as DrizzleORMClient;

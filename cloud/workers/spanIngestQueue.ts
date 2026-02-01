@@ -29,22 +29,25 @@
  * ClickHouse insert within this consumer.
  */
 
-import { Context, Effect, Layer } from "effect";
 import type {
   DurableObjectNamespace,
   MessageBatch,
 } from "@cloudflare/workers-types";
-import { Database } from "@/db/database";
+
+import { eq } from "drizzle-orm";
+import { Context, Effect, Layer } from "effect";
+
+import type { CompletedSpansBatchRequest } from "@/db/clickhouse/types";
+import type { BillingCronTriggerEnv } from "@/workers/config";
+
 import { ClickHouse } from "@/db/clickhouse/client";
 import { transformSpanForClickHouse } from "@/db/clickhouse/transform";
 import { DrizzleORM } from "@/db/client";
+import { Database } from "@/db/database";
 import { organizations } from "@/db/schema";
 import { Payments } from "@/payments";
 import { Settings } from "@/settings";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
-import type { BillingCronTriggerEnv } from "@/workers/config";
-import type { CompletedSpansBatchRequest } from "@/db/clickhouse/types";
-import { eq } from "drizzle-orm";
 
 // =============================================================================
 // Types

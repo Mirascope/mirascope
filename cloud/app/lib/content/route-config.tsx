@@ -1,11 +1,13 @@
-import type React from "react";
-import { redirect, useLoaderData } from "@tanstack/react-router";
 import type { ErrorComponentProps } from "@tanstack/react-router";
+import type React from "react";
+
+import { redirect, useLoaderData } from "@tanstack/react-router";
+
 import type { BlogMeta, Content, ContentMeta } from "@/app/lib/content/types";
-import { NotFound } from "@/app/components/not-found";
-import { DefaultCatchBoundary } from "@/app/components/error/default-catch-boundary";
+
 import LoadingContent from "@/app/components/blocks/loading-content";
-import type { ModuleMap } from "./virtual-module";
+import { DefaultCatchBoundary } from "@/app/components/error/default-catch-boundary";
+import { NotFound } from "@/app/components/not-found";
 import {
   createPageHead,
   canonicalizePath,
@@ -20,6 +22,9 @@ import {
   type HeadResult,
 } from "@/app/lib/seo/head";
 import { BASE_URL } from "@/app/lib/site";
+
+import type { ModuleMap } from "./virtual-module";
+
 import { compileMDXContent } from "./mdx-compile";
 
 /**

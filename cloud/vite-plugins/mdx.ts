@@ -26,6 +26,7 @@
  */
 
 import type { Plugin } from "vite";
+
 import { preprocessMdx } from "../app/lib/content/mdx-preprocessing";
 
 export function viteMDX(): Plugin {

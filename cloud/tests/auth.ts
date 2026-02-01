@@ -1,6 +1,7 @@
-import { describe, it, expect, TestEnvironmentFixture } from "@/tests/db";
 import { Effect } from "effect";
+
 import { Database } from "@/db/database";
+import { describe, it, expect, TestEnvironmentFixture } from "@/tests/db";
 
 // Re-export describe, it, and expect for convenience
 export { describe, it, expect };

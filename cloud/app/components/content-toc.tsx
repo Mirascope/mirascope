@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { cn } from "@/app/lib/utils";
+
 import type { TOCItem } from "@/app/lib/content/types";
+
+import { cn } from "@/app/lib/utils";
 
 export interface TableOfContentsProps {
   headings: TOCItem[];

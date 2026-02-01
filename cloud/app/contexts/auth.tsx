@@ -1,7 +1,9 @@
-import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { createContext, useContext, useEffect, type ReactNode } from "react";
+
 import type { PublicUser } from "@/db/schema";
+
 import { useAuthStatus, useLogout } from "@/app/api/auth";
 import { useAnalytics } from "@/app/contexts/analytics";
 

@@ -9,9 +9,10 @@ import {
   index,
   pgEnum,
 } from "drizzle-orm/pg-core";
+
 import { environments } from "./environments";
-import { projects } from "./projects";
 import { organizations } from "./organizations";
+import { projects } from "./projects";
 import { users } from "./users";
 
 export const labelEnum = pgEnum("annotation_label", ["pass", "fail"]);

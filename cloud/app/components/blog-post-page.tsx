@@ -1,11 +1,13 @@
 import { ChevronLeft } from "lucide-react";
-import { ButtonLink } from "@/app/components/ui/button-link";
-import { MDXRenderer } from "@/app/components/mdx/renderer";
+
+import type { BlogContent } from "@/app/lib/content/types";
+
 import { CopyMarkdownButton } from "@/app/components/blocks/copy-markdown-button";
 import LoadingContent from "@/app/components/blocks/loading-content";
-import { ContentTOC } from "@/app/components/content-toc";
-import type { BlogContent } from "@/app/lib/content/types";
 import ContentLayout from "@/app/components/content-layout";
+import { ContentTOC } from "@/app/components/content-toc";
+import { MDXRenderer } from "@/app/components/mdx/renderer";
+import { ButtonLink } from "@/app/components/ui/button-link";
 
 // Reusable component for "Back to Blog" button
 function BackToBlogLink() {

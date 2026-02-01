@@ -2,13 +2,16 @@
  * @fileoverview Tests for router metering queue consumer.
  */
 
-import { describe, expect, it, TEST_DATABASE_URL } from "@/tests/db";
+import type { Message, MessageBatch } from "@cloudflare/workers-types";
+
 import { Effect, Layer } from "effect";
+import { vi, afterEach } from "vitest";
+
+import type { WorkerEnv } from "@/workers/config";
+
 import { Database } from "@/db/database";
 import { Payments } from "@/payments";
-import type { Message, MessageBatch } from "@cloudflare/workers-types";
-import type { WorkerEnv } from "@/workers/config";
-import { vi, afterEach } from "vitest";
+import { describe, expect, it, TEST_DATABASE_URL } from "@/tests/db";
 import { createMockEnv } from "@/tests/settings";
 
 // Import the queue handler and types
@@ -91,6 +94,7 @@ function createTestMessage(
       outputTokens: 50,
     },
     costCenticents: 150,
+    tokenCostCenticents: 150,
     timestamp: Date.now(),
     ...overrides,
   };
@@ -167,9 +171,11 @@ describe("routerMeteringQueue", () => {
       } as never);
 
       await Effect.runPromise(
-        updateAndSettleRouterRequest(message, 150n).pipe(
-          Effect.provide(Layer.merge(mockDbLayer, mockPaymentsLayer)),
-        ),
+        updateAndSettleRouterRequest(message, {
+          tokenCost: 150n,
+          toolCost: undefined,
+          totalCost: 150n,
+        }).pipe(Effect.provide(Layer.merge(mockDbLayer, mockPaymentsLayer))),
       );
 
       // Verify database update was called
@@ -183,6 +189,7 @@ describe("routerMeteringQueue", () => {
             inputTokens: 100n,
             outputTokens: 50n,
             costCenticents: 150n,
+            tokenCostCenticents: 150n,
             status: "success",
           }),
         }),
@@ -233,9 +240,11 @@ describe("routerMeteringQueue", () => {
       } as never);
 
       await Effect.runPromise(
-        updateAndSettleRouterRequest(message, 150n).pipe(
-          Effect.provide(Layer.merge(mockDbLayer, mockPaymentsLayer)),
-        ),
+        updateAndSettleRouterRequest(message, {
+          tokenCost: 150n,
+          toolCost: undefined,
+          totalCost: 150n,
+        }).pipe(Effect.provide(Layer.merge(mockDbLayer, mockPaymentsLayer))),
       );
 
       // Verify database update was called with null for undefined fields
@@ -251,6 +260,7 @@ describe("routerMeteringQueue", () => {
             cacheReadTokens: null,
             cacheWriteTokens: null,
             costCenticents: 150n,
+            tokenCostCenticents: 150n,
             status: "success",
           }),
         }),
@@ -271,6 +281,7 @@ describe("routerMeteringQueue", () => {
           cacheWriteTokens: undefined,
         },
         costCenticents: 0,
+        tokenCostCenticents: 0,
       });
 
       // Mock the update and settleFunds functions
@@ -303,9 +314,11 @@ describe("routerMeteringQueue", () => {
       } as never);
 
       await Effect.runPromise(
-        updateAndSettleRouterRequest(message, 0n).pipe(
-          Effect.provide(Layer.merge(mockDbLayer, mockPaymentsLayer)),
-        ),
+        updateAndSettleRouterRequest(message, {
+          tokenCost: 0n,
+          toolCost: undefined,
+          totalCost: 0n,
+        }).pipe(Effect.provide(Layer.merge(mockDbLayer, mockPaymentsLayer))),
       );
 
       // Verify database update was called with all null token fields
@@ -321,6 +334,7 @@ describe("routerMeteringQueue", () => {
             cacheReadTokens: null,
             cacheWriteTokens: null,
             costCenticents: 0n,
+            tokenCostCenticents: 0n,
             status: "success",
           }),
         }),
@@ -371,9 +385,11 @@ describe("routerMeteringQueue", () => {
       } as never);
 
       await Effect.runPromise(
-        updateAndSettleRouterRequest(message, 150n).pipe(
-          Effect.provide(Layer.merge(mockDbLayer, mockPaymentsLayer)),
-        ),
+        updateAndSettleRouterRequest(message, {
+          tokenCost: 150n,
+          toolCost: undefined,
+          totalCost: 150n,
+        }).pipe(Effect.provide(Layer.merge(mockDbLayer, mockPaymentsLayer))),
       );
 
       // Verify database update was called with cache tokens as bigints
@@ -390,12 +406,144 @@ describe("routerMeteringQueue", () => {
             cacheWriteTokens: 10n,
             cacheWriteBreakdown: { foo: 5, bar: 5 },
             costCenticents: 150n,
+            tokenCostCenticents: 150n,
             status: "success",
           }),
         }),
       );
 
       // Verify settleFunds was called
+      expect(settleFundsMock).toHaveBeenCalledWith(message.reservationId, 150n);
+    });
+
+    it("handles tool cost correctly", async () => {
+      const message = createTestMessage({
+        usage: {
+          inputTokens: 100,
+          outputTokens: 50,
+          toolUsage: [{ toolType: "openai_web_search", callCount: 2 }],
+        },
+        tokenCostCenticents: 150,
+        toolCostCenticents: 200,
+        costCenticents: 350, // total
+      });
+
+      // Mock the update and settleFunds functions
+      const updateMock = vi.fn().mockReturnValue(Effect.succeed(undefined));
+      const settleFundsMock = vi
+        .fn()
+        .mockReturnValue(Effect.succeed(undefined));
+
+      // Create proper mock layers using Layer.succeed with partial implementations
+      const mockDbLayer = Layer.succeed(Database, {
+        organizations: {
+          projects: {
+            environments: {
+              apiKeys: {
+                routerRequests: {
+                  update: updateMock,
+                },
+              },
+            },
+          },
+        },
+      } as never);
+
+      const mockPaymentsLayer = Layer.succeed(Payments, {
+        products: {
+          router: {
+            settleFunds: settleFundsMock,
+          },
+        },
+      } as never);
+
+      await Effect.runPromise(
+        updateAndSettleRouterRequest(message, {
+          tokenCost: 150n,
+          toolCost: 200n,
+          totalCost: 350n,
+        }).pipe(Effect.provide(Layer.merge(mockDbLayer, mockPaymentsLayer))),
+      );
+
+      // Verify database update was called with correct costs
+      expect(updateMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          data: expect.objectContaining({
+            costCenticents: 350n,
+            tokenCostCenticents: 150n,
+            toolCostCenticents: 200n,
+            status: "success",
+          }),
+        }),
+      );
+
+      // Verify settleFunds was called with total cost
+      expect(settleFundsMock).toHaveBeenCalledWith(message.reservationId, 350n);
+    });
+
+    it("handles zero tool cost correctly", async () => {
+      const message = createTestMessage({
+        usage: {
+          inputTokens: 100,
+          outputTokens: 50,
+        },
+        tokenCostCenticents: 150,
+        toolCostCenticents: 0,
+        costCenticents: 150, // total
+      });
+
+      // Mock the update and settleFunds functions
+      const updateMock = vi.fn().mockReturnValue(Effect.succeed(undefined));
+      const settleFundsMock = vi
+        .fn()
+        .mockReturnValue(Effect.succeed(undefined));
+
+      // Create proper mock layers using Layer.succeed with partial implementations
+      const mockDbLayer = Layer.succeed(Database, {
+        organizations: {
+          projects: {
+            environments: {
+              apiKeys: {
+                routerRequests: {
+                  update: updateMock,
+                },
+              },
+            },
+          },
+        },
+      } as never);
+
+      const mockPaymentsLayer = Layer.succeed(Payments, {
+        products: {
+          router: {
+            settleFunds: settleFundsMock,
+          },
+        },
+      } as never);
+
+      await Effect.runPromise(
+        updateAndSettleRouterRequest(message, {
+          tokenCost: 150n,
+          toolCost: 0n,
+          totalCost: 150n,
+        }).pipe(Effect.provide(Layer.merge(mockDbLayer, mockPaymentsLayer))),
+      );
+
+      // Verify database update was called with correct costs (0n for tool cost, not null)
+      expect(updateMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          data: expect.objectContaining({
+            costCenticents: 150n,
+            tokenCostCenticents: 150n,
+            toolCostCenticents: 0n,
+            status: "success",
+          }),
+        }),
+      );
+
+      // Verify settleFunds was called with total cost
       expect(settleFundsMock).toHaveBeenCalledWith(message.reservationId, 150n);
     });
   });
@@ -689,6 +837,39 @@ describe("routerMeteringQueue", () => {
       expect(message.retryCalled).toBe(true);
     });
 
+    it("processes message with tokenCostCenticents as bigint", async () => {
+      // Test with tokenCostCenticents as bigint to cover that branch
+      const meteringMessage = createTestMessage({
+        usage: {
+          inputTokens: 100,
+          outputTokens: 50,
+        },
+        costCenticents: 150,
+        tokenCostCenticents: 150,
+      });
+
+      // Override tokenCostCenticents to be a bigint
+      (
+        meteringMessage as unknown as { tokenCostCenticents: bigint }
+      ).tokenCostCenticents = 150n;
+
+      const message = createMockMessage(meteringMessage);
+      const batch = createMockBatch([message]);
+
+      // Include HYPERDRIVE to pass settings validation and reach the bigint branch
+      const env = {
+        ...createMockEnv(),
+        HYPERDRIVE: {
+          connectionString: TEST_DATABASE_URL,
+        },
+      } as unknown as WorkerEnv;
+
+      await routerMeteringQueue.queue(batch, env);
+
+      // Will retry due to missing data in worker's separate DB connection
+      expect(message.retryCalled).toBe(true);
+    });
+
     it("processes message with costCenticents as bigint", async () => {
       // Test with costCenticents as bigint to cover that branch
       const meteringMessage = createTestMessage({
@@ -708,6 +889,69 @@ describe("routerMeteringQueue", () => {
       const batch = createMockBatch([message]);
 
       // Include HYPERDRIVE to pass settings validation and reach the bigint branch
+      const env = {
+        ...createMockEnv(),
+        HYPERDRIVE: {
+          connectionString: TEST_DATABASE_URL,
+        },
+      } as unknown as WorkerEnv;
+
+      await routerMeteringQueue.queue(batch, env);
+
+      // Will retry due to missing data in worker's separate DB connection
+      expect(message.retryCalled).toBe(true);
+    });
+
+    it("processes message with toolCostCenticents as bigint", async () => {
+      // Test with toolCostCenticents as bigint to cover that branch
+      const meteringMessage = createTestMessage({
+        usage: {
+          inputTokens: 100,
+          outputTokens: 50,
+          toolUsage: [{ toolType: "openai_web_search", callCount: 2 }],
+        },
+        costCenticents: 150,
+        toolCostCenticents: 200,
+      });
+
+      // Override toolCostCenticents to be a bigint
+      (
+        meteringMessage as unknown as { toolCostCenticents: bigint }
+      ).toolCostCenticents = 200n;
+
+      const message = createMockMessage(meteringMessage);
+      const batch = createMockBatch([message]);
+
+      // Include HYPERDRIVE to pass settings validation and reach the bigint branch
+      const env = {
+        ...createMockEnv(),
+        HYPERDRIVE: {
+          connectionString: TEST_DATABASE_URL,
+        },
+      } as unknown as WorkerEnv;
+
+      await routerMeteringQueue.queue(batch, env);
+
+      // Will retry due to missing data in worker's separate DB connection
+      expect(message.retryCalled).toBe(true);
+    });
+
+    it("processes message with toolCostCenticents as number", async () => {
+      // Test with toolCostCenticents as number to cover the BigInt conversion branch
+      const meteringMessage = createTestMessage({
+        usage: {
+          inputTokens: 100,
+          outputTokens: 50,
+          toolUsage: [{ toolType: "openai_web_search", callCount: 2 }],
+        },
+        costCenticents: 150,
+        toolCostCenticents: 200,
+      });
+
+      const message = createMockMessage(meteringMessage);
+      const batch = createMockBatch([message]);
+
+      // Include HYPERDRIVE to pass settings validation
       const env = {
         ...createMockEnv(),
         HYPERDRIVE: {

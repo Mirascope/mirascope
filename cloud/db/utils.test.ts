@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+
 import { isCheckConstraintError, isUniqueConstraintError } from "@/db/utils";
 
 describe("isUniqueConstraintError", () => {

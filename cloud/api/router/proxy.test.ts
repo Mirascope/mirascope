@@ -1,7 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Effect } from "effect";
-import { proxyToProvider, extractProviderPath } from "@/api/router/proxy";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { PROVIDER_CONFIGS } from "@/api/router/providers";
+import { proxyToProvider, extractProviderPath } from "@/api/router/proxy";
 import { ProxyError } from "@/errors";
 describe("Proxy", () => {
   describe("extractProviderPath", () => {

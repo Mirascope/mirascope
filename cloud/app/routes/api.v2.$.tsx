@@ -1,25 +1,26 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Effect, Layer } from "effect";
+
+import { Analytics } from "@/analytics";
 import { handleRequest } from "@/api/handler";
 import { handleErrors, handleDefects } from "@/api/utils";
-import { NotFoundError } from "@/errors";
 import { authenticate, type PathParameters } from "@/auth";
-import { Database } from "@/db/database";
-import { DrizzleORM } from "@/db/client";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
-import { RealtimeSpans } from "@/workers/realtimeSpans";
-import { Analytics } from "@/analytics";
+import { DrizzleORM } from "@/db/client";
+import { Database } from "@/db/database";
 import { Emails } from "@/emails";
-import { Settings } from "@/settings";
+import { NotFoundError } from "@/errors";
+import { RateLimiter } from "@/rate-limiting";
 import {
   spansIngestQueueLayer,
   realtimeSpansLayer,
   rateLimiterLayer,
   settingsLayer,
 } from "@/server-entry";
+import { Settings } from "@/settings";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
 import { SpansIngestQueue } from "@/workers/spanIngestQueue";
-import { RateLimiter } from "@/rate-limiting";
 
 /**
  * Extract path parameters from the splat path for API key validation.

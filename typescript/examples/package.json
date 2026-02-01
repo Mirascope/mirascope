@@ -1,0 +1,9 @@
+{
+  "name": "mirascope-examples",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "mirascope": "file:.."
+  }
+}

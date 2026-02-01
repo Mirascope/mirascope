@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp, uuid, unique } from "drizzle-orm/pg-core";
+
 import { environments } from "./environments";
 import { users, type PublicUser } from "./users";
 

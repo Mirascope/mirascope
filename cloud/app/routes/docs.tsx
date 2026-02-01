@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
+
 import { TabbedSectionMemoryProvider } from "../components/blocks/tabbed-section-provider";
 
 export const Route = createFileRoute("/docs")({

@@ -1,9 +1,11 @@
-import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Loader2, Plus, Trash2 } from "lucide-react";
-import { useOrganization } from "@/app/contexts/organization";
-import { useProject } from "@/app/contexts/project";
-import { useAuth } from "@/app/contexts/auth";
+import { useState } from "react";
+
+import { CreateProjectModal } from "@/app/components/create-project-modal";
+import { DeleteProjectModal } from "@/app/components/delete-project-modal";
+import { EnvironmentsSection } from "@/app/components/environments-section";
+import { ProjectMembersSection } from "@/app/components/project-members-section";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -12,12 +14,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { CreateProjectModal } from "@/app/components/create-project-modal";
-import { DeleteProjectModal } from "@/app/components/delete-project-modal";
-import { ProjectMembersSection } from "@/app/components/project-members-section";
-import { EnvironmentsSection } from "@/app/components/environments-section";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import { useAuth } from "@/app/contexts/auth";
+import { useOrganization } from "@/app/contexts/organization";
+import { useProject } from "@/app/contexts/project";
 
 function ProjectsSettingsPage() {
   const { selectedOrganization } = useOrganization();

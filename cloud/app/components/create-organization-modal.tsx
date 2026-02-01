@@ -1,4 +1,6 @@
 import { useState, type FormEvent } from "react";
+
+import { useCreateOrganization } from "@/app/api/organizations";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -11,7 +13,6 @@ import {
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { useOrganization } from "@/app/contexts/organization";
-import { useCreateOrganization } from "@/app/api/organizations";
 import { getErrorMessage } from "@/app/lib/errors";
 import { generateSlug } from "@/db/slug";
 

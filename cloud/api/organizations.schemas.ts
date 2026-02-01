@@ -1,5 +1,7 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
+
+import { createSlugSchema } from "@/db/slug";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -9,7 +11,6 @@ import {
   StripeError,
   SubscriptionPastDueError,
 } from "@/errors";
-import { createSlugSchema } from "@/db/slug";
 import { PLAN_TIERS, type DowngradeValidationError } from "@/payments/plans";
 
 export const OrganizationRoleSchema = Schema.Literal(

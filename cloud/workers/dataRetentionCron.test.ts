@@ -1,14 +1,16 @@
-import { describe, it, expect, vi } from "vitest";
 import { Effect, Layer } from "effect";
-import { DrizzleORM } from "@/db/client";
+import { describe, it, expect, vi } from "vitest";
+
+import type { CronTriggerEnv } from "@/workers/dataRetentionCron";
+
 import { ClickHouse } from "@/db/clickhouse/client";
-import { Payments } from "@/payments";
+import { DrizzleORM } from "@/db/client";
 import { ClickHouseError, DatabaseError } from "@/errors";
+import { Payments } from "@/payments";
+import { createMockEnv } from "@/tests/settings";
 import dataRetentionCron, {
   enforceDataRetentionLimits,
 } from "@/workers/dataRetentionCron";
-import type { CronTriggerEnv } from "@/workers/dataRetentionCron";
-import { createMockEnv } from "@/tests/settings";
 
 describe("dataRetentionCron", () => {
   const mockEnvironment = createMockEnv() as unknown as CronTriggerEnv;

@@ -504,6 +504,8 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
                 self.usage.cache_read_tokens += chunk.cache_read_tokens
                 self.usage.cache_write_tokens += chunk.cache_write_tokens
                 self.usage.reasoning_tokens += chunk.reasoning_tokens
+                if chunk.provider_tool_usage:
+                    self.usage.provider_tool_usage = chunk.provider_tool_usage
             else:
                 yield self._handle_chunk(chunk)
 
@@ -725,6 +727,8 @@ class BaseAsyncStreamResponse(
                 self.usage.cache_read_tokens += chunk.cache_read_tokens
                 self.usage.cache_write_tokens += chunk.cache_write_tokens
                 self.usage.reasoning_tokens += chunk.reasoning_tokens
+                if chunk.provider_tool_usage:
+                    self.usage.provider_tool_usage = chunk.provider_tool_usage
             else:
                 yield self._handle_chunk(chunk)
 

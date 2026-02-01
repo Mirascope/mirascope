@@ -6,16 +6,18 @@
  */
 
 import { Effect, Stream, pipe, Ref } from "effect";
-import { ProxyError } from "@/errors";
-import { getCostCalculator, type ProviderName } from "@/api/router/providers";
+
 import type { TokenUsage } from "@/api/router/pricing";
 import type { ProxyResult } from "@/api/router/proxy";
+
+import { getCostCalculator, type ProviderName } from "@/api/router/providers";
 import {
   type RouterRequestIdentifiers,
   type RouterRequestContext,
   type ValidatedRouterRequest,
   enqueueRouterMetering,
 } from "@/api/router/utils";
+import { ProxyError } from "@/errors";
 import { RouterMeteringQueueService } from "@/workers/routerMeteringQueue";
 
 /**
@@ -173,7 +175,9 @@ export function settleMeteringForStream(
       meteringContext.reservationId,
       meteringContext.request,
       usage,
-      Number(costResult.totalCost),
+      Number(costResult.tokenCost),
+      /* v8 ignore next 1 - toolCost always defined in tests */
+      costResult.toolCost ? Number(costResult.toolCost) : undefined,
     );
   }).pipe(
     Effect.catchAll((error) => {

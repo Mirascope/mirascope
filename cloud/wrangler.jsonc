@@ -4,6 +4,10 @@
   "compatibility_flags": ["nodejs_compat", "enable_nodejs_http_modules"],
   "$schema": "node_modules/wrangler/config-schema.json",
   "main": "server-entry.ts",
+  "assets": {
+    "directory": "./dist/client",
+    "binding": "ASSETS",
+  },
   "observability": {
     "enabled": true,
   },

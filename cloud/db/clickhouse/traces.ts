@@ -63,14 +63,20 @@
  * ```
  */
 
+import { eq } from "drizzle-orm";
 import { Effect } from "effect";
+
+import type { ResourceSpans, KeyValue } from "@/api/traces.schemas";
+import type { ProjectRole } from "@/db/schema";
+
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
 } from "@/db/base";
-import { DrizzleORM } from "@/db/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
+import { DrizzleORM } from "@/db/client";
 import { ProjectMemberships } from "@/db/project-memberships";
+import { organizations } from "@/db/schema/organizations";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -80,15 +86,11 @@ import {
   PlanLimitExceededError,
   StripeError,
 } from "@/errors";
+import { Payments } from "@/payments";
 import {
   SpansIngestQueue,
   type SpansIngestMessage,
 } from "@/workers/spanIngestQueue";
-import { organizations } from "@/db/schema/organizations";
-import { Payments } from "@/payments";
-import { eq } from "drizzle-orm";
-import type { ProjectRole } from "@/db/schema";
-import type { ResourceSpans, KeyValue } from "@/api/traces.schemas";
 
 /** Default time range in milliseconds for trace queries (30 days). */
 const DEFAULT_TIME_RANGE_MS = 30 * 24 * 60 * 60 * 1000;

@@ -8,13 +8,14 @@
  * - Helper functions for provider operations
  */
 
+import type { SettingsConfig } from "@/settings";
+
 import {
   OpenAICostCalculator,
   AnthropicCostCalculator,
   GoogleCostCalculator,
   type BaseCostCalculator,
 } from "@/api/router/cost-calculator";
-import type { SettingsConfig } from "@/settings";
 
 /**
  * Configuration for AI provider proxying.

@@ -1,23 +1,25 @@
-import { useMemo } from "react";
 import { DragHandleDots2Icon } from "@radix-ui/react-icons";
-import { Loader2, AlertCircle } from "lucide-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Loader2, AlertCircle } from "lucide-react";
+import { useMemo } from "react";
+
+import type { SpanDetail } from "@/api/traces-search.schemas";
+
+import { useFunctionDetail } from "@/app/api/functions";
+import { useTraceDetail } from "@/app/api/traces";
 import { CloudLayout } from "@/app/components/cloud-layout";
 import { Protected } from "@/app/components/protected";
-import { useOrganization } from "@/app/contexts/organization";
-import { useProject } from "@/app/contexts/project";
-import { useEnvironment } from "@/app/contexts/environment";
-import { useTraceDetail } from "@/app/api/traces";
-import { useFunctionDetail } from "@/app/api/functions";
-import { TraceTree } from "@/app/components/traces/trace-tree";
 import { SpanDetailPanel } from "@/app/components/traces/span-detail-panel";
+import { TraceTree } from "@/app/components/traces/trace-tree";
 import { Alert, AlertDescription, AlertTitle } from "@/app/components/ui/alert";
 import {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
 } from "@/app/components/ui/resizable";
-import type { SpanDetail } from "@/api/traces-search.schemas";
+import { useEnvironment } from "@/app/contexts/environment";
+import { useOrganization } from "@/app/contexts/organization";
+import { useProject } from "@/app/contexts/project";
 
 function FullTraceViewPage() {
   const { traceId, spanId } = Route.useParams();

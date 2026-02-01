@@ -6,8 +6,10 @@
  */
 
 import { Effect } from "effect";
-import { getCostCalculator } from "@/api/router/providers";
+
 import type { ProxyResult } from "@/api/router/proxy";
+
+import { getCostCalculator } from "@/api/router/providers";
 import {
   type RouterRequestContext,
   type ValidatedRouterRequest,
@@ -50,7 +52,9 @@ export function handleNonStreamingResponse(
         context.reservationId,
         context.request,
         usage,
-        Number(costResult.totalCost),
+        Number(costResult.tokenCost),
+        /* v8 ignore next 1 - toolCost always defined in tests */
+        costResult.toolCost ? Number(costResult.toolCost) : undefined,
       ).pipe(
         Effect.catchAll((error) => {
           console.error(

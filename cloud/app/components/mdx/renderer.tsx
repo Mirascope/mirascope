@@ -5,15 +5,21 @@
  * Uses runSync from @mdx-js/mdx to evaluate the compiled JSX code string.
  */
 
-import { ClientOnly } from "@tanstack/react-router";
-import React, { useMemo } from "react";
-import { runSync } from "@mdx-js/mdx";
-import { isDevelopment } from "@/app/lib/site";
-import * as jsxRuntime from "react/jsx-runtime";
-import * as jsxDevRuntime from "react/jsx-dev-runtime";
-import type { CompiledMDX } from "@/app/lib/mdx/types";
 import type { MDXComponents } from "mdx/types";
+
+import { runSync } from "@mdx-js/mdx";
+import { ClientOnly } from "@tanstack/react-router";
+import React, { useEffect, useMemo, useState } from "react";
+import * as jsxDevRuntime from "react/jsx-dev-runtime";
+import * as jsxRuntime from "react/jsx-runtime";
+
+import type { CompiledMDX } from "@/app/lib/mdx/types";
+
+import ViewModeSwitcher from "@/app/components/blocks/navigation/view-mode-switcher";
+import { useViewMode } from "@/app/components/blocks/theme-provider";
 import componentRegistry from "@/app/components/mdx/component-registry";
+import { highlightCode, fallbackHighlighter } from "@/app/lib/code-highlight";
+import { isDevelopment } from "@/app/lib/site";
 
 interface MDXRendererProps {
   /** Compiled MDX content with code string */
@@ -186,6 +192,60 @@ function ActualContent({ mdx, className, components }: MDXRendererProps) {
 }
 
 /**
+ * Raw markdown content for MACHINE mode
+ * Displays the raw MDX/markdown content with syntax highlighting
+ */
+function RawMarkdownContent({
+  mdx,
+}: Omit<MDXRendererProps, "components" | "className">) {
+  const [highlightedHtml, setHighlightedHtml] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    highlightCode(mdx.content, "markdown")
+      .then((result) => {
+        if (!cancelled) {
+          setHighlightedHtml(result.themeHtml);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          // Fallback to basic highlighting
+          const fallback = fallbackHighlighter(mdx.content, "markdown");
+          setHighlightedHtml(fallback.themeHtml);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [mdx.content]);
+
+  // Show fallback while loading
+  if (!highlightedHtml) {
+    const fallback = fallbackHighlighter(mdx.content, "markdown");
+    return (
+      <div className="max-w-none" id="mdx-container">
+        <div
+          className="machine-mode-code highlight-container w-full overflow-auto rounded-md border text-sm [&>pre]:overflow-x-auto [&>pre]:py-3 [&>pre]:pr-5 [&>pre]:pl-4"
+          dangerouslySetInnerHTML={{ __html: fallback.themeHtml }}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-none" id="mdx-container">
+      <div
+        className="machine-mode-code highlight-container w-full overflow-auto rounded-md border text-sm [&>pre]:overflow-x-auto [&>pre]:py-3 [&>pre]:pr-5 [&>pre]:pl-4"
+        dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+      />
+    </div>
+  );
+}
+
+/**
  * Renders compiled MDX content by evaluating the JSX code string at runtime
  *
  * @param className - Optional className for the wrapper div
@@ -193,9 +253,31 @@ function ActualContent({ mdx, className, components }: MDXRendererProps) {
  * @param components - Optional custom components to override defaults
  */
 export function MDXRenderer({ mdx, components, className }: MDXRendererProps) {
+  const viewMode = useViewMode();
+
+  // In MACHINE mode, render raw markdown
+  if (viewMode === "machine") {
+    return (
+      <>
+        <ClientOnly fallback={<IndexableContent mdx={mdx} />}>
+          <RawMarkdownContent mdx={mdx} />
+        </ClientOnly>
+        <ViewModeSwitcher />
+      </>
+    );
+  }
+
+  // In HUMAN mode, render compiled MDX with full styling
   return (
-    <ClientOnly fallback={<IndexableContent mdx={mdx} />}>
-      <ActualContent className={className} components={components} mdx={mdx} />
-    </ClientOnly>
+    <>
+      <ClientOnly fallback={<IndexableContent mdx={mdx} />}>
+        <ActualContent
+          className={className}
+          components={components}
+          mdx={mdx}
+        />
+      </ClientOnly>
+      <ViewModeSwitcher />
+    </>
   );
 }

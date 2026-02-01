@@ -6,6 +6,7 @@
  */
 
 import { Context, Effect, Layer } from "effect";
+
 import { RealtimeSpans } from "@/workers/realtimeSpans";
 
 // =============================================================================

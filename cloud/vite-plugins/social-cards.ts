@@ -12,16 +12,17 @@
  */
 
 import type { Plugin } from "vite";
+
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-
 import Piscina from "piscina";
 
 import type { SocialImagesOptions } from "../app/lib/social-cards/types";
-import ContentProcessor from "../app/lib/content/content-processor";
 import type { WorkerTask, WorkerResult } from "./social-cards-worker";
+
+import ContentProcessor from "../app/lib/content/content-processor";
 import {
   getStaticRouteTitle,
   getStaticRoutes,

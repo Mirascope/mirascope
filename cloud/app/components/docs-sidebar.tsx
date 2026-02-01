@@ -1,16 +1,18 @@
 import { useRouter } from "@tanstack/react-router";
-import { docRegistry } from "@/app/lib/content/doc-registry";
-import type { DocSpec, SectionSpec, VersionSpec } from "@/app/lib/content/spec";
-import { type Provider } from "@/app/components/mdx/elements/model-provider-provider";
-import Sidebar from "@/app/components/blocks/navigation/sidebar";
+
 import type {
   SidebarConfig,
   SidebarGroup,
   SidebarItem,
   SidebarSection,
 } from "@/app/components/blocks/navigation/sidebar";
-import DocsProductSelector from "@/app/components/blocks/navigation/docs-product-selector";
+import type { DocSpec, SectionSpec, VersionSpec } from "@/app/lib/content/spec";
+
 import { docsSpec } from "@/../content/docs/_meta";
+import DocsProductSelector from "@/app/components/blocks/navigation/docs-product-selector";
+import Sidebar from "@/app/components/blocks/navigation/sidebar";
+import { type Provider } from "@/app/components/mdx/elements/model-provider-provider";
+import { docRegistry } from "@/app/lib/content/doc-registry";
 
 interface DocsSidebarProps {
   selectedProvider?: Provider;

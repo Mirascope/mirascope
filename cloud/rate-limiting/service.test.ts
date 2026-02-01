@@ -2,13 +2,14 @@
  * @fileoverview Tests for the RateLimiter service.
  */
 
-import { describe, it, expect, assert } from "@/tests/payments";
 import { Effect, Layer } from "effect";
-import { RateLimiter } from "@/rate-limiting/service";
+
 import { RateLimitError, ServiceUnavailableError } from "@/errors";
-import { MockRateLimiter } from "@/tests/rate-limiting";
 import { Payments } from "@/payments";
+import { RateLimiter } from "@/rate-limiting/service";
 import { TestDrizzleORM } from "@/tests/db";
+import { describe, it, expect, assert } from "@/tests/payments";
+import { MockRateLimiter } from "@/tests/rate-limiting";
 
 describe("RateLimiter", () => {
   const TEST_ORG_ID = "550e8400-e29b-41d4-a716-446655440000";

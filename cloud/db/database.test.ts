@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
 import { Layer } from "effect";
+import { describe, it, expect } from "vitest";
+
 import { Database } from "@/db/database";
 
 describe("Database", () => {

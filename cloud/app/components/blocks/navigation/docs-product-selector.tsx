@@ -1,7 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { cn } from "@/app/lib/utils";
+
 import type { ProductOption } from "@/app/lib/content/spec";
+
 import { useSidebarContext } from "@/app/components/content-layout";
+import { cn } from "@/app/lib/utils";
 
 // Styles for product selector
 const PRODUCT_SELECTOR_STYLES = {

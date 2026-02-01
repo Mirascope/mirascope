@@ -1,15 +1,4 @@
 import {
-  describe as vitestDescribe,
-  it as vitestIt,
-  expect,
-  assert,
-  beforeAll,
-  afterAll,
-} from "@effect/vitest";
-import { createCustomIt, withRollback } from "@/tests/shared";
-import { Context, Effect, Layer, Option } from "effect";
-import { MirascopeCloudApi, ApiLive } from "@/api/router";
-import {
   HttpClient,
   HttpApiClient,
   HttpClientRequest,
@@ -17,30 +6,43 @@ import {
   HttpApiBuilder,
   HttpServer,
 } from "@effect/platform";
-import { Settings, type SettingsConfig } from "@/settings";
-import { createMockSettings, MockSettingsLayer } from "@/tests/settings";
-import { Database } from "@/db/database";
-import { DrizzleORM } from "@/db/client";
-import { Payments } from "@/payments";
+import {
+  describe as vitestDescribe,
+  it as vitestIt,
+  expect,
+  assert,
+  beforeAll,
+  afterAll,
+} from "@effect/vitest";
+import { eq } from "drizzle-orm";
+import { Context, Effect, Layer, Option } from "effect";
+
+import type { ProviderName } from "@/api/router/providers";
+import type { StreamMeteringContext } from "@/api/router/streaming";
+import type { AuthResult } from "@/auth/context";
+import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
+
 import { Analytics } from "@/analytics";
-import { Emails } from "@/emails";
+import { MirascopeCloudApi, ApiLive } from "@/api/router";
 import { AuthenticatedUser, Authentication } from "@/auth";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
+import { DrizzleORM } from "@/db/client";
+import { Database } from "@/db/database";
+import { users } from "@/db/schema";
+import { Emails } from "@/emails";
+import { Payments } from "@/payments";
+import { Settings, type SettingsConfig } from "@/settings";
+import { TEST_DATABASE_URL } from "@/tests/db";
+import { getTestClickHouseConfig } from "@/tests/global-setup";
+import { MockStripe } from "@/tests/payments";
+import { createMockSettings, MockSettingsLayer } from "@/tests/settings";
+import { createCustomIt, withRollback } from "@/tests/shared";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
 import {
   SpansIngestQueue,
   type SpansIngestMessage,
 } from "@/workers/spanIngestQueue";
-import { RealtimeSpans } from "@/workers/realtimeSpans";
-import type { AuthResult } from "@/auth/context";
-import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
-import { users } from "@/db/schema";
-import { TEST_DATABASE_URL } from "@/tests/db";
-import { MockStripe } from "@/tests/payments";
-import type { StreamMeteringContext } from "@/api/router/streaming";
-import type { ProviderName } from "@/api/router/providers";
-import { eq } from "drizzle-orm";
-import { getTestClickHouseConfig } from "@/tests/global-setup";
 
 // Re-export expect from vitest
 export { expect, assert };

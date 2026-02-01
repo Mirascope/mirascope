@@ -1,5 +1,8 @@
-import { useState, useEffect, useRef } from "react";
 import { ChevronRight, ChevronDown, Loader2 } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+
+import type { SpanSearchResult, SpanDetail } from "@/api/traces-search.schemas";
+
 import {
   Table,
   TableBody,
@@ -9,15 +12,14 @@ import {
   TableRow,
 } from "@/app/components/ui/table";
 import { TruncatedText } from "@/app/components/ui/truncated-text";
-import { cn, safeParseJSON } from "@/app/lib/utils";
 import {
   formatDuration,
   formatTimestamp,
   formatTokens,
   formatCost,
 } from "@/app/lib/traces/formatting";
-import type { SpanSearchResult, SpanDetail } from "@/api/traces-search.schemas";
 import { buildSpanTree, type SpanNode } from "@/app/lib/traces/types";
+import { cn, safeParseJSON } from "@/app/lib/utils";
 
 // =============================================================================
 // Attribute extraction helpers for mirascope.response.* fallback

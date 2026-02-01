@@ -18,11 +18,11 @@ from .primitives import (
     create_wrapper_model,
     is_primitive_type,
 )
-from .types import FormattableT, FormattingMode
+from .types import FormatSpec, FormattableT, FormattingMode
 
 __all__ = [
     "Format",
-    "FormattableT",
+    "FormatSpec",
     "FormattableT",
     "FormattingMode",
     "FromCallArgs",

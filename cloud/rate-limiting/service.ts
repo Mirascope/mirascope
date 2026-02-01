@@ -34,10 +34,12 @@
  */
 
 import { Context, Effect, Layer } from "effect";
-import { RateLimitError, ServiceUnavailableError } from "@/errors";
-import { Payments } from "@/payments";
+
 import type { PlanTier } from "@/payments/plans";
 import type { RateLimiterBinding } from "@/workers/config";
+
+import { RateLimitError, ServiceUnavailableError } from "@/errors";
+import { Payments } from "@/payments";
 
 /**
  * Result of a rate limit check.

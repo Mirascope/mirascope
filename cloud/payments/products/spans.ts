@@ -6,15 +6,16 @@
  */
 
 import { Effect } from "effect";
-import { Stripe } from "@/payments/client";
+
+import { DrizzleORM } from "@/db/client";
 import {
   NotFoundError,
   StripeError,
   PlanLimitExceededError,
   DatabaseError,
 } from "@/errors";
+import { Stripe } from "@/payments/client";
 import { Subscriptions } from "@/payments/subscriptions";
-import { DrizzleORM } from "@/db/client";
 
 /**
  * Spans product billing service.

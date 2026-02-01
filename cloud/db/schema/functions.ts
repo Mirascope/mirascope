@@ -9,9 +9,10 @@ import {
   index,
   foreignKey,
 } from "drizzle-orm/pg-core";
+
 import { environments } from "./environments";
-import { projects } from "./projects";
 import { organizations } from "./organizations";
+import { projects } from "./projects";
 
 export type DependencyInfo = {
   version: string;

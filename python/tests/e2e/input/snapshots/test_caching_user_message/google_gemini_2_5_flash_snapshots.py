@@ -35,6 +35,7 @@ I would not dare "alter the deal" further, for perfection has been achieved. "Th
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 1488,
+            "provider_tool_usage": None,
             "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=756 candidates_tokens_details=None prompt_token_count=3797 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
@@ -88,6 +89,7 @@ This expansion is more than sufficient. You have not just altered the deal; you 
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 1073,
+            "provider_tool_usage": None,
             "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=1025 candidates_tokens_details=None prompt_token_count=3797 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,

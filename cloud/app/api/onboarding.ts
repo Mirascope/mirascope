@@ -3,11 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { Effect } from "effect";
-import { authenticate } from "@/auth";
-import { Database } from "@/db/database";
-import { DrizzleORM } from "@/db/client";
-import { generateSlug } from "@/db/slug";
-import { runEffect } from "@/app/lib/effect";
+
 import type { Result } from "@/app/lib/types";
 import type {
   PublicOrganizationWithMembership,
@@ -15,6 +11,12 @@ import type {
   PublicEnvironment,
   ApiKeyCreateResponse,
 } from "@/db/schema";
+
+import { runEffect } from "@/app/lib/effect";
+import { authenticate } from "@/auth";
+import { DrizzleORM } from "@/db/client";
+import { Database } from "@/db/database";
+import { generateSlug } from "@/db/slug";
 
 /**
  * Response from the onboarding server function.

@@ -14,8 +14,10 @@
  */
 
 import type { Plugin } from "vite";
+
 import fs from "node:fs/promises";
 import path from "node:path";
+
 import {
   parseSitemapForUrlsWithoutChangefreq,
   generateRobotsTxt,

@@ -1,8 +1,10 @@
 import * as React from "react";
-import { cn } from "@/app/lib/utils";
-import { DISCORD_INVITE_URL } from "@/app/lib/site";
-import { buttonVariants } from "@/app/components/ui/button";
+
 import type { ButtonProps } from "@/app/components/ui/button";
+
+import { buttonVariants } from "@/app/components/ui/button";
+import { DISCORD_INVITE_URL } from "@/app/lib/site";
+import { cn } from "@/app/lib/utils";
 
 interface DiscordInviteButtonProps {
   variant?: ButtonProps["variant"];

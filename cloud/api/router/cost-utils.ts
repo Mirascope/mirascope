@@ -26,6 +26,21 @@
 export type CostInCenticents = bigint;
 
 /**
+ * Cost breakdown for metering and billing operations.
+ *
+ * Groups the different cost components together for cleaner function signatures
+ * and easier extensibility when adding new cost types.
+ */
+export interface MeteringCostBreakdown {
+  /** Token cost (input, output, cache) in centi-cents (1 = $0.0001 USD) */
+  tokenCost: CostInCenticents;
+  /** Tool cost (web search, code execution, etc.) in centi-cents (1 = $0.0001 USD) */
+  toolCost: CostInCenticents | undefined;
+  /** Total cost (tokenCost + toolCost) in centi-cents (1 = $0.0001 USD) */
+  totalCost: CostInCenticents;
+}
+
+/**
  * Number of centi-cents in one dollar.
  */
 const CENTICENTS_PER_DOLLAR = 10000n;

@@ -1,6 +1,7 @@
 import { Effect } from "effect";
-import { generateOpenApiSpec } from "@/api/generate-openapi";
+
 import { type OpenApiSpec } from "@/api/docs.schemas";
+import { generateOpenApiSpec } from "@/api/generate-openapi";
 
 export * from "@/api/docs.schemas";
 
