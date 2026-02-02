@@ -38,6 +38,11 @@ import { Effect, Layer, Context } from "effect";
 
 import type { GoogleAnalyticsConfig } from "@/settings";
 
+import {
+  toGA4Properties,
+  type BrowserContext,
+} from "@/app/lib/browser-context";
+
 /**
  * Parameters for tracking events.
  */
@@ -46,6 +51,8 @@ export interface TrackEventParams {
   eventName: string;
   /** Event parameters (e.g., { category: "user", value: 100 }) */
   eventParams?: Record<string, unknown>;
+  /** Browser context for rich analytics data */
+  browserContext?: BrowserContext;
 }
 
 /**
@@ -58,6 +65,8 @@ export interface TrackPageViewParams {
   pagePath?: string;
   /** Full page URL */
   pageLocation?: string;
+  /** Browser context for rich analytics data */
+  browserContext?: BrowserContext;
 }
 
 /**
@@ -232,8 +241,14 @@ function createServerImplementation(
   const sendEvent = async (eventData: {
     name: string;
     params?: Record<string, unknown>;
+    browserContext?: BrowserContext;
   }): Promise<void> => {
     const url = `https://www.google-analytics.com/mp/collect?measurement_id=${config.measurementId}&api_secret=${config.apiSecret}`;
+
+    // Transform browser context to GA4 format
+    const ga4Context = eventData.browserContext
+      ? toGA4Properties(eventData.browserContext)
+      : {};
 
     const payload = {
       client_id: clientId,
@@ -241,7 +256,11 @@ function createServerImplementation(
       events: [
         {
           name: eventData.name,
-          params: eventData.params || {},
+          params: {
+            ...ga4Context, // Browser context (page_location, screen_resolution, etc.)
+            ...eventData.params, // Event-specific params override
+            engagement_time_msec: 100, // Required for engagement metrics
+          },
         },
       ],
     };
@@ -272,6 +291,7 @@ function createServerImplementation(
           sendEvent({
             name: params.eventName,
             params: params.eventParams,
+            browserContext: params.browserContext,
           }),
         catch: (error) => {
           console.error("Google Analytics server trackEvent failed:", error);
@@ -289,6 +309,7 @@ function createServerImplementation(
               page_location: params.pageLocation || params.pagePath,
               page_path: params.pagePath,
             },
+            browserContext: params.browserContext,
           }),
         catch: (error) => {
           console.error("Google Analytics server trackPageView failed:", error);

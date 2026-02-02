@@ -18,6 +18,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Effect, Layer } from "effect";
 
+import type { BrowserContext } from "@/app/lib/browser-context";
+
 import { Analytics } from "@/analytics";
 import { settingsLayer } from "@/server-entry";
 import { Settings } from "@/settings";
@@ -40,6 +42,8 @@ type AnalyticsEventRequest = {
   userId?: string;
   /** PostHog distinct ID for user attribution */
   distinctId?: string;
+  /** Browser context for rich analytics data */
+  browserContext?: BrowserContext;
 };
 
 export const Route = createFileRoute("/api/analytics")({
@@ -60,6 +64,7 @@ export const Route = createFileRoute("/api/analytics")({
                       name: body.name,
                       properties: body.properties,
                       distinctId: body.distinctId,
+                      browserContext: body.browserContext,
                     });
                   }
                   break;
@@ -68,6 +73,7 @@ export const Route = createFileRoute("/api/analytics")({
                     path: body.path,
                     title: body.title,
                     distinctId: body.distinctId,
+                    browserContext: body.browserContext,
                   });
                   break;
                 case "identify":
@@ -75,6 +81,7 @@ export const Route = createFileRoute("/api/analytics")({
                     yield* analytics.identify({
                       userId: body.userId,
                       properties: body.properties,
+                      browserContext: body.browserContext,
                     });
                   }
                   break;

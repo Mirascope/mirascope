@@ -38,6 +38,11 @@ import { Effect, Layer, Context } from "effect";
 
 import type { PostHogConfig } from "@/settings";
 
+import {
+  toPostHogProperties,
+  type BrowserContext,
+} from "@/app/lib/browser-context";
+
 /**
  * Parameters for tracking events.
  */
@@ -48,6 +53,8 @@ export interface TrackEventParams {
   distinctId?: string;
   /** Event properties */
   properties?: Record<string, unknown>;
+  /** Browser context for rich analytics data */
+  browserContext?: BrowserContext;
 }
 
 /**
@@ -58,6 +65,8 @@ export interface TrackPageViewParams {
   distinctId?: string;
   /** Optional properties to include with page view */
   properties?: Record<string, unknown>;
+  /** Browser context for rich analytics data */
+  browserContext?: BrowserContext;
 }
 
 /**
@@ -68,6 +77,8 @@ export interface IdentifyParams {
   distinctId: string;
   /** User properties */
   properties?: Record<string, unknown>;
+  /** Browser context for rich analytics data */
+  browserContext?: BrowserContext;
 }
 
 /**
@@ -257,14 +268,23 @@ function createServerImplementation(config: PostHogConfig): PostHogClient {
     event: string;
     distinct_id?: string;
     properties?: Record<string, unknown>;
+    browserContext?: BrowserContext;
   }): Promise<void> => {
     const url = `${config.host}/capture/`;
+
+    // Transform browser context to PostHog format ($ prefixed properties)
+    const posthogContext = eventData.browserContext
+      ? toPostHogProperties(eventData.browserContext)
+      : {};
 
     const payload = {
       api_key: config.apiKey,
       event: eventData.event,
       distinct_id: eventData.distinct_id || "anonymous",
-      properties: eventData.properties || {},
+      properties: {
+        ...posthogContext, // Browser context ($current_url, $browser, etc.)
+        ...eventData.properties, // Event-specific properties override
+      },
       timestamp: new Date().toISOString(),
     };
 
@@ -295,6 +315,7 @@ function createServerImplementation(config: PostHogConfig): PostHogClient {
             event: params.event,
             distinct_id: params.distinctId,
             properties: params.properties,
+            browserContext: params.browserContext,
           }),
         catch: (error) => {
           console.error("PostHog server trackEvent failed:", error);
@@ -309,6 +330,7 @@ function createServerImplementation(config: PostHogConfig): PostHogClient {
             event: "$pageview",
             distinct_id: params?.distinctId,
             properties: params?.properties,
+            browserContext: params?.browserContext,
           }),
         catch: (error) => {
           console.error("PostHog server trackPageView failed:", error);
@@ -321,11 +343,17 @@ function createServerImplementation(config: PostHogConfig): PostHogClient {
         try: async () => {
           const url = `${config.host}/capture/`;
 
+          // Transform browser context to PostHog format
+          const posthogContext = params.browserContext
+            ? toPostHogProperties(params.browserContext)
+            : {};
+
           const payload = {
             api_key: config.apiKey,
             event: "$identify",
             distinct_id: params.distinctId,
             properties: {
+              ...posthogContext, // Browser context
               $set: params.properties || {},
             },
             timestamp: new Date().toISOString(),

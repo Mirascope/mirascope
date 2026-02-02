@@ -5,9 +5,9 @@
 // Import GitHub stats from build-time generated file
 import githubStats from "./github-stats.json";
 
-// todo(seb): consolidate versions as part of posthog integration
-// Site version information
-export const SITE_VERSION = "2.0.0-alpha.5";
+// Site version information for analytics tracking
+export const SITE_VERSION = "2.1.1";
+export const LIBRARY_NAME = "mirascope";
 
 // Base URL for absolute URLs
 export const BASE_URL = "https://mirascope.com";

@@ -66,6 +66,7 @@
 
 import { Effect, Layer, Context } from "effect";
 
+import type { BrowserContext } from "@/app/lib/browser-context";
 import type { GoogleAnalyticsConfig, PostHogConfig } from "@/settings";
 
 import {
@@ -94,6 +95,8 @@ export interface TrackEventParams {
   properties?: Record<string, unknown>;
   /** PostHog distinct ID for user attribution */
   distinctId?: string;
+  /** Browser context for rich analytics data */
+  browserContext?: BrowserContext;
 }
 
 /**
@@ -106,6 +109,8 @@ export interface TrackPageViewParams {
   title?: string;
   /** PostHog distinct ID for user attribution */
   distinctId?: string;
+  /** Browser context for rich analytics data */
+  browserContext?: BrowserContext;
 }
 
 /**
@@ -116,6 +121,8 @@ export interface IdentifyParams {
   userId: string;
   /** User properties */
   properties?: Record<string, unknown>;
+  /** Browser context for rich analytics data */
+  browserContext?: BrowserContext;
 }
 
 /**
@@ -200,11 +207,13 @@ export class Analytics extends Context.Tag("Analytics")<
               googleAnalytics.trackEvent({
                 eventName: params.name,
                 eventParams: params.properties,
+                browserContext: params.browserContext,
               }),
               postHog.trackEvent({
                 event: params.name,
                 distinctId: params.distinctId,
                 properties: params.properties,
+                browserContext: params.browserContext,
               }),
             ],
             { concurrency: "unbounded" },
@@ -222,9 +231,11 @@ export class Analytics extends Context.Tag("Analytics")<
               googleAnalytics.trackPageView({
                 pagePath: params?.path,
                 pageTitle: params?.title,
+                browserContext: params?.browserContext,
               }),
               postHog.trackPageView({
                 distinctId: params?.distinctId,
+                browserContext: params?.browserContext,
               }),
             ],
             { concurrency: "unbounded" },
@@ -243,6 +254,7 @@ export class Analytics extends Context.Tag("Analytics")<
               postHog.identify({
                 distinctId: params.userId,
                 properties: params.properties,
+                browserContext: params.browserContext,
               }),
             ],
             { concurrency: "unbounded" },

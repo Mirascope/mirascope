@@ -27,6 +27,11 @@
 
 import { createContext, useContext, useRef, type ReactNode } from "react";
 
+import {
+  collectBrowserContext,
+  type BrowserContext,
+} from "@/app/lib/browser-context";
+
 type AnalyticsContextType = {
   /**
    * Track a custom event.
@@ -79,12 +84,19 @@ async function sendToProxy(data: {
   title?: string;
   userId?: string;
   distinctId?: string;
+  browserContext?: BrowserContext;
 }) {
   try {
+    // Collect browser context for rich analytics data
+    const browserContext = collectBrowserContext();
+
     await fetch("/api/analytics", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        browserContext,
+      }),
     });
   } catch (error) {
     // Silently fail - analytics should never break the app
