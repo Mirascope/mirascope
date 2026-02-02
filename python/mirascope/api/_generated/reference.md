@@ -3749,6 +3749,7 @@ client.functions.create(
     signature="signature",
     signature_hash="signatureHash",
     name="name",
+    language="language",
 )
 
 ```
@@ -3798,6 +3799,14 @@ client.functions.create(
 <dd>
 
 **name:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**language:** `str` 
     
 </dd>
 </dl>

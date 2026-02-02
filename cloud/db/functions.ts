@@ -100,6 +100,7 @@ export type FunctionCreateData = Pick<
   | "signature"
   | "signatureHash"
   | "name"
+  | "language"
   | "description"
   | "tags"
   | "metadata"
@@ -270,6 +271,7 @@ export class Functions extends BaseAuthenticatedEffectService<
         metadata: data.metadata ?? null,
         code: data.code,
         signature: data.signature,
+        language: data.language,
         dependencies: data.dependencies ?? null,
         environmentId,
         projectId,

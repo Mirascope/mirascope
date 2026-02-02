@@ -66,6 +66,7 @@ class FunctionsClient:
         signature: str,
         signature_hash: str,
         name: str,
+        language: str,
         description: typing.Optional[str] = OMIT,
         tags: typing.Optional[typing.Sequence[str]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[str]]] = OMIT,
@@ -86,6 +87,8 @@ class FunctionsClient:
         signature_hash : str
 
         name : str
+
+        language : str
 
         description : typing.Optional[str]
 
@@ -114,6 +117,7 @@ class FunctionsClient:
             signature="signature",
             signature_hash="signatureHash",
             name="name",
+            language="language",
         )
         """
         _response = self._raw_client.create(
@@ -122,6 +126,7 @@ class FunctionsClient:
             signature=signature,
             signature_hash=signature_hash,
             name=name,
+            language=language,
             description=description,
             tags=tags,
             metadata=metadata,
@@ -359,6 +364,7 @@ class AsyncFunctionsClient:
         signature: str,
         signature_hash: str,
         name: str,
+        language: str,
         description: typing.Optional[str] = OMIT,
         tags: typing.Optional[typing.Sequence[str]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[str]]] = OMIT,
@@ -379,6 +385,8 @@ class AsyncFunctionsClient:
         signature_hash : str
 
         name : str
+
+        language : str
 
         description : typing.Optional[str]
 
@@ -412,6 +420,7 @@ class AsyncFunctionsClient:
                 signature="signature",
                 signature_hash="signatureHash",
                 name="name",
+                language="language",
             )
 
 
@@ -423,6 +432,7 @@ class AsyncFunctionsClient:
             signature=signature,
             signature_hash=signature_hash,
             name=name,
+            language=language,
             description=description,
             tags=tags,
             metadata=metadata,

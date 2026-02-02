@@ -13,6 +13,7 @@ export interface FunctionsGetResponse {
   metadata: Record<string, string | null> | null;
   code: string;
   signature: string;
+  language: string;
   dependencies: Record<
     string,
     Mirascope.FunctionsGetResponseDependenciesValue | null

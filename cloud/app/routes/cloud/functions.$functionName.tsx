@@ -1,3 +1,5 @@
+import type { SupportedLanguages } from "@pierre/diffs";
+
 import { DragHandleDots2Icon } from "@radix-ui/react-icons";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
@@ -412,14 +414,16 @@ function FunctionDetailPage() {
                       <DiffTool
                         baseCode={compareVersion.code}
                         newCode={fn.code}
-                        language="python"
+                        language={
+                          (fn.language ?? "python") as SupportedLanguages
+                        }
                         baseName={`v${compareVersion.version}`}
                         newName={`v${fn.version}`}
                       />
                     ) : (
                       <CodeBlock
                         code={fn.code}
-                        language="python"
+                        language={fn.language ?? "python"}
                         showLineNumbers={true}
                       />
                     )}

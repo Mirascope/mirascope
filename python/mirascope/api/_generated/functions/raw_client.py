@@ -167,6 +167,7 @@ class RawFunctionsClient:
         signature: str,
         signature_hash: str,
         name: str,
+        language: str,
         description: typing.Optional[str] = OMIT,
         tags: typing.Optional[typing.Sequence[str]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[str]]] = OMIT,
@@ -187,6 +188,8 @@ class RawFunctionsClient:
         signature_hash : str
 
         name : str
+
+        language : str
 
         description : typing.Optional[str]
 
@@ -213,6 +216,7 @@ class RawFunctionsClient:
                 "signature": signature,
                 "signatureHash": signature_hash,
                 "name": name,
+                "language": language,
                 "description": description,
                 "tags": tags,
                 "metadata": metadata,
@@ -1094,6 +1098,7 @@ class AsyncRawFunctionsClient:
         signature: str,
         signature_hash: str,
         name: str,
+        language: str,
         description: typing.Optional[str] = OMIT,
         tags: typing.Optional[typing.Sequence[str]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[str]]] = OMIT,
@@ -1114,6 +1119,8 @@ class AsyncRawFunctionsClient:
         signature_hash : str
 
         name : str
+
+        language : str
 
         description : typing.Optional[str]
 
@@ -1140,6 +1147,7 @@ class AsyncRawFunctionsClient:
                 "signature": signature,
                 "signatureHash": signature_hash,
                 "name": name,
+                "language": language,
                 "description": description,
                 "tags": tags,
                 "metadata": metadata,

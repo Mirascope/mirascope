@@ -236,6 +236,7 @@ export function versionCall<CallT extends CallLike>(
         signature: closure.signature,
         signatureHash: closure.signatureHash,
         name: callName,
+        language: "typescript",
         tags: tags.length > 0 ? tags : undefined,
         metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
       });

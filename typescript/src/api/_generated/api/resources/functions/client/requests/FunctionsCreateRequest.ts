@@ -9,7 +9,8 @@ import type * as Mirascope from "../../../../index.js";
  *         hash: "hash",
  *         signature: "signature",
  *         signatureHash: "signatureHash",
- *         name: "name"
+ *         name: "name",
+ *         language: "language"
  *     }
  */
 export interface FunctionsCreateRequest {
@@ -18,6 +19,7 @@ export interface FunctionsCreateRequest {
   signature: string;
   signatureHash: string;
   name: string;
+  language: string;
   description?: string | null;
   tags?: string[] | null;
   metadata?: Record<string, string | null> | null;

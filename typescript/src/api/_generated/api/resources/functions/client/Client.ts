@@ -192,7 +192,8 @@ export class FunctionsClient {
    *         hash: "hash",
    *         signature: "signature",
    *         signatureHash: "signatureHash",
-   *         name: "name"
+   *         name: "name",
+   *         language: "language"
    *     })
    */
   public create(

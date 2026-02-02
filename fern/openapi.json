@@ -8570,6 +8570,7 @@
                           "metadata",
                           "code",
                           "signature",
+                          "language",
                           "dependencies",
                           "environmentId",
                           "projectId",
@@ -8635,6 +8636,9 @@
                             "type": "string"
                           },
                           "signature": {
+                            "type": "string"
+                          },
+                          "language": {
                             "type": "string"
                           },
                           "dependencies": {
@@ -8814,6 +8818,7 @@
                     "metadata",
                     "code",
                     "signature",
+                    "language",
                     "dependencies",
                     "environmentId",
                     "projectId",
@@ -8879,6 +8884,9 @@
                       "type": "string"
                     },
                     "signature": {
+                      "type": "string"
+                    },
+                    "language": {
                       "type": "string"
                     },
                     "dependencies": {
@@ -9045,7 +9053,8 @@
                   "hash",
                   "signature",
                   "signatureHash",
-                  "name"
+                  "name",
+                  "language"
                 ],
                 "properties": {
                   "code": {
@@ -9061,6 +9070,9 @@
                     "type": "string"
                   },
                   "name": {
+                    "type": "string"
+                  },
+                  "language": {
                     "type": "string"
                   },
                   "description": {
@@ -9183,6 +9195,7 @@
                     "metadata",
                     "code",
                     "signature",
+                    "language",
                     "dependencies",
                     "environmentId",
                     "projectId",
@@ -9248,6 +9261,9 @@
                       "type": "string"
                     },
                     "signature": {
+                      "type": "string"
+                    },
+                    "language": {
                       "type": "string"
                     },
                     "dependencies": {
@@ -9523,6 +9539,7 @@
                     "metadata",
                     "code",
                     "signature",
+                    "language",
                     "dependencies",
                     "environmentId",
                     "projectId",
@@ -9588,6 +9605,9 @@
                       "type": "string"
                     },
                     "signature": {
+                      "type": "string"
+                    },
+                    "language": {
                       "type": "string"
                     },
                     "dependencies": {
@@ -9795,6 +9815,7 @@
                     "metadata",
                     "code",
                     "signature",
+                    "language",
                     "dependencies",
                     "environmentId",
                     "projectId",
@@ -9860,6 +9881,9 @@
                       "type": "string"
                     },
                     "signature": {
+                      "type": "string"
+                    },
+                    "language": {
                       "type": "string"
                     },
                     "dependencies": {
@@ -10068,6 +10092,7 @@
                           "metadata",
                           "code",
                           "signature",
+                          "language",
                           "dependencies",
                           "environmentId",
                           "projectId",
@@ -10133,6 +10158,9 @@
                             "type": "string"
                           },
                           "signature": {
+                            "type": "string"
+                          },
+                          "language": {
                             "type": "string"
                           },
                           "dependencies": {

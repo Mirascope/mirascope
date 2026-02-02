@@ -1,3 +1,5 @@
+import type { BundledLanguage } from "shiki";
+
 import { Link } from "@tanstack/react-router";
 import {
   AlertCircle,
@@ -950,7 +952,9 @@ export function SpanDetailPanel({
                           ? functionData.code
                           : functionData.signature
                       }
-                      language="python"
+                      language={
+                        (functionData.language ?? "python") as BundledLanguage
+                      }
                     />
                   </div>
                 </div>

@@ -22,6 +22,7 @@ export const FunctionsGetByEnvResponse: core.serialization.ObjectSchema<
     .nullable(),
   code: core.serialization.string(),
   signature: core.serialization.string(),
+  language: core.serialization.string(),
   dependencies: core.serialization
     .record(
       core.serialization.string(),
@@ -47,6 +48,7 @@ export declare namespace FunctionsGetByEnvResponse {
     metadata?: Record<string, string | null | undefined> | null;
     code: string;
     signature: string;
+    language: string;
     dependencies?: Record<
       string,
       FunctionsGetByEnvResponseDependenciesValue.Raw | null | undefined

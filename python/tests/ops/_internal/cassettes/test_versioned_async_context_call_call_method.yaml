@@ -115,16 +115,16 @@ interactions:
       connection:
       - keep-alive
       host:
-      - localhost:3000
+      - localhost:8000
       user-agent:
       - python-httpx/0.28.1
       x-fern-language:
       - Python
     method: GET
-    uri: http://example.com/functions/hash/79085c0ac8178f3ae453795c87e509b7738abc1b1dcf58b045137c5cfe7e7923
+    uri: http://localhost:8000/functions/hash/79085c0ac8178f3ae453795c87e509b7738abc1b1dcf58b045137c5cfe7e7923
   response:
     body:
-      string: '{"id":"64705856-f7bc-4f08-9fbd-466386f562a3","hash":"79085c0ac8178f3ae453795c87e509b7738abc1b1dcf58b045137c5cfe7e7923","signatureHash":"ae19bdc73bdb0f93f143b7df3c8cead8efc708c74688fcf000de53be729c5e96","name":"recommend","description":null,"version":"4.0","tags":null,"metadata":null,"code":"from
+      string: '{"id":"64705856-f7bc-4f08-9fbd-466386f562a3","hash":"79085c0ac8178f3ae453795c87e509b7738abc1b1dcf58b045137c5cfe7e7923","language":"python","signatureHash":"ae19bdc73bdb0f93f143b7df3c8cead8efc708c74688fcf000de53be729c5e96","name":"recommend","description":null,"version":"4.0","tags":null,"metadata":null,"code":"from
         mirascope import llm\n\nctx = llm.Context(deps=\"As a librarian,\")\n\n\n@llm.call(\"openai/gpt-4o-mini\")\nasync
         def recommend(ctx: llm.Context[str], genre: str) -> str:\n    return f\"{ctx.deps}
         Recommend a {genre} book.\"\n","signature":"@llm.call(\"openai/gpt-4o-mini\")\nasync
@@ -261,16 +261,16 @@ interactions:
       connection:
       - keep-alive
       host:
-      - localhost:3000
+      - localhost:8000
       user-agent:
       - python-httpx/0.28.1
       x-fern-language:
       - Python
     method: GET
-    uri: http://example.com/functions/hash/79085c0ac8178f3ae453795c87e509b7738abc1b1dcf58b045137c5cfe7e7923
+    uri: http://localhost:8000/functions/hash/79085c0ac8178f3ae453795c87e509b7738abc1b1dcf58b045137c5cfe7e7923
   response:
     body:
-      string: '{"id":"64705856-f7bc-4f08-9fbd-466386f562a3","hash":"79085c0ac8178f3ae453795c87e509b7738abc1b1dcf58b045137c5cfe7e7923","signatureHash":"ae19bdc73bdb0f93f143b7df3c8cead8efc708c74688fcf000de53be729c5e96","name":"recommend","description":null,"version":"4.0","tags":null,"metadata":null,"code":"from
+      string: '{"id":"64705856-f7bc-4f08-9fbd-466386f562a3","hash":"79085c0ac8178f3ae453795c87e509b7738abc1b1dcf58b045137c5cfe7e7923","language":"python","signatureHash":"ae19bdc73bdb0f93f143b7df3c8cead8efc708c74688fcf000de53be729c5e96","name":"recommend","description":null,"version":"4.0","tags":null,"metadata":null,"code":"from
         mirascope import llm\n\nctx = llm.Context(deps=\"As a librarian,\")\n\n\n@llm.call(\"openai/gpt-4o-mini\")\nasync
         def recommend(ctx: llm.Context[str], genre: str) -> str:\n    return f\"{ctx.deps}
         Recommend a {genre} book.\"\n","signature":"@llm.call(\"openai/gpt-4o-mini\")\nasync

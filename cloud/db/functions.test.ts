@@ -27,6 +27,7 @@ describe("Functions", () => {
     signature: "def my_func() -> str",
     signatureHash: "sig-hash-1",
     name: "my_func",
+    language: "python",
     ...overrides,
   });
 
@@ -577,6 +578,7 @@ describe("Functions", () => {
                 signature: "def test() -> None",
                 signatureHash: "sig-hash",
                 name: "test_func",
+                language: "python",
               },
             })
             .pipe(Effect.flip);
@@ -625,6 +627,7 @@ describe("Functions", () => {
               signature: "def test() -> None",
               signatureHash: "sig-hash",
               name: "test_func",
+              language: "python",
             },
           })
           .pipe(Effect.flip);

@@ -15,6 +15,7 @@ export const FunctionsCreateRequest: core.serialization.Schema<
   signature: core.serialization.string(),
   signatureHash: core.serialization.string(),
   name: core.serialization.string(),
+  language: core.serialization.string(),
   description: core.serialization.string().optionalNullable(),
   tags: core.serialization.list(core.serialization.string()).optionalNullable(),
   metadata: core.serialization
@@ -35,6 +36,7 @@ export declare namespace FunctionsCreateRequest {
     signature: string;
     signatureHash: string;
     name: string;
+    language: string;
     description?: (string | null | undefined) | null;
     tags?: (string[] | null | undefined) | null;
     metadata?:

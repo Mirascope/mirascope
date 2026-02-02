@@ -26,6 +26,7 @@ describe("toFunction", () => {
       metadata: null,
       code: "def test(): pass",
       signature: "def test() -> None",
+      language: "python",
       dependencies: null,
       environmentId: "env-id",
       projectId: "project-id",
@@ -52,6 +53,7 @@ describe("toFunction", () => {
       metadata: null,
       code: "def test(): pass",
       signature: "def test() -> None",
+      language: "python",
       dependencies: null,
       environmentId: "env-id",
       projectId: "project-id",
@@ -141,6 +143,7 @@ describe.sequential("Functions API", (it) => {
           signature: "def test_func() -> None",
           signatureHash: "api-sig-hash",
           name: "test_func",
+          language: "python",
         },
       });
       expect(result.id).toBeDefined();
@@ -157,6 +160,7 @@ describe.sequential("Functions API", (it) => {
           signature: "def test_func_with_meta() -> str",
           signatureHash: "api-sig-hash-meta",
           name: "test_func_with_meta",
+          language: "python",
           description: "A test function with metadata",
           tags: ["test", "api"],
           metadata: { source: "api-test" },
@@ -195,6 +199,7 @@ describe.sequential("Functions API", (it) => {
           signature: "def get_by_id_func() -> None",
           signatureHash: "get-by-id-sig-hash",
           name: "get_by_id_func",
+          language: "python",
         },
       });
 
@@ -218,6 +223,7 @@ describe.sequential("Functions API", (it) => {
           signature: "def get_by_hash_func() -> None",
           signatureHash: "get-by-hash-sig-hash",
           name: "get_by_hash_func",
+          language: "python",
         },
       });
 
@@ -239,6 +245,7 @@ describe.sequential("Functions API", (it) => {
           signature: "def delete_me() -> None",
           signatureHash: "delete-sig-hash",
           name: "delete_me",
+          language: "python",
         },
       });
 
@@ -271,6 +278,7 @@ describe.sequential("Functions API", (it) => {
             signature: "def get_by_env_func() -> None",
             signatureHash: "get-by-env-sig-hash",
             name: "get_by_env_func",
+            language: "python",
           },
         });
 

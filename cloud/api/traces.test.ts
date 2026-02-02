@@ -272,6 +272,7 @@ describe.sequential("Traces API", (it) => {
           code: "def traces_list_by_hash(): pass",
           signature: "def traces_list_by_hash()",
           signatureHash: "traces-list-by-hash",
+          language: "python",
         },
       });
 

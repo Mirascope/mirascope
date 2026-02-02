@@ -291,6 +291,7 @@ export function version<Args extends unknown[], R, CallT extends CallLike>(
         signatureHash: closure.signatureHash,
         /* v8 ignore next - name fallback chain branches */
         name: options.name || fn.name || "anonymous",
+        language: "typescript",
         tags: tags.length > 0 ? tags : undefined,
         metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
       });

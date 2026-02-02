@@ -24,6 +24,7 @@ class FunctionsListByEnvResponseFunctionsItem(UniversalBaseModel):
     metadata: typing.Optional[typing.Dict[str, typing.Optional[str]]] = None
     code: str
     signature: str
+    language: str
     dependencies: typing.Optional[
         typing.Dict[
             str,
