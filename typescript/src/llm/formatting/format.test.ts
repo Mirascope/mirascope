@@ -341,6 +341,61 @@ describe("Zod schema with descriptions", () => {
     const props = format.schema.properties as Record<string, { type?: string }>;
     expect(props.optionalField?.type).toBe("string");
   });
+
+  it("handles array types with items in Zod 3 schema", () => {
+    // Create a mock Zod-like object with an array field (Zod 3 style)
+    const mockZodSchema = {
+      _def: {
+        typeName: "ZodObject",
+        shape: () => ({
+          numbers: {
+            _def: {
+              typeName: "ZodArray",
+              description: "A list of numbers",
+              type: {
+                _def: { typeName: "ZodNumber" },
+              },
+            },
+          },
+        }),
+      },
+      safeParse: () => ({ success: true, data: {} }),
+    };
+
+    const format = defineFormat<{ numbers: number[] }>({
+      mode: "tool",
+      validator: mockZodSchema,
+    });
+
+    // The array field should have type "array" and items with type "number"
+    const props = format.schema.properties as Record<
+      string,
+      { type?: string; items?: { type?: string } }
+    >;
+    expect(props.numbers?.type).toBe("array");
+    expect(props.numbers?.items?.type).toBe("number");
+  });
+
+  it("handles array types with real Zod schema", () => {
+    // Use a real Zod schema to test the actual behavior
+    const SchemaWithArray = z.object({
+      numbers: z.array(z.number()).describe("A list of numbers"),
+    });
+
+    const format = defineFormat<{ numbers: number[] }>({
+      mode: "tool",
+      validator: SchemaWithArray,
+    });
+
+    // The array field should have type "array" and items
+    const props = format.schema.properties as Record<
+      string,
+      { type?: string; items?: { type?: string } }
+    >;
+    expect(props.numbers?.type).toBe("array");
+    expect(props.numbers?.items).toBeDefined();
+    expect(props.numbers?.items?.type).toBe("number");
+  });
 });
 
 describe("resolveFormat", () => {

@@ -564,6 +564,7 @@ function extractSchemaFromZod4(
 function extractFieldSchema(zodField: ZodLike): {
   type?: string;
   description?: string;
+  items?: { type?: string; description?: string };
 } {
   const def = zodField._def as Record<string, unknown>;
   const description = def.description as string | undefined;
@@ -586,6 +587,16 @@ function extractFieldSchema(zodField: ZodLike): {
 
   const typeName = def.typeName as string;
   const type = typeMapping[typeName];
+
+  // Handle array items (Zod 3 stores element type in _def.type)
+  if (typeName === "ZodArray" && def.type && typeof def.type === "object") {
+    const itemSchema = extractFieldSchema(def.type as ZodLike);
+    return {
+      type: "array",
+      items: itemSchema,
+      ...(description && { description }),
+    };
+  }
 
   return {
     ...(type && { type }),
