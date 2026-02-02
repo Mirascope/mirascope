@@ -1,0 +1,229 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"developer","content":"Respond only with valid JSON that
+      matches this exact schema:\n{\n  \"description\": \"A lucky number chosen by
+      the model.\",\n  \"properties\": {\n    \"value\": {\n      \"title\": \"Value\",\n      \"type\":
+      \"integer\"\n    }\n  },\n  \"required\": [\n    \"value\"\n  ],\n  \"title\":
+      \"LuckyNumber\",\n  \"type\": \"object\"\n}"},{"content":"Pick a random number
+      between 1 and 1000","role":"user"}],"model":"gpt-4o","text":{"format":{"type":"json_object"}}}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '503'
+      Content-Type:
+      - application/json
+      Host:
+      - api.openai.com
+      User-Agent:
+      - AsyncOpenAI/Python 2.16.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - async:asyncio
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.10.16
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3RU23KjMAx9z1d4/NzsGBICza80O4wAkbo1tteWM8108u87mEugTd4SHekgnSP5
+        e8MYlw0/Mu7Q21JUkAnMRAp50SRtK8ThtUiSPEn3bVEUyauAPWbZK+52WbE/tEXKX3oKU31gTRON
+        0R6HeO0QCJsSeizJcyEOeb4TEfMEFHxfU5vOKiRshqIK6s+zM0H3fbWgPA5hqZTUZ35k3xvGGOMW
+        ruj6+gYvqIxFxzeM3YYPT5Q/Pp1EFJ0zfaUOSsVA6/BfQF1fS4saFF35kYk/Q59ST2RlgwRS+WWl
+        1J5cqEkavYp38FWaQDZQSeYTf4NkjCprUGu6zjSo+pnOlrZ7s01Fut+KYisOo9CRkh/ZW9RgUGL2
+        sPPn5xbuBOxFb2Fx2DV1Wom8aotDk0Fkjix0tRh50Hs44x145lUEa6MJ9b2pZWMr2kkP/KK5OiaA
+        1oZg0vDt7wpU5mydqR4gkejI+PdJM3biF1ABT/zIsjQ/6RufU2/jr7maO6NiR+C99ASahuQ+MSZx
+        Cw6UQrW2iVwYdtE69KhrfLAu1uFFmuDL6RLK6M3ssHWms1TWUL9j+YnXp5jDXlVp9DLDIXijV2eA
+        bWscLZJ6v0LXgZu456vw0CJdS9n0xK3E1Q14dBdZY0lyuqoWghqc4p6Mw6UChJ1FBxRiOBmHHx0Z
+        O2uN6+D+f7EJH97ocnw0BuXHxi/oKuNlVJR32MjQ3Y968OLdyHowL5DhM3DfD07GloutEXPQLlt1
+        Qdcw6ssb6aFS0wsU4vbPc0i9OuNEpC+/gcXjMI8bjWzulWI168/nIRGPgEe88xY8oyZDoBbMSTqL
+        GPza9g4JGiDo+W+b238AAAD//wMAgNq0IhIGAAA=
+    headers:
+      CF-RAY:
+      - 9c7cc7d208f2c3a0-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 02 Feb 2026 21:28:51 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=hlgObIktLHM7nBKt.oX5PwdIV7HS7yNpH4gKyDIHwEs-1770067731-1.0.1.1-sfW56hlg8v.sq6dy5LgTXUhrnMzrIXGPEdzeUgAjsJ0P6AFIaLW6a8Ff9WLVdlDK5eOxN7gGxXcU9CIeyuUSFL6fl4H24gRvqqjNdGVMr4k;
+        path=/; expires=Mon, 02-Feb-26 21:58:51 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=eX5bpmEW0u4kmCgIx9MNjVELj7BG5f31tE7WOwjDmAY-1770067731299-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '973'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799879'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 9ms
+      x-request-id:
+      - req_277022e791d94e7a83e8e25e66e69e4a
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"role":"developer","content":"Respond only with valid JSON that
+      matches this exact schema:\n{\n  \"description\": \"A lucky number chosen by
+      the model.\",\n  \"properties\": {\n    \"value\": {\n      \"title\": \"Value\",\n      \"type\":
+      \"integer\"\n    }\n  },\n  \"required\": [\n    \"value\"\n  ],\n  \"title\":
+      \"LuckyNumber\",\n  \"type\": \"object\"\n}"},{"content":"Pick a random number
+      between 1 and 1000","role":"user"},{"id":"msg_0ba50e502a78d1ff00698117130a408190863dc2b07bf86d5a","content":[{"annotations":[],"text":"{\n  \"value\":
+      527\n}","type":"output_text","logprobs":[]}],"role":"assistant","status":"completed","type":"message"},{"content":"Your
+      response failed schema validation:\n1 validation error for LuckyNumber\nvalue\n  Value
+      error, The number must be exactly 173, but got 527 [type=value_error, input_value=527,
+      input_type=int]\n    For further information visit https://errors.pydantic.dev/2.12/v/value_error\n\nPlease
+      correct these issues and respond again.","role":"user"}],"model":"gpt-4o","text":{"format":{"type":"json_object"}}}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1077'
+      Content-Type:
+      - application/json
+      Cookie:
+      - <filtered>
+      Host:
+      - api.openai.com
+      User-Agent:
+      - AsyncOpenAI/Python 2.16.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - async:asyncio
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.10.16
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//dFTbcuIwDH3nKzJ+Ljt2oBD4lbKTURyFunVsry0zZTr8+06cC0kLb6Aj
+        nUjnSP5eZRlTNTtmzGNwJa/gleMrz2Ff1KJpON8dCiH2YrM7NLIQB17tarltxPaQbxrBi4K9dBS2
+        +kBJI401Afu49AiEdQkdJvZ7znf7/UYkLBBQDF2NtK3TSFj3RRXIz7O30XR9NaAD9mGltTJndsy+
+        V1mWZczBFX1XX+MFtXXo2SrLbv2HR8ofn84Tit7brtJErVOg8fgvopHX0qEBTVd2zPgfnjBlRrKy
+        RgKlw7xSmUA+SlLWLOItfJU2kotUkv3E3yBZq0sJeknX2hp1N9PZ0Xpr1znPt2terPluEDpRsmP2
+        ljTolZg8bMP5uYVbUVRFZ2Eh8rrZgagO1R4r2STmxEJXh4kHQ4Az3oFnXiVQWkNo7k3NG1vQjnrg
+        F03VKQGMsQSjhm9/F6C2Z+dt9QBJRMeMfZ9Mlp3YBXTEU3J7czI3NqXehl9TNfNWp44gBBUIDPXJ
+        XWJKYg48aI16aRP52O+i8xjQSHywLs7jRdkYyvESyuTN5LDztnVUSpDvWH7i9SnmsVNVWTPP8AjB
+        msUZYNNYT7Okzq/YtuBH7ukqAjRI11LVHXGjcHEDAf1FSSxJjVfVQNS9UyyQ9ThXgLB16IFiCoth
+        +MGRobPG+hbu/2eb8BGsKYdHo1d+aPyCvrJBJUVZi7WK7f2oey/erZK9eZEsm4D7fjCyrpxtDZ+C
+        bt6qj0bCoC+rVYBKjy9QTNs/zaHM4ozFIX/5Dcweh2ncZGR9r+SLWX8+D4I/Ah7xTlvwjJosgb6D
+        Oc8nEWNY2t4iQQ0EHf9tdfsPAAD//wMA1O+hMhIGAAA=
+    headers:
+      CF-RAY:
+      - 9c7cc7d8ed4cdef4-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 02 Feb 2026 21:28:52 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1018'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799789'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 15ms
+      x-request-id:
+      - req_d23f81b18f554e9cb54d7e119001c3e9
+    status:
+      code: 200
+      message: OK
+version: 1

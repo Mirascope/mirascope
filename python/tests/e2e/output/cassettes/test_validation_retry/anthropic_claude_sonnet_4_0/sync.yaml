@@ -1,0 +1,460 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Pick a random
+      number between 1 and 1000"}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Respond
+      only with valid JSON that matches this exact schema:\n{\n  \"description\":
+      \"A lucky number chosen by the model.\",\n  \"properties\": {\n    \"value\":
+      {\n      \"title\": \"Value\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+      [\n    \"value\"\n  ],\n  \"title\": \"LuckyNumber\",\n  \"type\": \"object\"\n}","cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '535'
+      Content-Type:
+      - application/json
+      Host:
+      - api.anthropic.com
+      User-Agent:
+      - Anthropic/Python 0.76.0
+      X-Api-Key:
+      - <filtered>
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.76.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.10.16
+      anthropic-version:
+      - '2023-06-01'
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WQwWrDMAyGXyXonEKcJh3k2sNO2WHXZRgTa22oI6e2XFZC3n1KWRnd2MlG32fp
+        l2cYvUUHDfTOJIub6ImQN9WmLMq6qFUFOQxW+BgPulD1a9mG/YeK133ZvuxO2D4rfxaHrxOuFsZo
+        DiiF4N1aMDEOkQ2xlHpPjHJr3ua7z/i5ktvRwNxRlnVwMS5hB022rZ46WmB5zyGyn3RAI/lERLKa
+        UyD4BhHPCamXjpScyyHdQjQzDDQl1uxPSBEapXaSwvRH1L304sGTfjSKOxds/2P3t+sAnI44YjBO
+        1+Nf/4eq42+65OATP8TbyjoYLkOPmgcMsuj6ddYEC8vyBTGA/DarAQAA
+    headers:
+      CF-RAY:
+      - 9c7cbe671957a0f3-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 02 Feb 2026 21:22:25 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-02-02T21:22:25Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-02-02T21:22:25Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-02-02T21:22:24Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-02-02T21:22:25Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CXjwjMrMR3T78os8mP7yc
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '1298'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Pick a random
+      number between 1 and 1000"},{"role":"assistant","content":[{"citations":null,"text":"{\n  \"value\":
+      347\n}","type":"text"}]},{"role":"user","content":[{"type":"text","text":"Your
+      response failed schema validation:\n1 validation error for LuckyNumber\nvalue\n  Value
+      error, The number must be exactly 173, but got 347 [type=value_error, input_value=347,
+      input_type=int]\n    For further information visit https://errors.pydantic.dev/2.12/v/value_error\n\nPlease
+      correct these issues and respond again.","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Respond
+      only with valid JSON that matches this exact schema:\n{\n  \"description\":
+      \"A lucky number chosen by the model.\",\n  \"properties\": {\n    \"value\":
+      {\n      \"title\": \"Value\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+      [\n    \"value\"\n  ],\n  \"title\": \"LuckyNumber\",\n  \"type\": \"object\"\n}","cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1050'
+      Content-Type:
+      - application/json
+      Host:
+      - api.anthropic.com
+      User-Agent:
+      - Anthropic/Python 0.76.0
+      X-Api-Key:
+      - <filtered>
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.76.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.10.16
+      anthropic-version:
+      - '2023-06-01'
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WQy2rDMBBFfyXM2gbLSQj1vhC666ah1EUIaxqrlUeuNAotxv/ecWjoi64k7jma
+        hyYYgkUPDXTeZItlCkTI5aasq3pbbdUGCnBW+JCOulL3N1cuqf3h9Hy4C7dP/f56tzdRHH4fcbEw
+        JXNECWLwS2BScokNsURdIEa5NQ/TxWd8W8j5aGBqabVq4WR8xhaaldqtW5phfiwgcRh1RCPziYhk
+        NedI8AkSvmakTipS9r6AfB6imcDRmFlzeEFK0NS1kilM16PupBa7QPqnUV24YPsfu7xdGuDY44DR
+        eL0d/vpfVPW/6VxAyPw9UmtZB+PJdajZYZRFl6+zJlqY5w8ZyXPCqwEAAA==
+    headers:
+      CF-RAY:
+      - 9c7cbe707e3f5195-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 02 Feb 2026 21:22:27 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-02-02T21:22:27Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-02-02T21:22:27Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-02-02T21:22:26Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-02-02T21:22:27Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CXjwjUHJWi4nhn9hwccU6
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '1698'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Pick a random
+      number between 1 and 1000"}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Respond
+      only with valid JSON that matches this exact schema:\n{\n  \"description\":
+      \"A lucky number chosen by the model.\",\n  \"properties\": {\n    \"value\":
+      {\n      \"title\": \"Value\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+      [\n    \"value\"\n  ],\n  \"title\": \"LuckyNumber\",\n  \"type\": \"object\"\n}","cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '535'
+      Content-Type:
+      - application/json
+      Host:
+      - api.anthropic.com
+      User-Agent:
+      - Anthropic/Python 0.76.0
+      X-Api-Key:
+      - <filtered>
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.76.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.10.16
+      anthropic-version:
+      - '2023-06-01'
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WQTU/DMAyG/8rkcyu1+2DQ67hxmVBvFGUhsbZuqVMSZwJV/e+4ExMaiFMiP4+d
+        1xmg8xYdVGCcThbz6ImQ82U+L+arYlUuIYPWCu/iXhXl+mlbb+w21GV9Wrw9+8eF4c2DOPzZ42Rh
+        jHqPUgjeTQUdYxtZE0vJeGKUW/UyXH3Gj4lcjgp2u91RAjQ0NDSbNXDWLmED1Ww5Xzc0NiQCjK8Z
+        RPa9CqhFljYkqzgFgm8Q8T0hGZlPybkM0iVSNUBLfWLF/oQUoSrLO8mkzQGVkVncelK3RnHlgu1/
+        7No7PYD9ATsM2qlV99f/oeXhNx0z8Ilv4t3LOhjOrUHFLQZZdPpIq4OFcfwCYrijX7kBAAA=
+    headers:
+      CF-RAY:
+      - 9c7cbf681ce72537-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 02 Feb 2026 21:23:07 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-02-02T21:23:06Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-02-02T21:23:07Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-02-02T21:23:05Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-02-02T21:23:06Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CXjwnPdqXZmZqfNt5mk5K
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '1533'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Pick a random
+      number between 1 and 1000"},{"role":"assistant","content":[{"citations":null,"text":"```json\n{\n  \"value\":
+      427\n}\n```","type":"text"}]},{"role":"user","content":[{"type":"text","text":"Your
+      response failed schema validation:\n1 validation error for LuckyNumber\nvalue\n  Value
+      error, The number must be exactly 173, but got 427 [type=value_error, input_value=427,
+      input_type=int]\n    For further information visit https://errors.pydantic.dev/2.12/v/value_error\n\nPlease
+      correct these issues and respond again.","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Respond
+      only with valid JSON that matches this exact schema:\n{\n  \"description\":
+      \"A lucky number chosen by the model.\",\n  \"properties\": {\n    \"value\":
+      {\n      \"title\": \"Value\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+      [\n    \"value\"\n  ],\n  \"title\": \"LuckyNumber\",\n  \"type\": \"object\"\n}","cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1064'
+      Content-Type:
+      - application/json
+      Host:
+      - api.anthropic.com
+      User-Agent:
+      - Anthropic/Python 0.76.0
+      X-Api-Key:
+      - <filtered>
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.76.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.10.16
+      anthropic-version:
+      - '2023-06-01'
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WQTU/DMAyG/8rkcyu1pdtQb1w4TCBxQUJQlIXGWgupUxJnAqr+d9yJiY+JU6L3
+        eezYGaF3Bi1U0FgdDabBESGnZVpkxTJb5iUk0BnhfdipLL+4LzdX7eXH7XVYlWj2d08bvlmLw+8D
+        zhaGoHcogXd2DnQIXWBNLFHjiFFu1cN49BnfZnI4Kthut88yQE1jTYtFDXttI9ZQLfL1WU1TTSLA
+        9JhAYDcoj1pkKUMyiqMn+AIBXyNSI/0pWptAPIxUjdDREFmxe0EKUBXFSmbSTYuqkV7cOVK/jezI
+        BZv/2LF2fgCHFnv02qplf+p/07z9S6cEXOSfUX4u66Dfdw0q7tDLovNHGu0NTNMnm+mQarkBAAA=
+    headers:
+      CF-RAY:
+      - 9c7cbf72eb010bdf-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 02 Feb 2026 21:23:08 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-02-02T21:23:08Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-02-02T21:23:08Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-02-02T21:23:07Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-02-02T21:23:08Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CXjwnX45QWStknQDxWLKx
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '1494'
+    status:
+      code: 200
+      message: OK
+version: 1

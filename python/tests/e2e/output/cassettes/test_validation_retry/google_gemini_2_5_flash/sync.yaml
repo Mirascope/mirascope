@@ -1,0 +1,276 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Pick a random number between 1 and 1000"}],
+      "role": "user"}], "systemInstruction": {"parts": [{"text": "Respond only with
+      valid JSON that matches this exact schema:\n{\n  \"description\": \"A lucky
+      number chosen by the model.\",\n  \"properties\": {\n    \"value\": {\n      \"title\":
+      \"Value\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\": [\n    \"value\"\n  ],\n  \"title\":
+      \"LuckyNumber\",\n  \"type\": \"object\"\n}"}], "role": "user"}, "generationConfig":
+      {"responseMimeType": "application/json"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '554'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/12Q0U+DMBDG3/krmnt2ZmO6Td+cGrNEs0WJmogPddygsbSEHmaT8L9bYLBiH5rm
+        u+/u+v1KjzHYchWJiBMauGYfVmGsbO66phWhIlvoJCtmPKeTtz2l87YWwn3dBGWoGAvhh8sCQyvM
+        p5NQVeCYq/79eXZakWuJdX+qI5SdveoMsBNKmOQZudGqtr0E6w30VaEi3Ft57HULmtFQGB7jExK3
+        YXkfCbJcpxkF+hvVrS6asJPxVTvNgTM0+Mc6aeJyWFp0vc5gc2fXCulSc4DalFwKOtRRgvv3ABwS
+        9O9fHQvPQQaU6CJOaPjH2cI7MmsxvmJuRMsrxtQSHPnnl6Od5CZpFkKOJtPK4Cpq0C/flvxrNn14
+        VPp3vtrEa/9wcbMFr/L+AOhN3Vk3AgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 02 Feb 2026 21:22:32 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=928
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Pick a random number between 1 and 1000"}],
+      "role": "user"}, {"parts": [{"text": "{\n  \"value\": 731\n}"}], "role": "model"},
+      {"parts": [{"text": "Your response failed schema validation:\n1 validation error
+      for LuckyNumber\nvalue\n  Value error, The number must be exactly 173, but got
+      731 [type=value_error, input_value=731, input_type=int]\n    For further information
+      visit https://errors.pydantic.dev/2.12/v/value_error\n\nPlease correct these
+      issues and respond again."}], "role": "user"}], "systemInstruction": {"parts":
+      [{"text": "Respond only with valid JSON that matches this exact schema:\n{\n  \"description\":
+      \"A lucky number chosen by the model.\",\n  \"properties\": {\n    \"value\":
+      {\n      \"title\": \"Value\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+      [\n    \"value\"\n  ],\n  \"title\": \"LuckyNumber\",\n  \"type\": \"object\"\n}"}],
+      "role": "user"}, "generationConfig": {"responseMimeType": "application/json"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '989'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQzU7DMBCE73kKa88tIqmqADd+ItEDomojoCIcLLJNTB07ijeoEOXdcRLSuuCD
+        Zc3O7nq+xmMM3rlKRcoJDVyxV6sw1vR3V9OKUJEtjJIVS17R0TucxnlbC+G+a4ImUYwl8MlljYkV
+        /HCWqBYcc3t4v02OKyotsesvdIpytLejAbZCCZOvkButOts6flzCoSpUinsrn3vjgn401IZn+IDE
+        bVh+iARlpYuSYr1DdavrPmzgz4dpDpwTgx/81kkTl6e9l+Hk32BzZ9cK6VJzgNqUXAr66qLE0UsM
+        Dgn686+RhecgA8p1neV0+sewy98zGzA+YWXEwCvDwhKcBmfz6VZyk/cLoUJTamVwkfboV883fHO/
+        jkwQfYeL5az+uMiud+C13g/+tKIXNwIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 02 Feb 2026 21:22:33 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=810
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Pick a random number between 1 and 1000"}],
+      "role": "user"}], "systemInstruction": {"parts": [{"text": "Respond only with
+      valid JSON that matches this exact schema:\n{\n  \"description\": \"A lucky
+      number chosen by the model.\",\n  \"properties\": {\n    \"value\": {\n      \"title\":
+      \"Value\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\": [\n    \"value\"\n  ],\n  \"title\":
+      \"LuckyNumber\",\n  \"type\": \"object\"\n}"}], "role": "user"}, "generationConfig":
+      {"responseMimeType": "application/json"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '554'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/12QX0+DMBTF3/kUzX12BjAG9c1/MXtYXCZxZsOHOu5GY9civeiU8N0tMFg3Hkhz
+        zum9Pb/KYwxWXKUi5YQGbtjSKoxV7b/xtCJUZI1esmLOCzpku69yzjZCuGsuQZUoxhL45rLExArR
+        RZCoGpxwPZzfzw4rCi2xub/VKco+XvcBWAslTDZDbrRqYi/x8xQGV6gUd1b2vX5BOxpKwzc4QeK2
+        LB8qQV7obU6x/kR1r8u2bOBfd9McOMeBcO+TJi6PrDDsPWewebBrhXSpOUBtSy4F/TZV4se3GBwS
+        dPKunoXnIAPKdLnJ6OSNfuDtoXUcX7EwogO2wa1FOArPL0dryU3WboQCTa6VwXHaZH5m8zu+mP+N
+        P6LJF5lptHgSV7cr8GrvH3j5m7c4AgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 02 Feb 2026 21:23:13 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1025
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Pick a random number between 1 and 1000"}],
+      "role": "user"}, {"parts": [{"text": "{\n  \"value\": 731\n}"}], "role": "model"},
+      {"parts": [{"text": "Your response failed schema validation:\n1 validation error
+      for LuckyNumber\nvalue\n  Value error, The number must be exactly 173, but got
+      731 [type=value_error, input_value=731, input_type=int]\n    For further information
+      visit https://errors.pydantic.dev/2.12/v/value_error\n\nPlease correct these
+      issues and respond again."}], "role": "user"}], "systemInstruction": {"parts":
+      [{"text": "Respond only with valid JSON that matches this exact schema:\n{\n  \"description\":
+      \"A lucky number chosen by the model.\",\n  \"properties\": {\n    \"value\":
+      {\n      \"title\": \"Value\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+      [\n    \"value\"\n  ],\n  \"title\": \"LuckyNumber\",\n  \"type\": \"object\"\n}"}],
+      "role": "user"}, "generationConfig": {"responseMimeType": "application/json"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '989'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/12QT0/DMAzF7/0Ukc8MsaIx4MifwyQQAypAUISs1Wsj0qQ0LgxV/e6k7bql5BBF
+        z8923q8OhIAV6kQmyGThXLw5RYi6u9ua0UyaXWGQnFhgyXtvf2rv7SxMm7YJ6lgLEcM3qopiJ0zn
+        x7FuwDM3u/f7wX5FaRS1/blJSA32ZjDAWmppswdCa3Rre4zulrCrSp3QxslHwbCgGw2VxZRuidGF
+        xV0kKEqTFxyZT9KXpurChtNZP82DMzJMw22dDaMa954Nvd5ge+XWSuVT84C6lKgk/7ZRouuXCDwS
+        /O9fA4vAQwacmSrNePzHk9Ngy6zH+ESllT2vlHJHcBIeziZrhTbrFkJJtjDa0iJpPT/Z8wW+ol3Q
+        zfyL7dJ8RDa8X0HQBH/jOVvUNwIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 02 Feb 2026 21:23:14 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=876
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

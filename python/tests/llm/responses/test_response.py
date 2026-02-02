@@ -1333,3 +1333,489 @@ def test_parse_error_equality() -> None:
     assert error1 == error2
     assert error1 != error3
     assert error1 != "not an error"
+
+
+class TestResponseValidate:
+    """Tests for Response.validate() method."""
+
+    def test_validate_success_first_attempt(self) -> None:
+        """Test validate() returns parsed value when parsing succeeds immediately."""
+
+        class Book(BaseModel):
+            title: str
+            author: str
+
+        valid_json = '{"title": "The Hobbit", "author": "J.R.R. Tolkien"}'
+        text_content = [llm.Text(text=valid_json)]
+        assistant_message = llm.messages.assistant(
+            text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+        )
+
+        response: llm.Response[Book] = llm.Response(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[llm.messages.user("Recommend a book")],
+            assistant_message=assistant_message,
+            finish_reason=None,
+            format=llm.format(Book, mode="tool"),
+        )
+
+        book, result_response = response.validate()
+
+        assert isinstance(book, Book)
+        assert book.title == "The Hobbit"
+        assert book.author == "J.R.R. Tolkien"
+        # Response should be the same since no retry was needed
+        assert result_response is response
+
+    def test_validate_no_format_returns_none(self) -> None:
+        """Test validate() returns (None, self) when no format is set."""
+        text_content = [llm.Text(text="Hello world")]
+        assistant_message = llm.messages.assistant(
+            text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+        )
+
+        response: llm.Response[None] = llm.Response(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[],
+            assistant_message=assistant_message,
+            finish_reason=None,
+        )
+
+        result, result_response = response.validate()
+
+        assert result is None
+        assert result_response is response
+
+    def test_validate_raises_after_max_retries(self) -> None:
+        """Test validate() raises ParseError after exhausting retries."""
+
+        class Book(BaseModel):
+            title: str
+            pages: int  # Required field that's always missing
+
+        incomplete_json = '{"title": "The Hobbit"}'  # Missing pages
+        text_content = [llm.Text(text=incomplete_json)]
+        assistant_message = llm.messages.assistant(
+            text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+        )
+
+        response: llm.Response[Book] = llm.Response(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[llm.messages.user("Recommend a book")],
+            assistant_message=assistant_message,
+            finish_reason=None,
+            format=llm.format(Book, mode="tool"),
+        )
+
+        # With max_retries=0, it should fail immediately without any retry
+        with pytest.raises(llm.ParseError) as exc_info:
+            response.validate(max_retries=0)
+        assert isinstance(exc_info.value.original_exception, pydantic.ValidationError)
+
+    def test_validate_negative_max_retries_raises_value_error(self) -> None:
+        """Test validate() raises ValueError when max_retries is negative."""
+        text_content = [llm.Text(text="Hello")]
+        assistant_message = llm.messages.assistant(
+            text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+        )
+
+        response: llm.Response[None] = llm.Response(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[],
+            assistant_message=assistant_message,
+            finish_reason=None,
+        )
+
+        with pytest.raises(ValueError, match="max_retries must be non-negative"):
+            response.validate(max_retries=-1)
+
+
+@pytest.mark.asyncio
+class TestAsyncResponseValidate:
+    """Tests for AsyncResponse.validate() method."""
+
+    async def test_validate_success_first_attempt(self) -> None:
+        """Test async validate() returns parsed value when parsing succeeds immediately."""
+
+        class Book(BaseModel):
+            title: str
+            author: str
+
+        valid_json = '{"title": "The Hobbit", "author": "J.R.R. Tolkien"}'
+        text_content = [llm.Text(text=valid_json)]
+        assistant_message = llm.messages.assistant(
+            text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+        )
+
+        response: llm.AsyncResponse[Book] = llm.AsyncResponse(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[llm.messages.user("Recommend a book")],
+            assistant_message=assistant_message,
+            finish_reason=None,
+            format=llm.format(Book, mode="tool"),
+        )
+
+        book, result_response = await response.validate()
+
+        assert isinstance(book, Book)
+        assert book.title == "The Hobbit"
+        assert book.author == "J.R.R. Tolkien"
+        # Response should be the same since no retry was needed
+        assert result_response is response
+
+    async def test_validate_no_format_returns_none(self) -> None:
+        """Test async validate() returns (None, self) when no format is set."""
+        text_content = [llm.Text(text="Hello world")]
+        assistant_message = llm.messages.assistant(
+            text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+        )
+
+        response: llm.AsyncResponse[None] = llm.AsyncResponse(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[],
+            assistant_message=assistant_message,
+            finish_reason=None,
+        )
+
+        result, result_response = await response.validate()
+
+        assert result is None
+        assert result_response is response
+
+    async def test_validate_raises_after_max_retries(self) -> None:
+        """Test async validate() raises ParseError after exhausting retries."""
+
+        class Book(BaseModel):
+            title: str
+            pages: int  # Required field that's always missing
+
+        incomplete_json = '{"title": "The Hobbit"}'  # Missing pages
+        text_content = [llm.Text(text=incomplete_json)]
+        assistant_message = llm.messages.assistant(
+            text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+        )
+
+        response: llm.AsyncResponse[Book] = llm.AsyncResponse(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[llm.messages.user("Recommend a book")],
+            assistant_message=assistant_message,
+            finish_reason=None,
+            format=llm.format(Book, mode="tool"),
+        )
+
+        # With max_retries=0, it should fail immediately without any retry
+        with pytest.raises(llm.ParseError) as exc_info:
+            await response.validate(max_retries=0)
+        assert isinstance(exc_info.value.original_exception, pydantic.ValidationError)
+
+    async def test_validate_negative_max_retries_raises_value_error(self) -> None:
+        """Test async validate() raises ValueError when max_retries is negative."""
+        text_content = [llm.Text(text="Hello")]
+        assistant_message = llm.messages.assistant(
+            text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+        )
+
+        response: llm.AsyncResponse[None] = llm.AsyncResponse(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[],
+            assistant_message=assistant_message,
+            finish_reason=None,
+        )
+
+        with pytest.raises(ValueError, match="max_retries must be non-negative"):
+            await response.validate(max_retries=-1)
+
+
+class TestContextResponseValidate:
+    """Tests for ContextResponse.validate() method."""
+
+    def test_validate_success_first_attempt(self) -> None:
+        """Test validate() returns parsed value when parsing succeeds immediately."""
+
+        class Book(BaseModel):
+            title: str
+            author: str
+
+        valid_json = '{"title": "The Hobbit", "author": "J.R.R. Tolkien"}'
+        text_content = [llm.Text(text=valid_json)]
+        assistant_message = llm.messages.assistant(
+            text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+        )
+
+        response: llm.ContextResponse[None, Book] = llm.ContextResponse(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[llm.messages.user("Recommend a book")],
+            assistant_message=assistant_message,
+            finish_reason=None,
+            format=llm.format(Book, mode="tool"),
+        )
+
+        ctx = llm.Context(deps=None)
+        book, result_response = response.validate(ctx)
+
+        assert isinstance(book, Book)
+        assert book.title == "The Hobbit"
+        assert book.author == "J.R.R. Tolkien"
+        # Response should be the same since no retry was needed
+        assert result_response is response
+
+    def test_validate_no_format_returns_none(self) -> None:
+        """Test validate() returns (None, self) when no format is set."""
+        text_content = [llm.Text(text="Hello world")]
+        assistant_message = llm.messages.assistant(
+            text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+        )
+
+        response: llm.ContextResponse[None, None] = llm.ContextResponse(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[],
+            assistant_message=assistant_message,
+            finish_reason=None,
+        )
+
+        ctx = llm.Context(deps=None)
+        result, result_response = response.validate(ctx)
+
+        assert result is None
+        assert result_response is response
+
+    def test_validate_raises_after_max_retries(self) -> None:
+        """Test validate() raises ParseError after exhausting retries."""
+
+        class Book(BaseModel):
+            title: str
+            pages: int  # Required field that's always missing
+
+        incomplete_json = '{"title": "The Hobbit"}'  # Missing pages
+        text_content = [llm.Text(text=incomplete_json)]
+        assistant_message = llm.messages.assistant(
+            text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+        )
+
+        response: llm.ContextResponse[None, Book] = llm.ContextResponse(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[llm.messages.user("Recommend a book")],
+            assistant_message=assistant_message,
+            finish_reason=None,
+            format=llm.format(Book, mode="tool"),
+        )
+
+        ctx = llm.Context(deps=None)
+        # With max_retries=0, it should fail immediately without any retry
+        with pytest.raises(llm.ParseError) as exc_info:
+            response.validate(ctx, max_retries=0)
+        assert isinstance(exc_info.value.original_exception, pydantic.ValidationError)
+
+    def test_validate_negative_max_retries_raises_value_error(self) -> None:
+        """Test validate() raises ValueError when max_retries is negative."""
+        text_content = [llm.Text(text="Hello")]
+        assistant_message = llm.messages.assistant(
+            text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+        )
+
+        response: llm.ContextResponse[None, None] = llm.ContextResponse(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[],
+            assistant_message=assistant_message,
+            finish_reason=None,
+        )
+
+        ctx = llm.Context(deps=None)
+        with pytest.raises(ValueError, match="max_retries must be non-negative"):
+            response.validate(ctx, max_retries=-1)
+
+
+@pytest.mark.asyncio
+class TestAsyncContextResponseValidate:
+    """Tests for AsyncContextResponse.validate() method."""
+
+    async def test_validate_success_first_attempt(self) -> None:
+        """Test async validate() returns parsed value when parsing succeeds immediately."""
+
+        class Book(BaseModel):
+            title: str
+            author: str
+
+        valid_json = '{"title": "The Hobbit", "author": "J.R.R. Tolkien"}'
+        text_content = [llm.Text(text=valid_json)]
+        assistant_message = llm.messages.assistant(
+            text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+        )
+
+        response: llm.AsyncContextResponse[None, Book] = llm.AsyncContextResponse(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[llm.messages.user("Recommend a book")],
+            assistant_message=assistant_message,
+            finish_reason=None,
+            format=llm.format(Book, mode="tool"),
+        )
+
+        ctx = llm.Context(deps=None)
+        book, result_response = await response.validate(ctx)
+
+        assert isinstance(book, Book)
+        assert book.title == "The Hobbit"
+        assert book.author == "J.R.R. Tolkien"
+        # Response should be the same since no retry was needed
+        assert result_response is response
+
+    async def test_validate_no_format_returns_none(self) -> None:
+        """Test async validate() returns (None, self) when no format is set."""
+        text_content = [llm.Text(text="Hello world")]
+        assistant_message = llm.messages.assistant(
+            text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+        )
+
+        response: llm.AsyncContextResponse[None, None] = llm.AsyncContextResponse(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[],
+            assistant_message=assistant_message,
+            finish_reason=None,
+        )
+
+        ctx = llm.Context(deps=None)
+        result, result_response = await response.validate(ctx)
+
+        assert result is None
+        assert result_response is response
+
+    async def test_validate_raises_after_max_retries(self) -> None:
+        """Test async validate() raises ParseError after exhausting retries."""
+
+        class Book(BaseModel):
+            title: str
+            pages: int  # Required field that's always missing
+
+        incomplete_json = '{"title": "The Hobbit"}'  # Missing pages
+        text_content = [llm.Text(text=incomplete_json)]
+        assistant_message = llm.messages.assistant(
+            text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+        )
+
+        response: llm.AsyncContextResponse[None, Book] = llm.AsyncContextResponse(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[llm.messages.user("Recommend a book")],
+            assistant_message=assistant_message,
+            finish_reason=None,
+            format=llm.format(Book, mode="tool"),
+        )
+
+        ctx = llm.Context(deps=None)
+        # With max_retries=0, it should fail immediately without any retry
+        with pytest.raises(llm.ParseError) as exc_info:
+            await response.validate(ctx, max_retries=0)
+        assert isinstance(exc_info.value.original_exception, pydantic.ValidationError)
+
+    async def test_validate_negative_max_retries_raises_value_error(self) -> None:
+        """Test async validate() raises ValueError when max_retries is negative."""
+        text_content = [llm.Text(text="Hello")]
+        assistant_message = llm.messages.assistant(
+            text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+        )
+
+        response: llm.AsyncContextResponse[None, None] = llm.AsyncContextResponse(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[],
+            assistant_message=assistant_message,
+            finish_reason=None,
+        )
+
+        ctx = llm.Context(deps=None)
+        with pytest.raises(ValueError, match="max_retries must be non-negative"):
+            await response.validate(ctx, max_retries=-1)

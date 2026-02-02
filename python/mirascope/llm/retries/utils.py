@@ -7,7 +7,7 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from typing import TypeVar
 
-from .retry_config import DEFAULT_MAX_PARSE_RETRIES, RetryConfig
+from .retry_config import RetryConfig
 
 _ResultT = TypeVar("_ResultT")
 
@@ -28,19 +28,12 @@ class RetryState:
         retry_on: The exception types that triggered retries.
         retries: The number of retries made (0 = succeeded on first try).
         exceptions: The list of exceptions caught during failed attempts.
-        max_parse_retries: The maximum parse validation retries configured.
-        parse_retries: The number of parse validation retries made
-            (0 = succeeded on first try or validation disabled).
-        parse_exceptions: The list of ParseErrors caught during validation retries.
     """
 
     max_retries: int
     retry_on: tuple[type[BaseException], ...]
     retries: int = 0
     exceptions: list[BaseException] = field(default_factory=_empty_exception_list)
-    max_parse_retries: int = DEFAULT_MAX_PARSE_RETRIES
-    parse_retries: int = 0
-    parse_exceptions: list[BaseException] = field(default_factory=_empty_exception_list)
 
 
 def _calculate_delay(config: RetryConfig, attempt: int) -> float:
@@ -89,7 +82,6 @@ def with_retry(
     state = RetryState(
         max_retries=config.max_retries,
         retry_on=config.retry_on,
-        max_parse_retries=config.max_parse_retries,
     )
     for retry in range(config.max_retries + 1):
         try:
@@ -125,7 +117,6 @@ async def with_retry_async(
     state = RetryState(
         max_retries=config.max_retries,
         retry_on=config.retry_on,
-        max_parse_retries=config.max_parse_retries,
     )
     for retry in range(config.max_retries + 1):
         try:

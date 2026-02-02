@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Generic, overload
 
 from ..content import ToolOutput
 from ..context import Context, DepsT
+from ..exceptions import ParseError
 from ..formatting import Format, FormattableT
 from ..messages import Message, UserContent
 from ..tools import (
@@ -156,6 +157,61 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
             content=content,
         )
 
+    @overload
+    def validate(
+        self: "StreamResponse[None]", max_retries: int = 1
+    ) -> tuple[None, "StreamResponse[None]"]: ...
+
+    @overload
+    def validate(
+        self: "StreamResponse[FormattableT]", max_retries: int = 1
+    ) -> tuple[FormattableT, "StreamResponse[FormattableT]"]: ...
+
+    def validate(
+        self, max_retries: int = 1
+    ) -> tuple[
+        FormattableT | None, "StreamResponse[FormattableT] | StreamResponse[None]"
+    ]:
+        """Parse and validate the response, retrying on parse errors.
+
+        Consumes the stream (calls `finish()`) and then attempts to parse. On
+        `ParseError`, asks the LLM to fix its output by resuming with the error
+        message. Returns both the parsed value and the (potentially updated) response.
+
+        Args:
+            max_retries: Maximum number of retry attempts on parse failure.
+                Defaults to 1 (2 total attempts). Must be non-negative.
+
+        Returns:
+            A tuple of (parsed_value, response). If parsing succeeded on the first
+            attempt, returns (value, self). If retries were needed, returns
+            (value, new_response) where new_response is the final successful response.
+
+        Raises:
+            ValueError: If max_retries is negative.
+            ParseError: If parsing fails after exhausting all retry attempts.
+            Error: If the LLM call fails while generating a retry response.
+        """
+        if max_retries < 0:
+            raise ValueError("max_retries must be non-negative")
+
+        self.finish()
+
+        if self.format is None:
+            return None, self
+
+        current_response: StreamResponse[FormattableT] = self
+        for attempt in range(max_retries + 1):
+            try:
+                return current_response.parse(), current_response
+            except ParseError as e:
+                if attempt == max_retries:
+                    raise
+                current_response = current_response.resume(e.retry_message())
+                current_response.finish()
+
+        raise AssertionError("Unreachable")  # pragma: no cover
+
 
 class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
     """An `AsyncStreamResponse` wraps response content from the LLM with a streaming interface.
@@ -286,6 +342,62 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
             response=self,
             content=content,
         )
+
+    @overload
+    async def validate(
+        self: "AsyncStreamResponse[None]", max_retries: int = 1
+    ) -> tuple[None, "AsyncStreamResponse[None]"]: ...
+
+    @overload
+    async def validate(
+        self: "AsyncStreamResponse[FormattableT]", max_retries: int = 1
+    ) -> tuple[FormattableT, "AsyncStreamResponse[FormattableT]"]: ...
+
+    async def validate(
+        self, max_retries: int = 1
+    ) -> tuple[
+        FormattableT | None,
+        "AsyncStreamResponse[FormattableT] | AsyncStreamResponse[None]",
+    ]:
+        """Parse and validate the response, retrying on parse errors.
+
+        Consumes the stream (calls `finish()`) and then attempts to parse. On
+        `ParseError`, asks the LLM to fix its output by resuming with the error
+        message. Returns both the parsed value and the (potentially updated) response.
+
+        Args:
+            max_retries: Maximum number of retry attempts on parse failure.
+                Defaults to 1 (2 total attempts). Must be non-negative.
+
+        Returns:
+            A tuple of (parsed_value, response). If parsing succeeded on the first
+            attempt, returns (value, self). If retries were needed, returns
+            (value, new_response) where new_response is the final successful response.
+
+        Raises:
+            ValueError: If max_retries is negative.
+            ParseError: If parsing fails after exhausting all retry attempts.
+            Error: If the LLM call fails while generating a retry response.
+        """
+        if max_retries < 0:
+            raise ValueError("max_retries must be non-negative")
+
+        await self.finish()
+
+        if self.format is None:
+            return None, self
+
+        current_response: AsyncStreamResponse[FormattableT] = self
+        for attempt in range(max_retries + 1):
+            try:
+                return current_response.parse(), current_response
+            except ParseError as e:
+                if attempt == max_retries:
+                    raise
+                current_response = await current_response.resume(e.retry_message())
+                await current_response.finish()
+
+        raise AssertionError("Unreachable")  # pragma: no cover
 
 
 class ContextStreamResponse(
@@ -427,6 +539,67 @@ class ContextStreamResponse(
             response=self,
             content=content,
         )
+
+    @overload
+    def validate(
+        self: "ContextStreamResponse[DepsT, None]",
+        ctx: Context[DepsT],
+        max_retries: int = 1,
+    ) -> tuple[None, "ContextStreamResponse[DepsT, None]"]: ...
+
+    @overload
+    def validate(
+        self: "ContextStreamResponse[DepsT, FormattableT]",
+        ctx: Context[DepsT],
+        max_retries: int = 1,
+    ) -> tuple[FormattableT, "ContextStreamResponse[DepsT, FormattableT]"]: ...
+
+    def validate(
+        self, ctx: Context[DepsT], max_retries: int = 1
+    ) -> tuple[
+        FormattableT | None,
+        "ContextStreamResponse[DepsT, FormattableT] | ContextStreamResponse[DepsT, None]",
+    ]:
+        """Parse and validate the response, retrying on parse errors.
+
+        Consumes the stream (calls `finish()`) and then attempts to parse. On
+        `ParseError`, asks the LLM to fix its output by resuming with the error
+        message. Returns both the parsed value and the (potentially updated) response.
+
+        Args:
+            ctx: A `Context` with the required deps type.
+            max_retries: Maximum number of retry attempts on parse failure.
+                Defaults to 1 (2 total attempts). Must be non-negative.
+
+        Returns:
+            A tuple of (parsed_value, response). If parsing succeeded on the first
+            attempt, returns (value, self). If retries were needed, returns
+            (value, new_response) where new_response is the final successful response.
+
+        Raises:
+            ValueError: If max_retries is negative.
+            ParseError: If parsing fails after exhausting all retry attempts.
+            Error: If the LLM call fails while generating a retry response.
+        """
+        if max_retries < 0:
+            raise ValueError("max_retries must be non-negative")
+
+        self.finish()
+
+        if self.format is None:
+            return None, self
+
+        current_response: ContextStreamResponse[DepsT, FormattableT] = self
+        for attempt in range(max_retries + 1):
+            try:
+                return current_response.parse(), current_response
+            except ParseError as e:
+                if attempt == max_retries:
+                    raise
+                current_response = current_response.resume(ctx, e.retry_message())
+                current_response.finish()
+
+        raise AssertionError("Unreachable")  # pragma: no cover
 
 
 class AsyncContextStreamResponse(
@@ -575,3 +748,64 @@ class AsyncContextStreamResponse(
             response=self,
             content=content,
         )
+
+    @overload
+    async def validate(
+        self: "AsyncContextStreamResponse[DepsT, None]",
+        ctx: Context[DepsT],
+        max_retries: int = 1,
+    ) -> tuple[None, "AsyncContextStreamResponse[DepsT, None]"]: ...
+
+    @overload
+    async def validate(
+        self: "AsyncContextStreamResponse[DepsT, FormattableT]",
+        ctx: Context[DepsT],
+        max_retries: int = 1,
+    ) -> tuple[FormattableT, "AsyncContextStreamResponse[DepsT, FormattableT]"]: ...
+
+    async def validate(
+        self, ctx: Context[DepsT], max_retries: int = 1
+    ) -> tuple[
+        FormattableT | None,
+        "AsyncContextStreamResponse[DepsT, FormattableT] | AsyncContextStreamResponse[DepsT, None]",
+    ]:
+        """Parse and validate the response, retrying on parse errors.
+
+        Consumes the stream (calls `finish()`) and then attempts to parse. On
+        `ParseError`, asks the LLM to fix its output by resuming with the error
+        message. Returns both the parsed value and the (potentially updated) response.
+
+        Args:
+            ctx: A `Context` with the required deps type.
+            max_retries: Maximum number of retry attempts on parse failure.
+                Defaults to 1 (2 total attempts). Must be non-negative.
+
+        Returns:
+            A tuple of (parsed_value, response). If parsing succeeded on the first
+            attempt, returns (value, self). If retries were needed, returns
+            (value, new_response) where new_response is the final successful response.
+
+        Raises:
+            ValueError: If max_retries is negative.
+            ParseError: If parsing fails after exhausting all retry attempts.
+            Error: If the LLM call fails while generating a retry response.
+        """
+        if max_retries < 0:
+            raise ValueError("max_retries must be non-negative")
+
+        await self.finish()
+
+        if self.format is None:
+            return None, self
+
+        current_response: AsyncContextStreamResponse[DepsT, FormattableT] = self
+        for attempt in range(max_retries + 1):
+            try:
+                return current_response.parse(), current_response
+            except ParseError as e:
+                if attempt == max_retries:
+                    raise
+                current_response = await current_response.resume(ctx, e.retry_message())
+                await current_response.finish()
+
+        raise AssertionError("Unreachable")  # pragma: no cover

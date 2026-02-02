@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, overload
 from ..content import (
     AssistantContentChunk,
 )
-from ..exceptions import ParseError, StreamRestarted
+from ..exceptions import StreamRestarted
 from ..formatting import FormattableT
 from ..messages import UserContent
 from ..responses import (
@@ -77,7 +77,6 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
             retry_on=retry_config.retry_on,
             retries=0,
             exceptions=[],
-            max_parse_retries=retry_config.max_parse_retries,
         )
 
     @property
@@ -121,53 +120,6 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
                 attempt=self.retry_state.retries,
                 error=e,
             ) from e
-
-    def validate(self) -> FormattableT | None:
-        """Parse and validate the response, automatically retrying on ParseError.
-
-        When `max_parse_retries` is set in the retry config, this method will
-        automatically retry on ParseError by calling `resume(error.retry_message())`
-        to ask the LLM to fix its output. On retry, a new stream is created via
-        `resume_stream()` and fully consumed before attempting to parse again.
-
-        This method mutates the response - after successful validation with retries,
-        the internal state will be updated to the successful stream and
-        properties like `content` and `messages` will reflect the final state.
-
-        Returns:
-            The parsed output, or None if format is None.
-
-        Raises:
-            ParseError: If parsing fails after exhausting all retries.
-        """
-        if self.format is None:
-            return None
-
-        max_parse_retries = self.retry_config.max_parse_retries
-
-        for retry in range(max_parse_retries + 1):
-            try:
-                return self.parse()
-            except ParseError as e:
-                if retry == max_parse_retries:
-                    raise  # Exhausted all retries
-
-                self.retry_state.parse_retries += 1
-                self.retry_state.parse_exceptions.append(e)
-
-                # Resume returns a new stream - iterate it fully to get the response
-                new_stream = self.model.resume_stream(
-                    response=self,
-                    content=e.retry_message(),
-                )
-                new_stream.finish()  # Consume the stream
-                # Copy all attributes from the new stream, preserving our retry state
-                current_retry_state = self.retry_state
-                for key, value in new_stream.__dict__.items():
-                    object.__setattr__(self, key, value)
-                self.retry_state = current_retry_state
-
-        raise AssertionError("Unreachable")  # pragma: no cover
 
     @overload
     def resume(
@@ -243,7 +195,6 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
             retry_on=retry_config.retry_on,
             retries=0,
             exceptions=[],
-            max_parse_retries=retry_config.max_parse_retries,
         )
 
     @property
@@ -288,56 +239,6 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
                 attempt=self.retry_state.retries,
                 error=e,
             ) from e
-
-    async def validate(self) -> FormattableT | None:
-        """Parse and validate the response, automatically retrying on ParseError.
-
-        When `max_parse_retries` is set in the retry config, this method will
-        automatically retry on ParseError by calling `resume(error.retry_message())`
-        to ask the LLM to fix its output. On retry, a new stream is created via
-        `resume_stream_async()` and fully consumed before attempting to parse again.
-
-        This method mutates the response - after successful validation with retries,
-        the internal state will be updated to the successful stream and
-        properties like `content` and `messages` will reflect the final state.
-
-        Note: Unlike the sync version, this method is async because retries require
-        making async API calls.
-
-        Returns:
-            The parsed output, or None if format is None.
-
-        Raises:
-            ParseError: If parsing fails after exhausting all retries.
-        """
-        if self.format is None:
-            return None
-
-        max_parse_retries = self.retry_config.max_parse_retries
-
-        for retry in range(max_parse_retries + 1):
-            try:
-                return self.parse()
-            except ParseError as e:
-                if retry == max_parse_retries:
-                    raise  # Exhausted all retries
-
-                self.retry_state.parse_retries += 1
-                self.retry_state.parse_exceptions.append(e)
-
-                # Resume returns a new stream - iterate it fully to get the response
-                new_stream = await self.model.resume_stream_async(
-                    response=self,
-                    content=e.retry_message(),
-                )
-                await new_stream.finish()  # Consume the stream
-                # Copy all attributes from the new stream, preserving our retry state
-                current_retry_state = self.retry_state
-                for key, value in new_stream.__dict__.items():
-                    object.__setattr__(self, key, value)
-                self.retry_state = current_retry_state
-
-        raise AssertionError("Unreachable")  # pragma: no cover
 
     @overload
     async def resume(

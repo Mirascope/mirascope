@@ -2203,3 +2203,481 @@ class TestAsyncStreams:
         assert stream_response.texts == [example_text]
         assert stream_response.thoughts == [example_thought]
         assert stream_response.tool_calls == [example_tool_call]
+
+
+class TestStreamResponseValidate:
+    """Tests for StreamResponse.validate() method."""
+
+    def test_validate_success_first_attempt(self) -> None:
+        """Test validate() returns parsed value when parsing succeeds immediately."""
+        from pydantic import BaseModel
+
+        class Book(BaseModel):
+            title: str
+            author: str
+
+        valid_json = '{"title": "The Hobbit", "author": "J.R.R. Tolkien"}'
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta=valid_json),
+            llm.TextEndChunk(),
+        ]
+
+        def sync_chunk_iter() -> llm.ChunkIterator:
+            yield from chunks
+
+        stream_response: llm.StreamResponse[Book] = llm.StreamResponse(
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            input_messages=[llm.messages.user("Recommend a book")],
+            chunk_iterator=sync_chunk_iter(),
+            format=llm.format(Book, mode="tool"),
+        )
+
+        book, result_response = stream_response.validate()
+
+        assert isinstance(book, Book)
+        assert book.title == "The Hobbit"
+        assert book.author == "J.R.R. Tolkien"
+        # Response should be the same since no retry was needed
+        assert result_response is stream_response
+        # Stream should be consumed after validate
+        assert stream_response.consumed is True
+
+    def test_validate_no_format_returns_none(self) -> None:
+        """Test validate() returns (None, self) when no format is set."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Hello world"),
+            llm.TextEndChunk(),
+        ]
+
+        stream_response: llm.StreamResponse[None] = create_sync_stream_response(chunks)
+
+        result, result_response = stream_response.validate()
+
+        assert result is None
+        assert result_response is stream_response
+        assert stream_response.consumed is True
+
+    def test_validate_raises_after_max_retries(self) -> None:
+        """Test validate() raises ParseError after exhausting retries."""
+        import pydantic
+        from pydantic import BaseModel
+
+        class Book(BaseModel):
+            title: str
+            pages: int  # Required field that's always missing
+
+        incomplete_json = '{"title": "The Hobbit"}'  # Missing pages
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta=incomplete_json),
+            llm.TextEndChunk(),
+        ]
+
+        def sync_chunk_iter() -> llm.ChunkIterator:
+            yield from chunks
+
+        stream_response: llm.StreamResponse[Book] = llm.StreamResponse(
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            input_messages=[llm.messages.user("Recommend a book")],
+            chunk_iterator=sync_chunk_iter(),
+            format=llm.format(Book, mode="tool"),
+        )
+
+        # With max_retries=0, it should fail immediately without any retry
+        with pytest.raises(llm.ParseError) as exc_info:
+            stream_response.validate(max_retries=0)
+        assert isinstance(exc_info.value.original_exception, pydantic.ValidationError)
+        assert stream_response.consumed is True
+
+    def test_validate_negative_max_retries_raises_value_error(self) -> None:
+        """Test validate() raises ValueError when max_retries is negative."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Hello"),
+            llm.TextEndChunk(),
+        ]
+
+        stream_response: llm.StreamResponse[None] = create_sync_stream_response(chunks)
+
+        with pytest.raises(ValueError, match="max_retries must be non-negative"):
+            stream_response.validate(max_retries=-1)
+
+
+@pytest.mark.asyncio
+class TestAsyncStreamResponseValidate:
+    """Tests for AsyncStreamResponse.validate() method."""
+
+    async def test_validate_success_first_attempt(self) -> None:
+        """Test async validate() returns parsed value when parsing succeeds immediately."""
+        from pydantic import BaseModel
+
+        class Book(BaseModel):
+            title: str
+            author: str
+
+        valid_json = '{"title": "The Hobbit", "author": "J.R.R. Tolkien"}'
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta=valid_json),
+            llm.TextEndChunk(),
+        ]
+
+        stream_response = create_async_stream_response(chunks)
+        object.__setattr__(stream_response, "format", llm.format(Book, mode="tool"))
+
+        book, result_response = await stream_response.validate()
+
+        assert isinstance(book, Book)
+        assert book.title == "The Hobbit"
+        assert book.author == "J.R.R. Tolkien"
+        # Response should be the same since no retry was needed
+        assert result_response is stream_response
+        # Stream should be consumed after validate
+        assert stream_response.consumed is True
+
+    async def test_validate_no_format_returns_none(self) -> None:
+        """Test async validate() returns (None, self) when no format is set."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Hello world"),
+            llm.TextEndChunk(),
+        ]
+
+        stream_response: llm.AsyncStreamResponse[None] = create_async_stream_response(
+            chunks
+        )
+
+        result, result_response = await stream_response.validate()
+
+        assert result is None
+        assert result_response is stream_response
+        assert stream_response.consumed is True
+
+    async def test_validate_raises_after_max_retries(self) -> None:
+        """Test async validate() raises ParseError after exhausting retries."""
+        import pydantic
+        from pydantic import BaseModel
+
+        class Book(BaseModel):
+            title: str
+            pages: int  # Required field that's always missing
+
+        incomplete_json = '{"title": "The Hobbit"}'  # Missing pages
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta=incomplete_json),
+            llm.TextEndChunk(),
+        ]
+
+        stream_response = create_async_stream_response(chunks)
+        object.__setattr__(stream_response, "format", llm.format(Book, mode="tool"))
+
+        # With max_retries=0, it should fail immediately without any retry
+        with pytest.raises(llm.ParseError) as exc_info:
+            await stream_response.validate(max_retries=0)
+        assert isinstance(exc_info.value.original_exception, pydantic.ValidationError)
+        assert stream_response.consumed is True
+
+    async def test_validate_negative_max_retries_raises_value_error(self) -> None:
+        """Test async validate() raises ValueError when max_retries is negative."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Hello"),
+            llm.TextEndChunk(),
+        ]
+
+        stream_response: llm.AsyncStreamResponse[None] = create_async_stream_response(
+            chunks
+        )
+
+        with pytest.raises(ValueError, match="max_retries must be non-negative"):
+            await stream_response.validate(max_retries=-1)
+
+
+class TestContextStreamResponseValidate:
+    """Tests for ContextStreamResponse.validate() method."""
+
+    def test_validate_success_first_attempt(self) -> None:
+        """Test validate() returns parsed value when parsing succeeds immediately."""
+        from pydantic import BaseModel
+
+        class Book(BaseModel):
+            title: str
+            author: str
+
+        valid_json = '{"title": "The Hobbit", "author": "J.R.R. Tolkien"}'
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta=valid_json),
+            llm.TextEndChunk(),
+        ]
+
+        def sync_chunk_iter() -> llm.ChunkIterator:
+            yield from chunks
+
+        stream_response: llm.ContextStreamResponse[None, Book] = (
+            llm.ContextStreamResponse(
+                provider_id="openai",
+                model_id="openai/gpt-5-mini",
+                provider_model_name="gpt-5-mini",
+                params={},
+                input_messages=[llm.messages.user("Recommend a book")],
+                chunk_iterator=sync_chunk_iter(),
+                format=llm.format(Book, mode="tool"),
+            )
+        )
+
+        ctx = llm.Context(deps=None)
+        book, result_response = stream_response.validate(ctx)
+
+        assert isinstance(book, Book)
+        assert book.title == "The Hobbit"
+        assert book.author == "J.R.R. Tolkien"
+        # Response should be the same since no retry was needed
+        assert result_response is stream_response
+        # Stream should be consumed after validate
+        assert stream_response.consumed is True
+
+    def test_validate_no_format_returns_none(self) -> None:
+        """Test validate() returns (None, self) when no format is set."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Hello world"),
+            llm.TextEndChunk(),
+        ]
+
+        def sync_chunk_iter() -> llm.ChunkIterator:
+            yield from chunks
+
+        stream_response: llm.ContextStreamResponse[None, None] = (
+            llm.ContextStreamResponse(
+                provider_id="openai",
+                model_id="openai/gpt-5-mini",
+                provider_model_name="gpt-5-mini",
+                params={},
+                input_messages=[],
+                chunk_iterator=sync_chunk_iter(),
+            )
+        )
+
+        ctx = llm.Context(deps=None)
+        result, result_response = stream_response.validate(ctx)
+
+        assert result is None
+        assert result_response is stream_response
+        assert stream_response.consumed is True
+
+    def test_validate_raises_after_max_retries(self) -> None:
+        """Test validate() raises ParseError after exhausting retries."""
+        import pydantic
+        from pydantic import BaseModel
+
+        class Book(BaseModel):
+            title: str
+            pages: int  # Required field that's always missing
+
+        incomplete_json = '{"title": "The Hobbit"}'  # Missing pages
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta=incomplete_json),
+            llm.TextEndChunk(),
+        ]
+
+        def sync_chunk_iter() -> llm.ChunkIterator:
+            yield from chunks
+
+        stream_response: llm.ContextStreamResponse[None, Book] = (
+            llm.ContextStreamResponse(
+                provider_id="openai",
+                model_id="openai/gpt-5-mini",
+                provider_model_name="gpt-5-mini",
+                params={},
+                input_messages=[llm.messages.user("Recommend a book")],
+                chunk_iterator=sync_chunk_iter(),
+                format=llm.format(Book, mode="tool"),
+            )
+        )
+
+        ctx = llm.Context(deps=None)
+        # With max_retries=0, it should fail immediately without any retry
+        with pytest.raises(llm.ParseError) as exc_info:
+            stream_response.validate(ctx, max_retries=0)
+        assert isinstance(exc_info.value.original_exception, pydantic.ValidationError)
+        assert stream_response.consumed is True
+
+    def test_validate_negative_max_retries_raises_value_error(self) -> None:
+        """Test validate() raises ValueError when max_retries is negative."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Hello"),
+            llm.TextEndChunk(),
+        ]
+
+        def sync_chunk_iter() -> llm.ChunkIterator:
+            yield from chunks
+
+        stream_response: llm.ContextStreamResponse[None, None] = (
+            llm.ContextStreamResponse(
+                provider_id="openai",
+                model_id="openai/gpt-5-mini",
+                provider_model_name="gpt-5-mini",
+                params={},
+                input_messages=[],
+                chunk_iterator=sync_chunk_iter(),
+            )
+        )
+
+        ctx = llm.Context(deps=None)
+        with pytest.raises(ValueError, match="max_retries must be non-negative"):
+            stream_response.validate(ctx, max_retries=-1)
+
+
+@pytest.mark.asyncio
+class TestAsyncContextStreamResponseValidate:
+    """Tests for AsyncContextStreamResponse.validate() method."""
+
+    async def test_validate_success_first_attempt(self) -> None:
+        """Test async validate() returns parsed value when parsing succeeds immediately."""
+        from pydantic import BaseModel
+
+        class Book(BaseModel):
+            title: str
+            author: str
+
+        valid_json = '{"title": "The Hobbit", "author": "J.R.R. Tolkien"}'
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta=valid_json),
+            llm.TextEndChunk(),
+        ]
+
+        async def async_chunk_iter() -> AsyncIterator[llm.StreamResponseChunk]:
+            for chunk in chunks:
+                yield chunk
+
+        stream_response: llm.AsyncContextStreamResponse[None, Book] = (
+            llm.AsyncContextStreamResponse(
+                provider_id="openai",
+                model_id="openai/gpt-5-mini",
+                provider_model_name="gpt-5-mini",
+                params={},
+                input_messages=[llm.messages.user("Recommend a book")],
+                chunk_iterator=async_chunk_iter(),
+                format=llm.format(Book, mode="tool"),
+            )
+        )
+
+        ctx = llm.Context(deps=None)
+        book, result_response = await stream_response.validate(ctx)
+
+        assert isinstance(book, Book)
+        assert book.title == "The Hobbit"
+        assert book.author == "J.R.R. Tolkien"
+        # Response should be the same since no retry was needed
+        assert result_response is stream_response
+        # Stream should be consumed after validate
+        assert stream_response.consumed is True
+
+    async def test_validate_no_format_returns_none(self) -> None:
+        """Test async validate() returns (None, self) when no format is set."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Hello world"),
+            llm.TextEndChunk(),
+        ]
+
+        async def async_chunk_iter() -> AsyncIterator[llm.StreamResponseChunk]:
+            for chunk in chunks:
+                yield chunk
+
+        stream_response: llm.AsyncContextStreamResponse[None, None] = (
+            llm.AsyncContextStreamResponse(
+                provider_id="openai",
+                model_id="openai/gpt-5-mini",
+                provider_model_name="gpt-5-mini",
+                params={},
+                input_messages=[],
+                chunk_iterator=async_chunk_iter(),
+            )
+        )
+
+        ctx = llm.Context(deps=None)
+        result, result_response = await stream_response.validate(ctx)
+
+        assert result is None
+        assert result_response is stream_response
+        assert stream_response.consumed is True
+
+    async def test_validate_raises_after_max_retries(self) -> None:
+        """Test async validate() raises ParseError after exhausting retries."""
+        import pydantic
+        from pydantic import BaseModel
+
+        class Book(BaseModel):
+            title: str
+            pages: int  # Required field that's always missing
+
+        incomplete_json = '{"title": "The Hobbit"}'  # Missing pages
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta=incomplete_json),
+            llm.TextEndChunk(),
+        ]
+
+        async def async_chunk_iter() -> AsyncIterator[llm.StreamResponseChunk]:
+            for chunk in chunks:
+                yield chunk
+
+        stream_response: llm.AsyncContextStreamResponse[None, Book] = (
+            llm.AsyncContextStreamResponse(
+                provider_id="openai",
+                model_id="openai/gpt-5-mini",
+                provider_model_name="gpt-5-mini",
+                params={},
+                input_messages=[llm.messages.user("Recommend a book")],
+                chunk_iterator=async_chunk_iter(),
+                format=llm.format(Book, mode="tool"),
+            )
+        )
+
+        ctx = llm.Context(deps=None)
+        # With max_retries=0, it should fail immediately without any retry
+        with pytest.raises(llm.ParseError) as exc_info:
+            await stream_response.validate(ctx, max_retries=0)
+        assert isinstance(exc_info.value.original_exception, pydantic.ValidationError)
+        assert stream_response.consumed is True
+
+    async def test_validate_negative_max_retries_raises_value_error(self) -> None:
+        """Test async validate() raises ValueError when max_retries is negative."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Hello"),
+            llm.TextEndChunk(),
+        ]
+
+        async def async_chunk_iter() -> AsyncIterator[llm.StreamResponseChunk]:
+            for chunk in chunks:
+                yield chunk
+
+        stream_response: llm.AsyncContextStreamResponse[None, None] = (
+            llm.AsyncContextStreamResponse(
+                provider_id="openai",
+                model_id="openai/gpt-5-mini",
+                provider_model_name="gpt-5-mini",
+                params={},
+                input_messages=[],
+                chunk_iterator=async_chunk_iter(),
+            )
+        )
+
+        ctx = llm.Context(deps=None)
+        with pytest.raises(ValueError, match="max_retries must be non-negative"):
+            await stream_response.validate(ctx, max_retries=-1)

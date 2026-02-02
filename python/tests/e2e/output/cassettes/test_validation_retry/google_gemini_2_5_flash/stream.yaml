@@ -1,0 +1,280 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Pick a random number between 1 and 1000"}],
+      "role": "user"}], "systemInstruction": {"parts": [{"text": "Respond only with
+      valid JSON that matches this exact schema:\n{\n  \"description\": \"A lucky
+      number chosen by the model.\",\n  \"properties\": {\n    \"value\": {\n      \"title\":
+      \"Value\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\": [\n    \"value\"\n  ],\n  \"title\":
+      \"LuckyNumber\",\n  \"type\": \"object\"\n}"}], "role": "user"}, "generationConfig":
+      {"responseMimeType": "application/json"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '554'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\n
+        \ \\\"value\\\": 57\"}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\":
+        {\"promptTokenCount\": 109,\"candidatesTokenCount\": 9,\"totalTokenCount\":
+        164,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 109}],\"thoughtsTokenCount\":
+        46},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"KBaBaciEFu6cz7IPtcjAoAU\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"3\\n}\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        109,\"candidatesTokenCount\": 12,\"totalTokenCount\": 167,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 109}],\"thoughtsTokenCount\": 46},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"KBaBaciEFu6cz7IPtcjAoAU\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Mon, 02 Feb 2026 21:24:56 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=750
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Pick a random number between 1 and 1000"}],
+      "role": "user"}, {"parts": [{"text": "{\n  \"value\": 57"}, {"text": "3\n}"}],
+      "role": "model"}, {"parts": [{"text": "Your response failed schema validation:\n1
+      validation error for LuckyNumber\nvalue\n  Value error, The number must be exactly
+      173, but got 573 [type=value_error, input_value=573, input_type=int]\n    For
+      further information visit https://errors.pydantic.dev/2.12/v/value_error\n\nPlease
+      correct these issues and respond again."}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "Respond only with valid JSON that matches this exact schema:\n{\n  \"description\":
+      \"A lucky number chosen by the model.\",\n  \"properties\": {\n    \"value\":
+      {\n      \"title\": \"Value\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+      [\n    \"value\"\n  ],\n  \"title\": \"LuckyNumber\",\n  \"type\": \"object\"\n}"}],
+      "role": "user"}, "generationConfig": {"responseMimeType": "application/json"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1003'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\n
+        \ \\\"value\\\": 173\\n}\"}],\"role\": \"model\"},\"finishReason\": \"STOP\",\"index\":
+        0}],\"usageMetadata\": {\"promptTokenCount\": 215,\"candidatesTokenCount\":
+        12,\"totalTokenCount\": 311,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        215}],\"thoughtsTokenCount\": 84},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"KRaBafCoFcbiz7IP9eiE4Qs\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Mon, 02 Feb 2026 21:24:57 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=995
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Pick a random number between 1 and 1000"}],
+      "role": "user"}], "systemInstruction": {"parts": [{"text": "Respond only with
+      valid JSON that matches this exact schema:\n{\n  \"description\": \"A lucky
+      number chosen by the model.\",\n  \"properties\": {\n    \"value\": {\n      \"title\":
+      \"Value\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\": [\n    \"value\"\n  ],\n  \"title\":
+      \"LuckyNumber\",\n  \"type\": \"object\"\n}"}], "role": "user"}, "generationConfig":
+      {"responseMimeType": "application/json"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '554'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\n
+        \ \\\"value\\\": \"}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\":
+        {\"promptTokenCount\": 109,\"candidatesTokenCount\": 6,\"totalTokenCount\":
+        210,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 109}],\"thoughtsTokenCount\":
+        95},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"PRaBaZ33Iem6qtsPtebP2QM\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"723\\n}\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        109,\"candidatesTokenCount\": 11,\"totalTokenCount\": 215,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 109}],\"thoughtsTokenCount\": 95},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"PRaBaZ33Iem6qtsPtebP2QM\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Mon, 02 Feb 2026 21:25:18 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1253
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Pick a random number between 1 and 1000"}],
+      "role": "user"}, {"parts": [{"text": "{\n  \"value\": "}, {"text": "723\n}"}],
+      "role": "model"}, {"parts": [{"text": "Your response failed schema validation:\n1
+      validation error for LuckyNumber\nvalue\n  Value error, The number must be exactly
+      173, but got 723 [type=value_error, input_value=723, input_type=int]\n    For
+      further information visit https://errors.pydantic.dev/2.12/v/value_error\n\nPlease
+      correct these issues and respond again."}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "Respond only with valid JSON that matches this exact schema:\n{\n  \"description\":
+      \"A lucky number chosen by the model.\",\n  \"properties\": {\n    \"value\":
+      {\n      \"title\": \"Value\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+      [\n    \"value\"\n  ],\n  \"title\": \"LuckyNumber\",\n  \"type\": \"object\"\n}"}],
+      "role": "user"}, "generationConfig": {"responseMimeType": "application/json"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1003'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\n
+        \ \\\"value\\\": 173\\n}\"}],\"role\": \"model\"},\"finishReason\": \"STOP\",\"index\":
+        0}],\"usageMetadata\": {\"promptTokenCount\": 215,\"candidatesTokenCount\":
+        12,\"totalTokenCount\": 296,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        215}],\"thoughtsTokenCount\": 69},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"PhaBaYrkMfu4mtkP7Ou7uAQ\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Mon, 02 Feb 2026 21:25:19 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=914
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
