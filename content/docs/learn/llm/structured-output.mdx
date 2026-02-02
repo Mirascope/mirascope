@@ -25,19 +25,47 @@ Generic collections like `list[Book]` and `dict[str, Book]` work with BaseModel 
 
 <CodeExample file="python/examples/structured_output/generic_collection.py" />
 
-## Validation Errors
+## Parse Errors
 
-Pydantic validates the response. If the LLM returns invalid data, `parse()` raises `pydantic.ValidationError`:
+When the LLM returns invalid data, `parse()` raises `llm.ParseError`:
 
 ```python
 try:
     book = response.parse()
-except pydantic.ValidationError as e:
+except llm.ParseError as e:
     print(f"Invalid response: {e}")
 ```
 
+### Manual Retry
+
+To retry after a parse error, use `response.resume()` with the error's retry message:
+
+```python
+try:
+    book = response.parse()
+except llm.ParseError as e:
+    response = response.resume(e.retry_message())
+    book = response.parse()  # Try again
+```
+
+### Automatic Retry with `validate()`
+
+For convenience, use `response.validate()` to automatically retry when parsing fails. This is useful for getting reliable structured outputs, especially when you have custom Pydantic validators with constraints the LLM doesn't know about:
+
+<CodeExample file="python/examples/structured_output/validate.py" />
+
+The `validate()` method returns a tuple of `(parsed_value, response)` — if retries were needed, `response` is the final successful response. You can customize the number of retries with `max_retries` (default is 1):
+
+```python
+book, response = response.validate(max_retries=3)
+```
+
 <Note>
-When validation fails, consider retrying with error feedback. See [Reliability](/docs/learn/llm/reliability) for retry patterns.
+When using async, `response.validate()` is async — see [Async](/docs/learn/llm/async). For context responses, pass the `ctx` argument — see [Context](/docs/learn/llm/context).
+</Note>
+
+<Note>
+For API-level retries (rate limits, timeouts, server errors), use `@llm.retry`. See [Reliability](/docs/learn/llm/reliability).
 </Note>
 
 ## Formatting Modes
