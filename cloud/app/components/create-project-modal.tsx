@@ -12,6 +12,7 @@ import {
 } from "@/app/components/ui/dialog";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import { useAnalytics } from "@/app/contexts/analytics";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
 import { getErrorMessage } from "@/app/lib/errors";
@@ -28,6 +29,7 @@ export function CreateProjectModal({
   const createProject = useCreateProject();
   const { selectedOrganization } = useOrganization();
   const { setSelectedProject } = useProject();
+  const analytics = useAnalytics();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -47,6 +49,10 @@ export function CreateProjectModal({
       const newProject = await createProject.mutateAsync({
         organizationId: selectedOrganization.id,
         name: name.trim(),
+      });
+      analytics.trackEvent("project_created", {
+        project_id: newProject.id,
+        organization_id: selectedOrganization.id,
       });
       setSelectedProject(newProject);
       setName("");

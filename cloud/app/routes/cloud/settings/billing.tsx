@@ -12,10 +12,12 @@ import { DowngradePlanDialog } from "@/app/components/downgrade-plan-dialog";
 import { PlanSettings } from "@/app/components/plan-settings";
 import { RouterCreditsSettings } from "@/app/components/router-credits-settings";
 import { UpgradePlanDialog } from "@/app/components/upgrade-plan-dialog";
+import { useAnalytics } from "@/app/contexts/analytics";
 import { useOrganization } from "@/app/contexts/organization";
 
 function BillingSettingsPage() {
   const { selectedOrganization } = useOrganization();
+  const analytics = useAnalytics();
 
   const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
   const [upgradePlan, setUpgradePlan] = useState<PlanTier | null>(null);
@@ -77,6 +79,9 @@ function BillingSettingsPage() {
   const handleCancelDowngrade = () => {
     cancelDowngradeMutation.mutate(selectedOrganization.id, {
       onSuccess: () => {
+        analytics.trackEvent("plan_downgrade_cancelled", {
+          organization_id: selectedOrganization.id,
+        });
         toast.success("Scheduled plan change cancelled");
       },
       onError: () => {

@@ -15,6 +15,7 @@ import {
 } from "@/app/components/ui/dialog";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import { useAnalytics } from "@/app/contexts/analytics";
 import { getErrorMessage } from "@/app/lib/errors";
 
 export function DeleteApiKeyModal({
@@ -31,6 +32,7 @@ export function DeleteApiKeyModal({
   const [confirmName, setConfirmName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const deleteApiKey = useDeleteApiKey();
+  const analytics = useAnalytics();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -52,6 +54,12 @@ export function DeleteApiKeyModal({
         projectId: apiKey.projectId,
         environmentId: apiKey.environmentId,
         apiKeyId: apiKey.id,
+      });
+      analytics.trackEvent("api_key_deleted", {
+        api_key_id: apiKey.id,
+        environment_id: apiKey.environmentId,
+        project_id: apiKey.projectId,
+        organization_id: organizationId,
       });
 
       setConfirmName("");

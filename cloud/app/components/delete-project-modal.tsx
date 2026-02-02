@@ -16,6 +16,7 @@ import {
 } from "@/app/components/ui/dialog";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import { useAnalytics } from "@/app/contexts/analytics";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
 import { getErrorMessage } from "@/app/lib/errors";
@@ -33,6 +34,7 @@ export function DeleteProjectModal({
   const deleteProject = useDeleteProject();
   const { selectedOrganization } = useOrganization();
   const { selectedProject, setSelectedProject } = useProject();
+  const analytics = useAnalytics();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -57,6 +59,10 @@ export function DeleteProjectModal({
       await deleteProject.mutateAsync({
         organizationId: selectedOrganization.id,
         projectId: selectedProject.id,
+      });
+      analytics.trackEvent("project_deleted", {
+        project_id: selectedProject.id,
+        organization_id: selectedOrganization.id,
       });
 
       // Wait for the projects query to refetch and get fresh data

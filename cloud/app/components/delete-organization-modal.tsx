@@ -16,6 +16,7 @@ import {
 } from "@/app/components/ui/dialog";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import { useAnalytics } from "@/app/contexts/analytics";
 import { useOrganization } from "@/app/contexts/organization";
 import { getErrorMessage } from "@/app/lib/errors";
 
@@ -31,6 +32,7 @@ export function DeleteOrganizationModal({
   const queryClient = useQueryClient();
   const deleteOrganization = useDeleteOrganization();
   const { selectedOrganization, setSelectedOrganization } = useOrganization();
+  const analytics = useAnalytics();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -48,6 +50,9 @@ export function DeleteOrganizationModal({
 
     try {
       await deleteOrganization.mutateAsync(selectedOrganization.id);
+      analytics.trackEvent("organization_deleted", {
+        organization_id: selectedOrganization.id,
+      });
 
       // Wait for the organizations query to refetch and get fresh data
       await queryClient.invalidateQueries({ queryKey: ["organizations"] });

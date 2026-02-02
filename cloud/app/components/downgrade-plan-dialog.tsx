@@ -23,6 +23,7 @@ import {
   DialogTitle,
 } from "@/app/components/ui/dialog";
 import { planLabels } from "@/app/components/ui/plan-badge";
+import { useAnalytics } from "@/app/contexts/analytics";
 
 interface DowngradePlanDialogProps {
   organizationId: string;
@@ -236,6 +237,7 @@ export function DowngradePlanDialog({
   const queryClient = useQueryClient();
   const updateMutation = useUpdateSubscription();
   const previewMutation = usePreviewSubscriptionChange();
+  const analytics = useAnalytics();
 
   const featuresLost = featureLossWarnings[currentPlan]?.[targetPlan] || [];
 
@@ -280,6 +282,10 @@ export function DowngradePlanDialog({
       });
 
       if (result.scheduledFor) {
+        analytics.trackEvent("plan_downgrade_scheduled", {
+          organization_id: organizationId,
+          target_plan: targetPlan,
+        });
         toast.success(
           `Your plan will change to ${planLabels[targetPlan]} on ${result.scheduledFor.toLocaleDateString()}`,
         );

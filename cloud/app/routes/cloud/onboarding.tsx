@@ -18,6 +18,7 @@ import {
 } from "@/app/components/ui/card";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import { useAnalytics } from "@/app/contexts/analytics";
 import { useEnvironment } from "@/app/contexts/environment";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
@@ -59,6 +60,7 @@ function OnboardingContent() {
   const { setSelectedProject } = useProject();
   const { setSelectedEnvironment } = useEnvironment();
   const completeOnboardingMutation = useCompleteOnboarding();
+  const analytics = useAnalytics();
 
   const [step, setStep] = useState<Step>("setup");
   const [organizationName, setOrganizationName] = useState(() =>
@@ -99,6 +101,13 @@ function OnboardingContent() {
       setSelectedOrganization(result.organization);
       setSelectedProject(result.project);
       setSelectedEnvironment(result.environment);
+
+      // Track onboarding completion
+      analytics.trackEvent("onboarding_completed", {
+        organization_id: result.organization.id,
+        project_id: result.project.id,
+        environment_id: result.environment.id,
+      });
 
       // Store result and move to success step
       setOnboardingResult(result);

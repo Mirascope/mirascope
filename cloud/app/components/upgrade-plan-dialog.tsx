@@ -19,6 +19,7 @@ import {
   DialogTitle,
 } from "@/app/components/ui/dialog";
 import { planLabels } from "@/app/components/ui/plan-badge";
+import { useAnalytics } from "@/app/contexts/analytics";
 
 interface UpgradePlanDialogProps {
   organizationId: string;
@@ -40,6 +41,7 @@ export function UpgradePlanDialog({
 
   const queryClient = useQueryClient();
   const updateMutation = useUpdateSubscription();
+  const analytics = useAnalytics();
 
   // Load preview when dialog opens using useQuery
   const {
@@ -91,6 +93,10 @@ export function UpgradePlanDialog({
   };
 
   const handleUpgradeSuccess = () => {
+    analytics.trackEvent("plan_upgraded", {
+      organization_id: organizationId,
+      target_plan: targetPlan,
+    });
     setStep("success");
 
     // Refetch subscription data

@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from "@/app/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
+import { useAnalytics } from "@/app/contexts/analytics";
 import { useEnvironment } from "@/app/contexts/environment";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
@@ -61,6 +62,7 @@ function FunctionDetailPage() {
   const { selectedOrganization } = useOrganization();
   const { selectedProject } = useProject();
   const { selectedEnvironment } = useEnvironment();
+  const analytics = useAnalytics();
 
   const [activeTab, setActiveTab] = useState("code");
   const [selectedTraceId, setSelectedTraceId] = useState<string | null>(null);
@@ -106,6 +108,9 @@ function FunctionDetailPage() {
   // Enter compare mode with default previous version
   const enterCompareMode = () => {
     if (!fn || allVersions.length < 2) return;
+    analytics.trackEvent("function_compare_entered", {
+      function_name: functionName,
+    });
     // Find the index of current version
     const currentIndex = allVersions.findIndex((v) => v.id === fn.id);
     // Default to the next older version, or first version if current is oldest
@@ -117,6 +122,9 @@ function FunctionDetailPage() {
 
   // Exit compare mode
   const exitCompareMode = () => {
+    analytics.trackEvent("function_compare_exited", {
+      function_name: functionName,
+    });
     setIsCompareMode(false);
     setCompareVersionId(null);
   };
@@ -142,6 +150,10 @@ function FunctionDetailPage() {
   }, [versionFromUrl, allVersions, navigate, functionName]);
 
   const handleVersionChange = (newVersionId: string) => {
+    analytics.trackEvent("function_version_changed", {
+      function_name: functionName,
+      version_id: newVersionId,
+    });
     void navigate({
       to: "/cloud/functions/$functionName",
       params: { functionName },
@@ -443,7 +455,14 @@ function FunctionDetailPage() {
                       onTraceSelect={setSelectedTraceId}
                       traceDetail={traceDetail ?? null}
                       isLoadingDetail={isLoadingDetail}
-                      onSpanClick={setSelectedSpan}
+                      onSpanClick={(span) => {
+                        analytics.trackEvent("span_selected", {
+                          span_id: span?.spanId,
+                          trace_id: selectedTraceId,
+                          environment_id: selectedEnvironment?.id,
+                        });
+                        setSelectedSpan(span);
+                      }}
                       selectedSpanId={selectedSpan?.spanId}
                     />
                   </div>

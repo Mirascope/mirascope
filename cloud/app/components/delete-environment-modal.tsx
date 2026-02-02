@@ -16,6 +16,7 @@ import {
 } from "@/app/components/ui/dialog";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import { useAnalytics } from "@/app/contexts/analytics";
 import { useEnvironment } from "@/app/contexts/environment";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
@@ -37,6 +38,7 @@ export function DeleteEnvironmentModal({
   const { selectedOrganization } = useOrganization();
   const { selectedProject } = useProject();
   const { selectedEnvironment, setSelectedEnvironment } = useEnvironment();
+  const analytics = useAnalytics();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -67,6 +69,11 @@ export function DeleteEnvironmentModal({
         organizationId: selectedOrganization.id,
         projectId: selectedProject.id,
         environmentId: environment.id,
+      });
+      analytics.trackEvent("environment_deleted", {
+        environment_id: environment.id,
+        project_id: selectedProject.id,
+        organization_id: selectedOrganization.id,
       });
 
       // Wait for the environments query to refetch and get fresh data

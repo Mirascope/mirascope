@@ -12,6 +12,7 @@ import {
 } from "@/app/components/ui/dialog";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import { useAnalytics } from "@/app/contexts/analytics";
 import { useEnvironment } from "@/app/contexts/environment";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
@@ -31,6 +32,7 @@ export function CreateEnvironmentModal({
   const { selectedOrganization } = useOrganization();
   const { selectedProject } = useProject();
   const { setSelectedEnvironment } = useEnvironment();
+  const analytics = useAnalytics();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -59,6 +61,11 @@ export function CreateEnvironmentModal({
           name: name.trim(),
           slug: generateSlug(name.trim()),
         },
+      });
+      analytics.trackEvent("environment_created", {
+        environment_id: newEnvironment.id,
+        project_id: selectedProject.id,
+        organization_id: selectedOrganization.id,
       });
       setSelectedEnvironment(newEnvironment);
       setName("");

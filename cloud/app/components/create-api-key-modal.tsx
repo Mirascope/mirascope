@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
+import { useAnalytics } from "@/app/contexts/analytics";
 import { getErrorMessage } from "@/app/lib/errors";
 
 interface CreateApiKeyModalProps {
@@ -49,6 +50,7 @@ export function CreateApiKeyModal({
   const { data: environments, isLoading: loadingEnvironments } =
     useEnvironments(organizationId, selectedProjectId || null);
   const createApiKey = useCreateApiKey();
+  const analytics = useAnalytics();
 
   const handleProjectChange = (projectId: string) => {
     setSelectedProjectId(projectId);
@@ -80,6 +82,11 @@ export function CreateApiKeyModal({
         projectId: selectedProjectId,
         environmentId: selectedEnvironmentId,
         data: { name: name.trim() },
+      });
+      analytics.trackEvent("api_key_created", {
+        environment_id: selectedEnvironmentId,
+        project_id: selectedProjectId,
+        organization_id: organizationId,
       });
 
       // Show the created key

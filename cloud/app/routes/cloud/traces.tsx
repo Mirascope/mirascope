@@ -17,6 +17,7 @@ import {
   ResizablePanel,
   ResizableHandle,
 } from "@/app/components/ui/resizable";
+import { useAnalytics } from "@/app/contexts/analytics";
 import { useEnvironment } from "@/app/contexts/environment";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
@@ -30,6 +31,7 @@ function TracesPage() {
   const { selectedOrganization } = useOrganization();
   const { selectedProject } = useProject();
   const { selectedEnvironment } = useEnvironment();
+  const analytics = useAnalytics();
 
   const [selectedTraceId, setSelectedTraceId] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -128,7 +130,12 @@ function TracesPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setRefreshKey((k) => k + 1)}
+                  onClick={() => {
+                    analytics.trackEvent("traces_refreshed", {
+                      environment_id: selectedEnvironment?.id,
+                    });
+                    setRefreshKey((k) => k + 1);
+                  }}
                   disabled={isFetching}
                 >
                   <RefreshCw
@@ -140,10 +147,23 @@ function TracesPage() {
               <TracesTable
                 spans={data?.spans ?? []}
                 isLoading={isLoading}
-                onTraceSelect={setSelectedTraceId}
+                onTraceSelect={(traceId) => {
+                  analytics.trackEvent("trace_selected", {
+                    trace_id: traceId,
+                    environment_id: selectedEnvironment?.id,
+                  });
+                  setSelectedTraceId(traceId);
+                }}
                 traceDetail={traceDetail ?? null}
                 isLoadingDetail={isLoadingDetail}
-                onSpanClick={setSelectedSpan}
+                onSpanClick={(span) => {
+                  analytics.trackEvent("span_selected", {
+                    span_id: span?.spanId,
+                    trace_id: selectedTraceId,
+                    environment_id: selectedEnvironment?.id,
+                  });
+                  setSelectedSpan(span);
+                }}
                 selectedSpanId={selectedSpan?.spanId}
               />
             </div>

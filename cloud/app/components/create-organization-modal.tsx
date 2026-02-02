@@ -12,6 +12,7 @@ import {
 } from "@/app/components/ui/dialog";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import { useAnalytics } from "@/app/contexts/analytics";
 import { useOrganization } from "@/app/contexts/organization";
 import { getErrorMessage } from "@/app/lib/errors";
 import { generateSlug } from "@/db/slug";
@@ -27,6 +28,7 @@ export function CreateOrganizationModal({
   const [error, setError] = useState<string | null>(null);
   const createOrganization = useCreateOrganization();
   const { setSelectedOrganization } = useOrganization();
+  const analytics = useAnalytics();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -41,6 +43,9 @@ export function CreateOrganizationModal({
       const newOrg = await createOrganization.mutateAsync({
         name: name.trim(),
         slug: generateSlug(name.trim()),
+      });
+      analytics.trackEvent("organization_created", {
+        organization_id: newOrg.id,
       });
       setSelectedOrganization(newOrg);
       setName("");
