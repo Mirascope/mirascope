@@ -16,7 +16,7 @@ describe("settings", () => {
 
       const settings = getSettings();
 
-      expect(settings.baseUrl).toBe("https://mirascope.com/api/v2");
+      expect(settings.baseURL).toBe("https://mirascope.com/api/v2");
       expect(settings.apiKey).toBe("");
     });
 
@@ -38,34 +38,34 @@ describe("settings", () => {
       expect(settings.apiKey).toBe("test-api-key");
     });
 
-    it("updates baseUrl", () => {
-      updateSettings({ baseUrl: "https://custom.example.com" });
+    it("updates baseURL", () => {
+      updateSettings({ baseURL: "https://custom.example.com" });
 
       const settings = getSettings();
 
-      expect(settings.baseUrl).toBe("https://custom.example.com");
+      expect(settings.baseURL).toBe("https://custom.example.com");
     });
 
     it("updates multiple settings at once", () => {
       updateSettings({
         apiKey: "new-key",
-        baseUrl: "https://new.example.com",
+        baseURL: "https://new.example.com",
       });
 
       const settings = getSettings();
 
       expect(settings.apiKey).toBe("new-key");
-      expect(settings.baseUrl).toBe("https://new.example.com");
+      expect(settings.baseURL).toBe("https://new.example.com");
     });
 
     it("preserves existing settings when updating partially", () => {
       updateSettings({ apiKey: "first-key" });
-      updateSettings({ baseUrl: "https://new.example.com" });
+      updateSettings({ baseURL: "https://new.example.com" });
 
       const settings = getSettings();
 
       expect(settings.apiKey).toBe("first-key");
-      expect(settings.baseUrl).toBe("https://new.example.com");
+      expect(settings.baseURL).toBe("https://new.example.com");
     });
   });
 
@@ -76,14 +76,14 @@ describe("settings", () => {
 
       updateSettings({
         apiKey: "custom-key",
-        baseUrl: "https://custom.example.com",
+        baseURL: "https://custom.example.com",
       });
 
       resetSettings();
 
       const settings = getSettings();
 
-      expect(settings.baseUrl).toBe("https://mirascope.com/api/v2");
+      expect(settings.baseURL).toBe("https://mirascope.com/api/v2");
       expect(settings.apiKey).toBe("");
     });
   });

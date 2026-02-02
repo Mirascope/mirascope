@@ -143,7 +143,7 @@ describe("spans", () => {
     });
 
     describe("logging methods", () => {
-      it("debug() should add log event with debug level", () => {
+      it("debug() should add debug event with debug level", () => {
         const s = new Span("test-span");
         s.start();
         s.debug("debug message");
@@ -151,7 +151,7 @@ describe("spans", () => {
 
         const spans = exporter.getFinishedSpans();
         const event = spans[0]!.events[0]!;
-        expect(event.name).toBe("log");
+        expect(event.name).toBe("debug");
         expect(event.attributes?.["level"]).toBe("debug");
         expect(event.attributes?.["message"]).toBe("debug message");
       });
@@ -396,7 +396,7 @@ describe("spans", () => {
       expect(spans[0]!.attributes["initial"]).toBe("value");
     });
 
-    it("should log and rethrow errors", async () => {
+    it("should record exception and rethrow errors", async () => {
       await expect(
         span("test-operation", async () => {
           throw new Error("test error");
@@ -405,8 +405,11 @@ describe("spans", () => {
 
       const spans = exporter.getFinishedSpans();
       expect(spans[0]!.status.code).toBe(2); // SpanStatusCode.ERROR
-      expect(spans[0]!.events[0]!.attributes?.["level"]).toBe("error");
-      expect(spans[0]!.events[0]!.attributes?.["message"]).toBe("test error");
+      // recordException creates an "exception" event with standard OTEL attributes
+      expect(spans[0]!.events[0]!.name).toBe("exception");
+      expect(spans[0]!.events[0]!.attributes?.["exception.message"]).toBe(
+        "test error",
+      );
     });
 
     it("should handle non-Error throws", async () => {
@@ -417,6 +420,8 @@ describe("spans", () => {
       ).rejects.toBe("string error");
 
       const spans = exporter.getFinishedSpans();
+      // Non-Error throws use the error() method which creates an "error" event
+      expect(spans[0]!.events[0]!.name).toBe("error");
       expect(spans[0]!.events[0]!.attributes?.["message"]).toBe("string error");
     });
 

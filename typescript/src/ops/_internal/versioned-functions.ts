@@ -37,10 +37,32 @@ export interface VersionInfo {
   readonly signatureHash: string;
   /** Name of the function */
   readonly name: string;
+  /** Human-readable description (docstring) of the versioned function */
+  readonly description?: string;
+  /** Auto-computed semantic version in X.Y format */
+  readonly version: string;
   /** Tags associated with the function */
   readonly tags: string[];
   /** Key-value metadata */
   readonly metadata: Record<string, string>;
+}
+
+/**
+ * Computes the version string from the closure hash.
+ *
+ * For new functions without server history, returns "1.0" as the initial version.
+ *
+ * TODO: When API client is available, query the server for existing versions:
+ * 1. Check if a function with matching hash exists -> use its version
+ * 2. If no matches, return "1.0" as initial version
+ *
+ * @param _hash - SHA256 hash of the complete closure code (unused until server query)
+ * @returns Version string in X.Y format
+ */
+export function computeVersion(_hash: string): string {
+  // For now, always return "1.0" as initial version
+  // Server queries will be implemented when API is available
+  return "1.0";
 }
 
 /**
@@ -65,6 +87,20 @@ export interface VersionedResult<R> {
    * Sends the annotation to Mirascope Cloud for evaluation tracking.
    */
   annotate(options: AnnotateOptions): Promise<void>;
+  /**
+   * Add tags to this trace.
+   *
+   * @param tags - Tags to add to the trace
+   * @throws NotImplementedError - This feature is not yet implemented
+   */
+  tag(...tags: string[]): Promise<void>;
+  /**
+   * Assign this trace to users by email.
+   *
+   * @param emails - Email addresses to assign the trace to
+   * @throws NotImplementedError - This feature is not yet implemented
+   */
+  assign(...emails: string[]): Promise<void>;
 }
 
 /**
@@ -93,6 +129,14 @@ export interface VersionedFunction<Args extends unknown[], R> {
   wrapped(...args: Args): Promise<VersionedResult<R>>;
   /** Information about the function's version */
   readonly versionInfo: VersionInfo;
+  /**
+   * Get a specific version of this function.
+   *
+   * @param versionId - The version identifier (tag, hash, or semantic version)
+   * @returns A VersionedFunction bound to the specified version
+   * @throws NotImplementedError - This feature is not yet implemented
+   */
+  getVersion(versionId: string): Promise<VersionedFunction<Args, R>>;
 }
 
 /**
@@ -134,6 +178,16 @@ export function createVersionedResult<R>(
         reasoning: reasoning ?? null,
         metadata: metadata ?? null,
       });
+    },
+    async tag(..._tags: string[]): Promise<void> {
+      throw new Error(
+        "tag() is not yet implemented. Tagging will be available in a future release.",
+      );
+    },
+    async assign(..._emails: string[]): Promise<void> {
+      throw new Error(
+        "assign() is not yet implemented. Assignment will be available in a future release.",
+      );
     },
   };
 }

@@ -32,6 +32,8 @@ export interface Closure {
   name: string;
   /** Function signature (parameters and return type) */
   signature: string;
+  /** Function's docstring/documentation comment, if available */
+  docstring?: string;
   /** Complete source code including all dependencies */
   code: string;
   /** SHA256 hash of the formatted code */
@@ -50,6 +52,8 @@ export interface RawClosure {
   name: string;
   /** Function signature */
   signature: string;
+  /** Function's docstring/documentation comment, if available */
+  docstring?: string;
   /** Import statements */
   imports: string[];
   /** Global variable assignments */
@@ -162,6 +166,7 @@ export function createClosure(raw: RawClosure): Closure {
   return {
     name: raw.name,
     signature: raw.signature,
+    docstring: raw.docstring,
     code,
     hash,
     signatureHash,

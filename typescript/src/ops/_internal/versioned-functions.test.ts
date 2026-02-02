@@ -149,5 +149,31 @@ describe("versioned-functions", () => {
         span.finish();
       });
     });
+
+    describe("tag", () => {
+      it("should throw NotImplementedError", async () => {
+        const span = new Span("test").start();
+        const result = createVersionedResult("test-result", span);
+
+        await expect(result.tag("tag1", "tag2")).rejects.toThrow(
+          "tag() is not yet implemented. Tagging will be available in a future release.",
+        );
+
+        span.finish();
+      });
+    });
+
+    describe("assign", () => {
+      it("should throw NotImplementedError", async () => {
+        const span = new Span("test").start();
+        const result = createVersionedResult("test-result", span);
+
+        await expect(result.assign("user@example.com")).rejects.toThrow(
+          "assign() is not yet implemented. Assignment will be available in a future release.",
+        );
+
+        span.finish();
+      });
+    });
   });
 });

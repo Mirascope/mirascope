@@ -413,6 +413,49 @@ describe("tracing", () => {
     });
   });
 
+  describe("trace() - unified API with Call objects", () => {
+    // Create a mock Call-like object
+    function createMockCall() {
+      // Use a named function for the template to avoid readonly name issue
+      function mockTemplate({ query }: { query: string }) {
+        return `Hello ${query}`;
+      }
+      const mockCall = Object.assign(async () => ({ text: () => "response" }), {
+        call: async () => ({ text: () => "response" }),
+        stream: async () => ({ text: () => "stream" }),
+        template: mockTemplate,
+        prompt: { template: mockTemplate },
+      });
+      return mockCall;
+    }
+
+    it("should detect Call objects and delegate to traceCall", async () => {
+      const mockCall = createMockCall();
+      const traced = trace(mockCall, { tags: ["test"] });
+
+      // TracedCall has a `.call` property
+      expect(traced.call).toBe(mockCall);
+    });
+
+    it("should support curried form with Call objects", async () => {
+      const mockCall = createMockCall();
+      const withTracing = trace({ tags: ["curried-test"] });
+      const traced = withTracing(mockCall);
+
+      // TracedCall has a `.call` property
+      expect(traced.call).toBe(mockCall);
+    });
+
+    it("should still handle functions in curried form", async () => {
+      const withTracing = trace({ tags: ["test"] });
+      const fn = async (x: number) => x * 2;
+      const traced = withTracing(fn);
+
+      const result = await traced(5);
+      expect(result).toBe(10);
+    });
+  });
+
   describe("without tracer provider", () => {
     it("should still execute function when no tracer is registered", async () => {
       // Shutdown and disable the tracer

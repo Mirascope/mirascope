@@ -51,8 +51,9 @@ const recommendBook = llm.defineCall<{ genre: string }>({
   template: ({ genre }) => `Please recommend a book in ${genre}.`,
 });
 
-// Version the call - changes to the prompt template will be tracked
-const versionedRecommend = ops.versionCall(recommendBook, {
+// Version the call - the unified version() API handles both functions and calls
+// Changes to the prompt template will be tracked
+const versionedRecommend = ops.version(recommendBook, {
   name: "book-recommendation",
   tags: ["recommendation", "v1"],
 });

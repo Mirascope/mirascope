@@ -48,11 +48,18 @@ export interface MirascopeBunPluginOptions {
 }
 
 /**
- * Check if a file contains defineTool, defineContextTool, or defineFormat calls.
+ * Check if a file contains calls that need compile-time transformation.
  * Quick regex check to avoid expensive TypeScript compilation for files that don't need it.
+ *
+ * Patterns that trigger transformation:
+ * - defineTool, defineContextTool: Tool schema injection
+ * - defineFormat: Format schema injection
+ * - version, versionCall: Closure metadata injection for versioning
  */
 function needsTransform(contents: string): boolean {
-  return /\bdefineTool\b|\bdefineContextTool\b|\bdefineFormat\b/.test(contents);
+  return /\bdefineTool\b|\bdefineContextTool\b|\bdefineFormat\b|\bversion\b/.test(
+    contents,
+  );
 }
 
 /**

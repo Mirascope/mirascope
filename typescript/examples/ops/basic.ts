@@ -18,8 +18,8 @@ const recommendBook = llm.defineCall<{ genre: string }>({
   template: ({ genre }) => `Please recommend a book in ${genre}.`,
 });
 
-// Wrap the call with tracing using traceCall
-const tracedRecommendBook = ops.traceCall(recommendBook, {
+// Wrap the call with tracing - the unified trace() API handles both functions and calls
+const tracedRecommendBook = ops.trace(recommendBook, {
   tags: ["recommendation", "books"],
   metadata: { source: "example" },
 });
