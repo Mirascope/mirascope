@@ -1,7 +1,8 @@
 ---
-title: "What is Context Engineering? (And Why It’s Really Just Prompt Engineering Done Right)  "
+title: "What is Context Engineering? (And Why It's Really Just Prompt Engineering Done Right)  "
 description: "Think context engineering is something new? Think again. This article breaks down why the best prompt engineering is really just well-managed context."
 date: "2025-08-06"
+updatedAt: "2026-01-28"
 readTime: "5 min read"
 author: "William Bakst"
 ---
@@ -88,26 +89,26 @@ This colocates everything that influences the LLM’s output and makes the code 
 We typically express the prompt as a Python function and include decorators for calling and observability:
 
 ```python
-import lilypad
-from mirascope import llm
+from mirascope import llm, ops
 
-lilypad.configure(auto_llm=True)
+ops.configure()
+ops.instrument_llm()
 
-@lilypad.trace(versioning="automatic")  # [!code highlight]
-@llm.call(provider="openai", model="gpt-4o-mini")  # [!code highlight]
+@ops.version  # [!code highlight]
+@llm.call("openai/gpt-4o-mini")  # [!code highlight]
 def answer_question(question: str) -> str:  # [!code highlight]
     return f"Answer this question in one word: {question}"  # [!code highlight]
 
 response = answer_question("What is the capital of France?")
-print(response.content)
+print(response.text())
 # > Paris
 ```
 
-Here, Mirascope’s `@llm.call` decorator turns the prompt function into a call with minimal boilerplate code. `@llm.call` also provides a unified interface for working with model providers like OpenAI, Grok, Google (Gemini/Vertex), Anthropic, and many others.
+Here, Mirascope's `@llm.call` decorator turns the prompt function into a call with minimal boilerplate code. `@llm.call` also provides a unified interface for working with model providers like OpenAI, Grok, Google (Gemini/Vertex), Anthropic, and many others.
 
 It additionally [provides functionality](/docs/mirascope) for tool calling, structured outputs and schema, automatic input validation, type hints (integrated into your IDE), and more.
 
-The `@lilypad.trace` decorator traces and versions every change automatically, capturing snapshots of modifications within the entire function closure, including changes to:
+The `@ops.version` decorator traces and versions every change automatically, capturing snapshots of modifications within the entire function closure, including changes to:
 
 * Prompt templates  
 * Input arguments  
@@ -125,7 +126,7 @@ You view all this in the Lilypad UI:
 
 ![Lilypad GenAI Trace Data](/assets/blog/context-engineering/lilypad-genai-trace-data.webp)
 
-Lilypad traces both at the level of the API and at the level of each function decorated by `@lilypad.trace()`. The latter gives you a full snapshot of the entire context influencing an LLM call’s outcome, which contrasts with other tools often focusing solely on prompt changes.
+Mirascope Cloud traces both at the level of the API and at the level of each function decorated by `@ops.version`. The latter gives you a full snapshot of the entire context influencing an LLM call's outcome, which contrasts with other tools often focusing solely on prompt changes.
 
 The Lilypad UI also shows the outputs of every call, as well as any changes made to the prompt or its context:
 
@@ -151,7 +152,7 @@ Lilypad provides a playground featuring markdown-supported prompt templates, all
 
 Prompts are attached to a versioned function, and every time it runs, it’s automatically versioned and traced against that function. SMEs can develop and run code independently of developers, who can access prompts and context via methods like `.version` that return type-safe signatures matching the expected arguments for that version:
 
-```python
+```python-snippet-skip
 response = answer_question.version(1)("What is the capital of France?")
 ```
 
