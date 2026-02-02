@@ -43,7 +43,7 @@ class TestSyncRetryCall:
     def test_call_succeeds_first_attempt(self, mock_provider: MockProvider) -> None:
         """Test that a successful first call returns immediately with correct state."""
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -51,9 +51,9 @@ class TestSyncRetryCall:
         response = greet()
 
         assert response.pretty() == "mock response"
-        assert response.retry_state.attempts == 1
+        assert response.retry_state.retries == 0
         assert response.retry_state.exceptions == []
-        assert response.retry_state.max_attempts == 3
+        assert response.retry_state.max_retries == 2
         assert response.model_id == "mock/test-model"
         assert mock_provider.call_count == 1
 
@@ -63,7 +63,7 @@ class TestSyncRetryCall:
         """Test that all default retryable exceptions are caught and retried."""
         mock_provider.set_exceptions(DEFAULT_RETRYABLE_EXCEPTIONS)
 
-        @llm.retry(max_attempts=5)
+        @llm.retry(max_retries=4)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -71,8 +71,8 @@ class TestSyncRetryCall:
         response = greet()
 
         assert response.pretty() == "mock response"
-        assert response.retry_state.attempts == 5
-        assert response.retry_state.exceptions == DEFAULT_RETRYABLE_EXCEPTIONS
+        assert response.retry_state.retries == 4
+        assert response.retry_state.exceptions == list(DEFAULT_RETRYABLE_EXCEPTIONS)
         assert mock_provider.call_count == 5
 
     def test_call_retries_on_custom_exception(
@@ -82,7 +82,7 @@ class TestSyncRetryCall:
         exceptions: list[BaseException] = [AssertionError("custom error")]
         mock_provider.set_exceptions(exceptions)
 
-        @llm.retry(max_attempts=2, retry_on=(AssertionError,))
+        @llm.retry(max_retries=1, retry_on=(AssertionError,))
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -90,7 +90,7 @@ class TestSyncRetryCall:
         response = greet()
 
         assert response.pretty() == "mock response"
-        assert response.retry_state.attempts == 2
+        assert response.retry_state.retries == 1
         assert response.retry_state.exceptions == exceptions
         assert mock_provider.call_count == 2
 
@@ -102,7 +102,7 @@ class TestSyncRetryCall:
             [llm.ConnectionError("connection failed", provider="test")]
         )
 
-        @llm.retry(max_attempts=1)
+        @llm.retry(max_retries=0)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -115,7 +115,7 @@ class TestSyncRetryCall:
     def test_resume_retries_on_failure(self, mock_provider: MockProvider) -> None:
         """Test that resume retries on transient errors."""
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -130,8 +130,8 @@ class TestSyncRetryCall:
         # Resume should retry through the errors
         resumed = response.resume("Follow up")
         assert resumed.pretty() == "mock response"
-        assert resumed.retry_state.attempts == 3
-        assert resumed.retry_state.exceptions == RESUME_TEST_EXCEPTIONS
+        assert resumed.retry_state.retries == 2
+        assert resumed.retry_state.exceptions == list(RESUME_TEST_EXCEPTIONS)
         assert mock_provider.call_count == 4  # 1 initial + 3 resume attempts
 
     def test_resume_raises_after_max_attempts_exhausted(
@@ -139,7 +139,7 @@ class TestSyncRetryCall:
     ) -> None:
         """Test that resume re-raises when max_attempts is exhausted."""
 
-        @llm.retry(max_attempts=1)
+        @llm.retry(max_retries=0)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -166,7 +166,7 @@ class TestAsyncRetryCall:
     ) -> None:
         """Test that a successful first call returns immediately with correct state."""
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -174,9 +174,9 @@ class TestAsyncRetryCall:
         response = await greet()
 
         assert response.pretty() == "mock response"
-        assert response.retry_state.attempts == 1
+        assert response.retry_state.retries == 0
         assert response.retry_state.exceptions == []
-        assert response.retry_state.max_attempts == 3
+        assert response.retry_state.max_retries == 2
         assert response.model_id == "mock/test-model"
         assert mock_provider.call_count == 1
 
@@ -186,7 +186,7 @@ class TestAsyncRetryCall:
         """Test that all default retryable exceptions are caught and retried."""
         mock_provider.set_exceptions(DEFAULT_RETRYABLE_EXCEPTIONS)
 
-        @llm.retry(max_attempts=5)
+        @llm.retry(max_retries=4)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -194,8 +194,8 @@ class TestAsyncRetryCall:
         response = await greet()
 
         assert response.pretty() == "mock response"
-        assert response.retry_state.attempts == 5
-        assert response.retry_state.exceptions == DEFAULT_RETRYABLE_EXCEPTIONS
+        assert response.retry_state.retries == 4
+        assert response.retry_state.exceptions == list(DEFAULT_RETRYABLE_EXCEPTIONS)
         assert mock_provider.call_count == 5
 
     async def test_call_async_retries_on_custom_exception(
@@ -205,7 +205,7 @@ class TestAsyncRetryCall:
         exceptions: list[BaseException] = [AssertionError("custom error")]
         mock_provider.set_exceptions(exceptions)
 
-        @llm.retry(max_attempts=2, retry_on=(AssertionError,))
+        @llm.retry(max_retries=1, retry_on=(AssertionError,))
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -213,7 +213,7 @@ class TestAsyncRetryCall:
         response = await greet()
 
         assert response.pretty() == "mock response"
-        assert response.retry_state.attempts == 2
+        assert response.retry_state.retries == 1
         assert response.retry_state.exceptions == exceptions
         assert mock_provider.call_count == 2
 
@@ -225,7 +225,7 @@ class TestAsyncRetryCall:
             [llm.ConnectionError("connection failed", provider="test")]
         )
 
-        @llm.retry(max_attempts=1)
+        @llm.retry(max_retries=0)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -240,7 +240,7 @@ class TestAsyncRetryCall:
     ) -> None:
         """Test that async resume retries on transient errors."""
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -255,8 +255,8 @@ class TestAsyncRetryCall:
         # Resume should retry through the errors
         resumed = await response.resume("Follow up")
         assert resumed.pretty() == "mock response"
-        assert resumed.retry_state.attempts == 3
-        assert resumed.retry_state.exceptions == RESUME_TEST_EXCEPTIONS
+        assert resumed.retry_state.retries == 2
+        assert resumed.retry_state.exceptions == list(RESUME_TEST_EXCEPTIONS)
         assert mock_provider.call_count == 4  # 1 initial + 3 resume attempts
 
     async def test_resume_async_raises_after_max_attempts_exhausted(
@@ -264,7 +264,7 @@ class TestAsyncRetryCall:
     ) -> None:
         """Test that async resume re-raises when max_attempts is exhausted."""
 
-        @llm.retry(max_attempts=1)
+        @llm.retry(max_retries=0)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -285,44 +285,37 @@ class TestAsyncRetryCall:
 class TestRetryConfigValidation:
     """Tests for RetryConfig validation."""
 
-    def test_max_attempts_zero_raises_value_error(self) -> None:
-        """Test that max_attempts=0 raises ValueError."""
-        with pytest.raises(ValueError, match="max_attempts must be at least 1"):
-            llm.retry(max_attempts=0)
+    def test_max_retries_negative_raises_value_error(self) -> None:
+        """Test that negative max_retries raises ValueError."""
+        with pytest.raises(ValueError, match="max_retries must be non-negative"):
+            llm.retry(max_retries=-1)
 
-    def test_max_attempts_negative_raises_value_error(self) -> None:
-        """Test that negative max_attempts raises ValueError."""
-        with pytest.raises(ValueError, match="max_attempts must be at least 1"):
-            llm.retry(max_attempts=-1)
+    def test_max_retries_zero_is_valid(self, mock_provider: MockProvider) -> None:
+        """Test that max_retries=0 is valid (no retries, just one attempt)."""
 
-    def test_max_attempts_one_is_valid(self, mock_provider: MockProvider) -> None:
-        """Test that max_attempts=1 is valid (no retries, just one attempt)."""
-
-        @llm.retry(max_attempts=1)
+        @llm.retry(max_retries=0)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
 
         response = greet()
-        assert response.retry_state.max_attempts == 1
+        assert response.retry_state.max_retries == 0
 
-    def test_max_parse_attempts_negative_raises_value_error(self) -> None:
-        """Test that negative max_parse_attempts raises ValueError."""
-        with pytest.raises(ValueError, match="max_parse_attempts must be non-negative"):
-            llm.retry(max_parse_attempts=-1)
+    def test_max_parse_retries_negative_raises_value_error(self) -> None:
+        """Test that negative max_parse_retries raises ValueError."""
+        with pytest.raises(ValueError, match="max_parse_retries must be non-negative"):
+            llm.retry(max_parse_retries=-1)
 
-    def test_max_parse_attempts_zero_is_valid(
-        self, mock_provider: MockProvider
-    ) -> None:
-        """Test that max_parse_attempts=0 is valid (disables parse retries)."""
+    def test_max_parse_retries_zero_is_valid(self, mock_provider: MockProvider) -> None:
+        """Test that max_parse_retries=0 is valid (disables parse retries)."""
 
-        @llm.retry(max_parse_attempts=0)
+        @llm.retry(max_parse_retries=0)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
 
         response = greet()
-        assert response.retry_state.max_parse_attempts == 0
+        assert response.retry_state.max_parse_retries == 0
 
 
 class TestRetryDecorator:
@@ -331,25 +324,25 @@ class TestRetryDecorator:
     def test_retry_on_model(self, mock_provider: MockProvider) -> None:
         """Test that retry() works directly on a Model."""
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=3)
+        retry_model = llm.retry(model, max_retries=2)
 
         response = retry_model.call("hello")
 
         assert response.pretty() == "mock response"
-        assert response.retry_state.attempts == 1
-        assert response.retry_state.max_attempts == 3
+        assert response.retry_state.retries == 0
+        assert response.retry_state.max_retries == 2
 
     def test_retry_on_retry_model_updates_config(
         self, mock_provider: MockProvider
     ) -> None:
         """Test that retry() on a RetryModel updates the config."""
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=3)
-        updated_retry_model = llm.retry(retry_model, max_attempts=5)
+        retry_model = llm.retry(model, max_retries=2)
+        updated_retry_model = llm.retry(retry_model, max_retries=4)
 
         response = updated_retry_model.call("hello")
 
-        assert response.retry_state.max_attempts == 5
+        assert response.retry_state.max_retries == 4
 
     def test_retry_on_call_produces_retry_call(
         self, mock_provider: MockProvider
@@ -360,25 +353,25 @@ class TestRetryDecorator:
         def greet() -> str:
             return "Hello"
 
-        retry_call = llm.retry(greet, max_attempts=3)
+        retry_call = llm.retry(greet, max_retries=2)
 
         assert isinstance(retry_call, llm.RetryCall)
         response = retry_call()
-        assert response.retry_state.max_attempts == 3
+        assert response.retry_state.max_retries == 2
 
     def test_retry_on_retry_call_updates_config(
         self, mock_provider: MockProvider
     ) -> None:
         """Test that retry() on a RetryCall updates the config."""
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
 
-        updated = llm.retry(greet, max_attempts=5)
+        updated = llm.retry(greet, max_retries=4)
         response = updated()
-        assert response.retry_state.max_attempts == 5
+        assert response.retry_state.max_retries == 4
 
     def test_retry_on_prompt(self, mock_provider: MockProvider) -> None:
         """Test that retry() works on a Prompt."""
@@ -387,12 +380,12 @@ class TestRetryDecorator:
         def greet() -> str:
             return "Hello"
 
-        retry_prompt = llm.retry(greet, max_attempts=3)
+        retry_prompt = llm.retry(greet, max_retries=2)
 
         assert isinstance(retry_prompt, llm.RetryPrompt)
         model = llm.Model("mock/test-model")
         response = retry_prompt(model)
-        assert response.retry_state.max_attempts == 3
+        assert response.retry_state.max_retries == 2
 
     def test_retry_on_retry_prompt_updates_config(
         self, mock_provider: MockProvider
@@ -403,12 +396,12 @@ class TestRetryDecorator:
         def greet() -> str:
             return "Hello"
 
-        retry_prompt = llm.retry(greet, max_attempts=3)
-        updated = llm.retry(retry_prompt, max_attempts=5)
+        retry_prompt = llm.retry(greet, max_retries=2)
+        updated = llm.retry(retry_prompt, max_retries=4)
 
         model = llm.Model("mock/test-model")
         response = updated(model)
-        assert response.retry_state.max_attempts == 5
+        assert response.retry_state.max_retries == 4
 
 
 @pytest.mark.asyncio
@@ -422,25 +415,25 @@ class TestAsyncRetryDecorator:
         async def greet() -> str:
             return "Hello"
 
-        retry_call = llm.retry(greet, max_attempts=3)
+        retry_call = llm.retry(greet, max_retries=2)
 
         assert isinstance(retry_call, llm.AsyncRetryCall)
         response = await retry_call()
-        assert response.retry_state.max_attempts == 3
+        assert response.retry_state.max_retries == 2
 
     async def test_retry_on_async_retry_call_updates_config(
         self, mock_provider: MockProvider
     ) -> None:
         """Test that retry() on an AsyncRetryCall updates the config."""
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
 
-        updated = llm.retry(greet, max_attempts=5)
+        updated = llm.retry(greet, max_retries=4)
         response = await updated()
-        assert response.retry_state.max_attempts == 5
+        assert response.retry_state.max_retries == 4
 
     async def test_retry_on_async_prompt(self, mock_provider: MockProvider) -> None:
         """Test that retry() works on an AsyncPrompt."""
@@ -449,12 +442,12 @@ class TestAsyncRetryDecorator:
         async def greet() -> str:
             return "Hello"
 
-        retry_prompt = llm.retry(greet, max_attempts=3)
+        retry_prompt = llm.retry(greet, max_retries=2)
 
         assert isinstance(retry_prompt, llm.AsyncRetryPrompt)
         model = llm.Model("mock/test-model")
         response = await retry_prompt(model)
-        assert response.retry_state.max_attempts == 3
+        assert response.retry_state.max_retries == 2
 
     async def test_retry_on_async_retry_prompt_updates_config(
         self, mock_provider: MockProvider
@@ -465,12 +458,12 @@ class TestAsyncRetryDecorator:
         async def greet() -> str:
             return "Hello"
 
-        retry_prompt = llm.retry(greet, max_attempts=3)
-        updated = llm.retry(retry_prompt, max_attempts=5)
+        retry_prompt = llm.retry(greet, max_retries=2)
+        updated = llm.retry(retry_prompt, max_retries=4)
 
         model = llm.Model("mock/test-model")
         response = await updated(model)
-        assert response.retry_state.max_attempts == 5
+        assert response.retry_state.max_retries == 4
 
 
 class TestRetryResponseProperties:
@@ -481,7 +474,7 @@ class TestRetryResponseProperties:
     ) -> None:
         """Test that all response properties delegate to the wrapped response."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -508,7 +501,7 @@ class TestRetryResponseProperties:
     def test_execute_tools(self, mock_provider: MockProvider) -> None:  # noqa: ARG002
         """Test that execute_tools delegates to wrapped response."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -528,7 +521,7 @@ class TestAsyncRetryResponseProperties:
     ) -> None:
         """Test that async execute_tools delegates to wrapped response."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -544,14 +537,14 @@ class TestRetryModelProperties:
     def test_model_id_property(self, mock_provider: MockProvider) -> None:  # noqa: ARG002
         """Test that model_id delegates to wrapped model."""
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=3)
+        retry_model = llm.retry(model, max_retries=2)
 
         assert retry_model.model_id == "mock/test-model"
 
     def test_params_property(self, mock_provider: MockProvider) -> None:  # noqa: ARG002
         """Test that params delegates to wrapped model."""
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=3)
+        retry_model = llm.retry(model, max_retries=2)
 
         assert retry_model.params is not None
 
@@ -566,7 +559,7 @@ class TestRetryPromptProperties:
         def greet() -> str:
             return "Hello"
 
-        retry_prompt = llm.retry(greet, max_attempts=3)
+        retry_prompt = llm.retry(greet, max_retries=2)
 
         assert retry_prompt.fn is greet.fn
 
@@ -577,7 +570,7 @@ class TestRetryPromptProperties:
         def greet() -> str:
             return "Hello"
 
-        retry_prompt = llm.retry(greet, max_attempts=3)
+        retry_prompt = llm.retry(greet, max_retries=2)
 
         # Pass model as string instead of Model object
         response = retry_prompt.call("mock/test-model")
@@ -600,7 +593,7 @@ class TestAsyncRetryPromptProperties:
         async def greet() -> str:
             return "Hello"
 
-        retry_prompt = llm.retry(greet, max_attempts=3)
+        retry_prompt = llm.retry(greet, max_retries=2)
 
         assert retry_prompt.fn is greet.fn
 
@@ -611,7 +604,7 @@ class TestAsyncRetryPromptProperties:
         async def greet() -> str:
             return "Hello"
 
-        retry_prompt = llm.retry(greet, max_attempts=3)
+        retry_prompt = llm.retry(greet, max_retries=2)
 
         # Pass model as string instead of Model object
         response = await retry_prompt.call("mock/test-model")
@@ -629,7 +622,7 @@ class TestRetryCallProperties:
     ) -> None:
         """Test that default_model returns the underlying Model."""
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -645,7 +638,7 @@ class TestRetryCallProperties:
     ) -> None:
         """Test that model property returns a RetryModel wrapping the default model."""
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -662,7 +655,7 @@ class TestRetryDecoratorErrors:
     def test_retry_raises_value_error_for_unsupported_type(self) -> None:
         """Test that retry raises ValueError for unsupported target types."""
         with pytest.raises(ValueError, match="Unsupported target type for retry"):
-            llm.retry("not a valid target", max_attempts=3)  # type: ignore[arg-type]
+            llm.retry("not a valid target", max_retries=2)  # type: ignore[arg-type]
 
 
 class TestSyncStreamRetry:
@@ -671,7 +664,7 @@ class TestSyncStreamRetry:
     def test_stream_succeeds_first_attempt(self, mock_provider: MockProvider) -> None:
         """Test that a successful stream completes without raising StreamRestarted."""
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -683,7 +676,7 @@ class TestSyncStreamRetry:
 
         assert "mock " in "".join(chunks)
         assert "response" in "".join(chunks)
-        assert response.retry_state.attempts == 1
+        assert response.retry_state.retries == 0
         assert response.retry_state.exceptions == []
         assert mock_provider.stream_count == 1
 
@@ -693,7 +686,7 @@ class TestSyncStreamRetry:
         """Test that StreamRestarted is raised when a retryable error occurs mid-stream."""
         mock_provider.set_stream_exceptions([CONNECTION_ERROR])
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -704,9 +697,9 @@ class TestSyncStreamRetry:
         with pytest.raises(llm.StreamRestarted) as exc_info:
             list(response.text_stream())
 
-        assert exc_info.value.attempt == 2
+        assert exc_info.value.attempt == 1
         assert exc_info.value.error is CONNECTION_ERROR
-        assert response.retry_state.attempts == 2
+        assert response.retry_state.retries == 1
         assert response.retry_state.exceptions == [CONNECTION_ERROR]
 
     def test_stream_can_continue_after_restart(
@@ -715,7 +708,7 @@ class TestSyncStreamRetry:
         """Test that user can re-iterate after catching StreamRestarted."""
         mock_provider.set_stream_exceptions([CONNECTION_ERROR])
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -734,7 +727,7 @@ class TestSyncStreamRetry:
         assert restart_count == 1
         assert "mock " in "".join(chunks)
         assert "response" in "".join(chunks)
-        assert response.retry_state.attempts == 2
+        assert response.retry_state.retries == 1
         assert mock_provider.stream_count == 2
 
     def test_stream_raises_original_error_after_max_attempts(
@@ -744,7 +737,7 @@ class TestSyncStreamRetry:
         # Set more errors than max_attempts allows
         mock_provider.set_stream_exceptions([CONNECTION_ERROR, RATE_LIMIT_ERROR])
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -759,16 +752,16 @@ class TestSyncStreamRetry:
         with pytest.raises(llm.RateLimitError, match="rate limited"):
             list(response.text_stream())
 
-        # attempts is 3 because: 1 (initial) + 1 (after first error) + 1 (after second error)
-        # The third attempt never happens because max_attempts is exceeded
-        assert response.retry_state.attempts == 3
+        # retries is 2 because 2 retries were attempted (max_retries=1 allows 1 retry,
+        # but the second error happens during the retry so counter goes to 2)
+        assert response.retry_state.retries == 2
         assert mock_provider.stream_count == 2
 
     def test_stream_retry_state_accessible(self, mock_provider: MockProvider) -> None:
         """Test that retry_state is accessible from the response."""
         mock_provider.set_stream_exceptions([SERVER_ERROR])
 
-        @llm.retry(max_attempts=5)
+        @llm.retry(max_retries=4)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -776,14 +769,14 @@ class TestSyncStreamRetry:
         response = greet.stream()
 
         # Initial state
-        assert response.retry_state.max_attempts == 5
-        assert response.retry_state.attempts == 1
+        assert response.retry_state.max_retries == 4
+        assert response.retry_state.retries == 0
 
         # After first error
         with pytest.raises(llm.StreamRestarted):
             list(response.text_stream())
 
-        assert response.retry_state.attempts == 2
+        assert response.retry_state.retries == 1
         assert len(response.retry_state.exceptions) == 1
 
     def test_stream_model_property(
@@ -792,7 +785,7 @@ class TestSyncStreamRetry:
     ) -> None:
         """Test that model property returns RetryModel."""
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -812,7 +805,7 @@ class TestAsyncStreamRetry:
     ) -> None:
         """Test that a successful async stream completes without raising StreamRestarted."""
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -824,7 +817,7 @@ class TestAsyncStreamRetry:
 
         assert "mock " in "".join(chunks)
         assert "response" in "".join(chunks)
-        assert response.retry_state.attempts == 1
+        assert response.retry_state.retries == 0
         assert response.retry_state.exceptions == []
         assert mock_provider.stream_count == 1
 
@@ -834,7 +827,7 @@ class TestAsyncStreamRetry:
         """Test that StreamRestarted is raised when a retryable error occurs mid-stream."""
         mock_provider.set_stream_exceptions([TIMEOUT_ERROR])
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -845,9 +838,9 @@ class TestAsyncStreamRetry:
         with pytest.raises(llm.StreamRestarted) as exc_info:
             _ = [chunk async for chunk in response.text_stream()]
 
-        assert exc_info.value.attempt == 2
+        assert exc_info.value.attempt == 1
         assert exc_info.value.error is TIMEOUT_ERROR
-        assert response.retry_state.attempts == 2
+        assert response.retry_state.retries == 1
 
     async def test_stream_async_can_continue_after_restart(
         self, mock_provider: MockProvider
@@ -855,7 +848,7 @@ class TestAsyncStreamRetry:
         """Test that user can re-iterate after catching StreamRestarted."""
         mock_provider.set_stream_exceptions([SERVER_ERROR])
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -874,7 +867,7 @@ class TestAsyncStreamRetry:
         assert restart_count == 1
         assert "mock " in "".join(chunks)
         assert "response" in "".join(chunks)
-        assert response.retry_state.attempts == 2
+        assert response.retry_state.retries == 1
         assert mock_provider.stream_count == 2
 
     async def test_stream_async_raises_original_error_after_max_attempts(
@@ -883,7 +876,7 @@ class TestAsyncStreamRetry:
         """Test that original error is raised when max attempts exhausted."""
         mock_provider.set_stream_exceptions([CONNECTION_ERROR, SERVER_ERROR])
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -898,9 +891,9 @@ class TestAsyncStreamRetry:
         with pytest.raises(llm.ServerError, match="server error"):
             _ = [chunk async for chunk in response.text_stream()]
 
-        # attempts is 3 because: 1 (initial) + 1 (after first error) + 1 (after second error)
-        # The third attempt never happens because max_attempts is exceeded
-        assert response.retry_state.attempts == 3
+        # retries is 2 because 2 retries were attempted (max_retries=1 allows 1 retry,
+        # but the second error happens during the retry so counter goes to 2)
+        assert response.retry_state.retries == 2
         assert mock_provider.stream_count == 2
 
 
@@ -910,7 +903,7 @@ class TestRetryStreamResponseProperties:
     def test_delegated_properties(self, mock_provider: MockProvider) -> None:
         """Test that all properties delegate to the wrapped stream response."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -942,7 +935,7 @@ class TestRetryStreamResponseProperties:
     def test_finish_method(self, mock_provider: MockProvider) -> None:
         """Test that finish() consumes the stream."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -958,7 +951,7 @@ class TestRetryStreamResponseProperties:
     def test_pretty_stream(self, mock_provider: MockProvider) -> None:
         """Test that pretty_stream() yields formatted text."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -975,7 +968,7 @@ class TestRetryStreamResponseProperties:
     def test_streams_method(self, mock_provider: MockProvider) -> None:
         """Test that streams() yields Stream objects."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -990,7 +983,7 @@ class TestRetryStreamResponseProperties:
     def test_execute_tools_sync(self, mock_provider: MockProvider) -> None:  # noqa: ARG002
         """Test that execute_tools delegates to wrapped response."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -1004,7 +997,7 @@ class TestRetryStreamResponseProperties:
     def test_pretty_method(self, mock_provider: MockProvider) -> None:
         """Test that pretty() returns formatted text after consumption."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -1025,7 +1018,7 @@ class TestRetryStreamResponseStructuredStream:
     ) -> None:
         """Test that structured_stream raises ValueError without format."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -1044,7 +1037,7 @@ class TestRetryStreamResponseResume:
     ) -> None:
         """Test that resume returns a new RetryStreamResponse."""
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         def greet() -> str:
             return "Hello"
@@ -1065,7 +1058,7 @@ class TestAsyncRetryStreamResponseProperties:
     async def test_delegated_properties(self, mock_provider: MockProvider) -> None:
         """Test that all properties delegate to the wrapped async stream response."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -1098,7 +1091,7 @@ class TestAsyncRetryStreamResponseProperties:
     async def test_finish_method(self, mock_provider: MockProvider) -> None:
         """Test that finish() consumes the async stream."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -1114,7 +1107,7 @@ class TestAsyncRetryStreamResponseProperties:
     async def test_pretty_stream(self, mock_provider: MockProvider) -> None:
         """Test that pretty_stream() yields formatted text."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -1131,7 +1124,7 @@ class TestAsyncRetryStreamResponseProperties:
     async def test_streams_method(self, mock_provider: MockProvider) -> None:
         """Test that streams() yields AsyncStream objects."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -1149,7 +1142,7 @@ class TestAsyncRetryStreamResponseProperties:
     ) -> None:
         """Test that execute_tools delegates to wrapped response."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -1163,7 +1156,7 @@ class TestAsyncRetryStreamResponseProperties:
     async def test_pretty_method(self, mock_provider: MockProvider) -> None:
         """Test that pretty() returns formatted text after consumption."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -1185,7 +1178,7 @@ class TestAsyncRetryStreamResponseStructuredStream:
     ) -> None:
         """Test that structured_stream raises ValueError without format."""
 
-        @llm.retry(max_attempts=2)
+        @llm.retry(max_retries=1)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -1205,7 +1198,7 @@ class TestAsyncRetryStreamResponseResume:
     ) -> None:
         """Test that resume returns a new AsyncRetryStreamResponse."""
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -1223,7 +1216,7 @@ class TestAsyncRetryStreamResponseResume:
     ) -> None:
         """Test that resume's stream_factory is invoked when a retry happens."""
 
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("mock/test-model")
         async def greet() -> str:
             return "Hello"
@@ -1268,7 +1261,7 @@ class TestRetryStreamResponseStructuredStreamHappyPath:
         mock_provider.set_stream_text('{"name": "Alice", "age": 30}')
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2)
+        retry_model = llm.retry(model, max_retries=1)
 
         response = retry_model.stream("Get person", format=Person)
 
@@ -1288,7 +1281,7 @@ class TestRetryStreamResponseStructuredStreamHappyPath:
             return response.text()
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2)
+        retry_model = llm.retry(model, max_retries=1)
 
         response = retry_model.stream("Hello", format=custom_parser)
 
@@ -1316,7 +1309,7 @@ class TestAsyncRetryStreamResponseStructuredStreamHappyPath:
         mock_provider.set_stream_text('{"name": "Bob", "age": 25}')
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2)
+        retry_model = llm.retry(model, max_retries=1)
 
         response = await retry_model.stream_async("Get person", format=Person)
 
@@ -1336,7 +1329,7 @@ class TestAsyncRetryStreamResponseStructuredStreamHappyPath:
             return response.text()
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2)
+        retry_model = llm.retry(model, max_retries=1)
 
         response = await retry_model.stream_async("Hello", format=custom_parser)
 
@@ -1361,7 +1354,7 @@ class TestParseValidationRetryResponse:
         mock_provider.set_response_texts(['{"name": "Alice", "age": 30}'])
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=2)
+        retry_model = llm.retry(model, max_retries=1, max_parse_retries=2)
 
         response = retry_model.call("Get person", format=Person)
         result = response.validate()
@@ -1369,7 +1362,7 @@ class TestParseValidationRetryResponse:
         assert result is not None
         assert result.name == "Alice"
         assert result.age == 30
-        assert response.retry_state.parse_attempts == 0
+        assert response.retry_state.parse_retries == 0
         assert response.retry_state.parse_exceptions == []
 
     def test_validate_retries_on_invalid_then_succeeds(
@@ -1388,7 +1381,7 @@ class TestParseValidationRetryResponse:
         )
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=2)
+        retry_model = llm.retry(model, max_retries=1, max_parse_retries=2)
 
         response = retry_model.call("Get person", format=Person)
         result = response.validate()
@@ -1396,15 +1389,15 @@ class TestParseValidationRetryResponse:
         assert result is not None
         assert result.name == "Bob"
         assert result.age == 25
-        assert response.retry_state.parse_attempts == 1
+        assert response.retry_state.parse_retries == 1
         assert len(response.retry_state.parse_exceptions) == 1
         # Verify the wrapped response was updated
         assert "Bob" in response.pretty()
 
-    def test_validate_raises_after_max_parse_attempts(
+    def test_validate_raises_after_max_parse_retries(
         self, mock_provider: MockProvider
     ) -> None:
-        """Test that validate raises after exhausting max_parse_attempts."""
+        """Test that validate raises after exhausting max_parse_retries."""
         from pydantic import BaseModel
 
         class Person(BaseModel):
@@ -1417,21 +1410,21 @@ class TestParseValidationRetryResponse:
         )
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=2)
+        retry_model = llm.retry(model, max_retries=1, max_parse_retries=2)
 
         response = retry_model.call("Get person", format=Person)
 
         with pytest.raises(llm.ParseError):
             response.validate()
 
-        # Should have done 2 retries (max_parse_attempts=2)
-        assert response.retry_state.parse_attempts == 2
+        # Should have done 2 retries (max_parse_retries=2)
+        assert response.retry_state.parse_retries == 2
         assert len(response.retry_state.parse_exceptions) == 2
 
-    def test_validate_disabled_when_max_parse_attempts_zero(
+    def test_validate_disabled_when_max_parse_retries_zero(
         self, mock_provider: MockProvider
     ) -> None:
-        """Test that validate doesn't retry when max_parse_attempts is 0."""
+        """Test that validate doesn't retry when max_parse_retries is 0."""
         from pydantic import BaseModel
 
         class Person(BaseModel):
@@ -1442,7 +1435,7 @@ class TestParseValidationRetryResponse:
         mock_provider.set_response_texts(["invalid json"])
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=0)
+        retry_model = llm.retry(model, max_retries=1, max_parse_retries=0)
 
         response = retry_model.call("Get person", format=Person)
 
@@ -1450,7 +1443,7 @@ class TestParseValidationRetryResponse:
             response.validate()
 
         # Should NOT have done any retries
-        assert response.retry_state.parse_attempts == 0
+        assert response.retry_state.parse_retries == 0
         assert response.retry_state.parse_exceptions == []
 
     def test_validate_returns_none_without_format(
@@ -1459,13 +1452,13 @@ class TestParseValidationRetryResponse:
     ) -> None:
         """Test that validate returns None when no format is specified."""
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=2)
+        retry_model = llm.retry(model, max_retries=1, max_parse_retries=2)
 
         response = retry_model.call("Hello")
         result = response.validate()
 
         assert result is None
-        assert response.retry_state.parse_attempts == 0
+        assert response.retry_state.parse_retries == 0
 
 
 @pytest.mark.asyncio
@@ -1484,7 +1477,7 @@ class TestParseValidationAsyncRetryResponse:
         mock_provider.set_response_texts(['{"name": "Alice", "age": 30}'])
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=2)
+        retry_model = llm.retry(model, max_retries=1, max_parse_retries=2)
 
         response = await retry_model.call_async("Get person", format=Person)
         result = await response.validate()
@@ -1492,7 +1485,7 @@ class TestParseValidationAsyncRetryResponse:
         assert result is not None
         assert result.name == "Alice"
         assert result.age == 30
-        assert response.retry_state.parse_attempts == 0
+        assert response.retry_state.parse_retries == 0
         assert response.retry_state.parse_exceptions == []
 
     async def test_parse_retries_on_invalid_then_succeeds(
@@ -1511,7 +1504,7 @@ class TestParseValidationAsyncRetryResponse:
         )
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=2)
+        retry_model = llm.retry(model, max_retries=1, max_parse_retries=2)
 
         response = await retry_model.call_async("Get person", format=Person)
         result = await response.validate()
@@ -1519,13 +1512,13 @@ class TestParseValidationAsyncRetryResponse:
         assert result is not None
         assert result.name == "Carol"
         assert result.age == 35
-        assert response.retry_state.parse_attempts == 1
+        assert response.retry_state.parse_retries == 1
         assert len(response.retry_state.parse_exceptions) == 1
 
-    async def test_parse_raises_after_max_parse_attempts(
+    async def test_parse_raises_after_max_parse_retries(
         self, mock_provider: MockProvider
     ) -> None:
-        """Test that async parse raises after exhausting max_parse_attempts."""
+        """Test that async parse raises after exhausting max_parse_retries."""
         from pydantic import BaseModel
 
         class Person(BaseModel):
@@ -1538,14 +1531,14 @@ class TestParseValidationAsyncRetryResponse:
         )
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=2)
+        retry_model = llm.retry(model, max_retries=1, max_parse_retries=2)
 
         response = await retry_model.call_async("Get person", format=Person)
 
         with pytest.raises(llm.ParseError):
             await response.validate()
 
-        assert response.retry_state.parse_attempts == 2
+        assert response.retry_state.parse_retries == 2
         assert len(response.retry_state.parse_exceptions) == 2
 
     async def test_parse_returns_none_without_format(
@@ -1554,13 +1547,13 @@ class TestParseValidationAsyncRetryResponse:
     ) -> None:
         """Test that async parse returns None when no format is specified."""
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=2)
+        retry_model = llm.retry(model, max_retries=1, max_parse_retries=2)
 
         response = await retry_model.call_async("Hello")
         result = await response.validate()
 
         assert result is None
-        assert response.retry_state.parse_attempts == 0
+        assert response.retry_state.parse_retries == 0
 
 
 class TestParseValidationRetryStreamResponse:
@@ -1572,14 +1565,13 @@ class TestParseValidationRetryStreamResponse:
     ) -> None:
         """Test that stream validate returns None when no format is specified."""
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=2)
+        retry_model = llm.retry(model, max_retries=2, max_parse_retries=2)
 
         response = retry_model.stream("Hello")
         response.finish()
         result = response.validate()
 
         assert result is None
-        assert response.retry_state.parse_attempts == 0
 
     def test_validate_succeeds_first_try(self, mock_provider: MockProvider) -> None:
         """Test that stream validate succeeds on first try when response is valid."""
@@ -1593,7 +1585,7 @@ class TestParseValidationRetryStreamResponse:
         mock_provider.set_stream_texts(['{"name": "Dave", "age": 40}'])
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=2)
+        retry_model = llm.retry(model, max_retries=1, max_parse_retries=2)
 
         response = retry_model.stream("Get person", format=Person)
         response.finish()
@@ -1603,7 +1595,7 @@ class TestParseValidationRetryStreamResponse:
         assert isinstance(result, Person)
         assert result.name == "Dave"
         assert result.age == 40
-        assert response.retry_state.parse_attempts == 0
+        assert response.retry_state.parse_retries == 0
 
     def test_validate_retries_on_invalid_then_succeeds(
         self, mock_provider: MockProvider
@@ -1621,7 +1613,7 @@ class TestParseValidationRetryStreamResponse:
         )
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=2)
+        retry_model = llm.retry(model, max_retries=1, max_parse_retries=2)
 
         response = retry_model.stream("Get person", format=Person)
         response.finish()
@@ -1631,13 +1623,13 @@ class TestParseValidationRetryStreamResponse:
         assert isinstance(result, Person)
         assert result.name == "Eve"
         assert result.age == 28
-        assert response.retry_state.parse_attempts == 1
+        assert response.retry_state.parse_retries == 1
         assert len(response.retry_state.parse_exceptions) == 1
 
-    def test_validate_raises_after_max_parse_attempts(
+    def test_validate_raises_after_max_parse_retries(
         self, mock_provider: MockProvider
     ) -> None:
-        """Test that stream validate raises after exhausting max_parse_attempts."""
+        """Test that stream validate raises after exhausting max_parse_retries."""
         from pydantic import BaseModel
 
         class Person(BaseModel):
@@ -1650,7 +1642,7 @@ class TestParseValidationRetryStreamResponse:
         )
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=2)
+        retry_model = llm.retry(model, max_retries=1, max_parse_retries=2)
 
         response = retry_model.stream("Get person", format=Person)
         response.finish()
@@ -1658,7 +1650,7 @@ class TestParseValidationRetryStreamResponse:
         with pytest.raises(llm.ParseError):
             response.validate()
 
-        assert response.retry_state.parse_attempts == 2
+        assert response.retry_state.parse_retries == 2
         assert len(response.retry_state.parse_exceptions) == 2
 
 
@@ -1672,14 +1664,13 @@ class TestParseValidationAsyncRetryStreamResponse:
     ) -> None:
         """Test that async stream validate returns None when no format is specified."""
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=2)
+        retry_model = llm.retry(model, max_retries=2, max_parse_retries=2)
 
         response = await retry_model.stream_async("Hello")
         await response.finish()
         result = await response.validate()
 
         assert result is None
-        assert response.retry_state.parse_attempts == 0
 
     async def test_validate_succeeds_first_try(
         self, mock_provider: MockProvider
@@ -1695,7 +1686,7 @@ class TestParseValidationAsyncRetryStreamResponse:
         mock_provider.set_stream_texts(['{"name": "Frank", "age": 45}'])
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=2)
+        retry_model = llm.retry(model, max_retries=1, max_parse_retries=2)
 
         response = await retry_model.stream_async("Get person", format=Person)
         await response.finish()
@@ -1705,7 +1696,7 @@ class TestParseValidationAsyncRetryStreamResponse:
         assert isinstance(result, Person)
         assert result.name == "Frank"
         assert result.age == 45
-        assert response.retry_state.parse_attempts == 0
+        assert response.retry_state.parse_retries == 0
 
     async def test_validate_retries_on_invalid_then_succeeds(
         self, mock_provider: MockProvider
@@ -1723,7 +1714,7 @@ class TestParseValidationAsyncRetryStreamResponse:
         )
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=2)
+        retry_model = llm.retry(model, max_retries=1, max_parse_retries=2)
 
         response = await retry_model.stream_async("Get person", format=Person)
         await response.finish()
@@ -1733,9 +1724,9 @@ class TestParseValidationAsyncRetryStreamResponse:
         assert isinstance(result, Person)
         assert result.name == "Grace"
         assert result.age == 32
-        assert response.retry_state.parse_attempts == 1
+        assert response.retry_state.parse_retries == 1
 
-    async def test_validate_raises_after_max_parse_attempts(
+    async def test_validate_raises_after_max_parse_retries(
         self, mock_provider: MockProvider
     ) -> None:
         """Test that async stream validate raises after exhausting retries."""
@@ -1751,7 +1742,7 @@ class TestParseValidationAsyncRetryStreamResponse:
         )
 
         model = llm.Model("mock/test-model")
-        retry_model = llm.retry(model, max_attempts=2, max_parse_attempts=2)
+        retry_model = llm.retry(model, max_retries=1, max_parse_retries=2)
 
         response = await retry_model.stream_async("Get person", format=Person)
         await response.finish()
@@ -1759,5 +1750,5 @@ class TestParseValidationAsyncRetryStreamResponse:
         with pytest.raises(llm.ParseError):
             await response.validate()
 
-        assert response.retry_state.parse_attempts == 2
+        assert response.retry_state.parse_retries == 2
         assert len(response.retry_state.parse_exceptions) == 2

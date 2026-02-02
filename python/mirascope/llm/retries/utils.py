@@ -4,7 +4,7 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from typing import TypeVar
 
-from .retry_config import DEFAULT_MAX_PARSE_ATTEMPTS, RetryConfig
+from .retry_config import DEFAULT_MAX_PARSE_RETRIES, RetryConfig
 
 _ResultT = TypeVar("_ResultT")
 
@@ -21,22 +21,22 @@ class RetryState:
     results of the retry process.
 
     Attributes:
-        max_attempts: The maximum attempts that were configured.
+        max_retries: The maximum retries that were configured.
         retry_on: The exception types that triggered retries.
-        attempts: The number of attempts made (1 = succeeded on first try).
+        retries: The number of retries made (0 = succeeded on first try).
         exceptions: The list of exceptions caught during failed attempts.
-        max_parse_attempts: The maximum parse validation attempts configured.
-        parse_attempts: The number of parse validation retries made
+        max_parse_retries: The maximum parse validation retries configured.
+        parse_retries: The number of parse validation retries made
             (0 = succeeded on first try or validation disabled).
         parse_exceptions: The list of ParseErrors caught during validation retries.
     """
 
-    max_attempts: int
+    max_retries: int
     retry_on: tuple[type[BaseException], ...]
-    attempts: int = 1
+    retries: int = 0
     exceptions: list[BaseException] = field(default_factory=_empty_exception_list)
-    max_parse_attempts: int = DEFAULT_MAX_PARSE_ATTEMPTS
-    parse_attempts: int = 0
+    max_parse_retries: int = DEFAULT_MAX_PARSE_RETRIES
+    parse_retries: int = 0
     parse_exceptions: list[BaseException] = field(default_factory=_empty_exception_list)
 
 
@@ -57,19 +57,18 @@ def with_retry(
         Exception: The last exception encountered if all retry attempts fail.
     """
     state = RetryState(
-        max_attempts=config.max_attempts,
+        max_retries=config.max_retries,
         retry_on=config.retry_on,
-        max_parse_attempts=config.max_parse_attempts,
+        max_parse_retries=config.max_parse_retries,
     )
-    for attempt in range(1, config.max_attempts + 1):
+    for retry in range(config.max_retries + 1):
         try:
             result = fn()
-            state.attempts = attempt
             return result, state
         except config.retry_on as e:
             state.exceptions.append(e)
-            if attempt == config.max_attempts:
-                state.attempts = attempt
+            state.retries += 1
+            if retry == config.max_retries:
                 raise
     raise AssertionError("Unreachable")  # pragma: no cover
 
@@ -91,18 +90,17 @@ async def with_retry_async(
         Exception: The last exception encountered if all retry attempts fail.
     """
     state = RetryState(
-        max_attempts=config.max_attempts,
+        max_retries=config.max_retries,
         retry_on=config.retry_on,
-        max_parse_attempts=config.max_parse_attempts,
+        max_parse_retries=config.max_parse_retries,
     )
-    for attempt in range(1, config.max_attempts + 1):
+    for retry in range(config.max_retries + 1):
         try:
             result = await fn()
-            state.attempts = attempt
             return result, state
         except config.retry_on as e:
             state.exceptions.append(e)
-            if attempt == config.max_attempts:
-                state.attempts = attempt
+            state.retries += 1
+            if retry == config.max_retries:
                 raise
     raise AssertionError("Unreachable")  # pragma: no cover

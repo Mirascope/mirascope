@@ -241,13 +241,13 @@ def retry(
 
     1. Direct wrapping:
         ```python
-        retry_model = llm.retry(model, max_attempts=3)
-        retry_call = llm.retry(my_call, max_attempts=3)
+        retry_model = llm.retry(model, max_retries=2)
+        retry_call = llm.retry(my_call, max_retries=2)
         ```
 
     2. As a decorator:
         ```python
-        @llm.retry(max_attempts=3)
+        @llm.retry(max_retries=2)
         @llm.call("openai/gpt-4")
         def my_call() -> str:
             return "Hello"

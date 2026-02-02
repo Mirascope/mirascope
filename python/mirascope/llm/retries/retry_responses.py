@@ -51,7 +51,7 @@ class RetryResponse(Response[FormattableT]):
     def validate(self) -> FormattableT | None:
         """Parse and validate the response, automatically retrying on ParseError.
 
-        When `max_parse_attempts` is set in the retry config, this method will
+        When `max_parse_retries` is set in the retry config, this method will
         automatically retry on ParseError by calling `resume(error.retry_message())`
         to ask the LLM to fix its output.
 
@@ -67,17 +67,16 @@ class RetryResponse(Response[FormattableT]):
         if self.format is None:
             return None
 
-        max_parse_attempts = self.retry_config.max_parse_attempts
+        max_parse_retries = self.retry_config.max_parse_retries
 
-        # +1 because max_parse_attempts is the number of retries, not total attempts
-        for attempt in range(max_parse_attempts + 1):
+        for retry in range(max_parse_retries + 1):
             try:
                 return self.parse()
             except ParseError as e:
-                if attempt == max_parse_attempts:
-                    raise  # Exhausted all attempts
+                if retry == max_parse_retries:
+                    raise  # Exhausted all retries
 
-                self.retry_state.parse_attempts += 1
+                self.retry_state.parse_retries += 1
                 self.retry_state.parse_exceptions.append(e)
 
                 # Get new response via resume with the retry message
@@ -160,7 +159,7 @@ class AsyncRetryResponse(AsyncResponse[FormattableT]):
     async def validate(self) -> FormattableT | None:
         """Parse and validate the response, automatically retrying on ParseError.
 
-        When `max_parse_attempts` is set in the retry config, this method will
+        When `max_parse_retries` is set in the retry config, this method will
         automatically retry on ParseError by calling `resume(error.retry_message())`
         to ask the LLM to fix its output.
 
@@ -179,17 +178,16 @@ class AsyncRetryResponse(AsyncResponse[FormattableT]):
         if self.format is None:
             return None
 
-        max_parse_attempts = self.retry_config.max_parse_attempts
+        max_parse_retries = self.retry_config.max_parse_retries
 
-        # +1 because max_parse_attempts is the number of retries, not total attempts
-        for attempt in range(max_parse_attempts + 1):
+        for retry in range(max_parse_retries + 1):
             try:
                 return self.parse()
             except ParseError as e:
-                if attempt == max_parse_attempts:
-                    raise  # Exhausted all attempts
+                if retry == max_parse_retries:
+                    raise  # Exhausted all retries
 
-                self.retry_state.parse_attempts += 1
+                self.retry_state.parse_retries += 1
                 self.retry_state.parse_exceptions.append(e)
 
                 # Get new response via resume with the retry message

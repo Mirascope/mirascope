@@ -73,11 +73,11 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
         self._stream_factory = stream_factory
 
         self.retry_state = RetryState(
-            max_attempts=retry_config.max_attempts,
+            max_retries=retry_config.max_retries,
             retry_on=retry_config.retry_on,
-            attempts=1,
+            retries=0,
             exceptions=[],
-            max_parse_attempts=retry_config.max_parse_attempts,
+            max_parse_retries=retry_config.max_parse_retries,
         )
 
     @property
@@ -104,28 +104,28 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
 
         Raises:
             StreamRestarted: When the stream is reset for a retry attempt.
-            Exception: The underlying error if max attempts are exhausted.
+            Exception: The underlying error if max retries are exhausted.
         """
         try:
             yield from super().chunk_stream()
         except self.retry_config.retry_on as e:
             self.retry_state.exceptions.append(e)
-            self.retry_state.attempts += 1
+            self.retry_state.retries += 1
 
-            if self.retry_state.attempts > self.retry_config.max_attempts:
+            if self.retry_state.retries > self.retry_config.max_retries:
                 raise
 
             self._reset_stream()
 
             raise StreamRestarted(
-                attempt=self.retry_state.attempts,
+                attempt=self.retry_state.retries,
                 error=e,
             ) from e
 
     def validate(self) -> FormattableT | None:
         """Parse and validate the response, automatically retrying on ParseError.
 
-        When `max_parse_attempts` is set in the retry config, this method will
+        When `max_parse_retries` is set in the retry config, this method will
         automatically retry on ParseError by calling `resume(error.retry_message())`
         to ask the LLM to fix its output. On retry, a new stream is created via
         `resume_stream()` and fully consumed before attempting to parse again.
@@ -138,22 +138,21 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
             The parsed output, or None if format is None.
 
         Raises:
-            ParseError: If parsing fails after exhausting all retry attempts.
+            ParseError: If parsing fails after exhausting all retries.
         """
         if self.format is None:
             return None
 
-        max_parse_attempts = self.retry_config.max_parse_attempts
+        max_parse_retries = self.retry_config.max_parse_retries
 
-        # +1 because max_parse_attempts is the number of retries, not total attempts
-        for attempt in range(max_parse_attempts + 1):
+        for retry in range(max_parse_retries + 1):
             try:
                 return self.parse()
             except ParseError as e:
-                if attempt == max_parse_attempts:
-                    raise  # Exhausted all attempts
+                if retry == max_parse_retries:
+                    raise  # Exhausted all retries
 
-                self.retry_state.parse_attempts += 1
+                self.retry_state.parse_retries += 1
                 self.retry_state.parse_exceptions.append(e)
 
                 # Resume returns a new stream - iterate it fully to get the response
@@ -240,11 +239,11 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
         self._stream_factory = stream_factory
 
         self.retry_state = RetryState(
-            max_attempts=retry_config.max_attempts,
+            max_retries=retry_config.max_retries,
             retry_on=retry_config.retry_on,
-            attempts=1,
+            retries=0,
             exceptions=[],
-            max_parse_attempts=retry_config.max_parse_attempts,
+            max_parse_retries=retry_config.max_parse_retries,
         )
 
     @property
@@ -271,29 +270,29 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
 
         Raises:
             StreamRestarted: When the stream is reset for a retry attempt.
-            Exception: The underlying error if max attempts are exhausted.
+            Exception: The underlying error if max retries are exhausted.
         """
         try:
             async for chunk in super().chunk_stream():
                 yield chunk
         except self.retry_config.retry_on as e:
             self.retry_state.exceptions.append(e)
-            self.retry_state.attempts += 1
+            self.retry_state.retries += 1
 
-            if self.retry_state.attempts > self.retry_config.max_attempts:
+            if self.retry_state.retries > self.retry_config.max_retries:
                 raise
 
             await self._reset_stream()
 
             raise StreamRestarted(
-                attempt=self.retry_state.attempts,
+                attempt=self.retry_state.retries,
                 error=e,
             ) from e
 
     async def validate(self) -> FormattableT | None:
         """Parse and validate the response, automatically retrying on ParseError.
 
-        When `max_parse_attempts` is set in the retry config, this method will
+        When `max_parse_retries` is set in the retry config, this method will
         automatically retry on ParseError by calling `resume(error.retry_message())`
         to ask the LLM to fix its output. On retry, a new stream is created via
         `resume_stream_async()` and fully consumed before attempting to parse again.
@@ -309,22 +308,21 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
             The parsed output, or None if format is None.
 
         Raises:
-            ParseError: If parsing fails after exhausting all retry attempts.
+            ParseError: If parsing fails after exhausting all retries.
         """
         if self.format is None:
             return None
 
-        max_parse_attempts = self.retry_config.max_parse_attempts
+        max_parse_retries = self.retry_config.max_parse_retries
 
-        # +1 because max_parse_attempts is the number of retries, not total attempts
-        for attempt in range(max_parse_attempts + 1):
+        for retry in range(max_parse_retries + 1):
             try:
                 return self.parse()
             except ParseError as e:
-                if attempt == max_parse_attempts:
-                    raise  # Exhausted all attempts
+                if retry == max_parse_retries:
+                    raise  # Exhausted all retries
 
-                self.retry_state.parse_attempts += 1
+                self.retry_state.parse_retries += 1
                 self.retry_state.parse_exceptions.append(e)
 
                 # Resume returns a new stream - iterate it fully to get the response
