@@ -5,9 +5,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 import {
-  instrumentLlm,
-  uninstrumentLlm,
-  isLlmInstrumented,
+  instrumentLLM,
+  uninstrumentLLM,
+  isLLMInstrumented,
   resetInstrumentationState,
 } from "./llm";
 import { unwrapAllModelMethods, isModelInstrumented } from "./model";
@@ -29,15 +29,15 @@ describe("LLM Instrumentation", () => {
 
   afterEach(() => {
     // Clean up after each test
-    uninstrumentLlm();
+    uninstrumentLLM();
   });
 
-  describe("instrumentLlm", () => {
+  describe("instrumentLLM", () => {
     it("throws error if configure() was not called", () => {
       vi.mocked(getTracer).mockReturnValue(null);
 
-      expect(() => instrumentLlm()).toThrow(
-        "You must call configure() before calling instrumentLlm()",
+      expect(() => instrumentLLM()).toThrow(
+        "You must call configure() before calling instrumentLLM()",
       );
     });
 
@@ -47,7 +47,7 @@ describe("LLM Instrumentation", () => {
 
       expect(isModelInstrumented()).toBe(false);
 
-      instrumentLlm();
+      instrumentLLM();
 
       expect(isModelInstrumented()).toBe(true);
     });
@@ -56,60 +56,60 @@ describe("LLM Instrumentation", () => {
       const mockTracer = {} as ReturnType<typeof getTracer>;
       vi.mocked(getTracer).mockReturnValue(mockTracer);
 
-      instrumentLlm();
-      instrumentLlm();
-      instrumentLlm();
+      instrumentLLM();
+      instrumentLLM();
+      instrumentLLM();
 
-      expect(isLlmInstrumented()).toBe(true);
+      expect(isLLMInstrumented()).toBe(true);
       // Should still be instrumented, not errored
     });
   });
 
-  describe("uninstrumentLlm", () => {
+  describe("uninstrumentLLM", () => {
     it("removes instrumentation", () => {
       const mockTracer = {} as ReturnType<typeof getTracer>;
       vi.mocked(getTracer).mockReturnValue(mockTracer);
 
-      instrumentLlm();
-      expect(isLlmInstrumented()).toBe(true);
+      instrumentLLM();
+      expect(isLLMInstrumented()).toBe(true);
 
-      uninstrumentLlm();
-      expect(isLlmInstrumented()).toBe(false);
+      uninstrumentLLM();
+      expect(isLLMInstrumented()).toBe(false);
     });
 
     it("is idempotent - calling when not instrumented is a no-op", () => {
-      expect(isLlmInstrumented()).toBe(false);
+      expect(isLLMInstrumented()).toBe(false);
 
-      uninstrumentLlm();
-      uninstrumentLlm();
+      uninstrumentLLM();
+      uninstrumentLLM();
 
-      expect(isLlmInstrumented()).toBe(false);
+      expect(isLLMInstrumented()).toBe(false);
       // Should not error
     });
   });
 
-  describe("isLlmInstrumented", () => {
+  describe("isLLMInstrumented", () => {
     it("returns false initially", () => {
-      expect(isLlmInstrumented()).toBe(false);
+      expect(isLLMInstrumented()).toBe(false);
     });
 
-    it("returns true after instrumentLlm()", () => {
+    it("returns true after instrumentLLM()", () => {
       const mockTracer = {} as ReturnType<typeof getTracer>;
       vi.mocked(getTracer).mockReturnValue(mockTracer);
 
-      instrumentLlm();
+      instrumentLLM();
 
-      expect(isLlmInstrumented()).toBe(true);
+      expect(isLLMInstrumented()).toBe(true);
     });
 
-    it("returns false after uninstrumentLlm()", () => {
+    it("returns false after uninstrumentLLM()", () => {
       const mockTracer = {} as ReturnType<typeof getTracer>;
       vi.mocked(getTracer).mockReturnValue(mockTracer);
 
-      instrumentLlm();
-      uninstrumentLlm();
+      instrumentLLM();
+      uninstrumentLLM();
 
-      expect(isLlmInstrumented()).toBe(false);
+      expect(isLLMInstrumented()).toBe(false);
     });
   });
 });

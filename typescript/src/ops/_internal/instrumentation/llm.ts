@@ -10,6 +10,11 @@ import {
   unwrapAllModelMethods,
   isModelInstrumented,
 } from "@/ops/_internal/instrumentation/model";
+import {
+  wrapAllResponseResumeMethods,
+  unwrapAllResponseResumeMethods,
+  isResponseResumeInstrumented,
+} from "@/ops/_internal/instrumentation/response";
 
 let _instrumented = false;
 
@@ -31,7 +36,7 @@ let _instrumented = false;
  * ops.configure({ apiKey: process.env.MIRASCOPE_API_KEY });
  *
  * // Enable LLM instrumentation
- * ops.instrumentLlm();
+ * ops.instrumentLLM();
  *
  * // Now all Model calls are automatically traced
  * const model = new Model('anthropic/claude-sonnet-4-20250514');
@@ -39,7 +44,7 @@ let _instrumented = false;
  * // ^ Creates a span with GenAI semantic conventions
  * ```
  */
-export function instrumentLlm(): void {
+export function instrumentLLM(): void {
   if (_instrumented) {
     return;
   }
@@ -47,12 +52,13 @@ export function instrumentLlm(): void {
   const tracer = getTracer();
   if (!tracer) {
     throw new Error(
-      "You must call configure() before calling instrumentLlm(). " +
+      "You must call configure() before calling instrumentLLM(). " +
         "The tracer has not been initialized.",
     );
   }
 
   wrapAllModelMethods();
+  wrapAllResponseResumeMethods();
   _instrumented = true;
 }
 
@@ -66,44 +72,47 @@ export function instrumentLlm(): void {
  * import { ops } from 'mirascope';
  *
  * // Disable instrumentation
- * ops.uninstrumentLlm();
+ * ops.uninstrumentLLM();
  *
  * // Model calls are no longer traced
  * const response = await model.call('Hello!');
  * ```
  */
-export function uninstrumentLlm(): void {
+export function uninstrumentLLM(): void {
   if (!_instrumented) {
     return;
   }
 
   unwrapAllModelMethods();
+  unwrapAllResponseResumeMethods();
   _instrumented = false;
 }
 
 /**
  * Check if LLM instrumentation is currently enabled.
  *
- * @returns true if instrumentLlm() has been called and not yet uninstrumented
+ * @returns true if instrumentLLM() has been called and not yet uninstrumented
  *
  * @example
  * ```typescript
  * import { ops } from 'mirascope';
  *
- * console.log(ops.isLlmInstrumented()); // false
+ * console.log(ops.isLLMInstrumented()); // false
  *
  * ops.configure();
- * ops.instrumentLlm();
+ * ops.instrumentLLM();
  *
- * console.log(ops.isLlmInstrumented()); // true
+ * console.log(ops.isLLMInstrumented()); // true
  *
- * ops.uninstrumentLlm();
+ * ops.uninstrumentLLM();
  *
- * console.log(ops.isLlmInstrumented()); // false
+ * console.log(ops.isLLMInstrumented()); // false
  * ```
  */
-export function isLlmInstrumented(): boolean {
-  return _instrumented && isModelInstrumented();
+export function isLLMInstrumented(): boolean {
+  return (
+    _instrumented && isModelInstrumented() && isResponseResumeInstrumented()
+  );
 }
 
 /**

@@ -7,7 +7,7 @@
 
 import { context as otelContext, trace as otelTrace } from "@opentelemetry/api";
 
-import type { TraceOptions } from "@/ops/_internal/types";
+import type { BaseOpsOptions } from "@/ops/_internal/types";
 
 import { Span } from "@/ops/_internal/spans";
 import { createTrace, type Trace } from "@/ops/_internal/traced-functions";
@@ -41,7 +41,7 @@ export interface TracedCall<CallT> {
  */
 function createTracedCallSpan(
   callName: string,
-  options: TraceOptions,
+  options: BaseOpsOptions,
   vars: unknown,
 ): Span {
   const span = new Span(callName);
@@ -96,7 +96,7 @@ function createTracedCallSpan(
  */
 export function traceCall<CallT extends CallLike>(
   call: CallT,
-  options?: TraceOptions,
+  options?: BaseOpsOptions,
 ): TracedCall<CallT>;
 
 /**
@@ -106,12 +106,12 @@ export function traceCall<CallT extends CallLike>(
  * @returns A function that accepts the call to trace
  */
 export function traceCall(
-  options: TraceOptions,
+  options: BaseOpsOptions,
 ): <CallT extends CallLike>(call: CallT) => TracedCall<CallT>;
 
 export function traceCall<CallT extends CallLike>(
-  callOrOptions: CallT | TraceOptions,
-  maybeOptions?: TraceOptions,
+  callOrOptions: CallT | BaseOpsOptions,
+  maybeOptions?: BaseOpsOptions,
 ): TracedCall<CallT> | (<C extends CallLike>(call: C) => TracedCall<C>) {
   // Curried form
   if (!isCallLike(callOrOptions)) {

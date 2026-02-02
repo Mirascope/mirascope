@@ -7,9 +7,9 @@
 
 // Mirascope Model instrumentation
 export {
-  instrumentLlm,
-  uninstrumentLlm,
-  isLlmInstrumented,
+  instrumentLLM,
+  uninstrumentLLM,
+  isLLMInstrumented,
   resetInstrumentationState,
 } from "@/ops/_internal/instrumentation/llm";
 
@@ -65,3 +65,18 @@ export {
   unwrapAllModelMethods,
   isModelInstrumented,
 } from "@/ops/_internal/instrumentation/model";
+
+// Response wrappers (for Mirascope-specific resume instrumentation)
+export {
+  wrapResponseResume,
+  unwrapResponseResume,
+  wrapStreamResponseResume,
+  unwrapStreamResponseResume,
+  wrapContextResponseResume,
+  unwrapContextResponseResume,
+  wrapContextStreamResponseResume,
+  unwrapContextStreamResponseResume,
+  wrapAllResponseResumeMethods,
+  unwrapAllResponseResumeMethods,
+  isResponseResumeInstrumented,
+} from "@/ops/_internal/instrumentation/response";

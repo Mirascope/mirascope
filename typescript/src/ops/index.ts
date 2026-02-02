@@ -88,9 +88,9 @@ export { MirascopeOTLPExporter } from "@/ops/_internal/exporters";
 
 // LLM Instrumentation (Mirascope Model class)
 export {
-  instrumentLlm,
-  uninstrumentLlm,
-  isLlmInstrumented,
+  instrumentLLM,
+  uninstrumentLLM,
+  isLLMInstrumented,
 } from "@/ops/_internal/instrumentation";
 
 // Provider SDK Instrumentation

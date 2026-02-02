@@ -69,16 +69,19 @@ export function getQualifiedName(fn: NamedCallable): string {
 /**
  * Extract argument types and values from a function call.
  *
+ * Returns dictionaries mapping parameter names to their types and values,
+ * matching the Python implementation format for Mirascope Cloud display.
+ *
  * @param fn - The function being called.
  * @param args - The arguments passed to the function.
- * @returns Object containing argument types and values.
+ * @returns Object containing argument types and values as dictionaries.
  */
 export function extractArguments(
   fn: NamedCallable,
   args: unknown[],
-): { argTypes: string[]; argValues: Jsonable[] } {
-  const argTypes: string[] = [];
-  const argValues: Jsonable[] = [];
+): { argTypes: Record<string, string>; argValues: Record<string, Jsonable> } {
+  const argTypes: Record<string, string> = {};
+  const argValues: Record<string, Jsonable> = {};
 
   // Try to extract parameter names from function signature
   const fnStr = fn.toString();
@@ -105,8 +108,8 @@ export function extractArguments(
 
     // Use parameter name if available, otherwise use index
     const paramName = paramNames[i] ?? `arg${i}`;
-    argTypes.push(`${paramName}: ${argType}`);
-    argValues.push(toJsonable(arg));
+    argTypes[paramName] = argType;
+    argValues[paramName] = toJsonable(arg);
   }
 
   return { argTypes, argValues };

@@ -4,12 +4,14 @@
 
 import {
   trace,
+  trace as otelTrace,
   context as otelContext,
   SpanStatusCode,
   type Span as OtelSpan,
   type SpanContext,
 } from "@opentelemetry/api";
 
+import { getTracer } from "@/ops/_internal/configuration";
 import { currentSession } from "@/ops/_internal/session";
 import { jsonStringify } from "@/ops/_internal/utils";
 
@@ -61,7 +63,8 @@ export class Span {
    * @returns This span instance for chaining.
    */
   start(): this {
-    const tracer = trace.getTracer("mirascope.ops");
+    // Use configured tracer if available, otherwise fall back to global tracer
+    const tracer = getTracer() ?? trace.getTracer("mirascope.ops");
     this._span = tracer.startSpan(this._name, undefined, otelContext.active());
 
     // Check if this is a noop span (no tracer configured)
@@ -305,18 +308,32 @@ export async function span<T>(
   attributes?: Record<string, unknown>,
 ): Promise<T> {
   const s = new Span(name, attributes).start();
-  try {
-    return await fn(s);
-  } catch (error) {
-    if (error instanceof Error) {
-      s.recordException(error);
-    } else {
-      s.error(String(error));
+  const otelSpan = s.otelSpan;
+
+  async function execute(): Promise<T> {
+    try {
+      return await fn(s);
+    } catch (error) {
+      if (error instanceof Error) {
+        s.recordException(error);
+      } else {
+        s.error(String(error));
+      }
+      throw error;
+      /* v8 ignore start - finally is always executed, v8 branch tracking artifact */
+    } finally {
+      /* v8 ignore end */
+      s.finish();
     }
-    throw error;
-    /* v8 ignore start - finally is always executed, v8 branch tracking artifact */
-  } finally {
-    /* v8 ignore end */
-    s.finish();
   }
+
+  // Run within the span's context so child spans are properly linked
+  /* v8 ignore start - ternary branch with no-tracer case difficult to test */
+  return otelSpan
+    ? otelContext.with(
+        otelTrace.setSpan(otelContext.active(), otelSpan),
+        execute,
+      )
+    : execute();
+  /* v8 ignore end */
 }

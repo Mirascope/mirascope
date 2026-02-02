@@ -108,15 +108,15 @@ describe("utils", () => {
   });
 
   describe("extractArguments()", () => {
-    it("should extract argument types and values", () => {
+    it("should extract argument types and values as dictionaries", () => {
       function testFn(a: string, b: number) {
         return a + b;
       }
 
       const result = extractArguments(testFn, ["hello", 42]);
 
-      expect(result.argTypes).toEqual(["a: string", "b: number"]);
-      expect(result.argValues).toEqual(["hello", 42]);
+      expect(result.argTypes).toEqual({ a: "string", b: "number" });
+      expect(result.argValues).toEqual({ a: "hello", b: 42 });
     });
 
     it("should handle arrow functions", () => {
@@ -124,8 +124,8 @@ describe("utils", () => {
 
       const result = extractArguments(fn, ["test"]);
 
-      expect(result.argTypes).toEqual(["x: string"]);
-      expect(result.argValues).toEqual(["test"]);
+      expect(result.argTypes).toEqual({ x: "string" });
+      expect(result.argValues).toEqual({ x: "test" });
     });
 
     it("should handle functions with no parameters", () => {
@@ -133,8 +133,8 @@ describe("utils", () => {
 
       const result = extractArguments(fn, []);
 
-      expect(result.argTypes).toEqual([]);
-      expect(result.argValues).toEqual([]);
+      expect(result.argTypes).toEqual({});
+      expect(result.argValues).toEqual({});
     });
 
     it("should handle more args than params", () => {
@@ -142,8 +142,12 @@ describe("utils", () => {
 
       const result = extractArguments(fn, ["one", "two", "three"]);
 
-      expect(result.argTypes.length).toBe(3);
-      expect(result.argValues).toEqual(["one", "two", "three"]);
+      expect(Object.keys(result.argTypes).length).toBe(3);
+      expect(result.argValues).toEqual({
+        a: "one",
+        arg1: "two",
+        arg2: "three",
+      });
     });
 
     it("should convert object arguments to Jsonable", () => {
@@ -151,7 +155,7 @@ describe("utils", () => {
 
       const result = extractArguments(fn, [{ nested: { key: "value" } }]);
 
-      expect(result.argValues).toEqual([{ nested: { key: "value" } }]);
+      expect(result.argValues).toEqual({ obj: { nested: { key: "value" } } });
     });
 
     it("should handle array arguments", () => {
@@ -159,7 +163,7 @@ describe("utils", () => {
 
       const result = extractArguments(fn, [[1, 2, 3]]);
 
-      expect(result.argValues).toEqual([[1, 2, 3]]);
+      expect(result.argValues).toEqual({ arr: [1, 2, 3] });
     });
 
     it("should handle null and boolean arguments", () => {
@@ -167,7 +171,7 @@ describe("utils", () => {
 
       const result = extractArguments(fn, [null, true]);
 
-      expect(result.argValues).toEqual([null, true]);
+      expect(result.argValues).toEqual({ _a: null, _b: true });
     });
 
     it("should handle function with toString that has trailing comma", () => {
@@ -179,10 +183,10 @@ describe("utils", () => {
       const result = extractArguments(mockFn, ["x", "y", "z"]);
 
       // Should skip empty param and use fallback for third arg
-      expect(result.argValues).toEqual(["x", "y", "z"]);
-      expect(result.argTypes[0]).toBe("a: string");
-      expect(result.argTypes[1]).toBe("b: string");
-      expect(result.argTypes[2]).toBe("arg2: string"); // fallback name
+      expect(result.argValues).toEqual({ a: "x", b: "y", arg2: "z" });
+      expect(result.argTypes.a).toBe("string");
+      expect(result.argTypes.b).toBe("string");
+      expect(result.argTypes.arg2).toBe("string"); // fallback name
     });
   });
 });

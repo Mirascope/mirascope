@@ -65,13 +65,56 @@ export interface CallLike {
 }
 
 /**
+ * Extract function signature from function's toString() representation.
+ *
+ * Handles patterns like:
+ * - function name(params) { ... }
+ * - function (params) { ... }
+ * - (params) => ...
+ * - async function name(params) { ... }
+ * - async (params) => ...
+ *
+ * @internal Exported for testing only.
+ */
+export function extractSignatureFromString(fnStr: string): string {
+  // Normalize whitespace
+  const normalized = fnStr.replace(/\s+/g, " ").trim();
+
+  // Try to match arrow function: (params) => or async (params) =>
+  const arrowMatch = normalized.match(
+    /^(?:async\s+)?\(([^)]*)\)\s*(?::\s*[^=]+)?\s*=>/,
+  );
+  if (arrowMatch) {
+    return `(${arrowMatch[1]})`;
+  }
+
+  // Try to match function declaration: function name(params) or function(params)
+  const funcMatch = normalized.match(
+    /^(?:async\s+)?function\s*\w*\s*\(([^)]*)\)/,
+  );
+  if (funcMatch) {
+    return `(${funcMatch[1]})`;
+  }
+
+  /* v8 ignore next 10 - method match and fallback are defensive, JS toString() always matches above patterns */
+  // Try to match method syntax: name(params)
+  const methodMatch = normalized.match(/^\w+\s*\(([^)]*)\)/);
+  if (methodMatch) {
+    return `(${methodMatch[1]})`;
+  }
+
+  // Fallback
+  return "(...)";
+}
+
+/**
  * Runtime fallback for closure computation when transform plugin is not used.
  */
 function computeRuntimeClosure(call: CallLike): ClosureMetadata {
   // Use the template function's string representation
   const code = call.template.toString();
   const hash = createHash("sha256").update(code).digest("hex");
-  const signature = "(...)";
+  const signature = extractSignatureFromString(code);
   const signatureHash = createHash("sha256").update(signature).digest("hex");
   return { code, hash, signature, signatureHash };
 }

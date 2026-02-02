@@ -10,7 +10,7 @@ import type { Call } from "@/llm/calls";
 import type { AnyFormatInput } from "@/llm/formatting";
 import type { Response } from "@/llm/responses";
 
-import { versionCall } from "./versioned-calls";
+import { versionCall, extractSignatureFromString } from "./versioned-calls";
 
 // Mock the API client
 vi.mock("@/api/client", () => ({
@@ -426,6 +426,124 @@ describe("versioned-calls", () => {
       const versioned = versionCall(mockCall);
 
       expect(versioned.call).toBe(mockCall);
+    });
+  });
+
+  describe("extractSignatureFromString", () => {
+    it("should extract signature from arrow function", () => {
+      const fnStr = "({ name }) => `Hello ${name}`";
+      expect(extractSignatureFromString(fnStr)).toBe("({ name })");
+    });
+
+    it("should extract signature from async arrow function", () => {
+      const fnStr = "async ({ id }) => await fetch(id)";
+      expect(extractSignatureFromString(fnStr)).toBe("({ id })");
+    });
+
+    it("should extract signature from regular function declaration", () => {
+      const fnStr = "function myFunc(a, b) { return a + b; }";
+      expect(extractSignatureFromString(fnStr)).toBe("(a, b)");
+    });
+
+    it("should extract signature from anonymous function", () => {
+      const fnStr = "function (x) { return x * 2; }";
+      expect(extractSignatureFromString(fnStr)).toBe("(x)");
+    });
+
+    it("should extract signature from async function", () => {
+      const fnStr = "async function getData(url) { return fetch(url); }";
+      expect(extractSignatureFromString(fnStr)).toBe("(url)");
+    });
+
+    it("should handle arrow function with return type annotation", () => {
+      const fnStr = "({ x }: Props): string => x.toString()";
+      expect(extractSignatureFromString(fnStr)).toBe("({ x }: Props)");
+    });
+
+    it("should fall back to (...) for unrecognized patterns", () => {
+      const fnStr = "someWeirdThing";
+      expect(extractSignatureFromString(fnStr)).toBe("(...)");
+    });
+  });
+
+  describe("signature extraction", () => {
+    // Helper to create a mock Call with a custom template function
+    function createMockCallWithTemplate<T, F extends AnyFormatInput>(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      templateFn: (...args: any[]) => any,
+      name?: string,
+    ): Call<T, F> {
+      Object.defineProperty(templateFn, "name", {
+        value: name || "mockTemplate",
+        writable: false,
+        configurable: true,
+      });
+      const mockPrompt = {
+        template: templateFn,
+      };
+
+      const callFn = vi.fn().mockResolvedValue(createMockResponse("test"));
+      const call = Object.assign(callFn, {
+        call: callFn,
+        stream: vi
+          .fn()
+          .mockResolvedValue({ textStream: async function* () {} }),
+        prompt: mockPrompt,
+        template: mockPrompt.template,
+        model: {} as Call<T, F>["model"],
+        defaultModel: {} as Call<T, F>["defaultModel"],
+        tools: undefined,
+        format: undefined,
+      }) as unknown as Call<T, F>;
+
+      return call;
+    }
+
+    it("should extract signature from regular function with params", async () => {
+      // Use Function constructor to ensure we get a real function string representation
+      // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
+      const templateFn = new Function(
+        "query",
+        'return "Hello " + query',
+      ) as unknown as (query: string) => string;
+
+      const mockCall = createMockCallWithTemplate<{ query: string }, undefined>(
+        templateFn,
+        "template",
+      );
+
+      const versioned = versionCall(mockCall);
+
+      // The signature hash should be based on the actual signature, not "(...)"
+      expect(versioned.versionInfo.signatureHash).toBeTruthy();
+    });
+
+    it("should extract signature from arrow function", async () => {
+      const templateFn = ({ name }: { name: string }) => `Hello ${name}`;
+
+      const mockCall = createMockCallWithTemplate<{ name: string }, undefined>(
+        templateFn,
+        "template",
+      );
+
+      const versioned = versionCall(mockCall);
+
+      expect(versioned.versionInfo.signatureHash).toBeTruthy();
+    });
+
+    it("should extract signature from async function", async () => {
+      const templateFn = async function template({ id }: { id: number }) {
+        return `Item ${id}`;
+      };
+
+      const mockCall = createMockCallWithTemplate<{ id: number }, undefined>(
+        templateFn,
+        "template",
+      );
+
+      const versioned = versionCall(mockCall);
+
+      expect(versioned.versionInfo.signatureHash).toBeTruthy();
     });
   });
 

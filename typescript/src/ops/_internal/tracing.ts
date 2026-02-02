@@ -21,7 +21,6 @@ import {
 import { createTrace, type Trace } from "@/ops/_internal/traced-functions";
 import {
   jsonStringify,
-  getQualifiedName,
   extractArguments,
   toJsonable,
   type NamedCallable,
@@ -51,15 +50,14 @@ function createTracedSpan<Args extends unknown[]>(
   options: TraceOptions,
   args: Args,
 ): Span {
-  const qualifiedName = getQualifiedName(fn);
   const { argTypes, argValues } = extractArguments(fn, args);
 
-  const span = new Span(qualifiedName);
+  const span = new Span(options.name);
   span.start();
 
   span.set({
     "mirascope.type": "trace",
-    "mirascope.fn.qualname": qualifiedName,
+    "mirascope.fn.qualname": options.name,
     "mirascope.fn.module": "", // TypeScript doesn't have module metadata like Python (yet)
     "mirascope.fn.is_async": true, // All traced functions in TypeScript are async
     "mirascope.trace.arg_types": jsonStringify(argTypes),
@@ -103,20 +101,23 @@ function recordResult(span: Span, result: unknown): void {
  * Wrap a function with tracing instrumentation.
  *
  * @param fn - The async function to trace
- * @param options - Optional trace options (tags, metadata)
+ * @param options - Trace options including required name (since arrow functions have no name)
  * @returns A traced function that creates spans on each invocation
  *
  * @example Direct form
  * ```typescript
- * const tracedFn = trace(async (x: number) => x * 2);
+ * const tracedFn = trace(
+ *   async (x: number) => x * 2,
+ *   { name: 'double' }
+ * );
  * const result = await tracedFn(5);  // Returns 10
  * ```
  *
- * @example With options
+ * @example With tags and metadata
  * ```typescript
  * const tracedFn = trace(
  *   async (x: number) => x * 2,
- *   { tags: ['math'], metadata: { operation: 'double' } }
+ *   { name: 'double', tags: ['math'], metadata: { operation: 'double' } }
  * );
  * ```
  *
@@ -130,7 +131,7 @@ function recordResult(span: Span, result: unknown): void {
  */
 export function trace<Args extends unknown[], R>(
   fn: (...args: Args) => Promise<R>,
-  options?: TraceOptions,
+  options: TraceOptions,
 ): TracedFunction<Args, R>;
 
 /**
@@ -139,7 +140,7 @@ export function trace<Args extends unknown[], R>(
  * This overload handles Call objects created with defineCall().
  *
  * @param call - The call to trace
- * @param options - Optional trace options (tags, metadata)
+ * @param options - Trace options including required name
  * @returns A traced call that creates spans on each invocation
  *
  * @example
@@ -149,24 +150,24 @@ export function trace<Args extends unknown[], R>(
  *   template: ({ genre }: { genre: string }) => `Recommend a ${genre} book`,
  * });
  *
- * const tracedCall = trace(recommendBook, { tags: ['recommendation'] });
+ * const tracedCall = trace(recommendBook, { name: 'recommend-book' });
  * const response = await tracedCall({ genre: 'fantasy' });
  * ```
  */
 export function trace<CallT extends CallLike>(
   call: CallT,
-  options?: TraceOptions,
+  options: TraceOptions,
 ): TracedCall<CallT>;
 
 /**
  * Create a tracing wrapper with options (curried form).
  *
- * @param options - Trace options (tags, metadata)
+ * @param options - Trace options including required name
  * @returns A function that accepts the function or call to trace
  *
  * @example
  * ```typescript
- * const withTracing = trace({ tags: ['api'] });
+ * const withTracing = trace({ name: 'myFn', tags: ['api'] });
  * const tracedFn = withTracing(async (x: number) => x * 2);
  * ```
  */
@@ -208,6 +209,9 @@ export function trace<Args extends unknown[], R, CallT extends CallLike>(
 
   // Check if it's a Call object - delegate to traceCall
   if (isCallLike(fnOrCallOrOptions)) {
+    if (!maybeOptions) {
+      throw new Error("trace() requires options with a name");
+    }
     return traceCall(
       fnOrCallOrOptions,
       maybeOptions,
@@ -215,7 +219,10 @@ export function trace<Args extends unknown[], R, CallT extends CallLike>(
   }
 
   const fn = fnOrCallOrOptions as (...args: Args) => Promise<R>;
-  const options = maybeOptions ?? {};
+  if (!maybeOptions) {
+    throw new Error("trace() requires options with a name");
+  }
+  const options = maybeOptions;
 
   const traced = async (...args: Args): Promise<R> => {
     const span = createTracedSpan(fn, options, args);

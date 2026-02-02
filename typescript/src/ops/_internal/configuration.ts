@@ -2,7 +2,8 @@
  * Configuration utilities for Mirascope ops module initialization and setup.
  */
 
-import { trace, type Tracer } from "@opentelemetry/api";
+import type { Tracer } from "@opentelemetry/api";
+
 import {
   NodeTracerProvider,
   BatchSpanProcessor,
@@ -104,7 +105,9 @@ export function configure(options: ConfigureOptions = {}): void {
     _tracerProvider = createMirascopeCloudProvider(apiKey, baseURL);
   }
 
-  trace.setGlobalTracerProvider(_tracerProvider);
+  // Register the provider which sets up both tracer provider AND context manager
+  // This is critical for async context propagation (span nesting)
+  _tracerProvider.register();
 
   _tracerName = tracerName;
   _tracerVersion = tracerVersion;

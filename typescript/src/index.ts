@@ -9,7 +9,7 @@
  * ops.configure({ apiKey: process.env.MIRASCOPE_API_KEY });
  *
  * // Enable LLM instrumentation
- * ops.instrumentLlm();
+ * ops.instrumentLLM();
  *
  * const recommendBook = llm.defineCall({
  *   model: 'anthropic/claude-haiku-4-5',
