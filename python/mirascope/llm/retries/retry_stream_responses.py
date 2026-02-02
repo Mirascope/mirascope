@@ -9,6 +9,7 @@ from ..content import (
 from ..exceptions import StreamRestarted
 from ..formatting import FormattableT
 from ..messages import UserContent
+from ..models import Model
 from ..responses import (
     AsyncStreamResponse,
     StreamResponse,
@@ -51,26 +52,28 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
     retry_state: RetryState
     """State tracking retry attempts and any exceptions caught."""
 
-    _stream_factory: Callable[[], StreamResponse[FormattableT]]
+    _stream_fn: Callable[[Model], StreamResponse[FormattableT]]
 
     def __init__(
         self,
-        stream: StreamResponse[FormattableT],
-        retry_config: RetryConfig,
-        stream_factory: Callable[[], StreamResponse[FormattableT]],
+        retry_model: "RetryModel",
+        stream_fn: Callable[[Model], StreamResponse[FormattableT]],
     ) -> None:
         """Initialize a RetryStreamResponse.
 
         Args:
-            stream: The initial stream response from the LLM.
-            retry_config: Configuration for retry behavior.
-            stream_factory: Factory function to create new streams on retry.
+            retry_model: The RetryModel providing retry configuration.
+            stream_fn: Function that creates a stream from a Model.
         """
-        # Copy all attributes from the wrapped stream
-        for key, value in stream.__dict__.items():
+        retry_config = retry_model.retry_config
+
+        # Create the initial stream and copy all attributes from it
+        initial_stream = stream_fn(retry_model)
+        for key, value in initial_stream.__dict__.items():
             object.__setattr__(self, key, value)
+
         self.retry_config = retry_config
-        self._stream_factory = stream_factory
+        self._stream_fn = stream_fn
 
         self.retry_state = RetryState(
             max_retries=retry_config.max_retries,
@@ -89,7 +92,7 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
 
     def _reset_stream(self) -> None:
         """Reset to a fresh stream for a new retry attempt."""
-        new_stream = self._stream_factory()
+        new_stream = self._stream_fn(self.model)
         # Copy all attributes from the new stream
         for key, value in new_stream.__dict__.items():
             object.__setattr__(self, key, value)
@@ -169,26 +172,29 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
     retry_state: RetryState
     """State tracking retry attempts and any exceptions caught."""
 
-    _stream_factory: Callable[[], Awaitable[AsyncStreamResponse[FormattableT]]]
+    _stream_fn: Callable[[Model], Awaitable[AsyncStreamResponse[FormattableT]]]
 
     def __init__(
         self,
-        stream: AsyncStreamResponse[FormattableT],
-        retry_config: RetryConfig,
-        stream_factory: Callable[[], Awaitable[AsyncStreamResponse[FormattableT]]],
+        retry_model: "RetryModel",
+        stream_fn: Callable[[Model], Awaitable[AsyncStreamResponse[FormattableT]]],
+        initial_stream: AsyncStreamResponse[FormattableT],
     ) -> None:
         """Initialize an AsyncRetryStreamResponse.
 
         Args:
-            stream: The initial async stream response from the LLM.
-            retry_config: Configuration for retry behavior.
-            stream_factory: Async factory function to create new streams on retry.
+            retry_model: The RetryModel providing retry configuration.
+            stream_fn: Async function that creates a stream from a Model.
+            initial_stream: The pre-awaited initial stream.
         """
-        # Copy all attributes from the wrapped stream
-        for key, value in stream.__dict__.items():
+        retry_config = retry_model.retry_config
+
+        # Copy all attributes from the initial stream
+        for key, value in initial_stream.__dict__.items():
             object.__setattr__(self, key, value)
+
         self.retry_config = retry_config
-        self._stream_factory = stream_factory
+        self._stream_fn = stream_fn
 
         self.retry_state = RetryState(
             max_retries=retry_config.max_retries,
@@ -207,7 +213,7 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
 
     async def _reset_stream(self) -> None:
         """Reset to a fresh stream for a new retry attempt."""
-        new_stream = await self._stream_factory()
+        new_stream = await self._stream_fn(self.model)
         # Copy all attributes from the new stream
         for key, value in new_stream.__dict__.items():
             object.__setattr__(self, key, value)

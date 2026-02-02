@@ -1,6 +1,6 @@
 """RetryModel extends Model to add retry logic."""
 
-from collections.abc import Sequence
+from collections.abc import Awaitable, Sequence
 from typing import cast, overload
 from typing_extensions import Unpack
 
@@ -357,20 +357,12 @@ class RetryModel(Model):
         Returns:
             A RetryStreamResponse for iterating over the LLM-generated content.
         """
-
-        def stream_factory() -> StreamResponse[FormattableT]:
-            return cast(
-                "StreamResponse[FormattableT]",
-                super(RetryModel, self).stream(
-                    content=content, tools=tools, format=format
-                ),
-            )
-
-        initial_stream = stream_factory()
         return RetryStreamResponse(
-            stream=initial_stream,
-            retry_config=self.retry_config,
-            stream_factory=stream_factory,
+            self,
+            lambda m: cast(
+                "StreamResponse[FormattableT]",
+                Model.stream(m, content=content, tools=tools, format=format),
+            ),
         )
 
     @overload
@@ -422,20 +414,14 @@ class RetryModel(Model):
             An AsyncRetryStreamResponse for asynchronously iterating over the LLM-generated content.
         """
 
-        async def stream_factory() -> AsyncStreamResponse[FormattableT]:
+        def stream_fn(m: Model) -> Awaitable[AsyncStreamResponse[FormattableT]]:
             return cast(
-                "AsyncStreamResponse[FormattableT]",
-                await super(RetryModel, self).stream_async(
-                    content=content, tools=tools, format=format
-                ),
+                "Awaitable[AsyncStreamResponse[FormattableT]]",
+                Model.stream_async(m, content=content, tools=tools, format=format),
             )
 
-        initial_stream = await stream_factory()
-        return AsyncRetryStreamResponse(
-            stream=initial_stream,
-            retry_config=self.retry_config,
-            stream_factory=stream_factory,
-        )
+        initial_stream = await stream_fn(self)
+        return AsyncRetryStreamResponse(self, stream_fn, initial_stream)
 
     # Resume stream methods
 
@@ -478,20 +464,12 @@ class RetryModel(Model):
         Returns:
             A new RetryStreamResponse for streaming the extended conversation.
         """
-
-        def stream_factory() -> StreamResponse[FormattableT]:
-            return cast(
-                "StreamResponse[FormattableT]",
-                super(RetryModel, self).resume_stream(
-                    response=response, content=content
-                ),
-            )
-
-        initial_stream = stream_factory()
         return RetryStreamResponse(
-            stream=initial_stream,
-            retry_config=self.retry_config,
-            stream_factory=stream_factory,
+            self,
+            lambda m: cast(
+                "StreamResponse[FormattableT]",
+                Model.resume_stream(m, response=response, content=content),
+            ),
         )
 
     @overload
@@ -534,17 +512,11 @@ class RetryModel(Model):
             A new AsyncRetryStreamResponse for asynchronously streaming the extended conversation.
         """
 
-        async def stream_factory() -> AsyncStreamResponse[FormattableT]:
+        def stream_fn(m: Model) -> Awaitable[AsyncStreamResponse[FormattableT]]:
             return cast(
-                "AsyncStreamResponse[FormattableT]",
-                await super(RetryModel, self).resume_stream_async(
-                    response=response, content=content
-                ),
+                "Awaitable[AsyncStreamResponse[FormattableT]]",
+                Model.resume_stream_async(m, response=response, content=content),
             )
 
-        initial_stream = await stream_factory()
-        return AsyncRetryStreamResponse(
-            stream=initial_stream,
-            retry_config=self.retry_config,
-            stream_factory=stream_factory,
-        )
+        initial_stream = await stream_fn(self)
+        return AsyncRetryStreamResponse(self, stream_fn, initial_stream)
