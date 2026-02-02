@@ -2,6 +2,7 @@
 title: "Top 6 Open Source LLM Observability Tools"
 description: "Compare the best open source tools for LLM observability. These 6 platforms make it easy to monitor, debug, and improve language model performance."
 date: "2025-07-23"
+updatedAt: "2026-01-28"
 readTime: "10 min read"
 author: "William Bakst"
 ---
@@ -16,11 +17,11 @@ A lot of tools call themselves “observability” platforms, **but they only co
 
 The goal isn’t just to watch but to *understand*. Observability helps you debug, test, and fine-tune prompts. You can tweak things in real time, compare versions, and use data to make better changes that actually improve results.
 
-In this article, we’ll show you six tools that make this possible, starting with Lilypad, our open source framework for LLM observability. Lilypad treats every model call like an experiment, tracking what happened, versioning the call, and showing you what changed and why it matters.
+In this article, we'll show you six tools that make this possible, starting with Mirascope Cloud, our open source framework for LLM observability. Mirascope Cloud treats every model call like an experiment, tracking what happened, versioning the call, and showing you what changed and why it matters.
 
 Keep reading, or feel free to skip down to one of the observability tools below:
   
-* [Lilypad](#1-lilypad-understanding-what-happened-and-why)  
+* [Mirascope Cloud](#1-mirascope-cloud-understanding-what-happened-and-why)  
 * [Langfuse](#2-langfuse-metrics-traces-and-model-insights-in-one-place)  
 * [Phoenix](#3-phoenix-visual-debugging-and-evaluation)  
 * [Helicone](#4-helicone-full-visibility-via-proxy)  
@@ -44,36 +45,37 @@ That’s a start, but true observability offer deeper capabilities, like:
 
 We dive into tools offering these capabilities.
 
-## 1. Lilypad: Understanding What Happened, and Why
+## 1. Mirascope Cloud: Understanding What Happened, and Why
 
-![Lilypad Homepage](/assets/blog/llm-observability/lilypad-homepage.webp)
+![Mirascope Cloud Homepage](/assets/blog/llm-observability/lilypad-homepage.webp)
 
-[Lilypad](/docs/lilypad) is an open-source tool built for observing non-deterministic [LLM agents](/blog/llm-agents), where the same prompt doesn’t always give the same result. It’s designed to help you understand why something happened, not just what happened.
+[Mirascope Cloud](/docs/learn/ops) is an open-source tool built for observing non-deterministic [LLM agents](/blog/llm-agents), where the same prompt doesn't always give the same result. It's designed to help you understand why something happened, not just what happened.
 
-Unlike tools that only capture inputs and outputs, Lilypad traces each generation back to the exact version of the code that produced it. This means you get the full picture: inputs, logic, prompt transformations, model settings, and results, all tied to a specific function and version.
+Unlike tools that only capture inputs and outputs, Mirascope Cloud traces each generation back to the exact version of the code that produced it. This means you get the full picture: inputs, logic, prompt transformations, model settings, and results, all tied to a specific function and version.
 
-Because it works at the code level, you don’t need to rely on fragile manual versioning or be locked into writing prompts in a UI. You can work in plain Python, and Lilypad handles the observability and versioning for you, making  [LLM integration](/blog/llm-integration) easier.
+Because it works at the code level, you don't need to rely on fragile manual versioning or be locked into writing prompts in a UI. You can work in plain Python, and Mirascope Cloud handles the observability and versioning for you, making  [LLM integration](/blog/llm-integration) easier.
 
-It also supports any model provider or framework, and you can [self-host it for full control](/docs/lilypad).
+It also supports any model provider or framework, and you can [self-host it for full control](/docs/learn/ops).
 
-### Seeing the Whole Picture: How Lilypad Traces Execution Context
+### Seeing the Whole Picture: How Mirascope Cloud Traces Execution Context
 
 LLM outputs are influenced by everything that goes into them, like helper functions, temperature settings, and control logic. If you're only looking at the raw prompt text, you're missing half the story. That’s why tools that version just the prompt fall short.
 
-For starters, you can add the line `lilypad.configure(auto_llm=True)` to automatically track every LLM API call made anywhere in your code using the [OpenTelemetry Gen AI spec](https://opentelemetry.io/).
+For starters, you can add `ops.configure()` and `ops.instrument_llm()` to automatically track every LLM API call made anywhere in your code using the [OpenTelemetry Gen AI spec](https://opentelemetry.io/).
 
 This ensures spans are generated for each API call and that data like cost, token usage, and latency are captured.
 
-But to trace the *why* and *how* (not just the *what*) we recommend wrapping your LLM calls in Python functions and decorating them with `@lilypad.trace(versioning="automatic")`. This captures the full execution context: inputs, model configuration, helper logic, and prompt transformations. Every run then becomes a reproducible, versioned snapshot of your code in action.
+But to trace the *why* and *how* (not just the *what*) we recommend wrapping your LLM calls in Python functions and decorating them with `@ops.version`. This captures the full execution context: inputs, model configuration, helper logic, and prompt transformations. Every run then becomes a reproducible, versioned snapshot of your code in action.
 
-```python
+```python-snippet-skip
 from openai import OpenAI
-import lilypad
+from mirascope import ops
 
-lilypad.configure(auto_llm=True)  # [!code highlight]
+ops.configure()  # [!code highlight]
+ops.instrument_llm()  # [!code highlight]
 client = OpenAI()
-    
-@lilypad.trace(versioning="automatic")  # [!code highlight]
+
+@ops.version  # [!code highlight]
 def answer_question(question: str) -> str:
     resp = client.chat.completions.create(
         model="gpt-4o",
@@ -83,42 +85,42 @@ def answer_question(question: str) -> str:
 
 answer = answer_question("Who wrote 'To Kill a Mockingbird'?") # automatically versioned
 print(answer)
-# > Harper Lee wrote 'To Kill a Mockingbird'. 
+# > Harper Lee wrote 'To Kill a Mockingbird'.
 ```
 
 This also ties each trace directly to the exact code that produced it so you can always see what code ran, what inputs it used, and what output it returned.
 
 Other [LLM tools](/blog/llm-tools) make you manage versions by hand, like tagging each prompt and updating the tag when things change, but that can be hard to administrate. To avoid this, most tools give you a special UI for writing prompts, but then you lose the power and flexibility of real code.
 
-Lilypad works with your actual code and automatically tracks changes at the function level, so it can handle any kind of logic, not just prompts or LLM calls.
+Mirascope Cloud works with your actual code and automatically tracks changes at the function level, so it can handle any kind of logic, not just prompts or LLM calls.
 
-Once you’ve added the lines of code mentioned above, you can view the changes in the Lilypad UI , which automatically increments the version number for any change (e.g., changing the temperature or the prompt itself) you make within the function’s closure:
+Once you've added the lines of code mentioned above, you can view the changes in the Mirascope Cloud UI, which automatically increments the version number for any change (e.g., changing the temperature or the prompt itself) you make within the function's closure:
 
-![Lilypad Answer Question v7 Trace](/assets/blog/llm-observability/lilypad-answer-question-v7-trace.webp)
+![Mirascope Cloud Answer Question v7 Trace](/assets/blog/llm-observability/lilypad-answer-question-v7-trace.webp)
 
 It even logs and tracks changes to user-defined functions or classes outside the main prompt function (as long as they’re within scope).
 
 All this makes it easy to compare different runs and roll back to any version you need. You can always reproduce the exact state that led to a specific model response, and you’ll know what changed and why.
 
-While other tools might offer the user experience of logging the prompt and maybe the input and output, Lilypad goes further by treating your whole function as the thing to track. That’s because in real-world code, LLM behavior depends on more than just the prompt, which itself is often shaped by the surrounding logic, pre-processing, and other code-level customizations.
+While other tools might offer the user experience of logging the prompt and maybe the input and output, Mirascope Cloud goes further by treating your whole function as the thing to track. That’s because in real-world code, LLM behavior depends on more than just the prompt, which itself is often shaped by the surrounding logic, pre-processing, and other code-level customizations.
 
 In the playground, the “Compare” button allows you to compare different versions of the code:
 
-![Lilypad Answer Question Click Compare](/assets/blog/llm-observability/lilypad-answer-question-click-compare.webp)
+![Mirascope Cloud Answer Question Click Compare](/assets/blog/llm-observability/lilypad-answer-question-click-compare.webp)
 
 This shows a second dropdown menu, where you can select another version and view the differences side-by-side:
 
-![Lilypad Answer Question Compare Versions](/assets/blog/llm-observability/lilypad-answer-question-compare-versions.webp)
+![Mirascope Cloud Answer Question Compare Versions](/assets/blog/llm-observability/lilypad-answer-question-compare-versions.webp)
 
 You can inspect trace data for any LLM call that’s wrapped in a function by selecting that function. This lets you see the full picture of what happened during the call, including inputs, logic, prompt changes, and model settings:
 
-![Lilypad Answer Question Trace Data](/assets/blog/llm-observability/lilypad-answer-question-trace-data.webp)
+![Mirascope Cloud Answer Question Trace Data](/assets/blog/llm-observability/lilypad-answer-question-trace-data.webp)
 
 The `.version` method lets you access specific versions downstream and  re-run their exact code to compare outputs, track changes, or reproduce earlier results.
 
 For example:
 
-```python
+```python-snippet-skip
 response = answer_question.version(6)("Who wrote 'To Kill a Mockingbird?'")
 ```
 
@@ -126,44 +128,45 @@ You can also use `.version` to run different versions of the same function, e.g.
 
 ### A Visual Interface for LLM Observability
 
-Lilypad offers a visual, interactive interface that brings together traces, versioning, and annotations all in one place, allowing non-technical users to collaborate. This no-code environment is designed for domain experts who want to improve how LLMs behave and test different prompt wordings, tweak parameters, and observe how the model responds, all without needing to touch the underlying code or ask engineers for help.
+Mirascope Cloud offers a visual, interactive interface that brings together traces, versioning, and annotations all in one place, allowing non-technical users to collaborate. This no-code environment is designed for domain experts who want to improve how LLMs behave and test different prompt wordings, tweak parameters, and observe how the model responds, all without needing to touch the underlying code or ask engineers for help.
 
-![Lilypad Playground](/assets/blog/llm-observability/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/llm-observability/lilypad-playground.webp)
 
-The Lilypad playground allows users to write prompts in markdown with typed variable placeholders. When someone edits a prompt, like changing the wording or adjusting a setting, Lilypad automatically creates a new version of the Python function behind the scenes. This has the same effect as editing and rerunning the function directly in code.
+The Mirascope Cloud playground allows users to write prompts in markdown with typed variable placeholders. When someone edits a prompt, like changing the wording or adjusting a setting, Mirascope Cloud automatically creates a new version of the Python function behind the scenes. This has the same effect as editing and rerunning the function directly in code.
 
-The playground also shows the actual Python functions (that are decorated with `@lilypad.trace()`), so SMEs can directly interact with the prompts those functions use. The code you see in the playground is the same code that runs downstream since they mirror each other. So even if Lilypad ever goes down, **the code will still run as expected**.
+The playground also shows the actual Python functions (that are decorated with `@ops.trace`), so SMEs can directly interact with the prompts those functions use. The code you see in the playground is the same code that runs downstream since they mirror each other. So even if Mirascope Cloud ever goes down, **the code will still run as expected**.
 
 Every prompt template is tied to a function signature, ensuring strong typing and reproducibility for any use case around evaluation, debugging, or deployment. The inputs are type-checked, which helps prevent bugs like missing values, wrong formats, or injection risks.
 
-Lilypad’s playground also visualizes the full trace of each run, including inputs, outputs, provider and model info, along with settings like temperature and metadata like token usage, latency, and cost. The playground captures a complete snapshot of the execution so users can see what happened and why.
+Mirascope Cloud's playground also visualizes the full trace of each run, including inputs, outputs, provider and model info, along with settings like temperature and metadata like token usage, latency, and cost. The playground captures a complete snapshot of the execution so users can see what happened and why.
 
 ### Turning Outputs into Feedback Loops
 
 [LLM evaluation](/blog/llm-evaluation) isn’t just about checking if an answer is right or wrong; it’s about understanding whether the response was *good enough* for the situation. In many cases, there’s no clear correct answer, so human judgment becomes an all-important part of the process. Observability, in this context, isn't just about catching failures: it’s about recognizing what made a response succeed or fall short.
 
-Lilypad makes this possible by treating annotations as a key part of its observability system. An annotation is tied directly to a single span, which means it’s connected to the exact function version, inputs, prompt, and model settings that produced the output. This grounds feedback in its full context. 
+Mirascope Cloud makes this possible by treating annotations as a key part of its observability system. An annotation is tied directly to a single span, which means it's connected to the exact function version, inputs, prompt, and model settings that produced the output. This grounds feedback in its full context.
 
-![Lilypad Annotation Queue](/assets/blog/llm-observability/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/llm-observability/lilypad-annotation-queue.webp)
 
 You can assign reviewers to specific outputs and organize them into [prompt evaluation](/blog/prompt-evaluation) queues. Human reviewers define what “good enough” really means, and label outputs as pass or fail, adding optional notes to explain their reasoning. This turns gut checks into structured, searchable data.
 
-These annotations are saved alongside traces and function versions, creating a feedback trail that’s easy to review and reproduce. To keep reviews unbiased, Lilypad hides existing annotations when someone is evaluating a trace.
+These annotations are saved alongside traces and function versions, creating a feedback trail that's easy to review and reproduce. To keep reviews unbiased, Mirascope Cloud hides existing annotations when someone is evaluating a trace.
 
-![Lilypad Answer Question Annotations](/assets/blog/llm-observability/lilypad-answer-question-annotations.webp)
+![Mirascope Cloud Answer Question Annotations](/assets/blog/llm-observability/lilypad-answer-question-annotations.webp)
 
-Developers can also add annotations directly in code, right after a function runs. By setting `mode="wrap"` in the `@lilypad.trace` decorator, the function’s return value becomes a special object that still includes the output, but also lets you add annotations with `.annotate()`. 
+Developers can also add annotations directly in code, right after a function runs. By using the `@ops.trace` decorator, the function's return value becomes a special object that still includes the output, but also lets you add annotations with `.annotate()`. 
 
 This is useful for automated testing, scripted evals, or CI/CD workflows, where you want to capture evaluations without switching to the playground.
 
-```python
+```python-snippet-skip
 from google.genai import Client
-import lilypad
+from mirascope import ops
 
 client = Client()
-lilypad.configure()
+ops.configure()
+ops.instrument_llm()
 
-@lilypad.trace(name="Answer Question", versioning="automatic", mode="wrap")  # [!code highlight]
+@ops.trace  # [!code highlight]
 def answer_question(question: str) -> str | None:
     response = client.models.generate_content(
         model="gemini-2.0-flash-001",
@@ -171,11 +174,11 @@ def answer_question(question: str) -> str | None:
     )
     return response.text
 
-trace: lilypad.Trace[str | None] = answer_question("Who wrote 'To Kill a Mockingbird'?")
+trace: ops.Trace[str | None] = answer_question("Who wrote 'To Kill a Mockingbird'?")
 print(trace.response)  # original response
-# > Harper Lee wrote 'To Kill a Mockingbird'. 
+# > Harper Lee wrote 'To Kill a Mockingbird'.
 
-annotation = lilypad.Annotation(  # [!code highlight]
+annotation = ops.Annotation(  # [!code highlight]
     label="pass",  # [!code highlight]
     reasoning="The answer was correct",  # [!code highlight]
     data=None,  # [!code highlight]
@@ -188,7 +191,7 @@ Manual reviews are just the beginning. As you collect more annotations, you can 
 
 Each labeled example helps build a stronger dataset for comparing different versions and catching performance regressions. This turns model outputs into measurable progress over time. That said, it’s still important to manually spot-check evaluations to ensure the model isn’t quietly getting things wrong in ways that automated [LLM-as-a-judge](/blog/llm-as-judge) checks might miss.
 
-You can [sign up for Lilypad](https://lilypad.mirascope.com/) using your GitHub account and get started with tracing and versioning your LLM calls with only a few lines of code.
+You can [sign up for Mirascope Cloud](https://cloud.mirascope.com/) using your GitHub account and get started with tracing and versioning your LLM calls with only a few lines of code.
 
 ## 2. Langfuse: Metrics, Traces, and Model Insights in One Place
 
@@ -265,6 +268,6 @@ You can [sign up for Lilypad](https://lilypad.mirascope.com/) using your GitHub 
 
 ## See Beyond the Output
 
-Real observability means more than watching what your model says; it means understanding why it said it. With Lilypad, every generation in your [LLM pipeline](/blog/llm-pipeline) is traced, versioned, and open to inspection, turning it into a data point you can learn from.
+Real observability means more than watching what your model says; it means understanding why it said it. With Mirascope Cloud, every generation in your [LLM pipeline](/blog/llm-pipeline) is traced, versioned, and open to inspection, turning it into a data point you can learn from.
 
-Want to learn more about Lilypad? Check out our code samples in our [docs](/docs/lilypad) or on [GitHub](https://github.com/mirascope/lilypad). Lilypad offers first-class support for [Mirascope](/docs/mirascope), our lightweight toolkit for building LLM agents.
+Want to learn more about Mirascope Cloud? Check out our code samples in our [docs](/docs/learn/ops) or on [GitHub](https://github.com/mirascope/mirascope). Mirascope Cloud offers first-class support for [Mirascope](https://github.com/mirascope/mirascope), our lightweight toolkit for building LLM agents.
