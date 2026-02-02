@@ -565,6 +565,7 @@ function extractFieldSchema(zodField: ZodLike): {
   type?: string;
   description?: string;
   items?: { type?: string; description?: string };
+  enum?: readonly string[];
 } {
   const def = zodField._def as Record<string, unknown>;
   const description = def.description as string | undefined;
@@ -587,6 +588,16 @@ function extractFieldSchema(zodField: ZodLike): {
 
   const typeName = def.typeName as string;
   const type = typeMapping[typeName];
+
+  // Handle ZodEnum (Zod 3 stores enum values in _def.values)
+  if (typeName === "ZodEnum") {
+    const values = def.values as readonly string[];
+    return {
+      type: "string",
+      enum: values,
+      ...(description && { description }),
+    };
+  }
 
   // Handle array items (Zod 3 stores element type in _def.type)
   if (typeName === "ZodArray" && def.type && typeof def.type === "object") {
@@ -614,6 +625,7 @@ function extractFieldSchemaZod4(zodField: ZodLike): {
   type?: string;
   description?: string;
   items?: { type?: string };
+  enum?: readonly string[];
 } {
   const def = zodField._def as Record<string, unknown>;
   const fieldAny = zodField as unknown as { description?: string };
@@ -641,6 +653,16 @@ function extractFieldSchemaZod4(zodField: ZodLike): {
   };
 
   const type = zodType ? typeMapping[zodType] : undefined;
+
+  // Handle enum type (Zod 4 stores enum values in _def.values)
+  if (zodType === "enum") {
+    const values = def.values as readonly string[];
+    return {
+      type: "string",
+      enum: values,
+      ...(description && { description }),
+    };
+  }
 
   // Handle array items
   if (zodType === "array" && def.element) {
