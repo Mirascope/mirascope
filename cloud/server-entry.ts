@@ -250,8 +250,9 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = async (
   environment,
   context,
 ) => {
-  // Prevent search engine indexing with Basic Auth
-  if (environment.ENVIRONMENT === "staging") {
+  // Basic Auth for staging (skipped during prerendering)
+  const url = new URL(request.url);
+  if (url.hostname === "staging.mirascope.com") {
     const authHeader = request.headers.get("Authorization");
     if (!authHeader || !authHeader.startsWith("Basic ")) {
       return new Response("Unauthorized", {
