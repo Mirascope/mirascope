@@ -132,9 +132,9 @@ export function assembleCode(raw: RawClosure): string {
     parts.push(raw.imports.sort().join("\n"));
   }
 
-  // Add global assignments
+  // Add global assignments (with blank lines between each)
   if (raw.globals.length > 0) {
-    parts.push(raw.globals.join("\n"));
+    parts.push(raw.globals.join("\n\n"));
   }
 
   // Add dependency definitions
