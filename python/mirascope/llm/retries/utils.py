@@ -1,5 +1,8 @@
 """Utility functions for retry logic."""
 
+import asyncio
+import random
+import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from typing import TypeVar
@@ -40,6 +43,33 @@ class RetryState:
     parse_exceptions: list[BaseException] = field(default_factory=_empty_exception_list)
 
 
+def _calculate_delay(config: RetryConfig, attempt: int) -> float:
+    """Calculate the delay before the next retry attempt.
+
+    Args:
+        config: The retry configuration with backoff settings.
+        attempt: The retry attempt number (1-indexed, i.e., 1 for first retry).
+
+    Returns:
+        The delay in seconds, with exponential backoff, capped at max_delay,
+        and optionally with jitter applied.
+    """
+    # Calculate base delay with exponential backoff
+    delay = config.initial_delay * (config.backoff_multiplier ** (attempt - 1))
+
+    # Cap at max_delay
+    delay = min(delay, config.max_delay)
+
+    # Apply jitter if configured
+    if config.jitter > 0:
+        jitter_range = delay * config.jitter
+        delay = delay + random.uniform(-jitter_range, jitter_range)
+        # Ensure delay doesn't go negative
+        delay = max(0, delay)
+
+    return delay
+
+
 def with_retry(
     fn: Callable[[], _ResultT],
     config: RetryConfig,
@@ -70,6 +100,9 @@ def with_retry(
             state.retries += 1
             if retry == config.max_retries:
                 raise
+            # Wait before retrying with exponential backoff
+            delay = _calculate_delay(config, state.retries)
+            time.sleep(delay)
     raise AssertionError("Unreachable")  # pragma: no cover
 
 
@@ -103,4 +136,7 @@ async def with_retry_async(
             state.retries += 1
             if retry == config.max_retries:
                 raise
+            # Wait before retrying with exponential backoff
+            delay = _calculate_delay(config, state.retries)
+            await asyncio.sleep(delay)
     raise AssertionError("Unreachable")  # pragma: no cover
