@@ -324,15 +324,19 @@ function tryTransformVersionCall(
 }
 
 /**
- * Check if an expression is a call-like object for versionCall.
+ * Check if an expression is a call-like object for version/versionCall.
  * This handles identifiers that reference call objects.
+ *
+ * With the unified API, both version() and versionCall() can accept Call objects.
+ * We treat identifiers as potentially Call-like for both functions.
  */
 function isCallLikeExpression(
   node: ts.Expression,
   functionName: string,
 ): boolean {
-  // For versionCall, the first argument can be an identifier referencing a call
-  if (functionName === "versionCall") {
+  // For version and versionCall, the first argument can be an identifier referencing a call
+  // or a call expression like defineCall({...})
+  if (functionName === "versionCall" || functionName === "version") {
     return ts.isIdentifier(node) || ts.isCallExpression(node);
   }
   return false;
