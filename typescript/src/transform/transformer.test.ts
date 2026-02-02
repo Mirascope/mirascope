@@ -637,6 +637,68 @@ describe("version transform", () => {
     // The code should contain the function body
     expect(result).toContain("data.name.trim()");
   });
+
+  describe("version with Call identifier", () => {
+    it("injects __closure for version() with a Call identifier", () => {
+      const source = `
+const assistant = defineCall({
+  model: "openai/gpt-4",
+  template: ({ query }: { query: string }) => query,
+});
+
+const versioned = version(assistant, { name: "test" });`;
+
+      const result = transformSource(source);
+      expect(result).toContain("__closure");
+    });
+
+    it("captures the full defineCall expression for Call identifier", () => {
+      const source = `
+const myCall = defineCall({
+  model: "openai/gpt-4o-mini",
+  maxTokens: 1024,
+  template: ({ text }: { text: string }) => text.toUpperCase(),
+});
+
+const versionedCall = version(myCall);`;
+
+      const result = transformSource(source);
+      expect(result).toContain("__closure");
+      // The closure should contain the defineCall configuration
+      expect(result).toContain("openai/gpt-4o-mini");
+      expect(result).toContain("maxTokens");
+      expect(result).toContain("template");
+    });
+
+    it("handles ops.version with Call identifier", () => {
+      const source = `
+const call = defineCall({
+  model: "anthropic/claude-sonnet",
+  template: () => "Hello",
+});
+
+const traced = ops.version(call);`;
+
+      const result = transformSource(source);
+      expect(result).toContain("__closure");
+      expect(result).toContain("anthropic/claude-sonnet");
+    });
+
+    it("infers name from versioned variable when using Call identifier", () => {
+      const source = `
+const myCall = defineCall({
+  model: "openai/gpt-4",
+  template: () => "test",
+});
+
+const myVersionedCall = version(myCall);`;
+
+      const result = transformSource(source);
+      expect(result).toContain("__closure");
+      // Should infer name from the versioned variable
+      expect(result).toContain('name: "myVersionedCall"');
+    });
+  });
 });
 
 describe("transformer default export", () => {
