@@ -344,7 +344,7 @@ it.effect("returns DatabaseError when query fails", () =>
 
 ```bash
 bun run typecheck      # TypeScript type checking
-bun run lint:eslint    # ESLint
+bun run lint:oxlint    # oxlint
 bun run test           # Run all tests (NOT `bun test`)
 bun run test:coverage  # Run tests with coverage report
 bun run test <file>    # Run specific test file

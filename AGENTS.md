@@ -53,7 +53,7 @@ When making changes to the codebase:
 - **TypeScript/JS Package Manager**: `bun`
 - **Python Testing**: `pytest`
 - **TypeScript Testing**: `vitest`
-- **Linting**: `ruff` (Python), `eslint` (TypeScript)
+- **Linting**: `ruff` (Python), `oxlint` (TypeScript)
 - **Type Checking**: `pyright` (Python), `tsc` (TypeScript)
 
 ## Git Workflow with Graphite
@@ -73,7 +73,7 @@ gt submit                            # Push all PRs in the stack
 Before submitting changes, ensure:
 
 1. `bun run typecheck` passes
-2. `bun run lint:eslint` passes  
+2. `bun run lint:oxlint` passes  
 3. `bun run test:coverage` shows 100% coverage
 4. OpenAPI spec regenerated if API changed
 
