@@ -14,6 +14,7 @@ import { getClient } from "@/api/client";
 import { Span } from "@/ops/_internal/spans";
 import { jsonStringify, toJsonable } from "@/ops/_internal/utils";
 import {
+  computeVersion,
   createVersionedResult,
   type ClosureMetadata,
   type VersionInfo,
@@ -41,6 +42,8 @@ export interface VersionedCall<CallT> {
   wrapped(...args: unknown[]): Promise<VersionedResult<unknown>>;
   /** Stream the call and return the stream response directly */
   stream(...args: unknown[]): Promise<unknown>;
+  /** Stream the call and return the full VersionedResult object with stream response */
+  wrappedStream(...args: unknown[]): Promise<VersionedResult<unknown>>;
   /** The underlying call */
   readonly call: CallT;
   /** Information about the call's version */
@@ -50,7 +53,7 @@ export interface VersionedCall<CallT> {
 /**
  * Minimal interface for a Call-like object.
  */
-interface CallLike {
+export interface CallLike {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   call(...args: any[]): Promise<unknown>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -194,6 +197,8 @@ export function versionCall<CallT extends CallLike>(
     hash: closure.hash,
     signatureHash: closure.signatureHash,
     name: callName,
+    description: undefined, // Docstring extraction not yet supported in TypeScript
+    version: computeVersion(closure.hash),
     tags,
     metadata,
   };
@@ -270,7 +275,7 @@ export function versionCall<CallT extends CallLike>(
         return response;
       } catch (error) {
         if (error instanceof Error) {
-          span.error(error.message);
+          span.recordException(error);
         } else {
           span.error(String(error));
         }
@@ -313,7 +318,7 @@ export function versionCall<CallT extends CallLike>(
         return createVersionedResult(response, span, functionUuid);
       } catch (error) {
         if (error instanceof Error) {
-          span.error(error.message);
+          span.recordException(error);
         } else {
           span.error(String(error));
         }
@@ -354,7 +359,50 @@ export function versionCall<CallT extends CallLike>(
         return response;
       } catch (error) {
         if (error instanceof Error) {
-          span.error(error.message);
+          span.recordException(error);
+        } else {
+          span.error(String(error));
+        }
+        throw error;
+      } finally {
+        span.finish();
+      }
+    }
+
+    return runInContext();
+  };
+
+  versioned.wrappedStream = async (
+    ...args: unknown[]
+  ): Promise<VersionedResult<unknown>> => {
+    const vars = args[0];
+    const functionUuid = await ensureRegistration();
+    const span = createVersionedCallSpan(
+      callName,
+      options,
+      closure,
+      functionUuid,
+      vars,
+    );
+
+    const otelSpan = span.otelSpan;
+    /* v8 ignore start */
+    const runInContext = otelSpan
+      ? () =>
+          otelContext.with(
+            otelTrace.setSpan(otelContext.active(), otelSpan),
+            execute,
+          )
+      : execute;
+    /* v8 ignore end */
+
+    async function execute(): Promise<VersionedResult<unknown>> {
+      try {
+        const response = await call.stream(...args);
+        return createVersionedResult(response, span, functionUuid);
+      } catch (error) {
+        if (error instanceof Error) {
+          span.recordException(error);
         } else {
           span.error(String(error));
         }
@@ -384,7 +432,7 @@ export function versionCall<CallT extends CallLike>(
 /**
  * Type guard to check if a value is a Call-like object.
  */
-function isCallLike(value: unknown): value is CallLike {
+export function isCallLike(value: unknown): value is CallLike {
   return (
     typeof value === "function" &&
     "call" in value &&

@@ -26,7 +26,7 @@ export interface ConfigureOptions {
   /** Mirascope Cloud API key */
   apiKey?: string;
   /** Mirascope Cloud base URL */
-  baseUrl?: string;
+  baseURL?: string;
   /** Custom tracer provider (overrides automatic Mirascope Cloud setup) */
   tracerProvider?: NodeTracerProvider;
   /** Tracer name (default: "mirascope.llm") */
@@ -40,9 +40,9 @@ export interface ConfigureOptions {
  */
 function createMirascopeCloudProvider(
   apiKey?: string,
-  baseUrl?: string,
+  baseURL?: string,
 ): NodeTracerProvider {
-  const client = new MirascopeClient({ apiKey, baseUrl });
+  const client = new MirascopeClient({ apiKey, baseURL });
   const exporter = new MirascopeOTLPExporter(client);
   const provider = new NodeTracerProvider({
     spanProcessors: [new BatchSpanProcessor(exporter)],
@@ -86,22 +86,22 @@ function createMirascopeCloudProvider(
 export function configure(options: ConfigureOptions = {}): void {
   const {
     apiKey,
-    baseUrl,
+    baseURL,
     tracerProvider,
     tracerName = DEFAULT_TRACER_NAME,
     tracerVersion,
   } = options;
 
   // Update API settings if provided
-  if (apiKey !== undefined || baseUrl !== undefined) {
-    updateSettings({ apiKey, baseUrl });
+  if (apiKey !== undefined || baseURL !== undefined) {
+    updateSettings({ apiKey, baseURL });
   }
 
   // Use custom provider or create Mirascope Cloud provider
   if (tracerProvider) {
     _tracerProvider = tracerProvider;
   } else {
-    _tracerProvider = createMirascopeCloudProvider(apiKey, baseUrl);
+    _tracerProvider = createMirascopeCloudProvider(apiKey, baseURL);
   }
 
   trace.setGlobalTracerProvider(_tracerProvider);

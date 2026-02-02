@@ -12,6 +12,10 @@ import type { TraceOptions } from "@/ops/_internal/types";
 import { Span } from "@/ops/_internal/spans";
 import { createTrace, type Trace } from "@/ops/_internal/traced-functions";
 import { jsonStringify, toJsonable } from "@/ops/_internal/utils";
+import { isCallLike, type CallLike } from "@/ops/_internal/versioned-calls";
+
+// Re-export for use in tracing.ts
+export { isCallLike, type CallLike } from "@/ops/_internal/versioned-calls";
 
 /**
  * A traced call with access to the wrapped result.
@@ -26,23 +30,10 @@ export interface TracedCall<CallT> {
   wrapped(...args: unknown[]): Promise<Trace<unknown>>;
   /** Stream the call and return the stream response directly */
   stream(...args: unknown[]): Promise<unknown>;
+  /** Stream the call and return the full Trace object with stream response */
+  wrappedStream(...args: unknown[]): Promise<Trace<unknown>>;
   /** The underlying call */
   readonly call: CallT;
-}
-
-/**
- * Minimal interface for a Call-like object.
- * Template is a function that may have a name property.
- */
-interface CallLike {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  call(...args: any[]): Promise<unknown>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  stream(...args: any[]): Promise<unknown>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  template: ((...args: any[]) => unknown) & { name?: string };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  prompt: { template: ((...args: any[]) => unknown) & { name?: string } };
 }
 
 /**
@@ -160,7 +151,7 @@ export function traceCall<CallT extends CallLike>(
         return response;
       } catch (error) {
         if (error instanceof Error) {
-          span.error(error.message);
+          span.recordException(error);
         } else {
           span.error(String(error));
         }
@@ -194,7 +185,7 @@ export function traceCall<CallT extends CallLike>(
         return createTrace(response, span);
       } catch (error) {
         if (error instanceof Error) {
-          span.error(error.message);
+          span.recordException(error);
         } else {
           span.error(String(error));
         }
@@ -228,7 +219,43 @@ export function traceCall<CallT extends CallLike>(
         return response;
       } catch (error) {
         if (error instanceof Error) {
-          span.error(error.message);
+          span.recordException(error);
+        } else {
+          span.error(String(error));
+        }
+        throw error;
+      } finally {
+        span.finish();
+      }
+    }
+
+    return runInContext();
+  };
+
+  traced.wrappedStream = async (
+    ...args: unknown[]
+  ): Promise<Trace<unknown>> => {
+    const vars = args[0];
+    const span = createTracedCallSpan(callName, options, vars);
+
+    const otelSpan = span.otelSpan;
+    /* v8 ignore start - ternary branch with no-tracer case difficult to test */
+    const runInContext = otelSpan
+      ? () =>
+          otelContext.with(
+            otelTrace.setSpan(otelContext.active(), otelSpan),
+            execute,
+          )
+      : execute;
+    /* v8 ignore end */
+
+    async function execute(): Promise<Trace<unknown>> {
+      try {
+        const response = await call.stream(...args);
+        return createTrace(response, span);
+      } catch (error) {
+        if (error instanceof Error) {
+          span.recordException(error);
         } else {
           span.error(String(error));
         }
@@ -247,16 +274,4 @@ export function traceCall<CallT extends CallLike>(
   });
 
   return traced as TracedCall<CallT>;
-}
-
-/**
- * Type guard to check if a value is a Call-like object.
- */
-function isCallLike(value: unknown): value is CallLike {
-  return (
-    typeof value === "function" &&
-    "call" in value &&
-    "stream" in value &&
-    "prompt" in value
-  );
 }
