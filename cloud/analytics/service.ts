@@ -97,6 +97,8 @@ export interface TrackEventParams {
   distinctId?: string;
   /** Browser context for rich analytics data */
   browserContext?: BrowserContext;
+  /** Client IP address for PostHog geo-location (server-side only) */
+  clientIp?: string;
 }
 
 /**
@@ -111,6 +113,8 @@ export interface TrackPageViewParams {
   distinctId?: string;
   /** Browser context for rich analytics data */
   browserContext?: BrowserContext;
+  /** Client IP address for PostHog geo-location (server-side only) */
+  clientIp?: string;
 }
 
 /**
@@ -123,6 +127,8 @@ export interface IdentifyParams {
   properties?: Record<string, unknown>;
   /** Browser context for rich analytics data */
   browserContext?: BrowserContext;
+  /** Client IP address for PostHog geo-location (server-side only) */
+  clientIp?: string;
 }
 
 /**
@@ -214,6 +220,7 @@ export class Analytics extends Context.Tag("Analytics")<
                 distinctId: params.distinctId,
                 properties: params.properties,
                 browserContext: params.browserContext,
+                clientIp: params.clientIp,
               }),
             ],
             { concurrency: "unbounded" },
@@ -236,6 +243,7 @@ export class Analytics extends Context.Tag("Analytics")<
               postHog.trackPageView({
                 distinctId: params?.distinctId,
                 browserContext: params?.browserContext,
+                clientIp: params?.clientIp,
               }),
             ],
             { concurrency: "unbounded" },
@@ -255,6 +263,7 @@ export class Analytics extends Context.Tag("Analytics")<
                 distinctId: params.userId,
                 properties: params.properties,
                 browserContext: params.browserContext,
+                clientIp: params.clientIp,
               }),
             ],
             { concurrency: "unbounded" },

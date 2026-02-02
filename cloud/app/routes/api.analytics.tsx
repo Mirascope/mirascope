@@ -53,6 +53,12 @@ export const Route = createFileRoute("/api/analytics")({
         try {
           const body: AnalyticsEventRequest = await request.json();
 
+          // Extract client IP from Cloudflare headers for PostHog geo-location
+          const clientIp =
+            request.headers.get("CF-Connecting-IP") ||
+            request.headers.get("X-Forwarded-For")?.split(",")[0]?.trim() ||
+            undefined;
+
           await Effect.runPromise(
             Effect.gen(function* () {
               const analytics = yield* Analytics;
@@ -65,6 +71,7 @@ export const Route = createFileRoute("/api/analytics")({
                       properties: body.properties,
                       distinctId: body.distinctId,
                       browserContext: body.browserContext,
+                      clientIp,
                     });
                   }
                   break;
@@ -74,6 +81,7 @@ export const Route = createFileRoute("/api/analytics")({
                     title: body.title,
                     distinctId: body.distinctId,
                     browserContext: body.browserContext,
+                    clientIp,
                   });
                   break;
                 case "identify":
@@ -82,6 +90,7 @@ export const Route = createFileRoute("/api/analytics")({
                       userId: body.userId,
                       properties: body.properties,
                       browserContext: body.browserContext,
+                      clientIp,
                     });
                   }
                   break;

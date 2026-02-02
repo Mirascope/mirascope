@@ -55,6 +55,8 @@ export interface TrackEventParams {
   properties?: Record<string, unknown>;
   /** Browser context for rich analytics data */
   browserContext?: BrowserContext;
+  /** Client IP address for geo-location (server-side only) */
+  clientIp?: string;
 }
 
 /**
@@ -67,6 +69,8 @@ export interface TrackPageViewParams {
   properties?: Record<string, unknown>;
   /** Browser context for rich analytics data */
   browserContext?: BrowserContext;
+  /** Client IP address for geo-location (server-side only) */
+  clientIp?: string;
 }
 
 /**
@@ -79,6 +83,8 @@ export interface IdentifyParams {
   properties?: Record<string, unknown>;
   /** Browser context for rich analytics data */
   browserContext?: BrowserContext;
+  /** Client IP address for geo-location (server-side only) */
+  clientIp?: string;
 }
 
 /**
@@ -269,6 +275,7 @@ function createServerImplementation(config: PostHogConfig): PostHogClient {
     distinct_id?: string;
     properties?: Record<string, unknown>;
     browserContext?: BrowserContext;
+    clientIp?: string;
   }): Promise<void> => {
     const url = `${config.host}/capture/`;
 
@@ -280,12 +287,17 @@ function createServerImplementation(config: PostHogConfig): PostHogClient {
     const payload = {
       api_key: config.apiKey,
       event: eventData.event,
-      distinct_id: eventData.distinct_id || "anonymous",
+      // Priority: explicit distinctId > browserContext.anonymousId > "anonymous"
+      distinct_id:
+        eventData.distinct_id ||
+        eventData.browserContext?.anonymousId ||
+        "anonymous",
       properties: {
         ...posthogContext, // Browser context ($current_url, $browser, etc.)
         ...eventData.properties, // Event-specific properties override
       },
       timestamp: new Date().toISOString(),
+      ...(eventData.clientIp && { ip: eventData.clientIp }), // Client IP for geo-location
     };
 
     const response = await fetch(url, {
@@ -316,6 +328,7 @@ function createServerImplementation(config: PostHogConfig): PostHogClient {
             distinct_id: params.distinctId,
             properties: params.properties,
             browserContext: params.browserContext,
+            clientIp: params.clientIp,
           }),
         catch: (error) => {
           console.error("PostHog server trackEvent failed:", error);
@@ -331,6 +344,7 @@ function createServerImplementation(config: PostHogConfig): PostHogClient {
             distinct_id: params?.distinctId,
             properties: params?.properties,
             browserContext: params?.browserContext,
+            clientIp: params?.clientIp,
           }),
         catch: (error) => {
           console.error("PostHog server trackPageView failed:", error);
@@ -348,6 +362,9 @@ function createServerImplementation(config: PostHogConfig): PostHogClient {
             ? toPostHogProperties(params.browserContext)
             : {};
 
+          // Get anonymousId for user aliasing (links pre-login activity to authenticated user)
+          const anonymousId = params.browserContext?.anonymousId;
+
           const payload = {
             api_key: config.apiKey,
             event: "$identify",
@@ -355,8 +372,11 @@ function createServerImplementation(config: PostHogConfig): PostHogClient {
             properties: {
               ...posthogContext, // Browser context
               $set: params.properties || {},
+              // Link anonymous ID to authenticated user ID
+              ...(anonymousId && { $anon_distinct_id: anonymousId }),
             },
             timestamp: new Date().toISOString(),
+            ...(params.clientIp && { ip: params.clientIp }), // Client IP for geo-location
           };
 
           const response = await fetch(url, {

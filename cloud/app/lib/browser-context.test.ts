@@ -43,6 +43,7 @@ function createMockBrowserContext(
     libVersion: "1.0.0",
     insertId: "test-uuid-1234",
     timestamp: "2024-01-01T00:00:00.000Z",
+    anonymousId: "test-anonymous-id-1234",
     ...overrides,
   };
 }
@@ -281,6 +282,16 @@ describe("collectBrowserContext", () => {
       expect(ctx.insertId).toBeDefined();
       expect(ctx.timestamp).toBeDefined();
     });
+
+    it("generates fresh anonymousId for SSR (non-persistent)", () => {
+      const ctx = collectBrowserContext();
+
+      expect(ctx.anonymousId).toBeDefined();
+      // Should be a UUID format
+      expect(ctx.anonymousId).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+      );
+    });
   });
 
   describe("in browser environment", () => {
@@ -411,6 +422,29 @@ describe("collectBrowserContext", () => {
 
       expect(ctx.lib).toBe(LIBRARY_NAME);
       expect(ctx.libVersion).toBe(SITE_VERSION);
+    });
+
+    it("generates anonymousId on first visit", () => {
+      vi.stubGlobal("document", { referrer: "", title: "Test" });
+
+      const ctx = collectBrowserContext();
+
+      expect(ctx.anonymousId).toBe("test-uuid-1234-5678");
+      expect(mockStorage.get("mirascope_anonymous_id")).toBe(
+        "test-uuid-1234-5678",
+      );
+    });
+
+    it("returns stored anonymousId on subsequent visits", () => {
+      vi.stubGlobal("document", { referrer: "", title: "Test" });
+
+      // Pre-populate localStorage with existing anonymousId
+      mockStorage.set("mirascope_anonymous_id", "existing-anonymous-id");
+
+      const ctx = collectBrowserContext();
+
+      // Should return the stored ID, not generate a new one
+      expect(ctx.anonymousId).toBe("existing-anonymous-id");
     });
   });
 
@@ -747,6 +781,115 @@ describe("collectBrowserContext", () => {
       // Initial referrer still shows original source
       expect(ctx.initialReferrer).toBe("https://google.com/");
       expect(ctx.initialReferringDomain).toBe("google.com");
+    });
+  });
+
+  describe("anonymous ID tracking", () => {
+    let mockStorage: Map<string, string>;
+    let uuidCounter: number;
+
+    beforeEach(() => {
+      mockStorage = new Map();
+      uuidCounter = 0;
+
+      vi.stubGlobal("window", {
+        location: {
+          href: "https://mirascope.com/docs",
+          pathname: "/docs",
+          host: "mirascope.com",
+        },
+        screen: { width: 1920, height: 1080 },
+        innerWidth: 1600,
+        innerHeight: 900,
+      });
+
+      vi.stubGlobal("document", {
+        referrer: "",
+        title: "Test Page",
+      });
+
+      vi.stubGlobal("navigator", {
+        userAgent:
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/120.0.0.0",
+        language: "en-US",
+      });
+
+      // Generate incrementing UUIDs to verify persistence
+      vi.stubGlobal("crypto", {
+        randomUUID: () => `uuid-${++uuidCounter}`,
+      });
+
+      vi.stubGlobal("localStorage", {
+        getItem: (key: string) => mockStorage.get(key) ?? null,
+        setItem: (key: string, value: string) => mockStorage.set(key, value),
+        clear: () => mockStorage.clear(),
+      });
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it("generates and stores anonymousId on first visit", () => {
+      const ctx = collectBrowserContext();
+
+      expect(ctx.anonymousId).toBe("uuid-1");
+      expect(mockStorage.get("mirascope_anonymous_id")).toBe("uuid-1");
+    });
+
+    it("returns stored anonymousId on subsequent visits", () => {
+      // First visit
+      const ctx1 = collectBrowserContext();
+      expect(ctx1.anonymousId).toBe("uuid-1");
+
+      // Second visit - should return same ID
+      const ctx2 = collectBrowserContext();
+      expect(ctx2.anonymousId).toBe("uuid-1");
+
+      // Verify UUID generator was only called once for anonymousId
+      // (note: insertId also uses the generator, so we check the stored value)
+      expect(mockStorage.get("mirascope_anonymous_id")).toBe("uuid-1");
+    });
+
+    it("preserves anonymousId across page navigations", () => {
+      // Pre-existing anonymousId from previous session
+      mockStorage.set("mirascope_anonymous_id", "existing-user-id");
+
+      const ctx = collectBrowserContext();
+
+      expect(ctx.anonymousId).toBe("existing-user-id");
+      // Should not have generated a new ID
+      expect(mockStorage.get("mirascope_anonymous_id")).toBe(
+        "existing-user-id",
+      );
+    });
+
+    it("handles localStorage unavailable gracefully", () => {
+      // Mock localStorage to throw (simulating private browsing)
+      vi.stubGlobal("localStorage", {
+        getItem: () => {
+          throw new Error("Access denied");
+        },
+        setItem: () => {
+          throw new Error("Access denied");
+        },
+      });
+
+      // Should not throw and generate a fresh UUID
+      const ctx = collectBrowserContext();
+
+      expect(ctx.anonymousId).toBeDefined();
+      expect(ctx.anonymousId).toMatch(/^uuid-\d+$/);
+    });
+
+    it("generates different anonymousId and insertId", () => {
+      const ctx = collectBrowserContext();
+
+      // anonymousId should be persistent (uuid-1)
+      // insertId should be unique per event (uuid-2)
+      expect(ctx.anonymousId).toBe("uuid-1");
+      expect(ctx.insertId).toBe("uuid-2");
+      expect(ctx.anonymousId).not.toBe(ctx.insertId);
     });
   });
 });

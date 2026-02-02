@@ -234,8 +234,6 @@ function createClientImplementation(
 function createServerImplementation(
   config: GoogleAnalyticsConfig,
 ): GoogleAnalyticsClient {
-  // Generate a stable client ID (in production, this should be user/session based)
-  const clientId = "server_" + Date.now();
   let currentUserId: string | null = null;
 
   const sendEvent = async (eventData: {
@@ -249,6 +247,10 @@ function createServerImplementation(
     const ga4Context = eventData.browserContext
       ? toGA4Properties(eventData.browserContext)
       : {};
+
+    // Use anonymousId from browserContext, fallback to timestamp-based ID
+    const clientId =
+      eventData.browserContext?.anonymousId || "server_" + Date.now();
 
     const payload = {
       client_id: clientId,

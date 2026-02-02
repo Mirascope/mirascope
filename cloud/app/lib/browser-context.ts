@@ -53,6 +53,9 @@ export interface BrowserContext {
   readonly libVersion: string;
   readonly insertId: string;
   readonly timestamp: string;
+
+  // Anonymous user ID (persisted in localStorage for user deduplication)
+  readonly anonymousId: string;
 }
 
 /**
@@ -112,9 +115,10 @@ export function extractDomain(url: string): string {
 }
 
 /**
- * Generates a UUID v4 for event deduplication.
+ * Generates a UUID v4.
+ * Used for anonymousId (user deduplication) and insertId (event deduplication).
  */
-function generateInsertId(): string {
+function generateUUID(): string {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
     return crypto.randomUUID();
   }
@@ -248,9 +252,10 @@ function detectDevice(userAgent: string): string {
   return "Unknown";
 }
 
-// localStorage keys for initial referrer persistence
+// localStorage keys for persistence
 const INITIAL_REFERRER_KEY = "mirascope_initial_referrer";
 const INITIAL_REFERRING_DOMAIN_KEY = "mirascope_initial_referring_domain";
+const ANONYMOUS_ID_KEY = "mirascope_anonymous_id";
 
 /**
  * Safely reads from localStorage.
@@ -307,6 +312,23 @@ function getOrInitializeInitialReferrer(): {
 }
 
 /**
+ * Gets or initializes the anonymous user ID.
+ * - On first visit: generates UUID and stores in localStorage
+ * - On subsequent visits: returns stored value
+ * - If localStorage unavailable: generates fresh UUID (no persistence)
+ */
+function getOrInitializeAnonymousId(): string {
+  const storedId = safeLocalStorageGet(ANONYMOUS_ID_KEY);
+  if (storedId) {
+    return storedId;
+  }
+
+  const newId = generateUUID();
+  safeLocalStorageSet(ANONYMOUS_ID_KEY, newId);
+  return newId;
+}
+
+/**
  * Collects browser context from the current window.
  * Should only be called in browser environment.
  */
@@ -334,7 +356,8 @@ export function collectBrowserContext(): BrowserContext {
       language: "",
       lib: LIBRARY_NAME,
       libVersion: SITE_VERSION,
-      insertId: generateInsertId(),
+      anonymousId: generateUUID(), // Fresh ID for SSR (won't persist)
+      insertId: generateUUID(),
       timestamp: new Date().toISOString(),
     };
   }
@@ -376,7 +399,8 @@ export function collectBrowserContext(): BrowserContext {
     // Metadata
     lib: LIBRARY_NAME,
     libVersion: SITE_VERSION,
-    insertId: generateInsertId(),
+    anonymousId: getOrInitializeAnonymousId(),
+    insertId: generateUUID(),
     timestamp: new Date().toISOString(),
   };
 }
