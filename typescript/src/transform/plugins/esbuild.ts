@@ -1,5 +1,5 @@
 /**
- * esbuild plugin for Mirascope tool schema transformation.
+ * esbuild plugin for Mirascope tool schema transformations.
  *
  * This plugin uses the TypeScript compiler instead of esbuild's built-in
  * TypeScript support to ensure access to type information for schema generation.
@@ -115,12 +115,15 @@ export function mirascope(options: MirascopeEsbuildPluginOptions = {}): Plugin {
           // Read the source file
           const sourceText = await fs.promises.readFile(fileName, "utf-8");
 
-          // Check if this file contains defineTool or defineContextTool
+          // Check if this file contains functions that need transformation
           // If not, we can skip the expensive transformation
-          if (
-            !sourceText.includes("defineTool") &&
-            !sourceText.includes("defineContextTool")
-          ) {
+          const needsTransform =
+            sourceText.includes("defineTool") ||
+            sourceText.includes("defineContextTool") ||
+            sourceText.includes("defineFormat") ||
+            sourceText.includes("version");
+
+          if (!needsTransform) {
             return {
               contents: sourceText,
               loader: fileName.endsWith(".tsx") ? "tsx" : "ts",

@@ -466,6 +466,179 @@ const tool = defineTool<{ x: string }>(opts);`;
   });
 });
 
+describe("version transform", () => {
+  it("injects __closure for version() with inline arrow function", () => {
+    const source = `const fn = version(async (text: string): Promise<number[]> => {
+  return [1, 2, 3];
+});`;
+
+    const result = transformSource(source);
+    expect(result).toContain("__closure");
+    expect(result).toContain("code");
+    expect(result).toContain("hash");
+    expect(result).toContain("signature");
+    expect(result).toContain("signatureHash");
+  });
+
+  it("infers variable name from assignment", () => {
+    const source = `const myFunction = version(async (x: string) => x.toUpperCase());`;
+
+    const result = transformSource(source);
+    // Should inject the inferred name "myFunction"
+    expect(result).toContain('name: "myFunction"');
+  });
+
+  it("does not override explicit name with inferred name", () => {
+    const source = `const myFunction = version(async (x: string) => x, {
+  name: "explicit-name",
+});`;
+
+    const result = transformSource(source);
+    // Should keep the explicit name, not use "myFunction"
+    expect(result).toContain('name: "explicit-name"');
+    expect(result).not.toContain('name: "myFunction"');
+  });
+
+  it("injects __closure with correct signature for arrow function", () => {
+    const source = `const fn = version(async (text: string): Promise<number[]> => {
+  return [1, 2, 3];
+});`;
+
+    const result = transformSource(source);
+    expect(result).toContain("(text: string): Promise<number[]>");
+  });
+
+  it("injects __closure for version() with function expression", () => {
+    const source = `const fn = version(async function compute(x: number) {
+  return x * 2;
+});`;
+
+    const result = transformSource(source);
+    expect(result).toContain("__closure");
+    expect(result).toContain("hash");
+  });
+
+  it("merges __closure into existing options object", () => {
+    const source = `const fn = version(async (x: string) => x, {
+  name: "my-function",
+  tags: ["prod"],
+});`;
+
+    const result = transformSource(source);
+    expect(result).toContain("__closure");
+    expect(result).toContain('name: "my-function"');
+    expect(result).toContain('tags: ["prod"]');
+  });
+
+  it("does not override existing __closure", () => {
+    const source = `const fn = version(async (x: string) => x, {
+  name: "test",
+  __closure: { code: "existing", hash: "abc", signature: "()", signatureHash: "def" },
+});`;
+
+    const result = transformSource(source);
+    // Should only have one __closure
+    expect((result.match(/__closure/g) ?? []).length).toBe(1);
+    expect(result).toContain('code: "existing"');
+  });
+
+  it("handles ops.version() property access syntax", () => {
+    const source = `const fn = ops.version(async (x: number) => x * 2);`;
+
+    const result = transformSource(source);
+    expect(result).toContain("__closure");
+    expect(result).toContain("hash");
+  });
+
+  it("computes different hashes for different functions", () => {
+    const source1 = `const fn1 = version(async (x: string) => x.toUpperCase());`;
+    const source2 = `const fn2 = version(async (x: string) => x.toLowerCase());`;
+
+    const result1 = transformSource(source1);
+    const result2 = transformSource(source2);
+
+    // Extract hash values from results
+    const hashMatch1 = result1.match(/hash: "([a-f0-9]+)"/);
+    const hashMatch2 = result2.match(/hash: "([a-f0-9]+)"/);
+
+    expect(hashMatch1).not.toBeNull();
+    expect(hashMatch2).not.toBeNull();
+    expect(hashMatch1![1]).not.toBe(hashMatch2![1]);
+  });
+
+  it("computes same hash for same-named identical functions", () => {
+    // Hash includes the full declaration (const name = ...), so same variable names
+    // and function bodies should produce the same hash
+    const source1 = `const fn = version(async (x: string) => x.toUpperCase());`;
+    const source2 = `const fn = version(async (x: string) => x.toUpperCase());`;
+
+    const result1 = transformSource(source1);
+    const result2 = transformSource(source2);
+
+    // Extract hash values from results
+    const hashMatch1 = result1.match(/hash: "([a-f0-9]+)"/);
+    const hashMatch2 = result2.match(/hash: "([a-f0-9]+)"/);
+
+    expect(hashMatch1).not.toBeNull();
+    expect(hashMatch2).not.toBeNull();
+    expect(hashMatch1![1]).toBe(hashMatch2![1]);
+  });
+
+  it("computes different hash for different-named identical functions", () => {
+    // Since the closure includes the full declaration (const fn1 = ... vs const fn2 = ...),
+    // different variable names produce different hashes even with identical bodies
+    const source1 = `const fn1 = version(async (x: string) => x.toUpperCase());`;
+    const source2 = `const fn2 = version(async (x: string) => x.toUpperCase());`;
+
+    const result1 = transformSource(source1);
+    const result2 = transformSource(source2);
+
+    // Extract hash values from results
+    const hashMatch1 = result1.match(/hash: "([a-f0-9]+)"/);
+    const hashMatch2 = result2.match(/hash: "([a-f0-9]+)"/);
+
+    expect(hashMatch1).not.toBeNull();
+    expect(hashMatch2).not.toBeNull();
+    // Different variable names = different hashes (because closure includes full declaration)
+    expect(hashMatch1![1]).not.toBe(hashMatch2![1]);
+  });
+
+  it("leaves curried version(options) unchanged (no fn available)", () => {
+    const source = `const withVersion = version({ name: "test", tags: ["v1"] });`;
+
+    const result = transformSource(source);
+    // Should not inject __closure since we don't have the function
+    expect(result).not.toContain("__closure");
+    expect(result).toContain('name: "test"');
+  });
+
+  it("leaves non-version calls unchanged", () => {
+    const source = `const result = someOtherFunction(async (x: string) => x);`;
+
+    const result = transformSource(source);
+    expect(result).not.toContain("__closure");
+  });
+
+  it("leaves version calls without function argument unchanged", () => {
+    const source = `const fn = version();`;
+
+    const result = transformSource(source);
+    expect(result).not.toContain("__closure");
+  });
+
+  it("captures full function body in code field", () => {
+    const source = `const fn = version(async (data: { name: string }) => {
+  const processed = data.name.trim();
+  return processed.length;
+});`;
+
+    const result = transformSource(source);
+    expect(result).toContain("__closure");
+    // The code should contain the function body
+    expect(result).toContain("data.name.trim()");
+  });
+});
+
 describe("transformer default export", () => {
   it("returns the same transformer as createToolSchemaTransformer", () => {
     const fileName = "test.ts";
