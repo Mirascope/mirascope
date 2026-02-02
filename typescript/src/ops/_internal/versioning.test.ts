@@ -523,6 +523,51 @@ describe("versioning", () => {
     });
   });
 
+  describe("version() - unified API with Call objects", () => {
+    // Create a mock Call-like object
+    function createMockCall() {
+      // Use a named function for the template to avoid readonly name issue
+      function mockTemplate({ query }: { query: string }) {
+        return `Hello ${query}`;
+      }
+      const mockCall = Object.assign(async () => ({ text: () => "response" }), {
+        call: async () => ({ text: () => "response" }),
+        stream: async () => ({ text: () => "stream" }),
+        template: mockTemplate,
+        prompt: { template: mockTemplate },
+      });
+      return mockCall;
+    }
+
+    it("should detect Call objects and delegate to versionCall", async () => {
+      const mockCall = createMockCall();
+      const versioned = version(mockCall, { name: "test-call" });
+
+      expect(versioned.versionInfo).toBeTruthy();
+      expect(versioned.versionInfo.name).toBe("test-call");
+    });
+
+    it("should support curried form with Call objects", async () => {
+      const mockCall = createMockCall();
+      const withVersion = version({ name: "curried-call", tags: ["test"] });
+      const versioned = withVersion(mockCall);
+
+      expect(versioned.versionInfo).toBeTruthy();
+      expect(versioned.versionInfo.name).toBe("curried-call");
+      expect(versioned.versionInfo.tags).toEqual(["test"]);
+    });
+
+    it("should still handle functions in curried form", async () => {
+      const withVersion = version({ name: "curried-fn", tags: ["test"] });
+      const fn = async (x: number) => x * 2;
+      const versioned = withVersion(fn);
+
+      const result = await versioned(5);
+      expect(result).toBe(10);
+      expect(versioned.versionInfo.name).toBe("curried-fn");
+    });
+  });
+
   describe("function registration", () => {
     it("should use existing function when found by hash", async () => {
       const { getClient } = await import("@/api/client");

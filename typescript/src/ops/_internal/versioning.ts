@@ -1,8 +1,10 @@
 /**
- * Versioning wrapper for functions.
+ * Versioning wrapper for functions and calls.
  *
- * Provides the version() function for wrapping async functions with
- * closure-based versioning and tracing instrumentation.
+ * Provides the version() function for wrapping async functions OR Call objects
+ * with closure-based versioning and tracing instrumentation.
+ *
+ * This unified API matches Python's @ops.version decorator pattern.
  */
 
 import { context as otelContext, trace as otelTrace } from "@opentelemetry/api";
@@ -12,6 +14,13 @@ import type { VersionOptions } from "@/ops/_internal/types";
 
 import { Span } from "@/ops/_internal/spans";
 import {
+  versionCall,
+  isCallLike,
+  type VersionedCall,
+  type CallLike,
+} from "@/ops/_internal/versioned-calls";
+import {
+  computeVersion,
   createVersionedResult,
   type ClosureMetadata,
   type VersionInfo,
@@ -19,8 +28,9 @@ import {
   type VersionedResult,
 } from "@/ops/_internal/versioned-functions";
 
-// Re-export VersionedFunction for convenience
+// Re-export types for convenience
 export type { VersionedFunction } from "@/ops/_internal/versioned-functions";
+export type { VersionedCall, CallLike } from "@/ops/_internal/versioned-calls";
 import { getClient } from "@/api/client";
 import { jsonStringify, type NamedCallable } from "@/ops/_internal/utils";
 
@@ -124,10 +134,41 @@ export function version<Args extends unknown[], R>(
 ): VersionedFunction<Args, R>;
 
 /**
+ * Wrap a Call object with versioning and tracing instrumentation.
+ *
+ * This overload handles Call objects created with defineCall().
+ * The version is computed from the call's template function.
+ *
+ * @param call - The call to version
+ * @param options - Optional version options (name, tags, metadata)
+ * @returns A versioned call with versionInfo property
+ *
+ * @example
+ * ```typescript
+ * const recommendBook = defineCall({
+ *   model: 'anthropic/claude-sonnet-4-20250514',
+ *   template: ({ genre }: { genre: string }) => `Recommend a ${genre} book`,
+ * });
+ *
+ * const versionedCall = version(recommendBook, {
+ *   name: 'recommend-book-v1',
+ *   tags: ['production']
+ * });
+ *
+ * console.log(versionedCall.versionInfo.hash);
+ * const response = await versionedCall({ genre: 'fantasy' });
+ * ```
+ */
+export function version<CallT extends CallLike>(
+  call: CallT,
+  options?: VersionOptionsWithClosure,
+): VersionedCall<CallT>;
+
+/**
  * Create a versioning wrapper with options (curried form).
  *
  * @param options - Version options (name, tags, metadata)
- * @returns A function that accepts the function to version
+ * @returns A function that accepts the function or call to version
  *
  * @example
  * ```typescript
@@ -135,28 +176,57 @@ export function version<Args extends unknown[], R>(
  * const versionedFn = withVersion(async (x: number) => x * 2);
  * ```
  */
-export function version(
-  options: VersionOptionsWithClosure,
-): <Args extends unknown[], R>(
-  fn: (...args: Args) => Promise<R>,
-) => VersionedFunction<Args, R>;
+export function version(options: VersionOptionsWithClosure): {
+  <Args extends unknown[], R>(
+    fn: (...args: Args) => Promise<R>,
+  ): VersionedFunction<Args, R>;
+  <CallT extends CallLike>(call: CallT): VersionedCall<CallT>;
+};
 
-export function version<Args extends unknown[], R>(
-  fnOrOptions: ((...args: Args) => Promise<R>) | VersionOptionsWithClosure,
+export function version<Args extends unknown[], R, CallT extends CallLike>(
+  fnOrCallOrOptions:
+    | ((...args: Args) => Promise<R>)
+    | CallT
+    | VersionOptionsWithClosure,
   maybeOptions?: VersionOptionsWithClosure,
 ):
   | VersionedFunction<Args, R>
-  | (<A extends unknown[], T>(
-      fn: (...args: A) => Promise<T>,
-    ) => VersionedFunction<A, T>) {
-  // Curried form: version(options)(fn)
-  if (typeof fnOrOptions !== "function") {
-    const options = fnOrOptions;
-    return <A extends unknown[], T>(fn: (...args: A) => Promise<T>) =>
-      version(fn, options);
+  | VersionedCall<CallT>
+  | {
+      <A extends unknown[], T>(
+        fn: (...args: A) => Promise<T>,
+      ): VersionedFunction<A, T>;
+      <C extends CallLike>(call: C): VersionedCall<C>;
+    } {
+  // Curried form: version(options)(fn or call)
+  if (typeof fnOrCallOrOptions !== "function") {
+    const options = fnOrCallOrOptions as VersionOptionsWithClosure;
+    // Return a function that handles both functions and calls
+    return (<T>(target: T) => {
+      if (isCallLike(target)) {
+        return versionCall(target, options);
+      }
+      return version(
+        target as (...args: unknown[]) => Promise<unknown>,
+        options,
+      );
+    }) as {
+      <A extends unknown[], T>(
+        fn: (...args: A) => Promise<T>,
+      ): VersionedFunction<A, T>;
+      <C extends CallLike>(call: C): VersionedCall<C>;
+    };
   }
 
-  const fn = fnOrOptions;
+  // Check if it's a Call object - delegate to versionCall
+  if (isCallLike(fnOrCallOrOptions)) {
+    return versionCall(
+      fnOrCallOrOptions,
+      maybeOptions,
+    ) as unknown as VersionedCall<CallT>;
+  }
+
+  const fn = fnOrCallOrOptions as (...args: Args) => Promise<R>;
   const options = maybeOptions ?? {};
   const tags = [...new Set(options.tags ?? [])].sort();
   const metadata = options.metadata ?? {};
@@ -178,6 +248,8 @@ export function version<Args extends unknown[], R>(
     signatureHash: closure.signatureHash,
     /* v8 ignore next - name fallback chain branches */
     name: options.name || fn.name || "anonymous",
+    description: undefined, // Docstring extraction not yet supported in TypeScript
+    version: computeVersion(closure.hash),
     tags,
     metadata,
   };
@@ -253,7 +325,7 @@ export function version<Args extends unknown[], R>(
         return result;
       } catch (error) {
         if (error instanceof Error) {
-          span.error(error.message);
+          span.recordException(error);
         } else {
           span.error(String(error));
         }
@@ -287,7 +359,7 @@ export function version<Args extends unknown[], R>(
         return createVersionedResult(result, span, functionUuid);
       } catch (error) {
         if (error instanceof Error) {
-          span.error(error.message);
+          span.recordException(error);
         } else {
           span.error(String(error));
         }
@@ -298,6 +370,14 @@ export function version<Args extends unknown[], R>(
     }
 
     return runInContext();
+  };
+
+  versioned.getVersion = async (
+    _versionId: string,
+  ): Promise<VersionedFunction<Args, R>> => {
+    throw new Error(
+      "getVersion is not yet implemented. Version retrieval will be available in a future release.",
+    );
   };
 
   Object.defineProperty(versioned, "versionInfo", {

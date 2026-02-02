@@ -48,15 +48,15 @@ describe("configuration", () => {
       expect(getTracer()).not.toBeNull();
     });
 
-    it("should accept baseUrl option", () => {
-      configure({ baseUrl: "https://custom.example.com" });
+    it("should accept baseURL option", () => {
+      configure({ baseURL: "https://custom.example.com" });
       expect(getTracer()).not.toBeNull();
     });
 
     it("should accept multiple options", () => {
       configure({
         apiKey: "test-key",
-        baseUrl: "https://custom.example.com",
+        baseURL: "https://custom.example.com",
         tracerName: "my.tracer",
         tracerVersion: "2.0.0",
       });

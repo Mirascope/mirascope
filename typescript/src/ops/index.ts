@@ -39,30 +39,49 @@ export {
   propagatedContext,
 } from "@/ops/_internal/propagation";
 
-// Tracing
+// Tracing (unified API - handles both functions and calls)
 export { trace } from "@/ops/_internal/tracing";
-export type { TracedFunction } from "@/ops/_internal/tracing";
+export type {
+  TracedFunction,
+  TracedCall,
+  CallLike,
+} from "@/ops/_internal/tracing";
 
-// Traced Calls
+/**
+ * @deprecated Use `trace()` instead, which now handles both functions and calls.
+ * @example
+ * // Old usage:
+ * const tracedCall = traceCall(myCall, options);
+ * // New unified usage:
+ * const tracedCall = trace(myCall, options);
+ */
 export { traceCall } from "@/ops/_internal/traced-calls";
-export type { TracedCall } from "@/ops/_internal/traced-calls";
 
 // Trace Result
 export { createTrace } from "@/ops/_internal/traced-functions";
 export type { Trace, AnnotateOptions } from "@/ops/_internal/traced-functions";
 
-// Versioning
+// Versioning (unified API - handles both functions and calls)
 export { version } from "@/ops/_internal/versioning";
-export type { VersionedFunction } from "@/ops/_internal/versioned-functions";
+export type {
+  VersionedFunction,
+  VersionedCall,
+} from "@/ops/_internal/versioning";
 export type {
   ClosureMetadata,
   VersionInfo,
   VersionedResult,
 } from "@/ops/_internal/versioned-functions";
 
-// Versioned Calls
+/**
+ * @deprecated Use `version()` instead, which now handles both functions and calls.
+ * @example
+ * // Old usage:
+ * const versionedCall = versionCall(myCall, options);
+ * // New unified usage:
+ * const versionedCall = version(myCall, options);
+ */
 export { versionCall } from "@/ops/_internal/versioned-calls";
-export type { VersionedCall } from "@/ops/_internal/versioned-calls";
 
 // Exporters
 export { MirascopeOTLPExporter } from "@/ops/_internal/exporters";

@@ -195,6 +195,36 @@ describe("traced-functions", () => {
     });
   });
 
+  describe("Trace.tag()", () => {
+    it("should throw NotImplementedError", async () => {
+      const span = new Span("test-span");
+      span.start();
+
+      const traced = createTrace("result", span);
+
+      await expect(traced.tag("tag1", "tag2")).rejects.toThrow(
+        "tag() is not yet implemented. Tagging will be available in a future release.",
+      );
+
+      span.finish();
+    });
+  });
+
+  describe("Trace.assign()", () => {
+    it("should throw NotImplementedError", async () => {
+      const span = new Span("test-span");
+      span.start();
+
+      const traced = createTrace("result", span);
+
+      await expect(traced.assign("user@example.com")).rejects.toThrow(
+        "assign() is not yet implemented. Assignment will be available in a future release.",
+      );
+
+      span.finish();
+    });
+  });
+
   describe("Trace interface", () => {
     it("should work with any result type", () => {
       const span = new Span("test-span");
