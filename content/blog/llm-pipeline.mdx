@@ -1,11 +1,11 @@
 ---
-title: "Building an LLM Pipeline - Tools and Techniques"
-description: "Learn how to build an efficient LLM pipeline, focusing on effective data handling and query generation techniques for retrieval augmented generation."
+author: William Bakst
 date: "2024-08-10"
-readTime: "11 min read"
-author: "William Bakst"
+updatedAt: "2026-01-28"
+description: Learn how to build an efficient LLM pipeline, focusing on effective data handling and query generation techniques for retrieval augmented generation.
+readTime: 11 min read
+title: Building an LLM Pipeline - Tools and Techniques
 ---
-
 
 An LLM pipeline-in the context of building applications based on language models-refers to the stages of a data workflow for ensuring that data is properly sourced, preprocessed, and integrated to obtain the best model results.
 
@@ -89,20 +89,24 @@ To start off, here’s the entire RAG code example we’ll use, and which we’l
 
 Now we’ll go through each important part of this example:
 
-```python
+```python-snippet-skip
+import bs4
+from langchain_chroma import Chroma
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from mirascope.core import openai
+from mirascope import llm
 
 # Load and chunk the contents of the blog.
 
 loader = WebBaseLoader(
     web_paths=("https://lilianweng.github.io/posts/2023-06-23-agent/",),
-    bs_kwargs=dict(
-        parse_only=bs4.SoupStrainer(
+    bs_kwargs={
+        "parse_only": bs4.SoupStrainer(
             class_=("post-content", "post-title", "post-header")
         )
-  ),
+    },
 )
 docs = loader.load()
 
@@ -113,50 +117,42 @@ splits = text_splitter.split_documents(docs)
 
 vector_store = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings())
 
-@openai.call("gpt-4o-mini")
-@prompt_template(
-   """
-   Here is some context related to a query: {context}
-   Answer this query using the given context: {query}
-   """
-)
-def query_documents(query: str, vector_store: Chroma) -> openai.OpenAIDynamicConfig:
-   """Answers a query by retrieving documents related to the query."""
-   documents = vector_store.similarity_search(query=query, k=3)
-   return {
-       "computed_fields": {
-           "context": [document.page_content for document in documents]
-       }
-   }
+@llm.call("openai/gpt-4o-mini")
+def query_documents(query: str, vector_store: Chroma):
+    """Answers a query by retrieving documents related to the query."""
+    documents = vector_store.similarity_search(query=query, k=3)
+    context = [document.page_content for document in documents]
+    return f"""Here is some context related to a query: {context}
+Answer this query using the given context: {query}"""
 
 query = "What are some common choices for ANN algorithms in fast MIPS?"
-print(query_documents(query=query, vector_store=vector_store))
+response = query_documents(query=query, vector_store=vector_store)
+print(response.text())
 
 # > Some common choices for approximate nearest neighbors (ANN) include...
-
 ```
 
 ### Step 1: Setting Up
 
 First, we set up our pipeline by installing the necessary modules for ingestion and preprocessing:
 
-```python
+```python-snippet-skip
 import bs4
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from mirascope.core import openai
+from mirascope import llm
 ```
 
-We’ll need to install modules from both LangChain and Mirascope: ‍
+We'll need to install modules from both LangChain and Mirascope:
 
 * `WebBaseLoader` is a text loader for blog articles (note that LangChain offers many different kinds of loaders for different data types, such as CSV, markdown, PDF, etc.).
-* `RecursiveCharacterTextSplitter` is a preprocessing task ensuring that documents and information we’re loading fits into the model’s context window.
-* LangChain’s `OpenAIEmbeddings` converts text into vectors.
-* Chroma is the vector store that’ll be our content database.
-* Mirascope’s `openai` module adds convenience around interactions with OpenAI’s large language models.
+* `RecursiveCharacterTextSplitter` is a preprocessing task ensuring that documents and information we're loading fits into the model's context window.
+* LangChain's `OpenAIEmbeddings` converts text into vectors.
+* Chroma is the vector store that'll be our content database.
+* Mirascope's `llm` module adds convenience around interactions with large language models.
 
 ### Step 2: Data Sourcing and Ingestion
 
@@ -166,8 +162,7 @@ As we pointed out earlier, low-quality content (e.g., containing inaccurate or i
 
 In the following sample, we load a blog page and split it into smaller chunks: ‍
 
-```python
-
+```python-snippet-skip
 # Load and chunk the contents of the blog.
 
 loader = WebBaseLoader(
@@ -194,8 +189,7 @@ One main tradeoff with chunk size is that larger chunks tend to capture more con
 
 Next, we encode each chunk as a vector using Chroma’s embedding model, with metadata being extracted and stored separately for indexing purposes. ‍
 
-```python
-
+```python-snippet-skip
 # Embed and index the contents of the blog
 
 vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings())
@@ -208,32 +202,22 @@ vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings
 
 Lastly, we slot in code from Mirascope to create a prompt where you can ask a question about the retrieved documents (in this case, the original blog post about LLM powered agents).
 
-Besides the query in the [prompt template](/blog/langchain-prompt-template) you see below, note that we also retrieve relevant contextual information from the vector database to go along with our query, before sending everything together in our call to the model: ‍
+Besides the query in the prompt you see below, note that we also retrieve relevant contextual information from the vector database to go along with our query, before sending everything together in our call to the model:
 
-```python
-@openai.call("gpt-4o-mini")
-@prompt_template(
-   """
-   Here is some context related to a query: {context}
-   Answer this query using the given context: {query}
-   """
-)
-def query_documents(
-    query: str, vector_store: Chroma
-) -> openai.OpenAIDynamicConfig:
-   """Answers a query by retrieving documents related to the query."""
-   documents = vector_store.similarity_search(query=query, k=3)
-   return {
-       "computed_fields": {
-           "context": [document.page_content for document in documents]
-       }
-   }
+```python-snippet-skip
+@llm.call("openai/gpt-4o-mini")
+def query_documents(query: str, vector_store: Chroma):
+    """Answers a query by retrieving documents related to the query."""
+    documents = vector_store.similarity_search(query=query, k=3)
+    context = [document.page_content for document in documents]
+    return f"""Here is some context related to a query: {context}
+Answer this query using the given context: {query}"""
 ```
 
 * The `query_documents` function generates a prompt for the model to answer a query using the retrieved context. When the function is called with a `query`, it retrieves all documents related to that query from a storage system (`vector_store`), extracting the text from these documents and compiling them into a list of `Document`s.
-* Within dynamic configuration, we take the `page_content` attribute of each `Document` and include this as `context`.
-* We call the model via our `@openai.call()` decorator.
-* The model uses the returned configuration to replace the `{**context**}` placeholder in the prompt template.
+* We take the `page_content` attribute of each `Document` and include this as `context` in the returned prompt string.
+* We call the model via our `@llm.call()` decorator.
+* The function returns a formatted string that becomes the prompt sent to the model.
 
 Above, we showcased a practical example of setting up a RAG pipeline using LangChain to load, chunk, and embed data from a blog, and Mirascope to generate a context-aware book recommendation query.
 
@@ -241,4 +225,4 @@ Above, we showcased a practical example of setting up a RAG pipeline using LangC
 
 Building an efficient LLM pipeline involves several key components, including data ingestion, preprocessing, and query generation. Mirascope’s [prompting capabilities and management](/blog/prompt-versioning) help deliver accurate and contextually relevant responses from the language model.
 
-‍Want to learn more? You can find more Mirascope code samples both on our [docs](/docs/mirascope) and on our [GitHub page](https://github.com/mirascope/mirascope).
+Want to learn more? You can find more Mirascope code samples both on our [docs](/docs) and on our [GitHub page](https://github.com/mirascope/mirascope).

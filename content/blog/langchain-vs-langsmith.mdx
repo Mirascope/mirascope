@@ -1,7 +1,8 @@
 ---
-title: "Comparing LangChain vs LangSmith vs Lilypad  "
-description: "LangChain vs LangSmith: what’s the real difference? This guide compares both, and introduces Lilypad as a developer-friendly alternative for prompt observability and testing."
+title: "Comparing LangChain vs LangSmith vs Mirascope Cloud"
+description: "LangChain vs LangSmith: what's the real difference? This guide compares both, and introduces Mirascope Cloud as a developer-friendly alternative for prompt observability and testing."
 date: "2025-08-06"
+updatedAt: "2026-01-28"
 readTime: "7 min read"
 author: "William Bakst"
 ---
@@ -23,11 +24,11 @@ Both LangSmith and LangChain are basically the same ecosystem and work well toge
 * In LangSmith, prompts are versioned separately from the code that uses them, which can make systems brittle.  
 * You also need to manually save prompts to version them (versioning isn’t automatic).
 
-To solve these issues, we designed [Mirascope](https://github.com/mirascope/mirascope), an LLM toolkit for building applications, and [Lilypad](/docs/lilypad), an open-source solution that makes LLM calls easy to repeat, test, and improve.
+To solve these issues, we designed [Mirascope](https://github.com/mirascope/mirascope), an LLM toolkit for building applications, and [Mirascope Cloud](/docs/learn/ops), an open-source solution that makes LLM calls easy to repeat, test, and improve.
 
 In this article, we first discuss how LangChain and LangSmith fit into a typical application development workflow and the situations when you need one, the other, or both.
 
-Then we present Lilypad as an alternative to LangSmith, and show how you can use it to track, evaluate, and optimize AI applications with less overhead, more transparency, and in a workflow that feels like standard software development.
+Then we present Mirascope Cloud as an alternative to LangSmith, and show how you can use it to track, evaluate, and optimize AI applications with less overhead, more transparency, and in a workflow that feels like standard software development.
 
 ## How LangChain and LangSmith Work
 
@@ -53,8 +54,8 @@ It offers a flexible Python API centered around the `Runnable` interface, which 
 
 A simple LCEL chain might look like: 
 
-```python
-chain = prompt | model | output_parser 
+```python-snippet-skip
+chain = prompt | model | output_parser
 ```
 
 This format works well for straightforward pipelines, being compact, readable, and easy to compose when you're dealing with single-step prompts or small utilities.
@@ -67,7 +68,7 @@ For example, an internal service chatbot might pass a query asking about the sta
 
 A prompt formats the query for processing and `runnable.bind(stop=”END”)` tells the LLM to stop generating a response once it encounters the keyword `”END”`:
 
-```python
+```python-snippet-skip
 from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser
@@ -95,20 +96,15 @@ What about using just plain Python (and a little bit of [Mirascope](https://gith
 ```python
 from mirascope import llm
 
-@llm.call(
-     provider="openai",
-     model="gpt-4o-mini",
-     call_params={"stop": "END"}, 
-     output_parser=str
-)
+@llm.call("openai/gpt-4o-mini", stop=["END"])
 def answer_question(question: str):
     return question
 
 response = answer_question("What is the status of my expense reimbursement request?")
-print(response)
+print(response.text())
 ```
 
-The above code uses a Python function decorated with `@llm.call` to directly define LLM interactions, avoiding intermediary abstractions like operators or runnables and simplifying the logic into a single function that includes built-in output parsing that lets you write your output parsers using standard Python functions rather than requiring additional abstractions.
+The above code uses a Python function decorated with `@llm.call` to directly define LLM interactions, avoiding intermediary abstractions like operators or runnables and simplifying the logic into a single function with call parameters passed directly as keyword arguments.
 
 #### Tools and Agent Integration in LangChain
 
@@ -116,7 +112,7 @@ Another significant reason developers use LangChain is its built-in support for 
 
 Below is an example of registering a Google Search tool and using an agent to decide when to call it based on the input prompt.   
 
-```python
+```python-snippet-skip
 from langchain.agents import initialize_agent, AgentType
 from langchain.tools import Tool
 from langchain.chat_models import ChatOpenAI
@@ -146,14 +142,14 @@ agent = initialize_agent(
 
 # Run the agent
 response = agent.run("Tell me about the latest AI regulation news")
-print(response) 
+print(response)
 ```
 
 LangChain agents rely heavily on prompt templates behind the scenes. These prompts are designed to instruct the model to think step-by-step, select a tool, call it with the right input, and return a final answer.  
 
 LangChain wraps this behavior into its agent classes, so you don’t have to build it from scratch, **but you still need to define the tools, prompt logic, and output parsers yourself**.
 
-```python
+```python-snippet-skip
 from langchain.agents import initialize_agent, Tool
 from langchain.agents.agent_types import AgentType
 from langchain.chat_models import ChatOpenAI
@@ -174,9 +170,9 @@ llm = ChatOpenAI(temperature=0)
 
 # Initialize agent
 agent = initialize_agent(
-    tools, 
-    llm, 
-    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, 
+    tools,
+    llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
     verbose=True
 )
 
@@ -219,7 +215,7 @@ For more advanced workflows, you can use its “Prompt Canvas” editor, which l
 
 If you prefer to manage prompts in code, the LangSmith SDK (available in both Python and TypeScript) lets you push prompt templates into LangSmith directly from your codebase using `client.push_prompt()`, pull specific versions with `client.pull_prompt()`, or tag and audit them through methods like `list_prompts()` or `delete_prompt()`: 
 
-```python
+```python-snippet-skip
 from langsmith import Client
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -252,107 +248,102 @@ But it’s not great when you’re just starting out, still trying to figure out
 
 This setup is similar to how traditional machine learning works, where you need a clear dataset and scoring system before you begin. But real-world prompt work isn’t always that straightforward. You often need the freedom to test an idea, see what happens, adjust it, and keep going, especially when you're working in a team and things are changing fast. Having to define tests up front can slow down that process.
 
-## Lilypad’s Developer-Friendly Approach to LLM Observability 
+## Mirascope Cloud's Developer-Friendly Approach to LLM Observability
 
-Lilypad is based on the idea that a model’s output depends on more than just the prompt text. Things like the logic of your code, the flow of your program, and settings like the `model`, `temperature`, and `top_p` all play a role. So if you want to improve your prompts, you need to pay attention to all of these parts, not just the words you send to the model.
+Mirascope Cloud is based on the idea that a model's output depends on more than just the prompt text. Things like the logic of your code, the flow of your program, and settings like the `model`, `temperature`, and `top_p` all play a role. So if you want to improve your prompts, you need to pay attention to all of these parts, not just the words you send to the model.
 
-That’s why Lilypad encourages you to encapsulate all that affects the output of large language models into a Python function. This makes it easier to track what’s happening, test different versions, and see how changes affect the results. It also helps you reproduce outputs and improve things step by step.
+That's why Mirascope Cloud encourages you to encapsulate all that affects the output of large language models into a Python function. This makes it easier to track what's happening, test different versions, and see how changes affect the results. It also helps you reproduce outputs and improve things step by step.
 
-Below, both prompt and model settings are contained in `answer_question()`, which is decorated by `@lilypad.trace` — which we describe further down. These treat prompt and context as a single observable unit, which makes tracing, versioning, and evaluating simpler:
+Below, both prompt and model settings are contained in `answer_question()`, which is decorated by `@ops.version` — which we describe further down. These treat prompt and context as a single observable unit, which makes tracing, versioning, and evaluating simpler:
 
 ```python
-from google.genai import Client
-import lilypad
+from mirascope import llm, ops
 
-lilypad.configure(auto_llm=True)
-client = Client()
-    
-@lilypad.trace(versioning="automatic")  # [!code highlight]
-def answer_question(question: str) -> str | None:
-    response = client.models.generate_content(
-        model="gemini-2.0-flash-001",
-        contents=f"Answer this question: {question}",
-    )
-    return response.text
-    
+ops.configure()
+ops.instrument_llm()
+
+@ops.version  # [!code highlight]
+@llm.call("google/gemini-2.0-flash")
+def answer_question(question: str) -> str:
+    return f"Answer this question: {question}"
+
 response = answer_question("What is the capital of France?")  # automatically versioned
-print(response)
-# > The capital of France is Paris. 
+print(response.text())
+# > The capital of France is Paris.
 ```
 
-Keeping prompt logic and settings together gives you a clear view of what’s affecting your outputs, especially as your application grows and outputs start varying in subtle, hard-to-track ways.
+Keeping prompt logic and settings together gives you a clear view of what's affecting your outputs, especially as your application grows and outputs start varying in subtle, hard-to-track ways.
 
-### Automatic, Full-Context Versioning 
+### Automatic, Full-Context Versioning
 
-When you set the versioning argument of `@lilypad.trace` to `”automatic”`, Lilypad versions all changes within the function closure automatically. This means all changes made to model settings, parameters, helper functions, and the surrounding logic within scope of the closure are captured, making each result reproducible and traceable, without needing to manually tag or manage versions.
+When you use the `@ops.version` decorator, Mirascope Cloud versions all changes within the function closure automatically. This means all changes made to model settings, parameters, helper functions, and the surrounding logic within scope of the closure are captured, making each result reproducible and traceable, without needing to manually tag or manage versions.
 
-It also allows you to compare different versions by clicking the “Compare” button in the Lilypad UI:  
+It also allows you to compare different versions by clicking the "Compare" button in the Mirascope Cloud UI:
 
-![Lilypad Click Compare](/assets/blog/langchain-vs-langsmith/lilypad-click-compare.webp)
+![Click Compare](/assets/blog/langchain-vs-langsmith/lilypad-click-compare.webp)
 
-This toggles a second dropdown menu, where you can select another version and view the differences side-by-side.  
+This toggles a second dropdown menu, where you can select another version and view the differences side-by-side.
 
-![Lilypad Compare Versions](/assets/blog/langchain-vs-langsmith/lilypad-compare-versions.webp)
+![Compare Versions](/assets/blog/langchain-vs-langsmith/lilypad-compare-versions.webp)
 
-Under the hood, Lilypad uses the [OpenTelemetry GenAI spec](https://opentelemetry.io/) to structure each trace to quantify what was asked, how it was asked, and what came back. 
+Under the hood, Mirascope Cloud uses the [OpenTelemetry GenAI spec](https://opentelemetry.io/) to structure each trace to quantify what was asked, how it was asked, and what came back.
 
-It also shows all the metadata: inputs, outputs, details of AI models, token usage, latency, and cost, making it easy to debug, monitor, and optimize AI workflows. 
+It also shows all the metadata: inputs, outputs, details of AI models, token usage, latency, and cost, making it easy to debug, monitor, and optimize AI workflows.
 
-![Lilypad GenAI Trace Data](/assets/blog/langchain-vs-langsmith/lilypad-genai-trace-data.webp)
+![GenAI Trace Data](/assets/blog/langchain-vs-langsmith/lilypad-genai-trace-data.webp)
 
-### Prompt Management and Collaboration  
+### Prompt Management and Collaboration
 
-Lilypad’s UI isn’t just for viewing version history; it’s also a live prompt editor and collaboration space. Engineers and non-technical teammates, like product managers, domain experts, or content leads, can create, edit, and test prompt changes in the playground: 
+Mirascope Cloud's UI isn't just for viewing version history; it's also a live prompt editor and collaboration space. Engineers and non-technical teammates, like product managers, domain experts, or content leads, can create, edit, and test prompt changes in the playground:
 
-![Lilypad Playground](/assets/blog/langchain-vs-langsmith/lilypad-playground.webp)
+![Playground](/assets/blog/langchain-vs-langsmith/lilypad-playground.webp)
 
-This includes leaving comments, suggested edits, or reviews of outputs without needing to touch the codebase or wait on an engineer to redeploy every change. 
+This includes leaving comments, suggested edits, or reviews of outputs without needing to touch the codebase or wait on an engineer to redeploy every change.
 
-This setup creates a clear division where developers manage infrastructure and application logic, and subject matter experts handle prompt wording and logic. 
+This setup creates a clear division where developers manage infrastructure and application logic, and subject matter experts handle prompt wording and logic.
 
-This separation is only virtual, however, and doesn’t extend to how prompts are actually stored or deployed. Your prompts remain part of the same versioned function they’re associated with. 
+This separation is only virtual, however, and doesn't extend to how prompts are actually stored or deployed. Your prompts remain part of the same versioned function they're associated with.
 
 Platforms like LangSmith manage prompts outside of the codebase, which might seem clean at first. But because the prompt is decoupled from the logic and parameters tied to it, it becomes hard to trace exactly which version of the prompt produced which output.
 
+**In Mirascope Cloud, prompts aren't managed in a separate interface and then pulled into your code** — **they *are* your code**. That tight coupling is what makes the system reliable because every playground run is tied to the same versioned function that you call downstream. And if Mirascope Cloud goes down, your code and prompts remain unaffected.
 
-**In Lilypad, prompts aren’t managed in a separate interface and then pulled into your code** — **they *are* your code**. That tight coupling is what makes the system reliable because every playground run is tied to the same versioned function that you call downstream. And if Lilypad goes down, your code and prompts remain unaffected.
+Also, changes made in the playground are sandboxed by default and won't affect production unless explicitly synced by an engineer. Once synced, they ship as part of your app, just like any other code change.
 
-Also, changes made in the playground are sandboxed by default and won’t affect production unless explicitly synced by an engineer. Once synced, they ship as part of your app, just like any other code change. 
+Inside the playground, users can edit markdown-supported prompt templates with type-safe variables and edit prompt metadata. Mirascope Cloud automatically generates type-safe function signatures, so the inputs you test always match the function's schema, reducing the risk of injection bugs or mismatched formats.
 
-Inside the playground, users can edit markdown-supported prompt templates with type-safe variables and edit prompt metadata. Lilypad automatically generates type-safe function signatures, so the inputs you test always match the function’s schema, reducing the risk of injection bugs or mismatched formats. 
-
-![Lilypad Playground Template Variables](/assets/blog/langchain-vs-langsmith/lilypad-playground-template-vars.webp)
+![Playground Template Variables](/assets/blog/langchain-vs-langsmith/lilypad-playground-template-vars.webp)
 
 Because prompts are part of the function logic, what you see in the playground is exactly what runs in dev, staging, or production. There's no risk of a config file drifting out of sync or some prompt variant behaving differently in production. 
 
-### Prompt Evaluation Workflow  
+### Prompt Evaluation Workflow
 
-When it comes to judging the [quality](/blog/llm-evaluation) of outputs, traditional scoring systems like 1–5 stars can be ambiguous and hard to interpret, since the difference between, say, a 3 and a 4 can be challenging to pin down (and subjective). Over time, these kinds of scoring systems become inconsistent, especially when multiple reviewers are involved.  
+When it comes to judging the [quality](/blog/llm-evaluation) of outputs, traditional scoring systems like 1–5 stars can be ambiguous and hard to interpret, since the difference between, say, a 3 and a 4 can be challenging to pin down (and subjective). Over time, these kinds of scoring systems become inconsistent, especially when multiple reviewers are involved.
 
-Lilypad uses a simple pass/fail system to evaluate outputs, allowing you to simply mark responses as acceptable or not, or plug in your own test logic, whether through scripts or automated [LLM-as-a-judge](/blog/llm-as-judge) flows (coming soon).
+Mirascope Cloud uses a simple pass/fail system to evaluate outputs, allowing you to simply mark responses as acceptable or not, or plug in your own test logic, whether through scripts or automated [LLM-as-a-judge](/blog/llm-as-judge) flows.
 
-Unlike LangSmith, which requires predefined datasets to use its full functionality, Lilypad lets you evaluate prompts organically and as you build. You don’t have to stop and formalize your test set before you start learning. You can just try variations, mark what works or doesn’t, and layer in structure later.
+Unlike LangSmith, which requires predefined datasets to use its full functionality, Mirascope Cloud lets you evaluate prompts organically and as you build. You don't have to stop and formalize your test set before you start learning. You can just try variations, mark what works or doesn't, and layer in structure later.
 
-To begin, simply choose the trace you want to evaluate:  
+To begin, simply choose the trace you want to evaluate:
 
-![Lilypad Assign Trace](/assets/blog/langchain-vs-langsmith/lilypad-assign-trace.webp)
+![Assign Trace](/assets/blog/langchain-vs-langsmith/lilypad-assign-trace.webp)
 
-And mark it with “Pass” or “Fail”: 
+And mark it with "Pass" or "Fail":
 
-![Lilypad Annotation Queue](/assets/blog/langchain-vs-langsmith/lilypad-annotation-queue.webp)
+![Annotation Queue](/assets/blog/langchain-vs-langsmith/lilypad-annotation-queue.webp)
 
-Reviewers need just answer the practical question: "Is this good enough to deploy?" They can also add a quick explanation to explain why something failed, like “missed a key detail” or “hallucinated fact.” These quick notes help build a picture of what good and bad look like over time.  
+Reviewers need just answer the practical question: "Is this good enough to deploy?" They can also add a quick explanation to explain why something failed, like "missed a key detail" or "hallucinated fact." These quick notes help build a picture of what good and bad look like over time.
 
-And because every [LLM evaluation](/blog/llm-evaluation) is tied to a specific versioned prompt and function, you can trace patterns across iterations and app versions — something that’s harder to do in systems like LangSmith, where evaluations are often tied to static datasets or separated from prompt logic. 
+And because every [LLM evaluation](/blog/llm-evaluation) is tied to a specific versioned prompt and function, you can trace patterns across iterations and app versions — something that's harder to do in systems like LangSmith, where evaluations are often tied to static datasets or separated from prompt logic.
 
-We generally recommend starting with manual evaluations by a domain expert. Once you build a solid base of labeled examples (pass or fail + explanations), you’ll be able to train an automated evaluator, i.e., an LLM-as-a-judge, later, to replicate those decisions at scale.   
+We generally recommend starting with manual evaluations by a domain expert. Once you build a solid base of labeled examples (pass or fail + explanations), you'll be able to train an automated evaluator, i.e., an LLM-as-a-judge, later, to replicate those decisions at scale.
 
-This doesn’t eliminate human oversight, as we recommend that human evaluators consistently step in to verify the judge’s decisions and ensure alignment with human standards.
+This doesn't eliminate human oversight, as we recommend that human evaluators consistently step in to verify the judge's decisions and ensure alignment with human standards.
 
-## Get Started with Lilypad 
+## Get Started with Mirascope Cloud
 
-Lilypad helps you track and improve individual [LLM applications](/blog/llm-applications) and functions, like AI agents, tools, and chains, while optimizing the overall system they’re part of. It’s designed for complex, non-deterministic AI workflows where outputs vary and constant evaluation is needed.   
+Mirascope Cloud helps you track and improve individual [LLM applications](/blog/llm-applications) and functions, like AI agents, tools, and chains, while optimizing the overall system they're part of. It's designed for complex, non-deterministic AI workflows where outputs vary and constant evaluation is needed.
 
-Lilypad is also tool-agnostic and supports self-hosting options. You can start for free, with no credit card required. Just sign up with your GitHub or Google account. 
+Mirascope Cloud is also tool-agnostic and supports self-hosting options. You can start for free, with no credit card required. Just sign up with your GitHub or Google account.
 
-Want to learn more? Find more Lilypad code samples in both our [docs](/docs/lilypad) and on [GitHub](https://github.com/mirascope/lilypad). Lilypad offers first-class support for [Mirascope](/docs/mirascope), our lightweight toolkit for building [LLM agents](/blog/llm-agents).  
+Want to learn more? Find more code samples in both our [docs](/docs/learn/ops) and on [GitHub](https://github.com/mirascope/mirascope). Mirascope Cloud offers first-class support for [Mirascope](/docs/learn/llm), our lightweight toolkit for building [LLM agents](/blog/llm-agents).  

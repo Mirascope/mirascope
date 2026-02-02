@@ -2,6 +2,7 @@
 title: "Prompt Evaluation - Methods, Tools, And Best Practices"
 description: "What is prompt evaluation, and why does it matter? Learn key methods, tools, and best practices to improve LLM outputs and ensure high-quality responses."
 date: "2025-03-03"
+updatedAt: "2026-01-28"
 readTime: "31 min read"
 author: "William Bakst"
 ---
@@ -19,7 +20,7 @@ When evaluating prompts, you should:
    Also, language models can carry biases from their training data, influencing responses in ways that weren’t intended.
 2. **Implement a process to evaluate prompts against these criteria**. This often involves using frameworks or automated tools for repetitive tasks like scoring outputs or ranking responses, while reserving more subtle aspects like detecting hallucinations or addressing culturally sensitive contexts for human oversight.
 
-In this article, we show you different ways to evaluate prompts and share practical techniques and insights based on real-world applications. Along the way, we’ll also examine how [Lilypad](/docs/lilypad) helps structure this evaluation process, making it easier to iterate, compare, and optimize prompts at scale.
+In this article, we show you different ways to evaluate prompts and share practical techniques and insights based on real-world applications. Along the way, we'll also examine how [Mirascope Cloud](/docs/learn/ops) helps structure this evaluation process, making it easier to iterate, compare, and optimize prompts at scale.
 
 Further down, we also share best practices for prompt evaluation and example evaluations using [Mirascope](https://github.com/mirascope/mirascope), our lightweight toolkit for building with LLMs.
 
@@ -65,25 +66,25 @@ Below are five notable frameworks designed to help you evaluate and refine promp
 
 Each tool offers unique features to address different aspects of prompt evaluation, making it easier to test, compare, and optimize for your specific use case.
 
-### Lilypad
+### Mirascope Cloud
 
-[Lilypad](/docs/lilypad) allows you to automatically version, trace, and manage prompts (functions) by simply adding the Python decorator `@lilypad.trace` to your LLM functions.  
+[Mirascope Cloud](/docs/learn/ops) allows you to automatically version, trace, and manage prompts (functions) by simply adding the Python decorator `@ops.trace` to your LLM functions.
 
 It recognizes the non-deterministic nature of LLM outputs and treats prompts and everything else that goes into generating the output as optimization problems rather than as one-time configurations that don't adapt to real-world performance.
 
 Each prompt variation is automatically versioned and iterated upon based on real-world performance.
 
-When evaluating prompts, you’d normally have a clear evaluation criteria such as bias, toxicity, or factual accuracy. While this is good practice, we generally don’t recommend treating them as separate categories for every prompt. Instead, consider using a single LLM-based judge that provides a simple pass/fail rating, where a “pass” means the output meets your standards and a “fail” indicates it needs improvement.
+When evaluating prompts, you'd normally have a clear evaluation criteria such as bias, toxicity, or factual accuracy. While this is good practice, we generally don't recommend treating them as separate categories for every prompt. Instead, consider using a single LLM-based judge that provides a simple pass/fail rating, where a "pass" means the output meets your standards and a "fail" indicates it needs improvement.
 
-Along with the label, our LLM-judge explains its reasoning based on your evaluation criteria, giving you insight into why a response passed or failed (more on this [below](#annotation-tasks). We’re working on additional tooling to more easily support this flow.
+Along with the label, our LLM-judge explains its reasoning based on your evaluation criteria, giving you insight into why a response passed or failed (more on this [below](#annotation-tasks). We're working on additional tooling to more easily support this flow.
 
 By analyzing these explanations, you can detect patterns such as bias issues consistently appearing in failed outputs without needing separate evaluations for each category, which may be unnecessary.
 
-Lilypad also allows easy collaboration between engineers and domain experts via a managed user interface, where non-technical users can tweak and evaluate prompts without altering (or even necessarily seeing) the underlying code, simplifying the process for non-technical users without needing to change engineering workflows:
+Mirascope Cloud also allows easy collaboration between engineers and domain experts via a managed user interface, where non-technical users can tweak and evaluate prompts without altering (or even necessarily seeing) the underlying code, simplifying the process for non-technical users without needing to change engineering workflows:
 
-![Lilypad Prompt Editor Screenshot](/assets/blog/prompt-evaluation/lilypad_editor_screenshot.webp)
+![Mirascope Cloud Playground](/assets/blog/prompt-evaluation/lilypad_editor_screenshot.webp)
 
-Lilypad’s design provides a structured approach to optimizing prompts from the get-go, allowing for controlled experiments and efficient annotation of LLM outputs.
+Mirascope Cloud's design provides a structured approach to optimizing prompts from the get-go, allowing for controlled experiments and efficient annotation of LLM outputs.
 
 ### Promptfoo
 
@@ -265,8 +266,8 @@ from nltk.translate.bleu_score import sentence_bleu
 reference = [['that', 'book', 'is', 'great']]
 candidate = ['that', 'book', 'is', 'great', 'also']
 score = sentence_bleu(reference, candidate)
-print(f"BLEU score: {score:.4f}") 
-> BLEU score: 0.6687
+print(f"BLEU score: {score:.4f}")
+# > BLEU score: 0.6687
 ```
 
 This BLEU score here indicates a 66.87% match between the candidate and reference text.
@@ -280,11 +281,9 @@ from rouge import Rouge
 reference = 'this book is great'
 candidate = 'this book is great too'
 rouge = Rouge()
-scores = rouge.get_scores(candidate, reference)[0]
-['rouge-2']
-['f']
+scores = rouge.get_scores(candidate, reference)[0]['rouge-2']['f']
 print(scores)
-> 0.8571428522448981
+# > 0.8571428522448981
 ```
 
 The ROUGE-2 score of 0.8571 reflects a high degree of overlap between bigrams in the candidate text and the reference text.
@@ -331,7 +330,7 @@ tfidf_matrix = vectorizer.fit_transform([prompt1, prompt2])
 
 cosine_sim = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])
 print(f"Cosine Similarity: {cosine_sim[0][0]:.4f}")
-> Cosine Similarity: 0.1274
+# > Cosine Similarity: 0.1274
 ```
 
 A result close to 1.0 indicates high similarity, while a result of 0 indicates low similarity.
@@ -346,7 +345,6 @@ Below we have a function that simulates sending a customer service request and r
 
 ```py
 import random
-import requests
 import time
 
 # Function to get a random prompt variant
@@ -546,9 +544,9 @@ print(highlighted_text)
 
 The code will first process the text using an NLP model and identify potentially biased words based on a predefined list. It then counts the occurrence of biased terms and highlights them within the original text.
 
-When you run the code, it returns an output as shown below:  
+When you run the code, it returns an output as shown below:
 
-```python
+```plaintext
 Detected Biased Words and Frequency:
 radical: 1
 devastated: 1
@@ -557,7 +555,7 @@ responsible: 1
 tirelessly: 1
 
 Text with Highlighted Bias:
-The senator's **radical** policies have **devastated** the economy, leaving **hardworking** citizens struggling to survive. Meanwhile, the **responsible** opposition has **tirelessly** fought for the people's interests. 
+The senator's **radical** policies have **devastated** the economy, leaving **hardworking** citizens struggling to survive. Meanwhile, the **responsible** opposition has **tirelessly** fought for the people's interests.
 ```
 
 ### User Feedback
@@ -608,11 +606,11 @@ We’d even argue that refining a prompt to produce an acceptable output is more
 
 Systematically versioning prompts and refining evaluation criteria helps establish reproducible outcomes and maintain consistent benchmarks across your optimization workflow.
 
-[Lilypad](/docs/lilypad) automatically versions and traces all prompt changes to support experiments and collaboration, allowing you to identify what worked and what didn’t. This includes:
+[Mirascope Cloud](/docs/learn/ops) automatically versions and traces all prompt changes to support experiments and collaboration, allowing you to identify what worked and what didn't. This includes:
 
-* Automating experimentation and detecting regressions, such as A/B testing of prompt variations  
-* Historically comparing the effectiveness of different prompts, via Lilypad’s traceability  
-* Providing context-aware evaluations entailing factors like token usage, latency, and model parameters  
+* Automating experimentation and detecting regressions, such as A/B testing of prompt variations
+* Historically comparing the effectiveness of different prompts, via Mirascope Cloud's traceability
+* Providing context-aware evaluations entailing factors like token usage, latency, and model parameters
 * Letting you run custom evaluation metrics
 
 ## Evaluate Prompts for AI-Generated Hiring Recommendations
@@ -653,12 +651,15 @@ Here, we install:
 
 ### 2. Define a Prompt Evaluation Workflow
 
-First, we define a Pydantic model (`CandidateEvaluation`) to structure the evaluation output. Then, using Mirascope’s decorators (`@prompt_template` and `@anthropic.call`), we create an asynchronous function `evaluate_candidate_suitability` that encapsulates the entire prompt evaluation workflow.
+First, we define a Pydantic model (`CandidateEvaluation`) to structure the evaluation output. Then, using Mirascope's `@llm.call` decorator, we create an asynchronous function `evaluate_candidate_suitability` that encapsulates the entire prompt evaluation workflow.
 
 ```python
-from mirascope.core import anthropic, prompt_template
-from pydantic import BaseModel, Field
 import asyncio
+import inspect
+
+from mirascope import llm
+from pydantic import BaseModel, Field
+
 
 class CandidateEvaluation(BaseModel):
     is_candidate_suitable: bool = Field(
@@ -668,85 +669,77 @@ class CandidateEvaluation(BaseModel):
         description="A brief explanation of why the LLM recommendation is or isn't suitable"
     )
 
-@llm.call(
-    model="claude-3-5-sonnet-20240620",
-    response_model=CandidateEvaluation,
-    json_mode=True
-)
-@prompt_template(
-    """
-    You are helping to review candidates for a virtual hiring assistant.
-    
-    Given:
-    - Role Requirements: {role_requirements}
-    - Candidate Profile: {candidate_profile}
-    - LLM Recommendation: {llm_recommendation}
 
-    Evaluate the LLM's recommendation based on the following criteria:
-
-    1. **Role Alignment**  
-       - Does the candidate's experience, skills, and qualifications match the role requirements?
-       - Is there any significant mismatch that the LLM recommendation overlooks?
-
-    2. **Unbiased Assessment**  
-       - Does the recommendation show any signs of bias or unfair assumptions?
-       - Are the candidate’s attributes (e.g., background, demographics) handled appropriately?
-
-    3. **Relevance to Responsibilities**  
-       - Does the recommendation address the specific responsibilities and day-to-day tasks of the job?
-       - Are there gaps in the candidate's profile that might affect job performance?
-
-    4. **Clarity and Rationale**  
-       - Does the LLM's recommendation clearly explain why this candidate is suitable or not?
-       - Is the logic behind the recommendation transparent and consistent?
-
-    5. **Cultural and Team Fit**  
-       - If applicable, does the recommendation consider team culture, communication style, or other intangible factors?
-       - Are there any red flags or concerns about collaboration?
-
-    6. **Potential Red Flags**  
-       - Are there any noticeable contradictions, missing details, or areas the LLM recommendation did not address?
-       - Does the advice seem incomplete or overly generalized?
-
-    Final Evaluation:
-    - Assess whether the LLM recommendation is truly suitable for the role.
-    - Provide a brief explanation indicating your reasoning-highlight any strengths or weaknesses in the LLM’s assessment.
-    - Indicate whether you would proceed with the candidate, request more information, or decline.
-
-    Based on the above, return:
-    - "is_candidate_suitable": true or false
-    - "explanation": a short summary of why the recommendation is or isn't suitable
-    """
-)
+@llm.call("anthropic/claude-sonnet-4-20250514", format=CandidateEvaluation, json_mode=True)
 async def evaluate_candidate_suitability(
-    role_requirements: str, 
-    candidate_profile: str, 
-    llm_recommendation: str
-) -> CandidateEvaluation:
-    # The decorators take care of the prompt generation and API call.
+    role_requirements: str,
+    candidate_profile: str,
+    llm_recommendation: str,
+) -> str:
+    return inspect.cleandoc(
+        f"""
+        You are helping to review candidates for a virtual hiring assistant.
 
-    ...
+        Given:
+        - Role Requirements: {role_requirements}
+        - Candidate Profile: {candidate_profile}
+        - LLM Recommendation: {llm_recommendation}
+
+        Evaluate the LLM's recommendation based on the following criteria:
+
+        1. **Role Alignment**
+           - Does the candidate's experience, skills, and qualifications match the role requirements?
+           - Is there any significant mismatch that the LLM recommendation overlooks?
+
+        2. **Unbiased Assessment**
+           - Does the recommendation show any signs of bias or unfair assumptions?
+           - Are the candidate's attributes (e.g., background, demographics) handled appropriately?
+
+        3. **Relevance to Responsibilities**
+           - Does the recommendation address the specific responsibilities and day-to-day tasks of the job?
+           - Are there gaps in the candidate's profile that might affect job performance?
+
+        4. **Clarity and Rationale**
+           - Does the LLM's recommendation clearly explain why this candidate is suitable or not?
+           - Is the logic behind the recommendation transparent and consistent?
+
+        5. **Cultural and Team Fit**
+           - If applicable, does the recommendation consider team culture, communication style, or other intangible factors?
+           - Are there any red flags or concerns about collaboration?
+
+        6. **Potential Red Flags**
+           - Are there any noticeable contradictions, missing details, or areas the LLM recommendation did not address?
+           - Does the advice seem incomplete or overly generalized?
+
+        Final Evaluation:
+        - Assess whether the LLM recommendation is truly suitable for the role.
+        - Provide a brief explanation indicating your reasoning-highlight any strengths or weaknesses in the LLM's assessment.
+        - Indicate whether you would proceed with the candidate, request more information, or decline.
+
+        Based on the above, return:
+        - "is_candidate_suitable": true or false
+        - "explanation": a short summary of why the recommendation is or isn't suitable
+        """
+    )
 
 # Example usage:
 
 if __name__ == "__main__":
     # Example inputs
-
     role_req = "Strong experience in backend development with expertise in Python and scalable architectures."
     candidate = "Jane Matt, with 7 years of experience in backend systems, specialized in Python and microservices."
     recommendation = "The candidate is highly recommended due to her extensive experience and clear alignment with the role requirements."
 
     # Execute the evaluation workflow
+    response = asyncio.run(evaluate_candidate_suitability(role_req, candidate, recommendation))
+    evaluation = response.parse()
 
-    evaluation = asyncio.run(evaluate_candidate_suitability(role_req, candidate, recommendation))
-    
     # Print the evaluation results
-
     print("Candidate Suitable:", evaluation.is_candidate_suitable)
     print("Explanation:", evaluation.explanation)
 ```
 
-In this workflow, the `@prompt_template` decorator embeds detailed hiring criteria (such as role alignment, unbiased assessment, relevance, clarity, and cultural fit) into the prompt. This evaluation prompt instructs the LLM to review a candidate recommendation (one that the virtual hiring assistant has already produced) and assess it against these criteria.
+In this workflow, the `@llm.call` decorator embeds detailed hiring criteria (such as role alignment, unbiased assessment, relevance, clarity, and cultural fit) into the prompt. This evaluation prompt instructs the LLM to review a candidate recommendation (one that the virtual hiring assistant has already produced) and assess it against these criteria.
 
 This setup allows you to prompt the large language model for a hiring recommendation and get a structured, typed response back for further processing.
 
@@ -754,9 +747,9 @@ This setup allows you to prompt the large language model for a hiring recommenda
 
 Below, the `run` function calls `evaluate_candidate_suitability`, passing in the role requirements, candidate profile, and LLM recommendation to simulate a real evaluation scenario.
 
-When you run the `await run(...)` function with these inputs, the system evaluates whether the LLM’s recommendation aligns with the role requirements, taking into account factors like skills, experience, and soft skills:  
+When you run the `run(...)` function with these inputs, the system evaluates whether the LLM's recommendation aligns with the role requirements, taking into account factors like skills, experience, and soft skills:
 
-```py
+```python-snippet-concat
 async def run(role_requirements: str, candidate_profile: str, llm_recommendation: str):
     return await evaluate_candidate_suitability(
         role_requirements,
@@ -780,8 +773,8 @@ llm_recommendation = (
 
 # Run the evaluation
 
-result = await run(role_requirements, candidate_profile, llm_recommendation)
-print(result) 
+result = asyncio.run(run(role_requirements, candidate_profile, llm_recommendation))
+print(result)
 ```
 
 As you see above, the test example helps confirm that the evaluation logic works as expected and allows you to iterate on your prompt criteria as needed.
@@ -790,4 +783,4 @@ As you see above, the test example helps confirm that the evaluation logic works
 
 Ready to build smarter, more effective prompts? Mirascope lets you write custom evaluation criteria for AI applications using the Python you already know, and slots readily into existing developer workflows, making it easy to get started.
 
-You can find more Mirascope [evaluation tutorials](/docs/v1/guides/evals/evaluating-web-search-agent/) both on our [documentation site](/docs/mirascope) and our [GitHub page](https://github.com/mirascope/mirascope).
+You can find more Mirascope code samples both on our [documentation site](/docs) and our [GitHub page](https://github.com/mirascope/mirascope).

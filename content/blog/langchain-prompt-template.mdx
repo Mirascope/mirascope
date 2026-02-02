@@ -2,6 +2,7 @@
 title: "A Guide to Prompt Templates in LangChain"
 description: "New to LangChain? Discover how a LangChain prompt template works and how to use it effectively in your AI projects."
 date: "2025-06-30"
+updatedAt: "2026-01-28"
 readTime: "9 min read"
 author: "William Bakst"
 ---
@@ -19,11 +20,11 @@ Once you fill in the variables, the template turns into a finished prompt that g
 
 In our experience, LangChain’s prompt templates work well for getting started and handling most tasks, but when your app scales up and starts making 100+ LLM calls, **its built-in system starts to feel clunky and hard to scale**: managing all the different components (using LangChain and LangSmith), like chains and iterations, becomes messy fast.
 
-That’s why we designed Mirascope and Lilypad to make LLM app development easier.
+That's why we designed Mirascope and Mirascope Cloud to make LLM app development easier.
 
-[Mirascope](https://github.com/mirascope/mirascope) is a user-friendly LLM toolkit that offers just the right abstractions to build smarter apps, without the clutter, confusion, or guesswork ([jump down](#how-mirascope-makes-prompt-templates-easier-to-build) to read more). [Lilypad](https://github.com/mirascope/lilypad) is a prompt management and observability tool that makes use cases for tracing and versioning prompts easier, to test what’s working ([skip to here](#how-lilypad-makes-structuring-calls-and-prompts-easier) to read more about Lilypad).
+[Mirascope](https://github.com/mirascope/mirascope) is a user-friendly LLM toolkit that offers just the right abstractions to build smarter apps, without the clutter, confusion, or guesswork ([jump down](#how-mirascope-makes-prompt-templates-easier-to-build) to read more). [Mirascope Cloud](/docs/learn/ops) is a prompt management and observability tool that makes use cases for tracing and versioning prompts easier, to test what's working ([skip to here](#how-mirascope-cloud-makes-structuring-calls-and-prompts-easier) to read more about Mirascope Cloud).
 
-We dive into how LangChain prompt templates work and show you ways of iterating and versioning prompts using Mirascope and Lilypad.
+We dive into how LangChain prompt templates work and show you ways of iterating and versioning prompts using Mirascope and Mirascope Cloud.
 
 ## 3 Types of LangChain Prompt Templates
 
@@ -45,7 +46,7 @@ from langchain_core.prompts import PromptTemplate
 example_prompt = PromptTemplate.from_template("Share an interesting fact about {animal}.")  # infers 'animal' as input variable
 
 # Format the template with a specific animal
-filled_prompt = prompt.format(animal="octopus")
+filled_prompt = example_prompt.format(animal="octopus")
 print(filled_prompt)
 
 #> Share an interesting fact about octopus.
@@ -135,52 +136,52 @@ LangChain lets you build prompt templates, but the process can feel a bit clunky
 
 If you’ve ever thought, “Why can’t I use a function for this?”, you’re not alone. That’s why third parties built tools like [`langchain-decorators`](https://pypi.org/project/langchain-decorators/), which layer a decorator-based syntax on top of LangChain. These offer a more pythonic way to write prompt templates, **but they’re still third-party, and come with some limitations**.
 
-Mirascope, on the other hand, takes the decorator approach seriously, and builds prompt templates around decorators from the ground up, allowing you to write clean, composable, and structured prompts as plain functions. But what really sets it apart is not just the decorator syntax. It’s the flexibility you get with constructs like `BaseMessageParam`, the return value of Mirascope’s prompt template decorator.
+Mirascope, on the other hand, takes the decorator approach seriously, and builds prompt templates around decorators from the ground up, allowing you to write clean, composable, and structured prompts as plain functions. But what really sets it apart is not just the decorator syntax. It's the flexibility you get with structured message types like `UserMessage` and `SystemMessage`, the return values of Mirascope's prompt decorator.
 
 Unlike `langchain-decorators`, which ultimately flatten your messages into strings, Mirascope treats prompts as structured data. Each message maintains its role (user, system, assistant), supports multi-modal content (text, images, audio, documents), and integrates with downstream LLM workflows.
 
 This approach ensures compatibility across providers and unlocks tool use, [prompt chaining](/blog/prompt-chaining/), and dynamic configuration for [LLM integration](/blog/llm-integration/).
 
-At its simplest, you can add a Mirascope `@prompt_template` decorator to any Python function to turn it into a structured prompt that returns a list of role-tagged messages ready for an LLM:
+At its simplest, you can add a Mirascope `@llm.prompt` decorator to any Python function to turn it into a structured prompt that returns a list of role-tagged messages ready for an LLM:
 
 ```python
-from mirascope import prompt_template
+from mirascope import llm
 
-@prompt_template("Recommend a {genre} movie")  # [!code highlight]
-def recommend_movie_prompt(genre: str) -> ...  # [!code highlight]
+@llm.prompt  # [!code highlight]
+def recommend_movie_prompt(genre: str):  # [!code highlight]
+    return f"Recommend a {genre} movie"  # [!code highlight]
 
-print(recommend_movie_prompt("comedy"))
-# Output: [BaseMessageParam(role='user', content='Recommend a comedy movie')] 
+messages = recommend_movie_prompt.messages("comedy")
+print(messages)
+# > [UserMessage(role='user', content=[Text(type='text', text='Recommend a comedy movie')], name=None)]
 ```
 
-Note that the `recommend_movie_prompt` method’s signature defines the prompt’s template variables. `BaseMessageParam`  turns those variables into role-aware messages that Mirascope can pass to any provider.
+Note that the `recommend_movie_prompt` method's signature defines the prompt's template variables. The `@llm.prompt` decorator turns those variables into role-aware messages that Mirascope can pass to any provider.
 
-`@prompt_template` works in tandem with our `@llm.call` decorator, which turns Python functions into structured API calls with minimal boilerplate.
-
-hl\_lines \= "3-5"
+`@llm.prompt` works in tandem with our `@llm.call` decorator, which turns Python functions into structured API calls with minimal boilerplate.
 
 ```python
-from mirascope import llm, prompt_template
+from mirascope import llm
 
-@llm.call(provider="openai", model="gpt-4o-mini")  # [!code highlight]
-@prompt_template("Recommend a {genre} movie")
-def recommend_movie_prompt(genre: str) -> ...
+@llm.call("openai/gpt-4o-mini")  # [!code highlight]
+def recommend_movie_prompt(genre: str):
+    return f"Recommend a {genre} movie"
 
 response = recommend_movie_prompt("comedy")
-print(response.content)
+print(response.text())
 
-#> You should watch The Grand Budapest Hotel, a witty and visually stunning comedy. 
+# > You should watch The Grand Budapest Hotel, a witty and visually stunning comedy.
 ```
 
-First, the `prompt_template` decorator wraps the function with a prompt string (“Recommend a `{genre}` movie”). When `genre=”comedy”`is passed, Mirascope transforms the template into a structured message:
+The `@llm.call` decorator turns the function into a structured API call. When `genre="comedy"` is passed, Mirascope transforms the returned string into a structured message:
 
+```sh
+UserMessage(role='user', content=[Text(type='text', text='Recommend a comedy movie')])
 ```
-BaseMessageParam(role='user', content='Recommend a comedy movie')
-```
 
-The model-agnostic [`llm.call` decorator](/docs/v1/learn/calls/) sends this structured message to the model and the return value is a `CallResponse` object that includes generated content, a full list of input messages, model parameters, usage metrics, and any tool or modality-specific metadata.
+The model-agnostic [`llm.call` decorator](/docs/learn/llm/calls) sends this structured message to the model and the return value is a response object that includes generated content, a full list of input messages, model parameters, usage metrics, and any tool or modality-specific metadata.
 
-[`CallResponse`](/docs/v1/api/core/base/call_response/) is useful because whether you're calling OpenAI, Anthropic, Google, or another provider, the shape of the response remains the same. That means you can build [LLM tools](/blog/llm-tools/), logging, analytics, or debugging features once and reuse them everywhere.
+The response object is useful because whether you're calling OpenAI, Anthropic, Google, or another provider, the shape of the response remains the same. That means you can build [LLM tools](/blog/llm-tools/), logging, analytics, or debugging features once and reuse them everywhere.
 
 It also includes fields like `.messages` for the exact prompt, `.usage` for token tracking, and `.model` to confirm which backend handled the call (among others).
 
@@ -213,24 +214,23 @@ The error would only be shown at runtime:
 In contrast, the example with Mirascope below shows how `storyline` is defined as a fixed word and string attribute, and so passing in, say, a plural form of the word would automatically generate an error, thanks to Python:
 
 ```python
-from mirascope.core import prompt_template
+from mirascope import llm
 
-@prompt_template(
-    """
-    SYSTEM: You are a top class manga editor
-    USER: What do you think of this new storyline I'm working on? {storyline}
-    """
-)
-def editor_prompt(storyline: str): ...
+@llm.prompt  # [!code highlight]
+def editor_prompt(storyline: str):
+    return [
+        llm.messages.system("You are a top class manga editor"),
+        llm.messages.user(f"What do you think of this new storyline I'm working on? {storyline}"),
+    ]
 
 storyline = "Two friends go off on an adventure, and ..."
-messages = editor_prompt(storyline)  # [!code highlight]
+messages = editor_prompt.messages(storyline)  # [!code highlight]
 
 print(messages)
-# > [
-#     BaseMessageParam(role='system', content='You are a top class manga editor'),
-#     BaseMessageParam(role='user', content='What do you think of this storyline I'm working on? Two friends go off on an adventure, and ...')
-#   ] 
+# [
+#     SystemMessage(content=[Text(text='You are a top class manga editor')]),
+#     UserMessage(content=[Text(text="What do you think of this storyline I'm working on? Two friends go off on an adventure, and ...")])
+# ]
 ```
 
 In our IDE, trying to pass in a non-string generates an error:
@@ -243,7 +243,7 @@ Autocomplete is also provided for the attribute:
 
 The catch here is that in the case of LangChain, if you haven’t defined your own error handling logic, **it might take you a while to figure out from where bugs originate**. Mirascope warns you immediately of such errors.
 
-## Prompt Versioning in Langchain Hub (And How Lilypad Makes It Better)
+## Prompt Versioning in Langchain Hub (And How Mirascope Cloud Makes It Better)
 
 Anyone working with prompt templates is going to need to version prompts, since changes and tweaks you make will affect the output and arguably need to be tracked so you know what worked, what didn’t, and can roll back or improve without guessing.
 
@@ -265,83 +265,76 @@ from LangChain import hub
 obj = hub.pull("langchain-ai/summarization of articles:3b929440")
 ```
 
-To improve this, we created Lilypad, an [advanced prompt engineering](/blog/advanced-prompt-engineering/) framework that automatically versions not just the prompt but the entire code calling the LLM, including model settings and logic, and handles all versioning behind the scenes, so you never have to do it manually.
+To improve this, we created Mirascope Cloud, an [advanced prompt engineering](/blog/advanced-prompt-engineering/) framework that automatically versions not just the prompt but the entire code calling the LLM, including model settings and logic, and handles all versioning behind the scenes, so you never have to do it manually.
 
-### How Lilypad Makes Structuring Calls and Prompts Easier
+### How Mirascope Cloud Makes Structuring Calls and Prompts Easier
 
-Lilypad treats the entire context around an LLM call (not just the prompt itself) as a fully defined system, **capturing not just the prompt** but also the code, model, inputs, and parameters, effectively isolating each factor that could affect the model’s behavior. 
+Mirascope Cloud treats the entire context around an LLM call (not just the prompt itself) as a fully defined system, **capturing not just the prompt** but also the code, model, inputs, and parameters, effectively isolating each factor that could affect the model's behavior.
 
 This structured approach makes it possible to methodically test what impacts the outcome, compare results across variations, and understand what actually improved performance.
 
-We encourage developers to wrap calls inside Python functions and decorate them with `@lilypad.trace` to automatically version and trace each execution:
+We encourage developers to wrap calls inside Python functions and decorate them with `@ops.version` to automatically version and trace each execution:
 
 ```python
-import lilypad
-import os
-from openai import OpenAI
+from mirascope import llm, ops
 
-lilypad.configure()
+ops.configure()
+ops.instrument_llm()
 
-client = OpenAI()
-
-@lilypad.trace(versioning="automatic")  # [!code highlight]
+@ops.version  # [!code highlight]
+@llm.call("openai/gpt-4o-mini")
 def answer_question(question: str) -> str:
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": question}],
-    )
-    return str(completion.choices[0].message.content) 
+    return question
 
-response = answer_question("What is the deepest point in the Pacific ocean?")    
-print(response)
-
+response = answer_question("What is the deepest point in the Pacific ocean?")
+print(response.text())
 ```
 
-(Note that setting `versioning=”automatic”` in the trace decorator will automatically track changes.)
+(Note that the `@ops.version` decorator will automatically track changes.)
 
 Structuring calls in such a way encourages developers to treat LLM logic as first-class software components: versioned, traceable, and ready to be optimized.
 
-Lilypad tracks changes based on the function closure, so any user-defined functions or classes it relies on (that are within scope) are also **automatically** captured as part of the version, with no need to manually save changes.
+Mirascope Cloud tracks changes based on the function closure, so any user-defined functions or classes it relies on (that are within scope) are also **automatically** captured as part of the version, with no need to manually save changes.
 
 ### One Playground, Full Control: Manage, Test, and Trace in One Place
 
-Such code lines wire your LLM applications into Lilypad’s playground environment, letting you observe, test, and iterate on your functions in a structured, UI-driven way.
+Such code lines wire your LLM applications into Mirascope Cloud's playground environment, letting you observe, test, and iterate on your functions in a structured, UI-driven way.
 
-Below, we show an example of how versioning works. A function wrapped in `lilypad.trace` is displayed in the playground as V6:
+Below, we show an example of how versioning works. A function wrapped in `@ops.version` is displayed in the playground as V6:
 
-![Lilypad Answer Question v6 Trace](/assets/blog/langchain-prompt-template/lilypad-answer-question-v6-trace.webp)
+![Mirascope Cloud Answer Question v6 Trace](/assets/blog/langchain-prompt-template/lilypad-answer-question-v6-trace.webp)
 
-We then edit the function to change the model type in the call to `gpt-4o-mini` and Lilypad automatically increments it to V7:
+We then edit the function to change the model type in the call to `gpt-4o-mini` and Mirascope Cloud automatically increments it to V7:
 
-![Lilypad Answer Question v7 Trace](/assets/blog/langchain-prompt-template/lilypad-answer-question-v7-trace.webp)
+![Mirascope Cloud Answer Question v7 Trace](/assets/blog/langchain-prompt-template/lilypad-answer-question-v7-trace.webp)
 
 The fact such changes are done automatically is especially useful when running large numbers of prompts and calls.
 
-If the system detects that a change is identical to that in a previous version, the version number isn’t incremented. You can revert to any saved version simply by selecting it in the playground.
+If the system detects that a change is identical to that in a previous version, the version number isn't incremented. You can revert to any saved version simply by selecting it in the playground.
 
 This managed prompt environment allows non-technical domain experts to independently work with prompt templates without involvement from developers, meaning they can run prompts and evaluate and annotate outputs of large language models without developers needing to redeploy code.
 
 The playground provides:
 
-* Prompt templates in markdown, and displays any Python function associated with a template  
-* Call settings, like provider, model, and temperature  
+* Prompt templates in markdown, and displays any Python function associated with a template
+* Call settings, like provider, model, and temperature
 * Type-safe prompt arguments and values
 
-![Lilypad Playground](/assets/blog/langchain-prompt-template/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/langchain-prompt-template/lilypad-playground.webp)
 
-Lilypad also captures outputs and traces using the [OpenTelemetry Gen AI](https://opentelemetry.io/) spec to make observability easier, giving users an exact snapshot of every output:
+Mirascope Cloud also captures outputs and traces using the [OpenTelemetry Gen AI](https://opentelemetry.io/) spec to make observability easier, giving users an exact snapshot of every output:
 
-![Lilypad OpenTelemetry GenAI Data](/assets/blog/langchain-prompt-template/lilypad-otel-genai-data.webp)
+![Mirascope Cloud OpenTelemetry GenAI Data](/assets/blog/langchain-prompt-template/lilypad-otel-genai-data.webp)
 
 Domain experts can evaluate outputs using a simple and effective pass/fail labeling system, based on whether the output meets the bar for being "good enough" in context.
 
-We recommend using such [LLM evaluation](/blog/llm-evaluation/) criteria since relying on scoring rubrics or arbitrary rating scales like 1–5 add unnecessary complexity, slow down the evaluation process, and can lead to inconsistent judgments. 
+We recommend using such [LLM evaluation](/blog/llm-evaluation/) criteria since relying on scoring rubrics or arbitrary rating scales like 1–5 add unnecessary complexity, slow down the evaluation process, and can lead to inconsistent judgments.
 
 By contrast, a binary pass/fail system keeps evaluations focused, fast, and aligned with real-world goals of determining whether an output is acceptable for production use.
 
-So Lilypad encourages users to assess outputs through a practical lens: would this be an acceptable output? If yes, it’s a pass. If not, it’s a fail, and you can (optionally) explain why:
+So Mirascope Cloud encourages users to assess outputs through a practical lens: would this be an acceptable output? If yes, it's a pass. If not, it's a fail, and you can (optionally) explain why:
 
-![Lilypad Annotation Queue](/assets/blog/langchain-prompt-template/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/langchain-prompt-template/lilypad-annotation-queue.webp)
 
 Having a domain expert who really knows the task go through the results and mark what's good and what's not gives you solid training examples for automating evaluations.
 
@@ -351,6 +344,6 @@ Even if the handoff to [LLM-as-a-judge](/blog/llm-as-judge/) is reliable though,
 
 ## Start Structuring Your Prompts Smarter
 
-Lilypad brings engineering discipline to prompt development, giving you automatic versioning, easy [prompt evaluation](/blog/prompt-evaluation/), and traceable outputs for every LLM call. Mirascope’s user-friendly library provides multi-modal messaging and provider-agnostic calls, offering a cleaner alternative to LangChain’s prompt classes.
+Mirascope Cloud brings engineering discipline to prompt development, giving you automatic versioning, easy [prompt evaluation](/blog/prompt-evaluation/), and traceable outputs for every LLM call. Mirascope's user-friendly library provides multi-modal messaging and provider-agnostic calls, offering a cleaner alternative to LangChain's prompt classes.
 
-To get started quickly and securely, [you can sign up for Lilypad](https://lilypad.mirascope.com/) with your GitHub credentials. Lilypad also supports [Mirascope](https://github.com/mirascope/mirascope/), our lightweight toolkit for building AI agents.
+To get started quickly and securely, [you can sign up for Mirascope Cloud](https://app.mirascope.com/) with your GitHub credentials. Mirascope Cloud integrates seamlessly with [Mirascope](https://github.com/mirascope/mirascope/), our lightweight toolkit for building AI agents.

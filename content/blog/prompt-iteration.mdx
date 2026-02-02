@@ -2,6 +2,7 @@
 title: "A Guide to Prompt Iteration: Strategies and Examples"
 description: "Explore proven prompt iteration techniques and real-world examples to optimize your LLM workflows and boost model performance."
 date: "2025-11-26"
+updatedAt: "2026-01-28"
 readTime: "6 min read"
 author: "William Bakst"
 ---
@@ -38,11 +39,11 @@ The challenge, though, is that it’s also a bit of a grind. You often end up wi
 
 To get real, repeatable results, you need more than clever wording; you need a way to measure, test, and verify how changes affect outcomes.
 
-But most prompt tools don’t make it easy. That’s why we built [Lilypad](/docs/lilypad), our framework for prompt iteration that tracks every variable affecting output quality. 
+But most prompt tools don't make it easy. That's why we built [Mirascope Cloud](/docs/learn/ops), our framework for prompt iteration that tracks every variable affecting output quality.
 
-Lilypad enables this through rigorous, data-driven evaluation. It versions not just your prompt text, but also the code, model settings, and data transformations around it, so prompt experimentation becomes measurable, repeatable, and debuggable. 
+Mirascope Cloud enables this through rigorous, data-driven evaluation. It versions not just your prompt text, but also the code, model settings, and data transformations around it, so prompt experimentation becomes measurable, repeatable, and debuggable.
 
-In this article, we share the iteration strategies we’ve found most useful in refining prompts for LLMs, and show how Lilypad turns prompt iteration into a structured optimization process, not just trial and error. 
+In this article, we share the iteration strategies we've found most useful in refining prompts for LLMs, and show how Mirascope Cloud turns prompt iteration into a structured optimization process, not just trial and error. 
 
 ## How Iterative Prompting Works 
 
@@ -249,14 +250,14 @@ Some observability frameworks try to manage this, but they often treat prompts a
 
 This separation makes debugging harder and collaboration messy. Developers need a view that captures not just *what* the prompt says, but *where* and *how* it’s being used.
 
-Below, we discuss best practices for [prompt optimization](/blog/prompt-optimization) through iteration, including how Lilypad helps you handle these challenges when working directly with LLM APIs inside a software project. 
+Below, we discuss best practices for [prompt optimization](/blog/prompt-optimization) through iteration, including how Mirascope Cloud helps you handle these challenges when working directly with LLM APIs inside a software project. 
 
 
 ## Best Practices for Systematically Iterating Prompts  
 
 Manual prompt iteration works fine when you’re experimenting or working on one-off use cases. But when prompts are part of [LLM applications](/blog/llm-applications) where they directly influence system behavior, you need more structure. In that context, a “good prompt” isn’t enough. It has to be consistent, testable, and easy to version and improve over time. 
 
-Below are five best practices that we’ve found to make iterative prompting more reliable and measurable. Along the way, we illustrate these using examples from Lilypad, our [context engineering platform](/blog/context-engineering-platform).
+Below are five best practices that we've found to make iterative prompting more reliable and measurable. Along the way, we illustrate these using examples from Mirascope Cloud, our [context engineering platform](/blog/context-engineering-platform).
 
 ### Define Goals and Constraints Up Front
 
@@ -274,39 +275,29 @@ Prompt iteration works best when it’s treated like an experiment; measurable, 
 
 Otherwise, it’s easy to lose track of what caused a particular improvement (or regression). You might notice that your outputs suddenly got worse, but unless you’ve logged prompt versions, retracing the root cause can turn into guesswork. Versioning eliminates that uncertainty. It allows you to compare results across different iterations, run A/B tests, and analyze how specific edits impact output quality.
 
-Prompt iteration platforms should include functionality for iterating on prompts. For example, Lilypad encourages developers to use Python functions to encapsulate their prompts and any logic influencing them. Capturing context in this way makes prompt iteration more reliable by ensuring you can trace, reproduce, and understand exactly what influenced each output.
+Prompt iteration platforms should include functionality for iterating on prompts. For example, Mirascope Cloud encourages developers to use Python functions to encapsulate their prompts and any logic influencing them. Capturing context in this way makes prompt iteration more reliable by ensuring you can trace, reproduce, and understand exactly what influenced each output.
 
-We decorate prompt functions using `@lilypad.trace()`, which can automatically version every change as the function evolves. 
+We decorate prompt functions using `@ops.version`, which can automatically version every change as the function evolves.
 
 ```python{4-13}
-import os
+from mirascope import llm, ops
 
-import lilypad
-from openai import OpenAI
+ops.configure()
+ops.instrument_llm()
 
-lilypad.configure(
-    project_id=os.environ["LILYPAD_PROJECT_ID"],
-    api_key=os.environ["LILYPAD_API_KEY"],
-    auto_llm=True,
-)
-client = OpenAI()
+@ops.version
+@llm.call("openai/gpt-4o-mini")
+def answer_question(question: str) -> str:
+    return f"Answer this question: {question}"
 
-@lilypad.trace(versioning="automatic")
-def answer_question(question: str) -> str | None:
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": f"Answer this question: {question}"}],
-    )
-    return response.choices[0].message.content
-    
 response = answer_question("Who painted the Mona Lisa?")
-print(response)
-# > Leongardo da Vinci painted the Mona Lisa. 
+print(response.text())
+# > Leonardo da Vinci painted the Mona Lisa.
 ```
 
-By decorating the function with `@lilypad.trace`, you also see it inside the Lilypad UI. Every versioned function produces trace data, and in the next section, we’ll dig into how that tracing gives you full visibility into each run.
+By decorating the function with `@ops.version`, you also see it inside the Mirascope Cloud UI. Every versioned function produces trace data, and in the next section, we'll dig into how that tracing gives you full visibility into each run.
 
-![Lilypad Traces](/assets/blog/prompt-iteration/lilypad-traces.webp)
+![Mirascope Cloud Traces](/assets/blog/prompt-iteration/lilypad-traces.webp)
 
 Automatic versioning saves time and ensures every change is recorded, so you don’t forget anything and can always see what changed and why. You can also revisit or re-run any previous version directly in code. 
 
@@ -316,11 +307,11 @@ As your prompt system evolves, visibility becomes more important, meaning you sh
 
 We recommend treating every prompt execution as an event worth logging in order to tell the full story behind every output. Capture inputs, outputs, metadata (like temperature, latency, or model version), and any contextual variables that could influence results. These traces form the backbone of a reproducible workflow where every decision and change is auditable.
 
-In Lilypad, using  `@lilypad.trace()` as we describe above also automatically records a full execution log of prompt inputs, model configuration, output, latency, and even any downstream calls that occur during the run.  
+In Mirascope Cloud, using `@ops.version` as we describe above also automatically records a full execution log of prompt inputs, model configuration, output, latency, and even any downstream calls that occur during the run.
 
-Each log entry becomes a “trace” that’s viewable in Lilypad’s dashboard, so you can explore what happened without manually instrumenting code. For example, you can inspect a past trace to see how a model responded under different temperature settings, or compare multiple traces from the same prompt version to spot performance drift. 
+Each log entry becomes a "trace" that's viewable in Mirascope Cloud's dashboard, so you can explore what happened without manually instrumenting code. For example, you can inspect a past trace to see how a model responded under different temperature settings, or compare multiple traces from the same prompt version to spot performance drift.
 
-![Lilypad OpenTelemetry Data](/assets/blog/prompt-iteration/lilypad-otel-data.webp)
+![Mirascope Cloud OpenTelemetry Data](/assets/blog/prompt-iteration/lilypad-otel-data.webp)
 
 Every time this function runs, Lilypad captures a complete record, creating a searchable timeline of runs, parameters, and results. These logs are built on the [OpenTelemetry JSON spec](https://opentelemetry.io/), so they include nested spans, meaning you can trace how one function triggered another and measure how each part performed. 
 
@@ -336,9 +327,9 @@ You structure this process around three principles:
 2. Version every change, such that each edit creates a new version where teams can compare results or revert if needed.   
 3. Keep parity with production so test prompts run exactly as they would in production, using the same types, parameters, and configurations. 
 
-For instance, Lilypad provides a no-code playground where teams can safely experiment, edit, and test prompts in Markdown-based [prompt editor](/blog/prompt-editor).
+For instance, Mirascope Cloud provides a no-code playground where teams can safely experiment, edit, and test prompts in Markdown-based [prompt editor](/blog/prompt-editor).
 
-![Lilypad Playground](/assets/blog/prompt-iteration/lilypad-playground.webp)
+![Mirascope Cloud Playground](/assets/blog/prompt-iteration/lilypad-playground.webp)
 
 Every edit is versioned automatically, so developers and non-developers can collaborate without overwriting each other’s work. 
 
@@ -362,16 +353,16 @@ To make this process meaningful:
 
 * Combine human judgment with automation. Human reviewers should establish the baseline, then you can bring in [LLM-as-judge](/blog/llm-as-judge) evaluators for scale, always manually validating their results periodically.
 
-For example, Lilypad lets you attach evaluations directly to prompt traces. Each trace captures the input, output, and environment, while users can mark whether the result “passed” or “failed” according to your team’s standards. 
+For example, Mirascope Cloud lets you attach evaluations directly to prompt traces. Each trace captures the input, output, and environment, while users can mark whether the result "passed" or "failed" according to your team's standards.
 
-![Lilypad Annotation Queue](/assets/blog/prompt-iteration/lilypad-annotation-queue.webp)
+![Mirascope Cloud Annotation Queue](/assets/blog/prompt-iteration/lilypad-annotation-queue.webp)
 
-Every annotation in Lilypad is tied to a specific trace, so you get a full context of how and when a prompt was run, including its inputs, outputs, and environment. You can also assign annotations to teammates, so it's easy to review and discuss results collaboratively.
+Every annotation in Mirascope Cloud is tied to a specific trace, so you get a full context of how and when a prompt was run, including its inputs, outputs, and environment. You can also assign annotations to teammates, so it's easy to review and discuss results collaboratively.
 
-## Iterate Better with Lilypad 
+## Iterate Better with Mirascope Cloud
 
-Lilypad makes prompt iteration for [LLM application development](/blog/llm-application-development) systematic so you can version every change, trace every run, and collaborate without losing context. It’s open source and can be self-hosted or run in the cloud. 
+Mirascope Cloud makes prompt iteration for [LLM application development](/blog/llm-application-development) systematic so you can version every change, trace every run, and collaborate without losing context. It's open source and can be self-hosted or run in the cloud.
 
-To get started, sign up for the Lilypad [playground](https://lilypad.mirascope.com/) using your GitHub credentials and begin tracing calls with just a few lines of code.  
+To get started, sign up for the Mirascope Cloud [playground](https://cloud.mirascope.com/) using your GitHub credentials and begin tracing calls with just a few lines of code.
 
-Want to learn more? Explore our [docs](/docs/lilypad) or check out our [GitHub](https://github.com/mirascope/lilypad). Lilypad also offers first-class support for [Mirascope](https://github.com/mirascope/mirascope), our lightweight toolkit for building agents. 
+Want to learn more? Explore our [docs](/docs/learn/ops) or check out our [GitHub](https://github.com/mirascope/mirascope). Mirascope Cloud also offers first-class support for [Mirascope](https://github.com/mirascope/mirascope), our lightweight toolkit for building agents. 
