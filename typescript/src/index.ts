@@ -3,7 +3,13 @@
  *
  * @example
  * ```typescript
- * import { llm } from 'mirascope';
+ * import { llm, ops } from 'mirascope';
+ *
+ * // Configure tracing
+ * ops.configure({ apiKey: process.env.MIRASCOPE_API_KEY });
+ *
+ * // Enable LLM instrumentation
+ * ops.instrumentLlm();
  *
  * const recommendBook = llm.defineCall({
  *   model: 'anthropic/claude-haiku-4-5',
@@ -16,5 +22,6 @@
  * ```
  */
 import * as llm from "./llm";
+import * as ops from "./ops";
 
-export { llm };
+export { llm, ops };
