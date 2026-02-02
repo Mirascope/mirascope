@@ -51,6 +51,19 @@ export type { TracedCall } from "@/ops/_internal/traced-calls";
 export { createTrace } from "@/ops/_internal/traced-functions";
 export type { Trace, AnnotateOptions } from "@/ops/_internal/traced-functions";
 
+// Versioning
+export { version } from "@/ops/_internal/versioning";
+export type { VersionedFunction } from "@/ops/_internal/versioned-functions";
+export type {
+  ClosureMetadata,
+  VersionInfo,
+  VersionedResult,
+} from "@/ops/_internal/versioned-functions";
+
+// Versioned Calls
+export { versionCall } from "@/ops/_internal/versioned-calls";
+export type { VersionedCall } from "@/ops/_internal/versioned-calls";
+
 // Exporters
 export { MirascopeOTLPExporter } from "@/ops/_internal/exporters";
 

@@ -26,8 +26,10 @@ export default defineConfig({
         // generated Fern code
         "src/api/_generated",
         "src/globals.d.ts",
-        // compile-time transformer runs in build plugins, difficult to unit test
+        // compile-time transformer and closure collector run in build plugins, difficult to unit test
         "src/transform/transformer.ts",
+        "src/ops/_internal/closure.ts",
+        "src/ops/_internal/closure-collector.ts",
         // type files with nothing to cover
         "src/transform/plugins/types.ts",
         "src/ops/_internal/instrumentation/providers/types.d.ts",
