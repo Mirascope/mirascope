@@ -1,0 +1,25 @@
+{
+  "$schema": "https://mirascope.com/registry/schema/registry-item.json",
+  "name": "agent",
+  "type": "registry:agent",
+  "title": "Agent Decorator",
+  "description": "A decorator that provides an agentic loop with tool execution, middleware hooks, and streaming support.",
+  "version": "1.0.0",
+  "categories": ["agents", "tools", "middleware"],
+  "mirascope": {
+    "python": { "minVersion": "2.0.0" }
+  },
+  "files": {
+    "python": [
+      {
+        "path": "agent.py",
+        "target": "agent.py"
+      }
+    ]
+  },
+  "dependencies": {
+    "pip": [],
+    "npm": []
+  },
+  "registryDependencies": []
+}
