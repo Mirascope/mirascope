@@ -158,6 +158,20 @@ describe("provider registry", () => {
       });
       expect(provider.id).toBe("together");
     });
+
+    it("registers openrouter provider by ID", () => {
+      vi.stubEnv("OPENROUTER_API_KEY", "test-openrouter-key");
+      const provider = registerProvider("openrouter");
+      expect(provider.id).toBe("openrouter");
+    });
+
+    it("registers openrouter provider by ID with options", () => {
+      const provider = registerProvider("openrouter", {
+        apiKey: "custom-key",
+        baseURL: "https://custom.openrouter.api.com",
+      });
+      expect(provider.id).toBe("openrouter");
+    });
   });
 
   describe("getProviderForModel", () => {

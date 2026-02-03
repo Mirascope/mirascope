@@ -16,6 +16,7 @@ import { GoogleProvider } from "@/llm/providers/google";
 import { MirascopeProvider } from "@/llm/providers/mirascope";
 import { OllamaProvider } from "@/llm/providers/ollama";
 import { OpenAIProvider } from "@/llm/providers/openai/provider";
+import { OpenRouterProvider } from "@/llm/providers/openrouter";
 import { TogetherProvider } from "@/llm/providers/together";
 
 /**
@@ -54,6 +55,9 @@ const DEFAULT_AUTO_REGISTER_SCOPES: Record<string, ProviderDefault[]> = {
   ],
   "ollama/": [{ providerId: "ollama", apiKeyEnvVar: null }],
   "openai/": [{ providerId: "openai", apiKeyEnvVar: "OPENAI_API_KEY" }],
+  "openrouter/": [
+    { providerId: "openrouter", apiKeyEnvVar: "OPENROUTER_API_KEY" },
+  ],
   "together/": [{ providerId: "together", apiKeyEnvVar: "TOGETHER_API_KEY" }],
 };
 
@@ -116,6 +120,12 @@ export function getProviderSingleton(
       break;
     case "openai":
       provider = new OpenAIProvider({
+        apiKey: options?.apiKey,
+        baseURL: options?.baseURL,
+      });
+      break;
+    case "openrouter":
+      provider = new OpenRouterProvider({
         apiKey: options?.apiKey,
         baseURL: options?.baseURL,
       });
