@@ -18,11 +18,17 @@ from .retry_responses import (
     ContextRetryResponse,
     RetryResponse,
 )
-from .retry_stream_responses import AsyncRetryStreamResponse, RetryStreamResponse
+from .retry_stream_responses import (
+    AsyncContextRetryStreamResponse,
+    AsyncRetryStreamResponse,
+    ContextRetryStreamResponse,
+    RetryStreamResponse,
+)
 from .utils import RetryFailure
 
 __all__ = [
     "AsyncContextRetryResponse",
+    "AsyncContextRetryStreamResponse",
     "AsyncRetryCall",
     "AsyncRetryPrompt",
     "AsyncRetryResponse",
@@ -30,6 +36,7 @@ __all__ = [
     "BaseRetryCall",
     "BaseRetryPrompt",
     "ContextRetryResponse",
+    "ContextRetryStreamResponse",
     "RetryArgs",
     "RetryCall",
     "RetryConfig",

@@ -463,8 +463,27 @@ class MockProvider(BaseProvider[None]):
     ) -> (
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
     ):
-        """Not implemented for mock."""
-        raise NotImplementedError
+        """Return a ContextStreamResponse with configurable mid-stream exceptions."""
+        self._stream_count += 1
+        # Convert format to Format if it's a type
+        resolved_format: Format[Any] | None = None
+        if format is not None:
+            if isinstance(format, Format):
+                resolved_format = format
+            elif isinstance(format, OutputParser):
+                resolved_format = llm.format(format, mode="parser")
+            else:
+                resolved_format = llm.format(format, mode="json")
+        return ContextStreamResponse(
+            provider_id="mock",
+            model_id=model_id,
+            provider_model_name="test-model",
+            params={},
+            tools=None,
+            format=resolved_format,
+            input_messages=list(messages),
+            chunk_iterator=self._make_chunk_iterator(),
+        )
 
     async def _context_stream_async(
         self,
@@ -482,8 +501,27 @@ class MockProvider(BaseProvider[None]):
         AsyncContextStreamResponse[DepsT, None]
         | AsyncContextStreamResponse[DepsT, FormattableT]
     ):
-        """Not implemented for mock."""
-        raise NotImplementedError
+        """Return an AsyncContextStreamResponse with configurable mid-stream exceptions."""
+        self._stream_count += 1
+        # Convert format to Format if it's a type
+        resolved_format: Format[Any] | None = None
+        if format is not None:
+            if isinstance(format, Format):
+                resolved_format = format
+            elif isinstance(format, OutputParser):
+                resolved_format = llm.format(format, mode="parser")
+            else:
+                resolved_format = llm.format(format, mode="json")
+        return AsyncContextStreamResponse(
+            provider_id="mock",
+            model_id=model_id,
+            provider_model_name="test-model",
+            params={},
+            tools=None,
+            format=resolved_format,
+            input_messages=list(messages),
+            chunk_iterator=self._make_async_chunk_iterator(),
+        )
 
     def get_error_status(self, e: Exception) -> int | None:
         """Return None for mock provider."""
