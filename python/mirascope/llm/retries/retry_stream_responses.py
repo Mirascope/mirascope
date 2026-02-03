@@ -47,7 +47,7 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
                     print(chunk, end="", flush=True)
                 break  # Success
             except llm.StreamRestarted as e:
-                print(f"\\n[Retry {e.attempt} after: {e.error}]")
+                print(e.message)
         ```
     """
 
@@ -124,7 +124,6 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
             self._reset_stream(self._current_variant)
 
             raise StreamRestarted(
-                attempt=len(self.retry_failures),
                 failure=failure,
             ) from e
 
@@ -169,7 +168,7 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
                     print(chunk, end="", flush=True)
                 break  # Success
             except llm.StreamRestarted as e:
-                print(f"\\n[Retry {e.attempt} after: {e.error}]")
+                print(e.message)
         ```
     """
 
@@ -250,7 +249,6 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
             await self._reset_stream(self._current_variant)
 
             raise StreamRestarted(
-                attempt=len(self.retry_failures),
                 failure=failure,
             ) from e
 
@@ -289,7 +287,6 @@ class ContextRetryStreamResponse(
 
     Example:
         ```python
-        ctx = llm.Context(deps=my_deps)
         response = retry_model.context_stream("Tell me a story", ctx=ctx)
 
         while True:
@@ -298,7 +295,7 @@ class ContextRetryStreamResponse(
                     print(chunk, end="", flush=True)
                 break  # Success
             except llm.StreamRestarted as e:
-                print(f"\\n[Retry {e.attempt} after: {e.error}]")
+                print(e.message)
         ```
     """
 
@@ -375,7 +372,6 @@ class ContextRetryStreamResponse(
             self._reset_stream(self._current_variant)
 
             raise StreamRestarted(
-                attempt=len(self.retry_failures),
                 failure=failure,
             ) from e
 
@@ -427,7 +423,7 @@ class AsyncContextRetryStreamResponse(
                     print(chunk, end="", flush=True)
                 break  # Success
             except llm.StreamRestarted as e:
-                print(f"\\n[Retry {e.attempt} after: {e.error}]")
+                print(e.message)
         ```
     """
 
@@ -512,7 +508,6 @@ class AsyncContextRetryStreamResponse(
             await self._reset_stream(self._current_variant)
 
             raise StreamRestarted(
-                attempt=len(self.retry_failures),
                 failure=failure,
             ) from e
 
