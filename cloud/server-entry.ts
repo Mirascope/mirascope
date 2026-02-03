@@ -372,7 +372,15 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = async (
   // Try serving from static assets first (only needed when run_worker_first is enabled)
   // In staging, all requests go through the worker including assets
   if (url.hostname === "staging.mirascope.com") {
-    const assetResponse = await environment.ASSETS.fetch(request);
+    // Strip credentials from URL - ASSETS binding can't handle URLs with embedded credentials
+    const cleanUrl = new URL(url);
+    cleanUrl.username = "";
+    cleanUrl.password = "";
+    const assetRequest = new Request(cleanUrl.toString(), {
+      method: request.method,
+      headers: request.headers,
+    });
+    const assetResponse = await environment.ASSETS.fetch(assetRequest);
     if (assetResponse.ok) {
       return assetResponse;
     }
