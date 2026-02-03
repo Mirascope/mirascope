@@ -11,7 +11,7 @@ from ..responses import (
     ContextResponse,
     Response,
 )
-from .utils import RetryFailure
+from .utils import RetryFailure, get_retry_model_from_context
 
 if TYPE_CHECKING:
     from .retry_models import RetryModel
@@ -54,12 +54,15 @@ class RetryResponse(Response[FormattableT]):
     def model(self) -> "RetryModel":
         """A RetryModel with the successful model as active.
 
-        This RetryModel has the same pool of available models, but with the
-        model that succeeded set as the active model. This means:
+        If a model is set in context (via `llm.model()` or `llm.retry_model()`),
+        that model is used instead, wrapped with this response's retry config.
+
+        Otherwise, this RetryModel has the same pool of available models, but with
+        the model that succeeded set as the active model. This means:
         - `response.model.model_id` equals `response.model_id`
         - `response.resume()` will try the successful model first
         """
-        return self._retry_model
+        return get_retry_model_from_context(self._retry_model)
 
     @overload
     def resume(
@@ -122,12 +125,15 @@ class AsyncRetryResponse(AsyncResponse[FormattableT]):
     def model(self) -> "RetryModel":
         """A RetryModel with the successful model as active.
 
-        This RetryModel has the same pool of available models, but with the
-        model that succeeded set as the active model. This means:
+        If a model is set in context (via `llm.model()` or `llm.retry_model()`),
+        that model is used instead, wrapped with this response's retry config.
+
+        Otherwise, this RetryModel has the same pool of available models, but with
+        the model that succeeded set as the active model. This means:
         - `response.model.model_id` equals `response.model_id`
         - `response.resume()` will try the successful model first
         """
-        return self._retry_model
+        return get_retry_model_from_context(self._retry_model)
 
     @overload
     async def resume(
@@ -192,12 +198,15 @@ class ContextRetryResponse(
     def model(self) -> "RetryModel":
         """A RetryModel with the successful model as active.
 
-        This RetryModel has the same pool of available models, but with the
-        model that succeeded set as the active model. This means:
+        If a model is set in context (via `llm.model()` or `llm.retry_model()`),
+        that model is used instead, wrapped with this response's retry config.
+
+        Otherwise, this RetryModel has the same pool of available models, but with
+        the model that succeeded set as the active model. This means:
         - `response.model.model_id` equals `response.model_id`
         - `response.resume()` will try the successful model first
         """
-        return self._retry_model
+        return get_retry_model_from_context(self._retry_model)
 
     @overload
     def resume(
@@ -269,12 +278,15 @@ class AsyncContextRetryResponse(
     def model(self) -> "RetryModel":
         """A RetryModel with the successful model as active.
 
-        This RetryModel has the same pool of available models, but with the
-        model that succeeded set as the active model. This means:
+        If a model is set in context (via `llm.model()` or `llm.retry_model()`),
+        that model is used instead, wrapped with this response's retry config.
+
+        Otherwise, this RetryModel has the same pool of available models, but with
+        the model that succeeded set as the active model. This means:
         - `response.model.model_id` equals `response.model_id`
         - `response.resume()` will try the successful model first
         """
-        return self._retry_model
+        return get_retry_model_from_context(self._retry_model)
 
     @overload
     async def resume(

@@ -12,6 +12,30 @@ if TYPE_CHECKING:
     from ..models import Model
     from .retry_models import RetryModel
 
+
+def get_retry_model_from_context(stored_retry_model: "RetryModel") -> "RetryModel":
+    """Get the RetryModel to use, checking context for overrides.
+
+    If a model is set in context (via `llm.model()` or `llm.retry_model()`),
+    that model is used instead, wrapped with this response's retry config.
+
+    Args:
+        stored_retry_model: The RetryModel stored on the response.
+
+    Returns:
+        Either the context model (wrapped in RetryModel if needed) or the stored model.
+    """
+    from ..models import model_from_context
+    from .retry_models import RetryModel
+
+    context_model = model_from_context()
+    if context_model is not None:
+        if isinstance(context_model, RetryModel):
+            return context_model
+        return RetryModel(context_model, stored_retry_model.retry_config)
+    return stored_retry_model
+
+
 _ResultT = TypeVar("_ResultT")
 
 
