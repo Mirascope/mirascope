@@ -142,6 +142,35 @@ def test_stream_model_property(mock_provider: MockProvider) -> None:  # noqa: AR
     assert response.model.model_id == "mock/test-model"
 
 
+def test_stream_retry_config_property(mock_provider: MockProvider) -> None:  # noqa: ARG001
+    """Test that retry_config property returns the retry configuration."""
+
+    @llm.retry(max_retries=3)
+    @llm.call("mock/test-model")
+    def greet() -> str:
+        return "Hello"
+
+    response = greet.stream()
+
+    assert response.retry_config.max_retries == 3
+
+
+@pytest.mark.asyncio
+async def test_async_stream_retry_config_property(
+    mock_provider: MockProvider,  # noqa: ARG001
+) -> None:
+    """Test that async retry_config property returns the retry configuration."""
+
+    @llm.retry(max_retries=3)
+    @llm.call("mock/test-model")
+    async def greet() -> str:
+        return "Hello"
+
+    response = await greet.stream()
+
+    assert response.retry_config.max_retries == 3
+
+
 # --- Async streaming tests ---
 
 
@@ -849,3 +878,31 @@ async def test_async_resume_can_fall_back_to_original_if_fallback_fails(
     # Second iteration succeeds on primary
     chunks = [chunk async for chunk in resumed.chunk_stream()]
     assert len(chunks) > 0
+
+
+# --- Context stream retry_config tests ---
+
+
+def test_context_stream_retry_config_property(
+    mock_provider: MockProvider,  # noqa: ARG001
+) -> None:
+    """Test that ContextRetryStreamResponse.retry_config property returns the retry configuration."""
+    retry_model = llm.retry_model("mock/test-model", max_retries=3)
+    ctx = llm.Context(deps=None)
+
+    response = retry_model.context_stream("Hello", ctx=ctx)
+
+    assert response.retry_config.max_retries == 3
+
+
+@pytest.mark.asyncio
+async def test_async_context_stream_retry_config_property(
+    mock_provider: MockProvider,  # noqa: ARG001
+) -> None:
+    """Test that AsyncContextRetryStreamResponse.retry_config property returns the retry configuration."""
+    retry_model = llm.retry_model("mock/test-model", max_retries=3)
+    ctx = llm.Context(deps=None)
+
+    response = await retry_model.context_stream_async("Hello", ctx=ctx)
+
+    assert response.retry_config.max_retries == 3

@@ -20,6 +20,7 @@ from ..responses import (
 from .utils import RetryFailure, get_retry_model_from_context
 
 if TYPE_CHECKING:
+    from .retry_config import RetryConfig
     from .retry_models import RetryModel
 
 
@@ -91,6 +92,11 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
         that model is used instead, wrapped with this response's retry config.
         """
         return get_retry_model_from_context(self._current_variant)
+
+    @property
+    def retry_config(self) -> "RetryConfig":
+        """The retry configuration for this response."""
+        return self.model.retry_config
 
     def _reset_stream(self, variant: "RetryModel") -> None:
         """Reset to a fresh stream for a new retry attempt."""
@@ -220,6 +226,11 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
         """
         return get_retry_model_from_context(self._current_variant)
 
+    @property
+    def retry_config(self) -> "RetryConfig":
+        """The retry configuration for this response."""
+        return self.model.retry_config
+
     async def _reset_stream(self, variant: "RetryModel") -> None:
         """Reset to a fresh stream for a new retry attempt."""
         new_stream = await self._stream_fn(variant.get_active_model())
@@ -347,6 +358,11 @@ class ContextRetryStreamResponse(
         that model is used instead, wrapped with this response's retry config.
         """
         return get_retry_model_from_context(self._current_variant)
+
+    @property
+    def retry_config(self) -> "RetryConfig":
+        """The retry configuration for this response."""
+        return self.model.retry_config
 
     def _reset_stream(self, variant: "RetryModel") -> None:
         """Reset to a fresh stream for a new retry attempt."""
@@ -486,6 +502,11 @@ class AsyncContextRetryStreamResponse(
         that model is used instead, wrapped with this response's retry config.
         """
         return get_retry_model_from_context(self._current_variant)
+
+    @property
+    def retry_config(self) -> "RetryConfig":
+        """The retry configuration for this response."""
+        return self.model.retry_config
 
     async def _reset_stream(self, variant: "RetryModel") -> None:
         """Reset to a fresh stream for a new retry attempt."""

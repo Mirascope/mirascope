@@ -14,6 +14,7 @@ from ..responses import (
 from .utils import RetryFailure, get_retry_model_from_context
 
 if TYPE_CHECKING:
+    from .retry_config import RetryConfig
     from .retry_models import RetryModel
 
 
@@ -63,6 +64,11 @@ class RetryResponse(Response[FormattableT]):
         - `response.resume()` will try the successful model first
         """
         return get_retry_model_from_context(self._retry_model)
+
+    @property
+    def retry_config(self) -> "RetryConfig":
+        """The retry configuration for this response."""
+        return self.model.retry_config
 
     @overload
     def resume(
@@ -134,6 +140,11 @@ class AsyncRetryResponse(AsyncResponse[FormattableT]):
         - `response.resume()` will try the successful model first
         """
         return get_retry_model_from_context(self._retry_model)
+
+    @property
+    def retry_config(self) -> "RetryConfig":
+        """The retry configuration for this response."""
+        return self.model.retry_config
 
     @overload
     async def resume(
@@ -207,6 +218,11 @@ class ContextRetryResponse(
         - `response.resume()` will try the successful model first
         """
         return get_retry_model_from_context(self._retry_model)
+
+    @property
+    def retry_config(self) -> "RetryConfig":
+        """The retry configuration for this response."""
+        return self.model.retry_config
 
     @overload
     def resume(
@@ -287,6 +303,11 @@ class AsyncContextRetryResponse(
         - `response.resume()` will try the successful model first
         """
         return get_retry_model_from_context(self._retry_model)
+
+    @property
+    def retry_config(self) -> "RetryConfig":
+        """The retry configuration for this response."""
+        return self.model.retry_config
 
     @overload
     async def resume(

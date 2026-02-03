@@ -38,6 +38,33 @@ def test_response_properties_delegate_to_wrapped(mock_provider: MockProvider) ->
     assert response.parse() is None  # No format specified
 
 
+def test_retry_config_property(mock_provider: MockProvider) -> None:  # noqa: ARG001
+    """Test that retry_config property returns the retry configuration."""
+
+    @llm.retry(max_retries=3)
+    @llm.call("mock/test-model")
+    def greet() -> str:
+        return "Hello"
+
+    response = greet()
+
+    assert response.retry_config.max_retries == 3
+
+
+@pytest.mark.asyncio
+async def test_async_retry_config_property(mock_provider: MockProvider) -> None:  # noqa: ARG001
+    """Test that async retry_config property returns the retry configuration."""
+
+    @llm.retry(max_retries=3)
+    @llm.call("mock/test-model")
+    async def greet() -> str:
+        return "Hello"
+
+    response = await greet()
+
+    assert response.retry_config.max_retries == 3
+
+
 def test_execute_tools(mock_provider: MockProvider) -> None:  # noqa: ARG001
     """Test that execute_tools delegates to wrapped response."""
 
@@ -173,3 +200,29 @@ async def test_async_resume_can_fall_back_to_original_if_fallback_fails(
     assert resumed.model_id == "mock/primary"
     assert len(resumed.retry_failures) == 1
     assert resumed.retry_failures[0].model.model_id == "mock/fallback"
+
+
+# --- Context retry response tests ---
+
+
+def test_context_retry_config_property(mock_provider: MockProvider) -> None:  # noqa: ARG001
+    """Test that ContextRetryResponse.retry_config property returns the retry configuration."""
+    retry_model = llm.retry_model("mock/test-model", max_retries=3)
+    ctx = llm.Context(deps=None)
+
+    response = retry_model.context_call("Hello", ctx=ctx)
+
+    assert response.retry_config.max_retries == 3
+
+
+@pytest.mark.asyncio
+async def test_async_context_retry_config_property(
+    mock_provider: MockProvider,  # noqa: ARG001
+) -> None:
+    """Test that AsyncContextRetryResponse.retry_config property returns the retry configuration."""
+    retry_model = llm.retry_model("mock/test-model", max_retries=3)
+    ctx = llm.Context(deps=None)
+
+    response = await retry_model.context_call_async("Hello", ctx=ctx)
+
+    assert response.retry_config.max_retries == 3
