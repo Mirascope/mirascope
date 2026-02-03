@@ -27,6 +27,23 @@ function isStaging(ctx: StagingContext): boolean {
   return ctx.url.hostname === STAGING_HOSTNAME;
 }
 
+/** Prevents CDN caching of HTML to avoid stale content after deployments. */
+function withNoCacheForHtml(response: Response): Response {
+  const contentType = response.headers.get("Content-Type") || "";
+  if (!contentType.includes("text/html")) {
+    return response;
+  }
+
+  const newHeaders = new Headers(response.headers);
+  // no-store over low TTL: staging has minimal traffic, freshness after deploy matters most
+  newHeaders.set("Cache-Control", "no-store, must-revalidate");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: newHeaders,
+  });
+}
+
 function hasValidSessionCookie(request: Request): boolean {
   const cookies = request.headers.get("Cookie") || "";
   return cookies
@@ -152,10 +169,17 @@ export function wrapWithStagingMiddleware(
     // 3. Staging assets (after core handlers, before SSR)
     const assetResponse = await handleStagingAssets(stagingCtx);
     if (assetResponse) {
+      if (isStaging(stagingCtx)) {
+        return withNoCacheForHtml(assetResponse);
+      }
       return assetResponse;
     }
 
     // 4. SSR fallback
-    return ssrHandler(request);
+    const ssrResponse = await ssrHandler(request);
+    if (isStaging(stagingCtx)) {
+      return withNoCacheForHtml(ssrResponse);
+    }
+    return ssrResponse;
   };
 }
