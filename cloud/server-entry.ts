@@ -16,6 +16,7 @@ import {
   validateSettingsFromEnvironment,
   type CloudflareEnvironment,
 } from "@/settings";
+import { wrapWithStagingMiddleware } from "@/staging";
 import billingReconciliationCron from "@/workers/billingReconciliationCron";
 import { type WorkerEnv } from "@/workers/config";
 import dataRetentionCron from "@/workers/dataRetentionCron";
@@ -26,8 +27,6 @@ import routerMeteringQueue, {
   RouterMeteringQueueService,
 } from "@/workers/routerMeteringQueue";
 import spanIngestQueue, { SpansIngestQueue } from "@/workers/spanIngestQueue";
-
-const STAGING_HOSTNAME = "staging.mirascope.com";
 
 /**
  * ExecutionContext service tag for Effect dependency injection.
@@ -247,64 +246,16 @@ const scheduled = async (
   }
 };
 
-const fetch: ExportedHandlerFetchHandler<WorkerEnv> = async (
-  request,
-  environment,
-  context,
-) => {
-  // Cookie staging session (skips /auth/ routes) to get around dynamic import issues
-  const url = new URL(request.url);
-  if (url.hostname === STAGING_HOSTNAME && !url.pathname.startsWith("/auth/")) {
-    const COOKIE_NAME = "staging_session";
-    const SESSION_TOKEN = "ok"; // Simple token, not for security
-
-    // Check for existing session cookie
-    const cookies = request.headers.get("Cookie") || "";
-    const hasSession = cookies
-      .split(";")
-      .some((c) => c.trim().startsWith(`${COOKIE_NAME}=${SESSION_TOKEN}`));
-
-    if (!hasSession) {
-      // No session - require Basic Auth
-      const authHeader = request.headers.get("Authorization");
-      if (!authHeader || !authHeader.startsWith("Basic ")) {
-        return new Response("Unauthorized", {
-          status: 401,
-          headers: { "WWW-Authenticate": 'Basic realm="Staging"' },
-        });
-      }
-
-      try {
-        const base64Credentials = authHeader.slice(6);
-        const credentials = atob(base64Credentials);
-        const [username, password] = credentials.split(":");
-
-        if (username !== "mirascope" || password !== "mirascope") {
-          return new Response("Unauthorized", {
-            status: 401,
-            headers: { "WWW-Authenticate": 'Basic realm="Staging"' },
-          });
-        }
-
-        // Valid credentials - redirect with session cookie
-        // Use 302 to replay the request with the cookie set
-        return new Response(null, {
-          status: 302,
-          headers: {
-            Location: request.url,
-            "Set-Cookie": `${COOKIE_NAME}=${SESSION_TOKEN}; Path=/; HttpOnly; SameSite=Strict; Max-Age=86400`,
-          },
-        });
-      } catch {
-        return new Response("Unauthorized", {
-          status: 401,
-          headers: { "WWW-Authenticate": 'Basic realm="Staging"' },
-        });
-      }
-    }
-    // Has valid session cookie - continue to app
-  }
-
+/**
+ * Core request handling - baseline logic only.
+ * Staging-specific behavior is handled by the middleware wrapper.
+ */
+const coreHandler = async (
+  request: Request,
+  environment: WorkerEnv,
+  context: globalThis.ExecutionContext,
+  url: URL,
+): Promise<Response | null> => {
   // Set execution context layer for route handlers
   executionContextLayer = Layer.succeed(ExecutionContext, context);
 
@@ -348,7 +299,7 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = async (
   }
 
   if (environment.ENVIRONMENT === "local") {
-    const { pathname } = new URL(request.url);
+    const { pathname } = url;
     if (pathname === "/__scheduled") {
       const event: ScheduledEvent = {
         cron: "local",
@@ -392,26 +343,12 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = async (
     // Fall through to normal handler if no .md file exists
   }
 
-  // Try serving from static assets first (only needed when run_worker_first is enabled)
-  // In staging, all requests go through the worker including assets
-  if (url.hostname === STAGING_HOSTNAME) {
-    // Strip credentials from URL - ASSETS binding can't handle URLs with embedded credentials
-    const cleanUrl = new URL(url);
-    cleanUrl.username = "";
-    cleanUrl.password = "";
-    const assetRequest = new Request(cleanUrl.toString(), {
-      method: request.method,
-      headers: request.headers,
-    });
-    const assetResponse = await environment.ASSETS.fetch(assetRequest);
-    if (assetResponse.ok) {
-      return assetResponse;
-    }
-  }
-
-  // Fall back to SSR handler for routes
-  return fetchHandler(request);
+  // Continue to next phase (staging assets then SSR)
+  return null;
 };
+
+// Compose: staging middleware wraps core logic
+const fetch = wrapWithStagingMiddleware(coreHandler, fetchHandler);
 
 const queue = async (
   batch: MessageBatch,
