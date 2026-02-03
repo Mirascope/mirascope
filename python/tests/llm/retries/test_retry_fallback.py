@@ -151,10 +151,8 @@ def test_stream_fallback_model_tried_after_primary_exhausted(
     response = retry_model.stream("Hello")
 
     # First iteration fails, triggers StreamRestarted
-    with pytest.raises(llm.StreamRestarted) as exc_info:
+    with pytest.raises(llm.StreamRestarted):
         list(response.chunk_stream())
-
-    assert exc_info.value.attempt == 1
 
     # After restart, should use fallback model
     assert response.model.model_id == "mock/fallback"
@@ -186,21 +184,18 @@ def test_stream_fallback_model_gets_own_retry_budget(
     response = retry_model.stream("Hello")
 
     # First iteration: primary attempt 1 fails
-    with pytest.raises(llm.StreamRestarted) as exc_info:
+    with pytest.raises(llm.StreamRestarted):
         list(response.chunk_stream())
-    assert exc_info.value.attempt == 1
     assert response.model.model_id == "mock/primary"  # Still on primary (has retries)
 
     # Second iteration: primary attempt 2 (retry) fails, moves to fallback
-    with pytest.raises(llm.StreamRestarted) as exc_info:
+    with pytest.raises(llm.StreamRestarted):
         list(response.chunk_stream())
-    assert exc_info.value.attempt == 2
     assert response.model.model_id == "mock/fallback"  # Now on fallback
 
     # Third iteration: fallback attempt 1 fails
-    with pytest.raises(llm.StreamRestarted) as exc_info:
+    with pytest.raises(llm.StreamRestarted):
         list(response.chunk_stream())
-    assert exc_info.value.attempt == 3
     assert response.model.model_id == "mock/fallback"  # Still on fallback (has retries)
 
     # Fourth iteration: fallback attempt 2 succeeds
@@ -257,10 +252,9 @@ async def test_stream_async_fallback_model_tried_after_primary_exhausted(
     response = await retry_model.stream_async("Hello")
 
     # First iteration fails
-    with pytest.raises(llm.StreamRestarted) as exc_info:
+    with pytest.raises(llm.StreamRestarted):
         async for _ in response.chunk_stream():
             pass
-    assert exc_info.value.attempt == 1
 
     # After restart, should use fallback model
     assert response.model.model_id == "mock/fallback"

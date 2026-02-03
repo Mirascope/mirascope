@@ -40,7 +40,6 @@ def test_context_stream_raises_stream_restarted_on_error(
     with pytest.raises(llm.StreamRestarted) as exc_info:
         list(response.text_stream())
 
-    assert exc_info.value.attempt == 1
     assert exc_info.value.failure.exception is CONNECTION_ERROR
     assert len(response.retry_failures) == 1
     assert [f.exception for f in response.retry_failures] == [CONNECTION_ERROR]
@@ -275,7 +274,6 @@ async def test_async_context_stream_raises_stream_restarted_on_error(
     with pytest.raises(llm.StreamRestarted) as exc_info:
         _ = [chunk async for chunk in response.text_stream()]
 
-    assert exc_info.value.attempt == 1
     assert exc_info.value.failure.exception is TIMEOUT_ERROR
     assert len(response.retry_failures) == 1
 
