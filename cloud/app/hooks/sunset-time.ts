@@ -194,7 +194,10 @@ function isAroundSunsetTime(): boolean {
 
   // Calculate civil twilight end (when it's actually dark) + small buffer
   const BUFFER_MINUTES = 10;
-  const civilTwilightEndHour = estimateCivilTwilightEndHour(latitude, dayOfYear);
+  const civilTwilightEndHour = estimateCivilTwilightEndHour(
+    latitude,
+    dayOfYear,
+  );
 
   // Window: starts 30 min before sunset, ends when civil twilight ends + buffer
   // Convert everything to minutes since midnight for easier comparison
@@ -213,7 +216,11 @@ function isAroundSunsetTime(): boolean {
 
   const formattedWindowStart = `${windowStartHour}:${windowStartMinute.toString().padStart(2, "0")}`;
   const formattedWindowEnd = `${windowEndHour}:${windowEndMinute.toString().padStart(2, "0")}`;
-  const formattedTwilightEnd = `${Math.floor(civilTwilightEndHour)}:${Math.round((civilTwilightEndHour % 1) * 60).toString().padStart(2, "0")}`;
+  const formattedTwilightEnd = `${Math.floor(civilTwilightEndHour)}:${Math.round(
+    (civilTwilightEndHour % 1) * 60,
+  )
+    .toString()
+    .padStart(2, "0")}`;
 
   // Determine if it's sunset time
   const isSunsetTime =
