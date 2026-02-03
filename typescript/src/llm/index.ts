@@ -131,6 +131,9 @@ export type {
 import * as messages from "@/llm/messages";
 export { messages };
 
+import * as mcp from "@/llm/mcp";
+export { mcp };
+
 export {
   MirascopeError,
   ProviderError,
