@@ -12,17 +12,24 @@ from .retry_config import RetryArgs, RetryConfig
 from .retry_decorator import retry
 from .retry_models import RetryModel, RetryModelParams, retry_model
 from .retry_prompts import AsyncRetryPrompt, BaseRetryPrompt, RetryPrompt
-from .retry_responses import AsyncRetryResponse, RetryResponse
+from .retry_responses import (
+    AsyncContextRetryResponse,
+    AsyncRetryResponse,
+    ContextRetryResponse,
+    RetryResponse,
+)
 from .retry_stream_responses import AsyncRetryStreamResponse, RetryStreamResponse
 from .utils import RetryFailure
 
 __all__ = [
+    "AsyncContextRetryResponse",
     "AsyncRetryCall",
     "AsyncRetryPrompt",
     "AsyncRetryResponse",
     "AsyncRetryStreamResponse",
     "BaseRetryCall",
     "BaseRetryPrompt",
+    "ContextRetryResponse",
     "RetryArgs",
     "RetryCall",
     "RetryConfig",
