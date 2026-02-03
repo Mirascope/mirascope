@@ -20,6 +20,10 @@ import {
   buildRequestParams,
   decodeResponse,
 } from "@/llm/providers/openai/completions/_utils";
+import {
+  EMPTY_FEATURE_INFO,
+  type CompletionsModelFeatureInfo,
+} from "@/llm/providers/openai/completions/_utils/feature-info";
 import { decodeStream } from "@/llm/providers/openai/completions/decode-stream";
 import { Response } from "@/llm/responses";
 import { ContextResponse } from "@/llm/responses/context-response";
@@ -96,6 +100,18 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
   /* v8 ignore stop */
 
   /**
+   * Get feature info for the model.
+   * Override in subclasses for provider-specific feature detection.
+   *
+   * Default returns empty feature info (all undefined = most permissive).
+   */
+  /* v8 ignore start - default used by subclasses, tested via E2E */
+  protected modelFeatureInfo(_modelId: string): CompletionsModelFeatureInfo {
+    return EMPTY_FEATURE_INFO;
+  }
+  /* v8 ignore stop */
+
+  /**
    * Execute a call to the OpenAI-compatible API.
    */
   protected async _call(args: {
@@ -106,11 +122,13 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
     params?: Params;
   }): Promise<Response> {
     const apiModelName = this.modelName(args.modelId);
+    const featureInfo = this.modelFeatureInfo(args.modelId);
     const requestParams = buildRequestParams(
       apiModelName,
       args.messages,
       args.tools,
       args.params,
+      featureInfo,
     );
 
     const openaiResponse =
@@ -147,11 +165,13 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
     params?: Params;
   }): Promise<StreamResponse> {
     const apiModelName = this.modelName(args.modelId);
+    const featureInfo = this.modelFeatureInfo(args.modelId);
     const requestParams = buildRequestParams(
       apiModelName,
       args.messages,
       args.tools,
       args.params,
+      featureInfo,
     );
 
     const stream = await this.client.chat.completions.create({
@@ -186,11 +206,13 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
     params?: Params;
   }): Promise<ContextResponse<DepsT>> {
     const apiModelName = this.modelName(args.modelId);
+    const featureInfo = this.modelFeatureInfo(args.modelId);
     const requestParams = buildRequestParams(
       apiModelName,
       args.messages,
       args.tools,
       args.params,
+      featureInfo,
     );
 
     const openaiResponse =
@@ -228,11 +250,13 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
     params?: Params;
   }): Promise<ContextStreamResponse<DepsT>> {
     const apiModelName = this.modelName(args.modelId);
+    const featureInfo = this.modelFeatureInfo(args.modelId);
     const requestParams = buildRequestParams(
       apiModelName,
       args.messages,
       args.tools,
       args.params,
+      featureInfo,
     );
 
     const stream = await this.client.chat.completions.create({

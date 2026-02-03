@@ -7,7 +7,7 @@
 
 import type { ChatCompletion } from "openai/resources/chat/completions";
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 import type { Thought } from "@/llm/content";
 import type { AudioMimeType } from "@/llm/content";
@@ -21,6 +21,7 @@ import {
   decodeResponse,
   buildRequestParams,
 } from "@/llm/providers/openai/completions/_utils";
+import { featureInfoForOpenAIModel } from "@/llm/providers/openai/completions/_utils/feature-info";
 import { FinishReason } from "@/llm/responses/finish-reason";
 
 describe("encodeMessages edge cases", () => {
@@ -166,6 +167,68 @@ describe("buildRequestParams", () => {
     });
 
     expect(params.stop).toEqual(["END", "STOP"]);
+  });
+});
+
+describe("buildRequestParams with reasoning models", () => {
+  const reasoningModelFeatureInfo = { isReasoningModel: true };
+
+  it("omits temperature for reasoning models and warns", () => {
+    const messages = [user("Hello")];
+    const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const params = buildRequestParams(
+      "openai/o1",
+      messages,
+      undefined,
+      { temperature: 0.7 },
+      reasoningModelFeatureInfo,
+    );
+
+    expect(params.temperature).toBeUndefined();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("temperature"),
+    );
+
+    consoleSpy.mockRestore();
+  });
+
+  it("omits topP for reasoning models and warns", () => {
+    const messages = [user("Hello")];
+    const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const params = buildRequestParams(
+      "openai/o1",
+      messages,
+      undefined,
+      { topP: 0.9 },
+      reasoningModelFeatureInfo,
+    );
+
+    expect(params.top_p).toBeUndefined();
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("topP"));
+
+    consoleSpy.mockRestore();
+  });
+
+  it("omits stopSequences for reasoning models and warns", () => {
+    const messages = [user("Hello")];
+    const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const params = buildRequestParams(
+      "openai/o1",
+      messages,
+      undefined,
+      { stopSequences: ["END"] },
+      reasoningModelFeatureInfo,
+    );
+
+    expect(params.stop).toBeUndefined();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("stopSequences"),
+    );
+
+    consoleSpy.mockRestore();
   });
 });
 
@@ -467,9 +530,43 @@ describe("audio encoding", () => {
     );
     const messages = [user(["Listen to this", wavAudio])];
 
-    // gpt-4o-mini doesn't support audio
+    // gpt-4o-mini doesn't support audio - need to pass feature info to enable check
+    const featureInfo = featureInfoForOpenAIModel("gpt-4o-mini");
     expect(() =>
-      buildRequestParams("openai/gpt-4o-mini:completions", messages),
+      buildRequestParams(
+        "openai/gpt-4o-mini:completions",
+        messages,
+        undefined,
+        {},
+        featureInfo,
+      ),
+    ).toThrow(FeatureNotSupportedError);
+  });
+
+  it("throws FeatureNotSupportedError with null modelId when modelId is undefined", () => {
+    // Create valid WAV audio with proper magic bytes (RIFF....WAVE)
+    const wavAudio = Audio.fromBytes(
+      new Uint8Array([
+        0x52,
+        0x49,
+        0x46,
+        0x46, // 'RIFF'
+        0x00,
+        0x00,
+        0x00,
+        0x00, // file size (placeholder)
+        0x57,
+        0x41,
+        0x56,
+        0x45, // 'WAVE'
+      ]),
+    );
+    const messages = [user(["Listen to this", wavAudio])];
+
+    // Call encodeMessages directly without modelId but with feature info that disables audio
+    const featureInfo = { audioSupport: false };
+    expect(() =>
+      encodeMessages(messages, false, undefined, featureInfo),
     ).toThrow(FeatureNotSupportedError);
   });
 });

@@ -23,6 +23,7 @@ import type {
 } from "@/llm/content";
 import type { AssistantMessage, Message } from "@/llm/messages";
 import type { Params } from "@/llm/models";
+import type { CompletionsModelFeatureInfo } from "@/llm/providers/openai/completions/_utils/feature-info";
 import type { OpenAIModelId } from "@/llm/providers/openai/model-id";
 import type { Usage } from "@/llm/responses/usage";
 import type { ToolSchema, Tools } from "@/llm/tools";
@@ -30,7 +31,6 @@ import type { ToolSchema, Tools } from "@/llm/tools";
 import { FeatureNotSupportedError } from "@/llm/exceptions";
 import { ParamHandler } from "@/llm/providers/base";
 import { modelName } from "@/llm/providers/openai/model-id";
-import { MODELS_WITHOUT_AUDIO_SUPPORT } from "@/llm/providers/openai/model-info";
 import { FinishReason } from "@/llm/responses/finish-reason";
 import { createUsage } from "@/llm/responses/usage";
 import { isProviderTool } from "@/llm/tools";
@@ -95,18 +95,16 @@ function toOpenAIAudioFormat(mimeType: AudioMimeType): OpenAIAudioFormat {
 function encodeAudio(
   audio: Audio,
   modelId: OpenAIModelId | undefined,
+  featureInfo?: CompletionsModelFeatureInfo,
 ): ChatCompletionContentPartInputAudio {
-  // Check if model supports audio
-  if (modelId) {
-    const baseModelName = modelName(modelId, null);
-    if (MODELS_WITHOUT_AUDIO_SUPPORT.has(baseModelName)) {
-      throw new FeatureNotSupportedError(
-        "audio input",
-        "openai",
-        modelId,
-        `Model '${modelId}' does not support audio inputs.`,
-      );
-    }
+  // Check if model supports audio using feature info
+  if (featureInfo?.audioSupport === false) {
+    throw new FeatureNotSupportedError(
+      "audio input",
+      "openai",
+      modelId ?? null,
+      `Model '${modelId}' does not support audio inputs.`,
+    );
   }
 
   const format = toOpenAIAudioFormat(audio.source.mimeType);
@@ -169,11 +167,13 @@ export function encodeTools(
  * @param messages - The messages to encode
  * @param encodeThoughtsAsText - Whether to encode thoughts as text in assistant messages
  * @param modelId - The model ID (used for checking audio support and raw message reuse)
+ * @param featureInfo - Feature info for the model (used for capability checks)
  */
 export function encodeMessages(
   messages: readonly Message[],
   encodeThoughtsAsText: boolean = false,
   modelId?: OpenAIModelId,
+  featureInfo?: CompletionsModelFeatureInfo,
 ): ChatCompletionMessageParam[] {
   const openaiMessages: ChatCompletionMessageParam[] = [];
   const expectedProviderModelName = modelId
@@ -194,7 +194,7 @@ export function encodeMessages(
       /* v8 ignore stop */
 
       // Then add the user message if it has non-tool content
-      const userMessage = encodeUserMessage(message, modelId);
+      const userMessage = encodeUserMessage(message, modelId, featureInfo);
       if (userMessage) {
         openaiMessages.push(userMessage);
       }
@@ -235,6 +235,7 @@ export function encodeMessages(
 function encodeUserMessage(
   message: Extract<Message, { role: "user" }>,
   modelId?: OpenAIModelId,
+  featureInfo?: CompletionsModelFeatureInfo,
 ): ChatCompletionMessageParam | null {
   const contentParts: UserContentPartOpenAI[] = [];
 
@@ -249,7 +250,7 @@ function encodeUserMessage(
         break;
 
       case "audio":
-        contentParts.push(encodeAudio(part, modelId));
+        contentParts.push(encodeAudio(part, modelId, featureInfo));
         break;
 
       /* v8 ignore start - content types not yet implemented */
@@ -397,21 +398,27 @@ function encodeAssistantMessage(
  * @param messages - The messages to send
  * @param tools - Optional tools to make available to the model
  * @param params - Optional parameters (temperature, maxTokens, etc.)
+ * @param featureInfo - Optional feature info for model capability detection
  */
 export function buildRequestParams(
   modelId: OpenAIModelId,
   messages: readonly Message[],
   tools?: Tools,
   params: Params = {},
+  featureInfo?: CompletionsModelFeatureInfo,
 ): ChatCompletionCreateParamsNonStreaming {
   return ParamHandler.with(params, "openai", modelId, (p) => {
     const thinkingConfig = p.get("thinking");
     const encodeThoughtsAsText = thinkingConfig?.encodeThoughtsAsText ?? false;
 
+    // Determine if this is a reasoning model (skip temperature/topP/stop)
+    const isReasoningModel = featureInfo?.isReasoningModel === true;
+
     const openaiMessages = encodeMessages(
       messages,
       encodeThoughtsAsText,
       modelId,
+      featureInfo,
     );
 
     const requestParams: ChatCompletionCreateParamsNonStreaming = {
@@ -448,12 +455,26 @@ export function buildRequestParams(
 
     const temperature = p.get("temperature");
     if (temperature !== undefined) {
-      requestParams.temperature = temperature;
+      if (isReasoningModel) {
+        p.warnUnsupported(
+          "temperature",
+          "Reasoning models do not support the temperature parameter",
+        );
+      } else {
+        requestParams.temperature = temperature;
+      }
     }
 
     const topP = p.get("topP");
     if (topP !== undefined) {
-      requestParams.top_p = topP;
+      if (isReasoningModel) {
+        p.warnUnsupported(
+          "topP",
+          "Reasoning models do not support the top_p parameter",
+        );
+      } else {
+        requestParams.top_p = topP;
+      }
     }
 
     const seed = p.get("seed");
@@ -463,7 +484,14 @@ export function buildRequestParams(
 
     const stopSequences = p.get("stopSequences");
     if (stopSequences !== undefined) {
-      requestParams.stop = stopSequences;
+      if (isReasoningModel) {
+        p.warnUnsupported(
+          "stopSequences",
+          "Reasoning models do not support stop sequences",
+        );
+      } else {
+        requestParams.stop = stopSequences;
+      }
     }
 
     // OpenAI doesn't support topK
