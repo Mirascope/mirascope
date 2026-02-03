@@ -80,15 +80,15 @@ function getDayOfYear(date: Date): number {
   return Math.floor(diff / oneDay);
 }
 
+// Calculate solar declination angle (in degrees) for a given day of year
+// 23.44° is Earth's axial tilt, and the offset of 81 days aligns with the spring equinox
+function getSolarDeclination(dayOfYear: number): number {
+  return 23.44 * Math.sin(((2 * Math.PI) / 365) * (dayOfYear - 81));
+}
+
 // Calculate approximate sunset hour based on latitude and day of year
 function estimateSunsetHour(latitude: number, dayOfYear: number): number {
-  // More accurate astronomical formula for calculating sunset times
-  // This accounts for Earth's axial tilt
-
-  // Calculate solar declination angle (in degrees)
-  // 23.44° is Earth's axial tilt, and the offset of 81 days aligns with the spring equinox
-  const declination =
-    23.44 * Math.sin(((2 * Math.PI) / 365) * (dayOfYear - 81));
+  const declination = getSolarDeclination(dayOfYear);
 
   // Calculate the hour angle (in degrees, then converted to hours)
   // This is the angular displacement of the sun from the local meridian
@@ -103,10 +103,33 @@ function estimateSunsetHour(latitude: number, dayOfYear: number): number {
   // Calculate sunset time (12 hours + hour angle)
   // At true noon, the sun is at the local meridian (12:00)
   // The hour angle represents the additional time until sunset
-  const sunsetHour = 12 + hourAngle;
+  return 12 + hourAngle;
+}
 
-  // Return the calculated sunset hour
-  return sunsetHour;
+// Calculate when civil twilight ends (sun is 6° below horizon)
+// Returns hour in decimal form (e.g., 19.5 = 7:30 PM)
+function estimateCivilTwilightEndHour(
+  latitude: number,
+  dayOfYear: number,
+): number {
+  const declination = getSolarDeclination(dayOfYear);
+  const latRad = (latitude * Math.PI) / 180;
+  const decRad = (declination * Math.PI) / 180;
+
+  // Sun altitude for civil twilight end: -6 degrees
+  const altitudeRad = (-6 * Math.PI) / 180;
+
+  // Hour angle formula accounting for sun altitude below horizon:
+  // cos(ω) = (sin(h) - sin(φ) × sin(δ)) / (cos(φ) × cos(δ))
+  const cosHourAngle =
+    (Math.sin(altitudeRad) - Math.sin(latRad) * Math.sin(decRad)) /
+    (Math.cos(latRad) * Math.cos(decRad));
+
+  // Clamp to valid range (handles extreme latitudes where twilight may not end)
+  const clampedCos = Math.max(-1, Math.min(1, cosHourAngle));
+  const hourAngle = (Math.acos(clampedCos) * (180 / Math.PI)) / 15;
+
+  return 12 + hourAngle;
 }
 
 // Calculates if current time is close to sunset based on location and date
@@ -169,38 +192,33 @@ function isAroundSunsetTime(): boolean {
   const formattedSunsetTime = `${sunsetHourInt}:${sunsetMinute.toString().padStart(2, "0")}`;
   const formattedCurrentTime = `${hour}:${minutes.toString().padStart(2, "0")}`;
 
-  // Check if current time is within 30 minutes of calculated sunset
-  const windowStartMinute = sunsetMinute - 30;
-  const windowStartHour =
-    windowStartMinute < 0 ? sunsetHourInt - 1 : sunsetHourInt;
-  const actualWindowStartMinute =
-    windowStartMinute < 0 ? windowStartMinute + 60 : windowStartMinute;
+  // Calculate civil twilight end (when it's actually dark) + small buffer
+  const BUFFER_MINUTES = 10;
+  const civilTwilightEndHour = estimateCivilTwilightEndHour(latitude, dayOfYear);
 
-  const windowEndMinute = sunsetMinute + 30;
-  const windowEndHour =
-    windowEndMinute >= 60 ? sunsetHourInt + 1 : sunsetHourInt;
-  const actualWindowEndMinute =
-    windowEndMinute >= 60 ? windowEndMinute - 60 : windowEndMinute;
+  // Window: starts 30 min before sunset, ends when civil twilight ends + buffer
+  // Convert everything to minutes since midnight for easier comparison
+  const currentTimeMinutes = hour * 60 + minutes;
+  const windowStartMinutes = sunsetHourInt * 60 + sunsetMinute - 30;
+  const windowEndMinutes =
+    Math.floor(civilTwilightEndHour) * 60 +
+    Math.round((civilTwilightEndHour % 1) * 60) +
+    BUFFER_MINUTES;
 
-  const formattedWindowStart = `${windowStartHour}:${actualWindowStartMinute.toString().padStart(2, "0")}`;
-  const formattedWindowEnd = `${windowEndHour}:${actualWindowEndMinute.toString().padStart(2, "0")}`;
+  // Format for logging
+  const windowStartHour = Math.floor(windowStartMinutes / 60);
+  const windowStartMinute = windowStartMinutes % 60;
+  const windowEndHour = Math.floor(windowEndMinutes / 60);
+  const windowEndMinute = windowEndMinutes % 60;
+
+  const formattedWindowStart = `${windowStartHour}:${windowStartMinute.toString().padStart(2, "0")}`;
+  const formattedWindowEnd = `${windowEndHour}:${windowEndMinute.toString().padStart(2, "0")}`;
+  const formattedTwilightEnd = `${Math.floor(civilTwilightEndHour)}:${Math.round((civilTwilightEndHour % 1) * 60).toString().padStart(2, "0")}`;
 
   // Determine if it's sunset time
-  let isSunsetTime: boolean;
-
-  // Real sunset time detection using the correctly calculated window
-  if (windowStartHour === windowEndHour) {
-    // Window is within a single hour
-    isSunsetTime =
-      hour === windowStartHour &&
-      minutes >= actualWindowStartMinute &&
-      minutes <= actualWindowEndMinute;
-  } else {
-    // Window spans two hours
-    isSunsetTime =
-      (hour === windowStartHour && minutes >= actualWindowStartMinute) ||
-      (hour === windowEndHour && minutes <= actualWindowEndMinute);
-  }
+  const isSunsetTime =
+    currentTimeMinutes >= windowStartMinutes &&
+    currentTimeMinutes <= windowEndMinutes;
 
   if (VERBOSE_LOGGING) {
     console.log(
@@ -212,6 +230,7 @@ function isAroundSunsetTime(): boolean {
       `- Location: ${countryCode} (source: ${locationSource}, latitude: ${latitude}°)
       - Current time: ${formattedCurrentTime}
       - Estimated sunset: ${formattedSunsetTime}
+      - Civil twilight ends: ${formattedTwilightEnd}
       - Sunset window: ${formattedWindowStart} - ${formattedWindowEnd}
       - Day of year: ${dayOfYear}/365`,
     );
@@ -288,7 +307,7 @@ export function useSunsetTime(): boolean {
       );
     }
     document.documentElement.classList.remove("sunset-time");
-  }, [isSunsetTime]);
+  }, [isSunsetTime, isLandingPage, isRouterWaitlistPage]);
 
   return isSunsetTime;
 }
