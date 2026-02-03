@@ -62,6 +62,16 @@ export const callWithMessages = llm.defineCall<{ topic: string }>({
   ],
 });
 
+// Multi-variable declaration (tests that we don't duplicate the statement)
+const configA = "openai/gpt-4o-mini",
+  configB = 512;
+
+export const callWithMultiVarDeps = llm.defineCall({
+  model: configA,
+  maxTokens: configB,
+  template: () => "Using multi-var deps",
+});
+
 // Versioned call - this is what we're testing
 export const versionedSimpleCall = ops.version(simpleCall, {
   name: "simple-call",
@@ -77,4 +87,8 @@ export const versionedCallWithTools = ops.version(callWithTools);
 
 export const versionedCallWithMessages = ops.version(callWithMessages, {
   tags: ["production", "claude"],
+});
+
+export const versionedCallWithMultiVarDeps = ops.version(callWithMultiVarDeps, {
+  name: "multi-var-deps",
 });

@@ -277,8 +277,13 @@ export function version<Args extends unknown[], R, CallT extends CallLike>(
         const existing = await client.functions.findbyhash({
           hash: closure.hash,
         });
-        registeredUuid = existing.id;
-        return registeredUuid;
+        // Only reuse if the language matches - otherwise we need a new record
+        if (existing.language === "typescript") {
+          registeredUuid = existing.id;
+          return registeredUuid;
+        }
+        // Language mismatch - fall through to create new function
+        // This can happen when the same code exists in both Python and TypeScript
       } catch {
         // Not found, create new
       }

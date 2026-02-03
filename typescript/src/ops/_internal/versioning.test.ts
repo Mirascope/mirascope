@@ -571,7 +571,9 @@ describe("versioning", () => {
   describe("function registration", () => {
     it("should use existing function when found by hash", async () => {
       const { getClient } = await import("@/api/client");
-      const mockFindbyhash = vi.fn().mockResolvedValue({ id: "existing-uuid" });
+      const mockFindbyhash = vi
+        .fn()
+        .mockResolvedValue({ id: "existing-uuid", language: "typescript" });
       const mockCreate = vi.fn().mockResolvedValue({ id: "new-uuid" });
       vi.mocked(getClient).mockReturnValue({
         annotations: { create: vi.fn() },

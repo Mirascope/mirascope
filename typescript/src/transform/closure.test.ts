@@ -113,6 +113,24 @@ describe("closure extraction with real Call definitions", () => {
     });
   });
 
+  describe("versionedCallWithMultiVarDeps", () => {
+    it("includes multi-variable declaration only once per closure", () => {
+      // Count occurrences of 'const configA' which starts the multi-var declaration
+      // In the closure code strings, this gets escaped, so we match the pattern
+      const pattern = /const configA\b/g;
+      const matches = transformed.match(pattern);
+      expect(matches).not.toBeNull();
+      // Should appear exactly twice total (once per closure that needs it)
+      // If the bug existed, it would appear 4 times (duplicated in each closure)
+      expect(matches!.length).toBe(2);
+    });
+
+    it("captures both variables from the declaration", () => {
+      expect(transformed).toContain("configA");
+      expect(transformed).toContain("configB");
+    });
+  });
+
   describe("closure code structure", () => {
     it("includes hash in closure metadata", () => {
       // Check that hash is present in the closure

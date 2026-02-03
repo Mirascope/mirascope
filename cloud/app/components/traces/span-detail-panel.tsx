@@ -924,6 +924,8 @@ export function SpanDetailPanel({
                 <dd>{functionData.name}</dd>
                 <dt className="text-muted-foreground">Version</dt>
                 <dd>{functionData.version}</dd>
+                <dt className="text-muted-foreground">Language</dt>
+                <dd>{functionData.language}</dd>
               </dl>
               {functionData && (
                 <div className="space-y-2">

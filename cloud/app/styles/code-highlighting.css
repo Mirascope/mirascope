@@ -130,6 +130,15 @@ html.dark .machine-mode-code .shiki {
   background-color: hsl(var(--background)) !important;
 }
 
+/* App background code blocks (span details, etc.) */
+.app-bg-code .shiki {
+  background-color: hsl(var(--background)) !important;
+}
+
+html.dark .app-bg-code .shiki {
+  background-color: hsl(var(--background)) !important;
+}
+
 /* Machine mode: word wrap for better readability */
 .machine-mode-code .shiki,
 .machine-mode-code .shiki code {

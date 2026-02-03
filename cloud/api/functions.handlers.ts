@@ -74,6 +74,7 @@ export const createFunctionHandler = (payload: CreateFunctionRequest) =>
           signature: payload.signature,
           signatureHash: payload.signatureHash,
           name: payload.name,
+          language: payload.language,
           description: payload.description ?? null,
           tags,
           metadata,

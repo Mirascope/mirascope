@@ -425,6 +425,7 @@ function FunctionDetailPage() {
                         code={fn.code}
                         language={fn.language ?? "python"}
                         showLineNumbers={true}
+                        className="app-bg-code"
                       />
                     )}
                   </div>

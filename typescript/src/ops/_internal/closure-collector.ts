@@ -289,6 +289,15 @@ class ImportCollector {
 }
 
 /**
+ * Information about a top-level definition (function, class, type, interface, enum).
+ */
+interface DefinitionInfo {
+  node: ts.Node;
+  name: string;
+  kind: "function" | "class" | "type" | "interface" | "enum";
+}
+
+/**
  * Collects function and class definitions from a source file.
  */
 class DefinitionCollector {
@@ -296,83 +305,103 @@ class DefinitionCollector {
   private usedNames: Set<string>;
   private definitions: Map<string, string> = new Map();
   private visitedNames: Set<string> = new Set();
+  /** Map from definition name to its info for O(1) lookup */
+  private definitionMap: Map<string, DefinitionInfo> = new Map();
 
   constructor(sourceFile: ts.SourceFile, usedNames: Set<string>) {
     this.sourceFile = sourceFile;
     this.usedNames = usedNames;
+    this.buildDefinitionMap();
   }
 
   /**
-   * Collect all referenced definitions.
+   * Build a map of all top-level definitions for O(1) lookup.
    */
-  collect(): string[] {
-    this.collectTopLevelDefinitions();
-    return Array.from(this.definitions.values());
-  }
-
-  private collectTopLevelDefinitions(): void {
+  private buildDefinitionMap(): void {
     ts.forEachChild(this.sourceFile, (node) => {
       if (ts.isFunctionDeclaration(node) && node.name) {
-        const name = node.name.text;
-        if (this.usedNames.has(name) && !this.visitedNames.has(name)) {
-          this.visitedNames.add(name);
-          const text = this.getNodeText(node);
-          this.definitions.set(name, this.removeVersionDecorator(text));
-          // Recursively collect dependencies of this function
-          this.collectNestedDependencies(node);
-        }
+        this.definitionMap.set(node.name.text, {
+          node,
+          name: node.name.text,
+          kind: "function",
+        });
       } else if (ts.isClassDeclaration(node) && node.name) {
-        const name = node.name.text;
-        if (this.usedNames.has(name) && !this.visitedNames.has(name)) {
-          this.visitedNames.add(name);
-          const text = this.getNodeText(node);
-          this.definitions.set(name, text);
-          this.collectNestedDependencies(node);
-        }
+        this.definitionMap.set(node.name.text, {
+          node,
+          name: node.name.text,
+          kind: "class",
+        });
       } else if (ts.isTypeAliasDeclaration(node)) {
-        const name = node.name.text;
-        if (this.usedNames.has(name) && !this.visitedNames.has(name)) {
-          this.visitedNames.add(name);
-          this.definitions.set(name, this.getNodeText(node));
-        }
+        this.definitionMap.set(node.name.text, {
+          node,
+          name: node.name.text,
+          kind: "type",
+        });
       } else if (ts.isInterfaceDeclaration(node)) {
-        const name = node.name.text;
-        if (this.usedNames.has(name) && !this.visitedNames.has(name)) {
-          this.visitedNames.add(name);
-          this.definitions.set(name, this.getNodeText(node));
-        }
+        this.definitionMap.set(node.name.text, {
+          node,
+          name: node.name.text,
+          kind: "interface",
+        });
       } else if (ts.isEnumDeclaration(node)) {
-        const name = node.name.text;
-        if (this.usedNames.has(name) && !this.visitedNames.has(name)) {
-          this.visitedNames.add(name);
-          this.definitions.set(name, this.getNodeText(node));
-        }
+        this.definitionMap.set(node.name.text, {
+          node,
+          name: node.name.text,
+          kind: "enum",
+        });
       }
     });
   }
 
-  private collectNestedDependencies(node: ts.Node): void {
-    const nestedCollector = new NameCollector();
-    const nestedNames = nestedCollector.collect(node);
+  /**
+   * Collect all referenced definitions using a work queue.
+   */
+  collect(): string[] {
+    const queue = Array.from(this.usedNames);
 
-    for (const name of nestedNames) {
-      if (!this.visitedNames.has(name) && name !== this.getCurrentName(node)) {
-        this.usedNames.add(name);
+    while (queue.length > 0) {
+      const name = queue.shift()!;
+      if (this.visitedNames.has(name)) continue;
+
+      const info = this.definitionMap.get(name);
+      if (!info) continue;
+
+      this.visitedNames.add(name);
+      const text = this.getNodeText(info.node);
+
+      if (info.kind === "function") {
+        this.definitions.set(name, this.removeVersionDecorator(text));
+      } else {
+        this.definitions.set(name, text);
+      }
+
+      // For functions and classes, collect nested dependencies
+      if (info.kind === "function" || info.kind === "class") {
+        const newDeps = this.collectNestedDependencies(info.node, name);
+        for (const dep of newDeps) {
+          if (!this.visitedNames.has(dep)) {
+            this.usedNames.add(dep);
+            queue.push(dep);
+          }
+        }
       }
     }
 
-    // Re-collect with the new names
-    this.collectTopLevelDefinitions();
+    return Array.from(this.definitions.values());
   }
 
-  private getCurrentName(node: ts.Node): string | undefined {
-    if (
-      (ts.isFunctionDeclaration(node) || ts.isClassDeclaration(node)) &&
-      node.name
-    ) {
-      return node.name.text;
-    }
-    return undefined;
+  /**
+   * Collect nested dependencies from a node.
+   * Returns the names used in the node (excluding the node's own name).
+   */
+  private collectNestedDependencies(
+    node: ts.Node,
+    currentName: string,
+  ): Set<string> {
+    const nestedCollector = new NameCollector();
+    const nestedNames = nestedCollector.collect(node);
+    nestedNames.delete(currentName);
+    return nestedNames;
   }
 
   private getNodeText(node: ts.Node): string {
@@ -397,35 +426,83 @@ class GlobalAssignmentCollector {
   private sourceFile: ts.SourceFile;
   private usedNames: Set<string>;
   private assignments: string[] = [];
+  private visitedNames: Set<string> = new Set();
+  /** Map from variable name to its declaration node and statement */
+  private variableMap: Map<
+    string,
+    { declaration: ts.VariableDeclaration; statement: ts.VariableStatement }
+  > = new Map();
 
   constructor(sourceFile: ts.SourceFile, usedNames: Set<string>) {
     this.sourceFile = sourceFile;
     this.usedNames = usedNames;
+    this.buildVariableMap();
   }
 
   /**
-   * Collect all used global variable assignments.
+   * Build a map of all top-level variable declarations for O(1) lookup.
    */
-  collect(): string[] {
+  private buildVariableMap(): void {
     ts.forEachChild(this.sourceFile, (node) => {
       if (ts.isVariableStatement(node)) {
-        // Check if it's a module-level declaration
-        this.processVariableStatement(node);
+        for (const declaration of node.declarationList.declarations) {
+          if (ts.isIdentifier(declaration.name)) {
+            this.variableMap.set(declaration.name.text, {
+              declaration,
+              statement: node,
+            });
+          }
+        }
       }
     });
-    return this.assignments;
   }
 
-  private processVariableStatement(node: ts.VariableStatement): void {
-    for (const declaration of node.declarationList.declarations) {
-      if (ts.isIdentifier(declaration.name)) {
-        const name = declaration.name.text;
-        if (this.usedNames.has(name)) {
-          this.assignments.push(node.getText(this.sourceFile));
-          break; // Only add the statement once
+  /**
+   * Collect all used global variable assignments using a work queue.
+   */
+  collect(): string[] {
+    const queue = Array.from(this.usedNames);
+    const visitedStatements = new Set<ts.VariableStatement>();
+
+    while (queue.length > 0) {
+      const name = queue.shift()!;
+      if (this.visitedNames.has(name)) continue;
+
+      const entry = this.variableMap.get(name);
+      if (!entry) continue;
+
+      this.visitedNames.add(name);
+
+      // Only add statement once even if multiple variables from it are used
+      if (!visitedStatements.has(entry.statement)) {
+        visitedStatements.add(entry.statement);
+        this.assignments.push(entry.statement.getText(this.sourceFile));
+      }
+
+      // Collect dependencies from this variable's initializer and add to queue
+      const newDeps = this.collectNestedDependencies(entry.declaration);
+      for (const dep of newDeps) {
+        if (!this.visitedNames.has(dep)) {
+          this.usedNames.add(dep);
+          queue.push(dep);
         }
       }
     }
+
+    return this.assignments;
+  }
+
+  /**
+   * Collect nested dependencies from a variable declaration.
+   * Returns the names used in the initializer.
+   */
+  private collectNestedDependencies(
+    declaration: ts.VariableDeclaration,
+  ): Set<string> {
+    if (!declaration.initializer) return new Set();
+
+    const nestedCollector = new NameCollector();
+    return nestedCollector.collect(declaration.initializer);
   }
 }
 
@@ -548,24 +625,27 @@ export class ClosureCollector {
     const nameCollector = new NameCollector();
     const usedNames = nameCollector.collect(node);
 
-    // Collect imports
-    const importCollector = new ImportCollector(
-      sourceFile,
-      usedNames,
-      this.program,
-    );
-    const imports = importCollector.collect();
+    // Collect definitions first - this recursively adds more names to usedNames
+    // as it discovers dependencies in the collected definitions
+    const definitionCollector = new DefinitionCollector(sourceFile, usedNames);
+    const definitions = definitionCollector.collect();
 
-    // Collect global assignments
+    // Collect global assignments (variable declarations like const myTool = ...)
+    // This also recursively adds nested dependencies to usedNames
     const globalCollector = new GlobalAssignmentCollector(
       sourceFile,
       usedNames,
     );
     const globals = globalCollector.collect();
 
-    // Collect definitions
-    const definitionCollector = new DefinitionCollector(sourceFile, usedNames);
-    const definitions = definitionCollector.collect();
+    // Now collect imports - after both definitions and globals have added
+    // all transitive dependencies to usedNames (e.g., if myTool uses z from zod)
+    const importCollector = new ImportCollector(
+      sourceFile,
+      usedNames,
+      this.program,
+    );
+    const imports = importCollector.collect();
 
     // Extract main declaration
     const mainDeclaration = this.extractMainDeclaration(
