@@ -17,7 +17,7 @@ from ..responses import (
     ContextStreamResponse,
     StreamResponse,
 )
-from .utils import RetryFailure
+from .utils import RetryFailure, get_retry_model_from_context
 
 if TYPE_CHECKING:
     from .retry_models import RetryModel
@@ -85,8 +85,12 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
 
     @property
     def model(self) -> "RetryModel":
-        """A RetryModel with parameters matching this response."""
-        return self._current_variant
+        """A RetryModel with parameters matching this response.
+
+        If a model is set in context (via `llm.model()` or `llm.retry_model()`),
+        that model is used instead, wrapped with this response's retry config.
+        """
+        return get_retry_model_from_context(self._current_variant)
 
     def _reset_stream(self, variant: "RetryModel") -> None:
         """Reset to a fresh stream for a new retry attempt."""
@@ -209,8 +213,12 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
 
     @property
     def model(self) -> "RetryModel":
-        """A RetryModel with parameters matching this response."""
-        return self._current_variant
+        """A RetryModel with parameters matching this response.
+
+        If a model is set in context (via `llm.model()` or `llm.retry_model()`),
+        that model is used instead, wrapped with this response's retry config.
+        """
+        return get_retry_model_from_context(self._current_variant)
 
     async def _reset_stream(self, variant: "RetryModel") -> None:
         """Reset to a fresh stream for a new retry attempt."""
@@ -333,8 +341,12 @@ class ContextRetryStreamResponse(
 
     @property
     def model(self) -> "RetryModel":
-        """A RetryModel with parameters matching this response."""
-        return self._current_variant
+        """A RetryModel with parameters matching this response.
+
+        If a model is set in context (via `llm.model()` or `llm.retry_model()`),
+        that model is used instead, wrapped with this response's retry config.
+        """
+        return get_retry_model_from_context(self._current_variant)
 
     def _reset_stream(self, variant: "RetryModel") -> None:
         """Reset to a fresh stream for a new retry attempt."""
@@ -468,8 +480,12 @@ class AsyncContextRetryStreamResponse(
 
     @property
     def model(self) -> "RetryModel":
-        """A RetryModel with parameters matching this response."""
-        return self._current_variant
+        """A RetryModel with parameters matching this response.
+
+        If a model is set in context (via `llm.model()` or `llm.retry_model()`),
+        that model is used instead, wrapped with this response's retry config.
+        """
+        return get_retry_model_from_context(self._current_variant)
 
     async def _reset_stream(self, variant: "RetryModel") -> None:
         """Reset to a fresh stream for a new retry attempt."""
