@@ -78,8 +78,9 @@ def test_resume_uses_fallback_model_when_original_succeeded_on_fallback(
     # First call: primary fails, fallback succeeds
     mock_provider.set_exceptions([CONNECTION_ERROR])
 
-    primary = llm.Model("mock/primary")
-    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=0, fallback_models=["mock/fallback"]
+    )
 
     response = retry_model.call("Hello")
 
@@ -101,8 +102,9 @@ def test_resume_can_fall_back_to_original_if_fallback_fails(
     # First call: primary fails, fallback succeeds
     mock_provider.set_exceptions([CONNECTION_ERROR])
 
-    primary = llm.Model("mock/primary")
-    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=0, fallback_models=["mock/fallback"]
+    )
 
     response = retry_model.call("Hello")
 
@@ -128,8 +130,9 @@ async def test_async_resume_uses_fallback_model_when_original_succeeded_on_fallb
     # First call: primary fails, fallback succeeds
     mock_provider.set_exceptions([CONNECTION_ERROR])
 
-    primary = llm.Model("mock/primary")
-    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=0, fallback_models=["mock/fallback"]
+    )
 
     response = await retry_model.call_async("Hello")
 
@@ -152,8 +155,9 @@ async def test_async_resume_can_fall_back_to_original_if_fallback_fails(
     # First call: primary fails, fallback succeeds
     mock_provider.set_exceptions([CONNECTION_ERROR])
 
-    primary = llm.Model("mock/primary")
-    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=0, fallback_models=["mock/fallback"]
+    )
 
     response = await retry_model.call_async("Hello")
 

@@ -12,11 +12,15 @@ from .mock_provider import MockProvider
 
 def test_fallback_with_model_id_inherits_params(mock_provider: MockProvider) -> None:
     """Test that ModelId fallbacks inherit params from primary model."""
-    model = llm.Model("mock/primary", temperature=0.5)
-    retry_model = llm.retry(model, max_retries=0, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary",
+        temperature=0.5,
+        max_retries=0,
+        fallback_models=["mock/fallback"],
+    )
 
     # Access internal models to verify params inheritance
-    models = retry_model._models  # pyright: ignore[reportPrivateUsage]
+    models = list(retry_model.variants())
     assert len(models) == 2
     assert models[0].model_id == "mock/primary"
     assert models[1].model_id == "mock/fallback"
@@ -27,11 +31,12 @@ def test_fallback_with_model_instance_uses_own_params(
     mock_provider: MockProvider,
 ) -> None:
     """Test that Model instance fallbacks use their own params."""
-    primary = llm.Model("mock/primary", temperature=0.5)
     fallback = llm.Model("mock/fallback", temperature=0.9)
-    retry_model = llm.retry(primary, max_retries=0, fallback_models=[fallback])
+    retry_model = llm.retry_model(
+        "mock/primary", temperature=0.5, max_retries=0, fallback_models=[fallback]
+    )
 
-    models = retry_model._models  # pyright: ignore[reportPrivateUsage]
+    models = list(retry_model.variants())
     assert len(models) == 2
     assert models[0].params.get("temperature") == 0.5
     assert models[1].params.get("temperature") == 0.9
@@ -39,18 +44,18 @@ def test_fallback_with_model_instance_uses_own_params(
 
 def test_fallback_strips_retry_model_wrapper(mock_provider: MockProvider) -> None:
     """Test that RetryModel fallbacks are stripped to plain Model."""
-    primary = llm.Model("mock/primary")
-    nested_retry = llm.retry(
-        llm.Model("mock/fallback", temperature=0.7),
+    nested_retry = llm.retry_model(
+        "mock/fallback",
+        temperature=0.7,
         max_retries=5,
         fallback_models=["mock/nested-fallback"],
     )
-    retry_model = llm.retry(primary, max_retries=0, fallback_models=[nested_retry])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=0, fallback_models=[nested_retry]
+    )
 
-    models = retry_model._models  # pyright: ignore[reportPrivateUsage]
+    models = list(retry_model.variants())
     assert len(models) == 2
-    # The nested RetryModel should be stripped to a plain Model
-    assert type(models[1]) is llm.Model
     assert models[1].model_id == "mock/fallback"
     assert models[1].params.get("temperature") == 0.7
 
@@ -62,8 +67,9 @@ def test_fallback_model_tried_after_primary_exhausted(
     # Primary model will fail, fallback will succeed
     mock_provider.set_exceptions([CONNECTION_ERROR])
 
-    primary = llm.Model("mock/primary")
-    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=0, fallback_models=["mock/fallback"]
+    )
 
     response = retry_model.call("Hello")
 
@@ -83,8 +89,9 @@ def test_fallback_model_gets_own_retry_budget(mock_provider: MockProvider) -> No
         ]
     )
 
-    primary = llm.Model("mock/primary")
-    retry_model = llm.retry(primary, max_retries=1, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=1, fallback_models=["mock/fallback"]
+    )
 
     response = retry_model.call("Hello")
 
@@ -99,8 +106,9 @@ def test_response_model_property_returns_retry_model_with_successful_active(
     """Test that response.model returns RetryModel with successful model as active."""
     mock_provider.set_exceptions([CONNECTION_ERROR])
 
-    primary = llm.Model("mock/primary")
-    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=0, fallback_models=["mock/fallback"]
+    )
 
     response = retry_model.call("Hello")
 
@@ -117,8 +125,7 @@ def test_retry_failures_track_model_and_exception(mock_provider: MockProvider) -
     """Test that retry_failures tracks both model and exception."""
     mock_provider.set_exceptions([CONNECTION_ERROR])
 
-    model = llm.Model("mock/test-model")
-    retry_model = llm.retry(model, max_retries=1)
+    retry_model = llm.retry_model("mock/test-model", max_retries=1)
 
     response = retry_model.call("Hello")
 
@@ -137,8 +144,9 @@ def test_stream_fallback_model_tried_after_primary_exhausted(
     # Primary model will fail mid-stream, fallback will succeed
     mock_provider.set_stream_exceptions([CONNECTION_ERROR])
 
-    primary = llm.Model("mock/primary")
-    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=0, fallback_models=["mock/fallback"]
+    )
 
     response = retry_model.stream("Hello")
 
@@ -171,8 +179,9 @@ def test_stream_fallback_model_gets_own_retry_budget(
         ]
     )
 
-    primary = llm.Model("mock/primary")
-    retry_model = llm.retry(primary, max_retries=1, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=1, fallback_models=["mock/fallback"]
+    )
 
     response = retry_model.stream("Hello")
 
@@ -212,8 +221,9 @@ def test_stream_raises_after_all_fallbacks_exhausted(
         ]
     )
 
-    primary = llm.Model("mock/primary")
-    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=0, fallback_models=["mock/fallback"]
+    )
 
     response = retry_model.stream("Hello")
 
@@ -240,8 +250,9 @@ async def test_stream_async_fallback_model_tried_after_primary_exhausted(
     """Test that fallback model is tried when primary exhausts retries during async streaming."""
     mock_provider.set_stream_exceptions([CONNECTION_ERROR])
 
-    primary = llm.Model("mock/primary")
-    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=0, fallback_models=["mock/fallback"]
+    )
 
     response = await retry_model.stream_async("Hello")
 
@@ -273,8 +284,9 @@ async def test_stream_async_fallback_gets_own_retry_budget(
         ]
     )
 
-    primary = llm.Model("mock/primary")
-    retry_model = llm.retry(primary, max_retries=1, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=1, fallback_models=["mock/fallback"]
+    )
 
     response = await retry_model.stream_async("Hello")
 

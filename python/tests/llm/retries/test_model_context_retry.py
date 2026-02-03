@@ -44,10 +44,7 @@ def test_retry_call_with_retry_model_context_uses_context_config(
         return "Hello"
 
     # Override with a RetryModel that has different retry config
-    context_retry_model = llm.retry(
-        llm.Model("mock/override-model"),
-        max_retries=1,
-    )
+    context_retry_model = llm.retry_model("mock/override-model", max_retries=1)
 
     with context_retry_model, pytest.raises(llm.RetriesExhausted) as exc_info:
         # Should fail because context model only has max_retries=1
@@ -94,10 +91,7 @@ def test_regular_call_with_retry_model_context_gets_retry_semantics(
         return "Hello"
 
     # Override with a RetryModel via context
-    context_retry_model = llm.retry(
-        llm.Model("mock/override-model"),
-        max_retries=1,
-    )
+    context_retry_model = llm.retry_model("mock/override-model", max_retries=1)
 
     with context_retry_model:
         response = greet()
@@ -120,10 +114,7 @@ def test_regular_call_with_retry_model_context_respects_retry_config(
         return "Hello"
 
     # Override with a RetryModel that has max_retries=1
-    context_retry_model = llm.retry(
-        llm.Model("mock/override-model"),
-        max_retries=1,
-    )
+    context_retry_model = llm.retry_model("mock/override-model", max_retries=1)
 
     with context_retry_model, pytest.raises(llm.RetriesExhausted) as exc_info:
         # Should fail because context model only has max_retries=1
@@ -146,10 +137,7 @@ async def test_async_regular_call_with_retry_model_context_gets_retry_semantics(
         return "Hello"
 
     # Override with a RetryModel via context
-    context_retry_model = llm.retry(
-        llm.Model("mock/override-model"),
-        max_retries=1,
-    )
+    context_retry_model = llm.retry_model("mock/override-model", max_retries=1)
 
     with context_retry_model:
         response = await greet()
@@ -202,10 +190,7 @@ def test_regular_call_stream_with_retry_model_context_gets_retry_semantics(
         return "Hello"
 
     # Override with a RetryModel via context
-    context_retry_model = llm.retry(
-        llm.Model("mock/override-model"),
-        max_retries=1,
-    )
+    context_retry_model = llm.retry_model("mock/override-model", max_retries=1)
 
     with context_retry_model:
         response = greet.stream()
@@ -265,10 +250,7 @@ async def test_async_regular_call_stream_with_retry_model_context_gets_retry_sem
         return "Hello"
 
     # Override with a RetryModel via context
-    context_retry_model = llm.retry(
-        llm.Model("mock/override-model"),
-        max_retries=1,
-    )
+    context_retry_model = llm.retry_model("mock/override-model", max_retries=1)
 
     with context_retry_model:
         response = await greet.stream()
@@ -302,10 +284,8 @@ def test_retry_call_with_retry_model_context_uses_fallbacks(
         return "Hello"
 
     # Override with a RetryModel that has fallback models
-    context_retry_model = llm.retry(
-        llm.Model("mock/primary"),
-        max_retries=0,
-        fallback_models=["mock/fallback"],
+    context_retry_model = llm.retry_model(
+        "mock/primary", max_retries=0, fallback_models=["mock/fallback"]
     )
 
     with context_retry_model:
@@ -331,10 +311,8 @@ async def test_async_retry_call_with_retry_model_context_uses_fallbacks(
         return "Hello"
 
     # Override with a RetryModel that has fallback models
-    context_retry_model = llm.retry(
-        llm.Model("mock/primary"),
-        max_retries=0,
-        fallback_models=["mock/fallback"],
+    context_retry_model = llm.retry_model(
+        "mock/primary", max_retries=0, fallback_models=["mock/fallback"]
     )
 
     with context_retry_model:

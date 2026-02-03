@@ -25,10 +25,7 @@ def test_validate_retries_on_connection_error_during_resume(
     # Resume attempt 1 fails with ConnectionError, retry succeeds
     mock_provider.set_response_texts(["not valid json", '{"name": "Alice", "age": 30}'])
 
-    retry_model = llm.retry(
-        llm.Model("mock/primary"),
-        max_retries=1,
-    )
+    retry_model = llm.retry_model("mock/primary", max_retries=1)
 
     response = retry_model.call("Get person", format=Person)
     assert response.text() == snapshot("not valid json")
@@ -58,8 +55,8 @@ def test_validate_uses_fallback_when_resume_fails(
     # Resume on primary fails with ConnectionError, fallback succeeds
     mock_provider.set_response_texts(["not valid json", '{"name": "Bob", "age": 25}'])
 
-    retry_model = llm.retry(
-        llm.Model("mock/primary"),
+    retry_model = llm.retry_model(
+        "mock/primary",
         max_retries=0,  # No retries on primary, must fall back
         fallback_models=["mock/fallback"],
     )
@@ -96,10 +93,7 @@ async def test_async_validate_retries_on_connection_error_during_resume(
     # Resume attempt 1 fails with ConnectionError, retry succeeds
     mock_provider.set_response_texts(["not valid json", '{"name": "Carol", "age": 35}'])
 
-    retry_model = llm.retry(
-        llm.Model("mock/primary"),
-        max_retries=1,
-    )
+    retry_model = llm.retry_model("mock/primary", max_retries=1)
 
     response = await retry_model.call_async("Get person", format=Person)
     assert response.text() == snapshot("not valid json")
@@ -130,8 +124,8 @@ async def test_async_validate_uses_fallback_when_resume_fails(
     # Resume on primary fails with ConnectionError, fallback succeeds
     mock_provider.set_response_texts(["not valid json", '{"name": "Dave", "age": 40}'])
 
-    retry_model = llm.retry(
-        llm.Model("mock/primary"),
+    retry_model = llm.retry_model(
+        "mock/primary",
         max_retries=0,  # No retries on primary, must fall back
         fallback_models=["mock/fallback"],
     )

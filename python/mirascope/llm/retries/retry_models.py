@@ -20,7 +20,7 @@ from ..tools import (
     AsyncTools,
     Tools,
 )
-from .retry_config import RetryConfig
+from .retry_config import RetryArgs, RetryConfig
 from .retry_responses import (
     AsyncRetryResponse,
     RetryResponse,
@@ -30,6 +30,17 @@ from .retry_stream_responses import (
     RetryStreamResponse,
 )
 from .utils import with_retry, with_retry_async
+
+
+class RetryModelParams(Params, RetryArgs, total=False):
+    """Combined parameters for RetryModel: model params + retry config.
+
+    This TypedDict combines all fields from `Params` and `RetryArgs`, allowing
+    users to configure both the model behavior and retry logic in a single call.
+    """
+
+
+_RETRY_ARG_KEYS = frozenset(RetryArgs.__annotations__.keys())
 
 
 class RetryModel(Model):
@@ -650,3 +661,82 @@ class RetryModel(Model):
         return AsyncRetryStreamResponse(
             stream_fn, initial_stream, initial_variant, variants_iter
         )
+
+
+def retry_model(
+    model_id: ModelId,
+    **kwargs: Unpack[RetryModelParams],
+) -> RetryModel:
+    """Helper for creating a `RetryModel` instance with retry logic.
+
+    This function creates a RetryModel that wraps the specified model with automatic
+    retry functionality. It accepts both model parameters (temperature, max_tokens, etc.)
+    and retry configuration (max_retries, initial_delay, etc.) in a single call.
+
+    Args:
+        model_id: A model ID string (e.g., "openai/gpt-4").
+        **kwargs: Combined model parameters and retry configuration. Model parameters
+            (temperature, max_tokens, top_p, top_k, seed, stop_sequences, thinking)
+            are passed to the underlying Model. Retry parameters (max_retries, retry_on,
+            initial_delay, max_delay, backoff_multiplier, jitter, fallback_models)
+            configure the retry behavior.
+
+    Returns:
+        A RetryModel instance configured with the specified model and retry settings.
+
+    Raises:
+        ValueError: If the model_id format is invalid.
+
+    Example:
+        Basic usage with retry defaults:
+
+        ```python
+        import mirascope.llm as llm
+
+        model = llm.retry_model("openai/gpt-4o")
+        response = model.call("Hello!")
+        ```
+
+    Example:
+        With model parameters and retry configuration:
+
+        ```python
+        import mirascope.llm as llm
+
+        model = llm.retry_model(
+            "openai/gpt-4o",
+            temperature=0.7,
+            max_tokens=1000,
+            max_retries=5,
+            initial_delay=1.0,
+            backoff_multiplier=2.0,
+        )
+        response = model.call("Write a story.")
+        ```
+
+    Example:
+        With fallback models:
+
+        ```python
+        import mirascope.llm as llm
+
+        model = llm.retry_model(
+            "openai/gpt-4o",
+            max_retries=3,
+            fallback_models=["anthropic/claude-sonnet-4-5", "google/gemini-2.0-flash"],
+        )
+        response = model.call("Complex task...")
+        ```
+    """
+    # Separate retry args from model params
+    retry_args: RetryArgs = {}
+    model_params: Params = {}
+
+    for key, value in kwargs.items():
+        if key in _RETRY_ARG_KEYS:
+            retry_args[key] = value
+        else:
+            model_params[key] = value
+
+    retry_config = RetryConfig.from_args(**retry_args)
+    return RetryModel(model_id, retry_config, **model_params)

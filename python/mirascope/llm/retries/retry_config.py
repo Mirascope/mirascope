@@ -2,8 +2,8 @@
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
-from typing_extensions import TypedDict, Unpack
+from typing import TYPE_CHECKING, TypedDict
+from typing_extensions import Unpack
 
 from ..exceptions import (
     ConnectionError,

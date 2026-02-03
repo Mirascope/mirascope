@@ -518,8 +518,7 @@ def test_structured_stream_yields_partials(mock_provider: MockProvider) -> None:
     # Set up mock to return valid JSON
     mock_provider.set_stream_text('{"name": "Alice", "age": 30}')
 
-    model = llm.Model("mock/test-model")
-    retry_model = llm.retry(model, max_retries=1)
+    retry_model = llm.retry_model("mock/test-model", max_retries=1)
 
     response = retry_model.stream("Get person", format=Person)
 
@@ -538,8 +537,7 @@ def test_structured_stream_raises_for_output_parser(
     def custom_parser(response: llm.RootResponse[llm.Toolkit, None]) -> str:
         return response.text()
 
-    model = llm.Model("mock/test-model")
-    retry_model = llm.retry(model, max_retries=1)
+    retry_model = llm.retry_model("mock/test-model", max_retries=1)
 
     response = retry_model.stream("Hello", format=custom_parser)
 
@@ -582,8 +580,7 @@ async def test_async_structured_stream_yields_partials(
     # Set up mock to return valid JSON
     mock_provider.set_stream_text('{"name": "Bob", "age": 25}')
 
-    model = llm.Model("mock/test-model")
-    retry_model = llm.retry(model, max_retries=1)
+    retry_model = llm.retry_model("mock/test-model", max_retries=1)
 
     response = await retry_model.stream_async("Get person", format=Person)
 
@@ -603,8 +600,7 @@ async def test_async_structured_stream_raises_for_output_parser(
     def custom_parser(response: llm.RootResponse[llm.Toolkit, None]) -> str:
         return response.text()
 
-    model = llm.Model("mock/test-model")
-    retry_model = llm.retry(model, max_retries=1)
+    retry_model = llm.retry_model("mock/test-model", max_retries=1)
 
     response = await retry_model.stream_async("Hello", format=custom_parser)
 
@@ -701,8 +697,9 @@ def test_resume_uses_fallback_model_when_original_succeeded_on_fallback(
     # First stream: primary fails, fallback succeeds
     mock_provider.set_stream_exceptions([CONNECTION_ERROR])
 
-    primary = llm.Model("mock/primary")
-    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=0, fallback_models=["mock/fallback"]
+    )
 
     response = retry_model.stream("Hello")
 
@@ -734,8 +731,9 @@ def test_resume_can_fall_back_to_original_if_fallback_fails(
     # First stream: primary fails, fallback succeeds
     mock_provider.set_stream_exceptions([CONNECTION_ERROR])
 
-    primary = llm.Model("mock/primary")
-    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=0, fallback_models=["mock/fallback"]
+    )
 
     response = retry_model.stream("Hello")
 
@@ -782,8 +780,9 @@ async def test_async_resume_uses_fallback_model_when_original_succeeded_on_fallb
     # First stream: primary fails, fallback succeeds
     mock_provider.set_stream_exceptions([CONNECTION_ERROR])
 
-    primary = llm.Model("mock/primary")
-    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=0, fallback_models=["mock/fallback"]
+    )
 
     response = await retry_model.stream_async("Hello")
 
@@ -816,8 +815,9 @@ async def test_async_resume_can_fall_back_to_original_if_fallback_fails(
     # First stream: primary fails, fallback succeeds
     mock_provider.set_stream_exceptions([CONNECTION_ERROR])
 
-    primary = llm.Model("mock/primary")
-    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+    retry_model = llm.retry_model(
+        "mock/primary", max_retries=0, fallback_models=["mock/fallback"]
+    )
 
     response = await retry_model.stream_async("Hello")
 

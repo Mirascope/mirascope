@@ -1,4 +1,4 @@
-"""The @llm.retry decorator for adding retry logic to models, prompts, and calls."""
+"""The @llm.retry decorator for adding retry logic to prompts and calls."""
 
 from typing import overload
 from typing_extensions import Unpack
@@ -6,7 +6,6 @@ from typing_extensions import Unpack
 from ..calls import AsyncCall, AsyncContextCall, Call, ContextCall
 from ..context import DepsT
 from ..formatting import FormattableT
-from ..models import Model
 from ..prompts import AsyncContextPrompt, AsyncPrompt, ContextPrompt, Prompt
 from ..types import P
 from .retry_calls import (
@@ -14,16 +13,13 @@ from .retry_calls import (
     RetryCall,
 )
 from .retry_config import RetryArgs, RetryConfig
-from .retry_models import RetryModel
 from .retry_prompts import (
     AsyncRetryPrompt,
     RetryPrompt,
 )
 
 RetryTarget = (
-    Model
-    | RetryModel
-    | ContextPrompt[P, DepsT, FormattableT]
+    ContextPrompt[P, DepsT, FormattableT]
     | AsyncContextPrompt[P, DepsT, FormattableT]
     | Prompt[P, FormattableT]
     | RetryPrompt[P, FormattableT]
@@ -38,12 +34,12 @@ RetryTarget = (
 )
 """Union type for all targets that can be wrapped with retry logic.
 
-Includes Models, Prompts, and Calls (both sync and async variants).
+Includes Prompts and Calls (both sync and async variants).
+For models, use `llm.retry_model()` instead.
 """
 
 RetryResult = (
-    RetryModel
-    | RetryPrompt[P, FormattableT]
+    RetryPrompt[P, FormattableT]
     | AsyncRetryPrompt[P, FormattableT]
     | RetryCall[P, FormattableT]
     | AsyncRetryCall[P, FormattableT]
@@ -55,15 +51,6 @@ When a target is wrapped with retry logic, it returns one of these types.
 
 
 # Overloads for direct wrapping: retry(target, ...)
-
-
-@overload
-def retry(
-    target: Model | RetryModel,
-    **config: Unpack[RetryArgs],
-) -> RetryModel:
-    """Wrap a Model with retry logic."""
-    ...
 
 
 @overload
@@ -125,9 +112,6 @@ class RetryDecorator:
         self._config = config
 
     @overload
-    def __call__(self, target: Model | RetryModel) -> RetryModel: ...
-
-    @overload
     def __call__(
         self, target: Prompt[P, FormattableT] | RetryPrompt[P, FormattableT]
     ) -> RetryPrompt[P, FormattableT]: ...
@@ -160,10 +144,6 @@ def _wrap_target(
     retry_config: RetryConfig,
 ) -> RetryResult[P, FormattableT]:
     """Internal function to wrap a target with retry logic."""
-    # Wrap Model (RetryModel is a subclass of Model, so this handles both)
-    if isinstance(target, Model):
-        return RetryModel(target, retry_config)
-
     # Wrap RetryCall variants first - they inherit from BaseCall, not Call/AsyncCall
     if isinstance(target, AsyncRetryCall):
         prompt = target.prompt
@@ -235,13 +215,12 @@ def retry(
     target: RetryTarget[P, DepsT, FormattableT] | None = None,
     **config: Unpack[RetryArgs],
 ) -> RetryResult[P, FormattableT] | RetryDecorator:
-    """Add retry logic to a Model, Prompt, or Call.
+    """Add retry logic to a Prompt or Call.
 
     This function can be used in two ways:
 
     1. Direct wrapping:
         ```python
-        retry_model = llm.retry(model, max_retries=2)
         retry_call = llm.retry(my_call, max_retries=2)
         ```
 
@@ -257,11 +236,13 @@ def retry(
     automatically retry on failures, handle rate limits, and use fallback models.
     The retry configuration can be provided as keyword arguments.
 
-    If a RetryModel, RetryPrompt, or RetryCall is passed, then this will return a new
-    RetryModel, RetryPrompt, or RetryCall using the retry_config passed to the function.
+    For models, use `llm.retry_model()` instead.
+
+    If a RetryPrompt or RetryCall is passed, then this will return a new
+    RetryPrompt or RetryCall using the retry_config passed to the function.
 
     Args:
-        target: The Model, Prompt, or Call to wrap with retry logic. If None,
+        target: The Prompt or Call to wrap with retry logic. If None,
             returns a decorator that can be applied to a target.
         **config: Configuration for retry behavior (see RetryArgs).
 

@@ -155,10 +155,12 @@ from .retries import (
     RetryCall,
     RetryConfig,
     RetryModel,
+    RetryModelParams,
     RetryPrompt,
     RetryResponse,
     RetryStreamResponse,
     retry,
+    retry_model,
 )
 from .tools import (
     AnyToolFn,
@@ -273,6 +275,7 @@ __all__ = [
     "RetryCall",
     "RetryConfig",
     "RetryModel",
+    "RetryModelParams",
     "RetryPrompt",
     "RetryResponse",
     "RetryStreamResponse",
@@ -339,6 +342,7 @@ __all__ = [
     "responses",
     "retries",
     "retry",
+    "retry_model",
     "tool",
     "tools",
     "types",
