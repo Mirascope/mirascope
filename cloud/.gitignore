@@ -9,6 +9,9 @@ tsconfig.tsbuildinfo
 coverage
 dist
 
+# Temporary snippet extraction output
+.extracted-snippets/
+
 docker/data
 !docker/data/
 docker/data/postgres/
