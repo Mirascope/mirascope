@@ -31,7 +31,7 @@ function hasValidSessionCookie(request: Request): boolean {
   const cookies = request.headers.get("Cookie") || "";
   return cookies
     .split(";")
-    .some((c) => c.trim().startsWith(`${COOKIE_NAME}=${SESSION_TOKEN}`));
+    .some((c) => c.trim() === `${COOKIE_NAME}=${SESSION_TOKEN}`);
 }
 
 function createUnauthorizedResponse(): Response {
