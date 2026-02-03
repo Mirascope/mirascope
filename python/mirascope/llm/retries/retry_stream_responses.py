@@ -107,11 +107,10 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
         try:
             yield from super().chunk_stream()
         except config.retry_on as e:
-            self.retry_failures.append(
-                RetryFailure(
-                    model=self._current_variant.get_active_model(), exception=e
-                )
+            failure = RetryFailure(
+                model=self._current_variant.get_active_model(), exception=e
             )
+            self.retry_failures.append(failure)
 
             # Try to get next variant (handles backoff and fallback)
             try:
@@ -123,7 +122,7 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
 
             raise StreamRestarted(
                 attempt=len(self.retry_failures),
-                error=e,
+                failure=failure,
             ) from e
 
     @overload
@@ -234,11 +233,10 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
             async for chunk in super().chunk_stream():
                 yield chunk
         except config.retry_on as e:
-            self.retry_failures.append(
-                RetryFailure(
-                    model=self._current_variant.get_active_model(), exception=e
-                )
+            failure = RetryFailure(
+                model=self._current_variant.get_active_model(), exception=e
             )
+            self.retry_failures.append(failure)
 
             # Try to get next variant (handles backoff and fallback)
             try:
@@ -250,7 +248,7 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
 
             raise StreamRestarted(
                 attempt=len(self.retry_failures),
-                error=e,
+                failure=failure,
             ) from e
 
     @overload

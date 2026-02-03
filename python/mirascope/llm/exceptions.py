@@ -411,7 +411,7 @@ class StreamRestarted(Error):
                     print(chunk, end="", flush=True)
                 break  # Success
             except llm.StreamRestarted as e:
-                print(f"\\n[Retry {e.attempt} after: {e.error}]")
+                print(f"\\n[Retry {e.attempt} after: {e.failure.exception}]")
                 # Loop continues, re-iterates the response
         ```
     """
@@ -419,16 +419,16 @@ class StreamRestarted(Error):
     attempt: int
     """The attempt number we're now on (2, 3, ...)."""
 
-    error: BaseException
-    """The error that triggered the restart."""
+    failure: "RetryFailure"
+    """The failure that triggered the restart."""
 
     def __init__(
         self,
         attempt: int,
-        error: BaseException,
+        failure: "RetryFailure",
     ) -> None:
-        message = f"Stream restarted (attempt {attempt}) due to: {error}"
+        message = f"Stream restarted (attempt {attempt}) due to: {failure.exception}"
         super().__init__(message)
         self.attempt = attempt
-        self.error = error
-        self.__cause__ = error
+        self.failure = failure
+        self.__cause__ = failure.exception
