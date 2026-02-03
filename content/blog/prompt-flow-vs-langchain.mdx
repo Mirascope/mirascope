@@ -2,6 +2,7 @@
 title: "Comparing Prompt Flow vs LangChain vs Mirascope"
 description: "We do a head-to-head comparison of Prompt Flow vs LangChain, along with our own modular LLM development toolkit, Mirascope."
 date: "2024-05-03"
+updatedAt: "2026-01-28"
 readTime: "17 min read"
 author: "William Bakst"
 ---
@@ -51,7 +52,7 @@ It’s also [characterized as an interface](https://python.langchain.com/docs/co
 
 Each Runnable in a chain accepts input, performs an action, and passes its output to the next Runnable in the chain. Understood as a whole, runnables facilitate the orchestration and execution of tasks. The code below illustrates this, showing an example of [`RunnablePassthrough()`](https://python.langchain.com/docs/how_to/passthrough/) (which allows you to pass inputs unchanged):
 
-```python
+```python-snippet-skip
 from langchain_community.vectorstores import FAISS
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
@@ -108,33 +109,29 @@ Mirascope takes a more implicit approach to chaining than the previous two tools
 In the example below, which chains two LLM calls, `recommend_destination()` uses a computed field to make an initial LLM call via `select_guide()` to fetch a travel guide's name based on the region type. This guide's name is then used in a subsequent, enriched LLM call within `recommend_destination()` to generate personalized travel destination recommendations.
 
 ```python
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
-@openai.call(model="gpt-4o-mini")
-@prompt_template(
-    "Name a travel guide who is very knowledgeable about {region_type} regions"
-)
-def select_guide(region_type: str): ...
 
-@openai.call(model="gpt-4o-mini")
-@prompt_template(
-    """
-    SYSTEM:
-    Imagine that you are the guide {guide}.
-    Your task is to recommend travel destinations that you, {guide}, would be excited to showcase.
+@llm.call("openai/gpt-4o-mini")
+def select_guide(region_type: str) -> str:
+    return f"Name a travel guide who is very knowledgeable about {region_type} regions"
 
-    USER:
-    Recommend a {region_type} destination that includes {feature}.
-    """
-)
-def recommend_destination(region_type: str, feature: str) -> openai.OpenAIDynamicConfig:
+
+@llm.call("openai/gpt-4o-mini")
+def recommend_destination(region_type: str, feature: str) -> list[llm.Message]:
     guide = select_guide(feature)
-    return {"computed_fields": {"guide": guide}}
+    return [
+        llm.messages.system(
+            f"Imagine that you are the guide {guide}. "
+            f"Your task is to recommend travel destinations that you, {guide}, would be excited to showcase."
+        ),
+        llm.messages.user(f"Recommend a {region_type} destination that includes {feature}."),
+    ]
 
-print(recommend_destination(region_type="European", feature="historic sites"))
 
-# > Certainly! Here's a travel guide to a stunning destination in Europe known for its rich history and magnificent historic sites.
-
+response = recommend_destination(region_type="European", feature="historic sites")
+print(response.text())
+# > One fantastic European destination that brims with historic sites is Rome, Italy. Known as the "Eternal City ...
 ```
 
 Relying on native Python for structuring sequences of steps keeps the development environment familiar and accessible to Python developers, and reduces the learning curve and integration overhead that comes with using new domain-specific languages or proprietary frameworks. This means that users can often easily figure out how to do things without additional documentation or research.
@@ -147,7 +144,7 @@ In LangChain, you’re free to make LLM calls wherever convenient, and so calls 
 
 LangChain also allows you to [bind arguments](https://python.langchain.com/docs/how_to/binding/) (such as tools and model ID) to the call at runtime to dynamically specify call parameters. For example:
 
-```python
+```python-snippet-skip
 tools = [
     {
         "type": "function",
@@ -174,7 +171,7 @@ model.invoke("What's the stock price for AAPL, MSFT, and GOOGL?")
 
 This is useful for dynamically specifying or changing the language model as the code is being run, and is beneficial especially in cases where you might not know up front which model will be used, for example.You can also use `.bind()` to set a specific runtime argument like a stopping condition or directive. This can be helpful for developing an LLM-driven tech support bot, for instance:
 
-```python
+```python-snippet-skip
 runnable = (
     {"support_query": RunnablePassthrough()}  # Passes through customer support queries unchanged.
 
@@ -216,37 +213,50 @@ We’ve found that making the LLM call the central organizing unit around which 
 
 By treating each LLM call as a distinct component, developers can manage changes more effectively and ensure that each module remains well organized and understandable, promoting an environment of code quality.
 
-The way we typically do this is by passing all the parameters pertaining to the language model to `call_params`, which is defined inside call decorator as shown below:
+The way we typically do this is by passing all the parameters pertaining to the language model directly to the `@llm.call` decorator, as shown below:
 
 ```python
-from mirascope.core import openai, prompt_template
+from mirascope import llm
 
+
+@llm.tool
 def get_weather(city: str) -> str:
+    """Get the weather for a city."""
     if city == "Tokyo":
         return "85 degrees"
     else:
         return "80 degrees"
 
-@openai.call(model="gpt-4o-mini", tools=[get_weather])
-@prompt_template("What's the weather in {city}")
-def get_city_weather(city: str): ...
+
+@llm.call("openai/gpt-4o-mini", tools=[get_weather])
+def get_city_weather(city: str) -> str:
+    return f"What's the weather in {city}"
+
 
 response = get_city_weather(city="Tokyo")
-if tool := response.tool:
-    print(tool.call())
+if response.tool_calls:
+    tool_results = response.execute_tools()
+    print(tool_results[0])
 ```
 
-`call_params` is an instantiation of the `OpenAICallParams` class, which serves as a configuration blueprint for parameters used when making calls to the OpenAI API. `call_params` also associates the tool `get_exchange_rate` to the LLM call.
+The `@llm.call` decorator accepts configuration parameters directly, such as `tools=[get_weather]` to associate tools with the LLM call.
 
 Not having to manage arguments dynamically configured at runtime also simplifies pipeline management and increases predictability and ease of use.
 
-**Note** : Although not required, you can modify these settings in Mirascope at runtime without altering the general configuration. For instance, you can override the default parameters dynamically using Mirascope’s dynamic configuration:
+**Note**: Although not required, you can modify these settings in Mirascope at runtime without altering the general configuration. For instance, you can override the default parameters dynamically using the `llm.model()` context manager:
 
 ```python
-@openai.call(model="gpt-4o-mini")
-@prompt_template("Recommend me a {genre} book.")
-def recommend_book(genre: str) -> openai.OpenAIDynamicConfig:
-    return {"call_params": {"temperature": 0.8}}
+from mirascope import llm
+
+
+@llm.call("openai/gpt-4o-mini", temperature=0.8)
+def recommend_book(genre: str) -> str:
+    return f"Recommend me a {genre} book."
+
+
+# Override at runtime with a different model or parameters
+with llm.model("anthropic/claude-sonnet-4-5", temperature=0.5):
+    response = recommend_book("fantasy")  # Uses Claude with temperature=0.5
 ```
 
 ## How Prompts are Versioned
@@ -271,79 +281,83 @@ Prompt Flow stores information about node variants in YAML files associated with
 
 While versioning in this way allows you to effectively experiment with prompts, it’s part of the overhead involved in working with DAGs, which can become complex to manage as the numbers of nodes in your workflow increase.
 
-### Lilypad: Prompt Versioning and Management for Fine-Tuning LLM Inputs
+### Mirascope Cloud: Prompt Versioning and Management for Fine-Tuning LLM Inputs
 
-Mirascope offers a sibling library, [`Lilypad`](/docs/lilypad), that versions and traces every LLM call automatically. This is the necessary first step for prompt engineering. Without versioning and tracing, you lack the data to engineer prompts effectively.
+Mirascope offers [Mirascope Cloud](/docs/learn/ops), which versions and traces every LLM call automatically. This is the necessary first step for prompt engineering. Without versioning and tracing, you lack the data to engineer prompts effectively.
 
-We've purpose built Lilypad for prompt engineering to be simple and easy so you can take your mind off annoying and manual tedium and focus on what really matters: engineering quality prompts. In line with our commitment to open-source, Lilypad is fully open-source and can even be run locally.
+We've purpose built Mirascope Cloud for prompt engineering to be simple and easy so you can take your mind off annoying and manual tedium and focus on what really matters: engineering quality prompts. In line with our commitment to open-source, Mirascope Cloud is fully open-source and can even be run locally.
 
-To automatically version and trace LLM functions, you simply wrap the function in the `lilypad.trace` decorator:
+To automatically version and trace LLM functions, you simply wrap the function in the `@ops.version` decorator:
 
 ```python
-import lilypad
-from mirascope import llm
+from mirascope import llm, ops
 
-lilypad.configure(auto_llm=True)  # [!code highlight]
+ops.configure()
+ops.instrument_llm()  # [!code highlight]
 
 
-@lilypad.trace(versioning="automatic")
-@llm.call("openai", "gpt-4o-mini")
+@ops.version
+@llm.call("openai/gpt-4o-mini")
 def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 
 
 output = recommend_book("fantasy")
-print(output.content)
+print(output.text())
 ```
 
 Now the `recommend_book` function will be automatically versioned and traced on every call.
 
-We also understand that not everyone uses Mirascope, so we've engineered Lilypad to work with using provider SDKs directly:
+We also understand that not everyone uses Mirascope, so we've engineered Mirascope Cloud to work with provider SDKs directly:
 
 ```python
-import lilypad
+from mirascope import ops
 from openai import OpenAI
 
-lilypad.configure(auto_llm=True)
+ops.configure()
+ops.instrument_llm()  # Auto-traces OpenAI calls  # [!code highlight]
 client = OpenAI()
 
-@lilypad.trace(versioning="automatic")
+
+@ops.version
 def recommend_book(genre: str) -> str:
-    completion = client.chat.completions.create(  # [!code highlight]
-        model="gpt-4o-mini",  # [!code highlight]
-        messages=[{"role": "user", "content": f"Recommend a {genre} book"}],  # [!code highlight]
-    )  # [!code highlight]
-    return str(completion.choices[0].message.content)  # [!code highlight]
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": f"Recommend a {genre} book"}],
+    )
+    return str(completion.choices[0].message.content)
 
 
 output = recommend_book("fantasy")
 print(output)
 ```
 
-When using the `lilypad.trace` decorator, the version is determined based on all user-defined code that could impact the prompt. In more technical terms, the version is determined by the entire lexical closure.
+When using the `@ops.version` decorator, the version is determined based on all user-defined code that could impact the prompt. In more technical terms, the version is determined by the entire lexical closure.
 
 This means not only that any changes to the function itself will be versioned but also that any changes to user-defined functions used by this function will also update the version:
 
 ```python
-import lilypad
-from mirascope import llm
+from mirascope import llm, ops
+
+ops.configure()
+ops.instrument_llm()
+
 
 # Changes to this function will also be detected and bump
-
 # the version of the LLM function :)
-
 def get_available_books() -> list[str]:
     return ["The Name of the Wind"]
 
-@lilypad.trace(versioning="automatic")
-@llm.call("openai", "gpt-4o-mini")
+
+@ops.version
+@llm.call("openai/gpt-4o-mini")
 def recommend_book(genre: str) -> str:
     books = get_available_books()
     return f"Recommend a {genre} book from this list: {books}"
 
 
 output = recommend_book("fantasy")
-print(output.content)
+print(output.text())
 ```
 
 ## Automatic Data Validation of Prompt Inputs and Outputs
@@ -363,7 +377,7 @@ In this way, you can catch errors before they go to the LLM. For example, an eco
 
 ### Mirascope: Automatically Validate Prompt Inputs and Outputs
 
-We provide automatic type validation of prompt inputs, requiring only a single Pydantic deceorator. Mirascope's `prompt_template` decorator enables writing prompts as Python functions, which means you can use Pydantic's [`validate_call`](https://docs.pydantic.dev/latest/concepts/validation_decorator/) decorator to ensure type safety and input verification on template variables. This allows you to focus more on prompting activities and less on debugging and maintenance, and eliminates the need to write your own validation boilerplate. It also encourages more consistent coding practices, as data validation is standardized through Pydantic.
+We provide automatic type validation of prompt inputs, requiring only a single Pydantic decorator. Mirascope's `@llm.call` decorator enables writing prompts as Python functions, which means you can use Pydantic's [`validate_call`](https://docs.pydantic.dev/latest/concepts/validation_decorator/) decorator to ensure type safety and input verification on template variables. This allows you to focus more on prompting activities and less on debugging and maintenance, and eliminates the need to write your own validation boilerplate. It also encourages more consistent coding practices, as data validation is standardized through Pydantic.
 
 Again, since Mirascope prompt templates are written as Python functions, you get inline documentation and linting out of the box, conveniently available in your IDE.
 
@@ -378,31 +392,31 @@ Autocompletion of a function call:
 **Beyond automatic validation of prompt inputs, you can also use Pydantic to validate data extracted from LLM outputs, as shown in the example code below:**
 
 ```python
-from mirascope.core import openai
+from mirascope import llm
 from pydantic import BaseModel, ValidationError
+
 
 class Movie(BaseModel):
     title: str
     rating: float
 
-@openai.call(model="gpt-4o-mini", response_model=Movie)
+
+@llm.call("openai/gpt-4o-mini", format=Movie)
 def recommend_movie() -> str:
     return "Recommend a movie"
 
+
 try:
-    movie = recommend_movie()
+    response = recommend_movie()
+    movie = response.parse()
     assert isinstance(movie, Movie)
     print(movie)
 except ValidationError as e:
     print(e)
     # > 1 validation error for Movie
-
     #  rating
-
     #    Input should be a valid number, unable to parse string as a number [type=float_parsing, input_value='standard', input_type=str]
-
     #      For further information visit https://errors.pydantic.dev/2.6/v/float_parsing
-
 ```
 
 This is an example of graceful error handling in validating an extracted `Movie` object with respect to its schema as defined in Pydantic.
@@ -413,4 +427,4 @@ Mirascope is a lightweight LLM toolkit in Python that provides building blocks r
 
 Our preference for Pythonic simplicity reduces both dependencies and the complexities of working with LLMs. Mirascope makes it easy to get started and slots right into your existing developer workflows.
 
-Want to learn more? You can find more Mirascope code samples on both our [docs](/docs/mirascope) and on [GitHub](https://github.com/mirascope/mirascope/).
+Want to learn more? You can find more Mirascope code samples on both our [docs](/docs) and on [GitHub](https://github.com/mirascope/mirascope/).
