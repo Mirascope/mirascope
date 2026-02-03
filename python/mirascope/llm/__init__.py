@@ -148,10 +148,12 @@ from .responses import (
     UsageDeltaChunk,
 )
 from .retries import (
+    AsyncContextRetryResponse,
     AsyncRetryCall,
     AsyncRetryPrompt,
     AsyncRetryResponse,
     AsyncRetryStreamResponse,
+    ContextRetryResponse,
     RetryCall,
     RetryConfig,
     RetryModel,
@@ -202,6 +204,7 @@ __all__ = [
     "AsyncContextCall",
     "AsyncContextPrompt",
     "AsyncContextResponse",
+    "AsyncContextRetryResponse",
     "AsyncContextStreamResponse",
     "AsyncContextTool",
     "AsyncContextToolkit",
@@ -234,6 +237,7 @@ __all__ = [
     "ContextCall",
     "ContextPrompt",
     "ContextResponse",
+    "ContextRetryResponse",
     "ContextStreamResponse",
     "ContextTool",
     "ContextToolkit",

@@ -172,6 +172,60 @@ class MockProvider(BaseProvider[None]):
             finish_reason=None,
         )
 
+    def _make_context_response(
+        self,
+        model_id: str,
+        messages: Sequence[llm.messages.Message],
+        format: Format[Any] | None = None,
+    ) -> ContextResponse[Any, Any]:
+        """Create a minimal valid ContextResponse for testing."""
+        # Use queued response text if available
+        text = self._response_texts.pop(0) if self._response_texts else "mock response"
+        return ContextResponse(
+            raw={"mock": True},
+            usage=None,
+            provider_id="mock",
+            model_id=model_id,
+            provider_model_name="test-model",
+            params={},
+            tools=None,
+            format=format,
+            input_messages=list(messages),
+            assistant_message=llm.messages.assistant(
+                [llm.Text(text=text)],
+                model_id=model_id,
+                provider_id="mock",
+            ),
+            finish_reason=None,
+        )
+
+    def _make_async_context_response(
+        self,
+        model_id: str,
+        messages: Sequence[llm.messages.Message],
+        format: Format[Any] | None = None,
+    ) -> AsyncContextResponse[Any, Any]:
+        """Create a minimal valid AsyncContextResponse for testing."""
+        # Use queued response text if available
+        text = self._response_texts.pop(0) if self._response_texts else "mock response"
+        return AsyncContextResponse(
+            raw={"mock": True},
+            usage=None,
+            provider_id="mock",
+            model_id=model_id,
+            provider_model_name="test-model",
+            params={},
+            tools=None,
+            format=format,
+            input_messages=list(messages),
+            assistant_message=llm.messages.assistant(
+                [llm.Text(text=text)],
+                model_id=model_id,
+                provider_id="mock",
+            ),
+            finish_reason=None,
+        )
+
     def _call(
         self,
         *,
@@ -239,8 +293,20 @@ class MockProvider(BaseProvider[None]):
         | None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
-        """Not implemented for mock."""
-        raise NotImplementedError
+        """Return the configured response or raise the next configured exception."""
+        self._call_count += 1
+        if self._exceptions:
+            raise self._exceptions.pop(0)
+        # Resolve format to Format object
+        resolved_format: Format[Any] | None = None
+        if format is not None:
+            if isinstance(format, Format):
+                resolved_format = format
+            elif isinstance(format, OutputParser):
+                resolved_format = llm.format(format, mode="parser")
+            else:
+                resolved_format = llm.format(format, mode="json")
+        return self._make_context_response(model_id, messages, resolved_format)
 
     async def _context_call_async(
         self,
@@ -255,8 +321,20 @@ class MockProvider(BaseProvider[None]):
         | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
-        """Not implemented for mock."""
-        raise NotImplementedError
+        """Return the configured response or raise the next configured exception."""
+        self._call_count += 1
+        if self._exceptions:
+            raise self._exceptions.pop(0)
+        # Resolve format to Format object
+        resolved_format: Format[Any] | None = None
+        if format is not None:
+            if isinstance(format, Format):
+                resolved_format = format
+            elif isinstance(format, OutputParser):
+                resolved_format = llm.format(format, mode="parser")
+            else:
+                resolved_format = llm.format(format, mode="json")
+        return self._make_async_context_response(model_id, messages, resolved_format)
 
     def _make_chunk_iterator(self) -> Iterator[StreamResponseChunk]:
         """Create a chunk iterator that yields mock text chunks.
