@@ -78,10 +78,10 @@ def test_stream_can_continue_after_restart(mock_provider: MockProvider) -> None:
     assert mock_provider.stream_count == 2
 
 
-def test_stream_raises_original_error_after_max_attempts(
+def test_stream_raises_retries_exhausted_after_max_attempts(
     mock_provider: MockProvider,
 ) -> None:
-    """Test that original error is raised when max attempts exhausted."""
+    """Test that RetriesExhausted is raised when max attempts exhausted."""
     # Set more errors than max_attempts allows
     mock_provider.set_stream_exceptions([CONNECTION_ERROR, RATE_LIMIT_ERROR])
 
@@ -96,13 +96,14 @@ def test_stream_raises_original_error_after_max_attempts(
     with pytest.raises(llm.StreamRestarted):
         list(response.text_stream())
 
-    # Second attempt also fails, should raise original error (not StreamRestarted)
-    with pytest.raises(llm.RateLimitError, match="rate limited"):
+    # Second attempt also fails, should raise RetriesExhausted (not StreamRestarted)
+    with pytest.raises(llm.RetriesExhausted) as exc_info:
         list(response.text_stream())
 
-    # retry_failures is 2 because 2 failures occurred (max_retries=1 allows 1 retry,
-    # but the second error happens during the retry so counter goes to 2)
-    assert len(response.retry_failures) == 2
+    # RetriesExhausted contains both failures
+    assert len(exc_info.value.failures) == 2
+    assert isinstance(exc_info.value.failures[0].exception, llm.ConnectionError)
+    assert isinstance(exc_info.value.failures[1].exception, llm.RateLimitError)
     assert mock_provider.stream_count == 2
 
 
@@ -219,10 +220,10 @@ async def test_stream_async_can_continue_after_restart(
 
 
 @pytest.mark.asyncio
-async def test_stream_async_raises_original_error_after_max_attempts(
+async def test_stream_async_raises_retries_exhausted_after_max_attempts(
     mock_provider: MockProvider,
 ) -> None:
-    """Test that original error is raised when max attempts exhausted."""
+    """Test that RetriesExhausted is raised when max attempts exhausted."""
     mock_provider.set_stream_exceptions([CONNECTION_ERROR, SERVER_ERROR])
 
     @llm.retry(max_retries=1)
@@ -236,13 +237,14 @@ async def test_stream_async_raises_original_error_after_max_attempts(
     with pytest.raises(llm.StreamRestarted):
         _ = [chunk async for chunk in response.text_stream()]
 
-    # Second attempt also fails, should raise original error
-    with pytest.raises(llm.ServerError, match="server error"):
+    # Second attempt also fails, should raise RetriesExhausted
+    with pytest.raises(llm.RetriesExhausted) as exc_info:
         _ = [chunk async for chunk in response.text_stream()]
 
-    # retry_failures is 2 because 2 failures occurred (max_retries=1 allows 1 retry,
-    # but the second error happens during the retry so counter goes to 2)
-    assert len(response.retry_failures) == 2
+    # RetriesExhausted contains both failures
+    assert len(exc_info.value.failures) == 2
+    assert isinstance(exc_info.value.failures[0].exception, llm.ConnectionError)
+    assert isinstance(exc_info.value.failures[1].exception, llm.ServerError)
     assert mock_provider.stream_count == 2
 
 

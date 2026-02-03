@@ -7,6 +7,7 @@ from pydantic import ValidationError
 
 if TYPE_CHECKING:
     from .providers import ModelId, ProviderId
+    from .retries.utils import RetryFailure
 
 
 class Error(Exception):
@@ -358,6 +359,39 @@ class MissingAPIKeyError(Error):
         super().__init__(message)
         self.provider_id = provider_id
         self.env_var = env_var
+
+
+class RetriesExhausted(Error):
+    """Raised when all retry attempts (including fallback models) have been exhausted.
+
+    This exception preserves the full failure history, allowing users to inspect
+    what went wrong at each attempt.
+
+    Example:
+        ```python
+        try:
+            response = retry_model.generate("Tell me a story")
+        except llm.RetriesExhausted as e:
+            print(f"Failed after {len(e.failures)} attempts:")
+            for failure in e.failures:
+                print(f"  - {failure.model.model}: {failure.exception}")
+        ```
+    """
+
+    failures: list["RetryFailure"]
+    """All failed attempts, in order. The last failure triggered exhaustion."""
+
+    def __init__(self, failures: list["RetryFailure"]) -> None:
+        model_names = [f.model.model_id for f in failures]
+        message = (
+            f"All retries exhausted after {len(failures)} attempt(s) "
+            f"across models: {model_names}"
+        )
+        super().__init__(message)
+        self.failures = failures
+        # Chain to the last error for standard traceback behavior
+        if failures:
+            self.__cause__ = failures[-1].exception
 
 
 class StreamRestarted(Error):

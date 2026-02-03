@@ -203,7 +203,7 @@ def test_stream_fallback_model_gets_own_retry_budget(
 def test_stream_raises_after_all_fallbacks_exhausted(
     mock_provider: MockProvider,
 ) -> None:
-    """Test that original error is raised when all fallback models are exhausted."""
+    """Test that RetriesExhausted is raised when all fallback models are exhausted."""
     # Both models fail all attempts
     mock_provider.set_stream_exceptions(
         [
@@ -221,9 +221,13 @@ def test_stream_raises_after_all_fallbacks_exhausted(
     with pytest.raises(llm.StreamRestarted):
         list(response.chunk_stream())
 
-    # Second: fallback fails, no more models -> raises original error
-    with pytest.raises(llm.RateLimitError):
+    # Second: fallback fails, no more models -> raises RetriesExhausted
+    with pytest.raises(llm.RetriesExhausted) as exc_info:
         list(response.chunk_stream())
+
+    assert len(exc_info.value.failures) == 2
+    assert isinstance(exc_info.value.failures[0].exception, llm.ConnectionError)
+    assert isinstance(exc_info.value.failures[1].exception, llm.RateLimitError)
 
 
 # --- Async stream fallback model tests ---

@@ -49,10 +49,11 @@ def test_retry_call_with_retry_model_context_uses_context_config(
         max_retries=1,
     )
 
-    with context_retry_model, pytest.raises(llm.RateLimitError):
+    with context_retry_model, pytest.raises(llm.RetriesExhausted) as exc_info:
         # Should fail because context model only has max_retries=1
         greet()
 
+    assert len(exc_info.value.failures) == 2
     # 2 attempts: initial + 1 retry
     assert mock_provider.call_count == 2
 
@@ -124,10 +125,11 @@ def test_regular_call_with_retry_model_context_respects_retry_config(
         max_retries=1,
     )
 
-    with context_retry_model, pytest.raises(llm.RateLimitError):
+    with context_retry_model, pytest.raises(llm.RetriesExhausted) as exc_info:
         # Should fail because context model only has max_retries=1
         greet()
 
+    assert len(exc_info.value.failures) == 2
     # 2 attempts: initial + 1 retry
     assert mock_provider.call_count == 2
 

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, overload
 from ..content import (
     AssistantContentChunk,
 )
-from ..exceptions import StreamRestarted
+from ..exceptions import RetriesExhausted, StreamRestarted
 from ..formatting import FormattableT
 from ..messages import UserContent
 from ..models import Model
@@ -117,7 +117,7 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
             try:
                 self._current_variant = next(self._variants_iter)
             except StopIteration:
-                raise e from None
+                raise RetriesExhausted(self.retry_failures) from None
 
             self._reset_stream(self._current_variant)
 
@@ -244,7 +244,7 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
             try:
                 self._current_variant = await anext(self._variants_iter)
             except StopAsyncIteration:
-                raise e from None
+                raise RetriesExhausted(self.retry_failures) from None
 
             await self._reset_stream(self._current_variant)
 

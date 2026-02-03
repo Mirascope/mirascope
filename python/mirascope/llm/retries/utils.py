@@ -5,6 +5,7 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, TypeVar
 
+from ..exceptions import RetriesExhausted
 from .retry_config import RetryConfig
 
 if TYPE_CHECKING:
@@ -89,9 +90,9 @@ def with_retry(
         except config.retry_on as e:
             failures.append(RetryFailure(model=model, exception=e))
 
-    # All models exhausted - raise the last exception
+    # All models exhausted
     if failures:
-        raise failures[-1].exception
+        raise RetriesExhausted(failures)
     raise AssertionError("Unreachable: no models provided")  # pragma: no cover
 
 
@@ -128,7 +129,7 @@ async def with_retry_async(
         except config.retry_on as e:
             failures.append(RetryFailure(model=model, exception=e))
 
-    # All models exhausted - raise the last exception
+    # All models exhausted
     if failures:
-        raise failures[-1].exception
+        raise RetriesExhausted(failures)
     raise AssertionError("Unreachable: no models provided")  # pragma: no cover

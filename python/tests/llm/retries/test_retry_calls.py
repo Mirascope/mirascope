@@ -69,7 +69,7 @@ def test_call_retries_on_custom_exception(mock_provider: MockProvider) -> None:
 
 
 def test_call_raises_after_max_attempts_exhausted(mock_provider: MockProvider) -> None:
-    """Test that exception is re-raised when max_attempts is exhausted."""
+    """Test that RetriesExhausted is raised when max_attempts is exhausted."""
     mock_provider.set_exceptions(
         [llm.ConnectionError("connection failed", provider="test")]
     )
@@ -79,9 +79,11 @@ def test_call_raises_after_max_attempts_exhausted(mock_provider: MockProvider) -
     def greet() -> str:
         return "Hello"
 
-    with pytest.raises(llm.ConnectionError, match="connection failed"):
+    with pytest.raises(llm.RetriesExhausted) as exc_info:
         greet()
 
+    assert len(exc_info.value.failures) == 1
+    assert isinstance(exc_info.value.failures[0].exception, llm.ConnectionError)
     assert mock_provider.call_count == 1
 
 
@@ -111,7 +113,7 @@ def test_resume_retries_on_failure(mock_provider: MockProvider) -> None:
 def test_resume_raises_after_max_attempts_exhausted(
     mock_provider: MockProvider,
 ) -> None:
-    """Test that resume re-raises when max_attempts is exhausted."""
+    """Test that resume raises RetriesExhausted when max_attempts is exhausted."""
 
     @llm.retry(max_retries=0)
     @llm.call("mock/test-model")
@@ -125,9 +127,11 @@ def test_resume_raises_after_max_attempts_exhausted(
     # Configure persistent error for the resume call
     mock_provider.set_exceptions([SERVER_ERROR])
 
-    with pytest.raises(llm.ServerError, match="server error"):
+    with pytest.raises(llm.RetriesExhausted) as exc_info:
         response.resume("Follow up")
 
+    assert len(exc_info.value.failures) == 1
+    assert isinstance(exc_info.value.failures[0].exception, llm.ServerError)
     assert mock_provider.call_count == 2  # 1 initial + 1 resume attempt
 
 
@@ -199,7 +203,7 @@ async def test_call_async_retries_on_custom_exception(
 async def test_call_async_raises_after_max_attempts_exhausted(
     mock_provider: MockProvider,
 ) -> None:
-    """Test that exception is re-raised when max_attempts is exhausted."""
+    """Test that RetriesExhausted is raised when max_attempts is exhausted."""
     mock_provider.set_exceptions(
         [llm.ConnectionError("connection failed", provider="test")]
     )
@@ -209,9 +213,11 @@ async def test_call_async_raises_after_max_attempts_exhausted(
     async def greet() -> str:
         return "Hello"
 
-    with pytest.raises(llm.ConnectionError, match="connection failed"):
+    with pytest.raises(llm.RetriesExhausted) as exc_info:
         await greet()
 
+    assert len(exc_info.value.failures) == 1
+    assert isinstance(exc_info.value.failures[0].exception, llm.ConnectionError)
     assert mock_provider.call_count == 1
 
 
@@ -243,7 +249,7 @@ async def test_resume_async_retries_on_failure(mock_provider: MockProvider) -> N
 async def test_resume_async_raises_after_max_attempts_exhausted(
     mock_provider: MockProvider,
 ) -> None:
-    """Test that async resume re-raises when max_attempts is exhausted."""
+    """Test that async resume raises RetriesExhausted when max_attempts is exhausted."""
 
     @llm.retry(max_retries=0)
     @llm.call("mock/test-model")
@@ -257,9 +263,11 @@ async def test_resume_async_raises_after_max_attempts_exhausted(
     # Configure persistent error for the resume call
     mock_provider.set_exceptions([SERVER_ERROR])
 
-    with pytest.raises(llm.ServerError, match="server error"):
+    with pytest.raises(llm.RetriesExhausted) as exc_info:
         await response.resume("Follow up")
 
+    assert len(exc_info.value.failures) == 1
+    assert isinstance(exc_info.value.failures[0].exception, llm.ServerError)
     assert mock_provider.call_count == 2  # 1 initial + 1 resume attempt
 
 
