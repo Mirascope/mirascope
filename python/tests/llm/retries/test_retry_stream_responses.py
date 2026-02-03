@@ -687,3 +687,165 @@ async def test_async_resume_stream_factory_called_on_retry(
     assert "mock " in "".join(chunks) or "response" in "".join(chunks)
     # No new stream created - we're using the one created by stream_factory
     assert mock_provider.stream_count == 3
+
+
+# --- Sync resume with fallback tests ---
+
+
+def test_resume_uses_fallback_model_when_original_succeeded_on_fallback(
+    mock_provider: MockProvider,
+) -> None:
+    """Test that stream resume uses the fallback model when original response succeeded on fallback."""
+    # First stream: primary fails, fallback succeeds
+    mock_provider.set_stream_exceptions([CONNECTION_ERROR])
+
+    primary = llm.Model("mock/primary")
+    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+
+    response = retry_model.stream("Hello")
+
+    # First iteration fails (primary), raises StreamRestarted
+    with pytest.raises(llm.StreamRestarted):
+        list(response.chunk_stream())
+
+    # After restart, should be on fallback model
+    assert response.model.model_id == "mock/fallback"
+
+    # Second iteration succeeds on fallback
+    list(response.chunk_stream())
+
+    # Resume should use the fallback model (which succeeded)
+    resumed = response.resume("Follow up")
+
+    # Should start on fallback (no errors set)
+    assert resumed.model.model_id == "mock/fallback"
+
+    # Should succeed on fallback
+    chunks = list(resumed.chunk_stream())
+    assert len(chunks) > 0
+
+
+def test_resume_can_fall_back_to_original_if_fallback_fails(
+    mock_provider: MockProvider,
+) -> None:
+    """Test that stream resume can fall back to original model if the fallback model fails."""
+    # First stream: primary fails, fallback succeeds
+    mock_provider.set_stream_exceptions([CONNECTION_ERROR])
+
+    primary = llm.Model("mock/primary")
+    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+
+    response = retry_model.stream("Hello")
+
+    # First iteration fails (primary), raises StreamRestarted
+    with pytest.raises(llm.StreamRestarted):
+        list(response.chunk_stream())
+
+    # After restart, should be on fallback model
+    assert response.model.model_id == "mock/fallback"
+
+    # Second iteration succeeds on fallback
+    list(response.chunk_stream())
+
+    # For resume: fallback fails, primary succeeds
+    mock_provider.set_stream_exceptions([RATE_LIMIT_ERROR])
+
+    resumed = response.resume("Follow up")
+
+    # Should start on fallback model (which succeeded before)
+    assert resumed.model.model_id == "mock/fallback"
+
+    # First iteration of resume fails (fallback), raises StreamRestarted
+    with pytest.raises(llm.StreamRestarted):
+        list(resumed.chunk_stream())
+
+    # After restart, should be on primary model
+    assert resumed.model.model_id == "mock/primary"
+    assert len(resumed.retry_failures) == 1
+    assert resumed.retry_failures[0].model.model_id == "mock/fallback"
+
+    # Second iteration succeeds on primary
+    chunks = list(resumed.chunk_stream())
+    assert len(chunks) > 0
+
+
+# --- Async resume with fallback tests ---
+
+
+@pytest.mark.asyncio
+async def test_async_resume_uses_fallback_model_when_original_succeeded_on_fallback(
+    mock_provider: MockProvider,
+) -> None:
+    """Test that async stream resume uses the fallback model when original response succeeded on fallback."""
+    # First stream: primary fails, fallback succeeds
+    mock_provider.set_stream_exceptions([CONNECTION_ERROR])
+
+    primary = llm.Model("mock/primary")
+    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+
+    response = await retry_model.stream_async("Hello")
+
+    # First iteration fails (primary), raises StreamRestarted
+    with pytest.raises(llm.StreamRestarted):
+        _ = [chunk async for chunk in response.chunk_stream()]
+
+    # After restart, should be on fallback model
+    assert response.model.model_id == "mock/fallback"
+
+    # Second iteration succeeds on fallback
+    _ = [chunk async for chunk in response.chunk_stream()]
+
+    # Resume should use the fallback model (which succeeded)
+    resumed = await response.resume("Follow up")
+
+    # Should start on fallback (no errors set)
+    assert resumed.model.model_id == "mock/fallback"
+
+    # Should succeed on fallback
+    chunks = [chunk async for chunk in resumed.chunk_stream()]
+    assert len(chunks) > 0
+
+
+@pytest.mark.asyncio
+async def test_async_resume_can_fall_back_to_original_if_fallback_fails(
+    mock_provider: MockProvider,
+) -> None:
+    """Test that async stream resume can fall back to original model if the fallback model fails."""
+    # First stream: primary fails, fallback succeeds
+    mock_provider.set_stream_exceptions([CONNECTION_ERROR])
+
+    primary = llm.Model("mock/primary")
+    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+
+    response = await retry_model.stream_async("Hello")
+
+    # First iteration fails (primary), raises StreamRestarted
+    with pytest.raises(llm.StreamRestarted):
+        _ = [chunk async for chunk in response.chunk_stream()]
+
+    # After restart, should be on fallback model
+    assert response.model.model_id == "mock/fallback"
+
+    # Second iteration succeeds on fallback
+    _ = [chunk async for chunk in response.chunk_stream()]
+
+    # For resume: fallback fails, primary succeeds
+    mock_provider.set_stream_exceptions([RATE_LIMIT_ERROR])
+
+    resumed = await response.resume("Follow up")
+
+    # Should start on fallback model (which succeeded before)
+    assert resumed.model.model_id == "mock/fallback"
+
+    # First iteration of resume fails (fallback), raises StreamRestarted
+    with pytest.raises(llm.StreamRestarted):
+        _ = [chunk async for chunk in resumed.chunk_stream()]
+
+    # After restart, should be on primary model
+    assert resumed.model.model_id == "mock/primary"
+    assert len(resumed.retry_failures) == 1
+    assert resumed.retry_failures[0].model.model_id == "mock/fallback"
+
+    # Second iteration succeeds on primary
+    chunks = [chunk async for chunk in resumed.chunk_stream()]
+    assert len(chunks) > 0

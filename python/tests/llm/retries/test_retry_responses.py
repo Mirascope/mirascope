@@ -4,6 +4,7 @@ import pytest
 
 from mirascope import llm
 
+from .conftest import CONNECTION_ERROR, RATE_LIMIT_ERROR
 from .mock_provider import MockProvider
 
 # --- Sync RetryResponse tests ---
@@ -65,3 +66,106 @@ async def test_async_execute_tools(mock_provider: MockProvider) -> None:  # noqa
     response = await greet()
     result = await response.execute_tools()
     assert result == []  # No tool calls in mock response
+
+
+# --- Resume with fallback tests ---
+
+
+def test_resume_uses_fallback_model_when_original_succeeded_on_fallback(
+    mock_provider: MockProvider,
+) -> None:
+    """Test that resume uses the fallback model when original response succeeded on fallback."""
+    # First call: primary fails, fallback succeeds
+    mock_provider.set_exceptions([CONNECTION_ERROR])
+
+    primary = llm.Model("mock/primary")
+    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+
+    response = retry_model.call("Hello")
+
+    # Response should have succeeded on fallback
+    assert response.model_id == "mock/fallback"
+    assert len(response.retry_failures) == 1
+
+    # Resume should use the fallback model (which succeeded)
+    resumed = response.resume("Follow up")
+
+    # Should succeed on fallback (no errors set)
+    assert resumed.model_id == "mock/fallback"
+
+
+def test_resume_can_fall_back_to_original_if_fallback_fails(
+    mock_provider: MockProvider,
+) -> None:
+    """Test that resume can fall back to original model if the fallback model fails."""
+    # First call: primary fails, fallback succeeds
+    mock_provider.set_exceptions([CONNECTION_ERROR])
+
+    primary = llm.Model("mock/primary")
+    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+
+    response = retry_model.call("Hello")
+
+    # Response should have succeeded on fallback
+    assert response.model_id == "mock/fallback"
+
+    # For resume: fallback fails, primary succeeds
+    mock_provider.set_exceptions([RATE_LIMIT_ERROR])
+
+    resumed = response.resume("Follow up")
+
+    # Should have fallen back to primary and succeeded
+    assert resumed.model_id == "mock/primary"
+    assert len(resumed.retry_failures) == 1
+    assert resumed.retry_failures[0].model.model_id == "mock/fallback"
+
+
+@pytest.mark.asyncio
+async def test_async_resume_uses_fallback_model_when_original_succeeded_on_fallback(
+    mock_provider: MockProvider,
+) -> None:
+    """Test that async resume uses the fallback model when original response succeeded on fallback."""
+    # First call: primary fails, fallback succeeds
+    mock_provider.set_exceptions([CONNECTION_ERROR])
+
+    primary = llm.Model("mock/primary")
+    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+
+    response = await retry_model.call_async("Hello")
+
+    # Response should have succeeded on fallback
+    assert response.model_id == "mock/fallback"
+    assert len(response.retry_failures) == 1
+
+    # Resume should use the fallback model (which succeeded)
+    resumed = await response.resume("Follow up")
+
+    # Should succeed on fallback (no errors set)
+    assert resumed.model_id == "mock/fallback"
+
+
+@pytest.mark.asyncio
+async def test_async_resume_can_fall_back_to_original_if_fallback_fails(
+    mock_provider: MockProvider,
+) -> None:
+    """Test that async resume can fall back to original model if the fallback model fails."""
+    # First call: primary fails, fallback succeeds
+    mock_provider.set_exceptions([CONNECTION_ERROR])
+
+    primary = llm.Model("mock/primary")
+    retry_model = llm.retry(primary, max_retries=0, fallback_models=["mock/fallback"])
+
+    response = await retry_model.call_async("Hello")
+
+    # Response should have succeeded on fallback
+    assert response.model_id == "mock/fallback"
+
+    # For resume: fallback fails, primary succeeds
+    mock_provider.set_exceptions([RATE_LIMIT_ERROR])
+
+    resumed = await response.resume("Follow up")
+
+    # Should have fallen back to primary and succeeded
+    assert resumed.model_id == "mock/primary"
+    assert len(resumed.retry_failures) == 1
+    assert resumed.retry_failures[0].model.model_id == "mock/fallback"
