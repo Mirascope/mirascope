@@ -369,6 +369,16 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = async (
     // Fall through to normal handler if no .md file exists
   }
 
+  // Try serving from static assets first (only needed when run_worker_first is enabled)
+  // In staging, all requests go through the worker including assets
+  if (url.hostname === "staging.mirascope.com") {
+    const assetResponse = await environment.ASSETS.fetch(request);
+    if (assetResponse.ok) {
+      return assetResponse;
+    }
+  }
+
+  // Fall back to SSR handler for routes
   return fetchHandler(request);
 };
 
