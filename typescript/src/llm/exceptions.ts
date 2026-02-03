@@ -3,6 +3,7 @@
  */
 
 import type { ModelId, ProviderId } from "@/llm/providers";
+import type { RetryFailure } from "@/llm/retries/utils";
 
 /**
  * Base exception for all Mirascope LLM errors.
@@ -343,5 +344,90 @@ export class MissingAPIKeyError extends MirascopeError {
     super(message);
     this.providerId = providerId;
     this.envVar = envVar;
+  }
+}
+
+// ===== Retry Exceptions =====
+
+/**
+ * Raised when all retry attempts (including fallback models) have been exhausted.
+ *
+ * This exception preserves the full failure history, allowing users to inspect
+ * what went wrong at each attempt.
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   const response = await retryModel.call("Tell me a story");
+ * } catch (e) {
+ *   if (e instanceof llm.RetriesExhausted) {
+ *     console.log(`Failed after ${e.failures.length} attempts:`);
+ *     for (const failure of e.failures) {
+ *       console.log(`  - ${failure.model.modelId}: ${failure.exception.message}`);
+ *     }
+ *   }
+ * }
+ * ```
+ */
+export class RetriesExhausted extends MirascopeError {
+  /**
+   * All failed attempts, in order. The last failure triggered exhaustion.
+   */
+  readonly failures: RetryFailure[];
+
+  constructor(failures: RetryFailure[]) {
+    const uniqueModelNames = [...new Set(failures.map((f) => f.model.modelId))];
+    const message =
+      `All retries exhausted after ${failures.length} attempt(s) ` +
+      `across models: ${JSON.stringify(uniqueModelNames)}`;
+    super(message);
+    this.failures = failures;
+    // Chain to the last error for standard traceback behavior
+    const lastFailure = failures[failures.length - 1];
+    if (lastFailure !== undefined) {
+      this.cause = lastFailure.exception;
+    }
+  }
+}
+
+/**
+ * Raised when a stream restarts due to a retryable error.
+ *
+ * This exception signals that the stream encountered an error and has been
+ * reset for a retry attempt. Users should catch this exception and re-iterate
+ * the response to continue streaming from the new attempt.
+ *
+ * @example
+ * ```typescript
+ * const response = await retryModel.stream("Tell me a story");
+ *
+ * while (true) {
+ *   try {
+ *     for await (const text of response.textStream()) {
+ *       process.stdout.write(text);
+ *     }
+ *     break; // Success
+ *   } catch (e) {
+ *     if (e instanceof llm.StreamRestarted) {
+ *       console.log(`Stream restarted: ${e.message}`);
+ *       // Loop continues, re-iterates the response
+ *     } else {
+ *       throw e;
+ *     }
+ *   }
+ * }
+ * ```
+ */
+export class StreamRestarted extends MirascopeError {
+  /**
+   * The failure that triggered the restart.
+   */
+  readonly failure: RetryFailure;
+
+  constructor(failure: RetryFailure) {
+    const message = `Stream restarted due to: ${failure.exception.message}`;
+    super(message);
+    this.failure = failure;
+    this.cause = failure.exception;
   }
 }
