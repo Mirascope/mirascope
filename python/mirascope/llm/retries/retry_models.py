@@ -6,23 +6,30 @@ from collections.abc import AsyncIterator, Awaitable, Iterator, Sequence
 from typing import cast, overload
 from typing_extensions import Unpack
 
+from ..context import Context, DepsT
 from ..formatting import FormatSpec, FormattableT
 from ..messages import Message, UserContent
 from ..models import Model, Params
 from ..providers import ModelId
 from ..responses import (
+    AsyncContextResponse,
     AsyncResponse,
     AsyncStreamResponse,
+    ContextResponse,
     Response,
     StreamResponse,
 )
 from ..tools import (
+    AsyncContextTools,
     AsyncTools,
+    ContextTools,
     Tools,
 )
 from .retry_config import RetryArgs, RetryConfig
 from .retry_responses import (
+    AsyncContextRetryResponse,
     AsyncRetryResponse,
+    ContextRetryResponse,
     RetryResponse,
 )
 from .retry_stream_responses import (
@@ -430,6 +437,274 @@ class RetryModel(Model):
         )
         return AsyncRetryResponse(
             response=cast("AsyncResponse[FormattableT]", new_response),
+            retry_model=updated_model,
+            retry_failures=failures,
+        )
+
+    # Context call methods
+
+    @overload
+    def context_call(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        ctx: Context[DepsT],
+        tools: ContextTools[DepsT] | None = None,
+        format: None = None,
+    ) -> ContextRetryResponse[DepsT, None]: ...
+
+    @overload
+    def context_call(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        ctx: Context[DepsT],
+        tools: ContextTools[DepsT] | None = None,
+        format: FormatSpec[FormattableT],
+    ) -> ContextRetryResponse[DepsT, FormattableT]: ...
+
+    @overload
+    def context_call(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        ctx: Context[DepsT],
+        tools: ContextTools[DepsT] | None = None,
+        format: FormatSpec[FormattableT] | None,
+    ) -> (
+        ContextRetryResponse[DepsT, None] | ContextRetryResponse[DepsT, FormattableT]
+    ): ...
+
+    def context_call(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        ctx: Context[DepsT],
+        tools: ContextTools[DepsT] | None = None,
+        format: FormatSpec[FormattableT] | None = None,
+    ) -> ContextRetryResponse[DepsT, None] | ContextRetryResponse[DepsT, FormattableT]:
+        """Generate a ContextRetryResponse by calling this model's LLM provider with context.
+
+        Args:
+            content: User content or LLM messages to send to the LLM.
+            ctx: A `Context` with the required deps type.
+            tools: Optional context-aware tools that the model may invoke.
+            format: Optional response format specifier.
+
+        Returns:
+            A ContextRetryResponse object containing the LLM-generated content and retry metadata.
+
+        Raises:
+            Exception: The last exception encountered if all retry attempts fail.
+        """
+        response, failures, updated_model = with_retry(
+            fn=lambda m: m.context_call(content, ctx=ctx, tools=tools, format=format),
+            retry_model=self,
+        )
+        return ContextRetryResponse(
+            response=cast("ContextResponse[DepsT, FormattableT]", response),
+            retry_model=updated_model,
+            retry_failures=failures,
+        )
+
+    @overload
+    async def context_call_async(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        ctx: Context[DepsT],
+        tools: AsyncContextTools[DepsT] | None = None,
+        format: None = None,
+    ) -> AsyncContextRetryResponse[DepsT, None]: ...
+
+    @overload
+    async def context_call_async(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        ctx: Context[DepsT],
+        tools: AsyncContextTools[DepsT] | None = None,
+        format: FormatSpec[FormattableT],
+    ) -> AsyncContextRetryResponse[DepsT, FormattableT]: ...
+
+    @overload
+    async def context_call_async(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        ctx: Context[DepsT],
+        tools: AsyncContextTools[DepsT] | None = None,
+        format: FormatSpec[FormattableT] | None,
+    ) -> (
+        AsyncContextRetryResponse[DepsT, None]
+        | AsyncContextRetryResponse[DepsT, FormattableT]
+    ): ...
+
+    async def context_call_async(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        ctx: Context[DepsT],
+        tools: AsyncContextTools[DepsT] | None = None,
+        format: FormatSpec[FormattableT] | None = None,
+    ) -> (
+        AsyncContextRetryResponse[DepsT, None]
+        | AsyncContextRetryResponse[DepsT, FormattableT]
+    ):
+        """Generate an AsyncContextRetryResponse by asynchronously calling this model's LLM provider with context.
+
+        Args:
+            content: User content or LLM messages to send to the LLM.
+            ctx: A `Context` with the required deps type.
+            tools: Optional context-aware tools that the model may invoke.
+            format: Optional response format specifier.
+
+        Returns:
+            An AsyncContextRetryResponse object containing the LLM-generated content and retry metadata.
+
+        Raises:
+            Exception: The last exception encountered if all retry attempts fail.
+        """
+        response, failures, updated_model = await with_retry_async(
+            fn=lambda m: m.context_call_async(
+                content, ctx=ctx, tools=tools, format=format
+            ),
+            retry_model=self,
+        )
+        return AsyncContextRetryResponse(
+            response=cast("AsyncContextResponse[DepsT, FormattableT]", response),
+            retry_model=updated_model,
+            retry_failures=failures,
+        )
+
+    # Context resume methods
+
+    @overload
+    def context_resume(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: ContextResponse[DepsT, None],
+        content: UserContent,
+    ) -> ContextRetryResponse[DepsT, None]: ...
+
+    @overload
+    def context_resume(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: ContextResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> ContextRetryResponse[DepsT, FormattableT]: ...
+
+    @overload
+    def context_resume(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> (
+        ContextRetryResponse[DepsT, None] | ContextRetryResponse[DepsT, FormattableT]
+    ): ...
+
+    def context_resume(  # pyright: ignore[reportIncompatibleMethodOverride]
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> ContextRetryResponse[DepsT, None] | ContextRetryResponse[DepsT, FormattableT]:
+        """Generate a new ContextRetryResponse by extending another response's messages.
+
+        Args:
+            ctx: A `Context` with the required deps type.
+            response: Previous context response to extend.
+            content: Additional user content to append.
+
+        Returns:
+            A new ContextRetryResponse containing the extended conversation.
+
+        Raises:
+            Exception: The last exception encountered if all retry attempts fail.
+        """
+        new_response, failures, updated_model = with_retry(
+            fn=lambda m: m.context_resume(ctx=ctx, response=response, content=content),
+            retry_model=self,
+        )
+        return ContextRetryResponse(
+            response=cast("ContextResponse[DepsT, FormattableT]", new_response),
+            retry_model=updated_model,
+            retry_failures=failures,
+        )
+
+    @overload
+    async def context_resume_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: AsyncContextResponse[DepsT, None],
+        content: UserContent,
+    ) -> AsyncContextRetryResponse[DepsT, None]: ...
+
+    @overload
+    async def context_resume_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: AsyncContextResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> AsyncContextRetryResponse[DepsT, FormattableT]: ...
+
+    @overload
+    async def context_resume_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: (
+            AsyncContextResponse[DepsT, None]
+            | AsyncContextResponse[DepsT, FormattableT]
+        ),
+        content: UserContent,
+    ) -> (
+        AsyncContextRetryResponse[DepsT, None]
+        | AsyncContextRetryResponse[DepsT, FormattableT]
+    ): ...
+
+    async def context_resume_async(  # pyright: ignore[reportIncompatibleMethodOverride]
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: (
+            AsyncContextResponse[DepsT, None]
+            | AsyncContextResponse[DepsT, FormattableT]
+        ),
+        content: UserContent,
+    ) -> (
+        AsyncContextRetryResponse[DepsT, None]
+        | AsyncContextRetryResponse[DepsT, FormattableT]
+    ):
+        """Generate a new AsyncContextRetryResponse by extending another response's messages.
+
+        Args:
+            ctx: A `Context` with the required deps type.
+            response: Previous async context response to extend.
+            content: Additional user content to append.
+
+        Returns:
+            A new AsyncContextRetryResponse containing the extended conversation.
+
+        Raises:
+            Exception: The last exception encountered if all retry attempts fail.
+        """
+        new_response, failures, updated_model = await with_retry_async(
+            fn=lambda m: m.context_resume_async(
+                ctx=ctx, response=response, content=content
+            ),
+            retry_model=self,
+        )
+        return AsyncContextRetryResponse(
+            response=cast("AsyncContextResponse[DepsT, FormattableT]", new_response),
             retry_model=updated_model,
             retry_failures=failures,
         )
