@@ -31,8 +31,8 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
     `StreamRestarted` exception is raised so the user can handle the restart
     (e.g., clear terminal output) before re-iterating.
 
-    Note: Streaming does not currently support fallback models. Retries will
-    only be attempted with the active model.
+    Supports fallback models - when the active model exhausts its retries,
+    the next fallback model is tried.
 
     Example:
         ```python
@@ -48,8 +48,11 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
         ```
     """
 
-    _retry_model: "RetryModel"
-    """The RetryModel providing retry configuration."""
+    _current_variant: "RetryModel"
+    """The current RetryModel variant being used."""
+
+    _variants_iter: Iterator["RetryModel"]
+    """Iterator over model variants with backoff delays."""
 
     retry_failures: list[RetryFailure]
     """Failed attempts before success (empty if first attempt succeeded)."""
@@ -67,25 +70,24 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
             retry_model: The RetryModel providing retry configuration.
             stream_fn: Function that creates a stream from a Model.
         """
-        # Create the initial stream using the active model and copy all attributes
-        active_model = retry_model.get_active_model()
-        initial_stream = stream_fn(active_model)
-        for key, value in initial_stream.__dict__.items():
-            object.__setattr__(self, key, value)
-
-        self._retry_model = retry_model
+        self._variants_iter = retry_model.variants()
+        self._current_variant = next(self._variants_iter)
         self._stream_fn = stream_fn
         self.retry_failures = []
+
+        # Create the initial stream and copy all attributes
+        initial_stream = stream_fn(self._current_variant.get_active_model())
+        for key, value in initial_stream.__dict__.items():
+            object.__setattr__(self, key, value)
 
     @property
     def model(self) -> "RetryModel":
         """A RetryModel with parameters matching this response."""
-        return self._retry_model
+        return self._current_variant
 
-    def _reset_stream(self) -> None:
+    def _reset_stream(self, variant: "RetryModel") -> None:
         """Reset to a fresh stream for a new retry attempt."""
-        active_model = self._retry_model.get_active_model()
-        new_stream = self._stream_fn(active_model)
+        new_stream = self._stream_fn(variant.get_active_model())
         # Copy all attributes from the new stream
         for key, value in new_stream.__dict__.items():
             object.__setattr__(self, key, value)
@@ -101,22 +103,26 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
             StreamRestarted: When the stream is reset for a retry attempt.
             Exception: The underlying error if max retries are exhausted.
         """
-        config = self._retry_model.retry_config
-        active_model = self._retry_model.get_active_model()
+        config = self._current_variant.retry_config
         try:
             yield from super().chunk_stream()
-            # Success - no need to record anything
         except config.retry_on as e:
-            self.retry_failures.append(RetryFailure(model=active_model, exception=e))
-            failure_count = len(self.retry_failures)
+            self.retry_failures.append(
+                RetryFailure(
+                    model=self._current_variant.get_active_model(), exception=e
+                )
+            )
 
-            if failure_count > config.max_retries:
-                raise
+            # Try to get next variant (handles backoff and fallback)
+            try:
+                self._current_variant = next(self._variants_iter)
+            except StopIteration:
+                raise e from None
 
-            self._reset_stream()
+            self._reset_stream(self._current_variant)
 
             raise StreamRestarted(
-                attempt=failure_count,
+                attempt=len(self.retry_failures),
                 error=e,
             ) from e
 
@@ -148,8 +154,8 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
     `StreamRestarted` exception is raised so the user can handle the restart
     (e.g., clear terminal output) before re-iterating.
 
-    Note: Streaming does not currently support fallback models. Retries will
-    only be attempted with the active model.
+    Supports fallback models - when the active model exhausts its retries,
+    the next fallback model is tried.
 
     Example:
         ```python
@@ -165,8 +171,11 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
         ```
     """
 
-    _retry_model: "RetryModel"
-    """The RetryModel providing retry configuration."""
+    _current_variant: "RetryModel"
+    """The current RetryModel variant being used."""
+
+    _variants_iter: AsyncIterator["RetryModel"]
+    """Async iterator over model variants with backoff delays."""
 
     retry_failures: list[RetryFailure]
     """Failed attempts before success (empty if first attempt succeeded)."""
@@ -175,34 +184,36 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
 
     def __init__(
         self,
-        retry_model: "RetryModel",
         stream_fn: Callable[[Model], Awaitable[AsyncStreamResponse[FormattableT]]],
         initial_stream: AsyncStreamResponse[FormattableT],
+        initial_variant: "RetryModel",
+        variants_iter: AsyncIterator["RetryModel"],
     ) -> None:
         """Initialize an AsyncRetryStreamResponse.
 
         Args:
-            retry_model: The RetryModel providing retry configuration.
             stream_fn: Async function that creates a stream from a Model.
             initial_stream: The pre-awaited initial stream.
+            initial_variant: The first variant from the iterator.
+            variants_iter: The async iterator for remaining variants.
         """
         # Copy all attributes from the initial stream
         for key, value in initial_stream.__dict__.items():
             object.__setattr__(self, key, value)
 
-        self._retry_model = retry_model
+        self._current_variant = initial_variant
+        self._variants_iter = variants_iter
         self._stream_fn = stream_fn
         self.retry_failures = []
 
     @property
     def model(self) -> "RetryModel":
         """A RetryModel with parameters matching this response."""
-        return self._retry_model
+        return self._current_variant
 
-    async def _reset_stream(self) -> None:
+    async def _reset_stream(self, variant: "RetryModel") -> None:
         """Reset to a fresh stream for a new retry attempt."""
-        active_model = self._retry_model.get_active_model()
-        new_stream = await self._stream_fn(active_model)
+        new_stream = await self._stream_fn(variant.get_active_model())
         # Copy all attributes from the new stream
         for key, value in new_stream.__dict__.items():
             object.__setattr__(self, key, value)
@@ -218,23 +229,27 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
             StreamRestarted: When the stream is reset for a retry attempt.
             Exception: The underlying error if max retries are exhausted.
         """
-        config = self._retry_model.retry_config
-        active_model = self._retry_model.get_active_model()
+        config = self._current_variant.retry_config
         try:
             async for chunk in super().chunk_stream():
                 yield chunk
-            # Success - no need to record anything
         except config.retry_on as e:
-            self.retry_failures.append(RetryFailure(model=active_model, exception=e))
-            failure_count = len(self.retry_failures)
+            self.retry_failures.append(
+                RetryFailure(
+                    model=self._current_variant.get_active_model(), exception=e
+                )
+            )
 
-            if failure_count > config.max_retries:
-                raise
+            # Try to get next variant (handles backoff and fallback)
+            try:
+                self._current_variant = await anext(self._variants_iter)
+            except StopAsyncIteration:
+                raise e from None
 
-            await self._reset_stream()
+            await self._reset_stream(self._current_variant)
 
             raise StreamRestarted(
-                attempt=failure_count,
+                attempt=len(self.retry_failures),
                 error=e,
             ) from e
 

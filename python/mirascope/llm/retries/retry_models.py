@@ -465,8 +465,8 @@ class RetryModel(Model):
         error occurs during iteration, a `StreamRestarted` exception is raised
         and the user can re-iterate to continue from the new attempt.
 
-        Note: Streaming does not currently support fallback models. Retries will
-        only be attempted with the active model.
+        Supports fallback models - when the active model exhausts its retries,
+        the next fallback model is tried.
 
         Args:
             content: User content or LLM messages to send to the LLM.
@@ -524,8 +524,8 @@ class RetryModel(Model):
         error occurs during iteration, a `StreamRestarted` exception is raised
         and the user can re-iterate to continue from the new attempt.
 
-        Note: Streaming does not currently support fallback models. Retries will
-        only be attempted with the active model.
+        Supports fallback models - when the active model exhausts its retries,
+        the next fallback model is tried.
 
         Args:
             content: User content or LLM messages to send to the LLM.
@@ -542,8 +542,12 @@ class RetryModel(Model):
                 m.stream_async(content=content, tools=tools, format=format),
             )
 
-        initial_stream = await stream_fn(self._models[self._active_index])
-        return AsyncRetryStreamResponse(self, stream_fn, initial_stream)
+        variants_iter = self.variants_async()
+        initial_variant = await anext(variants_iter)
+        initial_stream = await stream_fn(initial_variant.get_active_model())
+        return AsyncRetryStreamResponse(
+            stream_fn, initial_stream, initial_variant, variants_iter
+        )
 
     # Resume stream methods
 
@@ -640,5 +644,9 @@ class RetryModel(Model):
                 m.resume_stream_async(response=response, content=content),
             )
 
-        initial_stream = await stream_fn(self._models[self._active_index])
-        return AsyncRetryStreamResponse(self, stream_fn, initial_stream)
+        variants_iter = self.variants_async()
+        initial_variant = await anext(variants_iter)
+        initial_stream = await stream_fn(initial_variant.get_active_model())
+        return AsyncRetryStreamResponse(
+            stream_fn, initial_stream, initial_variant, variants_iter
+        )
