@@ -13,9 +13,11 @@ from ..models import Model, Params
 from ..providers import ModelId
 from ..responses import (
     AsyncContextResponse,
+    AsyncContextStreamResponse,
     AsyncResponse,
     AsyncStreamResponse,
     ContextResponse,
+    ContextStreamResponse,
     Response,
     StreamResponse,
 )
@@ -33,7 +35,9 @@ from .retry_responses import (
     RetryResponse,
 )
 from .retry_stream_responses import (
+    AsyncContextRetryStreamResponse,
     AsyncRetryStreamResponse,
+    ContextRetryStreamResponse,
     RetryStreamResponse,
 )
 from .utils import with_retry, with_retry_async
@@ -934,6 +938,298 @@ class RetryModel(Model):
         initial_variant = await anext(variants_iter)
         initial_stream = await stream_fn(initial_variant.get_active_model())
         return AsyncRetryStreamResponse(
+            stream_fn, initial_stream, initial_variant, variants_iter
+        )
+
+    # Context stream methods
+
+    @overload
+    def context_stream(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        ctx: Context[DepsT],
+        tools: ContextTools[DepsT] | None = None,
+        format: None = None,
+    ) -> ContextRetryStreamResponse[DepsT, None]: ...
+
+    @overload
+    def context_stream(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        ctx: Context[DepsT],
+        tools: ContextTools[DepsT] | None = None,
+        format: FormatSpec[FormattableT],
+    ) -> ContextRetryStreamResponse[DepsT, FormattableT]: ...
+
+    @overload
+    def context_stream(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        ctx: Context[DepsT],
+        tools: ContextTools[DepsT] | None = None,
+        format: FormatSpec[FormattableT] | None,
+    ) -> (
+        ContextRetryStreamResponse[DepsT, None]
+        | ContextRetryStreamResponse[DepsT, FormattableT]
+    ): ...
+
+    def context_stream(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        ctx: Context[DepsT],
+        tools: ContextTools[DepsT] | None = None,
+        format: FormatSpec[FormattableT] | None = None,
+    ) -> (
+        ContextRetryStreamResponse[DepsT, None]
+        | ContextRetryStreamResponse[DepsT, FormattableT]
+    ):
+        """Generate a ContextRetryStreamResponse by streaming from this model's LLM provider with context.
+
+        The returned response supports automatic retry on failure. If a retryable
+        error occurs during iteration, a `StreamRestarted` exception is raised
+        and the user can re-iterate to continue from the new attempt.
+
+        Supports fallback models - when the active model exhausts its retries,
+        the next fallback model is tried.
+
+        Args:
+            content: User content or LLM messages to send to the LLM.
+            ctx: A `Context` with the required deps type.
+            tools: Optional context-aware tools that the model may invoke.
+            format: Optional response format specifier.
+
+        Returns:
+            A ContextRetryStreamResponse for iterating over the LLM-generated content.
+        """
+        return ContextRetryStreamResponse(
+            self,
+            lambda m: cast(
+                "ContextStreamResponse[DepsT, FormattableT]",
+                m.context_stream(content=content, ctx=ctx, tools=tools, format=format),
+            ),
+        )
+
+    @overload
+    async def context_stream_async(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        ctx: Context[DepsT],
+        tools: AsyncContextTools[DepsT] | None = None,
+        format: None = None,
+    ) -> AsyncContextRetryStreamResponse[DepsT, None]: ...
+
+    @overload
+    async def context_stream_async(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        ctx: Context[DepsT],
+        tools: AsyncContextTools[DepsT] | None = None,
+        format: FormatSpec[FormattableT],
+    ) -> AsyncContextRetryStreamResponse[DepsT, FormattableT]: ...
+
+    @overload
+    async def context_stream_async(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        ctx: Context[DepsT],
+        tools: AsyncContextTools[DepsT] | None = None,
+        format: FormatSpec[FormattableT] | None,
+    ) -> (
+        AsyncContextRetryStreamResponse[DepsT, None]
+        | AsyncContextRetryStreamResponse[DepsT, FormattableT]
+    ): ...
+
+    async def context_stream_async(
+        self,
+        content: UserContent | Sequence[Message],
+        *,
+        ctx: Context[DepsT],
+        tools: AsyncContextTools[DepsT] | None = None,
+        format: FormatSpec[FormattableT] | None = None,
+    ) -> (
+        AsyncContextRetryStreamResponse[DepsT, None]
+        | AsyncContextRetryStreamResponse[DepsT, FormattableT]
+    ):
+        """Generate an AsyncContextRetryStreamResponse by streaming from this model's LLM provider with context.
+
+        The returned response supports automatic retry on failure. If a retryable
+        error occurs during iteration, a `StreamRestarted` exception is raised
+        and the user can re-iterate to continue from the new attempt.
+
+        Supports fallback models - when the active model exhausts its retries,
+        the next fallback model is tried.
+
+        Args:
+            content: User content or LLM messages to send to the LLM.
+            ctx: A `Context` with the required deps type.
+            tools: Optional context-aware tools that the model may invoke.
+            format: Optional response format specifier.
+
+        Returns:
+            An AsyncContextRetryStreamResponse for asynchronously iterating over the LLM-generated content.
+        """
+
+        def stream_fn(
+            m: Model,
+        ) -> Awaitable[AsyncContextStreamResponse[DepsT, FormattableT]]:
+            return cast(
+                "Awaitable[AsyncContextStreamResponse[DepsT, FormattableT]]",
+                m.context_stream_async(
+                    content=content, ctx=ctx, tools=tools, format=format
+                ),
+            )
+
+        variants_iter = self.variants_async()
+        initial_variant = await anext(variants_iter)
+        initial_stream = await stream_fn(initial_variant.get_active_model())
+        return AsyncContextRetryStreamResponse(
+            stream_fn, initial_stream, initial_variant, variants_iter
+        )
+
+    # Context resume stream methods
+
+    @overload
+    def context_resume_stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: ContextStreamResponse[DepsT, None],
+        content: UserContent,
+    ) -> ContextRetryStreamResponse[DepsT, None]: ...
+
+    @overload
+    def context_resume_stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: ContextStreamResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> ContextRetryStreamResponse[DepsT, FormattableT]: ...
+
+    @overload
+    def context_resume_stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: (
+            ContextStreamResponse[DepsT, None]
+            | ContextStreamResponse[DepsT, FormattableT]
+        ),
+        content: UserContent,
+    ) -> (
+        ContextRetryStreamResponse[DepsT, None]
+        | ContextRetryStreamResponse[DepsT, FormattableT]
+    ): ...
+
+    def context_resume_stream(  # pyright: ignore[reportIncompatibleMethodOverride]
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: (
+            ContextStreamResponse[DepsT, None]
+            | ContextStreamResponse[DepsT, FormattableT]
+        ),
+        content: UserContent,
+    ) -> (
+        ContextRetryStreamResponse[DepsT, None]
+        | ContextRetryStreamResponse[DepsT, FormattableT]
+    ):
+        """Generate a new ContextRetryStreamResponse by extending another response's messages.
+
+        Args:
+            ctx: A `Context` with the required deps type.
+            response: Previous context stream response to extend.
+            content: Additional user content to append.
+
+        Returns:
+            A new ContextRetryStreamResponse for streaming the extended conversation.
+        """
+        return ContextRetryStreamResponse(
+            self,
+            lambda m: cast(
+                "ContextStreamResponse[DepsT, FormattableT]",
+                m.context_resume_stream(ctx=ctx, response=response, content=content),
+            ),
+        )
+
+    @overload
+    async def context_resume_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: AsyncContextStreamResponse[DepsT, None],
+        content: UserContent,
+    ) -> AsyncContextRetryStreamResponse[DepsT, None]: ...
+
+    @overload
+    async def context_resume_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: AsyncContextStreamResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> AsyncContextRetryStreamResponse[DepsT, FormattableT]: ...
+
+    @overload
+    async def context_resume_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: (
+            AsyncContextStreamResponse[DepsT, None]
+            | AsyncContextStreamResponse[DepsT, FormattableT]
+        ),
+        content: UserContent,
+    ) -> (
+        AsyncContextRetryStreamResponse[DepsT, None]
+        | AsyncContextRetryStreamResponse[DepsT, FormattableT]
+    ): ...
+
+    async def context_resume_stream_async(  # pyright: ignore[reportIncompatibleMethodOverride]
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: (
+            AsyncContextStreamResponse[DepsT, None]
+            | AsyncContextStreamResponse[DepsT, FormattableT]
+        ),
+        content: UserContent,
+    ) -> (
+        AsyncContextRetryStreamResponse[DepsT, None]
+        | AsyncContextRetryStreamResponse[DepsT, FormattableT]
+    ):
+        """Generate a new AsyncContextRetryStreamResponse by extending another response's messages.
+
+        Args:
+            ctx: A `Context` with the required deps type.
+            response: Previous async context stream response to extend.
+            content: Additional user content to append.
+
+        Returns:
+            A new AsyncContextRetryStreamResponse for asynchronously streaming the extended conversation.
+        """
+
+        def stream_fn(
+            m: Model,
+        ) -> Awaitable[AsyncContextStreamResponse[DepsT, FormattableT]]:
+            return cast(
+                "Awaitable[AsyncContextStreamResponse[DepsT, FormattableT]]",
+                m.context_resume_stream_async(
+                    ctx=ctx, response=response, content=content
+                ),
+            )
+
+        variants_iter = self.variants_async()
+        initial_variant = await anext(variants_iter)
+        initial_stream = await stream_fn(initial_variant.get_active_model())
+        return AsyncContextRetryStreamResponse(
             stream_fn, initial_stream, initial_variant, variants_iter
         )
 
