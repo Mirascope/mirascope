@@ -1,6 +1,6 @@
 """RetryModel extends Model to add retry logic."""
 
-from collections.abc import Awaitable, Sequence
+from collections.abc import Awaitable, Iterator, Sequence
 from typing import cast, overload
 from typing_extensions import Unpack
 
@@ -31,12 +31,23 @@ from .utils import with_retry, with_retry_async
 
 
 class RetryModel(Model):
-    """Extends Model with retry logic.
+    """Extends Model with retry logic and optional fallback models.
 
-    This class inherits from Model and overrides call methods to return RetryResponse
-    instances instead of Response instances. It implements retry logic for handling
-    failures, rate limits, and validation errors.
+    RetryModel "is-a" Model - it has a primary model_id and params determined by
+    the active model. It also supports fallback models that will be tried if the
+    active model exhausts its retries.
+
+    The `_models` tuple contains all available models (primary + resolved fallbacks).
+    The `_active_index` indicates which model is currently "primary". When a call
+    succeeds on a fallback model, the returned response's `.model` property will
+    be a new RetryModel with that successful model as the active model.
     """
+
+    _models: tuple[Model, ...]
+    """All available models: primary at index 0, then fallbacks."""
+
+    _active_index: int
+    """Index into _models for the currently active model."""
 
     retry_config: RetryConfig
     """The RetryConfig specifying retry behavior."""
@@ -75,13 +86,76 @@ class RetryModel(Model):
             **params: Additional parameters for the model. Only used when `model`
                 is a ModelId string; ignored when wrapping an existing Model.
         """
+        # Resolve the primary model (strip to plain Model if needed)
         if isinstance(model, Model):
-            # Wrap existing Model - copy its model_id and params
-            super().__init__(model.model_id, **model.params)
+            primary = (
+                model if type(model) is Model else Model(model.model_id, **model.params)
+            )
         else:
-            # Create from ModelId
-            super().__init__(model, **params)
+            primary = Model(model, **params)
+
+        # Resolve fallback models
+        resolved_fallbacks: list[Model] = []
+        for fb in retry_config.fallback_models:
+            if isinstance(fb, Model):
+                # Strip any RetryModel wrapping, just take model_id and params
+                resolved_fallbacks.append(
+                    fb if type(fb) is Model else Model(fb.model_id, **fb.params)
+                )
+            else:
+                # ModelId string - inherit params from primary
+                resolved_fallbacks.append(Model(fb, **primary.params))
+
+        self._models = (primary, *resolved_fallbacks)
+        self._active_index = 0
         self.retry_config = retry_config
+
+        # Initialize _token_stack for context manager support
+        object.__setattr__(self, "_token_stack", [])
+
+    @classmethod
+    def _create_with_active(
+        cls,
+        models: tuple[Model, ...],
+        active_index: int,
+        retry_config: RetryConfig,
+    ) -> "RetryModel":
+        """Internal constructor for creating a RetryModel with pre-resolved models."""
+        instance = object.__new__(cls)
+        instance._models = models
+        instance._active_index = active_index
+        instance.retry_config = retry_config
+        object.__setattr__(instance, "_token_stack", [])
+        return instance
+
+    def get_active_model(self) -> Model:
+        """Get the currently active model."""
+        return self._models[self._active_index]
+
+    @property
+    def model_id(self) -> ModelId:  # pyright: ignore[reportIncompatibleVariableOverride]
+        """The model_id of the currently active model."""
+        return self._models[self._active_index].model_id
+
+    @property
+    def params(self) -> Params:  # pyright: ignore[reportIncompatibleVariableOverride]
+        """The params of the currently active model."""
+        return self._models[self._active_index].params
+
+    def _with_active(self, index: int) -> "RetryModel":
+        """Return a new RetryModel with a different active model."""
+        return self._create_with_active(
+            models=self._models,
+            active_index=index,
+            retry_config=self.retry_config,
+        )
+
+    def _attempt_variants(self) -> Iterator["RetryModel"]:
+        """Yield RetryModels in attempt order: active model first, then others."""
+        yield self
+        for i in range(len(self._models)):
+            if i != self._active_index:
+                yield self._with_active(i)
 
     @overload
     def call(
@@ -130,14 +204,14 @@ class RetryModel(Model):
         Raises:
             Exception: The last exception encountered if all retry attempts fail.
         """
-        response, retry_state = with_retry(
-            lambda: super(RetryModel, self).call(content, tools=tools, format=format),
-            self.retry_config,
+        response, failures, updated_model = with_retry(
+            fn=lambda m: m.call(content, tools=tools, format=format),
+            retry_model=self,
         )
         return RetryResponse(
             response=cast("Response[FormattableT]", response),
-            retry_config=self.retry_config,
-            retry_state=retry_state,
+            retry_model=updated_model,
+            retry_failures=failures,
         )
 
     @overload
@@ -187,16 +261,14 @@ class RetryModel(Model):
         Raises:
             Exception: The last exception encountered if all retry attempts fail.
         """
-        response, retry_state = await with_retry_async(
-            lambda: super(RetryModel, self).call_async(
-                content, tools=tools, format=format
-            ),
-            self.retry_config,
+        response, failures, updated_model = await with_retry_async(
+            fn=lambda m: m.call_async(content, tools=tools, format=format),
+            retry_model=self,
         )
         return AsyncRetryResponse(
             response=cast("AsyncResponse[FormattableT]", response),
-            retry_config=self.retry_config,
-            retry_state=retry_state,
+            retry_model=updated_model,
+            retry_failures=failures,
         )
 
     # Resume methods
@@ -243,14 +315,14 @@ class RetryModel(Model):
         Raises:
             Exception: The last exception encountered if all retry attempts fail.
         """
-        new_response, retry_state = with_retry(
-            lambda: super(RetryModel, self).resume(response=response, content=content),
-            self.retry_config,
+        new_response, failures, updated_model = with_retry(
+            fn=lambda m: m.resume(response=response, content=content),
+            retry_model=self,
         )
         return RetryResponse(
             response=cast("Response[FormattableT]", new_response),
-            retry_config=self.retry_config,
-            retry_state=retry_state,
+            retry_model=updated_model,
+            retry_failures=failures,
         )
 
     @overload
@@ -295,16 +367,14 @@ class RetryModel(Model):
         Raises:
             Exception: The last exception encountered if all retry attempts fail.
         """
-        new_response, retry_state = await with_retry_async(
-            lambda: super(RetryModel, self).resume_async(
-                response=response, content=content
-            ),
-            self.retry_config,
+        new_response, failures, updated_model = await with_retry_async(
+            fn=lambda m: m.resume_async(response=response, content=content),
+            retry_model=self,
         )
         return AsyncRetryResponse(
             response=cast("AsyncResponse[FormattableT]", new_response),
-            retry_config=self.retry_config,
-            retry_state=retry_state,
+            retry_model=updated_model,
+            retry_failures=failures,
         )
 
     # Stream methods
@@ -349,6 +419,9 @@ class RetryModel(Model):
         error occurs during iteration, a `StreamRestarted` exception is raised
         and the user can re-iterate to continue from the new attempt.
 
+        Note: Streaming does not currently support fallback models. Retries will
+        only be attempted with the active model.
+
         Args:
             content: User content or LLM messages to send to the LLM.
             tools: Optional tools that the model may invoke.
@@ -361,7 +434,7 @@ class RetryModel(Model):
             self,
             lambda m: cast(
                 "StreamResponse[FormattableT]",
-                Model.stream(m, content=content, tools=tools, format=format),
+                m.stream(content=content, tools=tools, format=format),
             ),
         )
 
@@ -405,6 +478,9 @@ class RetryModel(Model):
         error occurs during iteration, a `StreamRestarted` exception is raised
         and the user can re-iterate to continue from the new attempt.
 
+        Note: Streaming does not currently support fallback models. Retries will
+        only be attempted with the active model.
+
         Args:
             content: User content or LLM messages to send to the LLM.
             tools: Optional tools that the model may invoke.
@@ -417,10 +493,10 @@ class RetryModel(Model):
         def stream_fn(m: Model) -> Awaitable[AsyncStreamResponse[FormattableT]]:
             return cast(
                 "Awaitable[AsyncStreamResponse[FormattableT]]",
-                Model.stream_async(m, content=content, tools=tools, format=format),
+                m.stream_async(content=content, tools=tools, format=format),
             )
 
-        initial_stream = await stream_fn(self)
+        initial_stream = await stream_fn(self._models[self._active_index])
         return AsyncRetryStreamResponse(self, stream_fn, initial_stream)
 
     # Resume stream methods
@@ -468,7 +544,7 @@ class RetryModel(Model):
             self,
             lambda m: cast(
                 "StreamResponse[FormattableT]",
-                Model.resume_stream(m, response=response, content=content),
+                m.resume_stream(response=response, content=content),
             ),
         )
 
@@ -515,8 +591,8 @@ class RetryModel(Model):
         def stream_fn(m: Model) -> Awaitable[AsyncStreamResponse[FormattableT]]:
             return cast(
                 "Awaitable[AsyncStreamResponse[FormattableT]]",
-                Model.resume_stream_async(m, response=response, content=content),
+                m.resume_stream_async(response=response, content=content),
             )
 
-        initial_stream = await stream_fn(self)
+        initial_stream = await stream_fn(self._models[self._active_index])
         return AsyncRetryStreamResponse(self, stream_fn, initial_stream)

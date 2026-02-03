@@ -14,8 +14,7 @@ from ..responses import (
     AsyncStreamResponse,
     StreamResponse,
 )
-from .retry_config import RetryConfig
-from .utils import RetryState
+from .utils import RetryFailure
 
 if TYPE_CHECKING:
     from .retry_models import RetryModel
@@ -32,6 +31,9 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
     `StreamRestarted` exception is raised so the user can handle the restart
     (e.g., clear terminal output) before re-iterating.
 
+    Note: Streaming does not currently support fallback models. Retries will
+    only be attempted with the active model.
+
     Example:
         ```python
         response = retry_model.stream("Tell me a story")
@@ -46,11 +48,11 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
         ```
     """
 
-    retry_config: RetryConfig
-    """Configuration for retry behavior."""
+    _retry_model: "RetryModel"
+    """The RetryModel providing retry configuration."""
 
-    retry_state: RetryState
-    """State tracking retry attempts and any exceptions caught."""
+    retry_failures: list[RetryFailure]
+    """Failed attempts before success (empty if first attempt succeeded)."""
 
     _stream_fn: Callable[[Model], StreamResponse[FormattableT]]
 
@@ -65,34 +67,25 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
             retry_model: The RetryModel providing retry configuration.
             stream_fn: Function that creates a stream from a Model.
         """
-        retry_config = retry_model.retry_config
-
-        # Create the initial stream and copy all attributes from it
-        initial_stream = stream_fn(retry_model)
+        # Create the initial stream using the active model and copy all attributes
+        active_model = retry_model.get_active_model()
+        initial_stream = stream_fn(active_model)
         for key, value in initial_stream.__dict__.items():
             object.__setattr__(self, key, value)
 
-        self.retry_config = retry_config
+        self._retry_model = retry_model
         self._stream_fn = stream_fn
-
-        self.retry_state = RetryState(
-            max_retries=retry_config.max_retries,
-            retry_on=retry_config.retry_on,
-            retries=0,
-            exceptions=[],
-        )
+        self.retry_failures = []
 
     @property
     def model(self) -> "RetryModel":
         """A RetryModel with parameters matching this response."""
-        from .retry_models import RetryModel
-
-        base_model = super().model
-        return RetryModel(base_model, retry_config=self.retry_config)
+        return self._retry_model
 
     def _reset_stream(self) -> None:
         """Reset to a fresh stream for a new retry attempt."""
-        new_stream = self._stream_fn(self.model)
+        active_model = self._retry_model.get_active_model()
+        new_stream = self._stream_fn(active_model)
         # Copy all attributes from the new stream
         for key, value in new_stream.__dict__.items():
             object.__setattr__(self, key, value)
@@ -108,19 +101,22 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
             StreamRestarted: When the stream is reset for a retry attempt.
             Exception: The underlying error if max retries are exhausted.
         """
+        config = self._retry_model.retry_config
+        active_model = self._retry_model.get_active_model()
         try:
             yield from super().chunk_stream()
-        except self.retry_config.retry_on as e:
-            self.retry_state.exceptions.append(e)
-            self.retry_state.retries += 1
+            # Success - no need to record anything
+        except config.retry_on as e:
+            self.retry_failures.append(RetryFailure(model=active_model, exception=e))
+            failure_count = len(self.retry_failures)
 
-            if self.retry_state.retries > self.retry_config.max_retries:
+            if failure_count > config.max_retries:
                 raise
 
             self._reset_stream()
 
             raise StreamRestarted(
-                attempt=self.retry_state.retries,
+                attempt=failure_count,
                 error=e,
             ) from e
 
@@ -152,6 +148,9 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
     `StreamRestarted` exception is raised so the user can handle the restart
     (e.g., clear terminal output) before re-iterating.
 
+    Note: Streaming does not currently support fallback models. Retries will
+    only be attempted with the active model.
+
     Example:
         ```python
         response = await retry_model.stream_async("Tell me a story")
@@ -166,11 +165,11 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
         ```
     """
 
-    retry_config: RetryConfig
-    """Configuration for retry behavior."""
+    _retry_model: "RetryModel"
+    """The RetryModel providing retry configuration."""
 
-    retry_state: RetryState
-    """State tracking retry attempts and any exceptions caught."""
+    retry_failures: list[RetryFailure]
+    """Failed attempts before success (empty if first attempt succeeded)."""
 
     _stream_fn: Callable[[Model], Awaitable[AsyncStreamResponse[FormattableT]]]
 
@@ -187,33 +186,23 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
             stream_fn: Async function that creates a stream from a Model.
             initial_stream: The pre-awaited initial stream.
         """
-        retry_config = retry_model.retry_config
-
         # Copy all attributes from the initial stream
         for key, value in initial_stream.__dict__.items():
             object.__setattr__(self, key, value)
 
-        self.retry_config = retry_config
+        self._retry_model = retry_model
         self._stream_fn = stream_fn
-
-        self.retry_state = RetryState(
-            max_retries=retry_config.max_retries,
-            retry_on=retry_config.retry_on,
-            retries=0,
-            exceptions=[],
-        )
+        self.retry_failures = []
 
     @property
     def model(self) -> "RetryModel":
         """A RetryModel with parameters matching this response."""
-        from .retry_models import RetryModel
-
-        base_model = super().model
-        return RetryModel(base_model, retry_config=self.retry_config)
+        return self._retry_model
 
     async def _reset_stream(self) -> None:
         """Reset to a fresh stream for a new retry attempt."""
-        new_stream = await self._stream_fn(self.model)
+        active_model = self._retry_model.get_active_model()
+        new_stream = await self._stream_fn(active_model)
         # Copy all attributes from the new stream
         for key, value in new_stream.__dict__.items():
             object.__setattr__(self, key, value)
@@ -229,20 +218,23 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
             StreamRestarted: When the stream is reset for a retry attempt.
             Exception: The underlying error if max retries are exhausted.
         """
+        config = self._retry_model.retry_config
+        active_model = self._retry_model.get_active_model()
         try:
             async for chunk in super().chunk_stream():
                 yield chunk
-        except self.retry_config.retry_on as e:
-            self.retry_state.exceptions.append(e)
-            self.retry_state.retries += 1
+            # Success - no need to record anything
+        except config.retry_on as e:
+            self.retry_failures.append(RetryFailure(model=active_model, exception=e))
+            failure_count = len(self.retry_failures)
 
-            if self.retry_state.retries > self.retry_config.max_retries:
+            if failure_count > config.max_retries:
                 raise
 
             await self._reset_stream()
 
             raise StreamRestarted(
-                attempt=self.retry_state.retries,
+                attempt=failure_count,
                 error=e,
             ) from e
 

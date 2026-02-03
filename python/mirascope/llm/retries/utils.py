@@ -4,51 +4,46 @@ import asyncio
 import random
 import time
 from collections.abc import Awaitable, Callable
-from dataclasses import dataclass, field
-from typing import TypeVar
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, TypeVar
 
 from .retry_config import RetryConfig
+
+if TYPE_CHECKING:
+    from ..models import Model
+    from .retry_models import RetryModel
 
 _ResultT = TypeVar("_ResultT")
 
 
-def _empty_exception_list() -> list[BaseException]:
-    return []
-
-
 @dataclass
-class RetryState:
-    """Tracks the state of retry attempts with resolved configuration.
-
-    This captures both the concrete retry settings that were used and the
-    results of the retry process.
+class RetryFailure:
+    """A failed attempt to call a model.
 
     Attributes:
-        max_retries: The maximum retries that were configured.
-        retry_on: The exception types that triggered retries.
-        retries: The number of retries made (0 = succeeded on first try).
-        exceptions: The list of exceptions caught during failed attempts.
+        model: The model that was tried.
+        exception: The exception that was raised.
     """
 
-    max_retries: int
-    retry_on: tuple[type[BaseException], ...]
-    retries: int = 0
-    exceptions: list[BaseException] = field(default_factory=_empty_exception_list)
+    model: "Model"
+    exception: BaseException
 
 
-def _calculate_delay(config: RetryConfig, attempt: int) -> float:
+def _calculate_delay(config: RetryConfig, attempt_for_model: int) -> float:
     """Calculate the delay before the next retry attempt.
 
     Args:
         config: The retry configuration with backoff settings.
-        attempt: The retry attempt number (1-indexed, i.e., 1 for first retry).
+        attempt_for_model: The retry attempt number for this model (1-indexed).
 
     Returns:
         The delay in seconds, with exponential backoff, capped at max_delay,
         and optionally with jitter applied.
     """
     # Calculate base delay with exponential backoff
-    delay = config.initial_delay * (config.backoff_multiplier ** (attempt - 1))
+    delay = config.initial_delay * (
+        config.backoff_multiplier ** (attempt_for_model - 1)
+    )
 
     # Cap at max_delay
     delay = min(delay, config.max_delay)
@@ -64,70 +59,92 @@ def _calculate_delay(config: RetryConfig, attempt: int) -> float:
 
 
 def with_retry(
-    fn: Callable[[], _ResultT],
-    config: RetryConfig,
-) -> tuple[_ResultT, RetryState]:
-    """Execute a function with retry logic.
+    fn: Callable[["Model"], _ResultT],
+    retry_model: "RetryModel",
+) -> tuple[_ResultT, list[RetryFailure], "RetryModel"]:
+    """Execute a function with retry logic across the RetryModel's models.
+
+    Tries the active model first, then fallbacks. Each model gets its own
+    full retry budget. Returns an updated RetryModel with the successful
+    model set as active.
 
     Args:
-        fn: The function to execute.
-        config: Retry configuration.
+        fn: Function that takes a Model and returns a result.
+        retry_model: The RetryModel containing models and retry config.
 
     Returns:
-        A tuple of (result, retry_state).
+        A tuple of (result, failures, updated_retry_model).
+        failures contains all failed attempts before success.
+        The updated_retry_model has the successful model as active.
 
     Raises:
-        Exception: The last exception encountered if all retry attempts fail.
+        Exception: The last exception encountered if all models exhaust retries.
     """
-    state = RetryState(
-        max_retries=config.max_retries,
-        retry_on=config.retry_on,
-    )
-    for retry in range(config.max_retries + 1):
-        try:
-            result = fn()
-            return result, state
-        except config.retry_on as e:
-            state.exceptions.append(e)
-            state.retries += 1
-            if retry == config.max_retries:
-                raise
-            # Wait before retrying with exponential backoff
-            delay = _calculate_delay(config, state.retries)
-            time.sleep(delay)
-    raise AssertionError("Unreachable")  # pragma: no cover
+    config = retry_model.retry_config
+    failures: list[RetryFailure] = []
+
+    for variant in retry_model._attempt_variants():  # pyright: ignore[reportPrivateUsage]
+        model = variant.get_active_model()
+        retries_for_model = 0
+        for _ in range(config.max_retries + 1):
+            try:
+                result = fn(model)
+                return result, failures, variant
+            except config.retry_on as e:
+                failures.append(RetryFailure(model=model, exception=e))
+                retries_for_model += 1
+                if retries_for_model <= config.max_retries:
+                    delay = _calculate_delay(config, retries_for_model)
+                    time.sleep(delay)
+        # Exhausted retries for this model, try next (backoff resets)
+
+    # All models exhausted - raise the last exception
+    if failures:
+        raise failures[-1].exception
+    raise AssertionError("Unreachable: no models provided")  # pragma: no cover
 
 
 async def with_retry_async(
-    fn: Callable[[], Awaitable[_ResultT]],
-    config: RetryConfig,
-) -> tuple[_ResultT, RetryState]:
-    """Execute an async function with retry logic.
+    fn: Callable[["Model"], Awaitable[_ResultT]],
+    retry_model: "RetryModel",
+) -> tuple[_ResultT, list[RetryFailure], "RetryModel"]:
+    """Execute an async function with retry logic across the RetryModel's models.
+
+    Tries the active model first, then fallbacks. Each model gets its own
+    full retry budget. Returns an updated RetryModel with the successful
+    model set as active.
 
     Args:
-        fn: The async function to execute.
-        config: Retry configuration.
+        fn: Async function that takes a Model and returns a result.
+        retry_model: The RetryModel containing models and retry config.
 
     Returns:
-        A tuple of (result, retry_state).
+        A tuple of (result, failures, updated_retry_model).
+        failures contains all failed attempts before success.
+        The updated_retry_model has the successful model as active.
 
     Raises:
-        Exception: The last exception encountered if all retry attempts fail.
+        Exception: The last exception encountered if all models exhaust retries.
     """
-    state = RetryState(
-        max_retries=config.max_retries,
-        retry_on=config.retry_on,
-    )
-    for retry in range(config.max_retries + 1):
-        try:
-            result = await fn()
-            return result, state
-        except config.retry_on as e:
-            state.exceptions.append(e)
-            state.retries += 1
-            if retry == config.max_retries:
-                raise
-            # Wait before retrying with exponential backoff
-            delay = _calculate_delay(config, state.retries)
-            await asyncio.sleep(delay)
-    raise AssertionError("Unreachable")  # pragma: no cover
+    config = retry_model.retry_config
+    failures: list[RetryFailure] = []
+
+    for variant in retry_model._attempt_variants():  # pyright: ignore[reportPrivateUsage]
+        model = variant.get_active_model()
+        retries_for_model = 0
+        for _ in range(config.max_retries + 1):
+            try:
+                result = await fn(model)
+                return result, failures, variant
+            except config.retry_on as e:
+                failures.append(RetryFailure(model=model, exception=e))
+                retries_for_model += 1
+                if retries_for_model <= config.max_retries:
+                    delay = _calculate_delay(config, retries_for_model)
+                    await asyncio.sleep(delay)
+        # Exhausted retries for this model, try next (backoff resets)
+
+    # All models exhausted - raise the last exception
+    if failures:
+        raise failures[-1].exception
+    raise AssertionError("Unreachable: no models provided")  # pragma: no cover

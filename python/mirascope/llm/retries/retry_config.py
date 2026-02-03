@@ -1,6 +1,8 @@
 """Configuration for retry behavior."""
 
+from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 from typing_extensions import TypedDict, Unpack
 
 from ..exceptions import (
@@ -9,6 +11,10 @@ from ..exceptions import (
     ServerError,
     TimeoutError,
 )
+
+if TYPE_CHECKING:
+    from ..models import Model
+    from ..providers import ModelId
 
 DEFAULT_RETRYABLE_ERRORS: tuple[type[Exception], ...] = (
     ConnectionError,
@@ -84,6 +90,14 @@ class RetryArgs(TypedDict, total=False):
     jitter: float
     """Jitter factor (0.0 to 1.0) to add randomness to delays. Defaults to 0.0."""
 
+    fallback_models: "Sequence[Model | ModelId]"
+    """Sequence of fallback models to try if the primary model fails.
+
+    Each model gets its own full retry budget (max_retries applies per model).
+    ModelId strings inherit params from the primary model; Model instances
+    use their own params. Defaults to empty tuple (no fallbacks).
+    """
+
 
 @dataclass(frozen=True)
 class RetryConfig:
@@ -103,6 +117,14 @@ class RetryConfig:
 
     retry_on: tuple[type[Exception], ...] = DEFAULT_RETRYABLE_ERRORS
     """Tuple of exception types that should trigger a retry."""
+
+    fallback_models: "tuple[Model | ModelId, ...]" = ()
+    """Sequence of fallback models to try if the primary model fails.
+
+    Each model gets its own full retry budget (max_retries applies per model).
+    ModelId strings inherit params from the primary model; Model instances
+    use their own params. Defaults to empty tuple (no fallbacks).
+    """
 
     initial_delay: float = DEFAULT_INITIAL_DELAY
     """Initial delay in seconds before the first retry."""
@@ -132,9 +154,11 @@ class RetryConfig:
     @classmethod
     def from_args(cls, **args: Unpack[RetryArgs]) -> "RetryConfig":
         """Create a RetryConfig from RetryArgs kwargs."""
+        fallback_models = args.get("fallback_models", ())
         return cls(
             max_retries=args.get("max_retries", DEFAULT_MAX_RETRIES),
             retry_on=args.get("retry_on", DEFAULT_RETRYABLE_ERRORS),
+            fallback_models=tuple(fallback_models),
             initial_delay=args.get("initial_delay", DEFAULT_INITIAL_DELAY),
             max_delay=args.get("max_delay", DEFAULT_MAX_DELAY),
             backoff_multiplier=args.get(

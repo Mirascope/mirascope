@@ -51,9 +51,8 @@ class TestSyncRetryCall:
         response = greet()
 
         assert response.pretty() == "mock response"
-        assert response.retry_state.retries == 0
-        assert response.retry_state.exceptions == []
-        assert response.retry_state.max_retries == 2
+        assert len(response.retry_failures) == 0
+        assert response.model.retry_config.max_retries == 2
         assert response.model_id == "mock/test-model"
         assert mock_provider.call_count == 1
 
@@ -71,8 +70,10 @@ class TestSyncRetryCall:
         response = greet()
 
         assert response.pretty() == "mock response"
-        assert response.retry_state.retries == 4
-        assert response.retry_state.exceptions == list(DEFAULT_RETRYABLE_EXCEPTIONS)
+        assert len(response.retry_failures) == 4
+        assert [f.exception for f in response.retry_failures] == list(
+            DEFAULT_RETRYABLE_EXCEPTIONS
+        )
         assert mock_provider.call_count == 5
 
     def test_call_retries_on_custom_exception(
@@ -90,8 +91,8 @@ class TestSyncRetryCall:
         response = greet()
 
         assert response.pretty() == "mock response"
-        assert response.retry_state.retries == 1
-        assert response.retry_state.exceptions == exceptions
+        assert len(response.retry_failures) == 1
+        assert [f.exception for f in response.retry_failures] == exceptions
         assert mock_provider.call_count == 2
 
     def test_call_raises_after_max_attempts_exhausted(
@@ -130,8 +131,10 @@ class TestSyncRetryCall:
         # Resume should retry through the errors
         resumed = response.resume("Follow up")
         assert resumed.pretty() == "mock response"
-        assert resumed.retry_state.retries == 2
-        assert resumed.retry_state.exceptions == list(RESUME_TEST_EXCEPTIONS)
+        assert len(resumed.retry_failures) == 2
+        assert [f.exception for f in resumed.retry_failures] == list(
+            RESUME_TEST_EXCEPTIONS
+        )
         assert mock_provider.call_count == 4  # 1 initial + 3 resume attempts
 
     def test_resume_raises_after_max_attempts_exhausted(
@@ -174,9 +177,8 @@ class TestAsyncRetryCall:
         response = await greet()
 
         assert response.pretty() == "mock response"
-        assert response.retry_state.retries == 0
-        assert response.retry_state.exceptions == []
-        assert response.retry_state.max_retries == 2
+        assert len(response.retry_failures) == 0
+        assert response.model.retry_config.max_retries == 2
         assert response.model_id == "mock/test-model"
         assert mock_provider.call_count == 1
 
@@ -194,8 +196,10 @@ class TestAsyncRetryCall:
         response = await greet()
 
         assert response.pretty() == "mock response"
-        assert response.retry_state.retries == 4
-        assert response.retry_state.exceptions == list(DEFAULT_RETRYABLE_EXCEPTIONS)
+        assert len(response.retry_failures) == 4
+        assert [f.exception for f in response.retry_failures] == list(
+            DEFAULT_RETRYABLE_EXCEPTIONS
+        )
         assert mock_provider.call_count == 5
 
     async def test_call_async_retries_on_custom_exception(
@@ -213,8 +217,8 @@ class TestAsyncRetryCall:
         response = await greet()
 
         assert response.pretty() == "mock response"
-        assert response.retry_state.retries == 1
-        assert response.retry_state.exceptions == exceptions
+        assert len(response.retry_failures) == 1
+        assert [f.exception for f in response.retry_failures] == exceptions
         assert mock_provider.call_count == 2
 
     async def test_call_async_raises_after_max_attempts_exhausted(
@@ -255,8 +259,10 @@ class TestAsyncRetryCall:
         # Resume should retry through the errors
         resumed = await response.resume("Follow up")
         assert resumed.pretty() == "mock response"
-        assert resumed.retry_state.retries == 2
-        assert resumed.retry_state.exceptions == list(RESUME_TEST_EXCEPTIONS)
+        assert len(resumed.retry_failures) == 2
+        assert [f.exception for f in resumed.retry_failures] == list(
+            RESUME_TEST_EXCEPTIONS
+        )
         assert mock_provider.call_count == 4  # 1 initial + 3 resume attempts
 
     async def test_resume_async_raises_after_max_attempts_exhausted(
@@ -299,7 +305,7 @@ class TestRetryConfigValidation:
             return "Hello"
 
         response = greet()
-        assert response.retry_state.max_retries == 0
+        assert response.model.retry_config.max_retries == 0
 
     def test_initial_delay_negative_raises_value_error(self) -> None:
         """Test that negative initial_delay raises ValueError."""
@@ -347,7 +353,7 @@ class TestExponentialBackoff:
             return "Hello"
 
         response = greet()
-        assert response.retry_state.retries == 2
+        assert len(response.retry_failures) == 2
         # First delay: 0.1, second delay: 0.2 (0.1 * 2)
         assert len(sleep_calls) == 2
         assert sleep_calls[0] == pytest.approx(0.1)
@@ -375,7 +381,7 @@ class TestExponentialBackoff:
             return "Hello"
 
         response = greet()
-        assert response.retry_state.retries == 3
+        assert len(response.retry_failures) == 3
         # First: 1.0, second: min(10.0, 5.0) = 5.0, third: min(100.0, 5.0) = 5.0
         assert len(sleep_calls) == 3
         assert sleep_calls[0] == pytest.approx(1.0)
@@ -405,7 +411,7 @@ class TestExponentialBackoff:
             return "Hello"
 
         response = greet()
-        assert response.retry_state.retries == 1
+        assert len(response.retry_failures) == 1
         # With jitter=0.5 and our mock returning midpoint, jitter_range = 0.5
         # random.uniform(-0.5, 0.5) returns 0, so delay stays at 1.0
         assert len(sleep_calls) == 1
@@ -436,7 +442,7 @@ class TestExponentialBackoffAsync:
             return "Hello"
 
         response = await greet()
-        assert response.retry_state.retries == 2
+        assert len(response.retry_failures) == 2
         # First delay: 0.1, second delay: 0.2 (0.1 * 2)
         assert len(sleep_calls) == 2
         assert sleep_calls[0] == pytest.approx(0.1)
@@ -454,8 +460,8 @@ class TestRetryDecorator:
         response = retry_model.call("hello")
 
         assert response.pretty() == "mock response"
-        assert response.retry_state.retries == 0
-        assert response.retry_state.max_retries == 2
+        assert len(response.retry_failures) == 0
+        assert response.model.retry_config.max_retries == 2
 
     def test_retry_on_retry_model_updates_config(
         self, mock_provider: MockProvider
@@ -467,7 +473,7 @@ class TestRetryDecorator:
 
         response = updated_retry_model.call("hello")
 
-        assert response.retry_state.max_retries == 4
+        assert response.model.retry_config.max_retries == 4
 
     def test_retry_on_call_produces_retry_call(
         self, mock_provider: MockProvider
@@ -482,7 +488,7 @@ class TestRetryDecorator:
 
         assert isinstance(retry_call, llm.RetryCall)
         response = retry_call()
-        assert response.retry_state.max_retries == 2
+        assert response.model.retry_config.max_retries == 2
 
     def test_retry_on_retry_call_updates_config(
         self, mock_provider: MockProvider
@@ -496,7 +502,7 @@ class TestRetryDecorator:
 
         updated = llm.retry(greet, max_retries=4)
         response = updated()
-        assert response.retry_state.max_retries == 4
+        assert response.model.retry_config.max_retries == 4
 
     def test_retry_on_prompt(self, mock_provider: MockProvider) -> None:
         """Test that retry() works on a Prompt."""
@@ -510,7 +516,7 @@ class TestRetryDecorator:
         assert isinstance(retry_prompt, llm.RetryPrompt)
         model = llm.Model("mock/test-model")
         response = retry_prompt(model)
-        assert response.retry_state.max_retries == 2
+        assert response.model.retry_config.max_retries == 2
 
     def test_retry_on_retry_prompt_updates_config(
         self, mock_provider: MockProvider
@@ -526,7 +532,7 @@ class TestRetryDecorator:
 
         model = llm.Model("mock/test-model")
         response = updated(model)
-        assert response.retry_state.max_retries == 4
+        assert response.model.retry_config.max_retries == 4
 
 
 @pytest.mark.asyncio
@@ -544,7 +550,7 @@ class TestAsyncRetryDecorator:
 
         assert isinstance(retry_call, llm.AsyncRetryCall)
         response = await retry_call()
-        assert response.retry_state.max_retries == 2
+        assert response.model.retry_config.max_retries == 2
 
     async def test_retry_on_async_retry_call_updates_config(
         self, mock_provider: MockProvider
@@ -558,7 +564,7 @@ class TestAsyncRetryDecorator:
 
         updated = llm.retry(greet, max_retries=4)
         response = await updated()
-        assert response.retry_state.max_retries == 4
+        assert response.model.retry_config.max_retries == 4
 
     async def test_retry_on_async_prompt(self, mock_provider: MockProvider) -> None:
         """Test that retry() works on an AsyncPrompt."""
@@ -572,7 +578,7 @@ class TestAsyncRetryDecorator:
         assert isinstance(retry_prompt, llm.AsyncRetryPrompt)
         model = llm.Model("mock/test-model")
         response = await retry_prompt(model)
-        assert response.retry_state.max_retries == 2
+        assert response.model.retry_config.max_retries == 2
 
     async def test_retry_on_async_retry_prompt_updates_config(
         self, mock_provider: MockProvider
@@ -588,7 +594,7 @@ class TestAsyncRetryDecorator:
 
         model = llm.Model("mock/test-model")
         response = await updated(model)
-        assert response.retry_state.max_retries == 4
+        assert response.model.retry_config.max_retries == 4
 
 
 class TestRetryResponseProperties:
@@ -801,8 +807,7 @@ class TestSyncStreamRetry:
 
         assert "mock " in "".join(chunks)
         assert "response" in "".join(chunks)
-        assert response.retry_state.retries == 0
-        assert response.retry_state.exceptions == []
+        assert len(response.retry_failures) == 0
         assert mock_provider.stream_count == 1
 
     def test_stream_raises_stream_restarted_on_error(
@@ -824,8 +829,8 @@ class TestSyncStreamRetry:
 
         assert exc_info.value.attempt == 1
         assert exc_info.value.error is CONNECTION_ERROR
-        assert response.retry_state.retries == 1
-        assert response.retry_state.exceptions == [CONNECTION_ERROR]
+        assert len(response.retry_failures) == 1
+        assert [f.exception for f in response.retry_failures] == [CONNECTION_ERROR]
 
     def test_stream_can_continue_after_restart(
         self, mock_provider: MockProvider
@@ -852,7 +857,7 @@ class TestSyncStreamRetry:
         assert restart_count == 1
         assert "mock " in "".join(chunks)
         assert "response" in "".join(chunks)
-        assert response.retry_state.retries == 1
+        assert len(response.retry_failures) == 1
         assert mock_provider.stream_count == 2
 
     def test_stream_raises_original_error_after_max_attempts(
@@ -877,13 +882,15 @@ class TestSyncStreamRetry:
         with pytest.raises(llm.RateLimitError, match="rate limited"):
             list(response.text_stream())
 
-        # retries is 2 because 2 retries were attempted (max_retries=1 allows 1 retry,
+        # retry_failures is 2 because 2 failures occurred (max_retries=1 allows 1 retry,
         # but the second error happens during the retry so counter goes to 2)
-        assert response.retry_state.retries == 2
+        assert len(response.retry_failures) == 2
         assert mock_provider.stream_count == 2
 
-    def test_stream_retry_state_accessible(self, mock_provider: MockProvider) -> None:
-        """Test that retry_state is accessible from the response."""
+    def test_stream_retry_failures_accessible(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that retry_failures is accessible from the response."""
         mock_provider.set_stream_exceptions([SERVER_ERROR])
 
         @llm.retry(max_retries=4)
@@ -894,15 +901,14 @@ class TestSyncStreamRetry:
         response = greet.stream()
 
         # Initial state
-        assert response.retry_state.max_retries == 4
-        assert response.retry_state.retries == 0
+        assert response.model.retry_config.max_retries == 4
+        assert len(response.retry_failures) == 0
 
         # After first error
         with pytest.raises(llm.StreamRestarted):
             list(response.text_stream())
 
-        assert response.retry_state.retries == 1
-        assert len(response.retry_state.exceptions) == 1
+        assert len(response.retry_failures) == 1
 
     def test_stream_model_property(
         self,
@@ -942,8 +948,7 @@ class TestAsyncStreamRetry:
 
         assert "mock " in "".join(chunks)
         assert "response" in "".join(chunks)
-        assert response.retry_state.retries == 0
-        assert response.retry_state.exceptions == []
+        assert len(response.retry_failures) == 0
         assert mock_provider.stream_count == 1
 
     async def test_stream_async_raises_stream_restarted_on_error(
@@ -965,7 +970,7 @@ class TestAsyncStreamRetry:
 
         assert exc_info.value.attempt == 1
         assert exc_info.value.error is TIMEOUT_ERROR
-        assert response.retry_state.retries == 1
+        assert len(response.retry_failures) == 1
 
     async def test_stream_async_can_continue_after_restart(
         self, mock_provider: MockProvider
@@ -992,7 +997,7 @@ class TestAsyncStreamRetry:
         assert restart_count == 1
         assert "mock " in "".join(chunks)
         assert "response" in "".join(chunks)
-        assert response.retry_state.retries == 1
+        assert len(response.retry_failures) == 1
         assert mock_provider.stream_count == 2
 
     async def test_stream_async_raises_original_error_after_max_attempts(
@@ -1016,9 +1021,9 @@ class TestAsyncStreamRetry:
         with pytest.raises(llm.ServerError, match="server error"):
             _ = [chunk async for chunk in response.text_stream()]
 
-        # retries is 2 because 2 retries were attempted (max_retries=1 allows 1 retry,
+        # retry_failures is 2 because 2 failures occurred (max_retries=1 allows 1 retry,
         # but the second error happens during the retry so counter goes to 2)
-        assert response.retry_state.retries == 2
+        assert len(response.retry_failures) == 2
         assert mock_provider.stream_count == 2
 
 
@@ -1462,3 +1467,132 @@ class TestAsyncRetryStreamResponseStructuredStreamHappyPath:
             NotImplementedError, match="structured_stream\\(\\) not supported"
         ):
             _ = [p async for p in response.structured_stream()]
+
+
+class TestFallbackModels:
+    """Tests for fallback model functionality."""
+
+    def test_fallback_with_model_id_inherits_params(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that ModelId fallbacks inherit params from primary model."""
+        model = llm.Model("mock/primary", temperature=0.5)
+        retry_model = llm.retry(model, max_retries=0, fallback_models=["mock/fallback"])
+
+        # Access internal models to verify params inheritance
+        models = retry_model._models  # pyright: ignore[reportPrivateUsage]
+        assert len(models) == 2
+        assert models[0].model_id == "mock/primary"
+        assert models[1].model_id == "mock/fallback"
+        assert models[1].params.get("temperature") == 0.5
+
+    def test_fallback_with_model_instance_uses_own_params(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that Model instance fallbacks use their own params."""
+        primary = llm.Model("mock/primary", temperature=0.5)
+        fallback = llm.Model("mock/fallback", temperature=0.9)
+        retry_model = llm.retry(primary, max_retries=0, fallback_models=[fallback])
+
+        models = retry_model._models  # pyright: ignore[reportPrivateUsage]
+        assert len(models) == 2
+        assert models[0].params.get("temperature") == 0.5
+        assert models[1].params.get("temperature") == 0.9
+
+    def test_fallback_strips_retry_model_wrapper(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that RetryModel fallbacks are stripped to plain Model."""
+        primary = llm.Model("mock/primary")
+        nested_retry = llm.retry(
+            llm.Model("mock/fallback", temperature=0.7),
+            max_retries=5,
+            fallback_models=["mock/nested-fallback"],
+        )
+        retry_model = llm.retry(primary, max_retries=0, fallback_models=[nested_retry])
+
+        models = retry_model._models  # pyright: ignore[reportPrivateUsage]
+        assert len(models) == 2
+        # The nested RetryModel should be stripped to a plain Model
+        assert type(models[1]) is llm.Model
+        assert models[1].model_id == "mock/fallback"
+        assert models[1].params.get("temperature") == 0.7
+
+    def test_fallback_model_tried_after_primary_exhausted(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that fallback model is tried when primary exhausts retries."""
+        # Primary model will fail, fallback will succeed
+        mock_provider.set_exceptions([CONNECTION_ERROR])
+
+        primary = llm.Model("mock/primary")
+        retry_model = llm.retry(
+            primary, max_retries=0, fallback_models=["mock/fallback"]
+        )
+
+        response = retry_model.call("Hello")
+
+        # Should have succeeded on fallback
+        assert response.model_id == "mock/fallback"
+        assert len(response.retry_failures) == 1
+
+    def test_fallback_model_gets_own_retry_budget(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that each fallback model gets its own full retry budget."""
+        # Primary fails twice, fallback fails once then succeeds
+        mock_provider.set_exceptions(
+            [
+                CONNECTION_ERROR,  # primary attempt 1
+                CONNECTION_ERROR,  # primary attempt 2 (retry)
+                RATE_LIMIT_ERROR,  # fallback attempt 1
+            ]
+        )
+
+        primary = llm.Model("mock/primary")
+        retry_model = llm.retry(
+            primary, max_retries=1, fallback_models=["mock/fallback"]
+        )
+
+        response = retry_model.call("Hello")
+
+        # Should have succeeded on fallback's second attempt
+        assert response.model_id == "mock/fallback"
+        assert len(response.retry_failures) == 3  # 2 primary + 1 fallback failures
+
+    def test_response_model_property_returns_retry_model_with_successful_active(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that response.model returns RetryModel with successful model as active."""
+        mock_provider.set_exceptions([CONNECTION_ERROR])
+
+        primary = llm.Model("mock/primary")
+        retry_model = llm.retry(
+            primary, max_retries=0, fallback_models=["mock/fallback"]
+        )
+
+        response = retry_model.call("Hello")
+
+        # response.model should be a RetryModel with fallback as active
+        assert isinstance(response.model, llm.retries.RetryModel)
+        assert response.model.model_id == "mock/fallback"
+        assert response.model.model_id == response.model_id
+
+
+class TestRetryFailureTracking:
+    """Tests for retry failure tracking."""
+
+    def test_retry_failures_track_model_and_exception(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that retry_failures tracks both model and exception."""
+        mock_provider.set_exceptions([CONNECTION_ERROR])
+
+        model = llm.Model("mock/test-model")
+        retry_model = llm.retry(model, max_retries=1)
+
+        response = retry_model.call("Hello")
+
+        assert len(response.retry_failures) == 1
+        assert response.retry_failures[0].model.model_id == "mock/test-model"
+        assert response.retry_failures[0].exception is CONNECTION_ERROR

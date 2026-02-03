@@ -8,8 +8,7 @@ from ..responses import (
     AsyncResponse,
     Response,
 )
-from .retry_config import RetryConfig
-from .utils import RetryState
+from .utils import RetryFailure
 
 if TYPE_CHECKING:
     from .retry_models import RetryModel
@@ -19,41 +18,45 @@ class RetryResponse(Response[FormattableT]):
     """Response that includes retry metadata.
 
     Extends `Response` directly, copying all attributes from a wrapped response
-    and adding retry configuration.
+    and adding retry configuration. The `model` property returns a `RetryModel`
+    with the successful model as the active model.
     """
 
-    retry_config: RetryConfig
-    """Configuration for retry behavior."""
+    _retry_model: "RetryModel"
+    """The RetryModel with the successful model as active."""
 
-    retry_state: RetryState
-    """State tracking retry attempts and any exceptions caught."""
+    retry_failures: list[RetryFailure]
+    """Failed attempts before the successful one (empty if first attempt succeeded)."""
 
     def __init__(
         self,
         response: Response[FormattableT],
-        retry_config: RetryConfig,
-        retry_state: RetryState,
+        retry_model: "RetryModel",
+        retry_failures: list[RetryFailure],
     ) -> None:
         """Initialize a RetryResponse.
 
         Args:
             response: The successful response from the LLM.
-            retry_config: Configuration for retry behavior.
-            retry_state: State tracking retry attempts and exceptions.
+            retry_model: RetryModel with the successful model as active.
+            retry_failures: List of failed attempts before success.
         """
         # Copy all attributes from the wrapped response
         for key, value in response.__dict__.items():
             object.__setattr__(self, key, value)
-        self.retry_config = retry_config
-        self.retry_state = retry_state
+        self._retry_model = retry_model
+        self.retry_failures = retry_failures
 
     @property
     def model(self) -> "RetryModel":
-        """A RetryModel with parameters matching this response."""
-        from .retry_models import RetryModel
+        """A RetryModel with the successful model as active.
 
-        base_model = super().model
-        return RetryModel(base_model, retry_config=self.retry_config)
+        This RetryModel has the same pool of available models, but with the
+        model that succeeded set as the active model. This means:
+        - `response.model.model_id` equals `response.model_id`
+        - `response.resume()` will try the successful model first
+        """
+        return self._retry_model
 
     @overload
     def resume(
@@ -83,41 +86,45 @@ class AsyncRetryResponse(AsyncResponse[FormattableT]):
     """Async response that includes retry metadata.
 
     Extends `AsyncResponse` directly, copying all attributes from a wrapped response
-    and adding retry configuration.
+    and adding retry configuration. The `model` property returns a `RetryModel`
+    with the successful model as the active model.
     """
 
-    retry_config: RetryConfig
-    """Configuration for retry behavior."""
+    _retry_model: "RetryModel"
+    """The RetryModel with the successful model as active."""
 
-    retry_state: RetryState
-    """State tracking retry attempts and any exceptions caught."""
+    retry_failures: list[RetryFailure]
+    """Failed attempts before the successful one (empty if first attempt succeeded)."""
 
     def __init__(
         self,
         response: AsyncResponse[FormattableT],
-        retry_config: RetryConfig,
-        retry_state: RetryState,
+        retry_model: "RetryModel",
+        retry_failures: list[RetryFailure],
     ) -> None:
         """Initialize an AsyncRetryResponse.
 
         Args:
             response: The successful async response from the LLM.
-            retry_config: Configuration for retry behavior.
-            retry_state: State tracking retry attempts and exceptions.
+            retry_model: RetryModel with the successful model as active.
+            retry_failures: List of failed attempts before success.
         """
         # Copy all attributes from the wrapped response
         for key, value in response.__dict__.items():
             object.__setattr__(self, key, value)
-        self.retry_config = retry_config
-        self.retry_state = retry_state
+        self._retry_model = retry_model
+        self.retry_failures = retry_failures
 
     @property
     def model(self) -> "RetryModel":
-        """A RetryModel with parameters matching this response."""
-        from .retry_models import RetryModel
+        """A RetryModel with the successful model as active.
 
-        base_model = super().model
-        return RetryModel(base_model, retry_config=self.retry_config)
+        This RetryModel has the same pool of available models, but with the
+        model that succeeded set as the active model. This means:
+        - `response.model.model_id` equals `response.model_id`
+        - `response.resume()` will try the successful model first
+        """
+        return self._retry_model
 
     @overload
     async def resume(

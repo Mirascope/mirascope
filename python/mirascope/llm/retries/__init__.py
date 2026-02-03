@@ -14,6 +14,7 @@ from .retry_models import RetryModel
 from .retry_prompts import AsyncRetryPrompt, BaseRetryPrompt, RetryPrompt
 from .retry_responses import AsyncRetryResponse, RetryResponse
 from .retry_stream_responses import AsyncRetryStreamResponse, RetryStreamResponse
+from .utils import RetryFailure
 
 __all__ = [
     "AsyncRetryCall",
@@ -25,6 +26,7 @@ __all__ = [
     "RetryArgs",
     "RetryCall",
     "RetryConfig",
+    "RetryFailure",
     "RetryModel",
     "RetryPrompt",
     "RetryResponse",
