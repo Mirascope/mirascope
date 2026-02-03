@@ -1,4 +1,5 @@
 import { describe, test, expect } from "vitest";
+
 import { extractSnippetsFromContent } from "./snippet-extractor";
 
 describe("extractSnippetsFromContent", () => {
