@@ -7,7 +7,7 @@
 
 import { Effect } from "effect";
 
-import type { TokenUsage } from "@/api/router/pricing";
+import type { TokenUsage, ModelPricing } from "@/api/router/pricing";
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 
 import { estimateCost } from "@/api/router/cost-estimator";
@@ -65,6 +65,8 @@ export interface RouterRequestContext {
   routerRequestId: string;
   reservationId: string;
   request: RouterRequestIdentifiers;
+  /** Cached pricing from estimation phase for use in cost calculation */
+  modelPricing: ModelPricing;
 }
 
 // =============================================================================
@@ -196,22 +198,32 @@ export function createPendingRouterRequest(
 // =============================================================================
 
 /**
+ * Result of fund reservation.
+ */
+export interface ReserveRouterFundsResult {
+  /** Reservation ID for fund settlement */
+  reservationId: string;
+  /** Cached pricing data for cost calculation */
+  modelPricing: ModelPricing;
+}
+
+/**
  * Reserves funds for a router request.
  *
  * @param validated - Validated request information
  * @param routerRequestId - Router request ID
  * @param stripeCustomerId - Stripe customer ID for the organization
- * @returns Reservation ID
+ * @returns Reservation ID and cached pricing data
  */
 export function reserveRouterFunds(
   validated: ValidatedRouterRequest,
   routerRequestId: string,
   stripeCustomerId: string,
-): Effect.Effect<string, Error, Payments> {
+): Effect.Effect<ReserveRouterFundsResult, Error, Payments> {
   return Effect.gen(function* () {
     const payments = yield* Payments;
 
-    // Estimate cost
+    // Estimate cost (also validates pricing availability)
     const estimate = yield* estimateCost({
       provider: validated.provider,
       modelId: validated.modelId,
@@ -225,7 +237,10 @@ export function reserveRouterFunds(
       routerRequestId,
     });
 
-    return reservationId;
+    return {
+      reservationId,
+      modelPricing: estimate.modelPricing,
+    };
   });
 }
 

@@ -1,6 +1,7 @@
 import { Effect, Layer } from "effect";
 import { describe, it, expect, vi } from "vitest";
 
+import type { ModelPricing } from "@/api/router/pricing";
 import type { ProxyResult } from "@/api/router/proxy";
 import type {
   RouterRequestContext,
@@ -12,6 +13,13 @@ import { handleNonStreamingResponse } from "@/api/router/non-streaming";
 import { RouterMeteringQueueService } from "@/workers/routerMeteringQueue";
 
 describe("Non-Streaming", () => {
+  // Mock pricing data for tests (values in centi-cents per million tokens)
+  // Using large values so small token counts still produce non-zero costs
+  const mockPricing: ModelPricing = {
+    input: 150_000_000n, // Very high to ensure non-zero cost with small token counts
+    output: 600_000_000n, // Very high to ensure non-zero cost with small token counts
+  };
+
   // Mock queue service for tests
   const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {
     send: () => Effect.succeed(undefined),
@@ -47,6 +55,7 @@ describe("Non-Streaming", () => {
           apiKeyId: "key_test",
           routerRequestId: "req_test123",
         },
+        modelPricing: mockPricing,
       };
 
       const validated: ValidatedRouterRequest = {
@@ -109,6 +118,7 @@ describe("Non-Streaming", () => {
           apiKeyId: "key_test",
           routerRequestId: "req_test123",
         },
+        modelPricing: mockPricing,
       };
 
       const validated: ValidatedRouterRequest = {
@@ -142,7 +152,7 @@ describe("Non-Streaming", () => {
       expect(result).toBeInstanceOf(Response);
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         expect.stringContaining(
-          "[handleNonStreamingResponse] No usage data or cost calculation failed",
+          "[handleNonStreamingResponse] No usage data for request",
         ),
       );
 
@@ -182,6 +192,7 @@ describe("Non-Streaming", () => {
           apiKeyId: "key_test",
           routerRequestId: "req_test123",
         },
+        modelPricing: mockPricing,
       };
 
       const validated: ValidatedRouterRequest = {
@@ -254,6 +265,7 @@ describe("Non-Streaming", () => {
           apiKeyId: "key_test",
           routerRequestId: "req_test123",
         },
+        modelPricing: mockPricing,
       };
 
       const validated: ValidatedRouterRequest = {

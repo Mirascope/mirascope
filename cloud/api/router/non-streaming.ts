@@ -42,10 +42,14 @@ export function handleNonStreamingResponse(
       : null;
 
     const costResult = usage
-      ? yield* costCalculator.calculate(validated.modelId, usage)
+      ? yield* costCalculator.calculate(
+          validated.modelId,
+          usage,
+          context.modelPricing,
+        )
       : null;
 
-    if (costResult && costResult.totalCost > 0 && usage) {
+    if (usage && costResult && costResult.totalCost > 0) {
       // Enqueue metering for async processing
       yield* enqueueRouterMetering(
         context.routerRequestId,
@@ -65,12 +69,14 @@ export function handleNonStreamingResponse(
           return Effect.void;
         }),
       );
+    } else if (!usage) {
+      console.warn(
+        `[handleNonStreamingResponse] No usage data for request ${context.routerRequestId}`,
+      );
     } else {
       console.warn(
-        `[handleNonStreamingResponse] No usage data or cost calculation failed for request ${context.routerRequestId}`,
+        `[handleNonStreamingResponse] Zero cost calculated for request ${context.routerRequestId}`,
       );
-      // Note: We don't call handleRouterRequestFailure here because the queue
-      // consumer will handle this case if metering never succeeds
     }
 
     return proxyResult.response;

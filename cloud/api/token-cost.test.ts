@@ -194,6 +194,34 @@ describe("Token Cost Handler", () => {
       }),
     );
 
+    it.effect("returns PricingUnavailableError when fetch fails", () =>
+      Effect.gen(function* () {
+        // Mock fetch to throw an error
+        global.fetch = vi
+          .fn()
+          .mockRejectedValue(
+            new Error("Network error"),
+          ) as unknown as typeof fetch;
+        clearPricingCache();
+
+        const result = yield* tokenCostHandler({
+          provider: "openai",
+          model: "gpt-4o",
+          usage: {
+            inputTokens: 100,
+            outputTokens: 50,
+          },
+        }).pipe(Effect.flip);
+
+        assert(result instanceof PricingUnavailableError);
+        expect(result._tag).toBe("PricingUnavailableError");
+        expect(result.message).toContain("Failed to fetch pricing");
+        expect(result.message).toContain("openai/gpt-4o");
+        expect(result.provider).toBe("openai");
+        expect(result.model).toBe("gpt-4o");
+      }),
+    );
+
     it.effect("handles zero tokens correctly", () =>
       Effect.gen(function* () {
         const result = yield* tokenCostHandler({
