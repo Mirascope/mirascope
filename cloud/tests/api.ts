@@ -17,6 +17,7 @@ import {
 import { eq } from "drizzle-orm";
 import { Context, Effect, Layer, Option } from "effect";
 
+import type { ModelPricing } from "@/api/router/pricing";
 import type { ProviderName } from "@/api/router/providers";
 import type { StreamMeteringContext } from "@/api/router/streaming";
 import type { AuthResult } from "@/auth/context";
@@ -638,6 +639,13 @@ export const TestClient = {
  * });
  * ```
  */
+// Default mock pricing for tests (values in centi-cents per million tokens)
+// Using large values so small token counts still produce non-zero costs
+const defaultMockPricing: ModelPricing = {
+  input: 150_000_000n, // Very high to ensure non-zero cost with small token counts
+  output: 600_000_000n, // Very high to ensure non-zero cost with small token counts
+};
+
 export const MockMeteringContext = {
   fromProvider(
     provider: ProviderName,
@@ -661,6 +669,7 @@ export const MockMeteringContext = {
         statusText: "OK",
         headers: new Headers({ "content-type": "text/event-stream" }),
       },
+      modelPricing: defaultMockPricing,
       ...overrides,
     };
   },
