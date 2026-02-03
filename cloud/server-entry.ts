@@ -27,6 +27,8 @@ import routerMeteringQueue, {
 } from "@/workers/routerMeteringQueue";
 import spanIngestQueue, { SpansIngestQueue } from "@/workers/spanIngestQueue";
 
+const STAGING_HOSTNAME = "staging.mirascope.com";
+
 /**
  * ExecutionContext service tag for Effect dependency injection.
  *
@@ -250,36 +252,57 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = async (
   environment,
   context,
 ) => {
-  // Basic Auth for staging (skipped during prerendering)
+  // Cookie staging session (skips /auth/ routes) to get around dynamic import issues
   const url = new URL(request.url);
-  if (url.hostname === "staging.mirascope.com") {
-    const authHeader = request.headers.get("Authorization");
-    if (!authHeader || !authHeader.startsWith("Basic ")) {
-      return new Response("Unauthorized", {
-        status: 401,
-        headers: { "WWW-Authenticate": 'Basic realm="Staging"' },
-      });
-    }
+  if (url.hostname === STAGING_HOSTNAME && !url.pathname.startsWith("/auth/")) {
+    const COOKIE_NAME = "staging_session";
+    const SESSION_TOKEN = "ok"; // Simple token, not for security
 
-    try {
-      const base64Credentials = authHeader.slice(6);
-      const credentials = atob(base64Credentials);
-      const [username, password] = credentials.split(":");
+    // Check for existing session cookie
+    const cookies = request.headers.get("Cookie") || "";
+    const hasSession = cookies
+      .split(";")
+      .some((c) => c.trim().startsWith(`${COOKIE_NAME}=${SESSION_TOKEN}`));
 
-      // This isn't for confidentiality so keep user/pwd simple
-      if (username !== "mirascope" || password !== "mirascope") {
+    if (!hasSession) {
+      // No session - require Basic Auth
+      const authHeader = request.headers.get("Authorization");
+      if (!authHeader || !authHeader.startsWith("Basic ")) {
         return new Response("Unauthorized", {
           status: 401,
           headers: { "WWW-Authenticate": 'Basic realm="Staging"' },
         });
       }
-    } catch {
-      // Invalid base64 encoding
-      return new Response("Unauthorized", {
-        status: 401,
-        headers: { "WWW-Authenticate": 'Basic realm="Staging"' },
-      });
+
+      try {
+        const base64Credentials = authHeader.slice(6);
+        const credentials = atob(base64Credentials);
+        const [username, password] = credentials.split(":");
+
+        if (username !== "mirascope" || password !== "mirascope") {
+          return new Response("Unauthorized", {
+            status: 401,
+            headers: { "WWW-Authenticate": 'Basic realm="Staging"' },
+          });
+        }
+
+        // Valid credentials - redirect with session cookie
+        // Use 302 to replay the request with the cookie set
+        return new Response(null, {
+          status: 302,
+          headers: {
+            Location: request.url,
+            "Set-Cookie": `${COOKIE_NAME}=${SESSION_TOKEN}; Path=/; HttpOnly; SameSite=Strict; Max-Age=86400`,
+          },
+        });
+      } catch {
+        return new Response("Unauthorized", {
+          status: 401,
+          headers: { "WWW-Authenticate": 'Basic realm="Staging"' },
+        });
+      }
     }
+    // Has valid session cookie - continue to app
   }
 
   // Set execution context layer for route handlers
@@ -371,7 +394,7 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = async (
 
   // Try serving from static assets first (only needed when run_worker_first is enabled)
   // In staging, all requests go through the worker including assets
-  if (url.hostname === "staging.mirascope.com") {
+  if (url.hostname === STAGING_HOSTNAME) {
     // Strip credentials from URL - ASSETS binding can't handle URLs with embedded credentials
     const cleanUrl = new URL(url);
     cleanUrl.username = "";
