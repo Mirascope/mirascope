@@ -37,6 +37,25 @@ def mock_provider() -> Generator[MockProvider, None, None]:
     llm.reset_provider_registry()
 
 
+@pytest.fixture(autouse=True)
+def mock_sleep(monkeypatch: pytest.MonkeyPatch) -> list[float]:
+    """Auto-mock time.sleep and asyncio.sleep to avoid actual delays in tests.
+
+    Returns a list that captures all sleep durations for assertions.
+    """
+    sleep_calls: list[float] = []
+
+    def sync_sleep(seconds: float) -> None:
+        sleep_calls.append(seconds)
+
+    async def async_sleep(seconds: float) -> None:
+        sleep_calls.append(seconds)
+
+    monkeypatch.setattr("mirascope.llm.retries.retry_models.time.sleep", sync_sleep)
+    monkeypatch.setattr("mirascope.llm.retries.retry_models.asyncio.sleep", async_sleep)
+    return sleep_calls
+
+
 class TestSyncRetryCall:
     """Tests for sync @llm.retry with @llm.call decorator pattern."""
 
@@ -334,16 +353,9 @@ class TestExponentialBackoff:
     """Tests for exponential backoff delay behavior."""
 
     def test_backoff_delays_are_applied(
-        self, mock_provider: MockProvider, monkeypatch: pytest.MonkeyPatch
+        self, mock_provider: MockProvider, mock_sleep: list[float]
     ) -> None:
         """Test that exponential backoff delays are applied between retries."""
-        sleep_calls: list[float] = []
-
-        def mock_sleep(seconds: float) -> None:
-            sleep_calls.append(seconds)
-
-        monkeypatch.setattr("mirascope.llm.retries.utils.time.sleep", mock_sleep)
-
         # Fail twice, then succeed
         mock_provider.set_exceptions([SERVER_ERROR, SERVER_ERROR])
 
@@ -355,21 +367,14 @@ class TestExponentialBackoff:
         response = greet()
         assert len(response.retry_failures) == 2
         # First delay: 0.1, second delay: 0.2 (0.1 * 2)
-        assert len(sleep_calls) == 2
-        assert sleep_calls[0] == pytest.approx(0.1)
-        assert sleep_calls[1] == pytest.approx(0.2)
+        assert len(mock_sleep) == 2
+        assert mock_sleep[0] == pytest.approx(0.1)
+        assert mock_sleep[1] == pytest.approx(0.2)
 
     def test_backoff_respects_max_delay(
-        self, mock_provider: MockProvider, monkeypatch: pytest.MonkeyPatch
+        self, mock_provider: MockProvider, mock_sleep: list[float]
     ) -> None:
         """Test that backoff delay is capped at max_delay."""
-        sleep_calls: list[float] = []
-
-        def mock_sleep(seconds: float) -> None:
-            sleep_calls.append(seconds)
-
-        monkeypatch.setattr("mirascope.llm.retries.utils.time.sleep", mock_sleep)
-
         # Fail 3 times, then succeed
         mock_provider.set_exceptions([SERVER_ERROR, SERVER_ERROR, SERVER_ERROR])
 
@@ -383,21 +388,18 @@ class TestExponentialBackoff:
         response = greet()
         assert len(response.retry_failures) == 3
         # First: 1.0, second: min(10.0, 5.0) = 5.0, third: min(100.0, 5.0) = 5.0
-        assert len(sleep_calls) == 3
-        assert sleep_calls[0] == pytest.approx(1.0)
-        assert sleep_calls[1] == pytest.approx(5.0)
-        assert sleep_calls[2] == pytest.approx(5.0)
+        assert len(mock_sleep) == 3
+        assert mock_sleep[0] == pytest.approx(1.0)
+        assert mock_sleep[1] == pytest.approx(5.0)
+        assert mock_sleep[2] == pytest.approx(5.0)
 
     def test_backoff_with_jitter(
-        self, mock_provider: MockProvider, monkeypatch: pytest.MonkeyPatch
+        self,
+        mock_provider: MockProvider,
+        mock_sleep: list[float],
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test that jitter adds randomness to delays."""
-        sleep_calls: list[float] = []
-
-        def mock_sleep(seconds: float) -> None:
-            sleep_calls.append(seconds)
-
-        monkeypatch.setattr("mirascope.llm.retries.utils.time.sleep", mock_sleep)
         # Mock random.uniform to return a predictable value
         monkeypatch.setattr(
             "mirascope.llm.retries.utils.random.uniform", lambda a, b: (a + b) / 2
@@ -414,8 +416,8 @@ class TestExponentialBackoff:
         assert len(response.retry_failures) == 1
         # With jitter=0.5 and our mock returning midpoint, jitter_range = 0.5
         # random.uniform(-0.5, 0.5) returns 0, so delay stays at 1.0
-        assert len(sleep_calls) == 1
-        assert sleep_calls[0] == pytest.approx(1.0)
+        assert len(mock_sleep) == 1
+        assert mock_sleep[0] == pytest.approx(1.0)
 
 
 class TestExponentialBackoffAsync:
@@ -423,16 +425,9 @@ class TestExponentialBackoffAsync:
 
     @pytest.mark.asyncio
     async def test_async_backoff_delays_are_applied(
-        self, mock_provider: MockProvider, monkeypatch: pytest.MonkeyPatch
+        self, mock_provider: MockProvider, mock_sleep: list[float]
     ) -> None:
         """Test that exponential backoff delays are applied between async retries."""
-        sleep_calls: list[float] = []
-
-        async def mock_sleep(seconds: float) -> None:
-            sleep_calls.append(seconds)
-
-        monkeypatch.setattr("mirascope.llm.retries.utils.asyncio.sleep", mock_sleep)
-
         # Fail twice, then succeed
         mock_provider.set_exceptions([SERVER_ERROR, SERVER_ERROR])
 
@@ -444,9 +439,9 @@ class TestExponentialBackoffAsync:
         response = await greet()
         assert len(response.retry_failures) == 2
         # First delay: 0.1, second delay: 0.2 (0.1 * 2)
-        assert len(sleep_calls) == 2
-        assert sleep_calls[0] == pytest.approx(0.1)
-        assert sleep_calls[1] == pytest.approx(0.2)
+        assert len(mock_sleep) == 2
+        assert mock_sleep[0] == pytest.approx(0.1)
+        assert mock_sleep[1] == pytest.approx(0.2)
 
 
 class TestRetryDecorator:

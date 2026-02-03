@@ -1,8 +1,6 @@
 """Utility functions for retry logic."""
 
-import asyncio
 import random
-import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, TypeVar
@@ -29,7 +27,7 @@ class RetryFailure:
     exception: BaseException
 
 
-def _calculate_delay(config: RetryConfig, attempt_for_model: int) -> float:
+def calculate_delay(config: RetryConfig, attempt_for_model: int) -> float:
     """Calculate the delay before the next retry attempt.
 
     Args:
@@ -83,20 +81,13 @@ def with_retry(
     config = retry_model.retry_config
     failures: list[RetryFailure] = []
 
-    for variant in retry_model._attempt_variants():  # pyright: ignore[reportPrivateUsage]
+    for variant in retry_model.variants():
         model = variant.get_active_model()
-        retries_for_model = 0
-        for _ in range(config.max_retries + 1):
-            try:
-                result = fn(model)
-                return result, failures, variant
-            except config.retry_on as e:
-                failures.append(RetryFailure(model=model, exception=e))
-                retries_for_model += 1
-                if retries_for_model <= config.max_retries:
-                    delay = _calculate_delay(config, retries_for_model)
-                    time.sleep(delay)
-        # Exhausted retries for this model, try next (backoff resets)
+        try:
+            result = fn(model)
+            return result, failures, variant
+        except config.retry_on as e:
+            failures.append(RetryFailure(model=model, exception=e))
 
     # All models exhausted - raise the last exception
     if failures:
@@ -129,20 +120,13 @@ async def with_retry_async(
     config = retry_model.retry_config
     failures: list[RetryFailure] = []
 
-    for variant in retry_model._attempt_variants():  # pyright: ignore[reportPrivateUsage]
+    async for variant in retry_model.variants_async():
         model = variant.get_active_model()
-        retries_for_model = 0
-        for _ in range(config.max_retries + 1):
-            try:
-                result = await fn(model)
-                return result, failures, variant
-            except config.retry_on as e:
-                failures.append(RetryFailure(model=model, exception=e))
-                retries_for_model += 1
-                if retries_for_model <= config.max_retries:
-                    delay = _calculate_delay(config, retries_for_model)
-                    await asyncio.sleep(delay)
-        # Exhausted retries for this model, try next (backoff resets)
+        try:
+            result = await fn(model)
+            return result, failures, variant
+        except config.retry_on as e:
+            failures.append(RetryFailure(model=model, exception=e))
 
     # All models exhausted - raise the last exception
     if failures:

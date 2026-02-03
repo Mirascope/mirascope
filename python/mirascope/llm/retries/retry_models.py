@@ -1,6 +1,8 @@
 """RetryModel extends Model to add retry logic."""
 
-from collections.abc import Awaitable, Iterator, Sequence
+import asyncio
+import time
+from collections.abc import AsyncIterator, Awaitable, Iterator, Sequence
 from typing import cast, overload
 from typing_extensions import Unpack
 
@@ -156,6 +158,50 @@ class RetryModel(Model):
         for i in range(len(self._models)):
             if i != self._active_index:
                 yield self._with_active(i)
+
+    def variants(self) -> Iterator["RetryModel"]:
+        """Yield model variants with backoff delays between retries.
+
+        Yields the active model variant first. After each yield, if the caller
+        encountered an error and iterates again, this applies the appropriate
+        backoff delay before yielding the next attempt. Each model gets
+        max_retries additional attempts before moving to the next fallback model.
+
+        Yields:
+            RetryModel variants to attempt, with backoff delays applied between yields.
+        """
+        from .utils import calculate_delay
+
+        config = self.retry_config
+        for variant in self._attempt_variants():
+            for attempt in range(config.max_retries + 1):
+                yield variant
+                # If caller iterates again, they hit an error - apply backoff
+                if attempt < config.max_retries:
+                    delay = calculate_delay(config, attempt + 1)
+                    time.sleep(delay)
+
+    async def variants_async(self) -> AsyncIterator["RetryModel"]:
+        """Async version of variants().
+
+        Yields the active model variant first. After each yield, if the caller
+        encountered an error and iterates again, this applies the appropriate
+        backoff delay before yielding the next attempt. Each model gets
+        max_retries additional attempts before moving to the next fallback model.
+
+        Yields:
+            RetryModel variants to attempt, with backoff delays applied between yields.
+        """
+        from .utils import calculate_delay
+
+        config = self.retry_config
+        for variant in self._attempt_variants():
+            for attempt in range(config.max_retries + 1):
+                yield variant
+                # If caller iterates again, they hit an error - apply backoff
+                if attempt < config.max_retries:
+                    delay = calculate_delay(config, attempt + 1)
+                    await asyncio.sleep(delay)
 
     @overload
     def call(
