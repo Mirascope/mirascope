@@ -18,6 +18,7 @@ const welcome: SectionSpec = {
     { slug: "index", label: "Welcome" },
     { slug: "why", label: "Why Mirascope?" },
     { slug: "quickstart", label: "Mirascope Quickstart" },
+    { slug: "migration", label: "Migrating to v2" },
     { slug: "contributing", label: "Contributing" },
   ],
 };
