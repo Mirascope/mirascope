@@ -338,6 +338,173 @@ try {
 }
 ```
 
+## Ops: Instrumentation, Tracing & Versioning
+
+The `ops` module provides observability and versioning for your LLM applications, with automatic integration to Mirascope Cloud or any OpenTelemetry-compatible backend.
+
+### Configuration
+
+```typescript
+import { ops } from "mirascope";
+
+// Uses MIRASCOPE_API_KEY environment variable
+ops.configure();
+
+// Or explicit API key
+ops.configure({ apiKey: "your-api-key" });
+
+// Or custom OpenTelemetry provider
+import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
+ops.configure({ tracerProvider: new NodeTracerProvider() });
+```
+
+### Tracing
+
+Wrap functions or calls with `trace()` to create spans:
+
+```typescript
+import { llm, ops } from "mirascope";
+
+const recommendBook = llm.defineCall<{ genre: string }>({
+  model: "anthropic/claude-haiku-4-5",
+  template: ({ genre }) => `Recommend a ${genre} book.`,
+});
+
+// Trace a call
+const tracedRecommendBook = ops.trace(recommendBook, {
+  name: "recommend-book",
+  tags: ["recommendation", "books"],
+  metadata: { source: "example" },
+});
+
+const response = await tracedRecommendBook({ genre: "fantasy" });
+
+// Access span metadata
+const result = await tracedRecommendBook.wrapped({ genre: "sci-fi" });
+console.log(result.traceId, result.spanId);
+```
+
+### Versioning
+
+Track function versions based on closure analysis. Changes to your function code or its dependencies automatically create new versions:
+
+```typescript
+import { ops } from "mirascope";
+
+const computeEmbedding = ops.version(
+  async (text: string) => {
+    // Your embedding logic
+    return [0.1, 0.2, 0.3];
+  },
+  {
+    name: "embedding-v1",
+    tags: ["embedding", "production"],
+  }
+);
+
+// Access version info (hash, signatureHash, name, version, tags, metadata)
+console.log(computeEmbedding.versionInfo);
+
+// Get wrapped result with span info and annotation support
+const result = await computeEmbedding.wrapped("hello");
+await result.annotate({ label: "pass" }); // or "fail"
+```
+
+> [!NOTE]
+> For accurate source-level versioning, use the [Transform Plugin](#transform-plugin). Without it, versioning uses compiled JavaScript via `fn.toString()`.
+
+### Sessions
+
+Group related traces under a session ID:
+
+```typescript
+import { ops } from "mirascope";
+
+await ops.session({ id: "user-123-conversation-1" }, async () => {
+  const response = await tracedChat({ message: "Hello!" });
+  console.log(ops.currentSession()?.id); // "user-123-conversation-1"
+});
+
+// With attributes
+await ops.session(
+  {
+    id: "session-2",
+    attributes: { userId: "user-456", channel: "web" },
+  },
+  async () => {
+    // Attributes are propagated to spans
+  }
+);
+```
+
+### Spans
+
+Create custom spans for non-LLM operations:
+
+```typescript
+import { ops } from "mirascope";
+
+await ops.span("data-processing", async (span) => {
+  span.info("Starting processing");
+  span.set({ "app.batch_size": 100 });
+
+  // Nested spans
+  await ops.span("validation", async (child) => {
+    child.debug("Validating input");
+  });
+
+  span.info("Complete", { records: 100 });
+});
+```
+
+### LLM Instrumentation
+
+Automatically instrument all LLM calls with OpenTelemetry GenAI semantic conventions:
+
+```typescript
+import { ops } from "mirascope";
+
+ops.instrumentLLM();
+
+// Now all Model calls automatically create spans with:
+// - gen_ai.system: "anthropic"
+// - gen_ai.request.model: "claude-haiku-4-5"
+// - gen_ai.usage.input_tokens / output_tokens
+const response = await recommendBook({ genre: "mystery" });
+
+// Check status
+console.log(ops.isLLMInstrumented()); // true
+ops.uninstrumentLLM();
+```
+
+### Context Propagation
+
+Propagate trace context across service boundaries:
+
+```typescript
+import { ops } from "mirascope";
+
+// Inject context into outgoing HTTP headers
+const headers: Record<string, string> = {};
+ops.injectContext(headers);
+await fetch(url, { headers });
+
+// Extract context on receiving side
+await ops.propagatedContext(incomingHeaders, async () => {
+  await ops.span("downstream-work", async (span) => {
+    // Linked to upstream trace
+  });
+});
+
+// Session propagation
+const sessionId = ops.extractSessionId(incomingHeaders);
+if (sessionId) {
+  await ops.session({ id: sessionId }, async () => {
+    // Continue session from upstream
+  });
+}
+```
+
 ## Supported Providers
 
 - **Anthropic**: `anthropic/claude-sonnet-4-5`, `anthropic/claude-haiku-4-5`, etc.
@@ -380,6 +547,7 @@ See the [`examples/`](./examples) directory for more examples:
 - `context/` - Sharing dependencies with context
 - `chaining/` - Chaining and parallel calls
 - `reliability/` - Retry and fallback patterns
+- `ops/` - Tracing, versioning, sessions, and instrumentation
 
 Run an example:
 ```bash
