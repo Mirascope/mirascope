@@ -11,10 +11,7 @@ import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
 
-// NOTE: Must use relative path instead of @/../content alias because this file
-// is imported by vite.config.ts during Vite's config processing phase, before
-// the alias resolution is set up. Using the alias would cause module resolution errors.
-import { getDocInfoByPath } from "../../../../content/docs/_meta";
+import { docRegistry } from "./doc-registry";
 import { parseFrontmatter } from "./frontmatter";
 import {
   CONTENT_TYPES,
@@ -322,7 +319,7 @@ export default class ContentProcessor {
 
       case "docs": {
         // Use the DocRegistry to get the pre-calculated routePath
-        const docInfo = getDocInfoByPath(contentPath.subpath);
+        const docInfo = docRegistry.getDocInfoByPath(contentPath.subpath);
 
         if (docInfo) {
           return docInfo.routePath;
@@ -476,7 +473,7 @@ export default class ContentProcessor {
         // Extract product from path, assuming format: docs/product/...
 
         // Find matching DocInfo from docRegistry to get section path and search weight
-        const docInfo = getDocInfoByPath(contentPath.subpath);
+        const docInfo = docRegistry.getDocInfoByPath(contentPath.subpath);
 
         if (!docInfo) {
           throw new Error(
