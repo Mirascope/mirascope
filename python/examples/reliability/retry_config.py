@@ -2,10 +2,12 @@ from mirascope import llm
 
 
 @llm.retry(
-    fallback_models=[
-        "anthropic/claude-3-5-haiku-latest",
-        "google/gemini-2.0-flash",
-    ]
+    max_retries=5,
+    initial_delay=1.0,
+    max_delay=30.0,
+    backoff_multiplier=2.0,
+    jitter=0.1,
+    retry_on=(llm.RateLimitError, llm.ServerError),
 )
 @llm.call("openai/gpt-4o-mini")
 def recommend_book(genre: str) -> str:

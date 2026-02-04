@@ -33,6 +33,9 @@ All exceptions inherit from `llm.Error`. Indentation shows the hierarchy:
 | ↳ `llm.ParseError` | Failed to parse structured response (has `original_exception`) |
 | ↳ `llm.FeatureNotSupportedError` | Feature not supported by provider/model (has `provider_id`, `model_id`, `feature`) |
 | ↳ `llm.NoRegisteredProviderError` | Model ID has no registered provider |
+| ↳ `llm.MissingAPIKeyError` | Required API key environment variable not set (has `provider_id`, `env_var`) |
+| ↳ `llm.RetriesExhausted` | All retry attempts exhausted when using `@llm.retry` or `llm.retry_model` (has `failures`) |
+| ↳ `llm.StreamRestarted` | Stream restarted due to a retryable error when using `@llm.retry` or `llm.retry_model` (has `failure`) |
 
 ## Next Steps
 
