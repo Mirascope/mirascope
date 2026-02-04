@@ -20,7 +20,7 @@ app.add_typer(registry_app, name="registry")
 def version_callback(value: bool) -> None:
     """Print version and exit."""
     if value:
-        print("mirascope 0.1.0")
+        print("mirascope 2.1.1")
         raise typer.Exit()
 
 

@@ -10,13 +10,6 @@ import { RegistryClient } from "@/cli/registry/client";
 import { loadConfig } from "@/cli/utils/config";
 import { writeFile } from "@/cli/utils/file-ops";
 
-interface AddOptions {
-  items: string[];
-  path?: string;
-  overwrite: boolean;
-  registryUrl: string;
-}
-
 async function loadLocalItem(itemPath: string): Promise<RegistryItem | null> {
   try {
     // eslint-disable-next-line no-undef
@@ -30,13 +23,14 @@ async function loadLocalItem(itemPath: string): Promise<RegistryItem | null> {
   }
 }
 
-export async function runAdd(options: AddOptions): Promise<number> {
-  const { items, path, overwrite, registryUrl } = options;
-
-  // Load project config if it exists
+export async function addCommand(
+  items: string[],
+  path: string | undefined,
+  overwrite: boolean,
+  registryUrl: string,
+): Promise<void> {
   const config = await loadConfig();
   const basePath = path ?? process.cwd();
-
   const client = new RegistryClient(registryUrl);
 
   const allDependencies: { pip: string[]; npm: string[] } = {
@@ -59,20 +53,22 @@ export async function runAdd(options: AddOptions): Promise<number> {
       item = await loadLocalItem(itemName);
       if (!item) {
         console.error(`Error: Local file '${itemName}' not found.`);
-        return 1;
+        process.exit(1);
+        return;
       }
     } else {
-      // Fetch from registry
       try {
         item = await client.fetchItem(itemName, "typescript");
       } catch (e) {
         console.error(`Error: Failed to fetch '${itemName}': ${String(e)}`);
-        return 1;
+        process.exit(1);
+        return;
       }
 
       if (!item) {
         console.error(`Error: Item '${itemName}' not found in registry.`);
-        return 1;
+        process.exit(1);
+        return;
       }
     }
 
@@ -98,7 +94,6 @@ export async function runAdd(options: AddOptions): Promise<number> {
 
       const targetPath = join(basePath, target);
 
-      // Check if file exists
       // eslint-disable-next-line no-undef
       const file = Bun.file(targetPath);
       if ((await file.exists()) && !overwrite) {
@@ -108,14 +103,14 @@ export async function runAdd(options: AddOptions): Promise<number> {
         continue;
       }
 
-      // Write the file
       try {
         await writeFile(targetPath, content);
         filesWritten.push(targetPath);
         console.log(`  Created ${targetPath}`);
       } catch (e) {
         console.error(`Error: Failed to write ${targetPath}: ${String(e)}`);
-        return 1;
+        process.exit(1);
+        return;
       }
     }
 
@@ -133,16 +128,12 @@ export async function runAdd(options: AddOptions): Promise<number> {
     }
   }
 
-  // Print summary
   if (filesWritten.length > 0) {
     console.log(`\nSuccessfully added ${filesWritten.length} file(s).`);
   }
 
-  // Print dependencies to install
   if (allDependencies.npm.length > 0) {
     console.log("\nInstall required npm dependencies:");
     console.log(`  bun add ${allDependencies.npm.join(" ")}`);
   }
-
-  return 0;
 }

@@ -6,14 +6,10 @@ import type { RegistryIndex, RegistryIndexItem } from "@/cli/registry/types";
 
 import { RegistryClient } from "@/cli/registry/client";
 
-interface ListOptions {
-  itemType?: string;
-  registryUrl: string;
-}
-
-export async function runList(options: ListOptions): Promise<number> {
-  const { itemType, registryUrl } = options;
-
+export async function listCommand(
+  itemType: string | undefined,
+  registryUrl: string,
+): Promise<void> {
   const client = new RegistryClient(registryUrl);
 
   let index: RegistryIndex | null;
@@ -21,17 +17,18 @@ export async function runList(options: ListOptions): Promise<number> {
     index = await client.fetchIndex();
   } catch (e) {
     console.error(`Error: Failed to fetch registry index: ${String(e)}`);
-    return 1;
+    process.exit(1);
+    return;
   }
 
   if (!index) {
     console.error("Error: Could not fetch registry index.");
-    return 1;
+    process.exit(1);
+    return;
   }
 
   let items = index.items ?? [];
 
-  // Filter by type if specified
   if (itemType) {
     items = items.filter((i) => i.type === itemType);
   }
@@ -42,7 +39,7 @@ export async function runList(options: ListOptions): Promise<number> {
     } else {
       console.log("No items found in registry.");
     }
-    return 0;
+    return;
   }
 
   // Group by type
@@ -68,5 +65,4 @@ export async function runList(options: ListOptions): Promise<number> {
   }
 
   console.log("Use `mirascope registry add <name>` to install.");
-  return 0;
 }

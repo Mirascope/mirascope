@@ -49,6 +49,9 @@ export default defineConfig({
         "src/transform/plugins/types.ts",
         // CLI types with no runtime code
         "src/cli/registry/types.ts",
+        // CLI entry points using citty runtime (commands tested separately)
+        "src/cli/main.ts",
+        "src/cli/registry/app.ts",
       ],
       thresholds: {
         lines: 100,

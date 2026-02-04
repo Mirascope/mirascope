@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { runInit } from "@/cli/commands/init";
+import { initCommand } from "@/cli/registry/commands/init";
 
 const mockFileExists = vi.fn();
 const mockBunWrite = vi.fn();
@@ -17,23 +17,30 @@ const mockConsoleLog = vi.spyOn(console, "log").mockImplementation(() => {});
 const mockConsoleError = vi
   .spyOn(console, "error")
   .mockImplementation(() => {});
+const mockProcessExit = vi.fn<(code?: number) => never>();
 
-describe("runInit", () => {
+describe("initCommand", () => {
   beforeEach(() => {
-    process.cwd = vi.fn().mockReturnValue("/test/project");
+    vi.stubGlobal("process", {
+      ...process,
+      exit: mockProcessExit,
+      cwd: vi.fn().mockReturnValue("/test/project"),
+    });
   });
 
   afterEach(() => {
     vi.clearAllMocks();
-    process.cwd = originalCwd;
+    vi.stubGlobal("process", {
+      ...process,
+      cwd: originalCwd,
+    });
   });
 
-  it("returns 0 and logs message when config already exists", async () => {
+  it("returns early and logs message when config already exists", async () => {
     mockFileExists.mockResolvedValue(true);
 
-    const result = await runInit();
+    await initCommand();
 
-    expect(result).toBe(0);
     expect(mockConsoleLog).toHaveBeenCalledWith(
       "Configuration already exists at /test/project/mirascope.json",
     );
@@ -44,9 +51,8 @@ describe("runInit", () => {
     mockFileExists.mockResolvedValue(false);
     mockBunWrite.mockResolvedValue(undefined);
 
-    const result = await runInit();
+    await initCommand();
 
-    expect(result).toBe(0);
     expect(mockBunWrite).toHaveBeenCalledTimes(1);
 
     const [path, content] = mockBunWrite.mock.calls[0]!;
@@ -70,7 +76,7 @@ describe("runInit", () => {
     mockFileExists.mockResolvedValue(false);
     mockBunWrite.mockResolvedValue(undefined);
 
-    await runInit();
+    await initCommand();
 
     expect(mockConsoleLog).toHaveBeenCalledWith(
       "Created /test/project/mirascope.json",
@@ -80,13 +86,13 @@ describe("runInit", () => {
     );
   });
 
-  it("returns 1 and logs error when write fails", async () => {
+  it("exits with 1 and logs error when write fails", async () => {
     mockFileExists.mockResolvedValue(false);
     mockBunWrite.mockRejectedValue(new Error("Permission denied"));
 
-    const result = await runInit();
+    await initCommand();
 
-    expect(result).toBe(1);
+    expect(mockProcessExit).toHaveBeenCalledWith(1);
     expect(mockConsoleError).toHaveBeenCalledWith(
       "Error: Failed to create config file: Error: Permission denied",
     );
@@ -97,7 +103,7 @@ describe("runInit", () => {
     mockFileExists.mockResolvedValue(false);
     mockBunWrite.mockResolvedValue(undefined);
 
-    await runInit();
+    await initCommand();
 
     expect(Bun.file).toHaveBeenCalledWith(
       "/different/directory/mirascope.json",

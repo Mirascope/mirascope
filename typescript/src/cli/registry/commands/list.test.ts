@@ -1,6 +1,6 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { runList } from "@/cli/commands/list";
+import { listCommand } from "@/cli/registry/commands/list";
 
 const mockFetchIndex = vi.fn();
 
@@ -14,33 +14,38 @@ const mockConsoleLog = vi.spyOn(console, "log").mockImplementation(() => {});
 const mockConsoleError = vi
   .spyOn(console, "error")
   .mockImplementation(() => {});
+const mockProcessExit = vi.fn<(code?: number) => never>();
 
-describe("runList", () => {
-  afterEach(() => {
-    vi.clearAllMocks();
+describe("listCommand", () => {
+  beforeEach(() => {
+    vi.stubGlobal("process", {
+      ...process,
+      exit: mockProcessExit,
+    });
   });
 
-  it("returns 1 and logs error when fetch fails", async () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it("exits with 1 and logs error when fetch fails", async () => {
     mockFetchIndex.mockRejectedValue(new Error("Network error"));
 
-    const result = await runList({
-      registryUrl: "https://mirascope.com/registry",
-    });
+    await listCommand(undefined, "https://mirascope.com/registry");
 
-    expect(result).toBe(1);
+    expect(mockProcessExit).toHaveBeenCalledWith(1);
     expect(mockConsoleError).toHaveBeenCalledWith(
       "Error: Failed to fetch registry index: Error: Network error",
     );
   });
 
-  it("returns 1 when index is null", async () => {
+  it("exits with 1 when index is null", async () => {
     mockFetchIndex.mockResolvedValue(null);
 
-    const result = await runList({
-      registryUrl: "https://mirascope.com/registry",
-    });
+    await listCommand(undefined, "https://mirascope.com/registry");
 
-    expect(result).toBe(1);
+    expect(mockProcessExit).toHaveBeenCalledWith(1);
     expect(mockConsoleError).toHaveBeenCalledWith(
       "Error: Could not fetch registry index.",
     );
@@ -49,11 +54,8 @@ describe("runList", () => {
   it("logs message when no items found", async () => {
     mockFetchIndex.mockResolvedValue({ items: [] });
 
-    const result = await runList({
-      registryUrl: "https://mirascope.com/registry",
-    });
+    await listCommand(undefined, "https://mirascope.com/registry");
 
-    expect(result).toBe(0);
     expect(mockConsoleLog).toHaveBeenCalledWith("No items found in registry.");
   });
 
@@ -62,12 +64,8 @@ describe("runList", () => {
       items: [{ name: "calculator", type: "tool" }],
     });
 
-    const result = await runList({
-      registryUrl: "https://mirascope.com/registry",
-      itemType: "agent",
-    });
+    await listCommand("agent", "https://mirascope.com/registry");
 
-    expect(result).toBe(0);
     expect(mockConsoleLog).toHaveBeenCalledWith(
       "No items found with type 'agent'.",
     );
@@ -82,11 +80,8 @@ describe("runList", () => {
       ],
     });
 
-    const result = await runList({
-      registryUrl: "https://mirascope.com/registry",
-    });
+    await listCommand(undefined, "https://mirascope.com/registry");
 
-    expect(result).toBe(0);
     expect(mockConsoleLog).toHaveBeenCalledWith(
       "Available items from https://mirascope.com/registry:\n",
     );
@@ -105,12 +100,8 @@ describe("runList", () => {
       ],
     });
 
-    const result = await runList({
-      registryUrl: "https://mirascope.com/registry",
-      itemType: "tool",
-    });
+    await listCommand("tool", "https://mirascope.com/registry");
 
-    expect(result).toBe(0);
     // Should only show tools
     expect(mockConsoleLog).toHaveBeenCalledWith("Tools:");
   });
@@ -120,11 +111,8 @@ describe("runList", () => {
       items: [{ name: "unknown-item" }],
     });
 
-    const result = await runList({
-      registryUrl: "https://mirascope.com/registry",
-    });
+    await listCommand(undefined, "https://mirascope.com/registry");
 
-    expect(result).toBe(0);
     expect(mockConsoleLog).toHaveBeenCalledWith("Others:");
   });
 
@@ -133,11 +121,8 @@ describe("runList", () => {
       items: [{ type: "tool" }],
     });
 
-    const result = await runList({
-      registryUrl: "https://mirascope.com/registry",
-    });
+    await listCommand(undefined, "https://mirascope.com/registry");
 
-    expect(result).toBe(0);
     expect(mockConsoleLog).toHaveBeenCalledWith("Tools:");
     // Should use "unknown" for missing name and empty string for missing description
     expect(mockConsoleLog).toHaveBeenCalledWith(
@@ -148,11 +133,8 @@ describe("runList", () => {
   it("handles empty items array in index", async () => {
     mockFetchIndex.mockResolvedValue({ items: undefined });
 
-    const result = await runList({
-      registryUrl: "https://mirascope.com/registry",
-    });
+    await listCommand(undefined, "https://mirascope.com/registry");
 
-    expect(result).toBe(0);
     expect(mockConsoleLog).toHaveBeenCalledWith("No items found in registry.");
   });
 });

@@ -108,6 +108,7 @@
     "@rollup/plugin-typescript": ">=11.0.0",
     "@traceloop/instrumentation-anthropic": ">=0.10.0",
     "@traceloop/instrumentation-google-generativeai": ">=0.10.0",
+    "citty": ">=0.2.0",
     "esbuild": ">=0.17.0",
     "openai": ">=6.16.0",
     "typescript": ">=5.0.0",
@@ -148,22 +149,25 @@
     "@traceloop/instrumentation-google-generativeai": {
       "optional": true
     },
-    "openai": {
-      "optional": true
-    },
-    "zod": {
-      "optional": true
-    },
     "@rollup/plugin-typescript": {
       "optional": true
     },
+    "citty": {
+      "optional": true
+    },
     "esbuild": {
+      "optional": true
+    },
+    "openai": {
       "optional": true
     },
     "typescript": {
       "optional": true
     },
     "vite": {
+      "optional": true
+    },
+    "zod": {
       "optional": true
     }
   }
