@@ -1,0 +1,412 @@
+---
+title: Migrating to v2
+description: How to migrate your Mirascope v0 or v1 codebase to v2
+---
+
+# Migrating to v2
+
+This guide explains how to migrate your codebase from Mirascope v0 or v1 to v2 using the `mirascope migrate` CLI.
+
+## Quick Start
+
+<TabbedSection>
+<Tab value="uvx">
+```bash
+uvx mirascope migrate --path ./your-project
+```
+</Tab>
+<Tab value="pip">
+```bash
+pip install "mirascope[cli]"
+mirascope migrate --path ./your-project
+```
+</Tab>
+</TabbedSection>
+
+## Prerequisites
+
+Before running the migration, ensure you have:
+
+1. **An API key** for one of the supported LLM providers:
+
+| Provider | Environment Variable |
+| --- | --- |
+| Anthropic | `ANTHROPIC_API_KEY` |
+| OpenAI | `OPENAI_API_KEY` |
+| Google | `GOOGLE_API_KEY` |
+| Mirascope Router | `MIRASCOPE_API_KEY` |
+
+2. **A clean git state** (recommended):
+
+```bash
+git checkout -b mirascope-v2-migration
+```
+
+## Commands
+
+### `mirascope migrate`
+
+Runs the migration agent to automatically convert v0 or v1 code to v2.
+
+```bash
+# Migrate current directory
+mirascope migrate
+
+# Migrate a specific project
+mirascope migrate --path ./my-project
+
+# Dry run (show what would change without modifying files)
+mirascope migrate --dry-run
+
+# Auto-approve all changes (no interactive prompts)
+mirascope migrate --yes
+
+# Use a different model
+mirascope migrate --model openai/gpt-4o
+
+# Verbose output (show agent thinking and tool calls)
+mirascope migrate --verbose
+```
+
+**Options:**
+
+| Option | Description |
+| --- | --- |
+| `--path, -p PATH` | Path to migrate (default: current directory) |
+| `--model, -m MODEL` | LLM model to use (default: `anthropic/claude-sonnet-4-5`) |
+| `--dry-run` | Show changes without writing files |
+| `--yes, -y` | Auto-approve all changes |
+| `--verbose, -v` | Show detailed agent output |
+
+### `mirascope migrate scan`
+
+Scans for legacy patterns without making any changes. Useful for understanding the scope of migration.
+
+```bash
+# Scan current directory
+mirascope migrate scan
+
+# Scan a specific project
+mirascope migrate scan ./my-project
+```
+
+## Version Differences
+
+The migration tool handles both v0 and v1 code:
+
+- **v0**: Class-based approach (`class Foo(OpenAICall)`)
+- **v1**: Decorator-based with provider modules (`@openai.call()`)
+- **v2**: Unified decorator (`@llm.call("provider/model")`)
+
+---
+
+## V0 Migration
+
+If you're migrating from v0, here are the key changes:
+
+### V0 Class-Based Calls to Decorators
+
+<TabbedSection>
+<Tab value="v0 (class-based)">
+```python
+from mirascope.openai import OpenAICall
+
+class BookRecommender(OpenAICall):
+    prompt_template = "Recommend a {genre} book."
+    genre: str
+
+recommender = BookRecommender(genre="fantasy")
+response = recommender.call()
+print(response.content)
+```
+</Tab>
+<Tab value="v2 (decorator-based)">
+```python
+from mirascope import llm
+
+@llm.call("openai/gpt-4o")
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book."
+
+response = recommend_book("fantasy")
+print(response.text())
+```
+</Tab>
+</TabbedSection>
+
+### V0 Extractors to response_model
+
+<TabbedSection>
+<Tab value="v0 (extractor class)">
+```python
+from mirascope.openai import OpenAIExtractor
+from pydantic import BaseModel
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+class BookExtractor(OpenAIExtractor[Book]):
+    extract_schema: type[Book] = Book
+    prompt_template = "Recommend a {genre} book."
+    genre: str
+
+book = BookExtractor(genre="fantasy").extract()
+```
+</Tab>
+<Tab value="v2 (response_model)">
+```python
+from mirascope import llm
+from pydantic import BaseModel
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+@llm.call("openai/gpt-4o", response_model=Book)
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+book = recommend_book("fantasy")
+```
+</Tab>
+</TabbedSection>
+
+### V0 Provider-Specific Tools
+
+<TabbedSection>
+<Tab value="v0 (provider tool class)">
+```python
+from mirascope.openai import OpenAITool
+
+class FormatBook(OpenAITool):
+    title: str
+    author: str
+
+    def call(self):
+        return f"{self.title} by {self.author}"
+```
+</Tab>
+<Tab value="v2 (function-based)">
+```python
+from mirascope import llm
+
+@llm.tool
+def format_book(title: str, author: str) -> str:
+    """Format a book recommendation."""
+    return f"{title} by {author}"
+```
+</Tab>
+</TabbedSection>
+
+---
+
+## V1 Migration
+
+If you're migrating from v1, here are the key changes:
+
+### V1 Import Changes
+
+```python
+# v1
+from mirascope.core import openai
+from mirascope.core import anthropic
+from mirascope.core.base import BaseTool
+
+# v2
+from mirascope import llm
+```
+
+### V1 Decorator Changes
+
+```python
+# v1
+@openai.call("gpt-4o")
+def my_function(query: str) -> str:
+    return query
+
+# v2
+@llm.call("openai/gpt-4o")
+def my_function(query: str) -> str:
+    return query
+```
+
+### V1 BaseTool to @llm.tool
+
+<TabbedSection>
+<Tab value="v1 (BaseTool class)">
+```python
+from mirascope.core.base import BaseTool
+
+class FormatBook(BaseTool):
+    """Format a book recommendation."""
+    title: str
+    author: str
+
+    def call(self) -> str:
+        return f"{self.title} by {self.author}"
+```
+</Tab>
+<Tab value="v2 (function-based)">
+```python
+from mirascope import llm
+
+@llm.tool
+def format_book(title: str, author: str) -> str:
+    """Format a book recommendation."""
+    return f"{title} by {author}"
+```
+</Tab>
+</TabbedSection>
+
+### V1 Streaming Changes
+
+<TabbedSection>
+<Tab value="v1">
+```python
+@openai.call("gpt-4o", stream=True)
+def my_function(query: str) -> str:
+    return query
+
+for chunk in my_function("hello"):
+    print(chunk.content, end="")
+```
+</Tab>
+<Tab value="v2">
+```python
+@llm.call("openai/gpt-4o")
+def my_function(query: str) -> str:
+    return query
+
+for chunk in my_function("hello").stream().text_stream():
+    print(chunk, end="")
+```
+</Tab>
+</TabbedSection>
+
+---
+
+## Shared Changes (V0 and V1)
+
+### Response Content Access
+
+```python
+# v0/v1
+print(response.content)
+
+# v2
+print(response.text())
+```
+
+### Tool Access
+
+```python
+# v0/v1
+if response.tool:
+    result = response.tool.call()
+
+# v2
+if response.tool_calls:
+    results = response.execute_tools()
+```
+
+### Agentic Loop
+
+<TabbedSection>
+<Tab value="v0/v1">
+```python
+while response.tool:
+    tool_result = response.tool.call()
+    response = my_function(messages=response.messages + [
+        {"role": "tool", "content": tool_result}
+    ])
+```
+</Tab>
+<Tab value="v2">
+```python
+while response.tool_calls:
+    tool_outputs = response.execute_tools()
+    response = response.resume(tool_outputs)
+```
+</Tab>
+</TabbedSection>
+
+---
+
+## Migration Workflow
+
+1. **Create a migration branch**:
+   ```bash
+   git checkout -b mirascope-v2-migration
+   ```
+
+2. **Scan for legacy patterns** (optional):
+   ```bash
+   mirascope migrate scan
+   ```
+
+3. **Run the migration**:
+   ```bash
+   mirascope migrate
+   ```
+
+4. **Review each change** when prompted (or use `--yes` to auto-approve)
+
+5. **Run type checking**:
+   ```bash
+   pyright  # or mypy
+   ```
+
+6. **Run tests**:
+   ```bash
+   pytest
+   ```
+
+7. **Commit your changes**:
+   ```bash
+   git add .
+   git commit -m "Migrate to Mirascope v2"
+   ```
+
+## Model Name Mappings
+
+| Old Model | v2 Model |
+| --- | --- |
+| `gpt-4o` | `openai/gpt-4o` |
+| `gpt-4o-mini` | `openai/gpt-4o-mini` |
+| `claude-3-5-sonnet-20240620` | `anthropic/claude-3-5-sonnet-20240620` |
+| `claude-3-opus-20240229` | `anthropic/claude-3-opus-20240229` |
+| `gemini-1.5-pro` | `google/gemini-1.5-pro` |
+
+## Troubleshooting
+
+### "No API key found"
+
+Set one of the supported API keys:
+
+```bash
+export ANTHROPIC_API_KEY=your-key
+# or
+export OPENAI_API_KEY=your-key
+```
+
+### "Path is outside the project root"
+
+The migration agent can only modify files within the target directory. Ensure you're running from the correct location.
+
+### Complex patterns not recognized
+
+For complex or unusual code patterns, the agent may ask for guidance. You can also:
+
+1. Run with `--verbose` to see what the agent is doing
+2. Manually adjust files the agent couldn't handle
+3. Run `pyright` after migration to catch any remaining issues
+
+## Security
+
+The migration agent has limited capabilities for safety:
+
+- **Read-only git commands**: Only `git status`, `git diff`, `git log` are allowed
+- **Limited shell commands**: Only `pyright`, `ruff`, `python -m py_compile` for verification
+- **Project-scoped**: Can only read/write files within the target directory
+- **Interactive approval**: Shows diffs before writing (unless `--yes` is used)

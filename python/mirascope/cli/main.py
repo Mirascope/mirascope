@@ -6,6 +6,7 @@ from typing import Annotated
 
 import typer
 
+from mirascope.cli.migrate.app import app as migrate_app
 from mirascope.cli.registry.app import app as registry_app
 
 app = typer.Typer(
@@ -14,6 +15,7 @@ app = typer.Typer(
     no_args_is_help=True,
 )
 
+app.add_typer(migrate_app, name="migrate")
 app.add_typer(registry_app, name="registry")
 
 
