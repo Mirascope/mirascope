@@ -12,7 +12,9 @@ import { useEnvironments } from "@/app/api/environments";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
 
-const STORAGE_KEY = "mirascope:selectedEnvironmentId";
+const STORAGE_KEY_PREFIX = "mirascope:selectedEnvironmentId";
+const getStorageKey = (projectId: string) =>
+  `${STORAGE_KEY_PREFIX}:${projectId}`;
 
 type EnvironmentContextType = {
   environments: readonly PublicEnvironment[];
@@ -35,7 +37,11 @@ export function EnvironmentProvider({ children }: { children: ReactNode }) {
 
   // Load selected environment from localStorage on mount or when project changes
   useEffect(() => {
-    const storedId = localStorage.getItem(STORAGE_KEY);
+    // Don't do anything if no project selected
+    if (!selectedProject) return;
+
+    const storageKey = getStorageKey(selectedProject.id);
+    const storedId = localStorage.getItem(storageKey);
     if (storedId && environments.length > 0) {
       const environment = environments.find((e) => e.id === storedId);
       if (environment) {
@@ -43,24 +49,27 @@ export function EnvironmentProvider({ children }: { children: ReactNode }) {
       } else {
         // If stored environment doesn't exist in current project, select first one
         setSelectedEnvironmentState(environments[0]);
-        localStorage.setItem(STORAGE_KEY, environments[0].id);
+        localStorage.setItem(storageKey, environments[0].id);
       }
     } else if (environments.length > 0 && !selectedEnvironment) {
       // Auto-select first environment if none selected
       setSelectedEnvironmentState(environments[0]);
-      localStorage.setItem(STORAGE_KEY, environments[0].id);
+      localStorage.setItem(storageKey, environments[0].id);
     } else if (environments.length === 0) {
       // Clear selection if no environments
       setSelectedEnvironmentState(null);
     }
-  }, [environments]);
+  }, [environments, selectedProject, selectedEnvironment]);
 
   const setSelectedEnvironment = (environment: PublicEnvironment | null) => {
     setSelectedEnvironmentState(environment);
-    if (environment) {
-      localStorage.setItem(STORAGE_KEY, environment.id);
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
+    if (selectedProject) {
+      const storageKey = getStorageKey(selectedProject.id);
+      if (environment) {
+        localStorage.setItem(storageKey, environment.id);
+      } else {
+        localStorage.removeItem(storageKey);
+      }
     }
   };
 
