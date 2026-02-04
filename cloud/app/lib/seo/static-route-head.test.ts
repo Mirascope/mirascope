@@ -158,7 +158,8 @@ describe("getStaticRoutes", () => {
     expect(routes).toContain("/pricing");
     expect(routes).toContain("/blog/");
     expect(routes).toContain("/docs");
-    expect(routes.length).toBe(4);
+    expect(routes).toContain("/registry");
+    expect(routes.length).toBe(5);
   });
 
   it("returns routes as strings", () => {

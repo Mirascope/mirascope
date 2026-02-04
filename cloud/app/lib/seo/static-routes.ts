@@ -40,4 +40,9 @@ export const STATIC_ROUTE_REGISTRY: Partial<
     title: "Documentation",
     description: "Mirascope documentation and guides",
   },
+  "/registry": {
+    title: "Registry",
+    description:
+      "Browse and install reusable AI tools, agents, and prompts from the Mirascope Registry.",
+  },
 };
