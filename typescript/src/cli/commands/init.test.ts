@@ -76,7 +76,7 @@ describe("runInit", () => {
       "Created /test/project/mirascope.json",
     );
     expect(mockConsoleLog).toHaveBeenCalledWith(
-      "\nYou can now use `mirascope add <item>` to add registry items.",
+      "\nYou can now use `mirascope registry add <item>` to add registry items.",
     );
   });
 

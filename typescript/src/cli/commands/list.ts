@@ -67,6 +67,6 @@ export async function runList(options: ListOptions): Promise<number> {
     console.log();
   }
 
-  console.log("Use `mirascope add <name>` to install.");
+  console.log("Use `mirascope registry add <name>` to install.");
   return 0;
 }

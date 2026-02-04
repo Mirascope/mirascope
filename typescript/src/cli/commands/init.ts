@@ -33,7 +33,7 @@ export async function runInit(): Promise<number> {
     await Bun.write(configPath, JSON.stringify(config, null, 2) + "\n");
     console.log(`Created ${configPath}`);
     console.log(
-      "\nYou can now use `mirascope add <item>` to add registry items.",
+      "\nYou can now use `mirascope registry add <item>` to add registry items.",
     );
   } catch (e) {
     console.error(`Error: Failed to create config file: ${String(e)}`);
