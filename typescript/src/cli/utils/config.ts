@@ -4,12 +4,7 @@
 
 import { join } from "path";
 
-interface MirascopeConfig {
-  $schema?: string;
-  language?: string;
-  registry?: string;
-  paths?: Record<string, string>;
-}
+import type { MirascopeConfig } from "@/cli/registry/types";
 
 export async function loadConfig(): Promise<MirascopeConfig | null> {
   const configPath = join(process.cwd(), "mirascope.json");

@@ -4,17 +4,7 @@
 
 import { join } from "path";
 
-interface MirascopeConfig {
-  $schema: string;
-  language: string;
-  registry: string;
-  paths: {
-    tools: string;
-    agents: string;
-    prompts: string;
-    integrations: string;
-  };
-}
+import type { MirascopeConfig } from "@/cli/registry/types";
 
 export async function runInit(): Promise<number> {
   const configPath = join(process.cwd(), "mirascope.json");

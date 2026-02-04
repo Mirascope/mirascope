@@ -5,9 +5,9 @@
 
 import { parseArgs } from "util";
 
-import { runAdd } from "./commands/add";
-import { runInit } from "./commands/init";
-import { runList } from "./commands/list";
+import { runAdd } from "@/cli/commands/add";
+import { runInit } from "@/cli/commands/init";
+import { runList } from "@/cli/commands/list";
 
 const VERSION = "0.1.0";
 const DEFAULT_REGISTRY = "https://mirascope.com/registry";

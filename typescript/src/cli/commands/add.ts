@@ -4,31 +4,17 @@
 
 import { join } from "path";
 
-import { RegistryClient } from "../registry/client";
-import { loadConfig } from "../utils/config";
-import { writeFile } from "../utils/file-ops";
+import type { RegistryItem } from "@/cli/registry/types";
+
+import { RegistryClient } from "@/cli/registry/client";
+import { loadConfig } from "@/cli/utils/config";
+import { writeFile } from "@/cli/utils/file-ops";
 
 interface AddOptions {
   items: string[];
   path?: string;
   overwrite: boolean;
   registryUrl: string;
-}
-
-interface RegistryFile {
-  path: string;
-  target: string;
-  content: string;
-}
-
-interface RegistryItem {
-  name: string;
-  type: string;
-  files: RegistryFile[];
-  dependencies: {
-    pip: string[];
-    npm: string[];
-  };
 }
 
 async function loadLocalItem(itemPath: string): Promise<RegistryItem | null> {

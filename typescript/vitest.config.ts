@@ -47,6 +47,8 @@ export default defineConfig({
         "src/llm/content/tool-call.ts",
         "src/ops/_internal/instrumentation/providers/types.d.ts",
         "src/transform/plugins/types.ts",
+        // CLI types with no runtime code
+        "src/cli/registry/types.ts",
       ],
       thresholds: {
         lines: 100,
