@@ -8,6 +8,11 @@
       "name": "calculator",
       "type": "tool",
       "path": "tools/calculator"
+    },
+    {
+      "name": "agent",
+      "type": "agent",
+      "path": "agents/base"
     }
   ]
 }
