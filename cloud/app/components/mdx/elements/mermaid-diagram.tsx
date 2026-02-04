@@ -80,8 +80,11 @@ export default function MermaidDiagram({
       const renderId = `${uniqueId.current}-${Date.now()}`;
       const { svg } = await mermaid.render(renderId, chart);
       // Sanitize SVG output to prevent XSS attacks
+      // Allow foreignObject and its HTML contents (needed for mermaid labels)
       const sanitizedSvg = DOMPurify.sanitize(svg, {
         USE_PROFILES: { svg: true, svgFilters: true },
+        ADD_TAGS: ["foreignObject", "p"],
+        ADD_ATTR: ["requiredFeatures", "dominant-baseline"],
       });
       setSvgContent(sanitizedSvg);
       setError(null);
