@@ -1,0 +1,199 @@
+---
+title: Callout Component Test
+description: A showcase of all available callout components with their variations
+---
+
+# Callout Component Test
+
+This page demonstrates all available callout components and their variations.
+
+## Simple Callouts (No Header)
+
+### Note Callout
+
+<Note>
+This is a simple note without a header. It uses muted colors to avoid drawing too much attention.
+</Note>
+
+### Info Callout
+
+<Info>
+This is a simple info callout without a header. It uses primary colors to convey important information.
+</Info>
+
+### Warning Callout
+
+<Warning>
+This is a simple warning callout without a header. It uses destructive colors to indicate potential issues.
+</Warning>
+
+### Success Callout
+
+<Success>
+This is a simple success callout without a header. It uses secondary colors to confirm a positive outcome.
+</Success>
+
+
+## Open Callouts (With Header)
+
+### Note Callout with Title
+
+<Note title="Important Note">
+This is a note callout with a title. The header includes an icon and title.
+</Note>
+
+### Info Callout with Title
+
+<Info title="Helpful Information">
+This is an info callout with a title. The header provides context for the content.
+</Info>
+
+### Warning Callout with Title
+
+<Warning title="Caution Required">
+This is a warning callout with a title. The header emphasizes the importance of the warning.
+</Warning>
+
+### Success Callout with Title
+
+<Success title="Operation Successful">
+This is a success callout with a title. The header celebrates the positive outcome.
+</Success>
+
+
+## Collapsible Callouts
+
+### Note Collapsible (Default Open)
+
+<Note title="Expandable Note" collapsible={true}>
+This is a collapsible note that's open by default. Click the header to collapse it.
+
+- Bullet point 1
+- Bullet point 2
+- Bullet point 3
+</Note>
+
+### Info Collapsible (Default Open)
+
+<Info title="Expandable Information" collapsible={true}>
+This is a collapsible info callout that's open by default. Click the header to collapse it.
+
+```python
+def hello_world():
+    print("Hello, World!")
+```
+</Info>
+
+### Warning Collapsible (Default Open)
+
+<Warning title="Important Warning" collapsible={true}>
+This is a collapsible warning that's open by default. Click the header to collapse it.
+
+1. First precaution
+2. Second precaution
+3. Third precaution
+</Warning>
+
+### Success Collapsible (Default Open)
+
+<Success title="Success Details" collapsible={true}>
+This is a collapsible success callout that's open by default. Click the header to collapse it.
+
+Here's a table:
+
+| Column 1 | Column 2 |
+|----------|----------|
+| Data 1   | Data 2   |
+| Data 3   | Data 4   |
+</Success>
+
+
+
+## Collapsed Callouts (Default Closed)
+
+### Note Collapsed (Default Closed)
+
+<Note title="Hidden Note Content" collapsible={true} defaultOpen={false}>
+This is a collapsed note. Click the header to expand it.
+
+- Hidden bullet point 1
+- Hidden bullet point 2
+- Hidden bullet point 3
+</Note>
+
+### Info Collapsed (Default Closed)
+
+<Info title="Hidden Information" collapsible={true} defaultOpen={false}>
+This is a collapsed info callout. Click the header to expand it.
+
+```python
+def hidden_code():
+    print("This code was hidden!")
+```
+</Info>
+
+### Warning Collapsed (Default Closed)
+
+<Warning title="Hidden Warning" collapsible={true} defaultOpen={false}>
+This is a collapsed warning. Click the header to expand it.
+
+1. Hidden precaution 1
+2. Hidden precaution 2
+3. Hidden precaution 3
+</Warning>
+
+### Success Collapsed (Default Closed)
+
+<Success title="Hidden Success Details" collapsible={true} defaultOpen={false}>
+This is a collapsed success callout. Click the header to expand it.
+
+Here's a hidden table:
+
+| Column 1 | Column 2 |
+|----------|----------|
+| Hidden 1 | Hidden 2 |
+| Hidden 3 | Hidden 4 |
+</Success>
+
+
+## Customized Callouts
+
+<TabbedSection showLogo={true}>
+<Tab value="Shorthand">
+```python
+from mirascope import llm
+from pydantic import BaseModel
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import llm, prompt_template
+from pydantic import BaseModel
+```
+</Tab>
+</TabbedSection>
+<Info collapsible={true} title="Official SDK">
+<ProviderCodeBlock 
+  examplePath="mirascope/getting-started/quickstart/sdk"
+/>
+</Info>
+
+
+## Callouts with Custom Classes
+
+<Note className="border-dashed">
+This note has a dashed border applied via a custom class.
+</Note>
+
+<Info className="shadow-lg">
+This info callout has a larger shadow applied via a custom class.
+</Info>
+
+<Warning className="border-2">
+This warning has a thicker border applied via a custom class.
+</Warning>
+
+<Success className="italic">
+This success callout has italic text applied via a custom class.
+</Success>
+

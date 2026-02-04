@@ -1,5 +1,5 @@
 /**
- * Social card render pipeline
+ * Social card render pipeline (Node.js)
  *
  * Converts JSX templates to WebP images using:
  * 1. Satori - JSX to SVG
@@ -13,9 +13,10 @@ import path from "node:path";
 import satori from "satori";
 import sharp from "sharp";
 
-/** Open Graph recommended dimensions (1200x630) */
-export const CARD_WIDTH = 1200;
-export const CARD_HEIGHT = 630;
+import { CARD_WIDTH, CARD_HEIGHT, createSocialCardElement } from "./element";
+
+// Re-export for backwards compatibility
+export { CARD_WIDTH, CARD_HEIGHT, createSocialCardElement };
 
 /**
  * Cached assets loaded once at module level
@@ -89,88 +90,13 @@ export async function loadAssets(): Promise<{
 }
 
 /**
- * Render a social card to WebP buffer
- *
- * @param title - The page title to display on the card
- * @param assets - Pre-loaded font and background assets
- * @param quality - WebP quality (0-100)
- * @returns WebP image as Buffer
+ * Render a social card element to PNG buffer
+ * Common pipeline: Satori (Element -> SVG) -> resvg (SVG -> PNG)
  */
-/**
- * Create the social card element structure as a plain object
- * Satori accepts both React elements and plain object representations
- */
-function createSocialCardElement(
-  title: string,
-  logoDataUrl: string,
-  backgroundDataUrl: string,
-): Record<string, unknown> {
-  return {
-    type: "div",
-    props: {
-      style: {
-        width: CARD_WIDTH,
-        height: CARD_HEIGHT,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundImage: `url(${backgroundDataUrl})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        position: "relative",
-      },
-      children: [
-        // Logo positioned absolutely above the centered title
-        {
-          type: "img",
-          props: {
-            src: logoDataUrl,
-            style: {
-              position: "absolute",
-              top: 50,
-              left: "50%",
-              transform: "translateX(-50%)",
-              width: Math.round(1281 * 0.3),
-              height: Math.round(294 * 0.3),
-              objectFit: "contain",
-            },
-          },
-        },
-        // Title remains centered via flexbox
-        {
-          type: "div",
-          props: {
-            style: {
-              fontFamily: "Williams Handwriting",
-              fontSize: 68,
-              color: "#ffffff",
-              textAlign: "center",
-              lineHeight: 1.3,
-              maxWidth: "80%",
-              textShadow:
-                "0 2px 6px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.2)",
-            },
-            children: title,
-          },
-        },
-      ],
-    },
-  };
-}
-
-export async function renderSocialCard(
-  title: string,
-  assets: { font: ArrayBuffer; logo: string; background: string },
-  quality = 85,
+async function renderElementToPng(
+  element: Record<string, unknown>,
+  font: ArrayBuffer,
 ): Promise<Buffer> {
-  // Create element as plain object (Satori accepts both React and plain objects)
-  const element = createSocialCardElement(
-    title,
-    assets.logo,
-    assets.background,
-  );
-
   // 1. Satori: Element -> SVG string
   // Note: Satori accepts both React elements and plain object representations
   // We use plain objects to avoid JSX transformation issues in build pipeline
@@ -181,7 +107,7 @@ export async function renderSocialCard(
     fonts: [
       {
         name: "Williams Handwriting",
-        data: assets.font,
+        data: font,
         weight: 400,
         style: "normal",
       },
@@ -196,9 +122,47 @@ export async function renderSocialCard(
       value: CARD_WIDTH,
     },
   });
-  const pngData = resvg.render();
-  const pngBuffer = pngData.asPng();
+  return resvg.render().asPng();
+}
 
+/**
+ * Render a social card to PNG buffer (for preview)
+ *
+ * @param title - The page title to display on the card
+ * @param assets - Pre-loaded font and background assets
+ * @returns PNG image as Buffer
+ */
+export async function renderSocialCardAsPng(
+  title: string,
+  assets: { font: ArrayBuffer; logo: string; background: string },
+): Promise<Buffer> {
+  const element = createSocialCardElement(
+    title,
+    assets.logo,
+    assets.background,
+  );
+  return renderElementToPng(element, assets.font);
+}
+
+/**
+ * Render a social card to WebP buffer (for production)
+ *
+ * @param title - The page title to display on the card
+ * @param assets - Pre-loaded font and background assets
+ * @param quality - WebP quality (0-100)
+ * @returns WebP image as Buffer
+ */
+export async function renderSocialCard(
+  title: string,
+  assets: { font: ArrayBuffer; logo: string; background: string },
+  quality = 85,
+): Promise<Buffer> {
+  const element = createSocialCardElement(
+    title,
+    assets.logo,
+    assets.background,
+  );
+  const pngBuffer = await renderElementToPng(element, assets.font);
   // 3. Sharp: PNG -> WebP buffer
   return sharp(pngBuffer).webp({ quality }).toBuffer();
 }

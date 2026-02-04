@@ -13,14 +13,20 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as OrganizationsRouteImport } from './routes/organizations'
 import { Route as DocsRouteImport } from './routes/docs'
+import { Route as DevRouteImport } from './routes/dev'
 import { Route as CloudRouteImport } from './routes/cloud'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DevIndexRouteImport } from './routes/dev/index'
 import { Route as CloudIndexRouteImport } from './routes/cloud/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as TermsSplatRouteImport } from './routes/terms.$'
 import { Route as InvitationsAcceptRouteImport } from './routes/invitations.accept'
 import { Route as DocsSplatRouteImport } from './routes/docs.$'
+import { Route as DevSocialCardRouteImport } from './routes/dev/social-card'
+import { Route as DevLayoutTestRouteImport } from './routes/dev/layout-test'
+import { Route as DevAuditMetadataRouteImport } from './routes/dev/audit-metadata'
+import { Route as DevSlugRouteImport } from './routes/dev.$slug'
 import { Route as CloudTracesRouteImport } from './routes/cloud/traces'
 import { Route as CloudSettingsRouteImport } from './routes/cloud/settings'
 import { Route as CloudOnboardingRouteImport } from './routes/cloud/onboarding'
@@ -73,6 +79,11 @@ const DocsRoute = DocsRouteImport.update({
   path: '/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DevRoute = DevRouteImport.update({
+  id: '/dev',
+  path: '/dev',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CloudRoute = CloudRouteImport.update({
   id: '/cloud',
   path: '/cloud',
@@ -87,6 +98,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DevIndexRoute = DevIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DevRoute,
 } as any)
 const CloudIndexRoute = CloudIndexRouteImport.update({
   id: '/',
@@ -112,6 +128,26 @@ const DocsSplatRoute = DocsSplatRouteImport.update({
   id: '/$',
   path: '/$',
   getParentRoute: () => DocsRoute,
+} as any)
+const DevSocialCardRoute = DevSocialCardRouteImport.update({
+  id: '/social-card',
+  path: '/social-card',
+  getParentRoute: () => DevRoute,
+} as any)
+const DevLayoutTestRoute = DevLayoutTestRouteImport.update({
+  id: '/layout-test',
+  path: '/layout-test',
+  getParentRoute: () => DevRoute,
+} as any)
+const DevAuditMetadataRoute = DevAuditMetadataRouteImport.update({
+  id: '/audit-metadata',
+  path: '/audit-metadata',
+  getParentRoute: () => DevRoute,
+} as any)
+const DevSlugRoute = DevSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => DevRoute,
 } as any)
 const CloudTracesRoute = CloudTracesRouteImport.update({
   id: '/traces',
@@ -276,6 +312,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/blog': typeof BlogRouteWithChildren
   '/cloud': typeof CloudRouteWithChildren
+  '/dev': typeof DevRouteWithChildren
   '/docs': typeof DocsRouteWithChildren
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
@@ -291,11 +328,16 @@ export interface FileRoutesByFullPath {
   '/cloud/onboarding': typeof CloudOnboardingRoute
   '/cloud/settings': typeof CloudSettingsRouteWithChildren
   '/cloud/traces': typeof CloudTracesRoute
+  '/dev/$slug': typeof DevSlugRoute
+  '/dev/audit-metadata': typeof DevAuditMetadataRoute
+  '/dev/layout-test': typeof DevLayoutTestRoute
+  '/dev/social-card': typeof DevSocialCardRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog/': typeof BlogIndexRoute
   '/cloud/': typeof CloudIndexRoute
+  '/dev/': typeof DevIndexRoute
   '/api/v2/$': typeof ApiV2SplatRoute
   '/api/v2/docs': typeof ApiV2DocsRoute
   '/api/v2/health': typeof ApiV2HealthRoute
@@ -333,11 +375,16 @@ export interface FileRoutesByTo {
   '/cloud/login': typeof CloudLoginRoute
   '/cloud/onboarding': typeof CloudOnboardingRoute
   '/cloud/traces': typeof CloudTracesRoute
+  '/dev/$slug': typeof DevSlugRoute
+  '/dev/audit-metadata': typeof DevAuditMetadataRoute
+  '/dev/layout-test': typeof DevLayoutTestRoute
+  '/dev/social-card': typeof DevSocialCardRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog': typeof BlogIndexRoute
   '/cloud': typeof CloudIndexRoute
+  '/dev': typeof DevIndexRoute
   '/api/v2/$': typeof ApiV2SplatRoute
   '/api/v2/docs': typeof ApiV2DocsRoute
   '/api/v2/health': typeof ApiV2HealthRoute
@@ -364,6 +411,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/blog': typeof BlogRouteWithChildren
   '/cloud': typeof CloudRouteWithChildren
+  '/dev': typeof DevRouteWithChildren
   '/docs': typeof DocsRouteWithChildren
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
@@ -379,11 +427,16 @@ export interface FileRoutesById {
   '/cloud/onboarding': typeof CloudOnboardingRoute
   '/cloud/settings': typeof CloudSettingsRouteWithChildren
   '/cloud/traces': typeof CloudTracesRoute
+  '/dev/$slug': typeof DevSlugRoute
+  '/dev/audit-metadata': typeof DevAuditMetadataRoute
+  '/dev/layout-test': typeof DevLayoutTestRoute
+  '/dev/social-card': typeof DevSocialCardRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog/': typeof BlogIndexRoute
   '/cloud/': typeof CloudIndexRoute
+  '/dev/': typeof DevIndexRoute
   '/api/v2/$': typeof ApiV2SplatRoute
   '/api/v2/docs': typeof ApiV2DocsRoute
   '/api/v2/health': typeof ApiV2HealthRoute
@@ -411,6 +464,7 @@ export interface FileRouteTypes {
     | '/'
     | '/blog'
     | '/cloud'
+    | '/dev'
     | '/docs'
     | '/organizations'
     | '/pricing'
@@ -426,11 +480,16 @@ export interface FileRouteTypes {
     | '/cloud/onboarding'
     | '/cloud/settings'
     | '/cloud/traces'
+    | '/dev/$slug'
+    | '/dev/audit-metadata'
+    | '/dev/layout-test'
+    | '/dev/social-card'
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
     | '/blog/'
     | '/cloud/'
+    | '/dev/'
     | '/api/v2/$'
     | '/api/v2/docs'
     | '/api/v2/health'
@@ -468,11 +527,16 @@ export interface FileRouteTypes {
     | '/cloud/login'
     | '/cloud/onboarding'
     | '/cloud/traces'
+    | '/dev/$slug'
+    | '/dev/audit-metadata'
+    | '/dev/layout-test'
+    | '/dev/social-card'
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
     | '/blog'
     | '/cloud'
+    | '/dev'
     | '/api/v2/$'
     | '/api/v2/docs'
     | '/api/v2/health'
@@ -498,6 +562,7 @@ export interface FileRouteTypes {
     | '/'
     | '/blog'
     | '/cloud'
+    | '/dev'
     | '/docs'
     | '/organizations'
     | '/pricing'
@@ -513,11 +578,16 @@ export interface FileRouteTypes {
     | '/cloud/onboarding'
     | '/cloud/settings'
     | '/cloud/traces'
+    | '/dev/$slug'
+    | '/dev/audit-metadata'
+    | '/dev/layout-test'
+    | '/dev/social-card'
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
     | '/blog/'
     | '/cloud/'
+    | '/dev/'
     | '/api/v2/$'
     | '/api/v2/docs'
     | '/api/v2/health'
@@ -544,6 +614,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BlogRoute: typeof BlogRouteWithChildren
   CloudRoute: typeof CloudRouteWithChildren
+  DevRoute: typeof DevRouteWithChildren
   DocsRoute: typeof DocsRouteWithChildren
   OrganizationsRoute: typeof OrganizationsRoute
   PricingRoute: typeof PricingRoute
@@ -591,6 +662,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dev': {
+      id: '/dev'
+      path: '/dev'
+      fullPath: '/dev'
+      preLoaderRoute: typeof DevRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cloud': {
       id: '/cloud'
       path: '/cloud'
@@ -611,6 +689,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dev/': {
+      id: '/dev/'
+      path: '/'
+      fullPath: '/dev/'
+      preLoaderRoute: typeof DevIndexRouteImport
+      parentRoute: typeof DevRoute
     }
     '/cloud/': {
       id: '/cloud/'
@@ -646,6 +731,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/docs/$'
       preLoaderRoute: typeof DocsSplatRouteImport
       parentRoute: typeof DocsRoute
+    }
+    '/dev/social-card': {
+      id: '/dev/social-card'
+      path: '/social-card'
+      fullPath: '/dev/social-card'
+      preLoaderRoute: typeof DevSocialCardRouteImport
+      parentRoute: typeof DevRoute
+    }
+    '/dev/layout-test': {
+      id: '/dev/layout-test'
+      path: '/layout-test'
+      fullPath: '/dev/layout-test'
+      preLoaderRoute: typeof DevLayoutTestRouteImport
+      parentRoute: typeof DevRoute
+    }
+    '/dev/audit-metadata': {
+      id: '/dev/audit-metadata'
+      path: '/audit-metadata'
+      fullPath: '/dev/audit-metadata'
+      preLoaderRoute: typeof DevAuditMetadataRouteImport
+      parentRoute: typeof DevRoute
+    }
+    '/dev/$slug': {
+      id: '/dev/$slug'
+      path: '/$slug'
+      fullPath: '/dev/$slug'
+      preLoaderRoute: typeof DevSlugRouteImport
+      parentRoute: typeof DevRoute
     }
     '/cloud/traces': {
       id: '/cloud/traces'
@@ -931,6 +1044,24 @@ const CloudRouteChildren: CloudRouteChildren = {
 
 const CloudRouteWithChildren = CloudRoute._addFileChildren(CloudRouteChildren)
 
+interface DevRouteChildren {
+  DevSlugRoute: typeof DevSlugRoute
+  DevAuditMetadataRoute: typeof DevAuditMetadataRoute
+  DevLayoutTestRoute: typeof DevLayoutTestRoute
+  DevSocialCardRoute: typeof DevSocialCardRoute
+  DevIndexRoute: typeof DevIndexRoute
+}
+
+const DevRouteChildren: DevRouteChildren = {
+  DevSlugRoute: DevSlugRoute,
+  DevAuditMetadataRoute: DevAuditMetadataRoute,
+  DevLayoutTestRoute: DevLayoutTestRoute,
+  DevSocialCardRoute: DevSocialCardRoute,
+  DevIndexRoute: DevIndexRoute,
+}
+
+const DevRouteWithChildren = DevRoute._addFileChildren(DevRouteChildren)
+
 interface DocsRouteChildren {
   DocsSplatRoute: typeof DocsSplatRoute
   DocsV1SplatRoute: typeof DocsV1SplatRoute
@@ -975,6 +1106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BlogRoute: BlogRouteWithChildren,
   CloudRoute: CloudRouteWithChildren,
+  DevRoute: DevRouteWithChildren,
   DocsRoute: DocsRouteWithChildren,
   OrganizationsRoute: OrganizationsRoute,
   PricingRoute: PricingRoute,

@@ -425,6 +425,48 @@ function stripQueryParams(url: string): string {
 }
 
 /**
+ * Try to serve a social card from dist/client/social-cards
+ * Returns true if file was served, false otherwise
+ */
+async function tryServeSocialCard(
+  url: string,
+  res: ServerResponse,
+): Promise<boolean> {
+  // Only handle /social-cards/ requests
+  if (!url.startsWith("/social-cards/")) {
+    return false;
+  }
+
+  const distFilePath = resolve(process.cwd(), "dist/client", url.slice(1));
+
+  // Security: ensure path stays within dist/client/social-cards
+  const socialCardsDir = resolve(process.cwd(), "dist/client/social-cards");
+  if (!distFilePath.startsWith(socialCardsDir)) {
+    return false;
+  }
+
+  if (!fs.existsSync(distFilePath)) {
+    return false;
+  }
+
+  // Check cache first
+  const cachedImage = imageCache.get(url);
+  if (cachedImage) {
+    serveImage(res, cachedImage);
+    return true;
+  }
+
+  try {
+    const buffer = await fsp.readFile(distFilePath);
+    imageCache.set(url, buffer);
+    serveImage(res, buffer);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Handle an image request - process and serve optimized WebP images
  */
 async function handleImageRequest(
@@ -446,6 +488,12 @@ async function handleImageRequest(
   // Skip non-WebP requests
   if (!isWebPRequest(cleanUrl)) {
     next();
+    return;
+  }
+
+  // Try serving social cards from dist (for dev mode) - before skip check
+  // since social-cards are in skipPatterns to avoid processing
+  if (await tryServeSocialCard(cleanUrl, res)) {
     return;
   }
 
