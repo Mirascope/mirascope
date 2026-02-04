@@ -443,12 +443,20 @@ function renderPart(part: unknown, idx: number): ReactNode {
 
   // Text part (new format: type="text" with content field)
   if (p.type === "text" && typeof p.content === "string") {
-    return <MessageResponse key={idx}>{p.content}</MessageResponse>;
+    return (
+      <div className="trace-markdown" key={idx}>
+        <MessageResponse>{p.content}</MessageResponse>
+      </div>
+    );
   }
 
   // Text part (old format: type="text" with text field)
   if (p.type === "text" && p.text) {
-    return <MessageResponse key={idx}>{p.text}</MessageResponse>;
+    return (
+      <div className="trace-markdown" key={idx}>
+        <MessageResponse>{p.text}</MessageResponse>
+      </div>
+    );
   }
 
   // Standalone tool call (no matching response found)
@@ -753,7 +761,11 @@ function MessageCard({ message }: { message: unknown }) {
 
     // String content - use MessageResponse for markdown rendering
     if (typeof content === "string") {
-      return <MessageResponse>{content}</MessageResponse>;
+      return (
+        <div className="trace-markdown">
+          <MessageResponse>{content}</MessageResponse>
+        </div>
+      );
     }
 
     // Array content (multiple parts: text, tool calls, etc.)

@@ -67,7 +67,7 @@ export function CodeBlock({
 
   // Base styles for code block container
   const codeBlockBaseStyles =
-    "code-block-wrapper border-card relative m-0 mb-2 rounded-md overflow-hidden border p-0 text-xs group";
+    "code-block-wrapper border-card relative m-0 mb-2 rounded-md overflow-hidden border p-0 text-xs group/code";
 
   useEffect(() => {
     // If code changed, use the initial highlighter for the first render
@@ -94,7 +94,7 @@ export function CodeBlock({
       // Get the height of the code block
       const height = codeRef.current.clientHeight;
       // Consider blocks less than 100px as small
-      setIsSmallBlock(height < 100);
+      setIsSmallBlock(height < 75);
     }
   }, [highlightedCode]);
 
@@ -113,7 +113,7 @@ export function CodeBlock({
       {/* Buttons - positioned based on block size */}
       <div
         className={cn(
-          "absolute z-10 opacity-0 transition-opacity group-hover:opacity-100 max-sm:opacity-80 sm:opacity-0",
+          "absolute z-10 opacity-0 transition-opacity group-hover/code:opacity-100 max-sm:opacity-80 sm:opacity-0",
           isSmallBlock
             ? "top-1/2 right-3 flex -translate-y-1/2 space-x-1"
             : "top-3 right-3",

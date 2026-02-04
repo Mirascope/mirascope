@@ -139,6 +139,15 @@ html.dark .app-bg-code .shiki {
   background-color: hsl(var(--background)) !important;
 }
 
+/* Docs code blocks use page background */
+.code-block-wrapper .shiki {
+  background-color: hsl(var(--background)) !important;
+}
+
+html.dark .code-block-wrapper .shiki {
+  background-color: hsl(var(--background)) !important;
+}
+
 /* Machine mode: word wrap for better readability */
 .machine-mode-code .shiki,
 .machine-mode-code .shiki code {
@@ -149,4 +158,86 @@ html.dark .app-bg-code .shiki {
 
 .machine-mode-code .shiki .line {
   white-space: pre-wrap !important;
+}
+
+/* Compact markdown styling for trace panel messages */
+.trace-markdown h1,
+.trace-markdown h2,
+.trace-markdown h3,
+.trace-markdown h4,
+.trace-markdown h5,
+.trace-markdown h6 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.trace-markdown h1 {
+  font-size: 1rem;
+}
+
+.trace-markdown p {
+  margin-bottom: 0.5rem;
+}
+
+.trace-markdown ul,
+.trace-markdown ol {
+  margin-left: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.trace-markdown code:not(.shiki code) {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  background-color: hsl(var(--muted));
+}
+
+/* Use page background for code blocks in trace messages (assistant) */
+.trace-markdown .shiki {
+  background-color: hsl(var(--background)) !important;
+  font-size: 0.75rem !important;
+}
+
+html.dark .trace-markdown .shiki {
+  background-color: hsl(var(--background)) !important;
+}
+
+/* User message code blocks: solid card background for proper syntax highlighting */
+.is-user .code-block-wrapper {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+}
+
+html.dark .is-user .code-block-wrapper {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+}
+
+.is-user .code-block-wrapper .highlight-container,
+.is-user .code-block-wrapper .highlight-container > div {
+  background-color: #ffffff !important;
+}
+
+html.dark .is-user .code-block-wrapper .highlight-container,
+html.dark .is-user .code-block-wrapper .highlight-container > div {
+  background-color: #1f2937 !important;
+}
+
+.is-user .shiki,
+.is-user .shiki code,
+.is-user pre.shiki {
+  background-color: #ffffff !important;
+}
+
+html.dark .is-user .shiki,
+html.dark .is-user .shiki code,
+html.dark .is-user pre.shiki {
+  background-color: #1f2937 !important;
+}
+
+/* User message inline code: semi-transparent background */
+.is-user .trace-markdown code:not(.shiki code) {
+  background-color: rgba(255, 255, 255, 0.2);
 }
