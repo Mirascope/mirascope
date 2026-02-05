@@ -44,6 +44,8 @@ function AuditMetadata() {
   const sortedContent = [...allContent].sort((a, b) => {
     const lengthDiff = a.route.length - b.route.length;
     if (lengthDiff !== 0) return lengthDiff;
+    const slugCompare = a.slug.localeCompare(b.slug);
+    if (slugCompare !== 0) return slugCompare;
     return a.title.localeCompare(b.title);
   });
 
