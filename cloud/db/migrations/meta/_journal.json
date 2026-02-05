@@ -36,6 +36,13 @@
       "when": 1770334065451,
       "tag": "0004_jittery_thunderbolt",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1770346168468,
+      "tag": "0005_big_crystal",
+      "breakpoints": true
     }
   ]
 }

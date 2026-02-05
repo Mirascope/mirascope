@@ -16,6 +16,13 @@ import {
   getApiKeyHandler,
   deleteApiKeyHandler,
 } from "@/api/api-keys.handlers";
+import {
+  listClawsHandler,
+  createClawHandler,
+  getClawHandler,
+  updateClawHandler,
+  deleteClawHandler,
+} from "@/api/claws.handlers";
 import { getOpenApiSpecHandler } from "@/api/docs.handlers";
 import {
   listEnvironmentsHandler,
@@ -464,6 +471,26 @@ const TagsHandlersLive = HttpApiBuilder.group(
       ),
 );
 
+const ClawsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "claws",
+  (handlers) =>
+    handlers
+      .handle("list", ({ path }) => listClawsHandler(path.organizationId))
+      .handle("create", ({ path, payload }) =>
+        createClawHandler(path.organizationId, payload),
+      )
+      .handle("get", ({ path }) =>
+        getClawHandler(path.organizationId, path.clawId),
+      )
+      .handle("update", ({ path, payload }) =>
+        updateClawHandler(path.organizationId, path.clawId, payload),
+      )
+      .handle("delete", ({ path }) =>
+        deleteClawHandler(path.organizationId, path.clawId),
+      ),
+);
+
 const TokenCostHandlersLive = HttpApiBuilder.group(
   MirascopeCloudApi,
   "token-cost",
@@ -490,6 +517,7 @@ export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(ApiKeysHandlersLive),
   Layer.provide(FunctionsHandlersLive),
   Layer.provide(AnnotationsHandlersLive),
+  Layer.provide(ClawsHandlersLive),
   Layer.provide(TagsHandlersLive),
   Layer.provide(TokenCostHandlersLive),
 );

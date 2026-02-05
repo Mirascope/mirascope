@@ -12,7 +12,6 @@ import {
 import { clawMemberships } from "@/db/schema/claw-memberships";
 
 import { organizations } from "./organizations";
-import { projects } from "./projects";
 import { users } from "./users";
 
 export const clawStatusEnum = pgEnum("claw_status", [
@@ -24,7 +23,9 @@ export const clawStatusEnum = pgEnum("claw_status", [
 ]);
 
 export const clawInstanceTypeEnum = pgEnum("claw_instance_type", [
+  "lite",
   "basic",
+  "standard-1",
   "standard-2",
   "standard-3",
   "standard-4",
@@ -43,9 +44,6 @@ export const claws = pgTable(
     createdByUserId: uuid("created_by_user_id")
       .references(() => users.id)
       .notNull(),
-    homeProjectId: uuid("home_project_id").references(() => projects.id, {
-      onDelete: "set null",
-    }),
     status: clawStatusEnum("status").notNull().default("pending"),
     instanceType: clawInstanceTypeEnum("instance_type")
       .notNull()
@@ -93,10 +91,6 @@ export const clawsRelations = relations(claws, ({ one, many }) => ({
     fields: [claws.organizationId],
     references: [organizations.id],
   }),
-  homeProject: one(projects, {
-    fields: [claws.homeProjectId],
-    references: [projects.id],
-  }),
   memberships: many(clawMemberships),
 }));
 
@@ -113,11 +107,12 @@ export type PublicClaw = Pick<
   | "description"
   | "organizationId"
   | "createdByUserId"
-  | "homeProjectId"
   | "status"
   | "instanceType"
   | "lastDeployedAt"
   | "lastError"
+  | "secretsEncrypted"
+  | "secretsKeyId"
   | "bucketName"
   | "weeklySpendingGuardrailCenticents"
   | "weeklyWindowStart"

@@ -53,7 +53,9 @@ export const PLAN_TIER_ORDER: Record<PlanTier, number> = {
 
 /** Claw instance type values that can appear in plan limits */
 export type ClawInstanceType =
+  | "lite"
   | "basic"
+  | "standard-1"
   | "standard-2"
   | "standard-3"
   | "standard-4";
