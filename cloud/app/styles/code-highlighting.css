@@ -141,11 +141,11 @@ html.dark .app-bg-code .shiki {
 
 /* Docs code blocks use page background */
 .code-block-wrapper .shiki {
-  background-color: hsl(var(--background)) !important;
+  background-color: var(--background) !important;
 }
 
 html.dark .code-block-wrapper .shiki {
-  background-color: hsl(var(--background)) !important;
+  background-color: var(--background) !important;
 }
 
 /* Machine mode: word wrap for better readability */
