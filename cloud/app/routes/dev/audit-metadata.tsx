@@ -104,8 +104,10 @@ function AuditMetadata() {
                         // Hide the image if it fails to load
                         const target = e.target as HTMLImageElement;
                         target.style.display = "none";
-                        target.parentElement!.innerHTML =
-                          '<div class="p-4 text-foreground italic">No social card available</div>';
+                        if (target.parentElement) {
+                          target.parentElement.innerHTML =
+                            '<div class="p-4 text-foreground italic">No social card available</div>';
+                        }
                       }}
                     />
                   </div>

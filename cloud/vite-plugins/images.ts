@@ -449,16 +449,9 @@ async function tryServeSocialCard(
     return false;
   }
 
-  // Check cache first
-  const cachedImage = imageCache.get(url);
-  if (cachedImage) {
-    serveImage(res, cachedImage);
-    return true;
-  }
-
+  // No caching for social cards - they're regenerated during dev iteration
   try {
     const buffer = await fsp.readFile(distFilePath);
-    imageCache.set(url, buffer);
     serveImage(res, buffer);
     return true;
   } catch {
