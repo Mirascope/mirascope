@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import DiscordLink from "@/app/components/blocks/branding/discord-link";
 import GitHubMirascopeButton from "@/app/components/blocks/branding/github-mirascope-button";
 import MirascopeLogo from "@/app/components/blocks/branding/mirascope-logo";
+import { AccountMenu } from "@/app/components/blocks/navigation/account-menu";
 import DesktopNavigation from "@/app/components/blocks/navigation/desktop-navigation";
 import DocsSubNavbar from "@/app/components/blocks/navigation/docs-sub-navbar";
 import MobileNavigation from "@/app/components/blocks/navigation/mobile-navigation";
@@ -97,6 +98,11 @@ export default function Header() {
 
           {/* Theme switcher - visible on all screen sizes */}
           <ThemeSwitcher />
+
+          {/* Account menu - show at lg breakpoint */}
+          <div className="hidden lg:flex">
+            <AccountMenu />
+          </div>
 
           {/* Mobile nav button - hidden on desktop */}
           <button

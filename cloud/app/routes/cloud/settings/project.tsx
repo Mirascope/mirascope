@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { CreateProjectModal } from "@/app/components/create-project-modal";
@@ -16,13 +16,21 @@ import {
 } from "@/app/components/ui/card";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
 import { useAuth } from "@/app/contexts/auth";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
 
 function ProjectsSettingsPage() {
   const { selectedOrganization } = useOrganization();
-  const { selectedProject, isLoading } = useProject();
+  const { projects, selectedProject, setSelectedProject, isLoading } =
+    useProject();
   const { user } = useAuth();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -30,6 +38,15 @@ function ProjectsSettingsPage() {
   // Organization OWNER/ADMIN have implicit project ADMIN access
   const orgRole = selectedOrganization?.role;
   const canManageMembers = orgRole === "OWNER" || orgRole === "ADMIN";
+
+  const handleProjectChange = (value: string) => {
+    if (value === "__create_new__") {
+      setShowCreateModal(true);
+    } else {
+      const project = projects.find((p) => p.id === value);
+      setSelectedProject(project || null);
+    }
+  };
 
   const header = (
     <div className="mb-6 flex items-start justify-between">
@@ -39,10 +56,29 @@ function ProjectsSettingsPage() {
           Manage your project settings
         </p>
       </div>
-      <Button onClick={() => setShowCreateModal(true)}>
-        <Plus className="h-4 w-4 mr-2" />
-        New Project
-      </Button>
+      {selectedOrganization && !isLoading && (
+        <Select
+          value={selectedProject?.id || ""}
+          onValueChange={handleProjectChange}
+        >
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Select project" />
+          </SelectTrigger>
+          <SelectContent>
+            {projects.map((project) => (
+              <SelectItem key={project.id} value={project.id}>
+                {project.name}
+              </SelectItem>
+            ))}
+            <SelectItem
+              value="__create_new__"
+              className="text-primary font-medium"
+            >
+              + Create New Project
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      )}
     </div>
   );
 

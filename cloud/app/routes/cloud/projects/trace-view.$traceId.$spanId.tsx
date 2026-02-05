@@ -78,7 +78,7 @@ function FullTraceViewPage() {
   // Handle span selection - update URL
   const handleSpanSelect = (newSpanId: string) => {
     void navigate({
-      to: "/cloud/trace-view/$traceId/$spanId",
+      to: "/cloud/projects/trace-view/$traceId/$spanId",
       params: { traceId, spanId: newSpanId },
       replace: true,
     });
@@ -205,6 +205,8 @@ function FullTraceViewPage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/trace-view/$traceId/$spanId")({
+export const Route = createFileRoute(
+  "/cloud/projects/trace-view/$traceId/$spanId",
+)({
   component: FullTraceViewPage,
 });

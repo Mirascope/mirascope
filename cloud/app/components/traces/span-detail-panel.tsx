@@ -885,7 +885,7 @@ export function SpanDetailPanel({
         <div className="flex items-center gap-1">
           {mode === "side-panel" && (
             <Link
-              to="/cloud/trace-view/$traceId/$spanId"
+              to="/cloud/projects/trace-view/$traceId/$spanId"
               params={{ traceId: span.traceId, spanId: span.spanId }}
             >
               <Button variant="ghost" size="sm" className="h-8 gap-1.5 px-2">

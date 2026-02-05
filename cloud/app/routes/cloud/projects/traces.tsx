@@ -194,6 +194,6 @@ function TracesPage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/traces")({
+export const Route = createFileRoute("/cloud/projects/traces")({
   component: TracesPage,
 });

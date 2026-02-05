@@ -26,7 +26,7 @@ export function FunctionCard({ fn }: FunctionCardProps) {
 
   return (
     <Link
-      to="/cloud/functions/$functionName"
+      to="/cloud/projects/functions/$functionName"
       params={{ functionName: fn.name }}
       className="block"
     >

@@ -27,19 +27,15 @@ import { Route as DevSocialCardRouteImport } from './routes/dev/social-card'
 import { Route as DevLayoutTestRouteImport } from './routes/dev/layout-test'
 import { Route as DevAuditMetadataRouteImport } from './routes/dev/audit-metadata'
 import { Route as DevSlugRouteImport } from './routes/dev.$slug'
-import { Route as CloudTracesRouteImport } from './routes/cloud/traces'
 import { Route as CloudSettingsRouteImport } from './routes/cloud/settings'
-import { Route as CloudOnboardingRouteImport } from './routes/cloud/onboarding'
 import { Route as CloudLoginRouteImport } from './routes/cloud/login'
-import { Route as CloudDashboardRouteImport } from './routes/cloud/dashboard'
-import { Route as CloudAnnotationQueueRouteImport } from './routes/cloud/annotation-queue'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthMeRouteImport } from './routes/auth/me'
 import { Route as AuthGoogleRouteImport } from './routes/auth/google'
 import { Route as AuthGithubRouteImport } from './routes/auth/github'
 import { Route as ApiAnalyticsRouteImport } from './routes/api.analytics'
 import { Route as CloudSettingsIndexRouteImport } from './routes/cloud/settings/index'
-import { Route as CloudFunctionsIndexRouteImport } from './routes/cloud/functions.index'
+import { Route as CloudProjectsIndexRouteImport } from './routes/cloud/projects/index'
 import { Route as DocsV1SplatRouteImport } from './routes/docs.v1.$'
 import { Route as CloudSettingsTeamRouteImport } from './routes/cloud/settings/team'
 import { Route as CloudSettingsProjectRouteImport } from './routes/cloud/settings/project'
@@ -47,7 +43,10 @@ import { Route as CloudSettingsOrganizationRouteImport } from './routes/cloud/se
 import { Route as CloudSettingsMeRouteImport } from './routes/cloud/settings/me'
 import { Route as CloudSettingsBillingRouteImport } from './routes/cloud/settings/billing'
 import { Route as CloudSettingsApiKeysRouteImport } from './routes/cloud/settings/api-keys'
-import { Route as CloudFunctionsFunctionNameRouteImport } from './routes/cloud/functions.$functionName'
+import { Route as CloudProjectsTracesRouteImport } from './routes/cloud/projects/traces'
+import { Route as CloudProjectsOnboardingRouteImport } from './routes/cloud/projects/onboarding'
+import { Route as CloudProjectsDashboardRouteImport } from './routes/cloud/projects/dashboard'
+import { Route as CloudProjectsAnnotationQueueRouteImport } from './routes/cloud/projects/annotation-queue'
 import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
 import { Route as AuthGithubProxyCallbackRouteImport } from './routes/auth/github.proxy-callback'
@@ -56,8 +55,10 @@ import { Route as ApiWebhooksStripeRouteImport } from './routes/api.webhooks.str
 import { Route as ApiV2HealthRouteImport } from './routes/api.v2.health'
 import { Route as ApiV2DocsRouteImport } from './routes/api.v2.docs'
 import { Route as ApiV2SplatRouteImport } from './routes/api.v2.$'
+import { Route as CloudProjectsFunctionsIndexRouteImport } from './routes/cloud/projects/functions.index'
 import { Route as RouterV2ProviderSplatRouteImport } from './routes/router.v2.$provider.$'
-import { Route as CloudTraceViewTraceIdSpanIdRouteImport } from './routes/cloud/trace-view.$traceId.$spanId'
+import { Route as CloudProjectsFunctionsFunctionNameRouteImport } from './routes/cloud/projects/functions.$functionName'
+import { Route as CloudProjectsTraceViewTraceIdSpanIdRouteImport } from './routes/cloud/projects/trace-view.$traceId.$spanId'
 
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
@@ -149,34 +150,14 @@ const DevSlugRoute = DevSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => DevRoute,
 } as any)
-const CloudTracesRoute = CloudTracesRouteImport.update({
-  id: '/traces',
-  path: '/traces',
-  getParentRoute: () => CloudRoute,
-} as any)
 const CloudSettingsRoute = CloudSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
   getParentRoute: () => CloudRoute,
 } as any)
-const CloudOnboardingRoute = CloudOnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
-  getParentRoute: () => CloudRoute,
-} as any)
 const CloudLoginRoute = CloudLoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => CloudRoute,
-} as any)
-const CloudDashboardRoute = CloudDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => CloudRoute,
-} as any)
-const CloudAnnotationQueueRoute = CloudAnnotationQueueRouteImport.update({
-  id: '/annotation-queue',
-  path: '/annotation-queue',
   getParentRoute: () => CloudRoute,
 } as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
@@ -209,9 +190,9 @@ const CloudSettingsIndexRoute = CloudSettingsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => CloudSettingsRoute,
 } as any)
-const CloudFunctionsIndexRoute = CloudFunctionsIndexRouteImport.update({
-  id: '/functions/',
-  path: '/functions/',
+const CloudProjectsIndexRoute = CloudProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
   getParentRoute: () => CloudRoute,
 } as any)
 const DocsV1SplatRoute = DocsV1SplatRouteImport.update({
@@ -250,10 +231,25 @@ const CloudSettingsApiKeysRoute = CloudSettingsApiKeysRouteImport.update({
   path: '/api-keys',
   getParentRoute: () => CloudSettingsRoute,
 } as any)
-const CloudFunctionsFunctionNameRoute =
-  CloudFunctionsFunctionNameRouteImport.update({
-    id: '/functions/$functionName',
-    path: '/functions/$functionName',
+const CloudProjectsTracesRoute = CloudProjectsTracesRouteImport.update({
+  id: '/projects/traces',
+  path: '/projects/traces',
+  getParentRoute: () => CloudRoute,
+} as any)
+const CloudProjectsOnboardingRoute = CloudProjectsOnboardingRouteImport.update({
+  id: '/projects/onboarding',
+  path: '/projects/onboarding',
+  getParentRoute: () => CloudRoute,
+} as any)
+const CloudProjectsDashboardRoute = CloudProjectsDashboardRouteImport.update({
+  id: '/projects/dashboard',
+  path: '/projects/dashboard',
+  getParentRoute: () => CloudRoute,
+} as any)
+const CloudProjectsAnnotationQueueRoute =
+  CloudProjectsAnnotationQueueRouteImport.update({
+    id: '/projects/annotation-queue',
+    path: '/projects/annotation-queue',
     getParentRoute: () => CloudRoute,
   } as any)
 const AuthGoogleProxyCallbackRoute = AuthGoogleProxyCallbackRouteImport.update({
@@ -296,15 +292,27 @@ const ApiV2SplatRoute = ApiV2SplatRouteImport.update({
   path: '/api/v2/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CloudProjectsFunctionsIndexRoute =
+  CloudProjectsFunctionsIndexRouteImport.update({
+    id: '/projects/functions/',
+    path: '/projects/functions/',
+    getParentRoute: () => CloudRoute,
+  } as any)
 const RouterV2ProviderSplatRoute = RouterV2ProviderSplatRouteImport.update({
   id: '/router/v2/$provider/$',
   path: '/router/v2/$provider/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CloudTraceViewTraceIdSpanIdRoute =
-  CloudTraceViewTraceIdSpanIdRouteImport.update({
-    id: '/trace-view/$traceId/$spanId',
-    path: '/trace-view/$traceId/$spanId',
+const CloudProjectsFunctionsFunctionNameRoute =
+  CloudProjectsFunctionsFunctionNameRouteImport.update({
+    id: '/projects/functions/$functionName',
+    path: '/projects/functions/$functionName',
+    getParentRoute: () => CloudRoute,
+  } as any)
+const CloudProjectsTraceViewTraceIdSpanIdRoute =
+  CloudProjectsTraceViewTraceIdSpanIdRouteImport.update({
+    id: '/projects/trace-view/$traceId/$spanId',
+    path: '/projects/trace-view/$traceId/$spanId',
     getParentRoute: () => CloudRoute,
   } as any)
 
@@ -322,12 +330,8 @@ export interface FileRoutesByFullPath {
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
-  '/cloud/annotation-queue': typeof CloudAnnotationQueueRoute
-  '/cloud/dashboard': typeof CloudDashboardRoute
   '/cloud/login': typeof CloudLoginRoute
-  '/cloud/onboarding': typeof CloudOnboardingRoute
   '/cloud/settings': typeof CloudSettingsRouteWithChildren
-  '/cloud/traces': typeof CloudTracesRoute
   '/dev/$slug': typeof DevSlugRoute
   '/dev/audit-metadata': typeof DevAuditMetadataRoute
   '/dev/layout-test': typeof DevLayoutTestRoute
@@ -346,7 +350,10 @@ export interface FileRoutesByFullPath {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
-  '/cloud/functions/$functionName': typeof CloudFunctionsFunctionNameRoute
+  '/cloud/projects/annotation-queue': typeof CloudProjectsAnnotationQueueRoute
+  '/cloud/projects/dashboard': typeof CloudProjectsDashboardRoute
+  '/cloud/projects/onboarding': typeof CloudProjectsOnboardingRoute
+  '/cloud/projects/traces': typeof CloudProjectsTracesRoute
   '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
   '/cloud/settings/billing': typeof CloudSettingsBillingRoute
   '/cloud/settings/me': typeof CloudSettingsMeRoute
@@ -354,10 +361,12 @@ export interface FileRoutesByFullPath {
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
   '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
-  '/cloud/functions': typeof CloudFunctionsIndexRoute
+  '/cloud/projects': typeof CloudProjectsIndexRoute
   '/cloud/settings/': typeof CloudSettingsIndexRoute
-  '/cloud/trace-view/$traceId/$spanId': typeof CloudTraceViewTraceIdSpanIdRoute
+  '/cloud/projects/functions/$functionName': typeof CloudProjectsFunctionsFunctionNameRoute
   '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
+  '/cloud/projects/functions': typeof CloudProjectsFunctionsIndexRoute
+  '/cloud/projects/trace-view/$traceId/$spanId': typeof CloudProjectsTraceViewTraceIdSpanIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -370,11 +379,7 @@ export interface FileRoutesByTo {
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
-  '/cloud/annotation-queue': typeof CloudAnnotationQueueRoute
-  '/cloud/dashboard': typeof CloudDashboardRoute
   '/cloud/login': typeof CloudLoginRoute
-  '/cloud/onboarding': typeof CloudOnboardingRoute
-  '/cloud/traces': typeof CloudTracesRoute
   '/dev/$slug': typeof DevSlugRoute
   '/dev/audit-metadata': typeof DevAuditMetadataRoute
   '/dev/layout-test': typeof DevLayoutTestRoute
@@ -393,7 +398,10 @@ export interface FileRoutesByTo {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
-  '/cloud/functions/$functionName': typeof CloudFunctionsFunctionNameRoute
+  '/cloud/projects/annotation-queue': typeof CloudProjectsAnnotationQueueRoute
+  '/cloud/projects/dashboard': typeof CloudProjectsDashboardRoute
+  '/cloud/projects/onboarding': typeof CloudProjectsOnboardingRoute
+  '/cloud/projects/traces': typeof CloudProjectsTracesRoute
   '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
   '/cloud/settings/billing': typeof CloudSettingsBillingRoute
   '/cloud/settings/me': typeof CloudSettingsMeRoute
@@ -401,10 +409,12 @@ export interface FileRoutesByTo {
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
   '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
-  '/cloud/functions': typeof CloudFunctionsIndexRoute
+  '/cloud/projects': typeof CloudProjectsIndexRoute
   '/cloud/settings': typeof CloudSettingsIndexRoute
-  '/cloud/trace-view/$traceId/$spanId': typeof CloudTraceViewTraceIdSpanIdRoute
+  '/cloud/projects/functions/$functionName': typeof CloudProjectsFunctionsFunctionNameRoute
   '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
+  '/cloud/projects/functions': typeof CloudProjectsFunctionsIndexRoute
+  '/cloud/projects/trace-view/$traceId/$spanId': typeof CloudProjectsTraceViewTraceIdSpanIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -421,12 +431,8 @@ export interface FileRoutesById {
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
-  '/cloud/annotation-queue': typeof CloudAnnotationQueueRoute
-  '/cloud/dashboard': typeof CloudDashboardRoute
   '/cloud/login': typeof CloudLoginRoute
-  '/cloud/onboarding': typeof CloudOnboardingRoute
   '/cloud/settings': typeof CloudSettingsRouteWithChildren
-  '/cloud/traces': typeof CloudTracesRoute
   '/dev/$slug': typeof DevSlugRoute
   '/dev/audit-metadata': typeof DevAuditMetadataRoute
   '/dev/layout-test': typeof DevLayoutTestRoute
@@ -445,7 +451,10 @@ export interface FileRoutesById {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
-  '/cloud/functions/$functionName': typeof CloudFunctionsFunctionNameRoute
+  '/cloud/projects/annotation-queue': typeof CloudProjectsAnnotationQueueRoute
+  '/cloud/projects/dashboard': typeof CloudProjectsDashboardRoute
+  '/cloud/projects/onboarding': typeof CloudProjectsOnboardingRoute
+  '/cloud/projects/traces': typeof CloudProjectsTracesRoute
   '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
   '/cloud/settings/billing': typeof CloudSettingsBillingRoute
   '/cloud/settings/me': typeof CloudSettingsMeRoute
@@ -453,10 +462,12 @@ export interface FileRoutesById {
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
   '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
-  '/cloud/functions/': typeof CloudFunctionsIndexRoute
+  '/cloud/projects/': typeof CloudProjectsIndexRoute
   '/cloud/settings/': typeof CloudSettingsIndexRoute
-  '/cloud/trace-view/$traceId/$spanId': typeof CloudTraceViewTraceIdSpanIdRoute
+  '/cloud/projects/functions/$functionName': typeof CloudProjectsFunctionsFunctionNameRoute
   '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
+  '/cloud/projects/functions/': typeof CloudProjectsFunctionsIndexRoute
+  '/cloud/projects/trace-view/$traceId/$spanId': typeof CloudProjectsTraceViewTraceIdSpanIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -474,12 +485,8 @@ export interface FileRouteTypes {
     | '/auth/google'
     | '/auth/me'
     | '/blog/$slug'
-    | '/cloud/annotation-queue'
-    | '/cloud/dashboard'
     | '/cloud/login'
-    | '/cloud/onboarding'
     | '/cloud/settings'
-    | '/cloud/traces'
     | '/dev/$slug'
     | '/dev/audit-metadata'
     | '/dev/layout-test'
@@ -498,7 +505,10 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
-    | '/cloud/functions/$functionName'
+    | '/cloud/projects/annotation-queue'
+    | '/cloud/projects/dashboard'
+    | '/cloud/projects/onboarding'
+    | '/cloud/projects/traces'
     | '/cloud/settings/api-keys'
     | '/cloud/settings/billing'
     | '/cloud/settings/me'
@@ -506,10 +516,12 @@ export interface FileRouteTypes {
     | '/cloud/settings/project'
     | '/cloud/settings/team'
     | '/docs/v1/$'
-    | '/cloud/functions'
+    | '/cloud/projects'
     | '/cloud/settings/'
-    | '/cloud/trace-view/$traceId/$spanId'
+    | '/cloud/projects/functions/$functionName'
     | '/router/v2/$provider/$'
+    | '/cloud/projects/functions'
+    | '/cloud/projects/trace-view/$traceId/$spanId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -522,11 +534,7 @@ export interface FileRouteTypes {
     | '/auth/google'
     | '/auth/me'
     | '/blog/$slug'
-    | '/cloud/annotation-queue'
-    | '/cloud/dashboard'
     | '/cloud/login'
-    | '/cloud/onboarding'
-    | '/cloud/traces'
     | '/dev/$slug'
     | '/dev/audit-metadata'
     | '/dev/layout-test'
@@ -545,7 +553,10 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
-    | '/cloud/functions/$functionName'
+    | '/cloud/projects/annotation-queue'
+    | '/cloud/projects/dashboard'
+    | '/cloud/projects/onboarding'
+    | '/cloud/projects/traces'
     | '/cloud/settings/api-keys'
     | '/cloud/settings/billing'
     | '/cloud/settings/me'
@@ -553,10 +564,12 @@ export interface FileRouteTypes {
     | '/cloud/settings/project'
     | '/cloud/settings/team'
     | '/docs/v1/$'
-    | '/cloud/functions'
+    | '/cloud/projects'
     | '/cloud/settings'
-    | '/cloud/trace-view/$traceId/$spanId'
+    | '/cloud/projects/functions/$functionName'
     | '/router/v2/$provider/$'
+    | '/cloud/projects/functions'
+    | '/cloud/projects/trace-view/$traceId/$spanId'
   id:
     | '__root__'
     | '/'
@@ -572,12 +585,8 @@ export interface FileRouteTypes {
     | '/auth/google'
     | '/auth/me'
     | '/blog/$slug'
-    | '/cloud/annotation-queue'
-    | '/cloud/dashboard'
     | '/cloud/login'
-    | '/cloud/onboarding'
     | '/cloud/settings'
-    | '/cloud/traces'
     | '/dev/$slug'
     | '/dev/audit-metadata'
     | '/dev/layout-test'
@@ -596,7 +605,10 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
-    | '/cloud/functions/$functionName'
+    | '/cloud/projects/annotation-queue'
+    | '/cloud/projects/dashboard'
+    | '/cloud/projects/onboarding'
+    | '/cloud/projects/traces'
     | '/cloud/settings/api-keys'
     | '/cloud/settings/billing'
     | '/cloud/settings/me'
@@ -604,10 +616,12 @@ export interface FileRouteTypes {
     | '/cloud/settings/project'
     | '/cloud/settings/team'
     | '/docs/v1/$'
-    | '/cloud/functions/'
+    | '/cloud/projects/'
     | '/cloud/settings/'
-    | '/cloud/trace-view/$traceId/$spanId'
+    | '/cloud/projects/functions/$functionName'
     | '/router/v2/$provider/$'
+    | '/cloud/projects/functions/'
+    | '/cloud/projects/trace-view/$traceId/$spanId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -760,13 +774,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DevSlugRouteImport
       parentRoute: typeof DevRoute
     }
-    '/cloud/traces': {
-      id: '/cloud/traces'
-      path: '/traces'
-      fullPath: '/cloud/traces'
-      preLoaderRoute: typeof CloudTracesRouteImport
-      parentRoute: typeof CloudRoute
-    }
     '/cloud/settings': {
       id: '/cloud/settings'
       path: '/settings'
@@ -774,32 +781,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CloudSettingsRouteImport
       parentRoute: typeof CloudRoute
     }
-    '/cloud/onboarding': {
-      id: '/cloud/onboarding'
-      path: '/onboarding'
-      fullPath: '/cloud/onboarding'
-      preLoaderRoute: typeof CloudOnboardingRouteImport
-      parentRoute: typeof CloudRoute
-    }
     '/cloud/login': {
       id: '/cloud/login'
       path: '/login'
       fullPath: '/cloud/login'
       preLoaderRoute: typeof CloudLoginRouteImport
-      parentRoute: typeof CloudRoute
-    }
-    '/cloud/dashboard': {
-      id: '/cloud/dashboard'
-      path: '/dashboard'
-      fullPath: '/cloud/dashboard'
-      preLoaderRoute: typeof CloudDashboardRouteImport
-      parentRoute: typeof CloudRoute
-    }
-    '/cloud/annotation-queue': {
-      id: '/cloud/annotation-queue'
-      path: '/annotation-queue'
-      fullPath: '/cloud/annotation-queue'
-      preLoaderRoute: typeof CloudAnnotationQueueRouteImport
       parentRoute: typeof CloudRoute
     }
     '/blog/$slug': {
@@ -844,11 +830,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CloudSettingsIndexRouteImport
       parentRoute: typeof CloudSettingsRoute
     }
-    '/cloud/functions/': {
-      id: '/cloud/functions/'
-      path: '/functions'
-      fullPath: '/cloud/functions'
-      preLoaderRoute: typeof CloudFunctionsIndexRouteImport
+    '/cloud/projects/': {
+      id: '/cloud/projects/'
+      path: '/projects'
+      fullPath: '/cloud/projects'
+      preLoaderRoute: typeof CloudProjectsIndexRouteImport
       parentRoute: typeof CloudRoute
     }
     '/docs/v1/$': {
@@ -900,11 +886,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CloudSettingsApiKeysRouteImport
       parentRoute: typeof CloudSettingsRoute
     }
-    '/cloud/functions/$functionName': {
-      id: '/cloud/functions/$functionName'
-      path: '/functions/$functionName'
-      fullPath: '/cloud/functions/$functionName'
-      preLoaderRoute: typeof CloudFunctionsFunctionNameRouteImport
+    '/cloud/projects/traces': {
+      id: '/cloud/projects/traces'
+      path: '/projects/traces'
+      fullPath: '/cloud/projects/traces'
+      preLoaderRoute: typeof CloudProjectsTracesRouteImport
+      parentRoute: typeof CloudRoute
+    }
+    '/cloud/projects/onboarding': {
+      id: '/cloud/projects/onboarding'
+      path: '/projects/onboarding'
+      fullPath: '/cloud/projects/onboarding'
+      preLoaderRoute: typeof CloudProjectsOnboardingRouteImport
+      parentRoute: typeof CloudRoute
+    }
+    '/cloud/projects/dashboard': {
+      id: '/cloud/projects/dashboard'
+      path: '/projects/dashboard'
+      fullPath: '/cloud/projects/dashboard'
+      preLoaderRoute: typeof CloudProjectsDashboardRouteImport
+      parentRoute: typeof CloudRoute
+    }
+    '/cloud/projects/annotation-queue': {
+      id: '/cloud/projects/annotation-queue'
+      path: '/projects/annotation-queue'
+      fullPath: '/cloud/projects/annotation-queue'
+      preLoaderRoute: typeof CloudProjectsAnnotationQueueRouteImport
       parentRoute: typeof CloudRoute
     }
     '/auth/google/proxy-callback': {
@@ -963,6 +970,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV2SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cloud/projects/functions/': {
+      id: '/cloud/projects/functions/'
+      path: '/projects/functions'
+      fullPath: '/cloud/projects/functions'
+      preLoaderRoute: typeof CloudProjectsFunctionsIndexRouteImport
+      parentRoute: typeof CloudRoute
+    }
     '/router/v2/$provider/$': {
       id: '/router/v2/$provider/$'
       path: '/router/v2/$provider/$'
@@ -970,11 +984,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RouterV2ProviderSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/cloud/trace-view/$traceId/$spanId': {
-      id: '/cloud/trace-view/$traceId/$spanId'
-      path: '/trace-view/$traceId/$spanId'
-      fullPath: '/cloud/trace-view/$traceId/$spanId'
-      preLoaderRoute: typeof CloudTraceViewTraceIdSpanIdRouteImport
+    '/cloud/projects/functions/$functionName': {
+      id: '/cloud/projects/functions/$functionName'
+      path: '/projects/functions/$functionName'
+      fullPath: '/cloud/projects/functions/$functionName'
+      preLoaderRoute: typeof CloudProjectsFunctionsFunctionNameRouteImport
+      parentRoute: typeof CloudRoute
+    }
+    '/cloud/projects/trace-view/$traceId/$spanId': {
+      id: '/cloud/projects/trace-view/$traceId/$spanId'
+      path: '/projects/trace-view/$traceId/$spanId'
+      fullPath: '/cloud/projects/trace-view/$traceId/$spanId'
+      preLoaderRoute: typeof CloudProjectsTraceViewTraceIdSpanIdRouteImport
       parentRoute: typeof CloudRoute
     }
   }
@@ -1017,29 +1038,33 @@ const CloudSettingsRouteWithChildren = CloudSettingsRoute._addFileChildren(
 )
 
 interface CloudRouteChildren {
-  CloudAnnotationQueueRoute: typeof CloudAnnotationQueueRoute
-  CloudDashboardRoute: typeof CloudDashboardRoute
   CloudLoginRoute: typeof CloudLoginRoute
-  CloudOnboardingRoute: typeof CloudOnboardingRoute
   CloudSettingsRoute: typeof CloudSettingsRouteWithChildren
-  CloudTracesRoute: typeof CloudTracesRoute
   CloudIndexRoute: typeof CloudIndexRoute
-  CloudFunctionsFunctionNameRoute: typeof CloudFunctionsFunctionNameRoute
-  CloudFunctionsIndexRoute: typeof CloudFunctionsIndexRoute
-  CloudTraceViewTraceIdSpanIdRoute: typeof CloudTraceViewTraceIdSpanIdRoute
+  CloudProjectsAnnotationQueueRoute: typeof CloudProjectsAnnotationQueueRoute
+  CloudProjectsDashboardRoute: typeof CloudProjectsDashboardRoute
+  CloudProjectsOnboardingRoute: typeof CloudProjectsOnboardingRoute
+  CloudProjectsTracesRoute: typeof CloudProjectsTracesRoute
+  CloudProjectsIndexRoute: typeof CloudProjectsIndexRoute
+  CloudProjectsFunctionsFunctionNameRoute: typeof CloudProjectsFunctionsFunctionNameRoute
+  CloudProjectsFunctionsIndexRoute: typeof CloudProjectsFunctionsIndexRoute
+  CloudProjectsTraceViewTraceIdSpanIdRoute: typeof CloudProjectsTraceViewTraceIdSpanIdRoute
 }
 
 const CloudRouteChildren: CloudRouteChildren = {
-  CloudAnnotationQueueRoute: CloudAnnotationQueueRoute,
-  CloudDashboardRoute: CloudDashboardRoute,
   CloudLoginRoute: CloudLoginRoute,
-  CloudOnboardingRoute: CloudOnboardingRoute,
   CloudSettingsRoute: CloudSettingsRouteWithChildren,
-  CloudTracesRoute: CloudTracesRoute,
   CloudIndexRoute: CloudIndexRoute,
-  CloudFunctionsFunctionNameRoute: CloudFunctionsFunctionNameRoute,
-  CloudFunctionsIndexRoute: CloudFunctionsIndexRoute,
-  CloudTraceViewTraceIdSpanIdRoute: CloudTraceViewTraceIdSpanIdRoute,
+  CloudProjectsAnnotationQueueRoute: CloudProjectsAnnotationQueueRoute,
+  CloudProjectsDashboardRoute: CloudProjectsDashboardRoute,
+  CloudProjectsOnboardingRoute: CloudProjectsOnboardingRoute,
+  CloudProjectsTracesRoute: CloudProjectsTracesRoute,
+  CloudProjectsIndexRoute: CloudProjectsIndexRoute,
+  CloudProjectsFunctionsFunctionNameRoute:
+    CloudProjectsFunctionsFunctionNameRoute,
+  CloudProjectsFunctionsIndexRoute: CloudProjectsFunctionsIndexRoute,
+  CloudProjectsTraceViewTraceIdSpanIdRoute:
+    CloudProjectsTraceViewTraceIdSpanIdRoute,
 }
 
 const CloudRouteWithChildren = CloudRoute._addFileChildren(CloudRouteChildren)

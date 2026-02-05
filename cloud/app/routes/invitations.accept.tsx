@@ -52,7 +52,7 @@ function AcceptInvitationPage() {
 
       // Redirect to cloud dashboard after short delay
       setTimeout(() => {
-        void navigate({ to: "/cloud/dashboard" });
+        void navigate({ to: "/cloud/projects/dashboard" });
       }, 2000);
     } catch (error) {
       setState("error");

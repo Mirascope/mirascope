@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-import { CreateOrganizationModal } from "@/app/components/create-organization-modal";
 import { DeleteOrganizationModal } from "@/app/components/delete-organization-modal";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -18,21 +17,14 @@ import { useOrganization } from "@/app/contexts/organization";
 
 function OrganizationSettingsPage() {
   const { selectedOrganization, isLoading } = useOrganization();
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const header = (
-    <div className="mb-6 flex items-start justify-between">
-      <div>
-        <h1 className="text-2xl font-semibold">Organization</h1>
-        <p className="text-muted-foreground mt-1">
-          Manage your organization settings
-        </p>
-      </div>
-      <Button onClick={() => setShowCreateModal(true)}>
-        <Plus className="h-4 w-4 mr-2" />
-        New Organization
-      </Button>
+    <div className="mb-6">
+      <h1 className="text-2xl font-semibold">Organization</h1>
+      <p className="text-muted-foreground mt-1">
+        Manage your organization settings
+      </p>
     </div>
   );
 
@@ -43,10 +35,6 @@ function OrganizationSettingsPage() {
         <div className="flex justify-center pt-12">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
-        <CreateOrganizationModal
-          open={showCreateModal}
-          onOpenChange={setShowCreateModal}
-        />
       </div>
     );
   }
@@ -57,13 +45,9 @@ function OrganizationSettingsPage() {
         {header}
         <div className="flex justify-center pt-12">
           <div className="text-muted-foreground">
-            Please select an organization
+            Please select an organization from the menu above
           </div>
         </div>
-        <CreateOrganizationModal
-          open={showCreateModal}
-          onOpenChange={setShowCreateModal}
-        />
       </div>
     );
   }
@@ -128,10 +112,6 @@ function OrganizationSettingsPage() {
         </CardContent>
       </Card>
 
-      <CreateOrganizationModal
-        open={showCreateModal}
-        onOpenChange={setShowCreateModal}
-      />
       <DeleteOrganizationModal
         open={showDeleteModal}
         onOpenChange={setShowDeleteModal}

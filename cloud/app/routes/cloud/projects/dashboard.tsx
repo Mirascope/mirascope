@@ -132,6 +132,6 @@ function CloudDashboardPage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/dashboard")({
+export const Route = createFileRoute("/cloud/projects/dashboard")({
   component: CloudDashboardPage,
 });

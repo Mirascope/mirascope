@@ -142,7 +142,7 @@ function FunctionDetailPage() {
       const found = allVersions.find((f) => f.id === versionFromUrl);
       if (!found) {
         void navigate({
-          to: "/cloud/functions/$functionName",
+          to: "/cloud/projects/functions/$functionName",
           params: { functionName },
           search: {},
           replace: true,
@@ -157,7 +157,7 @@ function FunctionDetailPage() {
       version_id: newVersionId,
     });
     void navigate({
-      to: "/cloud/functions/$functionName",
+      to: "/cloud/projects/functions/$functionName",
       params: { functionName },
       search: { version: newVersionId },
       replace: true,
@@ -254,7 +254,7 @@ function FunctionDetailPage() {
                 <p className="text-muted-foreground mb-2 text-lg">
                   Function not found.
                 </p>
-                <Link to="/cloud/functions">
+                <Link to="/cloud/projects/functions">
                   <Button variant="outline" size="sm">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Functions
@@ -275,7 +275,7 @@ function FunctionDetailPage() {
           {/* Header */}
           <div className="shrink-0 p-6 pb-4">
             <div className="mb-2 flex items-center gap-2">
-              <Link to="/cloud/functions">
+              <Link to="/cloud/projects/functions">
                 <Button variant="ghost" size="sm">
                   <ArrowLeft className="mr-1 h-4 w-4" />
                   Functions
@@ -504,9 +504,13 @@ type FunctionSearchParams = {
   version?: string;
 };
 
-export const Route = createFileRoute("/cloud/functions/$functionName")({
-  component: FunctionDetailPage,
-  validateSearch: (search: Record<string, unknown>): FunctionSearchParams => ({
-    version: typeof search.version === "string" ? search.version : undefined,
-  }),
-});
+export const Route = createFileRoute("/cloud/projects/functions/$functionName")(
+  {
+    component: FunctionDetailPage,
+    validateSearch: (
+      search: Record<string, unknown>,
+    ): FunctionSearchParams => ({
+      version: typeof search.version === "string" ? search.version : undefined,
+    }),
+  },
+);

@@ -76,7 +76,7 @@ function OnboardingContent() {
   // But don't redirect if we're in the middle of onboarding (hasStartedOnboarding)
   useEffect(() => {
     if (!isLoadingOrgs && !needsOnboarding && !hasStartedOnboarding) {
-      void navigate({ to: "/cloud/dashboard", replace: true });
+      void navigate({ to: "/cloud/projects/dashboard", replace: true });
     }
   }, [isLoadingOrgs, needsOnboarding, hasStartedOnboarding, navigate]);
 
@@ -119,7 +119,7 @@ function OnboardingContent() {
 
   const handleGoToDashboard = () => {
     completeOnboarding();
-    void navigate({ to: "/cloud/dashboard", replace: true });
+    void navigate({ to: "/cloud/projects/dashboard", replace: true });
   };
 
   // Show loading state while checking if onboarding is needed
@@ -271,6 +271,6 @@ function OnboardingPage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/onboarding")({
+export const Route = createFileRoute("/cloud/projects/onboarding")({
   component: OnboardingPage,
 });

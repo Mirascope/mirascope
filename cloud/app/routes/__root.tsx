@@ -20,6 +20,7 @@ import {
 import { Toaster } from "@/app/components/ui/sonner";
 import { AnalyticsProvider } from "@/app/contexts/analytics";
 import { AuthProvider } from "@/app/contexts/auth";
+import { OrganizationProvider } from "@/app/contexts/organization";
 import { usePageView } from "@/app/hooks/use-page-view";
 import globalsCss from "@/app/styles/globals.css?url";
 
@@ -112,7 +113,9 @@ function RootComponent() {
           <QueryClientProvider client={queryClient}>
             <AnalyticsProvider>
               <AuthProvider>
-                <AppContent />
+                <OrganizationProvider>
+                  <AppContent />
+                </OrganizationProvider>
               </AuthProvider>
             </AnalyticsProvider>
           </QueryClientProvider>

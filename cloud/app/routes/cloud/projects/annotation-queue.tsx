@@ -77,6 +77,6 @@ function AnnotationQueuePage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/annotation-queue")({
+export const Route = createFileRoute("/cloud/projects/annotation-queue")({
   component: AnnotationQueuePage,
 });
