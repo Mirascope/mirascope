@@ -8,8 +8,8 @@ export interface TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem {
   parentSpanId?: string | null;
   name: string;
   kind?: number;
-  startTimeUnixNano: string;
-  endTimeUnixNano: string;
+  startTimeUnixNano: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano;
+  endTimeUnixNano: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano;
   attributes?: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem[];
   droppedAttributesCount?: number;
   events?: unknown[];

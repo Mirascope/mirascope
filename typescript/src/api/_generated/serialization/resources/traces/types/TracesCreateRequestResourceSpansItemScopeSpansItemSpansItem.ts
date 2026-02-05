@@ -5,6 +5,8 @@ import type * as serializers from "../../../index.js";
 
 import * as core from "../../../../core/index.js";
 import { TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem } from "./TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem.js";
+import { TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano } from "./TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano.js";
+import { TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano } from "./TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano.js";
 import { TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus } from "./TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus.js";
 
 export const TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem: core.serialization.ObjectSchema<
@@ -16,8 +18,10 @@ export const TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem: core.s
   parentSpanId: core.serialization.string().optionalNullable(),
   name: core.serialization.string(),
   kind: core.serialization.number().optional(),
-  startTimeUnixNano: core.serialization.string(),
-  endTimeUnixNano: core.serialization.string(),
+  startTimeUnixNano:
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano,
+  endTimeUnixNano:
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano,
   attributes: core.serialization
     .list(
       TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem,
@@ -39,8 +43,8 @@ export declare namespace TracesCreateRequestResourceSpansItemScopeSpansItemSpans
     parentSpanId?: (string | null | undefined) | null;
     name: string;
     kind?: number | null;
-    startTimeUnixNano: string;
-    endTimeUnixNano: string;
+    startTimeUnixNano: TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano.Raw;
+    endTimeUnixNano: TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano.Raw;
     attributes?:
       | TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem.Raw[]
       | null;

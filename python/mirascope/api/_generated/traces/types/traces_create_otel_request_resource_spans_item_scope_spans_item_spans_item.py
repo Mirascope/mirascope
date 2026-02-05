@@ -9,6 +9,12 @@ from ...core.serialization import FieldMetadata
 from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_attributes_item import (
     TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem,
 )
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_end_time_unix_nano import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_start_time_unix_nano import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano,
+)
 from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_status import (
     TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStatus,
 )
@@ -25,10 +31,12 @@ class TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem(
     name: str
     kind: typing.Optional[float] = None
     start_time_unix_nano: typing_extensions.Annotated[
-        str, FieldMetadata(alias="startTimeUnixNano")
+        TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano,
+        FieldMetadata(alias="startTimeUnixNano"),
     ]
     end_time_unix_nano: typing_extensions.Annotated[
-        str, FieldMetadata(alias="endTimeUnixNano")
+        TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano,
+        FieldMetadata(alias="endTimeUnixNano"),
     ]
     attributes: typing.Optional[
         typing.List[

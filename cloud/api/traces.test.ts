@@ -1,4 +1,4 @@
-import { Effect, Layer } from "effect";
+import { Effect, Layer, Schema } from "effect";
 
 import type { PublicProject, PublicEnvironment } from "@/db/schema";
 
@@ -8,6 +8,7 @@ import {
   DEFAULT_LIST_OFFSET,
   listByFunctionHashHandler,
 } from "@/api/traces.handlers";
+import { CreateTraceRequestSchema } from "@/api/traces.schemas";
 import { Authentication } from "@/auth";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { Database } from "@/db/database";
@@ -27,6 +28,89 @@ describe("traces.handlers constants", () => {
 
   it("DEFAULT_LIST_OFFSET is 0", () => {
     expect(DEFAULT_LIST_OFFSET).toBe(0);
+  });
+});
+
+describe("CreateTraceRequestSchema", () => {
+  const decode = Schema.decodeUnknownSync(CreateTraceRequestSchema);
+
+  it("accepts numeric intValue and timestamps (Node.js OTEL SDK compat)", () => {
+    const input = {
+      resourceSpans: [
+        {
+          resource: {
+            attributes: [
+              {
+                key: "service.name",
+                value: { stringValue: "node-otel-service" },
+              },
+              { key: "telemetry.sdk.version", value: { intValue: 5862 } },
+            ],
+          },
+          scopeSpans: [
+            {
+              scope: { name: "node-otel-scope", version: "1.0.0" },
+              spans: [
+                {
+                  traceId: "numeric-ts-trace-id",
+                  spanId: "numeric-ts-span-id",
+                  name: "numeric-ts-span",
+                  startTimeUnixNano: 1000000000,
+                  endTimeUnixNano: 2000000000,
+                  attributes: [
+                    { key: "http.status_code", value: { intValue: 200 } },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const result = decode(input);
+
+    // intValue should be decoded to string
+    const attrs = result.resourceSpans[0].resource!.attributes!;
+    expect(attrs[1].value.intValue).toBe("5862");
+
+    // Timestamps should be decoded to string
+    const span = result.resourceSpans[0].scopeSpans[0].spans[0];
+    expect(span.startTimeUnixNano).toBe("1000000000");
+    expect(span.endTimeUnixNano).toBe("2000000000");
+
+    // Span attribute intValue should also be decoded to string
+    expect(span.attributes![0].value.intValue).toBe("200");
+  });
+
+  it("still accepts string intValue and timestamps", () => {
+    const input = {
+      resourceSpans: [
+        {
+          scopeSpans: [
+            {
+              spans: [
+                {
+                  traceId: "test-trace-id",
+                  spanId: "test-span-id",
+                  name: "test-span",
+                  startTimeUnixNano: "1000000000",
+                  endTimeUnixNano: "2000000000",
+                  attributes: [{ key: "count", value: { intValue: "42" } }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const result = decode(input);
+
+    const span = result.resourceSpans[0].scopeSpans[0].spans[0];
+    expect(span.startTimeUnixNano).toBe("1000000000");
+    expect(span.endTimeUnixNano).toBe("2000000000");
+    expect(span.attributes![0].value.intValue).toBe("42");
   });
 });
 

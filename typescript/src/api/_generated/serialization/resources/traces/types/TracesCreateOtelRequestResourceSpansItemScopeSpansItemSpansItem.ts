@@ -5,6 +5,8 @@ import type * as serializers from "../../../index.js";
 
 import * as core from "../../../../core/index.js";
 import { TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem } from "./TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem.js";
+import { TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano } from "./TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano.js";
+import { TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano } from "./TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano.js";
 import { TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStatus } from "./TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStatus.js";
 
 export const TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem: core.serialization.ObjectSchema<
@@ -16,8 +18,10 @@ export const TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem: co
   parentSpanId: core.serialization.string().optionalNullable(),
   name: core.serialization.string(),
   kind: core.serialization.number().optional(),
-  startTimeUnixNano: core.serialization.string(),
-  endTimeUnixNano: core.serialization.string(),
+  startTimeUnixNano:
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano,
+  endTimeUnixNano:
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano,
   attributes: core.serialization
     .list(
       TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem,
@@ -39,8 +43,8 @@ export declare namespace TracesCreateOtelRequestResourceSpansItemScopeSpansItemS
     parentSpanId?: (string | null | undefined) | null;
     name: string;
     kind?: number | null;
-    startTimeUnixNano: string;
-    endTimeUnixNano: string;
+    startTimeUnixNano: TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano.Raw;
+    endTimeUnixNano: TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano.Raw;
     attributes?:
       | TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem.Raw[]
       | null;

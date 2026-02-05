@@ -5,6 +5,7 @@ import type * as serializers from "../../../index.js";
 
 import * as core from "../../../../core/index.js";
 import { TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueArrayValue } from "./TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueArrayValue.js";
+import { TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueIntValue } from "./TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueIntValue.js";
 import { TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueKvlistValue } from "./TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueKvlistValue.js";
 
 export const TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValue: core.serialization.ObjectSchema<
@@ -12,7 +13,8 @@ export const TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValue
   Mirascope.TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValue
 > = core.serialization.object({
   stringValue: core.serialization.string().optional(),
-  intValue: core.serialization.string().optional(),
+  intValue:
+    TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueIntValue.optional(),
   doubleValue: core.serialization.number().optional(),
   boolValue: core.serialization.boolean().optional(),
   arrayValue:
@@ -24,7 +26,7 @@ export const TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValue
 export declare namespace TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValue {
   export interface Raw {
     stringValue?: string | null;
-    intValue?: string | null;
+    intValue?: TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueIntValue.Raw | null;
     doubleValue?: number | null;
     boolValue?: boolean | null;
     arrayValue?: TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueArrayValue.Raw | null;
