@@ -120,6 +120,81 @@ client.traces.create(
 </dl>
 </details>
 
+<details><summary><code>client.traces.<a href="src/mirascope/traces/client.py">createotel</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from mirascope.api._generated import Mirascope
+from mirascope.api._generated.traces import (
+    TracesCreateOtelRequestResourceSpansItem,
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItem,
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem,
+)
+
+client = Mirascope()
+client.traces.createotel(
+    resource_spans=[
+        TracesCreateOtelRequestResourceSpansItem(
+            scope_spans=[
+                TracesCreateOtelRequestResourceSpansItemScopeSpansItem(
+                    spans=[
+                        TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem(
+                            trace_id="traceId",
+                            span_id="spanId",
+                            name="name",
+                            start_time_unix_nano="startTimeUnixNano",
+                            end_time_unix_nano="endTimeUnixNano",
+                        )
+                    ],
+                )
+            ],
+        )
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**resource_spans:** `typing.Sequence[TracesCreateOtelRequestResourceSpansItem]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.traces.<a href="src/mirascope/traces/client.py">search</a>(...)</code></summary>
 <dl>
 <dd>

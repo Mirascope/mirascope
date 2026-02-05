@@ -2,6 +2,73 @@
 
 # isort: skip_file
 
+from .traces_create_otel_request_resource_spans_item import (
+    TracesCreateOtelRequestResourceSpansItem,
+)
+from .traces_create_otel_request_resource_spans_item_resource import (
+    TracesCreateOtelRequestResourceSpansItemResource,
+)
+from .traces_create_otel_request_resource_spans_item_resource_attributes_item import (
+    TracesCreateOtelRequestResourceSpansItemResourceAttributesItem,
+)
+from .traces_create_otel_request_resource_spans_item_resource_attributes_item_value import (
+    TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValue,
+)
+from .traces_create_otel_request_resource_spans_item_resource_attributes_item_value_array_value import (
+    TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueArrayValue,
+)
+from .traces_create_otel_request_resource_spans_item_resource_attributes_item_value_kvlist_value import (
+    TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueKvlistValue,
+)
+from .traces_create_otel_request_resource_spans_item_resource_attributes_item_value_kvlist_value_values_item import (
+    TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueKvlistValueValuesItem,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItem,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_scope import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemScope,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_scope_attributes_item import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItem,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_scope_attributes_item_value import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValue,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_scope_attributes_item_value_array_value import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueArrayValue,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_scope_attributes_item_value_kvlist_value import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValue,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_scope_attributes_item_value_kvlist_value_values_item import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValueValuesItem,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_attributes_item import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_attributes_item_value import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_attributes_item_value_array_value import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueArrayValue,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_attributes_item_value_kvlist_value import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValue,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_attributes_item_value_kvlist_value_values_item import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValueValuesItem,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_status import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStatus,
+)
+from .traces_create_otel_response import TracesCreateOtelResponse
+from .traces_create_otel_response_partial_success import (
+    TracesCreateOtelResponsePartialSuccess,
+)
 from .traces_create_request_resource_spans_item import (
     TracesCreateRequestResourceSpansItem,
 )
@@ -108,6 +175,29 @@ from .traces_search_response import TracesSearchResponse
 from .traces_search_response_spans_item import TracesSearchResponseSpansItem
 
 __all__ = [
+    "TracesCreateOtelRequestResourceSpansItem",
+    "TracesCreateOtelRequestResourceSpansItemResource",
+    "TracesCreateOtelRequestResourceSpansItemResourceAttributesItem",
+    "TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValue",
+    "TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueArrayValue",
+    "TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueKvlistValue",
+    "TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueKvlistValueValuesItem",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItem",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemScope",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItem",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValue",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueArrayValue",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValue",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValueValuesItem",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueArrayValue",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValue",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValueValuesItem",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStatus",
+    "TracesCreateOtelResponse",
+    "TracesCreateOtelResponsePartialSuccess",
     "TracesCreateRequestResourceSpansItem",
     "TracesCreateRequestResourceSpansItemResource",
     "TracesCreateRequestResourceSpansItemResourceAttributesItem",

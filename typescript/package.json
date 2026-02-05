@@ -1,6 +1,6 @@
 {
   "name": "mirascope",
-  "version": "2.2.0-alpha.2",
+  "version": "2.2.1-alpha.3",
   "private": false,
   "license": "MIT",
   "workspaces": [
