@@ -163,6 +163,23 @@ export class TracesApi extends HttpApiGroup.make("traces")
       .addError(StripeError, { status: StripeError.status }),
   )
   .add(
+    // OTEL-compatible endpoint at /v1/traces (results in /api/v2/v1/traces)
+    HttpApiEndpoint.post("createOtel", "/v1/traces")
+      .setPayload(CreateTraceRequestSchema)
+      .addSuccess(CreateTraceResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      })
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(AlreadyExistsError, { status: AlreadyExistsError.status })
+      .addError(PlanLimitExceededError, {
+        status: PlanLimitExceededError.status,
+      })
+      .addError(StripeError, { status: StripeError.status }),
+  )
+  .add(
     HttpApiEndpoint.post("search", "/traces/search")
       .setPayload(SearchRequestSchema)
       .addSuccess(SearchResponseSchema)
