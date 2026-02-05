@@ -322,6 +322,44 @@ describe.sequential("Traces API", (it) => {
     }),
   );
 
+  it.effect(
+    "POST /v1/traces - creates trace via OTEL-compatible endpoint",
+    () =>
+      Effect.gen(function* () {
+        const payload = {
+          resourceSpans: [
+            {
+              resource: {
+                attributes: [
+                  {
+                    key: "service.name",
+                    value: { stringValue: "otel-test-service" },
+                  },
+                ],
+              },
+              scopeSpans: [
+                {
+                  scope: { name: "otel-test-scope", version: "1.0.0" },
+                  spans: [
+                    {
+                      traceId: "otel-test-trace-id",
+                      spanId: "otel-test-span-id",
+                      name: "otel-test-span",
+                      startTimeUnixNano: "1000000000",
+                      endTimeUnixNano: "2000000000",
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        };
+
+        const result = yield* apiKeyClient.traces.createOtel({ payload });
+        expect(result.partialSuccess).toBeDefined();
+      }),
+  );
+
   it.effect("POST /traces - returns partialSuccess on rejected spans", () =>
     Effect.gen(function* () {
       const payload = {

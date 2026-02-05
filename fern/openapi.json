@@ -608,6 +608,536 @@
         }
       }
     },
+    "/v1/traces": {
+      "post": {
+        "tags": [
+          "traces"
+        ],
+        "operationId": "traces.createOtel",
+        "parameters": [],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [],
+                  "properties": {
+                    "partialSuccess": {
+                      "type": "object",
+                      "required": [],
+                      "properties": {
+                        "rejectedSpans": {
+                          "type": "number"
+                        },
+                        "errorMessage": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request did not match the expected schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpApiDecodeError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "PlanLimitExceededError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanLimitExceededError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "PermissionDeniedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionDeniedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "AlreadyExistsError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlreadyExistsError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "DatabaseError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/StripeError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ServiceUnavailableError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceUnavailableError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "resourceSpans"
+                ],
+                "properties": {
+                  "resourceSpans": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "scopeSpans"
+                      ],
+                      "properties": {
+                        "resource": {
+                          "type": "object",
+                          "required": [],
+                          "properties": {
+                            "attributes": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "required": [
+                                  "key",
+                                  "value"
+                                ],
+                                "properties": {
+                                  "key": {
+                                    "type": "string"
+                                  },
+                                  "value": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                      "stringValue": {
+                                        "type": "string"
+                                      },
+                                      "intValue": {
+                                        "type": "string"
+                                      },
+                                      "doubleValue": {
+                                        "type": "number"
+                                      },
+                                      "boolValue": {
+                                        "type": "boolean"
+                                      },
+                                      "arrayValue": {
+                                        "type": "object",
+                                        "required": [
+                                          "values"
+                                        ],
+                                        "properties": {
+                                          "values": {
+                                            "type": "array",
+                                            "items": {
+                                              "$id": "/schemas/any",
+                                              "title": "any"
+                                            }
+                                          }
+                                        },
+                                        "additionalProperties": false
+                                      },
+                                      "kvlistValue": {
+                                        "type": "object",
+                                        "required": [
+                                          "values"
+                                        ],
+                                        "properties": {
+                                          "values": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "object",
+                                              "required": [
+                                                "key",
+                                                "value"
+                                              ],
+                                              "properties": {
+                                                "key": {
+                                                  "type": "string"
+                                                },
+                                                "value": {
+                                                  "$id": "/schemas/any",
+                                                  "title": "any"
+                                                }
+                                              },
+                                              "additionalProperties": false
+                                            }
+                                          }
+                                        },
+                                        "additionalProperties": false
+                                      }
+                                    },
+                                    "additionalProperties": false
+                                  }
+                                },
+                                "additionalProperties": false
+                              }
+                            },
+                            "droppedAttributesCount": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "scopeSpans": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "spans"
+                            ],
+                            "properties": {
+                              "scope": {
+                                "type": "object",
+                                "required": [
+                                  "name"
+                                ],
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "version": {
+                                    "type": "string"
+                                  },
+                                  "attributes": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "required": [
+                                        "key",
+                                        "value"
+                                      ],
+                                      "properties": {
+                                        "key": {
+                                          "type": "string"
+                                        },
+                                        "value": {
+                                          "type": "object",
+                                          "required": [],
+                                          "properties": {
+                                            "stringValue": {
+                                              "type": "string"
+                                            },
+                                            "intValue": {
+                                              "type": "string"
+                                            },
+                                            "doubleValue": {
+                                              "type": "number"
+                                            },
+                                            "boolValue": {
+                                              "type": "boolean"
+                                            },
+                                            "arrayValue": {
+                                              "type": "object",
+                                              "required": [
+                                                "values"
+                                              ],
+                                              "properties": {
+                                                "values": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "$id": "/schemas/any",
+                                                    "title": "any"
+                                                  }
+                                                }
+                                              },
+                                              "additionalProperties": false
+                                            },
+                                            "kvlistValue": {
+                                              "type": "object",
+                                              "required": [
+                                                "values"
+                                              ],
+                                              "properties": {
+                                                "values": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "object",
+                                                    "required": [
+                                                      "key",
+                                                      "value"
+                                                    ],
+                                                    "properties": {
+                                                      "key": {
+                                                        "type": "string"
+                                                      },
+                                                      "value": {
+                                                        "$id": "/schemas/any",
+                                                        "title": "any"
+                                                      }
+                                                    },
+                                                    "additionalProperties": false
+                                                  }
+                                                }
+                                              },
+                                              "additionalProperties": false
+                                            }
+                                          },
+                                          "additionalProperties": false
+                                        }
+                                      },
+                                      "additionalProperties": false
+                                    }
+                                  },
+                                  "droppedAttributesCount": {
+                                    "type": "number"
+                                  }
+                                },
+                                "additionalProperties": false
+                              },
+                              "spans": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "traceId",
+                                    "spanId",
+                                    "name",
+                                    "startTimeUnixNano",
+                                    "endTimeUnixNano"
+                                  ],
+                                  "properties": {
+                                    "traceId": {
+                                      "type": "string"
+                                    },
+                                    "spanId": {
+                                      "type": "string"
+                                    },
+                                    "parentSpanId": {
+                                      "anyOf": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "kind": {
+                                      "type": "number"
+                                    },
+                                    "startTimeUnixNano": {
+                                      "type": "string"
+                                    },
+                                    "endTimeUnixNano": {
+                                      "type": "string"
+                                    },
+                                    "attributes": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "required": [
+                                          "key",
+                                          "value"
+                                        ],
+                                        "properties": {
+                                          "key": {
+                                            "type": "string"
+                                          },
+                                          "value": {
+                                            "type": "object",
+                                            "required": [],
+                                            "properties": {
+                                              "stringValue": {
+                                                "type": "string"
+                                              },
+                                              "intValue": {
+                                                "type": "string"
+                                              },
+                                              "doubleValue": {
+                                                "type": "number"
+                                              },
+                                              "boolValue": {
+                                                "type": "boolean"
+                                              },
+                                              "arrayValue": {
+                                                "type": "object",
+                                                "required": [
+                                                  "values"
+                                                ],
+                                                "properties": {
+                                                  "values": {
+                                                    "type": "array",
+                                                    "items": {
+                                                      "$id": "/schemas/any",
+                                                      "title": "any"
+                                                    }
+                                                  }
+                                                },
+                                                "additionalProperties": false
+                                              },
+                                              "kvlistValue": {
+                                                "type": "object",
+                                                "required": [
+                                                  "values"
+                                                ],
+                                                "properties": {
+                                                  "values": {
+                                                    "type": "array",
+                                                    "items": {
+                                                      "type": "object",
+                                                      "required": [
+                                                        "key",
+                                                        "value"
+                                                      ],
+                                                      "properties": {
+                                                        "key": {
+                                                          "type": "string"
+                                                        },
+                                                        "value": {
+                                                          "$id": "/schemas/any",
+                                                          "title": "any"
+                                                        }
+                                                      },
+                                                      "additionalProperties": false
+                                                    }
+                                                  }
+                                                },
+                                                "additionalProperties": false
+                                              }
+                                            },
+                                            "additionalProperties": false
+                                          }
+                                        },
+                                        "additionalProperties": false
+                                      }
+                                    },
+                                    "droppedAttributesCount": {
+                                      "type": "number"
+                                    },
+                                    "events": {
+                                      "type": "array",
+                                      "items": {
+                                        "$id": "/schemas/unknown",
+                                        "title": "unknown"
+                                      }
+                                    },
+                                    "droppedEventsCount": {
+                                      "type": "number"
+                                    },
+                                    "status": {
+                                      "type": "object",
+                                      "required": [],
+                                      "properties": {
+                                        "code": {
+                                          "type": "number"
+                                        },
+                                        "message": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "additionalProperties": false
+                                    },
+                                    "links": {
+                                      "type": "array",
+                                      "items": {
+                                        "$id": "/schemas/unknown",
+                                        "title": "unknown"
+                                      }
+                                    },
+                                    "droppedLinksCount": {
+                                      "type": "number"
+                                    }
+                                  },
+                                  "additionalProperties": false
+                                }
+                              },
+                              "schemaUrl": {
+                                "type": "string"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "schemaUrl": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
     "/traces/search": {
       "post": {
         "tags": [

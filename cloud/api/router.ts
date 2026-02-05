@@ -106,6 +106,8 @@ const TracesHandlersLive = HttpApiBuilder.group(
   (handlers) =>
     handlers
       .handle("create", ({ payload }) => createTraceHandler(payload))
+      // OTEL-compatible endpoint at /api/v2/v1/traces
+      .handle("createOtel", ({ payload }) => createTraceHandler(payload))
       // API key route - extracts environmentId from apiKeyInfo
       .handle("search", ({ payload }) =>
         Effect.gen(function* () {
