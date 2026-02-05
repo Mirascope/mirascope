@@ -5,6 +5,7 @@ import typing
 import httpx
 from .annotations.client import AnnotationsClient, AsyncAnnotationsClient
 from .api_keys.client import ApiKeysClient, AsyncApiKeysClient
+from .claws.client import AsyncClawsClient, ClawsClient
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .docs.client import AsyncDocsClient, DocsClient
 from .environment import MirascopeEnvironment
@@ -109,6 +110,7 @@ class Mirascope:
         self.api_keys = ApiKeysClient(client_wrapper=self._client_wrapper)
         self.functions = FunctionsClient(client_wrapper=self._client_wrapper)
         self.annotations = AnnotationsClient(client_wrapper=self._client_wrapper)
+        self.claws = ClawsClient(client_wrapper=self._client_wrapper)
         self.tags = TagsClient(client_wrapper=self._client_wrapper)
         self.token_cost = TokenCostClient(client_wrapper=self._client_wrapper)
 
@@ -194,6 +196,7 @@ class AsyncMirascope:
         self.api_keys = AsyncApiKeysClient(client_wrapper=self._client_wrapper)
         self.functions = AsyncFunctionsClient(client_wrapper=self._client_wrapper)
         self.annotations = AsyncAnnotationsClient(client_wrapper=self._client_wrapper)
+        self.claws = AsyncClawsClient(client_wrapper=self._client_wrapper)
         self.tags = AsyncTagsClient(client_wrapper=self._client_wrapper)
         self.token_cost = AsyncTokenCostClient(client_wrapper=self._client_wrapper)
 

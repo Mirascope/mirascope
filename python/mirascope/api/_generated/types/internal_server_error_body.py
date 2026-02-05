@@ -9,8 +9,8 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .database_error_tag import DatabaseErrorTag
 
 
-class InternalServerErrorBody_ClickHouseError(UniversalBaseModel):
-    tag: typing.Literal["ClickHouseError"] = "ClickHouseError"
+class InternalServerErrorBody_StripeError(UniversalBaseModel):
+    tag: typing.Literal["StripeError"] = "StripeError"
     message: str
     cause: typing.Optional[typing.Optional[typing.Any]] = None
 
@@ -45,5 +45,5 @@ class InternalServerErrorBody_DatabaseError(UniversalBaseModel):
 
 
 InternalServerErrorBody = typing.Union[
-    InternalServerErrorBody_ClickHouseError, InternalServerErrorBody_DatabaseError
+    InternalServerErrorBody_StripeError, InternalServerErrorBody_DatabaseError
 ]

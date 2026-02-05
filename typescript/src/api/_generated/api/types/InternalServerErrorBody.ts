@@ -3,12 +3,12 @@
 import type * as Mirascope from "../index.js";
 
 export type InternalServerErrorBody =
-  | Mirascope.InternalServerErrorBody.ClickHouseError
+  | Mirascope.InternalServerErrorBody.StripeError
   | Mirascope.InternalServerErrorBody.DatabaseError;
 
 export namespace InternalServerErrorBody {
-  export interface ClickHouseError extends Mirascope.ClickHouseError {
-    tag: "ClickHouseError";
+  export interface StripeError extends Mirascope.StripeError {
+    tag: "StripeError";
   }
 
   export interface DatabaseError extends Mirascope.DatabaseError {
