@@ -20,6 +20,10 @@ const TEST_CARDS = [
     filename: "blog-prompt-orchestration.webp",
     title: "Prompt Orchestration: Techniques, Challenges, and Best Practices",
   },
+  {
+    filename: "docs-v1-api-core-cohere-call.webp",
+    title: "mirascope.core.cohere.call",
+  },
 ];
 
 async function main() {

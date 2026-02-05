@@ -24,6 +24,13 @@ export function getTitleFontSize(title: string): {
   fontSize: number;
   label: string;
 } {
+  // Satori renderer limitation: titles with no whitespace can't wrap and may
+  // truncate, so use a fixed small font size to ensure they fit
+  const hasWhitespace = /\s/.test(title);
+  if (!hasWhitespace && title.length > 15) {
+    return { fontSize: 50, label: "No Whitespace" };
+  }
+
   const length = title.length;
   for (const { maxChars, fontSize, label } of FONT_SIZE_BREAKPOINTS) {
     if (length <= maxChars) {
