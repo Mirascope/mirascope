@@ -17,6 +17,9 @@ from .traces_create_otel_request_resource_spans_item_resource_attributes_item_va
 from .traces_create_otel_request_resource_spans_item_resource_attributes_item_value_array_value import (
     TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueArrayValue,
 )
+from .traces_create_otel_request_resource_spans_item_resource_attributes_item_value_int_value import (
+    TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueIntValue,
+)
 from .traces_create_otel_request_resource_spans_item_resource_attributes_item_value_kvlist_value import (
     TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueKvlistValue,
 )
@@ -38,6 +41,9 @@ from .traces_create_otel_request_resource_spans_item_scope_spans_item_scope_attr
 from .traces_create_otel_request_resource_spans_item_scope_spans_item_scope_attributes_item_value_array_value import (
     TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueArrayValue,
 )
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_scope_attributes_item_value_int_value import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueIntValue,
+)
 from .traces_create_otel_request_resource_spans_item_scope_spans_item_scope_attributes_item_value_kvlist_value import (
     TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValue,
 )
@@ -56,11 +62,20 @@ from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item
 from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_attributes_item_value_array_value import (
     TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueArrayValue,
 )
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_attributes_item_value_int_value import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueIntValue,
+)
 from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_attributes_item_value_kvlist_value import (
     TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValue,
 )
 from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_attributes_item_value_kvlist_value_values_item import (
     TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValueValuesItem,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_end_time_unix_nano import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano,
+)
+from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_start_time_unix_nano import (
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano,
 )
 from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item_status import (
     TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStatus,
@@ -84,6 +99,9 @@ from .traces_create_request_resource_spans_item_resource_attributes_item_value i
 from .traces_create_request_resource_spans_item_resource_attributes_item_value_array_value import (
     TracesCreateRequestResourceSpansItemResourceAttributesItemValueArrayValue,
 )
+from .traces_create_request_resource_spans_item_resource_attributes_item_value_int_value import (
+    TracesCreateRequestResourceSpansItemResourceAttributesItemValueIntValue,
+)
 from .traces_create_request_resource_spans_item_resource_attributes_item_value_kvlist_value import (
     TracesCreateRequestResourceSpansItemResourceAttributesItemValueKvlistValue,
 )
@@ -105,6 +123,9 @@ from .traces_create_request_resource_spans_item_scope_spans_item_scope_attribute
 from .traces_create_request_resource_spans_item_scope_spans_item_scope_attributes_item_value_array_value import (
     TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueArrayValue,
 )
+from .traces_create_request_resource_spans_item_scope_spans_item_scope_attributes_item_value_int_value import (
+    TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueIntValue,
+)
 from .traces_create_request_resource_spans_item_scope_spans_item_scope_attributes_item_value_kvlist_value import (
     TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValue,
 )
@@ -123,11 +144,20 @@ from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_attr
 from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_attributes_item_value_array_value import (
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueArrayValue,
 )
+from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_attributes_item_value_int_value import (
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueIntValue,
+)
 from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_attributes_item_value_kvlist_value import (
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValue,
 )
 from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_attributes_item_value_kvlist_value_values_item import (
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValueValuesItem,
+)
+from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_end_time_unix_nano import (
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano,
+)
+from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_start_time_unix_nano import (
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano,
 )
 from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_status import (
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus,
@@ -180,6 +210,7 @@ __all__ = [
     "TracesCreateOtelRequestResourceSpansItemResourceAttributesItem",
     "TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValue",
     "TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueArrayValue",
+    "TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueIntValue",
     "TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueKvlistValue",
     "TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueKvlistValueValuesItem",
     "TracesCreateOtelRequestResourceSpansItemScopeSpansItem",
@@ -187,14 +218,18 @@ __all__ = [
     "TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItem",
     "TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValue",
     "TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueArrayValue",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueIntValue",
     "TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValue",
     "TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValueValuesItem",
     "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem",
     "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem",
     "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue",
     "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueArrayValue",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueIntValue",
     "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValue",
     "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValueValuesItem",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano",
+    "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano",
     "TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStatus",
     "TracesCreateOtelResponse",
     "TracesCreateOtelResponsePartialSuccess",
@@ -203,6 +238,7 @@ __all__ = [
     "TracesCreateRequestResourceSpansItemResourceAttributesItem",
     "TracesCreateRequestResourceSpansItemResourceAttributesItemValue",
     "TracesCreateRequestResourceSpansItemResourceAttributesItemValueArrayValue",
+    "TracesCreateRequestResourceSpansItemResourceAttributesItemValueIntValue",
     "TracesCreateRequestResourceSpansItemResourceAttributesItemValueKvlistValue",
     "TracesCreateRequestResourceSpansItemResourceAttributesItemValueKvlistValueValuesItem",
     "TracesCreateRequestResourceSpansItemScopeSpansItem",
@@ -210,14 +246,18 @@ __all__ = [
     "TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItem",
     "TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValue",
     "TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueArrayValue",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueIntValue",
     "TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValue",
     "TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValueValuesItem",
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem",
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem",
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue",
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueArrayValue",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueIntValue",
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValue",
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValueValuesItem",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano",
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus",
     "TracesCreateResponse",
     "TracesCreateResponsePartialSuccess",

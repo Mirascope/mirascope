@@ -4,7 +4,7 @@ import type * as Mirascope from "../../../index.js";
 
 export interface TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue {
   stringValue?: string;
-  intValue?: string;
+  intValue?: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueIntValue;
   doubleValue?: number;
   boolValue?: boolean;
   arrayValue?: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueArrayValue;

@@ -253,7 +253,14 @@
                                         "type": "string"
                                       },
                                       "intValue": {
-                                        "type": "string"
+                                        "anyOf": [
+                                          {
+                                            "type": "string"
+                                          },
+                                          {
+                                            "type": "number"
+                                          }
+                                        ]
                                       },
                                       "doubleValue": {
                                         "type": "number"
@@ -359,7 +366,14 @@
                                               "type": "string"
                                             },
                                             "intValue": {
-                                              "type": "string"
+                                              "anyOf": [
+                                                {
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "type": "number"
+                                                }
+                                              ]
                                             },
                                             "doubleValue": {
                                               "type": "number"
@@ -460,10 +474,24 @@
                                       "type": "number"
                                     },
                                     "startTimeUnixNano": {
-                                      "type": "string"
+                                      "anyOf": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "number"
+                                        }
+                                      ]
                                     },
                                     "endTimeUnixNano": {
-                                      "type": "string"
+                                      "anyOf": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "number"
+                                        }
+                                      ]
                                     },
                                     "attributes": {
                                       "type": "array",
@@ -485,7 +513,14 @@
                                                 "type": "string"
                                               },
                                               "intValue": {
-                                                "type": "string"
+                                                "anyOf": [
+                                                  {
+                                                    "type": "string"
+                                                  },
+                                                  {
+                                                    "type": "number"
+                                                  }
+                                                ]
                                               },
                                               "doubleValue": {
                                                 "type": "number"
@@ -783,7 +818,14 @@
                                         "type": "string"
                                       },
                                       "intValue": {
-                                        "type": "string"
+                                        "anyOf": [
+                                          {
+                                            "type": "string"
+                                          },
+                                          {
+                                            "type": "number"
+                                          }
+                                        ]
                                       },
                                       "doubleValue": {
                                         "type": "number"
@@ -889,7 +931,14 @@
                                               "type": "string"
                                             },
                                             "intValue": {
-                                              "type": "string"
+                                              "anyOf": [
+                                                {
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "type": "number"
+                                                }
+                                              ]
                                             },
                                             "doubleValue": {
                                               "type": "number"
@@ -990,10 +1039,24 @@
                                       "type": "number"
                                     },
                                     "startTimeUnixNano": {
-                                      "type": "string"
+                                      "anyOf": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "number"
+                                        }
+                                      ]
                                     },
                                     "endTimeUnixNano": {
-                                      "type": "string"
+                                      "anyOf": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "number"
+                                        }
+                                      ]
                                     },
                                     "attributes": {
                                       "type": "array",
@@ -1015,7 +1078,14 @@
                                                 "type": "string"
                                               },
                                               "intValue": {
-                                                "type": "string"
+                                                "anyOf": [
+                                                  {
+                                                    "type": "string"
+                                                  },
+                                                  {
+                                                    "type": "number"
+                                                  }
+                                                ]
                                               },
                                               "doubleValue": {
                                                 "type": "number"

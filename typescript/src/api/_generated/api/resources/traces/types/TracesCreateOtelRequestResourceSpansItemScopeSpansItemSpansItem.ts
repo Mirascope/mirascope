@@ -8,8 +8,8 @@ export interface TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem
   parentSpanId?: string | null;
   name: string;
   kind?: number;
-  startTimeUnixNano: string;
-  endTimeUnixNano: string;
+  startTimeUnixNano: Mirascope.TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano;
+  endTimeUnixNano: Mirascope.TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano;
   attributes?: Mirascope.TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem[];
   droppedAttributesCount?: number;
   events?: unknown[];

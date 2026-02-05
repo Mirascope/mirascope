@@ -5,6 +5,7 @@ import type * as serializers from "../../../index.js";
 
 import * as core from "../../../../core/index.js";
 import { TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueArrayValue } from "./TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueArrayValue.js";
+import { TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueIntValue } from "./TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueIntValue.js";
 import { TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValue } from "./TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValue.js";
 
 export const TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue: core.serialization.ObjectSchema<
@@ -12,7 +13,8 @@ export const TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttr
   Mirascope.TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue
 > = core.serialization.object({
   stringValue: core.serialization.string().optional(),
-  intValue: core.serialization.string().optional(),
+  intValue:
+    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueIntValue.optional(),
   doubleValue: core.serialization.number().optional(),
   boolValue: core.serialization.boolean().optional(),
   arrayValue:
@@ -24,7 +26,7 @@ export const TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttr
 export declare namespace TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue {
   export interface Raw {
     stringValue?: string | null;
-    intValue?: string | null;
+    intValue?: TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueIntValue.Raw | null;
     doubleValue?: number | null;
     boolValue?: boolean | null;
     arrayValue?: TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueArrayValue.Raw | null;

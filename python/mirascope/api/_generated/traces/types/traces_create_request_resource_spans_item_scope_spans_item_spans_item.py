@@ -9,6 +9,12 @@ from ...core.serialization import FieldMetadata
 from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_attributes_item import (
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem,
 )
+from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_end_time_unix_nano import (
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano,
+)
+from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_start_time_unix_nano import (
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano,
+)
 from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_status import (
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus,
 )
@@ -17,13 +23,23 @@ from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_stat
 class TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem(UniversalBaseModel):
     trace_id: typing_extensions.Annotated[str, FieldMetadata(alias="traceId")]
     span_id: typing_extensions.Annotated[str, FieldMetadata(alias="spanId")]
-    parent_span_id: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="parentSpanId")] = None
+    parent_span_id: typing_extensions.Annotated[
+        typing.Optional[str], FieldMetadata(alias="parentSpanId")
+    ] = None
     name: str
     kind: typing.Optional[float] = None
-    start_time_unix_nano: typing_extensions.Annotated[str, FieldMetadata(alias="startTimeUnixNano")]
-    end_time_unix_nano: typing_extensions.Annotated[str, FieldMetadata(alias="endTimeUnixNano")]
+    start_time_unix_nano: typing_extensions.Annotated[
+        TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano,
+        FieldMetadata(alias="startTimeUnixNano"),
+    ]
+    end_time_unix_nano: typing_extensions.Annotated[
+        TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano,
+        FieldMetadata(alias="endTimeUnixNano"),
+    ]
     attributes: typing.Optional[
-        typing.List[TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem]
+        typing.List[
+            TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem
+        ]
     ] = None
     dropped_attributes_count: typing_extensions.Annotated[
         typing.Optional[float], FieldMetadata(alias="droppedAttributesCount")
@@ -32,14 +48,18 @@ class TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem(UniversalBaseM
     dropped_events_count: typing_extensions.Annotated[
         typing.Optional[float], FieldMetadata(alias="droppedEventsCount")
     ] = None
-    status: typing.Optional[TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus] = None
+    status: typing.Optional[
+        TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus
+    ] = None
     links: typing.Optional[typing.List[typing.Optional[typing.Any]]] = None
     dropped_links_count: typing_extensions.Annotated[
         typing.Optional[float], FieldMetadata(alias="droppedLinksCount")
     ] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
+            extra="allow", frozen=True
+        )  # type: ignore # Pydantic v2
     else:
 
         class Config:

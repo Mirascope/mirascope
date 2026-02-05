@@ -9,6 +9,9 @@ from ...core.serialization import FieldMetadata
 from .traces_create_otel_request_resource_spans_item_resource_attributes_item_value_array_value import (
     TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueArrayValue,
 )
+from .traces_create_otel_request_resource_spans_item_resource_attributes_item_value_int_value import (
+    TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueIntValue,
+)
 from .traces_create_otel_request_resource_spans_item_resource_attributes_item_value_kvlist_value import (
     TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueKvlistValue,
 )
@@ -21,7 +24,10 @@ class TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValue(
         typing.Optional[str], FieldMetadata(alias="stringValue")
     ] = None
     int_value: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="intValue")
+        typing.Optional[
+            TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueIntValue
+        ],
+        FieldMetadata(alias="intValue"),
     ] = None
     double_value: typing_extensions.Annotated[
         typing.Optional[float], FieldMetadata(alias="doubleValue")
