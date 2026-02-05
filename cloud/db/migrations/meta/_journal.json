@@ -29,6 +29,13 @@
       "when": 1770055958839,
       "tag": "0003_free_eddie_brock",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1770334065451,
+      "tag": "0004_jittery_thunderbolt",
+      "breakpoints": true
     }
   ]
 }
