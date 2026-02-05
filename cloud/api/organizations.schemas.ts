@@ -106,7 +106,7 @@ export const DowngradeValidationErrorSchema: Schema.Schema<
   DowngradeValidationError,
   DowngradeValidationError
 > = Schema.Struct({
-  resource: Schema.Literal("seats", "projects"),
+  resource: Schema.Literal("seats", "projects", "claws"),
   currentUsage: Schema.Number,
   limit: Schema.Number,
   message: Schema.String,

@@ -48,6 +48,11 @@ describe("Plans Module", () => {
           spansPerMonth: 1_000_000,
           apiRequestsPerMinute: 100,
           dataRetentionDays: 30,
+          claws: 1,
+          clawInstanceType: "basic",
+          includedCreditsCenticents: 10_000,
+          burstCreditsCenticents: 2_000,
+          estimatedRequestsPerDay: 70,
         });
       });
     });
@@ -60,6 +65,11 @@ describe("Plans Module", () => {
           spansPerMonth: Infinity,
           apiRequestsPerMinute: 1000,
           dataRetentionDays: 90,
+          claws: 1,
+          clawInstanceType: "standard-2",
+          includedCreditsCenticents: 500_000,
+          burstCreditsCenticents: 100_000,
+          estimatedRequestsPerDay: 50,
         });
       });
 
@@ -76,6 +86,11 @@ describe("Plans Module", () => {
           spansPerMonth: Infinity,
           apiRequestsPerMinute: 10000,
           dataRetentionDays: 180,
+          claws: 3,
+          clawInstanceType: "standard-3",
+          includedCreditsCenticents: 2_500_000,
+          burstCreditsCenticents: 500_000,
+          estimatedRequestsPerDay: 300,
         });
       });
 
@@ -103,6 +118,38 @@ describe("Plans Module", () => {
       });
     });
 
+    describe("claw limits", () => {
+      it("should have valid claw counts for all tiers", () => {
+        expect(PLAN_LIMITS.free.claws).toBe(1);
+        expect(PLAN_LIMITS.pro.claws).toBe(1);
+        expect(PLAN_LIMITS.team.claws).toBe(3);
+      });
+
+      it("should have increasing instance types across tiers", () => {
+        expect(PLAN_LIMITS.free.clawInstanceType).toBe("basic");
+        expect(PLAN_LIMITS.pro.clawInstanceType).toBe("standard-2");
+        expect(PLAN_LIMITS.team.clawInstanceType).toBe("standard-3");
+      });
+
+      it("should have increasing included credits across tiers", () => {
+        expect(PLAN_LIMITS.free.includedCreditsCenticents).toBeLessThan(
+          PLAN_LIMITS.pro.includedCreditsCenticents,
+        );
+        expect(PLAN_LIMITS.pro.includedCreditsCenticents).toBeLessThan(
+          PLAN_LIMITS.team.includedCreditsCenticents,
+        );
+      });
+
+      it("should have burst credits at 20% of weekly credits", () => {
+        for (const tier of PLAN_TIERS) {
+          const limits = PLAN_LIMITS[tier];
+          expect(limits.burstCreditsCenticents).toBe(
+            limits.includedCreditsCenticents * 0.2,
+          );
+        }
+      });
+    });
+
     describe("type safety", () => {
       it("should satisfy PlanLimits interface", () => {
         const limits: PlanLimits = PLAN_LIMITS.free;
@@ -110,6 +157,9 @@ describe("Plans Module", () => {
         expect(limits).toHaveProperty("projects");
         expect(limits).toHaveProperty("spansPerMonth");
         expect(limits).toHaveProperty("apiRequestsPerMinute");
+        expect(limits).toHaveProperty("claws");
+        expect(limits).toHaveProperty("clawInstanceType");
+        expect(limits).toHaveProperty("includedCreditsCenticents");
       });
 
       it("should have all plan tiers as keys", () => {
@@ -137,6 +187,11 @@ describe("Plans Module", () => {
         spansPerMonth: 1_000_000,
         apiRequestsPerMinute: 100,
         dataRetentionDays: 30,
+        claws: 1,
+        clawInstanceType: "basic",
+        includedCreditsCenticents: 10_000,
+        burstCreditsCenticents: 2_000,
+        estimatedRequestsPerDay: 70,
       };
       expect(limits).toBeDefined();
     });

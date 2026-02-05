@@ -4406,7 +4406,8 @@
                             "type": "string",
                             "enum": [
                               "seats",
-                              "projects"
+                              "projects",
+                              "claws"
                             ]
                           },
                           "currentUsage": {
