@@ -10,6 +10,29 @@
 export const CARD_WIDTH = 1200;
 export const CARD_HEIGHT = 630;
 
+/** Font size breakpoints based on title length */
+const FONT_SIZE_BREAKPOINTS = [
+  { maxChars: 13, fontSize: 152, label: "XS" },
+  { maxChars: 27, fontSize: 128, label: "S" },
+  { maxChars: 42, fontSize: 100, label: "SM" },
+  { maxChars: 59, fontSize: 95, label: "M" },
+  { maxChars: 80, fontSize: 75, label: "L" },
+  { maxChars: Infinity, fontSize: 60, label: "XL" },
+] as const;
+
+export function getTitleFontSize(title: string): {
+  fontSize: number;
+  label: string;
+} {
+  const length = title.length;
+  for (const { maxChars, fontSize, label } of FONT_SIZE_BREAKPOINTS) {
+    if (length <= maxChars) {
+      return { fontSize, label };
+    }
+  }
+  return { fontSize: 60, label: "XL" };
+}
+
 /**
  * Create the social card element structure as a plain object
  * Satori accepts both React elements and plain object representations
@@ -56,12 +79,19 @@ export function createSocialCardElement(
           type: "div",
           props: {
             style: {
-              fontFamily: "Williams Handwriting",
-              fontSize: 68,
+              // Box model
+              maxWidth: "80%",
+              paddingTop: 100,
+              // Typography
+              fontFamily: "Williams Handwriting, cursive",
+              fontSize: getTitleFontSize(title).fontSize,
+              lineHeight: title.length > 40 ? 1.3 : 1.2,
               color: "#ffffff",
               textAlign: "center",
-              lineHeight: 1.3,
-              maxWidth: "80%",
+              // Text wrapping
+              overflowWrap: "break-word",
+              hyphens: "auto",
+              // Effects
               textShadow:
                 "0 2px 6px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.2)",
             },

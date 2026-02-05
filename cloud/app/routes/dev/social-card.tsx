@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import DevLayout from "@/app/components/blocks/dev/dev-layout";
 import LoadingContent from "@/app/components/blocks/loading-content";
 import { getAllDevMeta } from "@/app/lib/content/virtual-module";
+import { getTitleFontSize } from "@/app/lib/social-cards/element";
 import {
   loadAssetsBrowser,
   renderSocialCardToDataUrl,
@@ -112,7 +113,8 @@ function SocialCardPreview() {
               Title
             </label>
             <span className="text-sm text-gray-500">
-              {title.length} characters
+              {title.length} characters — {getTitleFontSize(title).fontSize}px (
+              {getTitleFontSize(title).label})
             </span>
           </div>
           <input
