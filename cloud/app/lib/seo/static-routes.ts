@@ -29,7 +29,7 @@ export const STATIC_ROUTE_REGISTRY: Partial<
   },
   "/pricing": {
     title: "Pricing",
-    description: "Mirascope cloud's pricing plans and features",
+    description: "Pricing plans for Mirascope Cloud AI bots and observability",
   },
   "/blog/": {
     title: "Blog",

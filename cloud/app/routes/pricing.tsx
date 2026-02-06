@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 
 import type { PlanTier } from "@/payments/plans";
 
+import { useClaws } from "@/app/api/claws";
 import { useOrganizationMembers } from "@/app/api/organization-memberships";
 import { useSubscription } from "@/app/api/organizations";
 import { useProjects } from "@/app/api/projects";
@@ -140,6 +141,7 @@ function PricingContent() {
     useSubscription(organizationId);
   const { data: projects } = useProjects(organizationId ?? null);
   const { data: members } = useOrganizationMembers(organizationId ?? null);
+  const { data: claws } = useClaws(organizationId ?? null);
 
   const currentPlan = subscription?.currentPlan;
 
@@ -154,6 +156,7 @@ function PricingContent() {
     ? {
         projects: projects?.length ?? 0,
         seats: members?.length ?? 0,
+        claws: claws?.length ?? 0,
       }
     : undefined;
 

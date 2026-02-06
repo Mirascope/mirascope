@@ -23,8 +23,10 @@ Get started with the Free plan today. No credit card required.
 ## Plans Overview
 
 ### Free - $0/month
-For individuals just getting started.
+For individuals getting started with AI bots.
 
+- **Claws:** 1
+- **Instance Size:** Small
 - **Seats:** 1
 - **Projects:** 1
 - **Tracing:** 1M spans/month (hard limit, no overages)
@@ -33,8 +35,10 @@ For individuals just getting started.
 - **Support:** Community only
 
 ### Pro - $49/month
-For professionals with growing projects.
+For professionals who need more power.
 
+- **Claws:** 1
+- **Instance Size:** Medium
 - **Seats:** 5
 - **Projects:** 5
 - **Tracing:** 1M spans/month included, then $5 per additional million
@@ -43,8 +47,10 @@ For professionals with growing projects.
 - **Support:** Community + Chat/Email
 
 ### Team - $199/month
-For organizations requiring dedicated support.
+For teams running multiple AI bots.
 
+- **Claws:** 3
+- **Instance Size:** Large
 - **Seats:** Unlimited
 - **Projects:** Unlimited
 - **Tracing:** 1M spans/month included, then $5 per additional million
@@ -56,6 +62,8 @@ For organizations requiring dedicated support.
 
 | Feature | Free | Pro | Team |
 |---------|------|-----|------|
+| Claws | 1 | 1 | 3 |
+| Instance Size | Small | Medium | Large |
 | Seats | 1 | 5 | Unlimited |
 | Projects | 1 | 5 | Unlimited |
 | Tracing | 1M spans/month (no overages) | 1M spans/month + $5/additional M | 1M spans/month + $5/additional M |
@@ -216,6 +224,7 @@ const PlanDetailsRow = ({ detail, free, pro, team }: PlanDetailsRowProps) => {
 export interface UsageData {
   projects: number;
   seats: number;
+  claws: number;
 }
 
 interface UsageIndicatorProps {
@@ -292,7 +301,11 @@ const PricingTier = ({
             {name}
           </h3>
         </div>
-        <p className="text-muted-foreground mb-4">{description}</p>
+        <p className="text-muted-foreground mb-1">{description}</p>
+        <p className="text-muted-foreground mb-4 text-sm">
+          {limits.claws} {limits.claws === 1 ? "Claw" : "Claws"} ·{" "}
+          {INSTANCE_SIZE[tier]}
+        </p>
         <div className="mb-5">
           <span className="text-foreground text-3xl font-bold">{price}</span>
           {price !== "TBD" && price !== "N/A" && (
@@ -301,6 +314,11 @@ const PricingTier = ({
         </div>
         {usage && (
           <div className="border-border mb-5 space-y-3 border-t pt-4">
+            <UsageIndicator
+              label="Claws"
+              current={usage.claws}
+              limit={limits.claws}
+            />
             <UsageIndicator
               label="Seats"
               current={usage.seats}
@@ -375,7 +393,26 @@ interface PricingActions {
  * 1. `PRICING_MARKDOWN` above (the machine-readable markdown view)
  * 2. `public/pricing.md` (the static markdown file served at /pricing.md)
  */
+/** Instance size display names keyed by plan tier */
+const INSTANCE_SIZE: Record<PlanTier, string> = {
+  free: "Small",
+  pro: "Medium",
+  team: "Large",
+};
+
 export const cloudHostedDetails = [
+  {
+    detail: "Claws",
+    free: String(PLAN_LIMITS.free.claws),
+    pro: String(PLAN_LIMITS.pro.claws),
+    team: String(PLAN_LIMITS.team.claws),
+  },
+  {
+    detail: "Instance Size",
+    free: INSTANCE_SIZE.free,
+    pro: INSTANCE_SIZE.pro,
+    team: INSTANCE_SIZE.team,
+  },
   { detail: "Seats", free: "1", pro: "5", team: "Unlimited" },
   { detail: "Projects", free: "1", pro: "5", team: "Unlimited" },
   {
@@ -498,7 +535,7 @@ export const CloudPricing = ({
       name: "Free",
       tier: "free",
       price: "$0",
-      description: "For individuals just getting started",
+      description: "For individuals getting started with AI bots",
       button: hostedActions.free.button,
       isCurrentPlan: currentPlan === "free",
       usage,
@@ -507,7 +544,7 @@ export const CloudPricing = ({
       name: "Pro",
       tier: "pro",
       price: "$49",
-      description: "For professionals with growing projects",
+      description: "For professionals who need more power",
       button: hostedActions.pro.button,
       isCurrentPlan: currentPlan === "pro",
       usage,
@@ -516,7 +553,7 @@ export const CloudPricing = ({
       name: "Team",
       tier: "team",
       price: "$199",
-      description: "For organizations requiring dedicated support",
+      description: "For teams running multiple AI bots",
       button: hostedActions.team.button,
       isCurrentPlan: currentPlan === "team",
       usage,
