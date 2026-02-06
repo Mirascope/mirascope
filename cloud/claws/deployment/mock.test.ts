@@ -83,6 +83,13 @@ describe("MockDeploymentService", () => {
       );
       expect(status.startedAt).toBeInstanceOf(Date);
       expect(status.errorMessage).toBeUndefined();
+      expect(status.bucketName).toBe(`claw-${testConfig.clawId}`);
+      expect(status.r2Credentials).toBeDefined();
+      expect(status.r2Credentials!.tokenId).toContain(testConfig.clawId);
+      expect(status.r2Credentials!.accessKeyId).toContain(testConfig.clawId);
+      expect(status.r2Credentials!.secretAccessKey).toContain(
+        testConfig.clawId,
+      );
     });
   });
 

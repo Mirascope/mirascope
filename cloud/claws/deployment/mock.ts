@@ -45,6 +45,12 @@ export const MockDeploymentService = Layer.succeed(DeploymentService, {
         status: "active",
         url: getClawUrl(config.organizationSlug, config.clawSlug),
         startedAt: new Date(),
+        bucketName: `claw-${config.clawId}`,
+        r2Credentials: {
+          tokenId: `mock-token-${config.clawId}`,
+          accessKeyId: `mock-access-${config.clawId}`,
+          secretAccessKey: `mock-secret-${config.clawId}`,
+        },
       };
 
       mockStatuses.set(config.clawId, status);

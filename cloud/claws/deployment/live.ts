@@ -103,7 +103,7 @@ export const LiveDeploymentService = Layer.effect(
           yield* wrap("Failed to create R2 bucket", r2.createBucket(bucket));
 
           // 2. Create scoped credentials for the bucket
-          yield* wrap(
+          const credentials = yield* wrap(
             "Failed to create R2 credentials",
             r2.createScopedCredentials(bucket),
           );
@@ -118,6 +118,8 @@ export const LiveDeploymentService = Layer.effect(
             status: "provisioning",
             url: getClawUrl(config.organizationSlug, config.clawSlug),
             startedAt: new Date(),
+            bucketName: bucket,
+            r2Credentials: credentials,
           } satisfies DeploymentStatus;
         }),
 

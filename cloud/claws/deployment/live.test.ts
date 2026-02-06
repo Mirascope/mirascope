@@ -74,6 +74,11 @@ describe("LiveDeploymentService", () => {
         getClawUrl(testConfig.organizationSlug, testConfig.clawSlug),
       );
       expect(status.startedAt).toBeInstanceOf(Date);
+      expect(status.bucketName).toBe(`claw-${testConfig.clawId}`);
+      expect(status.r2Credentials).toBeDefined();
+      expect(status.r2Credentials!.tokenId).toBeDefined();
+      expect(status.r2Credentials!.accessKeyId).toBeDefined();
+      expect(status.r2Credentials!.secretAccessKey).toBeDefined();
     });
 
     it("fails when R2 bucket already exists", async () => {

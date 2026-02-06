@@ -35,6 +35,7 @@
 import { Context, Effect } from "effect";
 
 import type { ClawStatus, OpenClawConfig } from "@/claws/deployment/types";
+import type { R2ScopedCredentials } from "@/cloudflare/r2/types";
 
 import { DeploymentError } from "@/claws/deployment/errors";
 
@@ -46,6 +47,10 @@ export interface DeploymentStatus {
   url?: string;
   startedAt?: Date;
   errorMessage?: string;
+  /** R2 bucket name created during provisioning (only present after provision). */
+  bucketName?: string;
+  /** R2 scoped credentials created during provisioning (only present after provision). */
+  r2Credentials?: R2ScopedCredentials;
 }
 
 /**
