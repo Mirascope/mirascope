@@ -25,6 +25,7 @@ import { Route as InvitationsAcceptRouteImport } from './routes/invitations.acce
 import { Route as DocsSplatRouteImport } from './routes/docs.$'
 import { Route as DevSocialCardRouteImport } from './routes/dev/social-card'
 import { Route as DevLayoutTestRouteImport } from './routes/dev/layout-test'
+import { Route as DevClawCardsRouteImport } from './routes/dev/claw-cards'
 import { Route as DevAuditMetadataRouteImport } from './routes/dev/audit-metadata'
 import { Route as DevSlugRouteImport } from './routes/dev.$slug'
 import { Route as CloudSettingsRouteImport } from './routes/cloud/settings'
@@ -142,6 +143,11 @@ const DevSocialCardRoute = DevSocialCardRouteImport.update({
 const DevLayoutTestRoute = DevLayoutTestRouteImport.update({
   id: '/layout-test',
   path: '/layout-test',
+  getParentRoute: () => DevRoute,
+} as any)
+const DevClawCardsRoute = DevClawCardsRouteImport.update({
+  id: '/claw-cards',
+  path: '/claw-cards',
   getParentRoute: () => DevRoute,
 } as any)
 const DevAuditMetadataRoute = DevAuditMetadataRouteImport.update({
@@ -358,6 +364,7 @@ export interface FileRoutesByFullPath {
   '/cloud/settings': typeof CloudSettingsRouteWithChildren
   '/dev/$slug': typeof DevSlugRoute
   '/dev/audit-metadata': typeof DevAuditMetadataRoute
+  '/dev/claw-cards': typeof DevClawCardsRoute
   '/dev/layout-test': typeof DevLayoutTestRoute
   '/dev/social-card': typeof DevSocialCardRoute
   '/docs/$': typeof DocsSplatRoute
@@ -410,6 +417,7 @@ export interface FileRoutesByTo {
   '/cloud/login': typeof CloudLoginRoute
   '/dev/$slug': typeof DevSlugRoute
   '/dev/audit-metadata': typeof DevAuditMetadataRoute
+  '/dev/claw-cards': typeof DevClawCardsRoute
   '/dev/layout-test': typeof DevLayoutTestRoute
   '/dev/social-card': typeof DevSocialCardRoute
   '/docs/$': typeof DocsSplatRoute
@@ -467,6 +475,7 @@ export interface FileRoutesById {
   '/cloud/settings': typeof CloudSettingsRouteWithChildren
   '/dev/$slug': typeof DevSlugRoute
   '/dev/audit-metadata': typeof DevAuditMetadataRoute
+  '/dev/claw-cards': typeof DevClawCardsRoute
   '/dev/layout-test': typeof DevLayoutTestRoute
   '/dev/social-card': typeof DevSocialCardRoute
   '/docs/$': typeof DocsSplatRoute
@@ -525,6 +534,7 @@ export interface FileRouteTypes {
     | '/cloud/settings'
     | '/dev/$slug'
     | '/dev/audit-metadata'
+    | '/dev/claw-cards'
     | '/dev/layout-test'
     | '/dev/social-card'
     | '/docs/$'
@@ -577,6 +587,7 @@ export interface FileRouteTypes {
     | '/cloud/login'
     | '/dev/$slug'
     | '/dev/audit-metadata'
+    | '/dev/claw-cards'
     | '/dev/layout-test'
     | '/dev/social-card'
     | '/docs/$'
@@ -633,6 +644,7 @@ export interface FileRouteTypes {
     | '/cloud/settings'
     | '/dev/$slug'
     | '/dev/audit-metadata'
+    | '/dev/claw-cards'
     | '/dev/layout-test'
     | '/dev/social-card'
     | '/docs/$'
@@ -807,6 +819,13 @@ declare module '@tanstack/react-router' {
       path: '/layout-test'
       fullPath: '/dev/layout-test'
       preLoaderRoute: typeof DevLayoutTestRouteImport
+      parentRoute: typeof DevRoute
+    }
+    '/dev/claw-cards': {
+      id: '/dev/claw-cards'
+      path: '/claw-cards'
+      fullPath: '/dev/claw-cards'
+      preLoaderRoute: typeof DevClawCardsRouteImport
       parentRoute: typeof DevRoute
     }
     '/dev/audit-metadata': {
@@ -1155,6 +1174,7 @@ const CloudRouteWithChildren = CloudRoute._addFileChildren(CloudRouteChildren)
 interface DevRouteChildren {
   DevSlugRoute: typeof DevSlugRoute
   DevAuditMetadataRoute: typeof DevAuditMetadataRoute
+  DevClawCardsRoute: typeof DevClawCardsRoute
   DevLayoutTestRoute: typeof DevLayoutTestRoute
   DevSocialCardRoute: typeof DevSocialCardRoute
   DevIndexRoute: typeof DevIndexRoute
@@ -1163,6 +1183,7 @@ interface DevRouteChildren {
 const DevRouteChildren: DevRouteChildren = {
   DevSlugRoute: DevSlugRoute,
   DevAuditMetadataRoute: DevAuditMetadataRoute,
+  DevClawCardsRoute: DevClawCardsRoute,
   DevLayoutTestRoute: DevLayoutTestRoute,
   DevSocialCardRoute: DevSocialCardRoute,
   DevIndexRoute: DevIndexRoute,

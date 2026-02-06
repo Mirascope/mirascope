@@ -77,6 +77,21 @@ function DevIndexPage() {
             </p>
           </div>
 
+          {/* Cloud component routes */}
+          <h2 className="mt-8 mb-4 text-2xl font-semibold">Cloud Components</h2>
+
+          <div className="rounded-lg border p-6 shadow-sm">
+            <a href="/dev/claw-cards" className="hover:underline">
+              <h2 className="text-primary mb-2 text-xl font-semibold">
+                Claw Cards
+              </h2>
+            </a>
+            <p className="mb-4">
+              All claw card variants — status colors, instance types, edge
+              cases, and the full status x instance matrix.
+            </p>
+          </div>
+
           {/* Style test pages section */}
           {sortedDevPages.length > 0 && (
             <>

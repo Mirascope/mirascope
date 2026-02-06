@@ -1,3 +1,5 @@
+import { useRef, useState, useEffect, useCallback } from "react";
+
 import type { Claw } from "@/api/claws.schemas";
 
 import { Badge } from "@/app/components/ui/badge";
@@ -7,38 +9,48 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/app/components/ui/tooltip";
 
-const statusConfig: Record<
+export const statusConfig: Record<
   Claw["status"],
-  { className: string; label: string }
+  {
+    card: string;
+    pill: string;
+    label: string;
+  }
 > = {
   active: {
-    className:
-      "bg-green-500/15 text-green-700 dark:text-green-400 border-green-500/20",
+    card: "border-green-300/40 bg-green-100/60 hover:bg-green-100/80 dark:border-green-700/40 dark:bg-green-950/40 dark:hover:bg-green-950/60",
+    pill: "bg-white text-green-700 border-green-400 dark:bg-green-950 dark:text-green-300 dark:border-green-600",
     label: "Active",
   },
   pending: {
-    className:
-      "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400 border-yellow-500/20",
+    card: "border-yellow-300/40 bg-yellow-100/60 hover:bg-yellow-100/80 dark:border-yellow-700/40 dark:bg-yellow-950/40 dark:hover:bg-yellow-950/60",
+    pill: "bg-white text-yellow-700 border-yellow-500 dark:bg-yellow-950 dark:text-yellow-300 dark:border-yellow-600",
     label: "Pending",
   },
   provisioning: {
-    className:
-      "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400 border-yellow-500/20",
+    card: "border-yellow-300/40 bg-yellow-100/60 hover:bg-yellow-100/80 dark:border-yellow-700/40 dark:bg-yellow-950/40 dark:hover:bg-yellow-950/60",
+    pill: "bg-white text-yellow-700 border-yellow-500 dark:bg-yellow-950 dark:text-yellow-300 dark:border-yellow-600",
     label: "Provisioning",
   },
   error: {
-    className: "bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/20",
+    card: "border-red-300/40 bg-red-100/60 hover:bg-red-100/80 dark:border-red-700/40 dark:bg-red-950/40 dark:hover:bg-red-950/60",
+    pill: "bg-white text-red-700 border-red-400 dark:bg-red-950 dark:text-red-300 dark:border-red-600",
     label: "Error",
   },
   paused: {
-    className:
-      "bg-gray-500/15 text-gray-700 dark:text-gray-400 border-gray-500/20",
+    card: "border-gray-300/40 bg-gray-100/60 hover:bg-gray-100/80 dark:border-gray-700/40 dark:bg-gray-800/40 dark:hover:bg-gray-800/60",
+    pill: "bg-white text-gray-600 border-gray-400 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600",
     label: "Paused",
   },
 };
 
-const instanceSizeLabel: Record<Claw["instanceType"], string> = {
+export const instanceConfig: Record<Claw["instanceType"], string> = {
   lite: "Lite",
   basic: "Small",
   "standard-1": "Medium",
@@ -47,6 +59,27 @@ const instanceSizeLabel: Record<Claw["instanceType"], string> = {
   "standard-4": "XL",
 };
 
+function useIsTruncated() {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [truncated, setTruncated] = useState(false);
+
+  const check = useCallback(() => {
+    const el = ref.current;
+    if (el) {
+      setTruncated(el.scrollWidth > el.clientWidth);
+    }
+  }, []);
+
+  useEffect(() => {
+    check();
+    const observer = new ResizeObserver(check);
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [check]);
+
+  return { ref, truncated };
+}
+
 interface ClawCardProps {
   claw: Claw;
   onClick?: () => void;
@@ -54,24 +87,50 @@ interface ClawCardProps {
 
 export function ClawCard({ claw, onClick }: ClawCardProps) {
   const status = statusConfig[claw.status];
+  const name = useIsTruncated();
+  const slug = useIsTruncated();
+
+  const nameText = claw.displayName ?? claw.slug;
 
   return (
     <Card
-      className="cursor-pointer transition-colors hover:bg-muted/50"
+      className={`cursor-pointer transition-colors ${status.card}`}
       onClick={onClick}
     >
       <CardHeader className="p-4">
         <CardTitle className="flex items-center gap-2 text-base">
-          <span className="truncate">{claw.displayName ?? claw.slug}</span>
-          <Badge pill className="shrink-0 font-normal">
-            {instanceSizeLabel[claw.instanceType]}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span ref={name.ref} className="truncate">
+                {nameText}
+              </span>
+            </TooltipTrigger>
+            {name.truncated && <TooltipContent>{nameText}</TooltipContent>}
+          </Tooltip>
+          <Badge
+            pill
+            variant="outline"
+            className="shrink-0 font-normal bg-white text-primary border-primary/40 dark:bg-primary/10 dark:text-primary-foreground dark:border-primary/40"
+          >
+            {instanceConfig[claw.instanceType]}
           </Badge>
-          <Badge pill className={`shrink-0 ml-auto ${status.className}`}>
+          <Badge
+            pill
+            variant="outline"
+            className={`shrink-0 ml-auto ${status.pill}`}
+          >
             {status.label}
           </Badge>
         </CardTitle>
-        <CardDescription className="text-sm truncate">
-          {claw.slug}
+        <CardDescription className="text-sm">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span ref={slug.ref} className="block truncate">
+                {claw.slug}
+              </span>
+            </TooltipTrigger>
+            {slug.truncated && <TooltipContent>{claw.slug}</TooltipContent>}
+          </Tooltip>
         </CardDescription>
       </CardHeader>
     </Card>

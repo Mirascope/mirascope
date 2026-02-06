@@ -48,6 +48,16 @@ function createDevSidebarConfig(devPages: DevMeta[]): SidebarConfig {
     },
   };
 
+  // Create cloud component items
+  const cloudComponentItems: Record<string, SidebarItem> = {
+    "claw-cards": {
+      slug: "claw-cards",
+      label: "Claw Cards",
+      routePath: "/dev/claw-cards",
+      hasContent: true,
+    },
+  };
+
   // Create style test items from MDX pages
   const styleTestItems: Record<string, SidebarItem> = {};
 
@@ -71,6 +81,11 @@ function createDevSidebarConfig(devPages: DevMeta[]): SidebarConfig {
         slug: "tools",
         label: "Tools",
         items: toolItems,
+      },
+      "cloud-components": {
+        slug: "cloud-components",
+        label: "Cloud Components",
+        items: cloudComponentItems,
       },
       ...(Object.keys(styleTestItems).length > 0
         ? {
