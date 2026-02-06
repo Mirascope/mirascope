@@ -59,7 +59,7 @@ export interface ClawR2Config {
  * The dispatch worker fetches this when it needs to start or configure a claw's
  * container.
  *
- * @endpoint GET /api/internal/claws/:orgSlug/:clawSlug/bootstrap
+ * @endpoint GET /api/internal/claws/:clawId/bootstrap
  */
 export interface OpenClawConfig {
   /** Unique identifier for the claw */

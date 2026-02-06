@@ -3,7 +3,13 @@ import { ParseError } from "effect/ParseResult";
 
 import type { PublicClaw } from "@/db/schema";
 
+import {
+  resolveClawHandler,
+  bootstrapClawHandler,
+  reportClawStatusHandler,
+} from "@/api/claws-internal.handlers";
 import { CreateClawRequestSchema } from "@/api/claws.handlers";
+import { NotFoundError } from "@/errors";
 import { describe, it, expect, TestApiContext } from "@/tests/api";
 
 describe("CreateClawRequestSchema validation", () => {
@@ -33,6 +39,36 @@ describe("CreateClawRequestSchema validation", () => {
     });
     expect(result.name).toBe("Valid Claw Name");
   });
+});
+
+describe("Internal handler stubs (TODO)", () => {
+  it.effect("resolveClawHandler returns NotFoundError", () =>
+    Effect.gen(function* () {
+      const error = yield* resolveClawHandler("org-slug", "claw-slug").pipe(
+        Effect.flip,
+      );
+      expect(error).toBeInstanceOf(NotFoundError);
+      expect(error.message).toContain("not yet implemented");
+    }),
+  );
+
+  it.effect("bootstrapClawHandler returns NotFoundError", () =>
+    Effect.gen(function* () {
+      const error = yield* bootstrapClawHandler("claw-id").pipe(Effect.flip);
+      expect(error).toBeInstanceOf(NotFoundError);
+      expect(error.message).toContain("not yet implemented");
+    }),
+  );
+
+  it.effect("reportClawStatusHandler returns NotFoundError", () =>
+    Effect.gen(function* () {
+      const error = yield* reportClawStatusHandler("claw-id", {
+        status: "active",
+      }).pipe(Effect.flip);
+      expect(error).toBeInstanceOf(NotFoundError);
+      expect(error.message).toContain("not yet implemented");
+    }),
+  );
 });
 
 describe.sequential("Claws API", (it) => {
