@@ -180,16 +180,24 @@ export const LiveDeploymentService = Layer.effect(
           } satisfies DeploymentStatus;
         }),
 
-      update: (clawId: string, _config: Partial<OpenClawConfig>) =>
+      update: (clawId: string, config: Partial<OpenClawConfig>) =>
         Effect.gen(function* () {
           const host = clawHostname(clawId);
 
-          // Config is stored in DB by the caller. Restart gateway to pick
-          // up fresh config from the bootstrap API.
-          yield* wrap(
-            "Failed to restart gateway for config update",
-            containers.restartGateway(host),
-          );
+          // Instance type changes require a full container recreate (different
+          // resource allocation). All other config changes just need a gateway
+          // restart to pick up fresh config from the bootstrap API.
+          if (config.instanceType != null) {
+            yield* wrap(
+              "Failed to recreate container for instance type change",
+              containers.recreate(host),
+            );
+          } else {
+            yield* wrap(
+              "Failed to restart gateway for config update",
+              containers.restartGateway(host),
+            );
+          }
 
           return {
             status: "provisioning",

@@ -257,7 +257,27 @@ describe("LiveDeploymentService", () => {
   });
 
   describe("update", () => {
-    it("restarts gateway for config update", async () => {
+    it("restarts gateway for non-instance-type config update", async () => {
+      const { layer, seedContainer } = createTestLayer();
+      seedContainer(INTERNAL_HOSTNAME);
+
+      const status = await Effect.runPromise(
+        Effect.gen(function* () {
+          const deployment = yield* DeploymentService;
+          return yield* deployment.update(testConfig.clawId, {
+            containerEnv: {
+              ...testConfig.containerEnv,
+              TELEGRAM_BOT_TOKEN: "new-token",
+            },
+          });
+        }).pipe(Effect.provide(layer)),
+      );
+
+      expect(status.status).toBe("provisioning");
+      expect(status.startedAt).toBeInstanceOf(Date);
+    });
+
+    it("recreates container when instance type changes", async () => {
       const { layer, seedContainer } = createTestLayer();
       seedContainer(INTERNAL_HOSTNAME);
 
@@ -274,7 +294,7 @@ describe("LiveDeploymentService", () => {
       expect(status.startedAt).toBeInstanceOf(Date);
     });
 
-    it("fails for non-existent container", async () => {
+    it("fails for non-existent container on gateway restart", async () => {
       const error = await runFail(
         Effect.gen(function* () {
           const deployment = yield* DeploymentService;
@@ -285,6 +305,22 @@ describe("LiveDeploymentService", () => {
       expect(error).toBeInstanceOf(DeploymentError);
       expect((error as DeploymentError).message).toContain(
         "Failed to restart gateway for config update",
+      );
+    });
+
+    it("fails for non-existent container on instance type change", async () => {
+      const error = await runFail(
+        Effect.gen(function* () {
+          const deployment = yield* DeploymentService;
+          return yield* deployment.update("nonexistent", {
+            instanceType: "standard-3",
+          });
+        }),
+      );
+
+      expect(error).toBeInstanceOf(DeploymentError);
+      expect((error as DeploymentError).message).toContain(
+        "Failed to recreate container for instance type change",
       );
     });
   });
