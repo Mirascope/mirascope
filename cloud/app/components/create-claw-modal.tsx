@@ -3,6 +3,7 @@ import { useState, type FormEvent } from "react";
 import type { CreateClawRequest } from "@/api/claws.schemas";
 import type { PlanTier } from "@/payments/plans";
 
+import { dollarsToCenticents } from "@/api/router/cost-utils";
 import { useCreateClaw } from "@/app/api/claws";
 import { useSubscription } from "@/app/api/organizations";
 import { ClawAdvancedOptions } from "@/app/components/claw-advanced-options";
@@ -53,7 +54,8 @@ export function CreateClawModal({
   const [model, setModel] = useState<CreateClawRequest["model"]>(
     DEFAULT_MODEL[planTier],
   );
-  const [weeklyGuardrail, setWeeklyGuardrail] = useState("");
+  const [useBeyondPlan, setUseBeyondPlan] = useState(false);
+  const [weeklySpendingLimit, setWeeklySpendingLimit] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const slug = generateSlug(name);
@@ -73,11 +75,26 @@ export function CreateClawModal({
     }
 
     try {
+      if (useBeyondPlan) {
+        const dollars = parseFloat(weeklySpendingLimit);
+        if (isNaN(dollars) || dollars <= 0) {
+          setError("Please enter a valid weekly spending limit");
+          return;
+        }
+      }
+
+      const dollars = parseFloat(weeklySpendingLimit);
+      const weeklySpendingGuardrailCenticents =
+        useBeyondPlan && !isNaN(dollars) && dollars > 0
+          ? dollarsToCenticents(dollars)
+          : null;
+
       const newClaw = await createClaw.mutateAsync({
         organizationId: selectedOrganization.id,
         name: name.trim(),
         description: description.trim() || undefined,
         model,
+        weeklySpendingGuardrailCenticents,
       });
       analytics.trackEvent("claw_created", {
         claw_id: newClaw.id,
@@ -96,7 +113,8 @@ export function CreateClawModal({
     setName("");
     setDescription("");
     setModel(DEFAULT_MODEL[planTier]);
-    setWeeklyGuardrail("");
+    setUseBeyondPlan(false);
+    setWeeklySpendingLimit("");
     setError(null);
   };
 
@@ -159,8 +177,10 @@ export function CreateClawModal({
               <ClawAdvancedOptions
                 model={model}
                 onModelChange={setModel}
-                weeklyGuardrail={weeklyGuardrail}
-                onWeeklyGuardrailChange={setWeeklyGuardrail}
+                useBeyondPlan={useBeyondPlan}
+                onUseBeyondPlanChange={setUseBeyondPlan}
+                weeklySpendingLimit={weeklySpendingLimit}
+                onWeeklySpendingLimitChange={setWeeklySpendingLimit}
               />
             )}
 

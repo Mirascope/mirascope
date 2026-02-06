@@ -12748,6 +12748,16 @@
                       "claude-sonnet-4-5",
                       "claude-opus-4-6"
                     ]
+                  },
+                  "weeklySpendingGuardrailCenticents": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/BigInt"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   }
                 },
                 "additionalProperties": false
@@ -13374,6 +13384,16 @@
                   },
                   "description": {
                     "type": "string"
+                  },
+                  "weeklySpendingGuardrailCenticents": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/BigInt"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   }
                 },
                 "additionalProperties": false

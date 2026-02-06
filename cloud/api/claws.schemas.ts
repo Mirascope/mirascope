@@ -63,11 +63,17 @@ export const CreateClawRequestSchema = Schema.Struct({
   model: Schema.optional(
     Schema.Literal("claude-haiku-4-5", "claude-sonnet-4-5", "claude-opus-4-6"),
   ),
+  weeklySpendingGuardrailCenticents: Schema.optional(
+    Schema.NullOr(Schema.BigInt),
+  ),
 });
 
 export const UpdateClawRequestSchema = Schema.Struct({
   name: Schema.optional(ClawNameSchema),
   description: Schema.optional(Schema.String),
+  weeklySpendingGuardrailCenticents: Schema.optional(
+    Schema.NullOr(Schema.BigInt),
+  ),
 });
 
 export const ClawUsageSchema = Schema.Struct({

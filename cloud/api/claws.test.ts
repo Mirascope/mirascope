@@ -224,6 +224,75 @@ describe.sequential("Claws API", (it) => {
   );
 
   it.effect(
+    "POST /organizations/:organizationId/claws - create claw with spending guardrail",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const created = yield* client.claws.create({
+          path: { organizationId: org.id },
+          payload: {
+            name: "Guardrail Claw",
+            slug: "guardrail-claw",
+            weeklySpendingGuardrailCenticents: 50000n,
+          },
+        });
+
+        expect(created.displayName).toBe("Guardrail Claw");
+        expect(created.weeklySpendingGuardrailCenticents).toBe(50000n);
+
+        // Clean up
+        yield* client.claws.delete({
+          path: { organizationId: org.id, clawId: created.id },
+        });
+      }),
+  );
+
+  it.effect(
+    "PUT /organizations/:organizationId/claws/:clawId - set spending guardrail",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const updated = yield* client.claws.update({
+          path: { organizationId: org.id, clawId: claw.id },
+          payload: { weeklySpendingGuardrailCenticents: 50000n },
+        });
+
+        expect(updated.id).toBe(claw.id);
+        expect(updated.weeklySpendingGuardrailCenticents).toBe(50000n);
+      }),
+  );
+
+  it.effect(
+    "PUT /organizations/:organizationId/claws/:clawId - update spending guardrail",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const updated = yield* client.claws.update({
+          path: { organizationId: org.id, clawId: claw.id },
+          payload: { weeklySpendingGuardrailCenticents: 100000n },
+        });
+
+        expect(updated.id).toBe(claw.id);
+        expect(updated.weeklySpendingGuardrailCenticents).toBe(100000n);
+      }),
+  );
+
+  it.effect(
+    "PUT /organizations/:organizationId/claws/:clawId - clear spending guardrail",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const updated = yield* client.claws.update({
+          path: { organizationId: org.id, clawId: claw.id },
+          payload: { weeklySpendingGuardrailCenticents: null },
+        });
+
+        expect(updated.id).toBe(claw.id);
+        expect(updated.weeklySpendingGuardrailCenticents).toBeNull();
+      }),
+  );
+
+  it.effect(
     "GET /organizations/:organizationId/claws/:clawId/usage - get usage",
     () =>
       Effect.gen(function* () {
