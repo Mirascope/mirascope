@@ -37,7 +37,7 @@ export function CloudNavIcons() {
   ];
 
   return (
-    <div className="hidden items-center gap-1 lg:flex">
+    <div className="flex items-center gap-1">
       {items.map((item) => (
         <Tooltip key={item.to}>
           <TooltipTrigger asChild>
