@@ -17,6 +17,13 @@ import {
   deleteApiKeyHandler,
 } from "@/api/api-keys.handlers";
 import {
+  listClawMembersHandler,
+  addClawMemberHandler,
+  getClawMembershipHandler,
+  updateClawMemberRoleHandler,
+  removeClawMemberHandler,
+} from "@/api/claw-memberships.handlers";
+import {
   listClawsHandler,
   createClawHandler,
   getClawHandler,
@@ -491,6 +498,41 @@ const ClawsHandlersLive = HttpApiBuilder.group(
       ),
 );
 
+const ClawMembershipsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "claw-memberships",
+  (handlers) =>
+    handlers
+      .handle("list", ({ path }) =>
+        listClawMembersHandler(path.organizationId, path.clawId),
+      )
+      .handle("create", ({ path, payload }) =>
+        addClawMemberHandler(path.organizationId, path.clawId, payload),
+      )
+      .handle("get", ({ path }) =>
+        getClawMembershipHandler(
+          path.organizationId,
+          path.clawId,
+          path.memberId,
+        ),
+      )
+      .handle("update", ({ path, payload }) =>
+        updateClawMemberRoleHandler(
+          path.organizationId,
+          path.clawId,
+          path.memberId,
+          payload,
+        ),
+      )
+      .handle("delete", ({ path }) =>
+        removeClawMemberHandler(
+          path.organizationId,
+          path.clawId,
+          path.memberId,
+        ),
+      ),
+);
+
 const TokenCostHandlersLive = HttpApiBuilder.group(
   MirascopeCloudApi,
   "token-cost",
@@ -518,6 +560,7 @@ export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(FunctionsHandlersLive),
   Layer.provide(AnnotationsHandlersLive),
   Layer.provide(ClawsHandlersLive),
+  Layer.provide(ClawMembershipsHandlersLive),
   Layer.provide(TagsHandlersLive),
   Layer.provide(TokenCostHandlersLive),
 );
