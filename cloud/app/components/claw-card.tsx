@@ -80,21 +80,67 @@ function useIsTruncated() {
   return { ref, truncated };
 }
 
+/** Color class for the filled portion of usage bars, keyed by claw status. */
+export const statusBarColor: Record<Claw["status"], string> = {
+  active: "bg-green-500 dark:bg-green-400",
+  pending: "bg-yellow-500 dark:bg-yellow-400",
+  provisioning: "bg-yellow-500 dark:bg-yellow-400",
+  error: "bg-red-500 dark:bg-red-400",
+  paused: "bg-gray-400 dark:bg-gray-500",
+};
+
+export function UsageMeter({
+  usage,
+  limit,
+  barColor,
+  className,
+}: {
+  usage: number;
+  limit: number;
+  barColor: string;
+  className?: string;
+}) {
+  const pct = limit > 0 ? Math.min((usage / limit) * 100, 100) : 0;
+  const ratio = limit > 0 ? usage / limit : 0;
+
+  let color = barColor;
+  if (ratio > 1) {
+    color = "bg-red-500 dark:bg-red-400";
+  } else if (ratio > 0.9) {
+    color = "bg-amber-500 dark:bg-amber-400";
+  }
+
+  return (
+    <div
+      className={`h-1.5 rounded-full bg-black/5 dark:bg-white/10 overflow-hidden ${className ?? ""}`}
+    >
+      <div
+        className={`h-full rounded-full transition-all ${color}`}
+        style={{ width: `${pct}%` }}
+      />
+    </div>
+  );
+}
+
 interface ClawCardProps {
   claw: Claw;
   onClick?: () => void;
+  burstLimitCenticents?: number | null;
 }
 
-export function ClawCard({ claw, onClick }: ClawCardProps) {
+export function ClawCard({
+  claw,
+  onClick,
+  burstLimitCenticents,
+}: ClawCardProps) {
   const status = statusConfig[claw.status];
   const name = useIsTruncated();
   const slug = useIsTruncated();
 
   const nameText = claw.displayName ?? claw.slug;
-
   return (
     <Card
-      className={`cursor-pointer transition-colors ${status.card}`}
+      className={`cursor-pointer transition-colors min-h-[5.5rem] ${status.card}`}
       onClick={onClick}
     >
       <CardHeader className="p-4">
@@ -122,15 +168,23 @@ export function ClawCard({ claw, onClick }: ClawCardProps) {
             {status.label}
           </Badge>
         </CardTitle>
-        <CardDescription className="text-sm">
+        <CardDescription className="flex items-center gap-2 text-sm">
           <Tooltip>
             <TooltipTrigger asChild>
-              <span ref={slug.ref} className="block truncate">
+              <span ref={slug.ref} className="truncate shrink-0">
                 {claw.slug}
               </span>
             </TooltipTrigger>
             {slug.truncated && <TooltipContent>{claw.slug}</TooltipContent>}
           </Tooltip>
+          {burstLimitCenticents != null && (
+            <UsageMeter
+              usage={Number(claw.burstUsageCenticents ?? 0n)}
+              limit={burstLimitCenticents}
+              barColor={statusBarColor[claw.status]}
+              className="flex-1 min-w-8 ml-2"
+            />
+          )}
         </CardDescription>
       </CardHeader>
     </Card>
