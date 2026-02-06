@@ -34,6 +34,8 @@ export const createClawHandler = (
         slug: payload.slug,
         displayName: payload.name,
         description: payload.description,
+        weeklySpendingGuardrailCenticents:
+          payload.weeklySpendingGuardrailCenticents,
       },
     });
 
@@ -75,6 +77,8 @@ export const updateClawHandler = (
       data: {
         displayName: payload.name,
         description: payload.description,
+        weeklySpendingGuardrailCenticents:
+          payload.weeklySpendingGuardrailCenticents,
       },
       userId: user.id,
     });

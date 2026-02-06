@@ -102,7 +102,10 @@ const publicFields = {
 /**
  * Insert type for creating claws.
  */
-type CreateData = Pick<NewClaw, "slug" | "displayName" | "description">;
+type CreateData = Pick<
+  NewClaw,
+  "slug" | "displayName" | "description" | "weeklySpendingGuardrailCenticents"
+>;
 
 /**
  * Update type for claws.
@@ -337,6 +340,8 @@ export class Claws extends BaseAuthenticatedEffectService<
               slug: data.slug,
               displayName: data.displayName,
               description: data.description,
+              weeklySpendingGuardrailCenticents:
+                data.weeklySpendingGuardrailCenticents,
               organizationId,
               createdByUserId: userId,
               instanceType: limits.clawInstanceType,

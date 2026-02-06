@@ -1,7 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Loader2, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import {
+  centicentsToDollars,
+  dollarsToCenticents,
+} from "@/api/router/cost-utils";
+import { useUpdateClaw } from "@/app/api/claws";
 import { useSubscription } from "@/app/api/organizations";
 import { ClawMembersSection } from "@/app/components/claw-members-section";
 import { CreateClawModal } from "@/app/components/create-claw-modal";
@@ -23,9 +28,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
+import { Switch } from "@/app/components/ui/switch";
 import { useAuth } from "@/app/contexts/auth";
 import { useClaw } from "@/app/contexts/claw";
 import { useOrganization } from "@/app/contexts/organization";
+import { getErrorMessage } from "@/app/lib/errors";
 import { PLAN_LIMITS } from "@/payments/plans";
 
 const STATUS_LABELS: Record<string, string> = {
@@ -41,8 +48,28 @@ function ClawsSettingsPage() {
   const { claws, selectedClaw, setSelectedClaw, isLoading } = useClaw();
   const { user } = useAuth();
   const { data: subscription } = useSubscription(selectedOrganization?.id);
+  const updateClaw = useUpdateClaw();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const [useBeyondPlan, setUseBeyondPlan] = useState(false);
+  const [weeklySpendingLimit, setWeeklySpendingLimit] = useState("");
+  const [spendingError, setSpendingError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (selectedClaw?.weeklySpendingGuardrailCenticents != null) {
+      setUseBeyondPlan(true);
+      setWeeklySpendingLimit(
+        centicentsToDollars(
+          selectedClaw.weeklySpendingGuardrailCenticents,
+        ).toString(),
+      );
+    } else {
+      setUseBeyondPlan(false);
+      setWeeklySpendingLimit("");
+    }
+    setSpendingError(null);
+  }, [selectedClaw?.id, selectedClaw?.weeklySpendingGuardrailCenticents]);
 
   const orgRole = selectedOrganization?.role;
   const canManageMembers = orgRole === "OWNER" || orgRole === "ADMIN";
@@ -185,6 +212,128 @@ function ClawsSettingsPage() {
               className="bg-muted"
             />
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Spending Controls */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Spending Controls</CardTitle>
+          <CardDescription>
+            Control beyond-plan router credit usage for this claw
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="settings-beyond-plan">
+              Use router credits beyond included plan
+            </Label>
+            <Switch
+              id="settings-beyond-plan"
+              checked={useBeyondPlan}
+              onCheckedChange={setUseBeyondPlan}
+            />
+          </div>
+          {useBeyondPlan && (
+            <div className="space-y-2">
+              <Label htmlFor="settings-spending-limit">
+                Weekly spending limit (dollars)
+              </Label>
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    $
+                  </span>
+                  <Input
+                    id="settings-spending-limit"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder="5.00"
+                    value={weeklySpendingLimit}
+                    onChange={(e) => setWeeklySpendingLimit(e.target.value)}
+                    className="pl-7"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  disabled={updateClaw.isPending}
+                  onClick={() => {
+                    if (!selectedOrganization || !selectedClaw) return;
+                    const dollars = parseFloat(weeklySpendingLimit);
+                    if (isNaN(dollars) || dollars <= 0) {
+                      setSpendingError("Enter a valid dollar amount");
+                      return;
+                    }
+                    setSpendingError(null);
+                    updateClaw.mutate(
+                      {
+                        organizationId: selectedOrganization.id,
+                        clawId: selectedClaw.id,
+                        updates: {
+                          weeklySpendingGuardrailCenticents:
+                            dollarsToCenticents(dollars),
+                        },
+                      },
+                      {
+                        onError: (err) =>
+                          setSpendingError(
+                            getErrorMessage(err, "Failed to save"),
+                          ),
+                      },
+                    );
+                  }}
+                >
+                  {updateClaw.isPending ? "Saving..." : "Save"}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Allow up to this dollar amount per week from purchased router
+                credits when the included plan is exhausted.
+              </p>
+            </div>
+          )}
+          {!useBeyondPlan &&
+            selectedClaw.weeklySpendingGuardrailCenticents != null && (
+              <Button
+                type="button"
+                variant="outline"
+                disabled={updateClaw.isPending}
+                onClick={() => {
+                  if (!selectedOrganization || !selectedClaw) return;
+                  setSpendingError(null);
+                  updateClaw.mutate(
+                    {
+                      organizationId: selectedOrganization.id,
+                      clawId: selectedClaw.id,
+                      updates: {
+                        weeklySpendingGuardrailCenticents: null,
+                      },
+                    },
+                    {
+                      onError: (err) =>
+                        setSpendingError(
+                          getErrorMessage(err, "Failed to save"),
+                        ),
+                    },
+                  );
+                }}
+              >
+                {updateClaw.isPending
+                  ? "Saving..."
+                  : "Disable beyond-plan spending"}
+              </Button>
+            )}
+          {!useBeyondPlan &&
+            selectedClaw.weeklySpendingGuardrailCenticents == null && (
+              <p className="text-xs text-muted-foreground">
+                When disabled, this claw will stop when the included plan
+                credits are exhausted.
+              </p>
+            )}
+          {spendingError && (
+            <p className="text-sm text-destructive">{spendingError}</p>
+          )}
         </CardContent>
       </Card>
 

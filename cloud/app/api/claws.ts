@@ -52,6 +52,7 @@ export const useCreateClaw = () => {
         name: string;
         description?: string;
         model?: CreateClawRequest["model"];
+        weeklySpendingGuardrailCenticents?: bigint | null;
       }) =>
         Effect.gen(function* () {
           const client = yield* ApiClient;
@@ -62,6 +63,8 @@ export const useCreateClaw = () => {
               slug: generateSlug(data.name),
               description: data.description,
               model: data.model,
+              weeklySpendingGuardrailCenticents:
+                data.weeklySpendingGuardrailCenticents,
             },
           });
         }),

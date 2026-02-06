@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
+import { Switch } from "@/app/components/ui/switch";
 import { cn } from "@/app/lib/utils";
 
 const MODELS = [
@@ -40,15 +41,19 @@ const MODELS = [
 interface ClawAdvancedOptionsProps {
   model: CreateClawRequest["model"];
   onModelChange: (model: CreateClawRequest["model"]) => void;
-  weeklyGuardrail: string;
-  onWeeklyGuardrailChange: (value: string) => void;
+  useBeyondPlan: boolean;
+  onUseBeyondPlanChange: (value: boolean) => void;
+  weeklySpendingLimit: string;
+  onWeeklySpendingLimitChange: (value: string) => void;
 }
 
 export function ClawAdvancedOptions({
   model,
   onModelChange,
-  weeklyGuardrail,
-  onWeeklyGuardrailChange,
+  useBeyondPlan,
+  onUseBeyondPlanChange,
+  weeklySpendingLimit,
+  onWeeklySpendingLimitChange,
 }: ClawAdvancedOptionsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const selectedModel = MODELS.find((m) => m.value === model);
@@ -90,26 +95,52 @@ export function ClawAdvancedOptions({
             )}
           </div>
 
-          {/* Weekly guardrail */}
-          <div className="space-y-2">
-            <Label htmlFor="claw-guardrail">
-              Weekly request guardrail{" "}
-              <span className="text-muted-foreground font-normal">
-                (optional)
-              </span>
-            </Label>
-            <Input
-              id="claw-guardrail"
-              type="number"
-              min={0}
-              placeholder="e.g. 100"
-              value={weeklyGuardrail}
-              onChange={(e) => onWeeklyGuardrailChange(e.target.value)}
-            />
-            <p className="text-xs text-muted-foreground">
-              Pause this claw after roughly this many requests per week. Leave
-              empty for no per-claw limit.
-            </p>
+          {/* Beyond-plan spending guardrail */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="claw-beyond-plan">
+                Use router credits beyond included plan
+              </Label>
+              <Switch
+                id="claw-beyond-plan"
+                checked={useBeyondPlan}
+                onCheckedChange={onUseBeyondPlanChange}
+              />
+            </div>
+            {useBeyondPlan && (
+              <div className="space-y-2">
+                <Label htmlFor="claw-spending-limit">
+                  Weekly spending limit (dollars)
+                </Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    $
+                  </span>
+                  <Input
+                    id="claw-spending-limit"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder="5.00"
+                    value={weeklySpendingLimit}
+                    onChange={(e) =>
+                      onWeeklySpendingLimitChange(e.target.value)
+                    }
+                    className="pl-7"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Allow up to this dollar amount per week from purchased router
+                  credits when the included plan is exhausted.
+                </p>
+              </div>
+            )}
+            {!useBeyondPlan && (
+              <p className="text-xs text-muted-foreground">
+                When disabled, this claw will stop when the included plan
+                credits are exhausted.
+              </p>
+            )}
           </div>
         </div>
       </CollapsibleContent>
