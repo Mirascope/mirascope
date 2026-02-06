@@ -36,6 +36,7 @@ export const createClawHandler = (
         description: payload.description,
         weeklySpendingGuardrailCenticents:
           payload.weeklySpendingGuardrailCenticents,
+        homeProjectId: payload.homeProjectId,
       },
     });
 
