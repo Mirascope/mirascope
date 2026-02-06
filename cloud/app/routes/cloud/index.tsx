@@ -3,8 +3,14 @@ import { FolderKanban, Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 
 import type { PublicProject } from "@/db/schema";
+import type { PlanTier } from "@/payments/plans";
 
-import { ClawCard } from "@/app/components/claw-card";
+import { useSubscription } from "@/app/api/organizations";
+import {
+  ClawCard,
+  UsageMeter,
+  statusBarColor,
+} from "@/app/components/claw-card";
 import { CloudLayout } from "@/app/components/cloud-layout";
 import { CreateClawModal } from "@/app/components/create-claw-modal";
 import { CreateProjectModal } from "@/app/components/create-project-modal";
@@ -20,6 +26,7 @@ import {
 import { useClaw } from "@/app/contexts/claw";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
+import { PLAN_LIMITS } from "@/payments/plans";
 
 function CloudIndexPage() {
   const { selectedOrganization, isLoading: orgsLoading } = useOrganization();
@@ -29,9 +36,17 @@ function CloudIndexPage() {
     isLoading: projectsLoading,
   } = useProject();
   const { claws, setSelectedClaw, isLoading: clawsLoading } = useClaw();
+  const { data: subscription } = useSubscription(selectedOrganization?.id);
   const navigate = useNavigate();
   const [showCreateClaw, setShowCreateClaw] = useState(false);
   const [showCreateProject, setShowCreateProject] = useState(false);
+
+  const planTier: PlanTier = subscription?.currentPlan ?? "free";
+  const limits = PLAN_LIMITS[planTier];
+  const weeklyUsage = claws.reduce(
+    (sum, c) => sum + Number(c.weeklyUsageCenticents ?? 0n),
+    0,
+  );
 
   const handleClawClick = (claw: (typeof claws)[number]) => {
     setSelectedClaw(claw);
@@ -106,14 +121,30 @@ function CloudIndexPage() {
                   </CardHeader>
                 </Card>
               ) : (
-                <div className="grid gap-3 grid-cols-1 lg:grid-cols-2">
-                  {claws.slice(0, 3).map((claw) => (
-                    <ClawCard
-                      key={claw.id}
-                      claw={claw}
-                      onClick={() => handleClawClick(claw)}
-                    />
-                  ))}
+                <div className="space-y-3">
+                  {weeklyUsage > 0 && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground shrink-0">
+                        Weekly
+                      </span>
+                      <UsageMeter
+                        usage={weeklyUsage}
+                        limit={limits.includedCreditsCenticents}
+                        barColor={statusBarColor[claws[0].status]}
+                        className="flex-1"
+                      />
+                    </div>
+                  )}
+                  <div className="grid gap-3 grid-cols-1 lg:grid-cols-2">
+                    {claws.slice(0, 3).map((claw) => (
+                      <ClawCard
+                        key={claw.id}
+                        claw={claw}
+                        onClick={() => handleClawClick(claw)}
+                        burstLimitCenticents={limits.burstCreditsCenticents}
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -146,7 +177,7 @@ function CloudIndexPage() {
                   {projects.map((project) => (
                     <Card
                       key={project.id}
-                      className="cursor-pointer transition-colors hover:bg-muted/50"
+                      className="cursor-pointer transition-colors hover:bg-muted/50 min-h-[5.5rem]"
                       onClick={() => handleProjectClick(project)}
                     >
                       <CardHeader className="p-4">

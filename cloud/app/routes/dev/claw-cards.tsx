@@ -25,10 +25,10 @@ const baseClaw: Claw = {
   homeProjectId: null,
   homeEnvironmentId: null,
   weeklySpendingGuardrailCenticents: null,
-  weeklyWindowStart: null,
-  weeklyUsageCenticents: null,
-  burstWindowStart: null,
-  burstUsageCenticents: null,
+  weeklyWindowStart: new Date(),
+  weeklyUsageCenticents: 3500n,
+  burstWindowStart: new Date(),
+  burstUsageCenticents: 800n,
   createdAt: new Date(),
   updatedAt: new Date(),
 };
@@ -93,6 +93,7 @@ function ClawCardsDevPage() {
                   displayName: `${status.charAt(0).toUpperCase()}${status.slice(1)} Claw`,
                   slug: `${status}-claw`,
                 }}
+                burstLimitCenticents={2_000}
               />
             ))}
           </div>
@@ -111,6 +112,7 @@ function ClawCardsDevPage() {
                   displayName: `${instanceType} Instance`,
                   slug: `${instanceType}-instance`,
                 }}
+                burstLimitCenticents={2_000}
               />
             ))}
           </div>
@@ -127,6 +129,7 @@ function ClawCardsDevPage() {
                   "Very Long Claw Name That Should Truncate Properly",
                 slug: "very-long-claw-name-that-should-truncate",
               }}
+              burstLimitCenticents={2_000}
             />
             <ClawCard
               claw={{
@@ -134,6 +137,7 @@ function ClawCardsDevPage() {
                 displayName: null,
                 slug: "slug-only-no-display-name",
               }}
+              burstLimitCenticents={2_000}
             />
             <ClawCard
               claw={{
@@ -143,6 +147,62 @@ function ClawCardsDevPage() {
                 displayName: "Error XL",
                 slug: "error-xl",
                 lastError: "Deployment failed",
+              }}
+              burstLimitCenticents={2_000}
+            />
+          </div>
+        </div>
+
+        {/* Usage Meter States */}
+        <div className="space-y-6">
+          <h2 className="text-lg font-semibold">Usage Meter States</h2>
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <ClawCard
+              claw={{
+                ...baseClaw,
+                displayName: "Low Usage",
+                slug: "low-usage",
+                weeklyUsageCenticents: 1_000n,
+                burstUsageCenticents: 200n,
+              }}
+              burstLimitCenticents={2_000}
+            />
+            <ClawCard
+              claw={{
+                ...baseClaw,
+                displayName: "Near Limit (>90%)",
+                slug: "near-limit",
+                weeklyUsageCenticents: 9_500n,
+                burstUsageCenticents: 1_900n,
+              }}
+              burstLimitCenticents={2_000}
+            />
+            <ClawCard
+              claw={{
+                ...baseClaw,
+                status: "paused",
+                displayName: "Over Limit",
+                slug: "over-limit",
+                weeklyUsageCenticents: 12_000n,
+                burstUsageCenticents: 2_500n,
+              }}
+              burstLimitCenticents={2_000}
+            />
+            <ClawCard
+              claw={{
+                ...baseClaw,
+                displayName: "No Usage Data",
+                slug: "no-usage-data",
+                weeklyUsageCenticents: null,
+                burstUsageCenticents: null,
+              }}
+              burstLimitCenticents={2_000}
+            />
+            <ClawCard
+              claw={{
+                ...baseClaw,
+                displayName: "No Limits Passed",
+                slug: "no-limits",
               }}
             />
           </div>
