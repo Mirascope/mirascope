@@ -248,6 +248,40 @@ describe.sequential("Claws API", (it) => {
   );
 
   it.effect(
+    "POST /organizations/:organizationId/claws - create claw with existing project",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+
+        // Create a project to use as the home project
+        const project = yield* client.projects.create({
+          path: { organizationId: org.id },
+          payload: { name: "Existing Project", slug: "existing-project" },
+        });
+
+        const created = yield* client.claws.create({
+          path: { organizationId: org.id },
+          payload: {
+            name: "Linked Claw",
+            slug: "linked-claw",
+            homeProjectId: project.id,
+          },
+        });
+
+        expect(created.displayName).toBe("Linked Claw");
+        expect(created.homeProjectId).toBe(project.id);
+
+        // Clean up
+        yield* client.claws.delete({
+          path: { organizationId: org.id, clawId: created.id },
+        });
+        yield* client.projects.delete({
+          path: { organizationId: org.id, projectId: project.id },
+        });
+      }),
+  );
+
+  it.effect(
     "PUT /organizations/:organizationId/claws/:clawId - set spending guardrail",
     () =>
       Effect.gen(function* () {

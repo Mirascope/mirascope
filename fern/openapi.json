@@ -12831,6 +12831,9 @@
                         "type": "null"
                       }
                     ]
+                  },
+                  "homeProjectId": {
+                    "type": "string"
                   }
                 },
                 "additionalProperties": false

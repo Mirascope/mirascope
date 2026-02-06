@@ -69,6 +69,7 @@ export const CreateClawRequestSchema = Schema.Struct({
   weeklySpendingGuardrailCenticents: Schema.optional(
     Schema.NullOr(Schema.BigInt),
   ),
+  homeProjectId: Schema.optional(Schema.String),
 });
 
 export const UpdateClawRequestSchema = Schema.Struct({
