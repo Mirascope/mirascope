@@ -34,7 +34,9 @@
       "Bash(uv run pytest:*)",
       "Bash(uv run rg:*)",
       "Bash(bun run lint:oxlint:*)",
-      "Bash(bun run format:*)"
+      "Bash(bun run format:*)",
+      "WebFetch(domain:community.cloudflare.com)",
+      "Bash(bunx oxlint:*)"
     ],
     "deny": []
   }
