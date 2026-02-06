@@ -20,6 +20,7 @@ import { Label } from "@/app/components/ui/label";
 interface PurchaseRouterCreditsDialogProps {
   organizationId: string;
   currentBalance: number;
+  trigger?: React.ReactNode;
 }
 
 const PRESET_AMOUNTS = [10, 25, 50, 100];
@@ -29,6 +30,7 @@ type Step = "select-amount" | "payment" | "success";
 export function PurchaseRouterCreditsDialog({
   organizationId,
   currentBalance,
+  trigger,
 }: PurchaseRouterCreditsDialogProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("select-amount");
@@ -145,7 +147,7 @@ export function PurchaseRouterCreditsDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="default">Purchase Credits</Button>
+        {trigger ?? <Button variant="default">Purchase Credits</Button>}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         {step === "select-amount" && (

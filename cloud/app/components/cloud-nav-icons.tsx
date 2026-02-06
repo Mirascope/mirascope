@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bot, FolderKanban, Home } from "lucide-react";
+import { FolderKanban, Home } from "lucide-react";
 
+import { ClawIcon } from "@/app/components/icons/claw-icon";
 import {
   Tooltip,
   TooltipContent,
@@ -8,19 +9,27 @@ import {
 } from "@/app/components/ui/tooltip";
 import { cn } from "@/app/lib/utils";
 
-export function IconSidebar() {
+export function CloudNavIcons() {
   const router = useRouterState();
   const currentPath = router.location.pathname;
 
-  const isHome = currentPath === "/cloud" || currentPath === "/cloud/";
+  const isHome =
+    currentPath === "/cloud" ||
+    currentPath === "/cloud/" ||
+    currentPath.startsWith("/cloud/settings");
   const isClaws = currentPath.startsWith("/cloud/claws");
   const isProjects = currentPath.startsWith("/cloud/projects");
 
   const items = [
-    { to: "/cloud", icon: Home, label: "Home", active: isHome },
-    { to: "/cloud/claws", icon: Bot, label: "Lobsters", active: isClaws },
+    { to: "/cloud" as const, icon: Home, label: "Home", active: isHome },
     {
-      to: "/cloud/projects/dashboard",
+      to: "/cloud/claws" as const,
+      icon: ClawIcon,
+      label: "Claws",
+      active: isClaws,
+    },
+    {
+      to: "/cloud/projects/dashboard" as const,
       icon: FolderKanban,
       label: "Projects",
       active: isProjects,
@@ -28,14 +37,14 @@ export function IconSidebar() {
   ];
 
   return (
-    <aside className="flex h-full w-12 flex-col items-center border-r border-border bg-background pt-4 gap-2">
+    <div className="hidden items-center gap-1 lg:flex">
       {items.map((item) => (
         <Tooltip key={item.to}>
           <TooltipTrigger asChild>
             <Link
               to={item.to}
               className={cn(
-                "flex h-9 w-9 items-center justify-center rounded-md transition-colors",
+                "flex items-center justify-center rounded-md p-2 transition-colors",
                 item.active
                   ? "bg-primary/10 text-primary"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -44,9 +53,11 @@ export function IconSidebar() {
               <item.icon className="h-5 w-5" />
             </Link>
           </TooltipTrigger>
-          <TooltipContent side="right">{item.label}</TooltipContent>
+          <TooltipContent side="bottom" className="z-[110]">
+            {item.label}
+          </TooltipContent>
         </Tooltip>
       ))}
-    </aside>
+    </div>
   );
 }
