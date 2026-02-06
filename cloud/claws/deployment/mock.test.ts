@@ -8,14 +8,15 @@
 import { Effect } from "effect";
 import { describe, it, expect, beforeEach } from "vitest";
 
-import type { DeploymentConfig } from "@/deployment/service";
+import type { DeploymentConfig } from "@/claws/deployment/service";
 
-import { DeploymentError } from "@/deployment/errors";
+import { DeploymentError } from "@/claws/deployment/errors";
 import {
   MockDeploymentService,
   resetMockDeploymentState,
-} from "@/deployment/mock";
-import { DeploymentService } from "@/deployment/service";
+} from "@/claws/deployment/mock";
+import { DeploymentService } from "@/claws/deployment/service";
+import { getClawUrl } from "@/claws/deployment/types";
 
 const testConfig: DeploymentConfig = {
   clawId: "claw-test-123",
@@ -334,5 +335,13 @@ describe("MockDeploymentService", () => {
 
       expect(error).toBeInstanceOf(DeploymentError);
     });
+  });
+});
+
+describe("getClawUrl", () => {
+  it("returns the correct URL", () => {
+    expect(getClawUrl("my-org", "my-claw")).toBe(
+      "https://my-claw.my-org.mirascope.com",
+    );
   });
 });

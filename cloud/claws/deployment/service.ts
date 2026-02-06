@@ -24,7 +24,7 @@
  * ## Usage
  *
  * ```ts
- * import { DeploymentService } from "@/deployment/service";
+ * import { DeploymentService } from "@/claws/deployment/service";
  *
  * const program = Effect.gen(function* () {
  *   const deployment = yield* DeploymentService;
@@ -45,9 +45,9 @@
 
 import { Context, Effect } from "effect";
 
-import type { ClawInstanceType } from "@/payments/plans";
+import type { ClawInstanceType, ClawStatus } from "@/claws/deployment/types";
 
-import { DeploymentError } from "@/deployment/errors";
+import { DeploymentError } from "@/claws/deployment/errors";
 
 /**
  * Configuration passed to the deployment service when provisioning a claw.
@@ -66,7 +66,7 @@ export interface DeploymentConfig {
  * Status returned by deployment operations.
  */
 export interface DeploymentStatus {
-  status: "pending" | "provisioning" | "active" | "paused" | "error";
+  status: ClawStatus;
   url?: string;
   startedAt?: Date;
   errorMessage?: string;

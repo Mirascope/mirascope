@@ -12,6 +12,7 @@
 export type ClawInstanceType =
   | "lite" // 1/16 vCPU, 256 MiB RAM, 2 GB disk - Testing only
   | "basic" // 1/4 vCPU, 1 GiB RAM - Free tier
+  | "standard-1" // 1/2 vCPU, 2 GiB RAM
   | "standard-2" // 1 vCPU, 6 GiB RAM - Pro tier (default)
   | "standard-3" // 2 vCPU, 8 GiB RAM - Team tier
   | "standard-4"; // 4 vCPU, 12 GiB RAM - Power users

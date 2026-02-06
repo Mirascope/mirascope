@@ -18,10 +18,13 @@
 
 import { Effect, Layer } from "effect";
 
-import type { DeploymentConfig, DeploymentStatus } from "@/deployment/service";
+import type {
+  DeploymentConfig,
+  DeploymentStatus,
+} from "@/claws/deployment/service";
 
-import { DeploymentError } from "@/deployment/errors";
-import { DeploymentService } from "@/deployment/service";
+import { DeploymentError } from "@/claws/deployment/errors";
+import { DeploymentService } from "@/claws/deployment/service";
 
 /**
  * In-memory storage for mock deployment state.

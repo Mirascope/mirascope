@@ -35,6 +35,8 @@
  * ```
  */
 
+import type { ClawInstanceType } from "@/claws/deployment/types";
+
 /** Available pricing plan tier values (source of truth) */
 export const PLAN_TIERS = ["free", "pro", "team"] as const;
 
@@ -51,14 +53,7 @@ export const PLAN_TIER_ORDER: Record<PlanTier, number> = {
   team: 2,
 } as const;
 
-/** Claw instance type values that can appear in plan limits */
-export type ClawInstanceType =
-  | "lite"
-  | "basic"
-  | "standard-1"
-  | "standard-2"
-  | "standard-3"
-  | "standard-4";
+export type { ClawInstanceType };
 
 /**
  * Limits for a specific pricing plan.
