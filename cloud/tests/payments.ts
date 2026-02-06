@@ -1435,11 +1435,19 @@ export const MockStripe = Layer.succeed(Stripe, {
         object: "subscription" as const,
       }),
   },
+  setupIntents: {
+    create: () =>
+      Effect.succeed({
+        id: `seti_mock_${crypto.randomUUID()}`,
+        object: "setup_intent" as const,
+        client_secret: `seti_mock_${crypto.randomUUID()}_secret_${crypto.randomUUID()}`,
+      }),
+  },
   paymentMethods: {
     list: () =>
       Effect.succeed({
         object: "list" as const,
-        data: [],
+        data: [createTestPaymentMethod()],
         has_more: false,
       }),
     retrieve: (id: string) =>
@@ -1448,6 +1456,11 @@ export const MockStripe = Layer.succeed(Stripe, {
         object: "payment_method" as const,
         card: DEFAULT_TEST_CARD,
         type: "card" as const,
+      }),
+    detach: (id: string) =>
+      Effect.succeed({
+        id,
+        object: "payment_method" as const,
       }),
   },
   invoices: {

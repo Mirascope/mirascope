@@ -1,13 +1,16 @@
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { Effect } from "effect";
-import { Loader2 } from "lucide-react";
+import { CreditCard, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 import type { PlanTier } from "@/payments/plans";
 
 import { ApiClient, eq } from "@/app/api/client";
-import { useUpdateSubscription } from "@/app/api/organizations";
+import {
+  useUpdateSubscription,
+  usePaymentMethod,
+} from "@/app/api/organizations";
 import { RouterCreditsPaymentForm } from "@/app/components/router-credits-payment-form";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -20,6 +23,7 @@ import {
 } from "@/app/components/ui/dialog";
 import { planLabels } from "@/app/components/ui/plan-badge";
 import { useAnalytics } from "@/app/contexts/analytics";
+import { getStripe } from "@/app/lib/stripe";
 
 interface UpgradePlanDialogProps {
   organizationId: string;
@@ -42,6 +46,7 @@ export function UpgradePlanDialog({
   const queryClient = useQueryClient();
   const updateMutation = useUpdateSubscription();
   const analytics = useAnalytics();
+  const { data: paymentMethod } = usePaymentMethod(organizationId);
 
   // Load preview when dialog opens using useQuery
   const {
@@ -79,7 +84,32 @@ export function UpgradePlanDialog({
       });
 
       if (result.requiresPayment && result.clientSecret) {
-        // Need to collect payment
+        // If we have a saved card, try to confirm server-side via Stripe.js
+        if (paymentMethod) {
+          const stripe = await getStripe();
+          if (!stripe) {
+            toast.error("Stripe failed to load");
+            return;
+          }
+
+          const { error } = await stripe.confirmPayment({
+            clientSecret: result.clientSecret,
+            confirmParams: {
+              payment_method: paymentMethod.id,
+              return_url: window.location.href,
+            },
+            redirect: "if_required",
+          });
+
+          if (error) {
+            toast.error(error.message ?? "Payment failed");
+          } else {
+            handleUpgradeSuccess();
+          }
+          return;
+        }
+
+        // No saved card — show payment form
         setClientSecret(result.clientSecret);
         setStep("payment");
       } else {
@@ -185,6 +215,18 @@ export function UpgradePlanDialog({
                       </div>
                     </div>
                   </div>
+
+                  {paymentMethod && (
+                    <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/50 p-3 text-sm">
+                      <CreditCard className="h-4 w-4 text-muted-foreground" />
+                      <span>
+                        Paying with{" "}
+                        {paymentMethod.brand.charAt(0).toUpperCase() +
+                          paymentMethod.brand.slice(1)}{" "}
+                        ····{paymentMethod.last4}
+                      </span>
+                    </div>
+                  )}
 
                   <p className="text-sm text-muted-foreground">
                     You'll be charged $

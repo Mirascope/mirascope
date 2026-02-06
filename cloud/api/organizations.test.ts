@@ -238,6 +238,47 @@ describe.sequential("Organizations API", (it) => {
       }),
   );
 
+  it.effect(
+    "POST /organizations/:id/payment-method/setup-intent - create setup intent",
+    () =>
+      Effect.gen(function* () {
+        const { client } = yield* TestApiContext;
+        const result = yield* client.organizations.createSetupIntent({
+          path: { id: org.id },
+        });
+
+        expect(result.clientSecret).toBeDefined();
+        expect(typeof result.clientSecret).toBe("string");
+      }),
+  );
+
+  it.effect(
+    "GET /organizations/:id/payment-method - get default payment method",
+    () =>
+      Effect.gen(function* () {
+        const { client } = yield* TestApiContext;
+        const result = yield* client.organizations.getPaymentMethod({
+          path: { id: org.id },
+        });
+
+        expect(result).not.toBeNull();
+        expect(result!.id).toBeDefined();
+        expect(result!.brand).toBe("visa");
+        expect(result!.last4).toBe("4242");
+      }),
+  );
+
+  it.effect(
+    "DELETE /organizations/:id/payment-method - remove payment method",
+    () =>
+      Effect.gen(function* () {
+        const { client } = yield* TestApiContext;
+        yield* client.organizations.removePaymentMethod({
+          path: { id: org.id },
+        });
+      }),
+  );
+
   it.effect("DELETE /organizations/:id - delete organization", () =>
     Effect.gen(function* () {
       const { client } = yield* TestApiContext;

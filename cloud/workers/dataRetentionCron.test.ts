@@ -70,6 +70,7 @@ describe("dataRetentionCron", () => {
         } as never,
         products: {} as never,
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       const executedQueries: string[] = [];
@@ -171,6 +172,7 @@ describe("dataRetentionCron", () => {
         } as never,
         products: {} as never,
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       const executedQueries: string[] = [];
@@ -243,6 +245,7 @@ describe("dataRetentionCron", () => {
         } as never,
         products: {} as never,
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       const mockClickHouseLayer = Layer.succeed(ClickHouse, {
@@ -304,6 +307,7 @@ describe("dataRetentionCron", () => {
         } as never,
         products: {} as never,
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       const commandSpy = vi.fn(() => Effect.succeed(undefined));
@@ -368,6 +372,7 @@ describe("dataRetentionCron", () => {
         } as never,
         products: {} as never,
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       const consoleWarnSpy = vi
@@ -444,6 +449,7 @@ describe("dataRetentionCron", () => {
         } as never,
         products: {} as never,
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       const mockClickHouseLayer = Layer.succeed(ClickHouse, {
@@ -513,6 +519,7 @@ describe("dataRetentionCron", () => {
         } as never,
         products: {} as never,
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       const commandSpy = vi.fn(() => Effect.succeed(undefined));
@@ -550,6 +557,7 @@ describe("dataRetentionCron", () => {
         } as never,
         products: {} as never,
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       const mockClickHouseLayer = Layer.succeed(ClickHouse, {
@@ -613,6 +621,7 @@ describe("dataRetentionCron", () => {
         } as never,
         products: {} as never,
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       const mockClickHouseLayer = Layer.succeed(ClickHouse, {

@@ -11,6 +11,7 @@ import {
 import { DowngradePlanDialog } from "@/app/components/downgrade-plan-dialog";
 import { PlanSettings } from "@/app/components/plan-settings";
 import { RouterCreditsSettings } from "@/app/components/router-credits-settings";
+import { SavedPaymentMethod } from "@/app/components/saved-payment-method";
 import { UpgradePlanDialog } from "@/app/components/upgrade-plan-dialog";
 import { useAnalytics } from "@/app/contexts/analytics";
 import { useOrganization } from "@/app/contexts/organization";
@@ -100,6 +101,8 @@ function BillingSettingsPage() {
         onDowngrade={handleDowngrade}
         onCancelDowngrade={handleCancelDowngrade}
       />
+
+      <SavedPaymentMethod organizationId={selectedOrganization.id} />
 
       <RouterCreditsSettings organizationId={selectedOrganization.id} />
 

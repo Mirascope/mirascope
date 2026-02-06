@@ -73,6 +73,9 @@ import {
   previewSubscriptionChangeHandler,
   updateSubscriptionHandler,
   cancelScheduledDowngradeHandler,
+  createSetupIntentHandler,
+  getPaymentMethodHandler,
+  removePaymentMethodHandler,
 } from "@/api/organizations.handlers";
 import {
   listProjectMembersHandler,
@@ -189,6 +192,15 @@ const OrganizationsHandlersLive = HttpApiBuilder.group(
       )
       .handle("cancelScheduledDowngrade", ({ path }) =>
         cancelScheduledDowngradeHandler(path.id),
+      )
+      .handle("createSetupIntent", ({ path }) =>
+        createSetupIntentHandler(path.id),
+      )
+      .handle("getPaymentMethod", ({ path }) =>
+        getPaymentMethodHandler(path.id),
+      )
+      .handle("removePaymentMethod", ({ path }) =>
+        removePaymentMethodHandler(path.id),
       ),
 );
 

@@ -79,6 +79,7 @@ describe("billingReconciliationCron", () => {
           spans: {} as never,
         },
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       await Effect.runPromise(
@@ -142,6 +143,7 @@ describe("billingReconciliationCron", () => {
           spans: {} as never,
         },
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       await Effect.runPromise(
@@ -207,6 +209,7 @@ describe("billingReconciliationCron", () => {
           spans: {} as never,
         },
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       await Effect.runPromise(
@@ -249,6 +252,7 @@ describe("billingReconciliationCron", () => {
           spans: {} as never,
         },
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       await Effect.runPromise(
@@ -287,6 +291,7 @@ describe("billingReconciliationCron", () => {
           spans: {} as never,
         },
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       const error = await Effect.runPromise(
@@ -796,6 +801,7 @@ describe("billingReconciliationCron", () => {
           spans: {} as never,
         },
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       await Effect.runPromise(
