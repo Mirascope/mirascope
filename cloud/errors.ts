@@ -448,6 +448,26 @@ export class ClickHouseError extends Schema.TaggedError<ClickHouseError>()(
 }
 
 // =============================================================================
+// Cloudflare Errors
+// =============================================================================
+
+/**
+ * Error thrown by Cloudflare API operations.
+ *
+ * Covers R2 bucket operations, Durable Object management, container lifecycle,
+ * and API token creation failures.
+ */
+export class CloudflareApiError extends Schema.TaggedError<CloudflareApiError>()(
+  "CloudflareApiError",
+  {
+    message: Schema.String,
+    cause: Schema.optional(Schema.Unknown),
+  },
+) {
+  static readonly status = 502 as const;
+}
+
+// =============================================================================
 // Pricing Errors
 // =============================================================================
 
