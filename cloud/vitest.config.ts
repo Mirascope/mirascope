@@ -14,6 +14,7 @@ export default defineConfig({
       include: [
         "api",
         "auth",
+        "cloudflare",
         "db",
         "claws",
         "emails",

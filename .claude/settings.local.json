@@ -34,7 +34,8 @@
       "Bash(uv run pytest:*)",
       "Bash(uv run rg:*)",
       "Bash(bun run lint:oxlint:*)",
-      "Bash(bun run format:*)"
+      "Bash(bun run format:*)",
+      "Bash(bun run vitest:*)"
     ],
     "deny": []
   }
