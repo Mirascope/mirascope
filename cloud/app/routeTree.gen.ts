@@ -36,6 +36,7 @@ import { Route as AuthGithubRouteImport } from './routes/auth/github'
 import { Route as ApiAnalyticsRouteImport } from './routes/api.analytics'
 import { Route as CloudSettingsIndexRouteImport } from './routes/cloud/settings/index'
 import { Route as CloudProjectsIndexRouteImport } from './routes/cloud/projects/index'
+import { Route as CloudClawsIndexRouteImport } from './routes/cloud/claws/index'
 import { Route as DocsV1SplatRouteImport } from './routes/docs.v1.$'
 import { Route as CloudSettingsTeamRouteImport } from './routes/cloud/settings/team'
 import { Route as CloudSettingsProjectRouteImport } from './routes/cloud/settings/project'
@@ -193,6 +194,11 @@ const CloudSettingsIndexRoute = CloudSettingsIndexRouteImport.update({
 const CloudProjectsIndexRoute = CloudProjectsIndexRouteImport.update({
   id: '/projects/',
   path: '/projects/',
+  getParentRoute: () => CloudRoute,
+} as any)
+const CloudClawsIndexRoute = CloudClawsIndexRouteImport.update({
+  id: '/claws/',
+  path: '/claws/',
   getParentRoute: () => CloudRoute,
 } as any)
 const DocsV1SplatRoute = DocsV1SplatRouteImport.update({
@@ -361,6 +367,7 @@ export interface FileRoutesByFullPath {
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
   '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/cloud/claws': typeof CloudClawsIndexRoute
   '/cloud/projects': typeof CloudProjectsIndexRoute
   '/cloud/settings/': typeof CloudSettingsIndexRoute
   '/cloud/projects/functions/$functionName': typeof CloudProjectsFunctionsFunctionNameRoute
@@ -409,6 +416,7 @@ export interface FileRoutesByTo {
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
   '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/cloud/claws': typeof CloudClawsIndexRoute
   '/cloud/projects': typeof CloudProjectsIndexRoute
   '/cloud/settings': typeof CloudSettingsIndexRoute
   '/cloud/projects/functions/$functionName': typeof CloudProjectsFunctionsFunctionNameRoute
@@ -462,6 +470,7 @@ export interface FileRoutesById {
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
   '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/cloud/claws/': typeof CloudClawsIndexRoute
   '/cloud/projects/': typeof CloudProjectsIndexRoute
   '/cloud/settings/': typeof CloudSettingsIndexRoute
   '/cloud/projects/functions/$functionName': typeof CloudProjectsFunctionsFunctionNameRoute
@@ -516,6 +525,7 @@ export interface FileRouteTypes {
     | '/cloud/settings/project'
     | '/cloud/settings/team'
     | '/docs/v1/$'
+    | '/cloud/claws'
     | '/cloud/projects'
     | '/cloud/settings/'
     | '/cloud/projects/functions/$functionName'
@@ -564,6 +574,7 @@ export interface FileRouteTypes {
     | '/cloud/settings/project'
     | '/cloud/settings/team'
     | '/docs/v1/$'
+    | '/cloud/claws'
     | '/cloud/projects'
     | '/cloud/settings'
     | '/cloud/projects/functions/$functionName'
@@ -616,6 +627,7 @@ export interface FileRouteTypes {
     | '/cloud/settings/project'
     | '/cloud/settings/team'
     | '/docs/v1/$'
+    | '/cloud/claws/'
     | '/cloud/projects/'
     | '/cloud/settings/'
     | '/cloud/projects/functions/$functionName'
@@ -837,6 +849,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CloudProjectsIndexRouteImport
       parentRoute: typeof CloudRoute
     }
+    '/cloud/claws/': {
+      id: '/cloud/claws/'
+      path: '/claws'
+      fullPath: '/cloud/claws'
+      preLoaderRoute: typeof CloudClawsIndexRouteImport
+      parentRoute: typeof CloudRoute
+    }
     '/docs/v1/$': {
       id: '/docs/v1/$'
       path: '/v1/$'
@@ -1045,6 +1064,7 @@ interface CloudRouteChildren {
   CloudProjectsDashboardRoute: typeof CloudProjectsDashboardRoute
   CloudProjectsOnboardingRoute: typeof CloudProjectsOnboardingRoute
   CloudProjectsTracesRoute: typeof CloudProjectsTracesRoute
+  CloudClawsIndexRoute: typeof CloudClawsIndexRoute
   CloudProjectsIndexRoute: typeof CloudProjectsIndexRoute
   CloudProjectsFunctionsFunctionNameRoute: typeof CloudProjectsFunctionsFunctionNameRoute
   CloudProjectsFunctionsIndexRoute: typeof CloudProjectsFunctionsIndexRoute
@@ -1059,6 +1079,7 @@ const CloudRouteChildren: CloudRouteChildren = {
   CloudProjectsDashboardRoute: CloudProjectsDashboardRoute,
   CloudProjectsOnboardingRoute: CloudProjectsOnboardingRoute,
   CloudProjectsTracesRoute: CloudProjectsTracesRoute,
+  CloudClawsIndexRoute: CloudClawsIndexRoute,
   CloudProjectsIndexRoute: CloudProjectsIndexRoute,
   CloudProjectsFunctionsFunctionNameRoute:
     CloudProjectsFunctionsFunctionNameRoute,

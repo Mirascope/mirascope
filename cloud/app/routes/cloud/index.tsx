@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Bot, FolderKanban, Loader2 } from "lucide-react";
+import { FolderKanban, Loader2 } from "lucide-react";
 
 import type { PublicProject } from "@/db/schema";
 
 import { CloudLayout } from "@/app/components/cloud-layout";
+import { ClawIcon } from "@/app/components/icons/claw-icon";
 import { Protected } from "@/app/components/protected";
 import {
   Card,
@@ -50,20 +51,20 @@ function CloudIndexPage() {
               {selectedOrganization?.name ?? "Dashboard"}
             </h1>
             <p className="text-muted-foreground">
-              Manage your bots and projects
+              Manage your claws and projects
             </p>
           </div>
 
           {/* Cards Grid */}
           <div className="grid gap-6 md:grid-cols-2">
-            {/* Bots Section */}
+            {/* Claws Section */}
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Bot className="h-5 w-5 text-muted-foreground" />
-                <h2 className="text-lg font-semibold">Bots</h2>
+                <ClawIcon className="h-5 w-5 text-muted-foreground" />
+                <h2 className="text-lg font-semibold">Claws</h2>
               </div>
               <p className="text-sm text-muted-foreground mb-4">
-                Deploy and manage AI-powered bots for your organization
+                Deploy and manage AI-powered claws for your organization
               </p>
               <div className="flex h-24 items-center justify-center rounded-lg border border-dashed bg-muted/30">
                 <p className="text-sm text-muted-foreground">Coming soon</p>

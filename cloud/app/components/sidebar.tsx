@@ -1,7 +1,6 @@
 import { useRouterState } from "@tanstack/react-router";
 
 import { ClawsSidebar } from "@/app/components/claws-sidebar";
-import { IconSidebar } from "@/app/components/icon-sidebar";
 import { ProjectsSidebar } from "@/app/components/projects-sidebar";
 
 export function Sidebar() {
@@ -11,9 +10,10 @@ export function Sidebar() {
   const showProjectsSidebar = currentPath.startsWith("/cloud/projects");
   const showClawsSidebar = currentPath.startsWith("/cloud/claws");
 
+  if (!showProjectsSidebar && !showClawsSidebar) return null;
+
   return (
     <div className="flex h-full">
-      <IconSidebar />
       {showProjectsSidebar && <ProjectsSidebar />}
       {showClawsSidebar && <ClawsSidebar />}
     </div>
