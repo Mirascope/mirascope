@@ -70,9 +70,21 @@ export const UpdateClawRequestSchema = Schema.Struct({
   description: Schema.optional(Schema.String),
 });
 
+export const ClawUsageSchema = Schema.Struct({
+  weeklyUsageCenticents: Schema.BigInt,
+  weeklyWindowStart: Schema.NullOr(Schema.Date),
+  burstUsageCenticents: Schema.BigInt,
+  burstWindowStart: Schema.NullOr(Schema.Date),
+  weeklySpendingGuardrailCenticents: Schema.NullOr(Schema.BigInt),
+  poolUsageCenticents: Schema.BigInt,
+  poolLimitCenticents: Schema.Number,
+  poolPercentUsed: Schema.Number,
+});
+
 export type Claw = typeof ClawSchema.Type;
 export type CreateClawRequest = typeof CreateClawRequestSchema.Type;
 export type UpdateClawRequest = typeof UpdateClawRequestSchema.Type;
+export type ClawUsage = typeof ClawUsageSchema.Type;
 
 export class ClawsApi extends HttpApiGroup.make("claws")
   .add(
@@ -143,4 +155,21 @@ export class ClawsApi extends HttpApiGroup.make("claws")
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
       .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get(
+      "getUsage",
+      "/organizations/:organizationId/claws/:clawId/usage",
+    )
+      .setPath(
+        Schema.Struct({
+          organizationId: Schema.String,
+          clawId: Schema.String,
+        }),
+      )
+      .addSuccess(ClawUsageSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(StripeError, { status: StripeError.status }),
   ) {}

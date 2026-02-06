@@ -617,4 +617,331 @@ export class Claws extends BaseAuthenticatedEffectService<
       }
     });
   }
+
+  // ---------------------------------------------------------------------------
+  // Usage Tracking
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Records usage for a claw, updating both weekly and burst windows.
+   *
+   * - Resets the weekly window if it has expired (7-day rolling window)
+   * - Resets the burst window if it has expired (5-hour rolling window)
+   * - Adds `amountCenticents` to both windows after any resets
+   * - Checks per-claw weekly spending guardrail (if set)
+   *
+   * This is an internal method called by the system (router/deployment),
+   * not by users. No user auth is required.
+   */
+  recordUsage({
+    clawId,
+    organizationId,
+    amountCenticents,
+  }: {
+    clawId: string;
+    organizationId: string;
+    amountCenticents: bigint;
+  }): Effect.Effect<
+    void,
+    DatabaseError | PlanLimitExceededError | NotFoundError | StripeError,
+    DrizzleORM | Payments
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+      const payments = yield* Payments;
+
+      // Get current claw usage state
+      const [claw] = yield* client
+        .select({
+          weeklyWindowStart: claws.weeklyWindowStart,
+          weeklyUsageCenticents: claws.weeklyUsageCenticents,
+          burstWindowStart: claws.burstWindowStart,
+          burstUsageCenticents: claws.burstUsageCenticents,
+          weeklySpendingGuardrailCenticents:
+            claws.weeklySpendingGuardrailCenticents,
+        })
+        .from(claws)
+        .where(
+          and(eq(claws.id, clawId), eq(claws.organizationId, organizationId)),
+        )
+        .limit(1)
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to get claw for usage recording",
+                cause: e,
+              }),
+          ),
+        );
+
+      if (!claw) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: `Claw ${clawId} not found`,
+            resource: this.getResourceName(),
+          }),
+        );
+      }
+
+      // Get plan tier for error reporting
+      const planTier =
+        yield* payments.customers.subscriptions.getPlan(organizationId);
+
+      const now = new Date();
+
+      // Weekly window: reset if expired or never started (7-day rolling window)
+      const weeklyDurationMs = 7 * 24 * 60 * 60 * 1000;
+
+      let newWeeklyStart = claw.weeklyWindowStart;
+      let newWeeklyUsage = claw.weeklyUsageCenticents ?? 0n;
+
+      if (
+        !newWeeklyStart ||
+        now.getTime() - newWeeklyStart.getTime() >= weeklyDurationMs
+      ) {
+        newWeeklyStart = now;
+        newWeeklyUsage = 0n;
+      }
+      newWeeklyUsage += amountCenticents;
+
+      // Burst window: reset if expired or never started (5-hour rolling window)
+      const burstDurationMs = 5 * 60 * 60 * 1000;
+
+      let newBurstStart = claw.burstWindowStart;
+      let newBurstUsage = claw.burstUsageCenticents ?? 0n;
+
+      if (
+        !newBurstStart ||
+        now.getTime() - newBurstStart.getTime() >= burstDurationMs
+      ) {
+        newBurstStart = now;
+        newBurstUsage = 0n;
+      }
+      newBurstUsage += amountCenticents;
+
+      // Check per-claw spending guardrail
+      if (
+        claw.weeklySpendingGuardrailCenticents !== null &&
+        newWeeklyUsage > claw.weeklySpendingGuardrailCenticents
+      ) {
+        return yield* Effect.fail(
+          new PlanLimitExceededError({
+            message: "Claw weekly spending guardrail exceeded",
+            resource: "claw",
+            limitType: "weeklySpendingGuardrail",
+            currentUsage: Number(newWeeklyUsage),
+            limit: Number(claw.weeklySpendingGuardrailCenticents),
+            planTier,
+          }),
+        );
+      }
+
+      // Update claw usage
+      yield* client
+        .update(claws)
+        .set({
+          weeklyWindowStart: newWeeklyStart,
+          weeklyUsageCenticents: newWeeklyUsage,
+          burstWindowStart: newBurstStart,
+          burstUsageCenticents: newBurstUsage,
+          updatedAt: now,
+        })
+        .where(
+          and(eq(claws.id, clawId), eq(claws.organizationId, organizationId)),
+        )
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to record usage",
+                cause: e,
+              }),
+          ),
+        );
+    });
+  }
+
+  /**
+   * Gets the org-level pool usage by summing `weeklyUsageCenticents`
+   * across all claws in the organization.
+   *
+   * Requires org membership (any role).
+   */
+  getPoolUsage({
+    userId,
+    organizationId,
+  }: {
+    userId: string;
+    organizationId: string;
+  }): Effect.Effect<
+    {
+      totalUsageCenticents: bigint;
+      limitCenticents: number;
+      percentUsed: number;
+    },
+    NotFoundError | PermissionDeniedError | DatabaseError | StripeError,
+    DrizzleORM | Payments
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+      const payments = yield* Payments;
+
+      // Verify org membership (any role can view pool usage)
+      yield* this.organizationMemberships.findById({
+        userId,
+        organizationId,
+        memberId: userId,
+      });
+
+      const [result] = yield* client
+        .select({
+          total: sql<string>`COALESCE(SUM(${claws.weeklyUsageCenticents}), 0)`,
+        })
+        .from(claws)
+        .where(eq(claws.organizationId, organizationId))
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to get pool usage",
+                cause: e,
+              }),
+          ),
+        );
+
+      const totalUsageCenticents = BigInt(result.total);
+
+      const planTier =
+        yield* payments.customers.subscriptions.getPlan(organizationId);
+      const limits =
+        yield* payments.customers.subscriptions.getPlanLimits(planTier);
+
+      const limitCenticents = limits.includedCreditsCenticents;
+      const percentUsed =
+        limitCenticents > 0
+          ? (Number(totalUsageCenticents) / limitCenticents) * 100
+          : /* v8 ignore next */ 0;
+
+      return { totalUsageCenticents, limitCenticents, percentUsed };
+    });
+  }
+
+  /**
+   * Gets usage details for a specific claw, including pool usage info.
+   *
+   * Requires read access to the claw.
+   */
+  getClawUsage({
+    userId,
+    organizationId,
+    clawId,
+  }: {
+    userId: string;
+    organizationId: string;
+    clawId: string;
+  }): Effect.Effect<
+    {
+      weeklyUsageCenticents: bigint;
+      weeklyWindowStart: Date | null;
+      burstUsageCenticents: bigint;
+      burstWindowStart: Date | null;
+      weeklySpendingGuardrailCenticents: bigint | null;
+      poolUsageCenticents: bigint;
+      poolLimitCenticents: number;
+      poolPercentUsed: number;
+    },
+    NotFoundError | PermissionDeniedError | DatabaseError | StripeError,
+    DrizzleORM | Payments
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+      const payments = yield* Payments;
+
+      // Authorize read access
+      yield* this.authorize({
+        userId,
+        action: "read",
+        organizationId,
+        clawId,
+      });
+
+      // Get claw usage fields
+      const [claw] = yield* client
+        .select({
+          weeklyUsageCenticents: claws.weeklyUsageCenticents,
+          weeklyWindowStart: claws.weeklyWindowStart,
+          burstUsageCenticents: claws.burstUsageCenticents,
+          burstWindowStart: claws.burstWindowStart,
+          weeklySpendingGuardrailCenticents:
+            claws.weeklySpendingGuardrailCenticents,
+        })
+        .from(claws)
+        .where(
+          and(eq(claws.id, clawId), eq(claws.organizationId, organizationId)),
+        )
+        .limit(1)
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to get claw usage",
+                cause: e,
+              }),
+          ),
+        );
+
+      if (!claw) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: `Claw with clawId ${clawId} not found`,
+            resource: this.getResourceName(),
+          }),
+        );
+      }
+
+      // Get pool usage (SUM across all claws in org)
+      const [poolResult] = yield* client
+        .select({
+          total: sql<string>`COALESCE(SUM(${claws.weeklyUsageCenticents}), 0)`,
+        })
+        .from(claws)
+        .where(eq(claws.organizationId, organizationId))
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to get pool usage",
+                cause: e,
+              }),
+          ),
+        );
+
+      const planTier =
+        yield* payments.customers.subscriptions.getPlan(organizationId);
+      const limits =
+        yield* payments.customers.subscriptions.getPlanLimits(planTier);
+
+      const poolUsageCenticents = BigInt(poolResult.total);
+      const poolLimitCenticents = limits.includedCreditsCenticents;
+      const poolPercentUsed =
+        poolLimitCenticents > 0
+          ? (Number(poolUsageCenticents) / poolLimitCenticents) * 100
+          : /* v8 ignore next */ 0;
+
+      return {
+        /* v8 ignore next 1 */
+        weeklyUsageCenticents: claw.weeklyUsageCenticents ?? 0n,
+        weeklyWindowStart: claw.weeklyWindowStart,
+        /* v8 ignore next 1 */
+        burstUsageCenticents: claw.burstUsageCenticents ?? 0n,
+        burstWindowStart: claw.burstWindowStart,
+        weeklySpendingGuardrailCenticents:
+          claw.weeklySpendingGuardrailCenticents,
+        poolUsageCenticents,
+        poolLimitCenticents,
+        poolPercentUsed,
+      };
+    });
+  }
 }

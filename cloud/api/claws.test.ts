@@ -163,6 +163,24 @@ describe.sequential("Claws API", (it) => {
   );
 
   it.effect(
+    "GET /organizations/:organizationId/claws/:clawId/usage - get usage",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const usage = yield* client.claws.getUsage({
+          path: { organizationId: org.id, clawId: claw.id },
+        });
+
+        expect(usage.weeklyUsageCenticents).toBe(0n);
+        expect(usage.burstUsageCenticents).toBe(0n);
+        expect(usage.weeklySpendingGuardrailCenticents).toBeNull();
+        expect(usage.poolUsageCenticents).toBe(0n);
+        expect(usage.poolLimitCenticents).toBeGreaterThan(0);
+        expect(usage.poolPercentUsed).toBe(0);
+      }),
+  );
+
+  it.effect(
     "DELETE /organizations/:organizationId/claws/:clawId - delete claw",
     () =>
       Effect.gen(function* () {
