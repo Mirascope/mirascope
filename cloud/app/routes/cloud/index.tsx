@@ -69,11 +69,11 @@ function CloudIndexPage() {
             </p>
           </div>
 
-          {/* Cards Grid */}
-          <div className="grid gap-6 md:grid-cols-2">
+          {/* Sections Grid — subgrid aligns headers, descriptions, and cards across columns */}
+          <div className="grid gap-x-6 gap-y-0 grid-cols-1 md:grid-cols-2 md:grid-rows-[auto_auto_1fr]">
             {/* Claws Section */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
+            <div className="row-span-1 md:row-span-3 grid grid-rows-subgrid items-start gap-y-0">
+              <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-3">
                   <ClawIcon className="h-5 w-5 text-muted-foreground" />
                   <h2 className="text-lg font-semibold">Claws</h2>
@@ -106,7 +106,7 @@ function CloudIndexPage() {
                   </CardHeader>
                 </Card>
               ) : (
-                <div className="grid gap-3">
+                <div className="grid gap-3 grid-cols-1 lg:grid-cols-2">
                   {claws.slice(0, 3).map((claw) => (
                     <ClawCard
                       key={claw.id}
@@ -119,8 +119,8 @@ function CloudIndexPage() {
             </div>
 
             {/* Projects Section */}
-            <div>
-              <div className="flex items-center gap-3 mb-4">
+            <div className="row-span-1 md:row-span-3 grid grid-rows-subgrid items-start gap-y-0 mt-6 md:mt-0">
+              <div className="flex items-center gap-3 mb-2">
                 <FolderKanban className="h-5 w-5 text-muted-foreground" />
                 <h2 className="text-lg font-semibold">Projects</h2>
                 <Button size="sm" onClick={() => setShowCreateProject(true)}>
@@ -142,7 +142,7 @@ function CloudIndexPage() {
                   </p>
                 </div>
               ) : (
-                <div className="grid gap-3">
+                <div className="grid gap-3 grid-cols-1 lg:grid-cols-2">
                   {projects.map((project) => (
                     <Card
                       key={project.id}
