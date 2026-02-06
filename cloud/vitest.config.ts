@@ -26,6 +26,8 @@ export default defineConfig({
         "app", // Currently manual testing only. We should cover this at some point
         "**.md",
         "**/index.ts",
+        // dispatch-worker has its own package.json and own tests
+        "cloud/claws/dispatch-worker/**",
         "db/migrations/**",
         "db/clickhouse/**",
         "db/schema/**",
@@ -42,6 +44,7 @@ export default defineConfig({
     },
     exclude: [
       "**/node_modules/**",
+      "claws/dispatch-worker/**",
       "dist",
       ".git",
       ".cache",

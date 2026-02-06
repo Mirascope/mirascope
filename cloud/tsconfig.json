@@ -1,6 +1,6 @@
 {
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["api2mdx/snapshots"],
+  "exclude": ["api2mdx/snapshots", "claws/dispatch-worker"],
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",
