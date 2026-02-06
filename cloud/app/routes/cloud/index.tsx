@@ -6,6 +6,7 @@ import type { PublicProject } from "@/db/schema";
 
 import { ClawCard } from "@/app/components/claw-card";
 import { CloudLayout } from "@/app/components/cloud-layout";
+import { CreateClawModal } from "@/app/components/create-claw-modal";
 import { CreateProjectModal } from "@/app/components/create-project-modal";
 import { ClawIcon } from "@/app/components/icons/claw-icon";
 import { Protected } from "@/app/components/protected";
@@ -29,6 +30,7 @@ function CloudIndexPage() {
   } = useProject();
   const { claws, setSelectedClaw, isLoading: clawsLoading } = useClaw();
   const navigate = useNavigate();
+  const [showCreateClaw, setShowCreateClaw] = useState(false);
   const [showCreateProject, setShowCreateProject] = useState(false);
 
   const handleClawClick = (claw: (typeof claws)[number]) => {
@@ -75,7 +77,7 @@ function CloudIndexPage() {
                 <div className="flex items-center gap-3">
                   <ClawIcon className="h-5 w-5 text-muted-foreground" />
                   <h2 className="text-lg font-semibold">Claws</h2>
-                  <Button size="sm" disabled>
+                  <Button size="sm" onClick={() => setShowCreateClaw(true)}>
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
@@ -164,6 +166,7 @@ function CloudIndexPage() {
         </div>
       </CloudLayout>
 
+      <CreateClawModal open={showCreateClaw} onOpenChange={setShowCreateClaw} />
       <CreateProjectModal
         open={showCreateProject}
         onOpenChange={setShowCreateProject}

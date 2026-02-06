@@ -57,6 +57,7 @@ import { Route as ApiWebhooksStripeRouteImport } from './routes/api.webhooks.str
 import { Route as ApiV2HealthRouteImport } from './routes/api.v2.health'
 import { Route as ApiV2DocsRouteImport } from './routes/api.v2.docs'
 import { Route as ApiV2SplatRouteImport } from './routes/api.v2.$'
+import { Route as ApiInternalSplatRouteImport } from './routes/api.internal.$'
 import { Route as CloudProjectsFunctionsIndexRouteImport } from './routes/cloud/projects/functions.index'
 import { Route as RouterV2ProviderSplatRouteImport } from './routes/router.v2.$provider.$'
 import { Route as CloudProjectsFunctionsFunctionNameRouteImport } from './routes/cloud/projects/functions.$functionName'
@@ -304,6 +305,11 @@ const ApiV2SplatRoute = ApiV2SplatRouteImport.update({
   path: '/api/v2/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiInternalSplatRoute = ApiInternalSplatRouteImport.update({
+  id: '/api/internal/$',
+  path: '/api/internal/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CloudProjectsFunctionsIndexRoute =
   CloudProjectsFunctionsIndexRouteImport.update({
     id: '/projects/functions/',
@@ -354,6 +360,7 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof BlogIndexRoute
   '/cloud/': typeof CloudIndexRoute
   '/dev/': typeof DevIndexRoute
+  '/api/internal/$': typeof ApiInternalSplatRoute
   '/api/v2/$': typeof ApiV2SplatRoute
   '/api/v2/docs': typeof ApiV2DocsRoute
   '/api/v2/health': typeof ApiV2HealthRoute
@@ -404,6 +411,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/cloud': typeof CloudIndexRoute
   '/dev': typeof DevIndexRoute
+  '/api/internal/$': typeof ApiInternalSplatRoute
   '/api/v2/$': typeof ApiV2SplatRoute
   '/api/v2/docs': typeof ApiV2DocsRoute
   '/api/v2/health': typeof ApiV2HealthRoute
@@ -459,6 +467,7 @@ export interface FileRoutesById {
   '/blog/': typeof BlogIndexRoute
   '/cloud/': typeof CloudIndexRoute
   '/dev/': typeof DevIndexRoute
+  '/api/internal/$': typeof ApiInternalSplatRoute
   '/api/v2/$': typeof ApiV2SplatRoute
   '/api/v2/docs': typeof ApiV2DocsRoute
   '/api/v2/health': typeof ApiV2HealthRoute
@@ -515,6 +524,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/cloud/'
     | '/dev/'
+    | '/api/internal/$'
     | '/api/v2/$'
     | '/api/v2/docs'
     | '/api/v2/health'
@@ -565,6 +575,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/cloud'
     | '/dev'
+    | '/api/internal/$'
     | '/api/v2/$'
     | '/api/v2/docs'
     | '/api/v2/health'
@@ -619,6 +630,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/cloud/'
     | '/dev/'
+    | '/api/internal/$'
     | '/api/v2/$'
     | '/api/v2/docs'
     | '/api/v2/health'
@@ -663,6 +675,7 @@ export interface RootRouteChildren {
   AuthMeRoute: typeof AuthMeRoute
   InvitationsAcceptRoute: typeof InvitationsAcceptRoute
   TermsSplatRoute: typeof TermsSplatRoute
+  ApiInternalSplatRoute: typeof ApiInternalSplatRoute
   ApiV2SplatRoute: typeof ApiV2SplatRoute
   ApiV2DocsRoute: typeof ApiV2DocsRoute
   ApiV2HealthRoute: typeof ApiV2HealthRoute
@@ -1008,6 +1021,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV2SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/internal/$': {
+      id: '/api/internal/$'
+      path: '/api/internal/$'
+      fullPath: '/api/internal/$'
+      preLoaderRoute: typeof ApiInternalSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cloud/projects/functions/': {
       id: '/cloud/projects/functions/'
       path: '/projects/functions'
@@ -1184,6 +1204,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthMeRoute: AuthMeRoute,
   InvitationsAcceptRoute: InvitationsAcceptRoute,
   TermsSplatRoute: TermsSplatRoute,
+  ApiInternalSplatRoute: ApiInternalSplatRoute,
   ApiV2SplatRoute: ApiV2SplatRoute,
   ApiV2DocsRoute: ApiV2DocsRoute,
   ApiV2HealthRoute: ApiV2HealthRoute,

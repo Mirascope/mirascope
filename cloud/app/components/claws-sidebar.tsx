@@ -2,6 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import * as React from "react";
 
+import { CreateClawModal } from "@/app/components/create-claw-modal";
 import {
   Select,
   SelectContent,
@@ -71,13 +72,14 @@ function SidebarLink({
 export function ClawsSidebar() {
   const { selectedOrganization } = useOrganization();
   const { claws, selectedClaw, setSelectedClaw, isLoading } = useClaw();
+  const [createModalOpen, setCreateModalOpen] = React.useState(false);
 
   const router = useRouterState();
   const currentPath = router.location.pathname;
 
   const handleClawSelectChange = (value: string) => {
     if (value === "__create_new__") {
-      // TODO: Trigger create claw modal/navigation
+      setCreateModalOpen(true);
       return;
     }
     const claw = claws.find((c) => c.id === value);
@@ -150,6 +152,11 @@ export function ClawsSidebar() {
           isActive={isActive("/cloud/claws/config")}
         />
       </div>
+
+      <CreateClawModal
+        open={createModalOpen}
+        onOpenChange={setCreateModalOpen}
+      />
     </aside>
   );
 }
