@@ -11,7 +11,9 @@ import {
 
 import { clawMemberships } from "@/db/schema/claw-memberships";
 
+import { environments } from "./environments";
 import { organizations } from "./organizations";
+import { projects } from "./projects";
 import { users } from "./users";
 
 export const clawStatusEnum = pgEnum("claw_status", [
@@ -54,6 +56,15 @@ export const claws = pgTable(
     secretsEncrypted: text("secrets_encrypted"),
     secretsKeyId: text("secrets_key_id"),
     bucketName: text("bucket_name"),
+    // Bot user that owns the claw's API key and resources
+    botUserId: uuid("bot_user_id")
+      .references(() => users.id)
+      .unique(),
+    // Home project and environment for API key integration
+    homeProjectId: uuid("home_project_id").references(() => projects.id),
+    homeEnvironmentId: uuid("home_environment_id").references(
+      () => environments.id,
+    ),
     // Per-claw spending guardrails (optional — billing is at org level via credit pool)
     // Stored in centicents: 1 cent = 100 centicents, $1 = 10,000 centicents
     weeklySpendingGuardrailCenticents: bigint(
@@ -114,6 +125,9 @@ export type PublicClaw = Pick<
   | "secretsEncrypted"
   | "secretsKeyId"
   | "bucketName"
+  | "botUserId"
+  | "homeProjectId"
+  | "homeEnvironmentId"
   | "weeklySpendingGuardrailCenticents"
   | "weeklyWindowStart"
   | "weeklyUsageCenticents"

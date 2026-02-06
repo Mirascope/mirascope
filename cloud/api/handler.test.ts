@@ -21,6 +21,7 @@ const mockUser: PublicUser = {
   id: "test-user-id",
   email: "test@example.com",
   name: "Test User",
+  accountType: "user",
   deletedAt: null,
 };
 

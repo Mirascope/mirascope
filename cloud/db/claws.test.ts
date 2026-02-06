@@ -5,7 +5,7 @@ import type { PublicClaw } from "@/db/schema";
 
 import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
-import { claws } from "@/db/schema";
+import { claws, users } from "@/db/schema";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -47,6 +47,11 @@ describe("Claws", () => {
           organizationId: org.id,
           createdByUserId: owner.id,
         } satisfies Partial<PublicClaw>);
+
+        // Verify service account resources were created
+        expect(claw.botUserId).toBeDefined();
+        expect(claw.homeProjectId).toBeDefined();
+        expect(claw.homeEnvironmentId).toBeDefined();
 
         // Verify creator was added as claw ADMIN
         const membership = yield* db.organizations.claws.memberships.findById({
@@ -93,6 +98,136 @@ describe("Claws", () => {
         expect(claw.slug).toBe("admin-created-claw");
         expect(claw.createdByUserId).toBe(admin.id);
       }),
+    );
+
+    it.effect("creates a claw without displayName (uses slug)", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "no-display-name" },
+        });
+
+        expect(claw.slug).toBe("no-display-name");
+        expect(claw.displayName).toBeNull();
+        expect(claw.botUserId).toBeDefined();
+      }),
+    );
+
+    it.effect("creates a claw with existing homeProjectId", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        // Create a project to use as home project
+        const project = yield* db.organizations.projects.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { name: "Existing Project", slug: "existing-project" },
+        });
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: {
+            slug: "claw-with-project",
+            displayName: "Claw With Project",
+            homeProjectId: project.id,
+          },
+        });
+
+        // Should use the provided project, not create a new one
+        expect(claw.homeProjectId).toBe(project.id);
+        expect(claw.botUserId).toBeDefined();
+        expect(claw.homeEnvironmentId).toBeDefined();
+      }),
+    );
+
+    it.effect("returns `NotFoundError` when homeProjectId does not exist", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const result = yield* db.organizations.claws
+          .create({
+            userId: owner.id,
+            organizationId: org.id,
+            data: {
+              slug: "claw-bad-project",
+              displayName: "Claw Bad Project",
+              homeProjectId: owner.id, // valid UUID but not a project
+            },
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe(
+          "Home project not found or does not belong to this organization",
+        );
+      }),
+    );
+
+    it.effect(
+      "returns `DatabaseError` when home project validation query fails",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.claws
+            .create({
+              userId: "owner-id",
+              organizationId: "org-id",
+              data: {
+                slug: "test-claw",
+                displayName: "Test Claw",
+                homeProjectId: "project-id",
+              },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(DatabaseError);
+          expect(result.message).toBe("Failed to validate home project");
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              // authorize: getRole
+              .select([{ role: "OWNER" }])
+              // findById: get membership
+              .select([
+                {
+                  memberId: "owner-id",
+                  role: "OWNER",
+                  createdAt: new Date(),
+                },
+              ])
+              // checkClawLimit: getPlan -> fetch organization
+              .select([{ stripeCustomerId: "cus_test" }])
+              // checkClawLimit: count claws (under limit)
+              .select([{ count: 0 }])
+              // getPlan (for plan defaults)
+              .select([{ stripeCustomerId: "cus_test" }])
+              // claw insert (success)
+              .insert([
+                {
+                  id: "claw-id",
+                  slug: "test-claw",
+                  displayName: "Test Claw",
+                  organizationId: "org-id",
+                  createdByUserId: "owner-id",
+                },
+              ])
+              // create claw-user (success)
+              .insert([{ id: "bot-user-id" }])
+              // add claw-user to org (success)
+              .insert([{}])
+              // validate homeProjectId - fails with DB error
+              .select(new Error("Database connection failed"))
+              .build(),
+          ),
+        ),
     );
 
     it.effect(
@@ -881,7 +1016,7 @@ describe("Claws", () => {
   // ===========================================================================
 
   describe("delete", () => {
-    it.effect("deletes a claw", () =>
+    it.effect("deletes a claw and soft-deletes the bot user", () =>
       Effect.gen(function* () {
         const { org, owner } = yield* TestOrganizationFixture;
         const db = yield* Database;
@@ -892,18 +1027,35 @@ describe("Claws", () => {
           data: { slug: "test-claw", displayName: "Test Claw" },
         });
 
+        // Bot user should exist before deletion
+        expect(claw.botUserId).toBeTruthy();
+        const client = yield* DrizzleORM;
+        const [botUserBefore] = yield* client
+          .select({ id: users.id, deletedAt: users.deletedAt })
+          .from(users)
+          .where(eq(users.id, claw.botUserId!));
+        expect(botUserBefore).toBeDefined();
+        expect(botUserBefore.deletedAt).toBeNull();
+
         yield* db.organizations.claws.delete({
           userId: owner.id,
           organizationId: org.id,
           clawId: claw.id,
         });
 
-        // Verify it's gone
+        // Verify claw is gone
         const allClaws = yield* db.organizations.claws.findAll({
           userId: owner.id,
           organizationId: org.id,
         });
         expect(allClaws.find((c) => c.id === claw.id)).toBeUndefined();
+
+        // Verify bot user is soft-deleted
+        const [botUserAfter] = yield* client
+          .select({ id: users.id, deletedAt: users.deletedAt })
+          .from(users)
+          .where(eq(users.id, claw.botUserId!));
+        expect(botUserAfter.deletedAt).not.toBeNull();
       }),
     );
 
@@ -1024,6 +1176,94 @@ describe("Claws", () => {
             ])
             // delete returns empty
             .delete([])
+            .build(),
+        ),
+      ),
+    );
+
+    it.effect("deletes a claw without bot user (no bot user cleanup)", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        // Should succeed without attempting bot user soft-delete
+        yield* db.organizations.claws.delete({
+          userId: "owner-id",
+          organizationId: "org-id",
+          clawId: "claw-id",
+        });
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // authorize: org memberships getRole
+            .select([{ role: "OWNER" }])
+            // authorize: org memberships findById
+            .select([
+              {
+                memberId: "owner-id",
+                role: "OWNER",
+                createdAt: new Date(),
+              },
+            ])
+            // authorize: verifyClawExists
+            .select([{ id: "claw-id" }])
+            // authorize: clawMemberships findById
+            .select([
+              {
+                memberId: "owner-id",
+                role: "ADMIN",
+                clawId: "claw-id",
+                createdAt: new Date(),
+              },
+            ])
+            // delete succeeds with no botUserId
+            .delete([{ id: "claw-id", botUserId: null }])
+            .build(),
+        ),
+      ),
+    );
+
+    it.effect("returns `DatabaseError` when bot user soft-delete fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.claws
+          .delete({
+            userId: "owner-id",
+            organizationId: "org-id",
+            clawId: "claw-id",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to delete bot user");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // authorize: org memberships getRole
+            .select([{ role: "OWNER" }])
+            // authorize: org memberships findById
+            .select([
+              {
+                memberId: "owner-id",
+                role: "OWNER",
+                createdAt: new Date(),
+              },
+            ])
+            // authorize: verifyClawExists
+            .select([{ id: "claw-id" }])
+            // authorize: clawMemberships findById
+            .select([
+              {
+                memberId: "owner-id",
+                role: "ADMIN",
+                clawId: "claw-id",
+                createdAt: new Date(),
+              },
+            ])
+            // delete succeeds with botUserId
+            .delete([{ id: "claw-id", botUserId: "bot-user-id" }])
+            // bot user soft-delete fails
+            .update(new Error("Connection failed"))
             .build(),
         ),
       ),
@@ -1456,6 +1696,73 @@ describe("Claws", () => {
                 createdAt: new Date(),
               },
             ])
+            // pool SUM query fails
+            .select(new Error("Connection failed"))
+            .build(),
+        ),
+      ),
+    );
+  });
+
+  // ===========================================================================
+  // getInternalPoolUsage
+  // ===========================================================================
+
+  describe("getInternalPoolUsage", () => {
+    it.effect("returns total usage and limit without auth", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "internal-pool-claw", displayName: "Internal Pool" },
+        });
+
+        yield* db.organizations.claws.recordUsage({
+          clawId: claw.id,
+          organizationId: org.id,
+          amountCenticents: 500n,
+        });
+
+        const pool = yield* db.organizations.claws.getInternalPoolUsage({
+          organizationId: org.id,
+        });
+
+        expect(pool.totalUsageCenticents).toBe(500n);
+        expect(pool.limitCenticents).toBeGreaterThan(0);
+      }),
+    );
+
+    it.effect("returns 0 usage when no claws have usage", () =>
+      Effect.gen(function* () {
+        const { org } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const pool = yield* db.organizations.claws.getInternalPoolUsage({
+          organizationId: org.id,
+        });
+
+        expect(pool.totalUsageCenticents).toBe(0n);
+      }),
+    );
+
+    it.effect("returns `DatabaseError` when query fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.claws
+          .getInternalPoolUsage({
+            organizationId: "org-id",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to get internal pool usage");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
             // pool SUM query fails
             .select(new Error("Connection failed"))
             .build(),

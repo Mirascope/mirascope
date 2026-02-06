@@ -25,6 +25,7 @@ describe("Users", () => {
           id: user.id,
           email,
           name,
+          accountType: "user",
           deletedAt: null,
         } satisfies PublicUser);
       }),
@@ -81,8 +82,9 @@ describe("Users", () => {
         });
 
         const all = yield* db.users.findAll();
+        const humanUsers = all.filter((u) => u.accountType === "user");
 
-        expect(all).toEqual([user1, user2] satisfies PublicUser[]);
+        expect(humanUsers).toEqual([user1, user2] satisfies PublicUser[]);
       }),
     );
 
@@ -91,8 +93,9 @@ describe("Users", () => {
         const db = yield* Database;
 
         const all = yield* db.users.findAll();
+        const humanUsers = all.filter((u) => u.accountType === "user");
 
-        expect(all).toEqual([]);
+        expect(humanUsers).toEqual([]);
       }),
     );
 
@@ -186,6 +189,7 @@ describe("Users", () => {
           id: created.id,
           name: updatedName,
           email: updatedEmail,
+          accountType: "user",
           deletedAt: null,
         } satisfies PublicUser);
       }),
