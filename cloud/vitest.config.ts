@@ -15,6 +15,7 @@ export default defineConfig({
         "api",
         "auth",
         "db",
+        "deployment",
         "emails",
         "payments",
         "rate-limiting",
