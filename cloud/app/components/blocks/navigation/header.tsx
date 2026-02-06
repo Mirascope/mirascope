@@ -108,13 +108,13 @@ export default function Header() {
           {isCloudRoute && <CloudNavIcons />}
           {isCloudRoute && <NavbarCredits />}
 
-          {/* Theme switcher - visible on all screen sizes */}
-          <ThemeSwitcher />
-
           {/* Account menu - show at lg breakpoint */}
           <div className="hidden lg:flex">
             <AccountMenu />
           </div>
+
+          {/* Theme switcher - visible on all screen sizes */}
+          <ThemeSwitcher />
 
           {/* Mobile nav button - hidden on desktop */}
           <button
@@ -134,6 +134,7 @@ export default function Header() {
       <MobileNavigation
         isOpen={isMobileNavOpen}
         onClose={() => setIsMobileNavOpen(false)}
+        isCloudRoute={isCloudRoute}
       />
     </header>
   );
