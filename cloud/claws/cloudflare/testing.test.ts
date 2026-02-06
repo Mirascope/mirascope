@@ -8,13 +8,13 @@
 import { Effect, Layer } from "effect";
 import { describe, it, expect } from "vitest";
 
-import type { CloudflareConfig } from "@/cloudflare/config";
+import type { CloudflareConfig } from "@/claws/cloudflare/config";
 
-import { CloudflareSettings } from "@/cloudflare/config";
-import { LiveCloudflareR2Service } from "@/cloudflare/r2/live";
-import { CloudflareR2Service } from "@/cloudflare/r2/service";
-import { makeHttpRecorder } from "@/cloudflare/testing";
+import { CloudflareSettings } from "@/claws/cloudflare/config";
 import { CloudflareApiError } from "@/errors";
+import { LiveCloudflareR2Service } from "@/claws/cloudflare/r2/live";
+import { CloudflareR2Service } from "@/claws/cloudflare/r2/service";
+import { makeHttpRecorder } from "@/claws/cloudflare/testing";
 
 const TEST_CONFIG: CloudflareConfig = {
   accountId: "test-account-id",

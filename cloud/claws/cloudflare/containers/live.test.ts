@@ -11,13 +11,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import type {
   CloudflareHttpClient,
   CloudflareRequestOptions,
-} from "@/cloudflare/client";
-import type { CloudflareConfig } from "@/cloudflare/config";
+} from "@/claws/cloudflare/client";
+import type { CloudflareConfig } from "@/claws/cloudflare/config";
 
-import { CloudflareHttp } from "@/cloudflare/client";
-import { CloudflareSettings } from "@/cloudflare/config";
-import { LiveCloudflareContainerService } from "@/cloudflare/containers/live";
-import { CloudflareContainerService } from "@/cloudflare/containers/service";
+import { CloudflareHttp } from "@/claws/cloudflare/client";
+import { CloudflareSettings } from "@/claws/cloudflare/config";
+import { LiveCloudflareContainerService } from "@/claws/cloudflare/containers/live";
+import { CloudflareContainerService } from "@/claws/cloudflare/containers/service";
 import { CloudflareApiError } from "@/errors";
 
 const TEST_CONFIG: CloudflareConfig = {
@@ -33,7 +33,9 @@ type RequestHandler = (
   options: CloudflareRequestOptions,
 ) => Effect.Effect<unknown, CloudflareApiError>;
 
-function createMockHttpClient(handler: RequestHandler): CloudflareHttpClient {
+function createMockHttpClient(
+  handler: RequestHandler,
+): CloudflareHttpClient {
   return {
     request: <T>(options: CloudflareRequestOptions) =>
       handler(options) as Effect.Effect<T, CloudflareApiError>,

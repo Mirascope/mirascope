@@ -26,14 +26,14 @@
 
 import { Effect, Layer } from "effect";
 
-import type { CloudflareHttpClient } from "@/cloudflare/client";
-import type { CloudflareConfig } from "@/cloudflare/config";
-import type { CloudflareContainerServiceInterface } from "@/cloudflare/containers/service";
-import type { ContainerState } from "@/cloudflare/containers/types";
+import type { CloudflareHttpClient } from "@/claws/cloudflare/client";
+import type { CloudflareConfig } from "@/claws/cloudflare/config";
+import type { CloudflareContainerServiceInterface } from "@/claws/cloudflare/containers/service";
+import type { ContainerState } from "@/claws/cloudflare/containers/types";
 
-import { CloudflareHttp } from "@/cloudflare/client";
-import { CloudflareSettings } from "@/cloudflare/config";
-import { CloudflareContainerService } from "@/cloudflare/containers/service";
+import { CloudflareHttp } from "@/claws/cloudflare/client";
+import { CloudflareSettings } from "@/claws/cloudflare/config";
+import { CloudflareContainerService } from "@/claws/cloudflare/containers/service";
 import { CloudflareApiError } from "@/errors";
 
 /**

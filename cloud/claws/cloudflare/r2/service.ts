@@ -19,7 +19,7 @@
  * ## Usage
  *
  * ```ts
- * import { CloudflareR2Service } from "@/cloudflare/r2/service";
+ * import { CloudflareR2Service } from "@/claws/cloudflare/r2/service";
  *
  * const program = Effect.gen(function* () {
  *   const r2 = yield* CloudflareR2Service;
@@ -32,7 +32,10 @@
 
 import { Context, Effect } from "effect";
 
-import type { R2BucketInfo, R2ScopedCredentials } from "@/cloudflare/r2/types";
+import type {
+  R2BucketInfo,
+  R2ScopedCredentials,
+} from "@/claws/cloudflare/r2/types";
 
 import { CloudflareApiError } from "@/errors";
 

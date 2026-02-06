@@ -11,9 +11,9 @@
 import { Effect } from "effect";
 import { describe, it, expect } from "vitest";
 
-import { makeMockR2Layer } from "@/cloudflare/r2/mock";
-import { CloudflareR2Service } from "@/cloudflare/r2/service";
 import { CloudflareApiError } from "@/errors";
+import { makeMockR2Layer } from "@/claws/cloudflare/r2/mock";
+import { CloudflareR2Service } from "@/claws/cloudflare/r2/service";
 
 function run<A, E>(effect: Effect.Effect<A, E, CloudflareR2Service>) {
   const layer = makeMockR2Layer();

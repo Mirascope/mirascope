@@ -11,12 +11,12 @@ import { describe, it, expect } from "vitest";
 
 import type { OpenClawConfig } from "@/claws/deployment/types";
 
+import { makeMockContainerLayer } from "@/claws/cloudflare/containers/mock";
+import { makeMockR2Layer } from "@/claws/cloudflare/r2/mock";
 import { DeploymentError } from "@/claws/deployment/errors";
 import { LiveDeploymentService } from "@/claws/deployment/live";
 import { DeploymentService } from "@/claws/deployment/service";
 import { getClawUrl } from "@/claws/deployment/types";
-import { makeMockContainerLayer } from "@/cloudflare/containers/mock";
-import { makeMockR2Layer } from "@/cloudflare/r2/mock";
 
 const testConfig: OpenClawConfig = {
   clawId: "claw-test-123",

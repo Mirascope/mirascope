@@ -24,10 +24,10 @@
 import { Effect, Layer } from "effect";
 import { describe, it, expect, afterAll } from "vitest";
 
-import { CloudflareHttp } from "@/cloudflare/client";
-import { CloudflareSettings } from "@/cloudflare/config";
-import { LiveCloudflareR2Service } from "@/cloudflare/r2/live";
-import { CloudflareR2Service } from "@/cloudflare/r2/service";
+import { CloudflareHttp } from "@/claws/cloudflare/client";
+import { CloudflareSettings } from "@/claws/cloudflare/config";
+import { LiveCloudflareR2Service } from "@/claws/cloudflare/r2/live";
+import { CloudflareR2Service } from "@/claws/cloudflare/r2/service";
 
 const TEST_BUCKET_PREFIX = "contract-test-";
 

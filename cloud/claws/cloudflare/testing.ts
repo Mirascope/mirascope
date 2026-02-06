@@ -32,9 +32,9 @@
 
 import { Effect, Layer } from "effect";
 
-import type { CloudflareRequestOptions } from "@/cloudflare/client";
+import type { CloudflareRequestOptions } from "@/claws/cloudflare/client";
 
-import { CloudflareHttp } from "@/cloudflare/client";
+import { CloudflareHttp } from "@/claws/cloudflare/client";
 import { CloudflareApiError } from "@/errors";
 
 /**

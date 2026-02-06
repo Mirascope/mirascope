@@ -15,14 +15,14 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import type {
   CloudflareHttpClient,
   CloudflareRequestOptions,
-} from "@/cloudflare/client";
-import type { CloudflareConfig } from "@/cloudflare/config";
+} from "@/claws/cloudflare/client";
+import type { CloudflareConfig } from "@/claws/cloudflare/config";
 
-import { CloudflareHttp } from "@/cloudflare/client";
-import { CloudflareSettings } from "@/cloudflare/config";
-import { LiveCloudflareR2Service } from "@/cloudflare/r2/live";
-import { CloudflareR2Service } from "@/cloudflare/r2/service";
+import { CloudflareHttp } from "@/claws/cloudflare/client";
+import { CloudflareSettings } from "@/claws/cloudflare/config";
 import { CloudflareApiError } from "@/errors";
+import { LiveCloudflareR2Service } from "@/claws/cloudflare/r2/live";
+import { CloudflareR2Service } from "@/claws/cloudflare/r2/service";
 
 const TEST_CONFIG: CloudflareConfig = {
   accountId: "test-account-id",

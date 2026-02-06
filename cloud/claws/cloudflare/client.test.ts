@@ -10,7 +10,7 @@
 import { Effect, Layer } from "effect";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { CloudflareHttp } from "@/cloudflare/client";
+import { CloudflareHttp } from "@/claws/cloudflare/client";
 import { CloudflareApiError } from "@/errors";
 
 const TEST_TOKEN = "test-api-token-abc123";

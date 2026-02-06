@@ -17,9 +17,9 @@
 
 import { Effect, Layer } from "effect";
 
-import type { ContainerState } from "@/cloudflare/containers/types";
+import type { ContainerState } from "@/claws/cloudflare/containers/types";
 
-import { CloudflareContainerService } from "@/cloudflare/containers/service";
+import { CloudflareContainerService } from "@/claws/cloudflare/containers/service";
 import { CloudflareApiError } from "@/errors";
 
 /**

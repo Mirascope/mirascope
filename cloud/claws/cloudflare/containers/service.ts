@@ -32,7 +32,7 @@
  * ## Usage
  *
  * ```ts
- * import { CloudflareContainerService } from "@/cloudflare/containers/service";
+ * import { CloudflareContainerService } from "@/claws/cloudflare/containers/service";
  *
  * const program = Effect.gen(function* () {
  *   const containers = yield* CloudflareContainerService;
@@ -48,7 +48,7 @@ import { Context, Effect } from "effect";
 import type {
   ContainerState,
   DurableObjectInfo,
-} from "@/cloudflare/containers/types";
+} from "@/claws/cloudflare/containers/types";
 
 import { CloudflareApiError } from "@/errors";
 

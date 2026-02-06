@@ -11,8 +11,8 @@
 import { Effect } from "effect";
 import { describe, it, expect } from "vitest";
 
-import { makeMockContainerLayer } from "@/cloudflare/containers/mock";
-import { CloudflareContainerService } from "@/cloudflare/containers/service";
+import { makeMockContainerLayer } from "@/claws/cloudflare/containers/mock";
+import { CloudflareContainerService } from "@/claws/cloudflare/containers/service";
 import { CloudflareApiError } from "@/errors";
 
 const TEST_HOSTNAME = "my-claw.my-org.mirascope.com";

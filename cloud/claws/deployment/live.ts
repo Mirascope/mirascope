@@ -39,12 +39,12 @@ import { Effect, Layer } from "effect";
 import type { DeploymentStatus } from "@/claws/deployment/service";
 import type { OpenClawConfig } from "@/claws/deployment/types";
 
+import { CloudflareContainerService } from "@/claws/cloudflare/containers/service";
+import { CloudflareApiError } from "@/errors";
+import { CloudflareR2Service } from "@/claws/cloudflare/r2/service";
 import { DeploymentError } from "@/claws/deployment/errors";
 import { DeploymentService } from "@/claws/deployment/service";
 import { getClawUrl } from "@/claws/deployment/types";
-import { CloudflareContainerService } from "@/cloudflare/containers/service";
-import { CloudflareR2Service } from "@/cloudflare/r2/service";
-import { CloudflareApiError } from "@/errors";
 
 /** R2 bucket name for a given claw. */
 function bucketName(clawId: string): string {

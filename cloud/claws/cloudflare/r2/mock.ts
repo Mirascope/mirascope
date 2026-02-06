@@ -17,10 +17,13 @@
 
 import { Effect, Layer } from "effect";
 
-import type { R2BucketInfo, R2ScopedCredentials } from "@/cloudflare/r2/types";
+import type {
+  R2BucketInfo,
+  R2ScopedCredentials,
+} from "@/claws/cloudflare/r2/types";
 
-import { CloudflareR2Service } from "@/cloudflare/r2/service";
 import { CloudflareApiError } from "@/errors";
+import { CloudflareR2Service } from "@/claws/cloudflare/r2/service";
 
 /**
  * Creates a fresh mock R2 service layer with isolated state.

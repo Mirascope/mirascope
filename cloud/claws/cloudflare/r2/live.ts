@@ -16,13 +16,16 @@
 
 import { Effect, Layer } from "effect";
 
-import type { CloudflareHttpClient } from "@/cloudflare/client";
-import type { CloudflareConfig } from "@/cloudflare/config";
-import type { R2BucketInfo, R2ScopedCredentials } from "@/cloudflare/r2/types";
+import type { CloudflareHttpClient } from "@/claws/cloudflare/client";
+import type { CloudflareConfig } from "@/claws/cloudflare/config";
+import type {
+  R2BucketInfo,
+  R2ScopedCredentials,
+} from "@/claws/cloudflare/r2/types";
 
-import { CloudflareHttp } from "@/cloudflare/client";
-import { CloudflareSettings } from "@/cloudflare/config";
-import { CloudflareR2Service } from "@/cloudflare/r2/service";
+import { CloudflareHttp } from "@/claws/cloudflare/client";
+import { CloudflareSettings } from "@/claws/cloudflare/config";
+import { CloudflareR2Service } from "@/claws/cloudflare/r2/service";
 
 /**
  * Raw Cloudflare API response shape for an R2 bucket.
