@@ -95,7 +95,10 @@ export function AccountMenu({ className }: AccountMenuProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className={cn("w-[200px]", DROPDOWN_Z_INDEX)}
+          className={cn(
+            "w-[200px] bg-popover text-popover-foreground",
+            DROPDOWN_Z_INDEX,
+          )}
         >
           {/* Organizations */}
           {hasOrganizations ? (
@@ -114,7 +117,7 @@ export function AccountMenu({ className }: AccountMenuProps) {
               ))}
               <DropdownMenuItem
                 onClick={() => setShowCreateOrg(true)}
-                className="text-primary font-medium"
+                className="text-[var(--mirple)] font-medium"
               >
                 + New Organization
               </DropdownMenuItem>
@@ -122,7 +125,7 @@ export function AccountMenu({ className }: AccountMenuProps) {
           ) : (
             <DropdownMenuItem
               onClick={() => setShowCreateOrg(true)}
-              className="text-primary font-medium"
+              className="text-[var(--mirple)] font-medium"
             >
               + New Organization
             </DropdownMenuItem>

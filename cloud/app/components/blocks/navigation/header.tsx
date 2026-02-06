@@ -15,6 +15,8 @@ import {
   useIsLandingPage,
   useIsRouterWaitlistPage,
 } from "@/app/components/blocks/theme-provider";
+import { CloudNavIcons } from "@/app/components/cloud-nav-icons";
+import { NavbarCredits } from "@/app/components/navbar-credits";
 import { cn } from "@/app/lib/utils";
 
 import { HEADER_STYLES } from "./styles";
@@ -79,30 +81,40 @@ export default function Header() {
         {/* Adding a grow spacer to push elements to edges */}
         <div className="grow"></div>
 
-        {/* Search bar in the middle with ability to grow/shrink */}
-        <ResponsiveSearchWrapper
-          onOpenChange={(isOpen: boolean) => {
-            setIsSearchOpen(isOpen);
-          }}
-        />
+        {/* Search bar - hide on cloud routes */}
+        {!isCloudRoute && (
+          <ResponsiveSearchWrapper
+            onOpenChange={(isOpen: boolean) => {
+              setIsSearchOpen(isOpen);
+            }}
+          />
+        )}
         {/* Right section with fixed controls */}
         <div className={HEADER_STYLES.controls}>
-          {/* Desktop: GitHub + Theme buttons */}
-          <div className={HEADER_STYLES.githubContainer}>
-            <GitHubMirascopeButton />
-          </div>
+          {/* Desktop: GitHub + Discord buttons - hide on cloud routes */}
+          {!isCloudRoute && (
+            <div className={HEADER_STYLES.githubContainer}>
+              <GitHubMirascopeButton />
+            </div>
+          )}
 
-          <div className={HEADER_STYLES.discordContainer}>
-            <DiscordLink />
-          </div>
+          {!isCloudRoute && (
+            <div className={HEADER_STYLES.discordContainer}>
+              <DiscordLink />
+            </div>
+          )}
 
-          {/* Theme switcher - visible on all screen sizes */}
-          <ThemeSwitcher />
+          {/* Cloud nav icons + credits - show only on cloud routes */}
+          {isCloudRoute && <CloudNavIcons />}
+          {isCloudRoute && <NavbarCredits />}
 
           {/* Account menu - show at lg breakpoint */}
           <div className="hidden lg:flex">
             <AccountMenu />
           </div>
+
+          {/* Theme switcher - visible on all screen sizes */}
+          <ThemeSwitcher />
 
           {/* Mobile nav button - hidden on desktop */}
           <button
@@ -122,6 +134,7 @@ export default function Header() {
       <MobileNavigation
         isOpen={isMobileNavOpen}
         onClose={() => setIsMobileNavOpen(false)}
+        isCloudRoute={isCloudRoute}
       />
     </header>
   );

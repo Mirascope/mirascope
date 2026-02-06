@@ -102,3 +102,14 @@ export const deleteClawHandler = (organizationId: string, clawId: string) =>
       distinctId: user.id,
     });
   });
+
+export const getClawUsageHandler = (organizationId: string, clawId: string) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    return yield* db.organizations.claws.getClawUsage({
+      userId: user.id,
+      organizationId,
+      clawId,
+    });
+  });

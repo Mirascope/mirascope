@@ -36,6 +36,7 @@ import { Route as AuthGithubRouteImport } from './routes/auth/github'
 import { Route as ApiAnalyticsRouteImport } from './routes/api.analytics'
 import { Route as CloudSettingsIndexRouteImport } from './routes/cloud/settings/index'
 import { Route as CloudProjectsIndexRouteImport } from './routes/cloud/projects/index'
+import { Route as CloudClawsIndexRouteImport } from './routes/cloud/claws/index'
 import { Route as DocsV1SplatRouteImport } from './routes/docs.v1.$'
 import { Route as CloudSettingsTeamRouteImport } from './routes/cloud/settings/team'
 import { Route as CloudSettingsProjectRouteImport } from './routes/cloud/settings/project'
@@ -47,6 +48,7 @@ import { Route as CloudProjectsTracesRouteImport } from './routes/cloud/projects
 import { Route as CloudProjectsOnboardingRouteImport } from './routes/cloud/projects/onboarding'
 import { Route as CloudProjectsDashboardRouteImport } from './routes/cloud/projects/dashboard'
 import { Route as CloudProjectsAnnotationQueueRouteImport } from './routes/cloud/projects/annotation-queue'
+import { Route as CloudClawsConfigRouteImport } from './routes/cloud/claws/config'
 import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
 import { Route as AuthGithubProxyCallbackRouteImport } from './routes/auth/github.proxy-callback'
@@ -195,6 +197,11 @@ const CloudProjectsIndexRoute = CloudProjectsIndexRouteImport.update({
   path: '/projects/',
   getParentRoute: () => CloudRoute,
 } as any)
+const CloudClawsIndexRoute = CloudClawsIndexRouteImport.update({
+  id: '/claws/',
+  path: '/claws/',
+  getParentRoute: () => CloudRoute,
+} as any)
 const DocsV1SplatRoute = DocsV1SplatRouteImport.update({
   id: '/v1/$',
   path: '/v1/$',
@@ -252,6 +259,11 @@ const CloudProjectsAnnotationQueueRoute =
     path: '/projects/annotation-queue',
     getParentRoute: () => CloudRoute,
   } as any)
+const CloudClawsConfigRoute = CloudClawsConfigRouteImport.update({
+  id: '/claws/config',
+  path: '/claws/config',
+  getParentRoute: () => CloudRoute,
+} as any)
 const AuthGoogleProxyCallbackRoute = AuthGoogleProxyCallbackRouteImport.update({
   id: '/proxy-callback',
   path: '/proxy-callback',
@@ -350,6 +362,7 @@ export interface FileRoutesByFullPath {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/cloud/claws/config': typeof CloudClawsConfigRoute
   '/cloud/projects/annotation-queue': typeof CloudProjectsAnnotationQueueRoute
   '/cloud/projects/dashboard': typeof CloudProjectsDashboardRoute
   '/cloud/projects/onboarding': typeof CloudProjectsOnboardingRoute
@@ -361,6 +374,7 @@ export interface FileRoutesByFullPath {
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
   '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/cloud/claws': typeof CloudClawsIndexRoute
   '/cloud/projects': typeof CloudProjectsIndexRoute
   '/cloud/settings/': typeof CloudSettingsIndexRoute
   '/cloud/projects/functions/$functionName': typeof CloudProjectsFunctionsFunctionNameRoute
@@ -398,6 +412,7 @@ export interface FileRoutesByTo {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/cloud/claws/config': typeof CloudClawsConfigRoute
   '/cloud/projects/annotation-queue': typeof CloudProjectsAnnotationQueueRoute
   '/cloud/projects/dashboard': typeof CloudProjectsDashboardRoute
   '/cloud/projects/onboarding': typeof CloudProjectsOnboardingRoute
@@ -409,6 +424,7 @@ export interface FileRoutesByTo {
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
   '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/cloud/claws': typeof CloudClawsIndexRoute
   '/cloud/projects': typeof CloudProjectsIndexRoute
   '/cloud/settings': typeof CloudSettingsIndexRoute
   '/cloud/projects/functions/$functionName': typeof CloudProjectsFunctionsFunctionNameRoute
@@ -451,6 +467,7 @@ export interface FileRoutesById {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/cloud/claws/config': typeof CloudClawsConfigRoute
   '/cloud/projects/annotation-queue': typeof CloudProjectsAnnotationQueueRoute
   '/cloud/projects/dashboard': typeof CloudProjectsDashboardRoute
   '/cloud/projects/onboarding': typeof CloudProjectsOnboardingRoute
@@ -462,6 +479,7 @@ export interface FileRoutesById {
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
   '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/cloud/claws/': typeof CloudClawsIndexRoute
   '/cloud/projects/': typeof CloudProjectsIndexRoute
   '/cloud/settings/': typeof CloudSettingsIndexRoute
   '/cloud/projects/functions/$functionName': typeof CloudProjectsFunctionsFunctionNameRoute
@@ -505,6 +523,7 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/cloud/claws/config'
     | '/cloud/projects/annotation-queue'
     | '/cloud/projects/dashboard'
     | '/cloud/projects/onboarding'
@@ -516,6 +535,7 @@ export interface FileRouteTypes {
     | '/cloud/settings/project'
     | '/cloud/settings/team'
     | '/docs/v1/$'
+    | '/cloud/claws'
     | '/cloud/projects'
     | '/cloud/settings/'
     | '/cloud/projects/functions/$functionName'
@@ -553,6 +573,7 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/cloud/claws/config'
     | '/cloud/projects/annotation-queue'
     | '/cloud/projects/dashboard'
     | '/cloud/projects/onboarding'
@@ -564,6 +585,7 @@ export interface FileRouteTypes {
     | '/cloud/settings/project'
     | '/cloud/settings/team'
     | '/docs/v1/$'
+    | '/cloud/claws'
     | '/cloud/projects'
     | '/cloud/settings'
     | '/cloud/projects/functions/$functionName'
@@ -605,6 +627,7 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/cloud/claws/config'
     | '/cloud/projects/annotation-queue'
     | '/cloud/projects/dashboard'
     | '/cloud/projects/onboarding'
@@ -616,6 +639,7 @@ export interface FileRouteTypes {
     | '/cloud/settings/project'
     | '/cloud/settings/team'
     | '/docs/v1/$'
+    | '/cloud/claws/'
     | '/cloud/projects/'
     | '/cloud/settings/'
     | '/cloud/projects/functions/$functionName'
@@ -837,6 +861,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CloudProjectsIndexRouteImport
       parentRoute: typeof CloudRoute
     }
+    '/cloud/claws/': {
+      id: '/cloud/claws/'
+      path: '/claws'
+      fullPath: '/cloud/claws'
+      preLoaderRoute: typeof CloudClawsIndexRouteImport
+      parentRoute: typeof CloudRoute
+    }
     '/docs/v1/$': {
       id: '/docs/v1/$'
       path: '/v1/$'
@@ -912,6 +943,13 @@ declare module '@tanstack/react-router' {
       path: '/projects/annotation-queue'
       fullPath: '/cloud/projects/annotation-queue'
       preLoaderRoute: typeof CloudProjectsAnnotationQueueRouteImport
+      parentRoute: typeof CloudRoute
+    }
+    '/cloud/claws/config': {
+      id: '/cloud/claws/config'
+      path: '/claws/config'
+      fullPath: '/cloud/claws/config'
+      preLoaderRoute: typeof CloudClawsConfigRouteImport
       parentRoute: typeof CloudRoute
     }
     '/auth/google/proxy-callback': {
@@ -1041,10 +1079,12 @@ interface CloudRouteChildren {
   CloudLoginRoute: typeof CloudLoginRoute
   CloudSettingsRoute: typeof CloudSettingsRouteWithChildren
   CloudIndexRoute: typeof CloudIndexRoute
+  CloudClawsConfigRoute: typeof CloudClawsConfigRoute
   CloudProjectsAnnotationQueueRoute: typeof CloudProjectsAnnotationQueueRoute
   CloudProjectsDashboardRoute: typeof CloudProjectsDashboardRoute
   CloudProjectsOnboardingRoute: typeof CloudProjectsOnboardingRoute
   CloudProjectsTracesRoute: typeof CloudProjectsTracesRoute
+  CloudClawsIndexRoute: typeof CloudClawsIndexRoute
   CloudProjectsIndexRoute: typeof CloudProjectsIndexRoute
   CloudProjectsFunctionsFunctionNameRoute: typeof CloudProjectsFunctionsFunctionNameRoute
   CloudProjectsFunctionsIndexRoute: typeof CloudProjectsFunctionsIndexRoute
@@ -1055,10 +1095,12 @@ const CloudRouteChildren: CloudRouteChildren = {
   CloudLoginRoute: CloudLoginRoute,
   CloudSettingsRoute: CloudSettingsRouteWithChildren,
   CloudIndexRoute: CloudIndexRoute,
+  CloudClawsConfigRoute: CloudClawsConfigRoute,
   CloudProjectsAnnotationQueueRoute: CloudProjectsAnnotationQueueRoute,
   CloudProjectsDashboardRoute: CloudProjectsDashboardRoute,
   CloudProjectsOnboardingRoute: CloudProjectsOnboardingRoute,
   CloudProjectsTracesRoute: CloudProjectsTracesRoute,
+  CloudClawsIndexRoute: CloudClawsIndexRoute,
   CloudProjectsIndexRoute: CloudProjectsIndexRoute,
   CloudProjectsFunctionsFunctionNameRoute:
     CloudProjectsFunctionsFunctionNameRoute,

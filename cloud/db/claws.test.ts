@@ -1,8 +1,11 @@
+import { and, eq } from "drizzle-orm";
 import { Effect, Layer } from "effect";
 
 import type { PublicClaw } from "@/db/schema";
 
+import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
+import { claws } from "@/db/schema";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -1051,6 +1054,625 @@ describe("Claws", () => {
 
         expect(role).toBe("ADMIN");
       }),
+    );
+  });
+
+  // ===========================================================================
+  // recordUsage
+  // ===========================================================================
+
+  describe("recordUsage", () => {
+    it.effect("records initial usage (sets up windows from null)", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "usage-claw", displayName: "Usage Claw" },
+        });
+
+        yield* db.organizations.claws.recordUsage({
+          clawId: claw.id,
+          organizationId: org.id,
+          amountCenticents: 100n,
+        });
+
+        const updated = yield* db.organizations.claws.findById({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+        });
+
+        expect(updated.weeklyUsageCenticents).toBe(100n);
+        expect(updated.weeklyWindowStart).toBeInstanceOf(Date);
+        expect(updated.burstUsageCenticents).toBe(100n);
+        expect(updated.burstWindowStart).toBeInstanceOf(Date);
+      }),
+    );
+
+    it.effect("accumulates usage on subsequent calls", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "accum-claw", displayName: "Accumulate Claw" },
+        });
+
+        yield* db.organizations.claws.recordUsage({
+          clawId: claw.id,
+          organizationId: org.id,
+          amountCenticents: 100n,
+        });
+
+        yield* db.organizations.claws.recordUsage({
+          clawId: claw.id,
+          organizationId: org.id,
+          amountCenticents: 200n,
+        });
+
+        const updated = yield* db.organizations.claws.findById({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+        });
+
+        expect(updated.weeklyUsageCenticents).toBe(300n);
+        expect(updated.burstUsageCenticents).toBe(300n);
+      }),
+    );
+
+    it.effect("resets weekly window when expired", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+        const client = yield* DrizzleORM;
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "weekly-reset-claw", displayName: "Weekly Reset" },
+        });
+
+        // Record initial usage
+        yield* db.organizations.claws.recordUsage({
+          clawId: claw.id,
+          organizationId: org.id,
+          amountCenticents: 500n,
+        });
+
+        // Set weekly window start to 8 days ago (expires for 7-day weekly reset)
+        const pastDate = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000);
+        yield* client
+          .update(claws)
+          .set({ weeklyWindowStart: pastDate })
+          .where(and(eq(claws.id, claw.id), eq(claws.organizationId, org.id)));
+
+        // Record more usage — should reset weekly window
+        yield* db.organizations.claws.recordUsage({
+          clawId: claw.id,
+          organizationId: org.id,
+          amountCenticents: 50n,
+        });
+
+        const updated = yield* db.organizations.claws.findById({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+        });
+
+        // Weekly was reset: only the new 50n
+        expect(updated.weeklyUsageCenticents).toBe(50n);
+        // Burst was NOT reset (5-hour window hasn't expired): 500 + 50
+        expect(updated.burstUsageCenticents).toBe(550n);
+      }),
+    );
+
+    it.effect("resets burst window when expired", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+        const client = yield* DrizzleORM;
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "burst-reset-claw", displayName: "Burst Reset" },
+        });
+
+        // Record initial usage
+        yield* db.organizations.claws.recordUsage({
+          clawId: claw.id,
+          organizationId: org.id,
+          amountCenticents: 500n,
+        });
+
+        // Set burst window start to 6 hours ago (expires for 5-hour burst)
+        const pastDate = new Date(Date.now() - 6 * 60 * 60 * 1000);
+        yield* client
+          .update(claws)
+          .set({ burstWindowStart: pastDate })
+          .where(and(eq(claws.id, claw.id), eq(claws.organizationId, org.id)));
+
+        // Record more usage — should reset burst window
+        yield* db.organizations.claws.recordUsage({
+          clawId: claw.id,
+          organizationId: org.id,
+          amountCenticents: 50n,
+        });
+
+        const updated = yield* db.organizations.claws.findById({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+        });
+
+        // Weekly was NOT reset: 500 + 50
+        expect(updated.weeklyUsageCenticents).toBe(550n);
+        // Burst was reset: only the new 50n
+        expect(updated.burstUsageCenticents).toBe(50n);
+      }),
+    );
+
+    it.effect("enforces per-claw spending guardrail", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+        const client = yield* DrizzleORM;
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "guardrail-claw", displayName: "Guardrail Claw" },
+        });
+
+        // Set a spending guardrail
+        yield* client
+          .update(claws)
+          .set({ weeklySpendingGuardrailCenticents: 500n })
+          .where(and(eq(claws.id, claw.id), eq(claws.organizationId, org.id)));
+
+        // First usage: under guardrail
+        yield* db.organizations.claws.recordUsage({
+          clawId: claw.id,
+          organizationId: org.id,
+          amountCenticents: 400n,
+        });
+
+        // Second usage: would exceed guardrail
+        const result = yield* db.organizations.claws
+          .recordUsage({
+            clawId: claw.id,
+            organizationId: org.id,
+            amountCenticents: 200n,
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(PlanLimitExceededError);
+        if (result instanceof PlanLimitExceededError) {
+          expect(result.limitType).toBe("weeklySpendingGuardrail");
+          expect(result.currentUsage).toBe(600);
+          expect(result.limit).toBe(500);
+        }
+      }),
+    );
+
+    it.effect("returns `NotFoundError` when claw does not exist", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.claws
+          .recordUsage({
+            clawId: "nonexistent-claw-id",
+            organizationId: "org-id",
+            amountCenticents: 100n,
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // recordUsage: select claw → empty
+            .select([])
+            .build(),
+        ),
+      ),
+    );
+
+    it.effect("returns `DatabaseError` when select fails in recordUsage", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.claws
+          .recordUsage({
+            clawId: "claw-id",
+            organizationId: "org-id",
+            amountCenticents: 100n,
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to get claw for usage recording");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // recordUsage: select fails
+            .select(new Error("Connection failed"))
+            .build(),
+        ),
+      ),
+    );
+
+    it.effect("returns `DatabaseError` when update fails in recordUsage", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.claws
+          .recordUsage({
+            clawId: "claw-id",
+            organizationId: "org-id",
+            amountCenticents: 100n,
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to record usage");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // recordUsage: select claw
+            .select([
+              {
+                weeklyWindowStart: new Date(),
+                weeklyUsageCenticents: 0n,
+                burstWindowStart: new Date(),
+                burstUsageCenticents: 0n,
+                weeklySpendingGuardrailCenticents: null,
+              },
+            ])
+            // getPlan: fetch organization
+            .select([{ stripeCustomerId: "cus_test" }])
+            // update fails
+            .update(new Error("Connection failed"))
+            .build(),
+        ),
+      ),
+    );
+  });
+
+  // ===========================================================================
+  // getPoolUsage
+  // ===========================================================================
+
+  describe("getPoolUsage", () => {
+    it.effect("returns total usage across all claws in org", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        // Create two claws and record usage
+        const claw1 = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "pool-claw-1", displayName: "Pool Claw 1" },
+        });
+        const claw2 = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "pool-claw-2", displayName: "Pool Claw 2" },
+        });
+
+        yield* db.organizations.claws.recordUsage({
+          clawId: claw1.id,
+          organizationId: org.id,
+          amountCenticents: 300n,
+        });
+        yield* db.organizations.claws.recordUsage({
+          clawId: claw2.id,
+          organizationId: org.id,
+          amountCenticents: 700n,
+        });
+
+        const pool = yield* db.organizations.claws.getPoolUsage({
+          userId: owner.id,
+          organizationId: org.id,
+        });
+
+        expect(pool.totalUsageCenticents).toBe(1000n);
+        expect(pool.limitCenticents).toBeGreaterThan(0);
+        expect(pool.percentUsed).toBeGreaterThan(0);
+      }),
+    );
+
+    it.effect("returns 0 when no claws have usage", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const pool = yield* db.organizations.claws.getPoolUsage({
+          userId: owner.id,
+          organizationId: org.id,
+        });
+
+        expect(pool.totalUsageCenticents).toBe(0n);
+        expect(pool.percentUsed).toBe(0);
+      }),
+    );
+
+    it.effect(
+      "returns `NotFoundError` when non-member calls getPoolUsage",
+      () =>
+        Effect.gen(function* () {
+          const { org, nonMember } = yield* TestOrganizationFixture;
+          const db = yield* Database;
+
+          const result = yield* db.organizations.claws
+            .getPoolUsage({
+              userId: nonMember.id,
+              organizationId: org.id,
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+        }),
+    );
+
+    it.effect("returns `DatabaseError` when pool query fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.claws
+          .getPoolUsage({
+            userId: "owner-id",
+            organizationId: "org-id",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to get pool usage");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // org memberships getRole
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "owner-id",
+                createdAt: new Date(),
+              },
+            ])
+            // org memberships findById
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "owner-id",
+                createdAt: new Date(),
+              },
+            ])
+            // pool SUM query fails
+            .select(new Error("Connection failed"))
+            .build(),
+        ),
+      ),
+    );
+  });
+
+  // ===========================================================================
+  // getClawUsage
+  // ===========================================================================
+
+  describe("getClawUsage", () => {
+    it.effect("returns usage info with pool data", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "usage-info-claw", displayName: "Usage Info Claw" },
+        });
+
+        yield* db.organizations.claws.recordUsage({
+          clawId: claw.id,
+          organizationId: org.id,
+          amountCenticents: 250n,
+        });
+
+        const usage = yield* db.organizations.claws.getClawUsage({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+        });
+
+        expect(usage.weeklyUsageCenticents).toBe(250n);
+        expect(usage.weeklyWindowStart).toBeInstanceOf(Date);
+        expect(usage.burstUsageCenticents).toBe(250n);
+        expect(usage.burstWindowStart).toBeInstanceOf(Date);
+        expect(usage.weeklySpendingGuardrailCenticents).toBeNull();
+        expect(usage.poolUsageCenticents).toBe(250n);
+        expect(usage.poolLimitCenticents).toBeGreaterThan(0);
+        expect(usage.poolPercentUsed).toBeGreaterThan(0);
+      }),
+    );
+
+    it.effect("returns `NotFoundError` for non-member", () =>
+      Effect.gen(function* () {
+        const { org, owner, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "auth-usage-claw", displayName: "Auth Usage Claw" },
+        });
+
+        const result = yield* db.organizations.claws
+          .getClawUsage({
+            userId: nonMember.id,
+            organizationId: org.id,
+            clawId: claw.id,
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+      }),
+    );
+
+    it.effect(
+      "returns `NotFoundError` when claw does not exist in getClawUsage",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.claws
+            .getClawUsage({
+              userId: "owner-id",
+              organizationId: "org-id",
+              clawId: "nonexistent-claw-id",
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+          expect(result.message).toContain("not found");
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              // authorize: org memberships getRole
+              .select([{ role: "OWNER" }])
+              // authorize: org memberships findById
+              .select([
+                {
+                  memberId: "owner-id",
+                  role: "OWNER",
+                  createdAt: new Date(),
+                },
+              ])
+              // authorize: verifyClawExists
+              .select([{ id: "nonexistent-claw-id" }])
+              // authorize: clawMemberships findById
+              .select([
+                {
+                  memberId: "owner-id",
+                  role: "ADMIN",
+                  clawId: "nonexistent-claw-id",
+                  createdAt: new Date(),
+                },
+              ])
+              // getClawUsage: select claw → empty
+              .select([])
+              .build(),
+          ),
+        ),
+    );
+
+    it.effect("returns `DatabaseError` when usage query fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.claws
+          .getClawUsage({
+            userId: "owner-id",
+            organizationId: "org-id",
+            clawId: "claw-id",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to get claw usage");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // authorize: org memberships getRole
+            .select([{ role: "OWNER" }])
+            // authorize: org memberships findById
+            .select([
+              {
+                memberId: "owner-id",
+                role: "OWNER",
+                createdAt: new Date(),
+              },
+            ])
+            // authorize: verifyClawExists
+            .select([{ id: "claw-id" }])
+            // authorize: clawMemberships findById
+            .select([
+              {
+                memberId: "owner-id",
+                role: "ADMIN",
+                clawId: "claw-id",
+                createdAt: new Date(),
+              },
+            ])
+            // getClawUsage: select fails
+            .select(new Error("Connection failed"))
+            .build(),
+        ),
+      ),
+    );
+
+    it.effect(
+      "returns `DatabaseError` when pool query fails in getClawUsage",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.claws
+            .getClawUsage({
+              userId: "owner-id",
+              organizationId: "org-id",
+              clawId: "claw-id",
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(DatabaseError);
+          expect(result.message).toBe("Failed to get pool usage");
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              // authorize: org memberships getRole
+              .select([{ role: "OWNER" }])
+              // authorize: org memberships findById
+              .select([
+                {
+                  memberId: "owner-id",
+                  role: "OWNER",
+                  createdAt: new Date(),
+                },
+              ])
+              // authorize: verifyClawExists
+              .select([{ id: "claw-id" }])
+              // authorize: clawMemberships findById
+              .select([
+                {
+                  memberId: "owner-id",
+                  role: "ADMIN",
+                  clawId: "claw-id",
+                  createdAt: new Date(),
+                },
+              ])
+              // getClawUsage: select claw
+              .select([
+                {
+                  weeklyUsageCenticents: 100n,
+                  weeklyWindowStart: new Date(),
+                  burstUsageCenticents: 50n,
+                  burstWindowStart: new Date(),
+                  weeklySpendingGuardrailCenticents: null,
+                },
+              ])
+              // pool SUM query fails
+              .select(new Error("Connection failed"))
+              .build(),
+          ),
+        ),
     );
   });
 });
