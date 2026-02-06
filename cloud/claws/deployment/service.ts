@@ -14,11 +14,7 @@
  *   ├── deprovision(clawId)  → Remove a claw deployment
  *   ├── getStatus(clawId)    → Check deployment health
  *   ├── restart(clawId)      → Restart a running claw
- *   ├── updateConfig(...)    → Update deployment config
- *   ├── resize(...)          → Change instance type
- *   ├── getStorage(...)      → Read from claw storage
- *   ├── putStorage(...)      → Write to claw storage
- *   └── deleteStorage(...)   → Delete from claw storage
+ *   └── update(clawId, ...)  → Update config (secrets, instance type, etc.)
  * ```
  *
  * ## Usage
@@ -29,38 +25,18 @@
  * const program = Effect.gen(function* () {
  *   const deployment = yield* DeploymentService;
  *
- *   const status = yield* deployment.provision({
- *     clawId: "claw-123",
- *     clawSlug: "my-claw",
- *     organizationSlug: "my-org",
- *     instanceType: "basic",
- *     routerApiKey: "key_abc",
- *   });
- *
+ *   const status = yield* deployment.provision(config);
  *   console.log(status.status); // "active"
- *   console.log(status.url);    // "my-claw.my-org.mirascope.com"
+ *   console.log(status.url);    // "https://my-claw.my-org.mirascope.com"
  * });
  * ```
  */
 
 import { Context, Effect } from "effect";
 
-import type { ClawInstanceType, ClawStatus } from "@/claws/deployment/types";
+import type { ClawStatus, OpenClawConfig } from "@/claws/deployment/types";
 
 import { DeploymentError } from "@/claws/deployment/errors";
-
-/**
- * Configuration passed to the deployment service when provisioning a claw.
- */
-export interface DeploymentConfig {
-  clawId: string;
-  clawSlug: string;
-  organizationSlug: string;
-  instanceType: ClawInstanceType;
-  routerApiKey: string;
-  secretsEncrypted?: string;
-  secretsKeyId?: string;
-}
 
 /**
  * Status returned by deployment operations.
@@ -77,14 +53,21 @@ export interface DeploymentStatus {
  *
  * Provides operations for managing claw deployments on the underlying
  * infrastructure (Moltworker / Cloudflare Workers for Platforms).
+ *
+ * Provisioning accepts an `OpenClawConfig` — the full runtime config that the
+ * dispatch worker needs to start a container (identity, instance type, R2
+ * credentials, container env vars with decrypted secrets).
+ *
+ * Storage operations (R2 bucket access) are intentionally excluded — the cloud
+ * backend can access R2 directly using the per-claw credentials.
  */
 export interface DeploymentServiceInterface {
   /** Provision and deploy a new claw. */
   readonly provision: (
-    config: DeploymentConfig,
+    config: OpenClawConfig,
   ) => Effect.Effect<DeploymentStatus, DeploymentError>;
 
-  /** Remove a claw deployment. */
+  /** Remove a claw deployment and release resources. */
   readonly deprovision: (
     clawId: string,
   ) => Effect.Effect<void, DeploymentError>;
@@ -94,41 +77,16 @@ export interface DeploymentServiceInterface {
     clawId: string,
   ) => Effect.Effect<DeploymentStatus, DeploymentError>;
 
-  /** Restart a running claw. */
+  /** Restart a running claw (fetches fresh config on next startup). */
   readonly restart: (
     clawId: string,
   ) => Effect.Effect<DeploymentStatus, DeploymentError>;
 
-  /** Update deployment configuration for a running claw. */
-  readonly updateConfig: (
+  /** Update a running claw's configuration (secrets, instance type, etc.). */
+  readonly update: (
     clawId: string,
-    config: Partial<DeploymentConfig>,
+    config: Partial<OpenClawConfig>,
   ) => Effect.Effect<DeploymentStatus, DeploymentError>;
-
-  /** Resize a claw's instance type. */
-  readonly resize: (
-    clawId: string,
-    instanceType: ClawInstanceType,
-  ) => Effect.Effect<DeploymentStatus, DeploymentError>;
-
-  /** Read a file from claw storage. */
-  readonly getStorage: (
-    clawId: string,
-    path: string,
-  ) => Effect.Effect<Uint8Array, DeploymentError>;
-
-  /** Write a file to claw storage. */
-  readonly putStorage: (
-    clawId: string,
-    path: string,
-    data: Uint8Array,
-  ) => Effect.Effect<void, DeploymentError>;
-
-  /** Delete a file from claw storage. */
-  readonly deleteStorage: (
-    clawId: string,
-    path: string,
-  ) => Effect.Effect<void, DeploymentError>;
 }
 
 /**

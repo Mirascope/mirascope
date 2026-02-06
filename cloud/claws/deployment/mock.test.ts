@@ -8,7 +8,7 @@
 import { Effect } from "effect";
 import { describe, it, expect, beforeEach } from "vitest";
 
-import type { DeploymentConfig } from "@/claws/deployment/service";
+import type { OpenClawConfig } from "@/claws/deployment/types";
 
 import { DeploymentError } from "@/claws/deployment/errors";
 import {
@@ -18,12 +18,23 @@ import {
 import { DeploymentService } from "@/claws/deployment/service";
 import { getClawUrl } from "@/claws/deployment/types";
 
-const testConfig: DeploymentConfig = {
+const testConfig: OpenClawConfig = {
   clawId: "claw-test-123",
   clawSlug: "my-claw",
+  organizationId: "org-456",
   organizationSlug: "my-org",
   instanceType: "basic",
-  routerApiKey: "key_abc123",
+  r2: {
+    bucketName: "claw-claw-test-123",
+    accessKeyId: "test-access-key",
+    secretAccessKey: "test-secret-key",
+  },
+  containerEnv: {
+    MIRASCOPE_API_KEY: "key_abc123",
+    ANTHROPIC_API_KEY: "key_abc123",
+    ANTHROPIC_BASE_URL: "https://router.mirascope.com/v1",
+    OPENCLAW_GATEWAY_TOKEN: "gw_token_xyz",
+  },
 };
 
 const run = <A, E>(effect: Effect.Effect<A, E, DeploymentService>) =>
@@ -67,7 +78,9 @@ describe("MockDeploymentService", () => {
       );
 
       expect(status.status).toBe("active");
-      expect(status.url).toBe("my-claw.my-org.mirascope.com");
+      expect(status.url).toBe(
+        getClawUrl(testConfig.organizationSlug, testConfig.clawSlug),
+      );
       expect(status.startedAt).toBeInstanceOf(Date);
       expect(status.errorMessage).toBeUndefined();
     });
@@ -106,7 +119,9 @@ describe("MockDeploymentService", () => {
       );
 
       expect(status.status).toBe("active");
-      expect(status.url).toBe("my-claw.my-org.mirascope.com");
+      expect(status.url).toBe(
+        getClawUrl(testConfig.organizationSlug, testConfig.clawSlug),
+      );
     });
 
     it("fails for unknown claw", async () => {
@@ -155,14 +170,14 @@ describe("MockDeploymentService", () => {
     });
   });
 
-  describe("updateConfig", () => {
+  describe("update", () => {
     it("returns active status", async () => {
       const status = await run(
         Effect.gen(function* () {
           const deployment = yield* DeploymentService;
           yield* deployment.provision(testConfig);
-          return yield* deployment.updateConfig(testConfig.clawId, {
-            routerApiKey: "new_key",
+          return yield* deployment.update(testConfig.clawId, {
+            instanceType: "standard-2",
           });
         }),
       );
@@ -174,132 +189,7 @@ describe("MockDeploymentService", () => {
       const error = await runFail(
         Effect.gen(function* () {
           const deployment = yield* DeploymentService;
-          return yield* deployment.updateConfig("unknown-claw", {});
-        }),
-      );
-
-      expect(error).toBeInstanceOf(DeploymentError);
-    });
-  });
-
-  describe("resize", () => {
-    it("returns active status", async () => {
-      const status = await run(
-        Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
-          yield* deployment.provision(testConfig);
-          return yield* deployment.resize(testConfig.clawId, "standard-2");
-        }),
-      );
-
-      expect(status.status).toBe("active");
-    });
-
-    it("fails for unknown claw", async () => {
-      const error = await runFail(
-        Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
-          return yield* deployment.resize("unknown-claw", "standard-2");
-        }),
-      );
-
-      expect(error).toBeInstanceOf(DeploymentError);
-    });
-  });
-
-  describe("storage operations", () => {
-    it("putStorage and getStorage round-trip", async () => {
-      const data = await run(
-        Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
-          yield* deployment.provision(testConfig);
-
-          const testData = new Uint8Array([1, 2, 3, 4, 5]);
-          yield* deployment.putStorage(
-            testConfig.clawId,
-            "config.json",
-            testData,
-          );
-          return yield* deployment.getStorage(testConfig.clawId, "config.json");
-        }),
-      );
-
-      expect(data).toEqual(new Uint8Array([1, 2, 3, 4, 5]));
-    });
-
-    it("getStorage fails for missing file", async () => {
-      const error = await runFail(
-        Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
-          yield* deployment.provision(testConfig);
-          return yield* deployment.getStorage(
-            testConfig.clawId,
-            "nonexistent.json",
-          );
-        }),
-      );
-
-      expect(error).toBeInstanceOf(DeploymentError);
-      expect((error as DeploymentError).message).toContain("File not found");
-    });
-
-    it("deleteStorage removes file", async () => {
-      const error = await runFail(
-        Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
-          yield* deployment.provision(testConfig);
-
-          const testData = new Uint8Array([1, 2, 3]);
-          yield* deployment.putStorage(
-            testConfig.clawId,
-            "temp.json",
-            testData,
-          );
-          yield* deployment.deleteStorage(testConfig.clawId, "temp.json");
-
-          // Should fail after deletion
-          return yield* deployment.getStorage(testConfig.clawId, "temp.json");
-        }),
-      );
-
-      expect(error).toBeInstanceOf(DeploymentError);
-      expect((error as DeploymentError).message).toContain("File not found");
-    });
-
-    it("getStorage fails for unprovisioned claw", async () => {
-      const error = await runFail(
-        Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
-          return yield* deployment.getStorage("unknown-claw", "file.json");
-        }),
-      );
-
-      expect(error).toBeInstanceOf(DeploymentError);
-      expect((error as DeploymentError).message).toContain(
-        "No deployment found",
-      );
-    });
-
-    it("putStorage fails for unprovisioned claw", async () => {
-      const error = await runFail(
-        Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
-          return yield* deployment.putStorage(
-            "unknown-claw",
-            "file.json",
-            new Uint8Array([1]),
-          );
-        }),
-      );
-
-      expect(error).toBeInstanceOf(DeploymentError);
-    });
-
-    it("deleteStorage fails for unprovisioned claw", async () => {
-      const error = await runFail(
-        Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
-          return yield* deployment.deleteStorage("unknown-claw", "file.json");
+          return yield* deployment.update("unknown-claw", {});
         }),
       );
 
@@ -314,11 +204,6 @@ describe("MockDeploymentService", () => {
         Effect.gen(function* () {
           const deployment = yield* DeploymentService;
           yield* deployment.provision(testConfig);
-          yield* deployment.putStorage(
-            testConfig.clawId,
-            "test.json",
-            new Uint8Array([1]),
-          );
         }),
       );
 

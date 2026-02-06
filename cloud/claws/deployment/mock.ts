@@ -8,29 +8,20 @@
  * ## Behavior
  *
  * - `provision` — Returns "active" status after a short delay
- * - `deprovision` — No-op with delay
- * - `getStatus` — Always returns "active"
+ * - `deprovision` — Removes tracked state with delay
+ * - `getStatus` — Returns tracked status
  * - `restart` — Returns "active" after delay
- * - `updateConfig` — Returns "active" after delay
- * - `resize` — Returns "active" after delay
- * - Storage operations — In-memory map, no persistence
+ * - `update` — Returns "active" after delay
  */
 
 import { Effect, Layer } from "effect";
 
-import type {
-  DeploymentConfig,
-  DeploymentStatus,
-} from "@/claws/deployment/service";
+import type { DeploymentStatus } from "@/claws/deployment/service";
+import type { OpenClawConfig } from "@/claws/deployment/types";
 
 import { DeploymentError } from "@/claws/deployment/errors";
 import { DeploymentService } from "@/claws/deployment/service";
-
-/**
- * In-memory storage for mock deployment state.
- * Maps clawId → Map<path, data>.
- */
-const mockStorage = new Map<string, Map<string, Uint8Array>>();
+import { getClawUrl } from "@/claws/deployment/types";
 
 /**
  * In-memory deployment status tracking.
@@ -43,22 +34,20 @@ const mockStatuses = new Map<string, DeploymentStatus>();
  *
  * Provides a fully functional but simulated deployment service:
  * - Provisioning sets status to "active" with a generated URL
- * - Storage uses an in-memory map
  * - All operations include simulated delays
  */
 export const MockDeploymentService = Layer.succeed(DeploymentService, {
-  provision: (config: DeploymentConfig) =>
+  provision: (config: OpenClawConfig) =>
     Effect.gen(function* () {
       yield* Effect.sleep("100 millis");
 
       const status: DeploymentStatus = {
         status: "active",
-        url: `${config.clawSlug}.${config.organizationSlug}.mirascope.com`,
+        url: getClawUrl(config.organizationSlug, config.clawSlug),
         startedAt: new Date(),
       };
 
       mockStatuses.set(config.clawId, status);
-      mockStorage.set(config.clawId, new Map());
 
       return status;
     }),
@@ -67,7 +56,6 @@ export const MockDeploymentService = Layer.succeed(DeploymentService, {
     Effect.gen(function* () {
       yield* Effect.sleep("50 millis");
       mockStatuses.delete(clawId);
-      mockStorage.delete(clawId);
     }),
 
   getStatus: (clawId: string) =>
@@ -105,7 +93,7 @@ export const MockDeploymentService = Layer.succeed(DeploymentService, {
       return status;
     }),
 
-  updateConfig: (clawId: string, _config: Partial<DeploymentConfig>) =>
+  update: (clawId: string, _config: Partial<OpenClawConfig>) =>
     Effect.gen(function* () {
       yield* Effect.sleep("50 millis");
 
@@ -124,78 +112,6 @@ export const MockDeploymentService = Layer.succeed(DeploymentService, {
       };
       mockStatuses.set(clawId, status);
       return status;
-    }),
-
-  resize: (clawId: string, _instanceType: DeploymentConfig["instanceType"]) =>
-    Effect.gen(function* () {
-      yield* Effect.sleep("50 millis");
-
-      const existing = mockStatuses.get(clawId);
-      if (!existing) {
-        return yield* Effect.fail(
-          new DeploymentError({
-            message: `No deployment found for claw ${clawId}`,
-          }),
-        );
-      }
-
-      const status: DeploymentStatus = {
-        ...existing,
-        status: "active",
-      };
-      mockStatuses.set(clawId, status);
-      return status;
-    }),
-
-  getStorage: (clawId: string, path: string) =>
-    Effect.gen(function* () {
-      const clawStorage = mockStorage.get(clawId);
-      if (!clawStorage) {
-        return yield* Effect.fail(
-          new DeploymentError({
-            message: `No deployment found for claw ${clawId}`,
-          }),
-        );
-      }
-
-      const data = clawStorage.get(path);
-      if (!data) {
-        return yield* Effect.fail(
-          new DeploymentError({
-            message: `File not found: ${path}`,
-          }),
-        );
-      }
-
-      return data;
-    }),
-
-  putStorage: (clawId: string, path: string, data: Uint8Array) =>
-    Effect.gen(function* () {
-      let clawStorage = mockStorage.get(clawId);
-      if (!clawStorage) {
-        return yield* Effect.fail(
-          new DeploymentError({
-            message: `No deployment found for claw ${clawId}`,
-          }),
-        );
-      }
-
-      clawStorage.set(path, data);
-    }),
-
-  deleteStorage: (clawId: string, path: string) =>
-    Effect.gen(function* () {
-      const clawStorage = mockStorage.get(clawId);
-      if (!clawStorage) {
-        return yield* Effect.fail(
-          new DeploymentError({
-            message: `No deployment found for claw ${clawId}`,
-          }),
-        );
-      }
-
-      clawStorage.delete(path);
     }),
 });
 
@@ -204,5 +120,4 @@ export const MockDeploymentService = Layer.succeed(DeploymentService, {
  */
 export function resetMockDeploymentState(): void {
   mockStatuses.clear();
-  mockStorage.clear();
 }
