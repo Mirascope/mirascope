@@ -4,19 +4,20 @@
  * Uses TWO communication channels:
  *
  * 1. **Dispatch worker internal API** — For lifecycle operations. The dispatch
- *    worker exposes `/_internal/restart`, `/_internal/destroy`, and
- *    `/_internal/state` endpoints that proxy commands to the Durable Object.
+ *    worker exposes `/_internal/*` endpoints that proxy commands to the
+ *    Durable Object and container.
  *
- * 2. **Cloudflare REST API** — For listing DO instances (read-only).
+ * 2. **Cloudflare REST API** — For read-only operations (list DO instances).
  *
  * ## Dispatch Worker Internal Endpoints
  *
  * These routes are handled by the dispatch worker and routed to the correct
  * Durable Object by hostname:
  *
- * - `POST /_internal/restart` (Host: {hostname}) — Force restart
- * - `POST /_internal/destroy` (Host: {hostname}) — Force destroy
- * - `GET  /_internal/state`   (Host: {hostname}) — Get container state
+ * - `POST /_internal/recreate`        (Host: {hostname}) — Evict DO, fresh container
+ * - `POST /_internal/restart-gateway` (Host: {hostname}) — Restart gateway process
+ * - `POST /_internal/destroy`         (Host: {hostname}) — Destroy container + DO
+ * - `GET  /_internal/state`           (Host: {hostname}) — Get container state
  *
  * ## Cloudflare REST API Endpoints
  *
@@ -69,17 +70,33 @@ function makeContainerService(
     });
 
   return {
-    restart: (hostname: string) =>
+    recreate: (hostname: string) =>
       Effect.gen(function* () {
         const response = yield* dispatchFetch(
           hostname,
-          "/_internal/restart",
+          "/_internal/recreate",
           "POST",
         );
         if (!response.ok) {
           return yield* Effect.fail(
             new CloudflareApiError({
-              message: `Restart failed for ${hostname}: ${response.status} ${response.statusText}`,
+              message: `Recreate failed for ${hostname}: ${response.status} ${response.statusText}`,
+            }),
+          );
+        }
+      }),
+
+    restartGateway: (hostname: string) =>
+      Effect.gen(function* () {
+        const response = yield* dispatchFetch(
+          hostname,
+          "/_internal/restart-gateway",
+          "POST",
+        );
+        if (!response.ok) {
+          return yield* Effect.fail(
+            new CloudflareApiError({
+              message: `Restart gateway failed for ${hostname}: ${response.status} ${response.statusText}`,
             }),
           );
         }

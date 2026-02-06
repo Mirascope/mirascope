@@ -66,20 +66,20 @@ describe("LiveCloudflareContainerService", () => {
       );
   });
 
-  describe("restart", () => {
-    it("sends POST to dispatch worker /_internal/restart", async () => {
+  describe("recreate", () => {
+    it("sends POST to dispatch worker /_internal/recreate", async () => {
       const handler: RequestHandler = () => Effect.succeed({});
       const layer = createTestLayer(handler);
 
       await Effect.runPromise(
         Effect.gen(function* () {
           const containers = yield* CloudflareContainerService;
-          yield* containers.restart(TEST_HOSTNAME);
+          yield* containers.recreate(TEST_HOSTNAME);
         }).pipe(Effect.provide(layer)),
       );
 
       expect(fetchSpy).toHaveBeenCalledWith(
-        "https://dispatch.test.workers.dev/_internal/restart",
+        "https://dispatch.test.workers.dev/_internal/recreate",
         expect.objectContaining({
           method: "POST",
           headers: expect.objectContaining({
@@ -103,12 +103,63 @@ describe("LiveCloudflareContainerService", () => {
       const error = await Effect.runPromise(
         Effect.gen(function* () {
           const containers = yield* CloudflareContainerService;
-          return yield* containers.restart(TEST_HOSTNAME);
+          return yield* containers.recreate(TEST_HOSTNAME);
         }).pipe(Effect.flip, Effect.provide(layer)),
       );
 
       expect(error).toBeInstanceOf(CloudflareApiError);
-      expect((error as CloudflareApiError).message).toContain("Restart failed");
+      expect((error as CloudflareApiError).message).toContain(
+        "Recreate failed",
+      );
+      expect((error as CloudflareApiError).message).toContain("500");
+    });
+  });
+
+  describe("restartGateway", () => {
+    it("sends POST to dispatch worker /_internal/restart-gateway", async () => {
+      const handler: RequestHandler = () => Effect.succeed({});
+      const layer = createTestLayer(handler);
+
+      await Effect.runPromise(
+        Effect.gen(function* () {
+          const containers = yield* CloudflareContainerService;
+          yield* containers.restartGateway(TEST_HOSTNAME);
+        }).pipe(Effect.provide(layer)),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledWith(
+        "https://dispatch.test.workers.dev/_internal/restart-gateway",
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.objectContaining({
+            Host: TEST_HOSTNAME,
+          }),
+        }),
+      );
+    });
+
+    it("fails when dispatch worker returns error", async () => {
+      fetchSpy.mockResolvedValue(
+        new Response("Internal Server Error", {
+          status: 500,
+          statusText: "Internal Server Error",
+        }),
+      );
+
+      const handler: RequestHandler = () => Effect.succeed({});
+      const layer = createTestLayer(handler);
+
+      const error = await Effect.runPromise(
+        Effect.gen(function* () {
+          const containers = yield* CloudflareContainerService;
+          return yield* containers.restartGateway(TEST_HOSTNAME);
+        }).pipe(Effect.flip, Effect.provide(layer)),
+      );
+
+      expect(error).toBeInstanceOf(CloudflareApiError);
+      expect((error as CloudflareApiError).message).toContain(
+        "Restart gateway failed",
+      );
       expect((error as CloudflareApiError).message).toContain("500");
     });
   });
@@ -350,7 +401,7 @@ describe("LiveCloudflareContainerService", () => {
       const error = await Effect.runPromise(
         Effect.gen(function* () {
           const containers = yield* CloudflareContainerService;
-          return yield* containers.restart(TEST_HOSTNAME);
+          return yield* containers.recreate(TEST_HOSTNAME);
         }).pipe(Effect.flip, Effect.provide(layer)),
       );
 

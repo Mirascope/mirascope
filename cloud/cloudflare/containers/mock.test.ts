@@ -18,15 +18,15 @@ import { CloudflareApiError } from "@/errors";
 const TEST_HOSTNAME = "my-claw.my-org.mirascope.com";
 
 describe("MockCloudflareContainerService", () => {
-  describe("restart", () => {
-    it("restarts a running container", async () => {
+  describe("recreate", () => {
+    it("recreates a running container", async () => {
       const { layer, seed } = makeMockContainerLayer();
       seed(TEST_HOSTNAME);
 
       const state = await Effect.runPromise(
         Effect.gen(function* () {
           const containers = yield* CloudflareContainerService;
-          yield* containers.restart(TEST_HOSTNAME);
+          yield* containers.recreate(TEST_HOSTNAME);
           return yield* containers.getState(TEST_HOSTNAME);
         }).pipe(Effect.provide(layer)),
       );
@@ -40,7 +40,38 @@ describe("MockCloudflareContainerService", () => {
       const error = await Effect.runPromise(
         Effect.gen(function* () {
           const containers = yield* CloudflareContainerService;
-          return yield* containers.restart("unknown.host.com");
+          return yield* containers.recreate("unknown.host.com");
+        }).pipe(Effect.flip, Effect.provide(layer)),
+      );
+
+      expect(error).toBeInstanceOf(CloudflareApiError);
+      expect((error as CloudflareApiError).message).toContain("not found");
+    });
+  });
+
+  describe("restartGateway", () => {
+    it("restarts gateway in a running container", async () => {
+      const { layer, seed } = makeMockContainerLayer();
+      seed(TEST_HOSTNAME);
+
+      const state = await Effect.runPromise(
+        Effect.gen(function* () {
+          const containers = yield* CloudflareContainerService;
+          yield* containers.restartGateway(TEST_HOSTNAME);
+          return yield* containers.getState(TEST_HOSTNAME);
+        }).pipe(Effect.provide(layer)),
+      );
+
+      expect(state.status).toBe("running");
+    });
+
+    it("fails for non-existent container", async () => {
+      const { layer } = makeMockContainerLayer();
+
+      const error = await Effect.runPromise(
+        Effect.gen(function* () {
+          const containers = yield* CloudflareContainerService;
+          return yield* containers.restartGateway("unknown.host.com");
         }).pipe(Effect.flip, Effect.provide(layer)),
       );
 

@@ -7,7 +7,8 @@
  *
  * ## Behavior
  *
- * - `restart` — Resets container state to "running"
+ * - `recreate` — Removes and reinitializes container state to "running"
+ * - `restartGateway` — Resets container state to "running" (simulates gateway restart)
  * - `destroy` — Removes container state entirely
  * - `getState` — Returns tracked container state, fails if not found
  * - `warmUp` — Initializes container to "running" state if not present
@@ -47,7 +48,24 @@ export function makeMockContainerLayer() {
   }
 
   const layer = Layer.succeed(CloudflareContainerService, {
-    restart: (hostname: string) =>
+    recreate: (hostname: string) =>
+      Effect.gen(function* () {
+        if (!containers.has(hostname)) {
+          return yield* Effect.fail(
+            new CloudflareApiError({
+              message: `Container not found for hostname ${hostname}`,
+            }),
+          );
+        }
+
+        containers.delete(hostname);
+        containers.set(hostname, {
+          status: "running",
+          lastChange: Date.now(),
+        });
+      }),
+
+    restartGateway: (hostname: string) =>
       Effect.gen(function* () {
         if (!containers.has(hostname)) {
           return yield* Effect.fail(

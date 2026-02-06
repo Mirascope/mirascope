@@ -21,11 +21,12 @@
  *
  * ```
  * CloudflareContainerService (Context.Tag)
- *   ├── restart(hostname)      → Restart container (via dispatch worker)
- *   ├── destroy(hostname)      → Destroy container (via dispatch worker)
- *   ├── getState(hostname)     → Get container state (via dispatch worker)
- *   ├── warmUp(hostname)       → Send warm-up request to trigger cold start
- *   └── listInstances()        → List DO instances (via Cloudflare API)
+ *   ├── recreate(hostname)        → Evict DO, next request creates fresh container
+ *   ├── restartGateway(hostname)  → Restart gateway process inside running container
+ *   ├── destroy(hostname)         → Destroy container and clear DO storage
+ *   ├── getState(hostname)        → Get container state (via dispatch worker)
+ *   ├── warmUp(hostname)          → Send warm-up request to trigger cold start
+ *   └── listInstances()           → List DO instances (via Cloudflare API)
  * ```
  *
  * ## Usage
@@ -36,7 +37,7 @@
  * const program = Effect.gen(function* () {
  *   const containers = yield* CloudflareContainerService;
  *
- *   yield* containers.restart("my-app.my-org.example.com");
+ *   yield* containers.restartGateway("my-app.my-org.example.com");
  *   yield* containers.warmUp("my-app.my-org.example.com");
  * });
  * ```
@@ -60,13 +61,28 @@ import { CloudflareApiError } from "@/errors";
  */
 export interface CloudflareContainerServiceInterface {
   /**
-   * Restart a container.
+   * Recreate a container from scratch.
    *
-   * Sends a restart command to the dispatch worker, which throws an uncaught
+   * Sends a recreate command to the dispatch worker, which throws an uncaught
    * exception in the Durable Object to force eviction. The next request to the
    * hostname triggers a fresh cold start with latest config.
+   *
+   * Use this for instance type changes or hard recovery from error state.
    */
-  readonly restart: (
+  readonly recreate: (
+    hostname: string,
+  ) => Effect.Effect<void, CloudflareApiError>;
+
+  /**
+   * Restart the gateway process inside a running container.
+   *
+   * Kills the OpenClaw gateway process and re-runs the startup script within
+   * the same container. The R2 mount and DO state are preserved.
+   *
+   * Use this for config changes (new secrets, model changes) that don't
+   * require a full container recreate.
+   */
+  readonly restartGateway: (
     hostname: string,
   ) => Effect.Effect<void, CloudflareApiError>;
 
