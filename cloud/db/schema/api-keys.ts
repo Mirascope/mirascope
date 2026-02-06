@@ -84,11 +84,13 @@ type OwnerFields<T> = {
 
 // Type for complete API key information including owner details
 // Uses mapped type to automatically derive owner fields from PublicUser
+// clawId is sourced from a LEFT JOIN to claws (null for human-owned keys)
 export type ApiKeyInfo = {
   apiKeyId: string;
   environmentId: string;
   projectId: string;
   organizationId: string;
+  clawId: string | null;
 } & OwnerFields<PublicUser>;
 
 // Type for API key with project and environment context (for listing all keys)

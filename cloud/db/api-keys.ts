@@ -61,6 +61,7 @@ import { DrizzleORM } from "@/db/client";
 import { ProjectMemberships } from "@/db/project-memberships";
 import {
   apiKeys,
+  claws,
   users,
   environments,
   projects,
@@ -85,29 +86,41 @@ import {
 // API Key Utilities
 // =============================================================================
 
-/** API key prefix for identification */
+/** API key prefix for user keys */
 const API_KEY_PREFIX = "mk_";
+
+/** API key prefix for claw keys */
+const CLAW_API_KEY_PREFIX = "mck_";
 
 /**
  * Generate a cryptographically secure random API key.
+ *
+ * @param prefix - Key prefix (defaults to "mk_" for user keys)
  */
-function generateApiKey(): string {
+export function generateApiKey(prefix: string = API_KEY_PREFIX): string {
   const bytes = crypto.randomBytes(32);
-  return API_KEY_PREFIX + bytes.toString("base64url");
+  return prefix + bytes.toString("base64url");
 }
 
 /**
  * Hash an API key for storage using SHA-256.
  */
-function hashApiKey(key: string): string {
+export function hashApiKey(key: string): string {
   return crypto.createHash("sha256").update(key).digest("hex");
 }
 
 /**
  * Generate a display prefix for an API key (e.g., "mk_abc...").
  */
-function getKeyPrefix(key: string): string {
+export function getKeyPrefix(key: string): string {
   return key.substring(0, 10) + "...";
+}
+
+/**
+ * Generate a claw API key with the "mck_" prefix.
+ */
+export function generateClawApiKey(): string {
+  return generateApiKey(CLAW_API_KEY_PREFIX);
 }
 
 // =============================================================================
@@ -700,21 +713,25 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
 
       // Look up the API key by hash and join to get the full hierarchy and owner info
       // Only include API keys whose owner has not been deleted
+      // LEFT JOIN to claws to get clawId for claw-user-owned keys
       const [apiKeyInfo] = yield* client
         .select({
           apiKeyId: apiKeys.id,
           environmentId: apiKeys.environmentId,
           projectId: environments.projectId,
           organizationId: projects.organizationId,
+          clawId: claws.id,
           ownerId: users.id,
           ownerEmail: users.email,
           ownerName: users.name,
+          ownerAccountType: users.accountType,
           ownerDeletedAt: users.deletedAt,
         })
         .from(apiKeys)
         .innerJoin(environments, eq(apiKeys.environmentId, environments.id))
         .innerJoin(projects, eq(environments.projectId, projects.id))
         .innerJoin(users, eq(apiKeys.ownerId, users.id))
+        .leftJoin(claws, eq(claws.botUserId, users.id))
         .where(
           and(
             eq(apiKeys.keyHash, keyHash),

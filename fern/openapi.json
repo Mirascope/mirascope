@@ -3350,7 +3350,8 @@
                         "enum": [
                           "OWNER",
                           "ADMIN",
-                          "MEMBER"
+                          "MEMBER",
+                          "BOT"
                         ]
                       }
                     },
@@ -3441,7 +3442,8 @@
                       "enum": [
                         "OWNER",
                         "ADMIN",
-                        "MEMBER"
+                        "MEMBER",
+                        "BOT"
                       ]
                     }
                   },
@@ -3601,7 +3603,8 @@
                       "enum": [
                         "OWNER",
                         "ADMIN",
-                        "MEMBER"
+                        "MEMBER",
+                        "BOT"
                       ]
                     }
                   },
@@ -3720,7 +3723,8 @@
                       "enum": [
                         "OWNER",
                         "ADMIN",
-                        "MEMBER"
+                        "MEMBER",
+                        "BOT"
                       ]
                     }
                   },
@@ -5549,7 +5553,8 @@
                       "enum": [
                         "OWNER",
                         "ADMIN",
-                        "MEMBER"
+                        "MEMBER",
+                        "BOT"
                       ]
                     },
                     "createdAt": {
@@ -5739,7 +5744,8 @@
                         "enum": [
                           "OWNER",
                           "ADMIN",
-                          "MEMBER"
+                          "MEMBER",
+                          "BOT"
                         ]
                       },
                       "createdAt": {
@@ -5868,7 +5874,8 @@
                       "enum": [
                         "OWNER",
                         "ADMIN",
-                        "MEMBER"
+                        "MEMBER",
+                        "BOT"
                       ]
                     },
                     "createdAt": {
@@ -12149,6 +12156,9 @@
                       "secretsEncrypted",
                       "secretsKeyId",
                       "bucketName",
+                      "botUserId",
+                      "homeProjectId",
+                      "homeEnvironmentId",
                       "weeklySpendingGuardrailCenticents",
                       "weeklyWindowStart",
                       "weeklyUsageCenticents",
@@ -12252,6 +12262,36 @@
                         ]
                       },
                       "bucketName": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "botUserId": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "homeProjectId": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "homeEnvironmentId": {
                         "anyOf": [
                           {
                             "type": "string"
@@ -12437,6 +12477,9 @@
                     "secretsEncrypted",
                     "secretsKeyId",
                     "bucketName",
+                    "botUserId",
+                    "homeProjectId",
+                    "homeEnvironmentId",
                     "weeklySpendingGuardrailCenticents",
                     "weeklyWindowStart",
                     "weeklyUsageCenticents",
@@ -12540,6 +12583,36 @@
                       ]
                     },
                     "bucketName": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "botUserId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "homeProjectId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "homeEnvironmentId": {
                       "anyOf": [
                         {
                           "type": "string"
@@ -12814,6 +12887,9 @@
                     "secretsEncrypted",
                     "secretsKeyId",
                     "bucketName",
+                    "botUserId",
+                    "homeProjectId",
+                    "homeEnvironmentId",
                     "weeklySpendingGuardrailCenticents",
                     "weeklyWindowStart",
                     "weeklyUsageCenticents",
@@ -12917,6 +12993,36 @@
                       ]
                     },
                     "bucketName": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "botUserId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "homeProjectId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "homeEnvironmentId": {
                       "anyOf": [
                         {
                           "type": "string"
@@ -13109,6 +13215,9 @@
                     "secretsEncrypted",
                     "secretsKeyId",
                     "bucketName",
+                    "botUserId",
+                    "homeProjectId",
+                    "homeEnvironmentId",
                     "weeklySpendingGuardrailCenticents",
                     "weeklyWindowStart",
                     "weeklyUsageCenticents",
@@ -13212,6 +13321,36 @@
                       ]
                     },
                     "bucketName": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "botUserId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "homeProjectId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "homeEnvironmentId": {
                       "anyOf": [
                         {
                           "type": "string"

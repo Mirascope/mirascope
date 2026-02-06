@@ -19,7 +19,7 @@ export * from "@/db/schema/claw-memberships";
 export * from "@/db/schema/claw-membership-audit";
 
 export type { PublicSession } from "@/db/schema/sessions";
-export type { PublicUser } from "@/db/schema/users";
+export type { PublicUser, AccountType } from "@/db/schema/users";
 export type { PublicOrganization } from "@/db/schema/organizations";
 export type {
   PublicOrganizationMembership,

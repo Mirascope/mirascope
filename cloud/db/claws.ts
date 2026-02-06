@@ -45,9 +45,10 @@
  * ```
  */
 
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { Effect } from "effect";
 
+import { generateClawApiKey, hashApiKey, getKeyPrefix } from "@/db/api-keys";
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
@@ -56,8 +57,14 @@ import { ClawMemberships } from "@/db/claw-memberships";
 import { DrizzleORM } from "@/db/client";
 import { OrganizationMemberships } from "@/db/organization-memberships";
 import {
+  apiKeys,
   claws,
   clawMemberships,
+  environments,
+  organizationMemberships,
+  projects,
+  projectMemberships,
+  users,
   type NewClaw,
   type PublicClaw,
   type ClawRole,
@@ -90,6 +97,9 @@ const publicFields = {
   secretsEncrypted: claws.secretsEncrypted,
   secretsKeyId: claws.secretsKeyId,
   bucketName: claws.bucketName,
+  botUserId: claws.botUserId,
+  homeProjectId: claws.homeProjectId,
+  homeEnvironmentId: claws.homeEnvironmentId,
   weeklySpendingGuardrailCenticents: claws.weeklySpendingGuardrailCenticents,
   weeklyWindowStart: claws.weeklyWindowStart,
   weeklyUsageCenticents: claws.weeklyUsageCenticents,
@@ -105,7 +115,10 @@ const publicFields = {
 type CreateData = Pick<
   NewClaw,
   "slug" | "displayName" | "description" | "weeklySpendingGuardrailCenticents"
->;
+> & {
+  /** If provided, use this existing project instead of creating a new one. */
+  homeProjectId?: string;
+};
 
 /**
  * Update type for claws.
@@ -281,7 +294,14 @@ export class Claws extends BaseAuthenticatedEffectService<
    * Requires org OWNER or ADMIN role. The creating user is automatically
    * added as an explicit claw member with role ADMIN.
    *
-   * Uses the plan's default instanceType for the new claw.
+   * Creates a full service account (claw-user) with:
+   * - A bot user account (accountType='claw')
+   * - Org membership as BOT
+   * - A home project and environment
+   * - Project membership as DEVELOPER
+   * - An API key (mck_ prefix) owned by the claw-user
+   *
+   * Returns the created claw.
    */
   create({
     userId,
@@ -331,9 +351,10 @@ export class Claws extends BaseAuthenticatedEffectService<
       const limits =
         yield* payments.customers.subscriptions.getPlanLimits(planTier);
 
-      // Use transaction to ensure claw, membership, and audit are created atomically
+      // Use transaction to ensure all resources are created atomically
       return yield* client.withTransaction(
         Effect.gen(this, function* () {
+          // 1. Insert claw
           const [claw] = yield* client
             .insert(claws)
             .values({
@@ -362,7 +383,188 @@ export class Claws extends BaseAuthenticatedEffectService<
               ),
             );
 
-          // Add creator as explicit claw ADMIN with audit log
+          // 2. Create claw-user (bot account)
+          const clawDisplayName = data.displayName ?? data.slug;
+          const [clawUser] = yield* client
+            .insert(users)
+            .values({
+              email: `claw-${claw.id}@bot.mirascope.io`,
+              name: `${clawDisplayName} (Bot)`,
+              accountType: "claw",
+            })
+            .returning({ id: users.id })
+            .pipe(
+              /* v8 ignore next 4 */
+              Effect.mapError(
+                (e) =>
+                  new DatabaseError({
+                    message: "Failed to create claw user",
+                    cause: e,
+                  }),
+              ),
+            );
+
+          // 3. Add claw-user to org as BOT
+          yield* client
+            .insert(organizationMemberships)
+            .values({
+              memberId: clawUser.id,
+              organizationId,
+              role: "BOT",
+            })
+            .pipe(
+              /* v8 ignore next 4 */
+              Effect.mapError(
+                (e) =>
+                  new DatabaseError({
+                    message: "Failed to add claw user to organization",
+                    cause: e,
+                  }),
+              ),
+            );
+
+          // 4. Create home project (or use existing one if provided)
+          let projectId: string;
+          if (data.homeProjectId) {
+            const [project] = yield* client
+              .select({ id: projects.id })
+              .from(projects)
+              .where(
+                and(
+                  eq(projects.id, data.homeProjectId),
+                  eq(projects.organizationId, organizationId),
+                ),
+              )
+              .pipe(
+                Effect.mapError(
+                  (e) =>
+                    new DatabaseError({
+                      message: "Failed to validate home project",
+                      cause: e,
+                    }),
+                ),
+              );
+
+            if (!project) {
+              return yield* Effect.fail(
+                new NotFoundError({
+                  message:
+                    "Home project not found or does not belong to this organization",
+                }),
+              );
+            }
+            projectId = data.homeProjectId;
+          } else {
+            const [project] = yield* client
+              .insert(projects)
+              .values({
+                name: `${clawDisplayName} Home`,
+                slug: `${data.slug}-home`,
+                organizationId,
+                createdByUserId: userId,
+              })
+              .returning({ id: projects.id })
+              .pipe(
+                /* v8 ignore next 4 */
+                Effect.mapError(
+                  (e) =>
+                    new DatabaseError({
+                      message: "Failed to create claw home project",
+                      cause: e,
+                    }),
+                ),
+              );
+            projectId = project.id;
+          }
+
+          // 5. Add claw-user to project as DEVELOPER
+          yield* client
+            .insert(projectMemberships)
+            .values({
+              memberId: clawUser.id,
+              organizationId,
+              projectId,
+              role: "DEVELOPER",
+            })
+            .pipe(
+              /* v8 ignore next 4 */
+              Effect.mapError(
+                (e) =>
+                  new DatabaseError({
+                    message: "Failed to add claw user to project",
+                    cause: e,
+                  }),
+              ),
+            );
+
+          // 6. Create environment
+          const [environment] = yield* client
+            .insert(environments)
+            .values({
+              name: data.slug,
+              slug: data.slug,
+              projectId,
+            })
+            .returning({ id: environments.id })
+            .pipe(
+              /* v8 ignore next 4 */
+              Effect.mapError(
+                (e) =>
+                  new DatabaseError({
+                    message: "Failed to create claw environment",
+                    cause: e,
+                  }),
+              ),
+            );
+
+          // 7. Generate and insert API key
+          const plaintextKey = generateClawApiKey();
+          const keyHash = hashApiKey(plaintextKey);
+          const keyPrefix = getKeyPrefix(plaintextKey);
+
+          yield* client
+            .insert(apiKeys)
+            .values({
+              name: `${data.slug}-key`,
+              keyHash,
+              keyPrefix,
+              environmentId: environment.id,
+              ownerId: clawUser.id,
+            })
+            .pipe(
+              /* v8 ignore next 4 */
+              Effect.mapError(
+                (e) =>
+                  new DatabaseError({
+                    message: "Failed to create claw API key",
+                    cause: e,
+                  }),
+              ),
+            );
+
+          // 8. Update claw with botUserId, homeProjectId, homeEnvironmentId
+          const [updatedClaw] = yield* client
+            .update(claws)
+            .set({
+              botUserId: clawUser.id,
+              homeProjectId: projectId,
+              homeEnvironmentId: environment.id,
+              updatedAt: new Date(),
+            })
+            .where(eq(claws.id, claw.id))
+            .returning(publicFields)
+            .pipe(
+              /* v8 ignore next 4 */
+              Effect.mapError(
+                (e) =>
+                  new DatabaseError({
+                    message: "Failed to update claw with home resources",
+                    cause: e,
+                  }),
+              ),
+            );
+
+          // 9. Add creator as explicit claw ADMIN with audit log
           yield* this.memberships.create({
             userId,
             organizationId,
@@ -370,7 +572,7 @@ export class Claws extends BaseAuthenticatedEffectService<
             data: { memberId: userId, role: "ADMIN" },
           });
 
-          return claw as PublicClaw;
+          return updatedClaw as PublicClaw;
         }),
       );
     });
@@ -601,7 +803,7 @@ export class Claws extends BaseAuthenticatedEffectService<
         .where(
           and(eq(claws.id, clawId), eq(claws.organizationId, organizationId)),
         )
-        .returning({ id: claws.id })
+        .returning({ id: claws.id, botUserId: claws.botUserId })
         .pipe(
           Effect.mapError(
             (e) =>
@@ -619,6 +821,28 @@ export class Claws extends BaseAuthenticatedEffectService<
             resource: this.getResourceName(),
           }),
         );
+      }
+
+      // Soft-delete the bot user if one was associated
+      if (deleted.botUserId) {
+        yield* client
+          .update(users)
+          .set({
+            email: `deleted-${deleted.botUserId}@deleted.local`,
+            name: null,
+            deletedAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .where(and(eq(users.id, deleted.botUserId), isNull(users.deletedAt)))
+          .pipe(
+            Effect.mapError(
+              (e) =>
+                new DatabaseError({
+                  message: "Failed to delete bot user",
+                  cause: e,
+                }),
+            ),
+          );
       }
     });
   }
@@ -829,6 +1053,58 @@ export class Claws extends BaseAuthenticatedEffectService<
           : /* v8 ignore next */ 0;
 
       return { totalUsageCenticents, limitCenticents, percentUsed };
+    });
+  }
+
+  /**
+   * Gets org-level pool usage without user authentication.
+   *
+   * Internal method for use by system processes (metering queue, cron jobs).
+   * Returns whether the org's total claw usage is within included credits.
+   */
+  getInternalPoolUsage({
+    organizationId,
+  }: {
+    organizationId: string;
+  }): Effect.Effect<
+    {
+      totalUsageCenticents: bigint;
+      limitCenticents: number;
+    },
+    DatabaseError | NotFoundError | StripeError,
+    DrizzleORM | Payments
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+      const payments = yield* Payments;
+
+      const [result] = yield* client
+        .select({
+          total: sql<string>`COALESCE(SUM(${claws.weeklyUsageCenticents}), 0)`,
+        })
+        .from(claws)
+        .where(eq(claws.organizationId, organizationId))
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to get internal pool usage",
+                cause: e,
+              }),
+          ),
+        );
+
+      const totalUsageCenticents = BigInt(result.total);
+
+      const planTier =
+        yield* payments.customers.subscriptions.getPlan(organizationId);
+      const limits =
+        yield* payments.customers.subscriptions.getPlanLimits(planTier);
+
+      return {
+        totalUsageCenticents,
+        limitCenticents: limits.includedCreditsCenticents,
+      };
     });
   }
 

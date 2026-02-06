@@ -14,6 +14,7 @@ export const organizationRoleEnum = pgEnum("organization_role", [
   "OWNER",
   "ADMIN",
   "MEMBER",
+  "BOT",
 ]);
 export const ORGANIZATION_ROLE_VALUES = organizationRoleEnum.enumValues;
 

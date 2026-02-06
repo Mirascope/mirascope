@@ -91,7 +91,9 @@ describe.sequential("Search API", (it) => {
         ownerId: owner.id,
         ownerEmail: owner.email,
         ownerName: owner.name,
+        ownerAccountType: "user" as const,
         ownerDeletedAt: owner.deletedAt,
+        clawId: null,
       };
       apiKeyInfo = apiKeyContext;
       ownerFromContext = owner;
@@ -2335,6 +2337,8 @@ describe("Realtime span merge", () => {
     ownerEmail: "test@example.com",
     ownerName: "Test User",
     ownerDeletedAt: null,
+    ownerAccountType: "user" as const,
+    clawId: null,
   };
 
   const mockUser: PublicUser = {
@@ -2342,6 +2346,7 @@ describe("Realtime span merge", () => {
     email: "test@example.com",
     name: "Test User",
     deletedAt: null,
+    accountType: "user" as const,
   };
 
   const authenticationLayer = Layer.succeed(Authentication, {

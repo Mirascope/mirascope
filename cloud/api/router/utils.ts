@@ -45,6 +45,7 @@ export interface RouterRequestIdentifiers {
   environmentId: string;
   apiKeyId: string;
   routerRequestId: string;
+  clawId: string | null;
 }
 
 /**

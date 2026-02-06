@@ -17,6 +17,7 @@ export const OrganizationRoleSchema = Schema.Literal(
   "OWNER",
   "ADMIN",
   "MEMBER",
+  "BOT",
 );
 
 export const OrganizationSchema = Schema.Struct({

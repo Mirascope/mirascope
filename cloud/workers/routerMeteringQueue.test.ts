@@ -88,6 +88,7 @@ function createTestMessage(
       environmentId: "test-env-id",
       apiKeyId: "test-api-key-id",
       routerRequestId: "test-router-request-id",
+      clawId: null,
     },
     usage: {
       inputTokens: 100,
@@ -480,6 +481,210 @@ describe("routerMeteringQueue", () => {
 
       // Verify settleFunds was called with total cost
       expect(settleFundsMock).toHaveBeenCalledWith(message.reservationId, 350n);
+    });
+
+    it("claw within included credits: records usage and releases funds", async () => {
+      const message = createTestMessage({
+        request: {
+          userId: "test-user-id",
+          organizationId: "test-org-id",
+          projectId: "test-project-id",
+          environmentId: "test-env-id",
+          apiKeyId: "test-api-key-id",
+          routerRequestId: "test-router-request-id",
+          clawId: "test-claw-id",
+        },
+      });
+
+      const updateMock = vi.fn().mockReturnValue(Effect.succeed(undefined));
+      const settleFundsMock = vi
+        .fn()
+        .mockReturnValue(Effect.succeed(undefined));
+      const releaseFundsMock = vi
+        .fn()
+        .mockReturnValue(Effect.succeed(undefined));
+      const recordUsageMock = vi
+        .fn()
+        .mockReturnValue(Effect.succeed(undefined));
+      const getInternalPoolUsageMock = vi.fn().mockReturnValue(
+        Effect.succeed({
+          totalUsageCenticents: 500n, // within limit
+          limitCenticents: 10_000,
+        }),
+      );
+
+      const mockDbLayer = Layer.succeed(Database, {
+        organizations: {
+          claws: {
+            recordUsage: recordUsageMock,
+            getInternalPoolUsage: getInternalPoolUsageMock,
+          },
+          projects: {
+            environments: {
+              apiKeys: {
+                routerRequests: {
+                  update: updateMock,
+                },
+              },
+            },
+          },
+        },
+      } as never);
+
+      const mockPaymentsLayer = Layer.succeed(Payments, {
+        products: {
+          router: {
+            settleFunds: settleFundsMock,
+            releaseFunds: releaseFundsMock,
+          },
+        },
+      } as never);
+
+      await Effect.runPromise(
+        updateAndSettleRouterRequest(message, {
+          tokenCost: 150n,
+          toolCost: undefined,
+          totalCost: 150n,
+        }).pipe(Effect.provide(Layer.merge(mockDbLayer, mockPaymentsLayer))),
+      );
+
+      // Verify recordUsage was called
+      expect(recordUsageMock).toHaveBeenCalledWith({
+        clawId: "test-claw-id",
+        organizationId: "test-org-id",
+        amountCenticents: 150n,
+      });
+
+      // Within included credits: releaseFunds, NOT settleFunds
+      expect(releaseFundsMock).toHaveBeenCalledWith(message.reservationId);
+      expect(settleFundsMock).not.toHaveBeenCalled();
+    });
+
+    it("claw over included credits: records usage and settles funds", async () => {
+      const message = createTestMessage({
+        request: {
+          userId: "test-user-id",
+          organizationId: "test-org-id",
+          projectId: "test-project-id",
+          environmentId: "test-env-id",
+          apiKeyId: "test-api-key-id",
+          routerRequestId: "test-router-request-id",
+          clawId: "test-claw-id",
+        },
+      });
+
+      const updateMock = vi.fn().mockReturnValue(Effect.succeed(undefined));
+      const settleFundsMock = vi
+        .fn()
+        .mockReturnValue(Effect.succeed(undefined));
+      const releaseFundsMock = vi
+        .fn()
+        .mockReturnValue(Effect.succeed(undefined));
+      const recordUsageMock = vi
+        .fn()
+        .mockReturnValue(Effect.succeed(undefined));
+      const getInternalPoolUsageMock = vi.fn().mockReturnValue(
+        Effect.succeed({
+          totalUsageCenticents: 15_000n, // over limit
+          limitCenticents: 10_000,
+        }),
+      );
+
+      const mockDbLayer = Layer.succeed(Database, {
+        organizations: {
+          claws: {
+            recordUsage: recordUsageMock,
+            getInternalPoolUsage: getInternalPoolUsageMock,
+          },
+          projects: {
+            environments: {
+              apiKeys: {
+                routerRequests: {
+                  update: updateMock,
+                },
+              },
+            },
+          },
+        },
+      } as never);
+
+      const mockPaymentsLayer = Layer.succeed(Payments, {
+        products: {
+          router: {
+            settleFunds: settleFundsMock,
+            releaseFunds: releaseFundsMock,
+          },
+        },
+      } as never);
+
+      await Effect.runPromise(
+        updateAndSettleRouterRequest(message, {
+          tokenCost: 150n,
+          toolCost: undefined,
+          totalCost: 150n,
+        }).pipe(Effect.provide(Layer.merge(mockDbLayer, mockPaymentsLayer))),
+      );
+
+      // Verify recordUsage was called
+      expect(recordUsageMock).toHaveBeenCalledWith({
+        clawId: "test-claw-id",
+        organizationId: "test-org-id",
+        amountCenticents: 150n,
+      });
+
+      // Over included credits: settleFunds, NOT releaseFunds
+      expect(settleFundsMock).toHaveBeenCalledWith(message.reservationId, 150n);
+      expect(releaseFundsMock).not.toHaveBeenCalled();
+    });
+
+    it("does not record claw usage when clawId is null", async () => {
+      const message = createTestMessage();
+
+      const updateMock = vi.fn().mockReturnValue(Effect.succeed(undefined));
+      const settleFundsMock = vi
+        .fn()
+        .mockReturnValue(Effect.succeed(undefined));
+      const recordUsageMock = vi
+        .fn()
+        .mockReturnValue(Effect.succeed(undefined));
+
+      const mockDbLayer = Layer.succeed(Database, {
+        organizations: {
+          claws: {
+            recordUsage: recordUsageMock,
+          },
+          projects: {
+            environments: {
+              apiKeys: {
+                routerRequests: {
+                  update: updateMock,
+                },
+              },
+            },
+          },
+        },
+      } as never);
+
+      const mockPaymentsLayer = Layer.succeed(Payments, {
+        products: {
+          router: {
+            settleFunds: settleFundsMock,
+          },
+        },
+      } as never);
+
+      await Effect.runPromise(
+        updateAndSettleRouterRequest(message, {
+          tokenCost: 150n,
+          toolCost: undefined,
+          totalCost: 150n,
+        }).pipe(Effect.provide(Layer.merge(mockDbLayer, mockPaymentsLayer))),
+      );
+
+      // Verify recordUsage was NOT called
+      expect(recordUsageMock).not.toHaveBeenCalled();
+      // Non-claw: settleFunds called normally
+      expect(settleFundsMock).toHaveBeenCalledWith(message.reservationId, 150n);
     });
 
     it("handles zero tool cost correctly", async () => {
