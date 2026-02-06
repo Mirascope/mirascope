@@ -207,3 +207,57 @@ export const useCancelScheduledDowngrade = () => {
     },
   });
 };
+
+export const usePaymentMethod = (organizationId: string | undefined) => {
+  return useQuery({
+    ...eq.queryOptions({
+      queryKey: ["organizations", organizationId, "payment-method"],
+      queryFn: () =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.organizations.getPaymentMethod({
+            path: { id: organizationId! },
+          });
+        }),
+    }),
+    enabled: !!organizationId,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useCreateSetupIntent = () => {
+  return useMutation({
+    ...eq.mutationOptions({
+      mutationKey: ["organizations", "createSetupIntent"],
+      mutationFn: (organizationId: string) =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.organizations.createSetupIntent({
+            path: { id: organizationId },
+          });
+        }),
+    }),
+  });
+};
+
+export const useRemovePaymentMethod = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...eq.mutationOptions({
+      mutationKey: ["organizations", "removePaymentMethod"],
+      mutationFn: (organizationId: string) =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.organizations.removePaymentMethod({
+            path: { id: organizationId },
+          });
+        }),
+    }),
+    onSuccess: (_data, organizationId) => {
+      void queryClient.invalidateQueries({
+        queryKey: ["organizations", organizationId, "payment-method"],
+      });
+    },
+  });
+};

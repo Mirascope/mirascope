@@ -38,6 +38,7 @@ describe("RateLimiter", () => {
       } as never,
       products: {} as never,
       paymentIntents: {} as never,
+      paymentMethods: {} as never,
     });
   }
 
@@ -453,6 +454,7 @@ describe("RateLimiter", () => {
         } as never,
         products: {} as never,
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       const mockLimiters = {
@@ -513,6 +515,7 @@ describe("RateLimiter", () => {
         } as never,
         products: {} as never,
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       const mockLimiters = {
@@ -566,6 +569,7 @@ describe("RateLimiter", () => {
         } as never,
         products: {} as never,
         paymentIntents: {} as never,
+        paymentMethods: {} as never,
       });
 
       const mockLimiters = {

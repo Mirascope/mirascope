@@ -128,6 +128,7 @@ export const createPaymentIntentHandler = (
       yield* payments.paymentIntents.createRouterCreditsPurchaseIntent({
         stripeCustomerId: organization.stripeCustomerId,
         amountInDollars: payload.amount,
+        paymentMethodId: payload.paymentMethodId,
         metadata: {
           organizationId: organization.id,
         },
@@ -136,6 +137,7 @@ export const createPaymentIntentHandler = (
     return {
       clientSecret: result.clientSecret,
       amount: result.amountInDollars,
+      status: result.status,
     };
   });
 
@@ -231,5 +233,64 @@ export const cancelScheduledDowngradeHandler = (organizationId: string) =>
     // Cancel the scheduled downgrade
     yield* payments.customers.subscriptions.cancelScheduledDowngrade(
       organization.stripeCustomerId,
+    );
+  });
+
+export const createSetupIntentHandler = (organizationId: string) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    const payments = yield* Payments;
+
+    const organization = yield* db.organizations.findById({
+      organizationId,
+      userId: user.id,
+    });
+
+    return yield* payments.paymentMethods.createSetupIntent(
+      organization.stripeCustomerId,
+    );
+  });
+
+export const getPaymentMethodHandler = (organizationId: string) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    const payments = yield* Payments;
+
+    const organization = yield* db.organizations.findById({
+      organizationId,
+      userId: user.id,
+    });
+
+    return yield* payments.paymentMethods.getDefault(
+      organization.stripeCustomerId,
+    );
+  });
+
+export const removePaymentMethodHandler = (organizationId: string) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    const payments = yield* Payments;
+
+    const organization = yield* db.organizations.findById({
+      organizationId,
+      userId: user.id,
+    });
+
+    const paymentMethod = yield* payments.paymentMethods.getDefault(
+      organization.stripeCustomerId,
+    );
+
+    /* v8 ignore start */
+    if (!paymentMethod) {
+      return;
+    }
+    /* v8 ignore end */
+
+    yield* payments.paymentMethods.remove(
+      organization.stripeCustomerId,
+      paymentMethod.id,
     );
   });

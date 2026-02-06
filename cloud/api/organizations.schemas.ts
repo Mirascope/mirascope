@@ -66,11 +66,25 @@ export const CreatePaymentIntentRequestSchema = Schema.Struct({
   amount: Schema.Number.pipe(
     Schema.positive({ message: () => "Amount must be positive" }),
   ),
+  paymentMethodId: Schema.optional(Schema.String),
 });
 
 export const CreatePaymentIntentResponseSchema = Schema.Struct({
-  clientSecret: Schema.String,
+  clientSecret: Schema.NullOr(Schema.String),
   amount: Schema.Number,
+  status: Schema.Literal("requires_payment", "requires_action", "succeeded"),
+});
+
+export const SetupIntentResponseSchema = Schema.Struct({
+  clientSecret: Schema.String,
+});
+
+export const PaymentMethodDetailsSchema = Schema.Struct({
+  id: Schema.String,
+  brand: Schema.String,
+  last4: Schema.String,
+  expMonth: Schema.Number,
+  expYear: Schema.Number,
 });
 
 // Subscription schemas
@@ -148,6 +162,8 @@ export type CreatePaymentIntentRequest =
   typeof CreatePaymentIntentRequestSchema.Type;
 export type CreatePaymentIntentResponse =
   typeof CreatePaymentIntentResponseSchema.Type;
+export type SetupIntentResponse = typeof SetupIntentResponseSchema.Type;
+export type PaymentMethodDetails = typeof PaymentMethodDetailsSchema.Type;
 export type SubscriptionDetails = typeof SubscriptionDetailsSchema.Type;
 export type PreviewSubscriptionChangeRequest =
   typeof PreviewSubscriptionChangeRequestSchema.Type;
@@ -268,6 +284,39 @@ export class OrganizationsApi extends HttpApiGroup.make("organizations")
     HttpApiEndpoint.post(
       "cancelScheduledDowngrade",
       "/organizations/:id/subscription/cancel-downgrade",
+    )
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .addSuccess(Schema.Void)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(StripeError, { status: StripeError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.post(
+      "createSetupIntent",
+      "/organizations/:id/payment-method/setup-intent",
+    )
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .addSuccess(SetupIntentResponseSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(StripeError, { status: StripeError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get("getPaymentMethod", "/organizations/:id/payment-method")
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .addSuccess(Schema.NullOr(PaymentMethodDetailsSchema))
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(StripeError, { status: StripeError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.del(
+      "removePaymentMethod",
+      "/organizations/:id/payment-method",
     )
       .setPath(Schema.Struct({ id: Schema.String }))
       .addSuccess(Schema.Void)

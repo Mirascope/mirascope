@@ -31,6 +31,8 @@ export default defineConfig({
         "db/migrations/**",
         "db/clickhouse/**",
         "db/schema/**",
+        "api/api.ts", // Declarative API composition, no logic to test
+        "workers/config.ts", // Type declarations only, no executable code
         "tests/**",
         ".build-cache",
         ...coverageConfigDefaults.exclude,

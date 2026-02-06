@@ -52,6 +52,7 @@ import { DrizzleORM } from "@/db/client";
 import { Stripe } from "@/payments/client";
 import { Customers } from "@/payments/customers";
 import { PaymentIntents } from "@/payments/payment-intents";
+import { PaymentMethods } from "@/payments/payment-methods";
 import { Router } from "@/payments/products/router";
 import { Spans } from "@/payments/products/spans";
 import { Subscriptions } from "@/payments/subscriptions";
@@ -93,6 +94,7 @@ export class Payments extends Context.Tag("Payments")<
       readonly spans: Ready<Spans>;
     };
     readonly paymentIntents: Ready<PaymentIntents>;
+    readonly paymentMethods: Ready<PaymentMethods>;
   }
 >() {
   /**
@@ -120,6 +122,7 @@ export class Payments extends Context.Tag("Payments")<
           spans: provideDependencies(new Spans(subscriptions)),
         },
         paymentIntents: provideDependencies(new PaymentIntents()),
+        paymentMethods: provideDependencies(new PaymentMethods()),
       };
     }),
   );

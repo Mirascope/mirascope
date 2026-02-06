@@ -7,48 +7,56 @@ import { Payments } from "@/payments/service";
 import { describe, it, expect } from "@/tests/db";
 
 describe("payment intents", () => {
+  const mockConfig = {
+    apiKey: "sk_test_mock",
+    routerPriceId: "price_test",
+    routerMeterId: "meter_test",
+  };
+
   describe("createRouterCreditsPurchaseIntent", () => {
-    it.effect("creates payment intent with correct parameters", () =>
-      Effect.gen(function* () {
-        const payments = yield* Payments;
+    it.effect(
+      "creates payment intent without saved card (requires_payment)",
+      () =>
+        Effect.gen(function* () {
+          const payments = yield* Payments;
 
-        const result =
-          yield* payments.paymentIntents.createRouterCreditsPurchaseIntent({
-            stripeCustomerId: "cus_test123",
-            amountInDollars: 50,
-            metadata: {
-              organizationId: "org_123",
-            },
-          });
+          const result =
+            yield* payments.paymentIntents.createRouterCreditsPurchaseIntent({
+              stripeCustomerId: "cus_test123",
+              amountInDollars: 50,
+              metadata: {
+                organizationId: "org_123",
+              },
+            });
 
-        expect(result.clientSecret).toBeDefined();
-        expect(result.clientSecret).toMatch(/^pi_test_/);
-        expect(result.amountInDollars).toBe(50);
-      }).pipe(
-        Effect.provide(
-          Payments.Default.pipe(
-            Layer.provide(
-              Layer.succeed(Stripe, {
-                paymentIntents: {
-                  create: (params: StripeSDK.PaymentIntentCreateParams) =>
-                    Effect.succeed({
-                      id: `pi_test_${crypto.randomUUID()}`,
-                      client_secret: `pi_test_${crypto.randomUUID()}_secret_${crypto.randomUUID()}`,
-                      amountInDollars: params.amount,
-                      currency: params.currency,
-                      metadata: params.metadata,
-                    }),
-                },
-                config: {
-                  apiKey: "sk_test_mock",
-                  routerPriceId: "price_test",
-                  routerMeterId: "meter_test",
-                },
-              } as unknown as Context.Tag.Service<typeof Stripe>),
+          expect(result.clientSecret).toBeDefined();
+          expect(result.clientSecret).toMatch(/^pi_test_/);
+          expect(result.amountInDollars).toBe(50);
+          expect(result.status).toBe("requires_payment");
+        }).pipe(
+          Effect.provide(
+            Payments.Default.pipe(
+              Layer.provide(
+                Layer.succeed(Stripe, {
+                  paymentIntents: {
+                    create: (params: StripeSDK.PaymentIntentCreateParams) => {
+                      expect(params.setup_future_usage).toBe("off_session");
+                      expect(params.automatic_payment_methods?.enabled).toBe(
+                        true,
+                      );
+                      return Effect.succeed({
+                        id: `pi_test_${crypto.randomUUID()}`,
+                        client_secret: `pi_test_${crypto.randomUUID()}_secret_${crypto.randomUUID()}`,
+                        status: "requires_payment_method",
+                      });
+                    },
+                  },
+                  config: mockConfig,
+                } as unknown as Context.Tag.Service<typeof Stripe>),
+              ),
             ),
           ),
         ),
-      ),
     );
 
     it.effect("includes correct metadata in payment intent", () =>
@@ -87,9 +95,6 @@ describe("payment intents", () => {
                     expect(params.currency).toBe("usd");
                     expect(params.customer).toBe("cus_test123");
                     expect(params.description).toContain("$50.00");
-                    expect(params.automatic_payment_methods?.enabled).toBe(
-                      true,
-                    );
 
                     return Effect.succeed({
                       id: `pi_test_${crypto.randomUUID()}`,
@@ -97,11 +102,7 @@ describe("payment intents", () => {
                     });
                   },
                 },
-                config: {
-                  apiKey: "sk_test_mock",
-                  routerPriceId: "price_test",
-                  routerMeterId: "meter_test",
-                },
+                config: mockConfig,
               } as unknown as Context.Tag.Service<typeof Stripe>),
             ),
           ),
@@ -132,11 +133,7 @@ describe("payment intents", () => {
                     });
                   },
                 },
-                config: {
-                  apiKey: "sk_test_mock",
-                  routerPriceId: "price_test",
-                  routerMeterId: "meter_test",
-                },
+                config: mockConfig,
               } as unknown as Context.Tag.Service<typeof Stripe>),
             ),
           ),
@@ -170,11 +167,7 @@ describe("payment intents", () => {
                       }),
                     ),
                 },
-                config: {
-                  apiKey: "sk_test_mock",
-                  routerPriceId: "price_test",
-                  routerMeterId: "meter_test",
-                },
+                config: mockConfig,
               } as unknown as Context.Tag.Service<typeof Stripe>),
             ),
           ),
@@ -211,11 +204,124 @@ describe("payment intents", () => {
                         client_secret: null, // No client secret
                       }),
                   },
-                  config: {
-                    apiKey: "sk_test_mock",
-                    routerPriceId: "price_test",
-                    routerMeterId: "meter_test",
+                  config: mockConfig,
+                } as unknown as Context.Tag.Service<typeof Stripe>),
+              ),
+            ),
+          ),
+        ),
+    );
+
+    it.effect(
+      "with saved card: returns succeeded when server-side confirmation succeeds",
+      () =>
+        Effect.gen(function* () {
+          const payments = yield* Payments;
+
+          const result =
+            yield* payments.paymentIntents.createRouterCreditsPurchaseIntent({
+              stripeCustomerId: "cus_test123",
+              amountInDollars: 50,
+              paymentMethodId: "pm_saved_123",
+            });
+
+          expect(result.clientSecret).toBeNull();
+          expect(result.status).toBe("succeeded");
+          expect(result.amountInDollars).toBe(50);
+        }).pipe(
+          Effect.provide(
+            Payments.Default.pipe(
+              Layer.provide(
+                Layer.succeed(Stripe, {
+                  paymentIntents: {
+                    create: (params: StripeSDK.PaymentIntentCreateParams) => {
+                      expect(params.payment_method).toBe("pm_saved_123");
+                      expect(params.confirm).toBe(true);
+                      expect(params.off_session).toBe(true);
+                      return Effect.succeed({
+                        id: "pi_test_123",
+                        client_secret: "pi_test_123_secret",
+                        status: "succeeded",
+                      });
+                    },
                   },
+                  config: mockConfig,
+                } as unknown as Context.Tag.Service<typeof Stripe>),
+              ),
+            ),
+          ),
+        ),
+    );
+
+    it.effect(
+      "with saved card: returns requires_action when 3DS is needed",
+      () =>
+        Effect.gen(function* () {
+          const payments = yield* Payments;
+
+          const result =
+            yield* payments.paymentIntents.createRouterCreditsPurchaseIntent({
+              stripeCustomerId: "cus_test123",
+              amountInDollars: 50,
+              paymentMethodId: "pm_saved_123",
+            });
+
+          expect(result.clientSecret).toBe("pi_test_3ds_secret");
+          expect(result.status).toBe("requires_action");
+          expect(result.amountInDollars).toBe(50);
+        }).pipe(
+          Effect.provide(
+            Payments.Default.pipe(
+              Layer.provide(
+                Layer.succeed(Stripe, {
+                  paymentIntents: {
+                    create: () =>
+                      Effect.succeed({
+                        id: "pi_test_3ds",
+                        client_secret: "pi_test_3ds_secret",
+                        status: "requires_action",
+                      }),
+                  },
+                  config: mockConfig,
+                } as unknown as Context.Tag.Service<typeof Stripe>),
+              ),
+            ),
+          ),
+        ),
+    );
+
+    it.effect(
+      "with saved card: returns StripeError when requires_action but no client secret",
+      () =>
+        Effect.gen(function* () {
+          const payments = yield* Payments;
+
+          const result = yield* payments.paymentIntents
+            .createRouterCreditsPurchaseIntent({
+              stripeCustomerId: "cus_test123",
+              amountInDollars: 50,
+              paymentMethodId: "pm_saved_123",
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(StripeError);
+          expect(result.message).toBe(
+            "PaymentIntent requires action but no client secret returned",
+          );
+        }).pipe(
+          Effect.provide(
+            Payments.Default.pipe(
+              Layer.provide(
+                Layer.succeed(Stripe, {
+                  paymentIntents: {
+                    create: () =>
+                      Effect.succeed({
+                        id: "pi_test_3ds",
+                        client_secret: null,
+                        status: "requires_action",
+                      }),
+                  },
+                  config: mockConfig,
                 } as unknown as Context.Tag.Service<typeof Stripe>),
               ),
             ),

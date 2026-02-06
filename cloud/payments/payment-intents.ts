@@ -18,6 +18,8 @@ export interface CreateRouterCreditsPurchaseIntentParams {
   stripeCustomerId: string;
   /** Credit amount in dollars (e.g., 50 for $50) */
   amountInDollars: number;
+  /** Optional saved payment method ID for server-side confirmation */
+  paymentMethodId?: string;
   /** Optional metadata to attach to the PaymentIntent */
   metadata?: Record<string, string>;
 }
@@ -26,10 +28,12 @@ export interface CreateRouterCreditsPurchaseIntentParams {
  * Result of creating a PaymentIntent.
  */
 export interface CreatePaymentIntentResult {
-  /** Client secret for confirming payment on frontend */
-  clientSecret: string;
+  /** Client secret for confirming payment on frontend (null when server-confirmed) */
+  clientSecret: string | null;
   /** Credit amount in dollars (e.g., 50 for $50) */
   amountInDollars: number;
+  /** Payment status */
+  status: "requires_payment" | "requires_action" | "succeeded";
 }
 
 /**
@@ -76,7 +80,51 @@ export class PaymentIntents {
       // Convert dollars to cents for Stripe
       const amountInCents = Math.round(params.amountInDollars * 100);
 
-      // Create PaymentIntent
+      const metadata = {
+        stripeCustomerId: params.stripeCustomerId,
+        creditAmountInCents: amountInCents.toString(),
+        ...params.metadata,
+      };
+
+      // If a saved payment method is provided, confirm server-side
+      if (params.paymentMethodId) {
+        const paymentIntent = yield* stripe.paymentIntents.create({
+          customer: params.stripeCustomerId,
+          amount: amountInCents,
+          currency: "usd",
+          payment_method: params.paymentMethodId,
+          confirm: true,
+          off_session: true,
+          description: `Mirascope Router Credits - $${params.amountInDollars.toFixed(2)}`,
+          metadata,
+        });
+
+        if (paymentIntent.status === "succeeded") {
+          return {
+            clientSecret: null,
+            amountInDollars: params.amountInDollars,
+            status: "succeeded" as const,
+          };
+        }
+
+        // 3DS or other action required
+        if (!paymentIntent.client_secret) {
+          return yield* Effect.fail(
+            new StripeError({
+              message:
+                "PaymentIntent requires action but no client secret returned",
+            }),
+          );
+        }
+
+        return {
+          clientSecret: paymentIntent.client_secret,
+          amountInDollars: params.amountInDollars,
+          status: "requires_action" as const,
+        };
+      }
+
+      // No saved card — create PaymentIntent for frontend confirmation
       const paymentIntent = yield* stripe.paymentIntents.create({
         customer: params.stripeCustomerId,
         amount: amountInCents,
@@ -84,12 +132,9 @@ export class PaymentIntents {
         automatic_payment_methods: {
           enabled: true,
         },
+        setup_future_usage: "off_session",
         description: `Mirascope Router Credits - $${params.amountInDollars.toFixed(2)}`,
-        metadata: {
-          stripeCustomerId: params.stripeCustomerId,
-          creditAmountInCents: amountInCents.toString(),
-          ...params.metadata,
-        },
+        metadata,
       });
 
       if (!paymentIntent.client_secret) {
@@ -103,6 +148,7 @@ export class PaymentIntents {
       return {
         clientSecret: paymentIntent.client_secret,
         amountInDollars: params.amountInDollars,
+        status: "requires_payment" as const,
       };
     });
   }
