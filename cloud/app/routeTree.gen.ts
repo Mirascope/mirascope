@@ -42,6 +42,7 @@ import { Route as CloudSettingsTeamRouteImport } from './routes/cloud/settings/t
 import { Route as CloudSettingsProjectRouteImport } from './routes/cloud/settings/project'
 import { Route as CloudSettingsOrganizationRouteImport } from './routes/cloud/settings/organization'
 import { Route as CloudSettingsMeRouteImport } from './routes/cloud/settings/me'
+import { Route as CloudSettingsClawsRouteImport } from './routes/cloud/settings/claws'
 import { Route as CloudSettingsBillingRouteImport } from './routes/cloud/settings/billing'
 import { Route as CloudSettingsApiKeysRouteImport } from './routes/cloud/settings/api-keys'
 import { Route as CloudProjectsTracesRouteImport } from './routes/cloud/projects/traces'
@@ -229,6 +230,11 @@ const CloudSettingsMeRoute = CloudSettingsMeRouteImport.update({
   path: '/me',
   getParentRoute: () => CloudSettingsRoute,
 } as any)
+const CloudSettingsClawsRoute = CloudSettingsClawsRouteImport.update({
+  id: '/claws',
+  path: '/claws',
+  getParentRoute: () => CloudSettingsRoute,
+} as any)
 const CloudSettingsBillingRoute = CloudSettingsBillingRouteImport.update({
   id: '/billing',
   path: '/billing',
@@ -376,6 +382,7 @@ export interface FileRoutesByFullPath {
   '/cloud/projects/traces': typeof CloudProjectsTracesRoute
   '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
   '/cloud/settings/billing': typeof CloudSettingsBillingRoute
+  '/cloud/settings/claws': typeof CloudSettingsClawsRoute
   '/cloud/settings/me': typeof CloudSettingsMeRoute
   '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
@@ -427,6 +434,7 @@ export interface FileRoutesByTo {
   '/cloud/projects/traces': typeof CloudProjectsTracesRoute
   '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
   '/cloud/settings/billing': typeof CloudSettingsBillingRoute
+  '/cloud/settings/claws': typeof CloudSettingsClawsRoute
   '/cloud/settings/me': typeof CloudSettingsMeRoute
   '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
@@ -483,6 +491,7 @@ export interface FileRoutesById {
   '/cloud/projects/traces': typeof CloudProjectsTracesRoute
   '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
   '/cloud/settings/billing': typeof CloudSettingsBillingRoute
+  '/cloud/settings/claws': typeof CloudSettingsClawsRoute
   '/cloud/settings/me': typeof CloudSettingsMeRoute
   '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
@@ -540,6 +549,7 @@ export interface FileRouteTypes {
     | '/cloud/projects/traces'
     | '/cloud/settings/api-keys'
     | '/cloud/settings/billing'
+    | '/cloud/settings/claws'
     | '/cloud/settings/me'
     | '/cloud/settings/organization'
     | '/cloud/settings/project'
@@ -591,6 +601,7 @@ export interface FileRouteTypes {
     | '/cloud/projects/traces'
     | '/cloud/settings/api-keys'
     | '/cloud/settings/billing'
+    | '/cloud/settings/claws'
     | '/cloud/settings/me'
     | '/cloud/settings/organization'
     | '/cloud/settings/project'
@@ -646,6 +657,7 @@ export interface FileRouteTypes {
     | '/cloud/projects/traces'
     | '/cloud/settings/api-keys'
     | '/cloud/settings/billing'
+    | '/cloud/settings/claws'
     | '/cloud/settings/me'
     | '/cloud/settings/organization'
     | '/cloud/settings/project'
@@ -916,6 +928,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CloudSettingsMeRouteImport
       parentRoute: typeof CloudSettingsRoute
     }
+    '/cloud/settings/claws': {
+      id: '/cloud/settings/claws'
+      path: '/claws'
+      fullPath: '/cloud/settings/claws'
+      preLoaderRoute: typeof CloudSettingsClawsRouteImport
+      parentRoute: typeof CloudSettingsRoute
+    }
     '/cloud/settings/billing': {
       id: '/cloud/settings/billing'
       path: '/billing'
@@ -1074,6 +1093,7 @@ const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 interface CloudSettingsRouteChildren {
   CloudSettingsApiKeysRoute: typeof CloudSettingsApiKeysRoute
   CloudSettingsBillingRoute: typeof CloudSettingsBillingRoute
+  CloudSettingsClawsRoute: typeof CloudSettingsClawsRoute
   CloudSettingsMeRoute: typeof CloudSettingsMeRoute
   CloudSettingsOrganizationRoute: typeof CloudSettingsOrganizationRoute
   CloudSettingsProjectRoute: typeof CloudSettingsProjectRoute
@@ -1084,6 +1104,7 @@ interface CloudSettingsRouteChildren {
 const CloudSettingsRouteChildren: CloudSettingsRouteChildren = {
   CloudSettingsApiKeysRoute: CloudSettingsApiKeysRoute,
   CloudSettingsBillingRoute: CloudSettingsBillingRoute,
+  CloudSettingsClawsRoute: CloudSettingsClawsRoute,
   CloudSettingsMeRoute: CloudSettingsMeRoute,
   CloudSettingsOrganizationRoute: CloudSettingsOrganizationRoute,
   CloudSettingsProjectRoute: CloudSettingsProjectRoute,

@@ -29,6 +29,10 @@ const settingsNavItems: SettingsNavItem[] = [
     path: "/cloud/settings/project",
   },
   {
+    label: "Claws",
+    path: "/cloud/settings/claws",
+  },
+  {
     label: "API Keys",
     path: "/cloud/settings/api-keys",
   },
