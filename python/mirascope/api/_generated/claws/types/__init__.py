@@ -9,6 +9,7 @@ from .claws_create_response_status import ClawsCreateResponseStatus
 from .claws_get_response import ClawsGetResponse
 from .claws_get_response_instance_type import ClawsGetResponseInstanceType
 from .claws_get_response_status import ClawsGetResponseStatus
+from .claws_get_usage_response import ClawsGetUsageResponse
 from .claws_list_response_item import ClawsListResponseItem
 from .claws_list_response_item_instance_type import ClawsListResponseItemInstanceType
 from .claws_list_response_item_status import ClawsListResponseItemStatus
@@ -24,6 +25,7 @@ __all__ = [
     "ClawsGetResponse",
     "ClawsGetResponseInstanceType",
     "ClawsGetResponseStatus",
+    "ClawsGetUsageResponse",
     "ClawsListResponseItem",
     "ClawsListResponseItemInstanceType",
     "ClawsListResponseItemStatus",

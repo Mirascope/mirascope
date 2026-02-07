@@ -10,10 +10,12 @@ export const OrganizationsCreatePaymentIntentRequest: core.serialization.Schema<
   Omit<Mirascope.OrganizationsCreatePaymentIntentRequest, "id">
 > = core.serialization.object({
   amount: core.serialization.number(),
+  paymentMethodId: core.serialization.string().optional(),
 });
 
 export declare namespace OrganizationsCreatePaymentIntentRequest {
   export interface Raw {
     amount: number;
+    paymentMethodId?: string | null;
   }
 }

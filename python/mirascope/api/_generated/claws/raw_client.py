@@ -17,6 +17,7 @@ from ..errors.not_found_error import NotFoundError
 from ..errors.payment_required_error import PaymentRequiredError
 from ..errors.service_unavailable_error import ServiceUnavailableError
 from ..errors.too_many_requests_error import TooManyRequestsError
+from ..types.big_int import BigInt
 from ..types.not_found_error_body import NotFoundErrorBody
 from ..types.permission_denied_error import PermissionDeniedError
 from ..types.plan_limit_exceeded_error import PlanLimitExceededError
@@ -24,6 +25,7 @@ from ..types.rate_limit_error import RateLimitError
 from .types.claws_create_request_model import ClawsCreateRequestModel
 from .types.claws_create_response import ClawsCreateResponse
 from .types.claws_get_response import ClawsGetResponse
+from .types.claws_get_usage_response import ClawsGetUsageResponse
 from .types.claws_list_response_item import ClawsListResponseItem
 from .types.claws_update_response import ClawsUpdateResponse
 
@@ -156,6 +158,8 @@ class RawClawsClient:
         slug: str,
         description: typing.Optional[str] = OMIT,
         model: typing.Optional[ClawsCreateRequestModel] = OMIT,
+        weekly_spending_guardrail_centicents: typing.Optional[BigInt] = OMIT,
+        home_project_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ClawsCreateResponse]:
         """
@@ -173,6 +177,10 @@ class RawClawsClient:
 
         model : typing.Optional[ClawsCreateRequestModel]
 
+        weekly_spending_guardrail_centicents : typing.Optional[BigInt]
+
+        home_project_id : typing.Optional[str]
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -189,6 +197,8 @@ class RawClawsClient:
                 "slug": slug,
                 "description": description,
                 "model": model,
+                "weeklySpendingGuardrailCenticents": weekly_spending_guardrail_centicents,
+                "homeProjectId": home_project_id,
             },
             headers={
                 "content-type": "application/json",
@@ -430,6 +440,7 @@ class RawClawsClient:
         *,
         name: typing.Optional[str] = OMIT,
         description: typing.Optional[str] = OMIT,
+        weekly_spending_guardrail_centicents: typing.Optional[BigInt] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ClawsUpdateResponse]:
         """
@@ -443,6 +454,8 @@ class RawClawsClient:
             a string at most 100 character(s) long
 
         description : typing.Optional[str]
+
+        weekly_spending_guardrail_centicents : typing.Optional[BigInt]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -458,6 +471,7 @@ class RawClawsClient:
             json={
                 "name": name,
                 "description": description,
+                "weeklySpendingGuardrailCenticents": weekly_spending_guardrail_centicents,
             },
             headers={
                 "content-type": "application/json",
@@ -673,6 +687,122 @@ class RawClawsClient:
             body=_response_json,
         )
 
+    def getusage(
+        self,
+        organization_id: str,
+        claw_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[ClawsGetUsageResponse]:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        claw_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[ClawsGetUsageResponse]
+            Success
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"organizations/{jsonable_encoder(organization_id)}/claws/{jsonable_encoder(claw_id)}/usage",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ClawsGetUsageResponse,
+                    parse_obj_as(
+                        type_=ClawsGetUsageResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        NotFoundErrorBody,
+                        parse_obj_as(
+                            type_=NotFoundErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
 
 class AsyncRawClawsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -799,6 +929,8 @@ class AsyncRawClawsClient:
         slug: str,
         description: typing.Optional[str] = OMIT,
         model: typing.Optional[ClawsCreateRequestModel] = OMIT,
+        weekly_spending_guardrail_centicents: typing.Optional[BigInt] = OMIT,
+        home_project_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ClawsCreateResponse]:
         """
@@ -816,6 +948,10 @@ class AsyncRawClawsClient:
 
         model : typing.Optional[ClawsCreateRequestModel]
 
+        weekly_spending_guardrail_centicents : typing.Optional[BigInt]
+
+        home_project_id : typing.Optional[str]
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -832,6 +968,8 @@ class AsyncRawClawsClient:
                 "slug": slug,
                 "description": description,
                 "model": model,
+                "weeklySpendingGuardrailCenticents": weekly_spending_guardrail_centicents,
+                "homeProjectId": home_project_id,
             },
             headers={
                 "content-type": "application/json",
@@ -1073,6 +1211,7 @@ class AsyncRawClawsClient:
         *,
         name: typing.Optional[str] = OMIT,
         description: typing.Optional[str] = OMIT,
+        weekly_spending_guardrail_centicents: typing.Optional[BigInt] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ClawsUpdateResponse]:
         """
@@ -1086,6 +1225,8 @@ class AsyncRawClawsClient:
             a string at most 100 character(s) long
 
         description : typing.Optional[str]
+
+        weekly_spending_guardrail_centicents : typing.Optional[BigInt]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1101,6 +1242,7 @@ class AsyncRawClawsClient:
             json={
                 "name": name,
                 "description": description,
+                "weeklySpendingGuardrailCenticents": weekly_spending_guardrail_centicents,
             },
             headers={
                 "content-type": "application/json",
@@ -1237,6 +1379,122 @@ class AsyncRawClawsClient:
         try:
             if 200 <= _response.status_code < 300:
                 return AsyncHttpResponse(response=_response, data=None)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        NotFoundErrorBody,
+                        parse_obj_as(
+                            type_=NotFoundErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    async def getusage(
+        self,
+        organization_id: str,
+        claw_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[ClawsGetUsageResponse]:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        claw_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[ClawsGetUsageResponse]
+            Success
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"organizations/{jsonable_encoder(organization_id)}/claws/{jsonable_encoder(claw_id)}/usage",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ClawsGetUsageResponse,
+                    parse_obj_as(
+                        type_=ClawsGetUsageResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
                     headers=dict(_response.headers),

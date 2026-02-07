@@ -4,10 +4,12 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
+from ..types.big_int import BigInt
 from .raw_client import AsyncRawClawsClient, RawClawsClient
 from .types.claws_create_request_model import ClawsCreateRequestModel
 from .types.claws_create_response import ClawsCreateResponse
 from .types.claws_get_response import ClawsGetResponse
+from .types.claws_get_usage_response import ClawsGetUsageResponse
 from .types.claws_list_response_item import ClawsListResponseItem
 from .types.claws_update_response import ClawsUpdateResponse
 
@@ -71,6 +73,8 @@ class ClawsClient:
         slug: str,
         description: typing.Optional[str] = OMIT,
         model: typing.Optional[ClawsCreateRequestModel] = OMIT,
+        weekly_spending_guardrail_centicents: typing.Optional[BigInt] = OMIT,
+        home_project_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ClawsCreateResponse:
         """
@@ -87,6 +91,10 @@ class ClawsClient:
         description : typing.Optional[str]
 
         model : typing.Optional[ClawsCreateRequestModel]
+
+        weekly_spending_guardrail_centicents : typing.Optional[BigInt]
+
+        home_project_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -113,6 +121,8 @@ class ClawsClient:
             slug=slug,
             description=description,
             model=model,
+            weekly_spending_guardrail_centicents=weekly_spending_guardrail_centicents,
+            home_project_id=home_project_id,
             request_options=request_options,
         )
         return _response.data
@@ -161,6 +171,7 @@ class ClawsClient:
         *,
         name: typing.Optional[str] = OMIT,
         description: typing.Optional[str] = OMIT,
+        weekly_spending_guardrail_centicents: typing.Optional[BigInt] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ClawsUpdateResponse:
         """
@@ -174,6 +185,8 @@ class ClawsClient:
             a string at most 100 character(s) long
 
         description : typing.Optional[str]
+
+        weekly_spending_guardrail_centicents : typing.Optional[BigInt]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -198,6 +211,7 @@ class ClawsClient:
             claw_id,
             name=name,
             description=description,
+            weekly_spending_guardrail_centicents=weekly_spending_guardrail_centicents,
             request_options=request_options,
         )
         return _response.data
@@ -234,6 +248,43 @@ class ClawsClient:
         )
         """
         _response = self._raw_client.delete(
+            organization_id, claw_id, request_options=request_options
+        )
+        return _response.data
+
+    def getusage(
+        self,
+        organization_id: str,
+        claw_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ClawsGetUsageResponse:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        claw_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ClawsGetUsageResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.claws.getusage(
+            organization_id="organizationId",
+            claw_id="clawId",
+        )
+        """
+        _response = self._raw_client.getusage(
             organization_id, claw_id, request_options=request_options
         )
         return _response.data
@@ -303,6 +354,8 @@ class AsyncClawsClient:
         slug: str,
         description: typing.Optional[str] = OMIT,
         model: typing.Optional[ClawsCreateRequestModel] = OMIT,
+        weekly_spending_guardrail_centicents: typing.Optional[BigInt] = OMIT,
+        home_project_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ClawsCreateResponse:
         """
@@ -319,6 +372,10 @@ class AsyncClawsClient:
         description : typing.Optional[str]
 
         model : typing.Optional[ClawsCreateRequestModel]
+
+        weekly_spending_guardrail_centicents : typing.Optional[BigInt]
+
+        home_project_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -353,6 +410,8 @@ class AsyncClawsClient:
             slug=slug,
             description=description,
             model=model,
+            weekly_spending_guardrail_centicents=weekly_spending_guardrail_centicents,
+            home_project_id=home_project_id,
             request_options=request_options,
         )
         return _response.data
@@ -409,6 +468,7 @@ class AsyncClawsClient:
         *,
         name: typing.Optional[str] = OMIT,
         description: typing.Optional[str] = OMIT,
+        weekly_spending_guardrail_centicents: typing.Optional[BigInt] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ClawsUpdateResponse:
         """
@@ -422,6 +482,8 @@ class AsyncClawsClient:
             a string at most 100 character(s) long
 
         description : typing.Optional[str]
+
+        weekly_spending_guardrail_centicents : typing.Optional[BigInt]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -454,6 +516,7 @@ class AsyncClawsClient:
             claw_id,
             name=name,
             description=description,
+            weekly_spending_guardrail_centicents=weekly_spending_guardrail_centicents,
             request_options=request_options,
         )
         return _response.data
@@ -498,6 +561,51 @@ class AsyncClawsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.delete(
+            organization_id, claw_id, request_options=request_options
+        )
+        return _response.data
+
+    async def getusage(
+        self,
+        organization_id: str,
+        claw_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ClawsGetUsageResponse:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        claw_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ClawsGetUsageResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.claws.getusage(
+                organization_id="organizationId",
+                claw_id="clawId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.getusage(
             organization_id, claw_id, request_options=request_options
         )
         return _response.data

@@ -744,4 +744,141 @@ export class ClawsClient {
       "/organizations/{organizationId}/claws/{clawId}",
     );
   }
+
+  /**
+   * @param {Mirascope.ClawsGetUsageRequest} request
+   * @param {ClawsClient.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link Mirascope.BadRequestError}
+   * @throws {@link Mirascope.ForbiddenError}
+   * @throws {@link Mirascope.NotFoundError}
+   * @throws {@link Mirascope.TooManyRequestsError}
+   * @throws {@link Mirascope.InternalServerError}
+   * @throws {@link Mirascope.ServiceUnavailableError}
+   *
+   * @example
+   *     await client.claws.getusage({
+   *         organizationId: "organizationId",
+   *         clawId: "clawId"
+   *     })
+   */
+  public getusage(
+    request: Mirascope.ClawsGetUsageRequest,
+    requestOptions?: ClawsClient.RequestOptions,
+  ): core.HttpResponsePromise<Mirascope.ClawsGetUsageResponse> {
+    return core.HttpResponsePromise.fromPromise(
+      this.__getusage(request, requestOptions),
+    );
+  }
+
+  private async __getusage(
+    request: Mirascope.ClawsGetUsageRequest,
+    requestOptions?: ClawsClient.RequestOptions,
+  ): Promise<core.WithRawResponse<Mirascope.ClawsGetUsageResponse>> {
+    const { organizationId, clawId } = request;
+    const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+      this._options?.headers,
+      requestOptions?.headers,
+    );
+    const _response = await core.fetcher({
+      url: core.url.join(
+        (await core.Supplier.get(this._options.baseUrl)) ??
+          (await core.Supplier.get(this._options.environment)) ??
+          environments.MirascopeEnvironment.Production,
+        `organizations/${core.url.encodePathParam(organizationId)}/claws/${core.url.encodePathParam(clawId)}/usage`,
+      ),
+      method: "GET",
+      headers: _headers,
+      queryParameters: requestOptions?.queryParams,
+      timeoutMs:
+        (requestOptions?.timeoutInSeconds ??
+          this._options?.timeoutInSeconds ??
+          180) * 1000,
+      maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+      abortSignal: requestOptions?.abortSignal,
+      fetchFn: this._options?.fetch,
+      logging: this._options.logging,
+    });
+    if (_response.ok) {
+      return {
+        data: serializers.ClawsGetUsageResponse.parseOrThrow(_response.body, {
+          unrecognizedObjectKeys: "passthrough",
+          allowUnrecognizedUnionMembers: true,
+          allowUnrecognizedEnumValues: true,
+          skipValidation: true,
+          breadcrumbsPrefix: ["response"],
+        }),
+        rawResponse: _response.rawResponse,
+      };
+    }
+
+    if (_response.error.reason === "status-code") {
+      switch (_response.error.statusCode) {
+        case 400:
+          throw new Mirascope.BadRequestError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 403:
+          throw new Mirascope.ForbiddenError(
+            serializers.PermissionDeniedError.parseOrThrow(
+              _response.error.body,
+              {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+              },
+            ),
+            _response.rawResponse,
+          );
+        case 404:
+          throw new Mirascope.NotFoundError(
+            serializers.NotFoundErrorBody.parseOrThrow(_response.error.body, {
+              unrecognizedObjectKeys: "passthrough",
+              allowUnrecognizedUnionMembers: true,
+              allowUnrecognizedEnumValues: true,
+              skipValidation: true,
+              breadcrumbsPrefix: ["response"],
+            }),
+            _response.rawResponse,
+          );
+        case 429:
+          throw new Mirascope.TooManyRequestsError(
+            serializers.RateLimitError.parseOrThrow(_response.error.body, {
+              unrecognizedObjectKeys: "passthrough",
+              allowUnrecognizedUnionMembers: true,
+              allowUnrecognizedEnumValues: true,
+              skipValidation: true,
+              breadcrumbsPrefix: ["response"],
+            }),
+            _response.rawResponse,
+          );
+        case 500:
+          throw new Mirascope.InternalServerError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 503:
+          throw new Mirascope.ServiceUnavailableError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        default:
+          throw new errors.MirascopeError({
+            statusCode: _response.error.statusCode,
+            body: _response.error.body,
+            rawResponse: _response.rawResponse,
+          });
+      }
+    }
+
+    return handleNonStatusCodeError(
+      _response.error,
+      _response.rawResponse,
+      "GET",
+      "/organizations/{organizationId}/claws/{clawId}/usage",
+    );
+  }
 }

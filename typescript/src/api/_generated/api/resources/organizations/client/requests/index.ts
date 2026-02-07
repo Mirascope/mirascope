@@ -1,10 +1,15 @@
 export type { OrganizationsCancelScheduledDowngradeRequest } from "./OrganizationsCancelScheduledDowngradeRequest.js";
 export type { OrganizationsCreatePaymentIntentRequest } from "./OrganizationsCreatePaymentIntentRequest.js";
 export type { OrganizationsCreateRequest } from "./OrganizationsCreateRequest.js";
+export type { OrganizationsCreateSetupIntentRequest } from "./OrganizationsCreateSetupIntentRequest.js";
 export type { OrganizationsDeleteRequest } from "./OrganizationsDeleteRequest.js";
+export type { OrganizationsGetAutoReloadSettingsRequest } from "./OrganizationsGetAutoReloadSettingsRequest.js";
+export type { OrganizationsGetPaymentMethodRequest } from "./OrganizationsGetPaymentMethodRequest.js";
 export type { OrganizationsGetRequest } from "./OrganizationsGetRequest.js";
 export type { OrganizationsPreviewSubscriptionChangeRequest } from "./OrganizationsPreviewSubscriptionChangeRequest.js";
+export type { OrganizationsRemovePaymentMethodRequest } from "./OrganizationsRemovePaymentMethodRequest.js";
 export type { OrganizationsRouterBalanceRequest } from "./OrganizationsRouterBalanceRequest.js";
 export type { OrganizationsSubscriptionRequest } from "./OrganizationsSubscriptionRequest.js";
+export type { OrganizationsUpdateAutoReloadSettingsRequest } from "./OrganizationsUpdateAutoReloadSettingsRequest.js";
 export type { OrganizationsUpdateRequest } from "./OrganizationsUpdateRequest.js";
 export type { OrganizationsUpdateSubscriptionRequest } from "./OrganizationsUpdateSubscriptionRequest.js";

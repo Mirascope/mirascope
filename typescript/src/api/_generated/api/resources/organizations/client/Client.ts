@@ -1563,4 +1563,707 @@ export class OrganizationsClient {
       "/organizations/{id}/subscription/cancel-downgrade",
     );
   }
+
+  /**
+   * @param {Mirascope.OrganizationsCreateSetupIntentRequest} request
+   * @param {OrganizationsClient.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link Mirascope.BadRequestError}
+   * @throws {@link Mirascope.ForbiddenError}
+   * @throws {@link Mirascope.NotFoundError}
+   * @throws {@link Mirascope.TooManyRequestsError}
+   * @throws {@link Mirascope.InternalServerError}
+   * @throws {@link Mirascope.ServiceUnavailableError}
+   *
+   * @example
+   *     await client.organizations.createsetupintent({
+   *         id: "id"
+   *     })
+   */
+  public createsetupintent(
+    request: Mirascope.OrganizationsCreateSetupIntentRequest,
+    requestOptions?: OrganizationsClient.RequestOptions,
+  ): core.HttpResponsePromise<Mirascope.OrganizationsCreateSetupIntentResponse> {
+    return core.HttpResponsePromise.fromPromise(
+      this.__createsetupintent(request, requestOptions),
+    );
+  }
+
+  private async __createsetupintent(
+    request: Mirascope.OrganizationsCreateSetupIntentRequest,
+    requestOptions?: OrganizationsClient.RequestOptions,
+  ): Promise<
+    core.WithRawResponse<Mirascope.OrganizationsCreateSetupIntentResponse>
+  > {
+    const { id } = request;
+    const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+      this._options?.headers,
+      requestOptions?.headers,
+    );
+    const _response = await core.fetcher({
+      url: core.url.join(
+        (await core.Supplier.get(this._options.baseUrl)) ??
+          (await core.Supplier.get(this._options.environment)) ??
+          environments.MirascopeEnvironment.Production,
+        `organizations/${core.url.encodePathParam(id)}/payment-method/setup-intent`,
+      ),
+      method: "POST",
+      headers: _headers,
+      queryParameters: requestOptions?.queryParams,
+      timeoutMs:
+        (requestOptions?.timeoutInSeconds ??
+          this._options?.timeoutInSeconds ??
+          180) * 1000,
+      maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+      abortSignal: requestOptions?.abortSignal,
+      fetchFn: this._options?.fetch,
+      logging: this._options.logging,
+    });
+    if (_response.ok) {
+      return {
+        data: serializers.OrganizationsCreateSetupIntentResponse.parseOrThrow(
+          _response.body,
+          {
+            unrecognizedObjectKeys: "passthrough",
+            allowUnrecognizedUnionMembers: true,
+            allowUnrecognizedEnumValues: true,
+            skipValidation: true,
+            breadcrumbsPrefix: ["response"],
+          },
+        ),
+        rawResponse: _response.rawResponse,
+      };
+    }
+
+    if (_response.error.reason === "status-code") {
+      switch (_response.error.statusCode) {
+        case 400:
+          throw new Mirascope.BadRequestError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 403:
+          throw new Mirascope.ForbiddenError(
+            serializers.PermissionDeniedError.parseOrThrow(
+              _response.error.body,
+              {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+              },
+            ),
+            _response.rawResponse,
+          );
+        case 404:
+          throw new Mirascope.NotFoundError(
+            serializers.NotFoundErrorBody.parseOrThrow(_response.error.body, {
+              unrecognizedObjectKeys: "passthrough",
+              allowUnrecognizedUnionMembers: true,
+              allowUnrecognizedEnumValues: true,
+              skipValidation: true,
+              breadcrumbsPrefix: ["response"],
+            }),
+            _response.rawResponse,
+          );
+        case 429:
+          throw new Mirascope.TooManyRequestsError(
+            serializers.RateLimitError.parseOrThrow(_response.error.body, {
+              unrecognizedObjectKeys: "passthrough",
+              allowUnrecognizedUnionMembers: true,
+              allowUnrecognizedEnumValues: true,
+              skipValidation: true,
+              breadcrumbsPrefix: ["response"],
+            }),
+            _response.rawResponse,
+          );
+        case 500:
+          throw new Mirascope.InternalServerError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 503:
+          throw new Mirascope.ServiceUnavailableError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        default:
+          throw new errors.MirascopeError({
+            statusCode: _response.error.statusCode,
+            body: _response.error.body,
+            rawResponse: _response.rawResponse,
+          });
+      }
+    }
+
+    return handleNonStatusCodeError(
+      _response.error,
+      _response.rawResponse,
+      "POST",
+      "/organizations/{id}/payment-method/setup-intent",
+    );
+  }
+
+  /**
+   * @param {Mirascope.OrganizationsGetPaymentMethodRequest} request
+   * @param {OrganizationsClient.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link Mirascope.BadRequestError}
+   * @throws {@link Mirascope.ForbiddenError}
+   * @throws {@link Mirascope.NotFoundError}
+   * @throws {@link Mirascope.TooManyRequestsError}
+   * @throws {@link Mirascope.InternalServerError}
+   * @throws {@link Mirascope.ServiceUnavailableError}
+   *
+   * @example
+   *     await client.organizations.getpaymentmethod({
+   *         id: "id"
+   *     })
+   */
+  public getpaymentmethod(
+    request: Mirascope.OrganizationsGetPaymentMethodRequest,
+    requestOptions?: OrganizationsClient.RequestOptions,
+  ): core.HttpResponsePromise<Mirascope.OrganizationsGetPaymentMethodResponse | null> {
+    return core.HttpResponsePromise.fromPromise(
+      this.__getpaymentmethod(request, requestOptions),
+    );
+  }
+
+  private async __getpaymentmethod(
+    request: Mirascope.OrganizationsGetPaymentMethodRequest,
+    requestOptions?: OrganizationsClient.RequestOptions,
+  ): Promise<
+    core.WithRawResponse<Mirascope.OrganizationsGetPaymentMethodResponse | null>
+  > {
+    const { id } = request;
+    const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+      this._options?.headers,
+      requestOptions?.headers,
+    );
+    const _response = await core.fetcher({
+      url: core.url.join(
+        (await core.Supplier.get(this._options.baseUrl)) ??
+          (await core.Supplier.get(this._options.environment)) ??
+          environments.MirascopeEnvironment.Production,
+        `organizations/${core.url.encodePathParam(id)}/payment-method`,
+      ),
+      method: "GET",
+      headers: _headers,
+      queryParameters: requestOptions?.queryParams,
+      timeoutMs:
+        (requestOptions?.timeoutInSeconds ??
+          this._options?.timeoutInSeconds ??
+          180) * 1000,
+      maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+      abortSignal: requestOptions?.abortSignal,
+      fetchFn: this._options?.fetch,
+      logging: this._options.logging,
+    });
+    if (_response.ok) {
+      return {
+        data: serializers.organizations.getpaymentmethod.Response.parseOrThrow(
+          _response.body,
+          {
+            unrecognizedObjectKeys: "passthrough",
+            allowUnrecognizedUnionMembers: true,
+            allowUnrecognizedEnumValues: true,
+            skipValidation: true,
+            breadcrumbsPrefix: ["response"],
+          },
+        ),
+        rawResponse: _response.rawResponse,
+      };
+    }
+
+    if (_response.error.reason === "status-code") {
+      switch (_response.error.statusCode) {
+        case 400:
+          throw new Mirascope.BadRequestError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 403:
+          throw new Mirascope.ForbiddenError(
+            serializers.PermissionDeniedError.parseOrThrow(
+              _response.error.body,
+              {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+              },
+            ),
+            _response.rawResponse,
+          );
+        case 404:
+          throw new Mirascope.NotFoundError(
+            serializers.NotFoundErrorBody.parseOrThrow(_response.error.body, {
+              unrecognizedObjectKeys: "passthrough",
+              allowUnrecognizedUnionMembers: true,
+              allowUnrecognizedEnumValues: true,
+              skipValidation: true,
+              breadcrumbsPrefix: ["response"],
+            }),
+            _response.rawResponse,
+          );
+        case 429:
+          throw new Mirascope.TooManyRequestsError(
+            serializers.RateLimitError.parseOrThrow(_response.error.body, {
+              unrecognizedObjectKeys: "passthrough",
+              allowUnrecognizedUnionMembers: true,
+              allowUnrecognizedEnumValues: true,
+              skipValidation: true,
+              breadcrumbsPrefix: ["response"],
+            }),
+            _response.rawResponse,
+          );
+        case 500:
+          throw new Mirascope.InternalServerError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 503:
+          throw new Mirascope.ServiceUnavailableError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        default:
+          throw new errors.MirascopeError({
+            statusCode: _response.error.statusCode,
+            body: _response.error.body,
+            rawResponse: _response.rawResponse,
+          });
+      }
+    }
+
+    return handleNonStatusCodeError(
+      _response.error,
+      _response.rawResponse,
+      "GET",
+      "/organizations/{id}/payment-method",
+    );
+  }
+
+  /**
+   * @param {Mirascope.OrganizationsRemovePaymentMethodRequest} request
+   * @param {OrganizationsClient.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link Mirascope.BadRequestError}
+   * @throws {@link Mirascope.ForbiddenError}
+   * @throws {@link Mirascope.NotFoundError}
+   * @throws {@link Mirascope.TooManyRequestsError}
+   * @throws {@link Mirascope.InternalServerError}
+   * @throws {@link Mirascope.ServiceUnavailableError}
+   *
+   * @example
+   *     await client.organizations.removepaymentmethod({
+   *         id: "id"
+   *     })
+   */
+  public removepaymentmethod(
+    request: Mirascope.OrganizationsRemovePaymentMethodRequest,
+    requestOptions?: OrganizationsClient.RequestOptions,
+  ): core.HttpResponsePromise<void> {
+    return core.HttpResponsePromise.fromPromise(
+      this.__removepaymentmethod(request, requestOptions),
+    );
+  }
+
+  private async __removepaymentmethod(
+    request: Mirascope.OrganizationsRemovePaymentMethodRequest,
+    requestOptions?: OrganizationsClient.RequestOptions,
+  ): Promise<core.WithRawResponse<void>> {
+    const { id } = request;
+    const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+      this._options?.headers,
+      requestOptions?.headers,
+    );
+    const _response = await core.fetcher({
+      url: core.url.join(
+        (await core.Supplier.get(this._options.baseUrl)) ??
+          (await core.Supplier.get(this._options.environment)) ??
+          environments.MirascopeEnvironment.Production,
+        `organizations/${core.url.encodePathParam(id)}/payment-method`,
+      ),
+      method: "DELETE",
+      headers: _headers,
+      queryParameters: requestOptions?.queryParams,
+      timeoutMs:
+        (requestOptions?.timeoutInSeconds ??
+          this._options?.timeoutInSeconds ??
+          180) * 1000,
+      maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+      abortSignal: requestOptions?.abortSignal,
+      fetchFn: this._options?.fetch,
+      logging: this._options.logging,
+    });
+    if (_response.ok) {
+      return { data: undefined, rawResponse: _response.rawResponse };
+    }
+
+    if (_response.error.reason === "status-code") {
+      switch (_response.error.statusCode) {
+        case 400:
+          throw new Mirascope.BadRequestError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 403:
+          throw new Mirascope.ForbiddenError(
+            serializers.PermissionDeniedError.parseOrThrow(
+              _response.error.body,
+              {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+              },
+            ),
+            _response.rawResponse,
+          );
+        case 404:
+          throw new Mirascope.NotFoundError(
+            serializers.NotFoundErrorBody.parseOrThrow(_response.error.body, {
+              unrecognizedObjectKeys: "passthrough",
+              allowUnrecognizedUnionMembers: true,
+              allowUnrecognizedEnumValues: true,
+              skipValidation: true,
+              breadcrumbsPrefix: ["response"],
+            }),
+            _response.rawResponse,
+          );
+        case 429:
+          throw new Mirascope.TooManyRequestsError(
+            serializers.RateLimitError.parseOrThrow(_response.error.body, {
+              unrecognizedObjectKeys: "passthrough",
+              allowUnrecognizedUnionMembers: true,
+              allowUnrecognizedEnumValues: true,
+              skipValidation: true,
+              breadcrumbsPrefix: ["response"],
+            }),
+            _response.rawResponse,
+          );
+        case 500:
+          throw new Mirascope.InternalServerError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 503:
+          throw new Mirascope.ServiceUnavailableError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        default:
+          throw new errors.MirascopeError({
+            statusCode: _response.error.statusCode,
+            body: _response.error.body,
+            rawResponse: _response.rawResponse,
+          });
+      }
+    }
+
+    return handleNonStatusCodeError(
+      _response.error,
+      _response.rawResponse,
+      "DELETE",
+      "/organizations/{id}/payment-method",
+    );
+  }
+
+  /**
+   * @param {Mirascope.OrganizationsGetAutoReloadSettingsRequest} request
+   * @param {OrganizationsClient.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link Mirascope.BadRequestError}
+   * @throws {@link Mirascope.ForbiddenError}
+   * @throws {@link Mirascope.NotFoundError}
+   * @throws {@link Mirascope.TooManyRequestsError}
+   * @throws {@link Mirascope.InternalServerError}
+   * @throws {@link Mirascope.ServiceUnavailableError}
+   *
+   * @example
+   *     await client.organizations.getautoreloadsettings({
+   *         id: "id"
+   *     })
+   */
+  public getautoreloadsettings(
+    request: Mirascope.OrganizationsGetAutoReloadSettingsRequest,
+    requestOptions?: OrganizationsClient.RequestOptions,
+  ): core.HttpResponsePromise<Mirascope.OrganizationsGetAutoReloadSettingsResponse> {
+    return core.HttpResponsePromise.fromPromise(
+      this.__getautoreloadsettings(request, requestOptions),
+    );
+  }
+
+  private async __getautoreloadsettings(
+    request: Mirascope.OrganizationsGetAutoReloadSettingsRequest,
+    requestOptions?: OrganizationsClient.RequestOptions,
+  ): Promise<
+    core.WithRawResponse<Mirascope.OrganizationsGetAutoReloadSettingsResponse>
+  > {
+    const { id } = request;
+    const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+      this._options?.headers,
+      requestOptions?.headers,
+    );
+    const _response = await core.fetcher({
+      url: core.url.join(
+        (await core.Supplier.get(this._options.baseUrl)) ??
+          (await core.Supplier.get(this._options.environment)) ??
+          environments.MirascopeEnvironment.Production,
+        `organizations/${core.url.encodePathParam(id)}/auto-reload`,
+      ),
+      method: "GET",
+      headers: _headers,
+      queryParameters: requestOptions?.queryParams,
+      timeoutMs:
+        (requestOptions?.timeoutInSeconds ??
+          this._options?.timeoutInSeconds ??
+          180) * 1000,
+      maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+      abortSignal: requestOptions?.abortSignal,
+      fetchFn: this._options?.fetch,
+      logging: this._options.logging,
+    });
+    if (_response.ok) {
+      return {
+        data: serializers.OrganizationsGetAutoReloadSettingsResponse.parseOrThrow(
+          _response.body,
+          {
+            unrecognizedObjectKeys: "passthrough",
+            allowUnrecognizedUnionMembers: true,
+            allowUnrecognizedEnumValues: true,
+            skipValidation: true,
+            breadcrumbsPrefix: ["response"],
+          },
+        ),
+        rawResponse: _response.rawResponse,
+      };
+    }
+
+    if (_response.error.reason === "status-code") {
+      switch (_response.error.statusCode) {
+        case 400:
+          throw new Mirascope.BadRequestError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 403:
+          throw new Mirascope.ForbiddenError(
+            serializers.PermissionDeniedError.parseOrThrow(
+              _response.error.body,
+              {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+              },
+            ),
+            _response.rawResponse,
+          );
+        case 404:
+          throw new Mirascope.NotFoundError(
+            serializers.NotFoundErrorBody.parseOrThrow(_response.error.body, {
+              unrecognizedObjectKeys: "passthrough",
+              allowUnrecognizedUnionMembers: true,
+              allowUnrecognizedEnumValues: true,
+              skipValidation: true,
+              breadcrumbsPrefix: ["response"],
+            }),
+            _response.rawResponse,
+          );
+        case 429:
+          throw new Mirascope.TooManyRequestsError(
+            serializers.RateLimitError.parseOrThrow(_response.error.body, {
+              unrecognizedObjectKeys: "passthrough",
+              allowUnrecognizedUnionMembers: true,
+              allowUnrecognizedEnumValues: true,
+              skipValidation: true,
+              breadcrumbsPrefix: ["response"],
+            }),
+            _response.rawResponse,
+          );
+        case 500:
+          throw new Mirascope.InternalServerError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 503:
+          throw new Mirascope.ServiceUnavailableError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        default:
+          throw new errors.MirascopeError({
+            statusCode: _response.error.statusCode,
+            body: _response.error.body,
+            rawResponse: _response.rawResponse,
+          });
+      }
+    }
+
+    return handleNonStatusCodeError(
+      _response.error,
+      _response.rawResponse,
+      "GET",
+      "/organizations/{id}/auto-reload",
+    );
+  }
+
+  /**
+   * @param {Mirascope.OrganizationsUpdateAutoReloadSettingsRequest} request
+   * @param {OrganizationsClient.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link Mirascope.BadRequestError}
+   * @throws {@link Mirascope.ForbiddenError}
+   * @throws {@link Mirascope.NotFoundError}
+   * @throws {@link Mirascope.TooManyRequestsError}
+   * @throws {@link Mirascope.InternalServerError}
+   * @throws {@link Mirascope.ServiceUnavailableError}
+   *
+   * @example
+   *     await client.organizations.updateautoreloadsettings({
+   *         id: "id",
+   *         enabled: true,
+   *         thresholdCenticents: "thresholdCenticents",
+   *         amountCenticents: "amountCenticents"
+   *     })
+   */
+  public updateautoreloadsettings(
+    request: Mirascope.OrganizationsUpdateAutoReloadSettingsRequest,
+    requestOptions?: OrganizationsClient.RequestOptions,
+  ): core.HttpResponsePromise<Mirascope.OrganizationsUpdateAutoReloadSettingsResponse> {
+    return core.HttpResponsePromise.fromPromise(
+      this.__updateautoreloadsettings(request, requestOptions),
+    );
+  }
+
+  private async __updateautoreloadsettings(
+    request: Mirascope.OrganizationsUpdateAutoReloadSettingsRequest,
+    requestOptions?: OrganizationsClient.RequestOptions,
+  ): Promise<
+    core.WithRawResponse<Mirascope.OrganizationsUpdateAutoReloadSettingsResponse>
+  > {
+    const { id, ..._body } = request;
+    const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+      this._options?.headers,
+      requestOptions?.headers,
+    );
+    const _response = await core.fetcher({
+      url: core.url.join(
+        (await core.Supplier.get(this._options.baseUrl)) ??
+          (await core.Supplier.get(this._options.environment)) ??
+          environments.MirascopeEnvironment.Production,
+        `organizations/${core.url.encodePathParam(id)}/auto-reload`,
+      ),
+      method: "PUT",
+      headers: _headers,
+      contentType: "application/json",
+      queryParameters: requestOptions?.queryParams,
+      requestType: "json",
+      body: serializers.OrganizationsUpdateAutoReloadSettingsRequest.jsonOrThrow(
+        _body,
+        {
+          unrecognizedObjectKeys: "strip",
+          omitUndefined: true,
+        },
+      ),
+      timeoutMs:
+        (requestOptions?.timeoutInSeconds ??
+          this._options?.timeoutInSeconds ??
+          180) * 1000,
+      maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+      abortSignal: requestOptions?.abortSignal,
+      fetchFn: this._options?.fetch,
+      logging: this._options.logging,
+    });
+    if (_response.ok) {
+      return {
+        data: serializers.OrganizationsUpdateAutoReloadSettingsResponse.parseOrThrow(
+          _response.body,
+          {
+            unrecognizedObjectKeys: "passthrough",
+            allowUnrecognizedUnionMembers: true,
+            allowUnrecognizedEnumValues: true,
+            skipValidation: true,
+            breadcrumbsPrefix: ["response"],
+          },
+        ),
+        rawResponse: _response.rawResponse,
+      };
+    }
+
+    if (_response.error.reason === "status-code") {
+      switch (_response.error.statusCode) {
+        case 400:
+          throw new Mirascope.BadRequestError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 403:
+          throw new Mirascope.ForbiddenError(
+            serializers.PermissionDeniedError.parseOrThrow(
+              _response.error.body,
+              {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+              },
+            ),
+            _response.rawResponse,
+          );
+        case 404:
+          throw new Mirascope.NotFoundError(
+            serializers.NotFoundErrorBody.parseOrThrow(_response.error.body, {
+              unrecognizedObjectKeys: "passthrough",
+              allowUnrecognizedUnionMembers: true,
+              allowUnrecognizedEnumValues: true,
+              skipValidation: true,
+              breadcrumbsPrefix: ["response"],
+            }),
+            _response.rawResponse,
+          );
+        case 429:
+          throw new Mirascope.TooManyRequestsError(
+            serializers.RateLimitError.parseOrThrow(_response.error.body, {
+              unrecognizedObjectKeys: "passthrough",
+              allowUnrecognizedUnionMembers: true,
+              allowUnrecognizedEnumValues: true,
+              skipValidation: true,
+              breadcrumbsPrefix: ["response"],
+            }),
+            _response.rawResponse,
+          );
+        case 500:
+          throw new Mirascope.InternalServerError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 503:
+          throw new Mirascope.ServiceUnavailableError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        default:
+          throw new errors.MirascopeError({
+            statusCode: _response.error.statusCode,
+            body: _response.error.body,
+            rawResponse: _response.rawResponse,
+          });
+      }
+    }
+
+    return handleNonStatusCodeError(
+      _response.error,
+      _response.rawResponse,
+      "PUT",
+      "/organizations/{id}/auto-reload",
+    );
+  }
 }

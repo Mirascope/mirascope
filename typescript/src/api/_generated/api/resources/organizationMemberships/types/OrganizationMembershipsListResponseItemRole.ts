@@ -4,6 +4,7 @@ export const OrganizationMembershipsListResponseItemRole = {
   Owner: "OWNER",
   Admin: "ADMIN",
   Member: "MEMBER",
+  Bot: "BOT",
 } as const;
 export type OrganizationMembershipsListResponseItemRole =
   (typeof OrganizationMembershipsListResponseItemRole)[keyof typeof OrganizationMembershipsListResponseItemRole];

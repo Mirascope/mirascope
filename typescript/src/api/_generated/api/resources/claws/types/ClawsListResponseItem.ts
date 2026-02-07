@@ -16,6 +16,9 @@ export interface ClawsListResponseItem {
   secretsEncrypted: string | null;
   secretsKeyId: string | null;
   bucketName: string | null;
+  botUserId: string | null;
+  homeProjectId: string | null;
+  homeEnvironmentId: string | null;
   weeklySpendingGuardrailCenticents: Mirascope.BigInt | null;
   weeklyWindowStart: Mirascope.Date_ | null;
   weeklyUsageCenticents: Mirascope.BigInt | null;

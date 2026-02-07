@@ -3,15 +3,15 @@
 import type * as Mirascope from "../index.js";
 
 export type InternalServerErrorBody =
-  | Mirascope.InternalServerErrorBody.StripeError
-  | Mirascope.InternalServerErrorBody.DatabaseError;
+  | Mirascope.InternalServerErrorBody.DatabaseError
+  | Mirascope.InternalServerErrorBody.StripeError;
 
 export namespace InternalServerErrorBody {
-  export interface StripeError extends Mirascope.StripeError {
-    tag: "StripeError";
-  }
-
   export interface DatabaseError extends Mirascope.DatabaseError {
     tag: "DatabaseError";
+  }
+
+  export interface StripeError extends Mirascope.StripeError {
+    tag: "StripeError";
   }
 }

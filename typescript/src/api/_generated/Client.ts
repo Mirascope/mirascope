@@ -4,6 +4,7 @@ import type { BaseClientOptions, BaseRequestOptions } from "./BaseClient.js";
 
 import { AnnotationsClient } from "./api/resources/annotations/client/Client.js";
 import { ApiKeysClient } from "./api/resources/apiKeys/client/Client.js";
+import { ClawMembershipsClient } from "./api/resources/clawMemberships/client/Client.js";
 import { ClawsClient } from "./api/resources/claws/client/Client.js";
 import { DocsClient } from "./api/resources/docs/client/Client.js";
 import { EnvironmentsClient } from "./api/resources/environments/client/Client.js";
@@ -43,6 +44,7 @@ export class MirascopeClient {
   protected _functions: FunctionsClient | undefined;
   protected _annotations: AnnotationsClient | undefined;
   protected _claws: ClawsClient | undefined;
+  protected _clawMemberships: ClawMembershipsClient | undefined;
   protected _tags: TagsClient | undefined;
   protected _tokenCost: TokenCostClient | undefined;
 
@@ -106,6 +108,10 @@ export class MirascopeClient {
 
   public get claws(): ClawsClient {
     return (this._claws ??= new ClawsClient(this._options));
+  }
+
+  public get clawMemberships(): ClawMembershipsClient {
+    return (this._clawMemberships ??= new ClawMembershipsClient(this._options));
   }
 
   public get tags(): TagsClient {

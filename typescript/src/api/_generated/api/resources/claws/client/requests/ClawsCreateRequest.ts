@@ -18,4 +18,6 @@ export interface ClawsCreateRequest {
   slug: string;
   description?: string;
   model?: Mirascope.ClawsCreateRequestModel;
+  weeklySpendingGuardrailCenticents?: Mirascope.BigInt | null;
+  homeProjectId?: string;
 }
