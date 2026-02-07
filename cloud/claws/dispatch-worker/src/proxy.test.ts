@@ -48,7 +48,7 @@ describe("buildEnvVars", () => {
   });
 
   it("returns empty object for empty containerEnv", () => {
-    const config = createMockConfig({ containerEnv: {} as any });
+    const config = createMockConfig({ containerEnv: {} });
     const result = buildEnvVars(config);
     expect(result).toEqual({});
   });

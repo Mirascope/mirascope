@@ -1,3 +1,5 @@
+import type { Sandbox, Process } from "@cloudflare/sandbox";
+
 import { Hono } from "hono";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
@@ -25,7 +27,7 @@ function createTestApp() {
   const app = new Hono<AppEnv>();
   // Simulate the main middleware that sets sandbox + clawId
   app.use("*", async (c, next) => {
-    c.set("sandbox", mockSandbox as any);
+    c.set("sandbox", mockSandbox as unknown as Sandbox);
     c.set("clawId", "test-claw-id");
     await next();
   });
@@ -41,7 +43,7 @@ beforeEach(() => {
 describe("POST /_internal/recreate", () => {
   it("kills gateway process and destroys container", async () => {
     const proc = createMockProcess();
-    mockFindGateway.mockResolvedValue(proc as any);
+    mockFindGateway.mockResolvedValue(proc as unknown as Process);
 
     const app = createTestApp();
     const res = await app.request("/_internal/recreate", { method: "POST" });
@@ -81,7 +83,7 @@ describe("POST /_internal/recreate", () => {
   it("still destroys container even if kill fails", async () => {
     const proc = createMockProcess();
     proc.kill.mockRejectedValue(new Error("kill failed"));
-    mockFindGateway.mockResolvedValue(proc as any);
+    mockFindGateway.mockResolvedValue(proc as unknown as Process);
 
     const app = createTestApp();
     const res = await app.request("/_internal/recreate", { method: "POST" });
@@ -96,7 +98,7 @@ describe("POST /_internal/recreate", () => {
 describe("POST /_internal/restart-gateway", () => {
   it("kills the gateway process", async () => {
     const proc = createMockProcess();
-    mockFindGateway.mockResolvedValue(proc as any);
+    mockFindGateway.mockResolvedValue(proc as unknown as Process);
 
     const app = createTestApp();
     const res = await app.request("/_internal/restart-gateway", {
@@ -125,7 +127,7 @@ describe("POST /_internal/restart-gateway", () => {
   it("returns 500 if kill fails", async () => {
     const proc = createMockProcess();
     proc.kill.mockRejectedValue(new Error("kill failed"));
-    mockFindGateway.mockResolvedValue(proc as any);
+    mockFindGateway.mockResolvedValue(proc as unknown as Process);
 
     const app = createTestApp();
     const res = await app.request("/_internal/restart-gateway", {
@@ -166,7 +168,7 @@ describe("POST /_internal/destroy", () => {
 describe("GET /_internal/state", () => {
   it("returns running state when gateway is running", async () => {
     const proc = createMockProcess({ status: "running" });
-    mockFindGateway.mockResolvedValue(proc as any);
+    mockFindGateway.mockResolvedValue(proc as unknown as Process);
 
     const app = createTestApp();
     const res = await app.request("/_internal/state");
@@ -179,7 +181,7 @@ describe("GET /_internal/state", () => {
 
   it("returns running state when gateway is starting", async () => {
     const proc = createMockProcess({ status: "starting" });
-    mockFindGateway.mockResolvedValue(proc as any);
+    mockFindGateway.mockResolvedValue(proc as unknown as Process);
 
     const app = createTestApp();
     const res = await app.request("/_internal/state");
@@ -190,7 +192,7 @@ describe("GET /_internal/state", () => {
 
   it("returns stopped with exit code when process completed", async () => {
     const proc = createMockProcess({ status: "completed", exitCode: 1 });
-    mockFindGateway.mockResolvedValue(proc as any);
+    mockFindGateway.mockResolvedValue(proc as unknown as Process);
 
     const app = createTestApp();
     const res = await app.request("/_internal/state");
