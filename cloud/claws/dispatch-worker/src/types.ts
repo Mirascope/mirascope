@@ -12,18 +12,11 @@ export interface DispatchEnv {
   Sandbox: DurableObjectNamespace<Sandbox>;
 
   /**
-   * Service token for calling Mirascope internal API.
-   * Only needed if NOT using Cloudflare service bindings.
-   * When using service bindings, auth is implicit.
+   * Service binding to the Mirascope Cloud worker.
+   * Internal API calls (bootstrap, resolve, status) are routed in-process
+   * via the binding — no network hop, no bearer token.
    */
-  MIRASCOPE_API_BEARER_TOKEN?: string;
-
-  /**
-   * Base URL for the Mirascope API (internal endpoints).
-   * e.g. "https://api.mirascope.com" or "http://localhost:8787" in dev.
-   * Only needed if NOT using service bindings.
-   */
-  MIRASCOPE_API_BASE_URL?: string;
+  MIRASCOPE_CLOUD: Fetcher;
 
   /** Cloudflare account ID for R2 endpoint URL */
   CF_ACCOUNT_ID?: string;

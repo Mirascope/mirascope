@@ -39,10 +39,14 @@
       "tag": "v1",
     },
   ],
+  // Service binding to the Mirascope Cloud worker for internal API calls
+  // (bootstrap, resolve, status). Auth is implicit — no bearer token needed.
+  "services": [
+    {
+      "binding": "MIRASCOPE_CLOUD",
+      "service": "mirascope-cloud",
+    },
+  ],
   // No R2 bucket binding — R2 is mounted dynamically per-claw using
   // scoped credentials from the bootstrap config.
-  //
-  // Secrets to configure via `wrangler secret put`:
-  // - MIRASCOPE_API_BEARER_TOKEN: Service token for calling Mirascope internal API
-  //   (only needed if NOT using service bindings)
 }

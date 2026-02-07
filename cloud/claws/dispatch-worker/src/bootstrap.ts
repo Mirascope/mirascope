@@ -1,12 +1,38 @@
 /**
  * Bootstrap config fetcher.
  *
- * Fetches the OpenClawConfig for a claw from the Mirascope internal API.
- * In production this will use a Cloudflare service binding (in-process RPC,
- * no network). For now it falls back to HTTP with a bearer token.
+ * Fetches the OpenClawConfig for a claw from the Mirascope internal API
+ * via the `env.MIRASCOPE_CLOUD` Cloudflare service binding (in-process
+ * RPC — no network hop, no bearer token).
+ *
+ * There is no HTTP fallback. Local dev relies on unit tests with mocked
+ * service bindings; integration testing happens on a deployed staging
+ * environment.
  */
 
 import type { DispatchEnv, OpenClawConfig } from "./types";
+
+// ---------------------------------------------------------------------------
+// Internal fetch via service binding
+// ---------------------------------------------------------------------------
+
+/**
+ * Perform a fetch against the Mirascope internal API via service binding.
+ *
+ * Service binding requests use a synthetic origin (`https://internal`) since
+ * the binding ignores the hostname and routes in-process.
+ */
+function internalFetch(
+  env: DispatchEnv,
+  path: string,
+  init?: RequestInit,
+): Promise<Response> {
+  return env.MIRASCOPE_CLOUD.fetch(`https://internal${path}`, init);
+}
+
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
 
 /**
  * Fetch the bootstrap config for a claw by its ID.
@@ -20,23 +46,14 @@ export async function fetchBootstrapConfig(
   clawId: string,
   env: DispatchEnv,
 ): Promise<OpenClawConfig> {
-  const baseUrl = env.MIRASCOPE_API_BASE_URL;
-  if (!baseUrl) {
-    throw new Error(
-      "MIRASCOPE_API_BASE_URL is not set. Required for bootstrap config fetch.",
-    );
-  }
-
-  const url = `${baseUrl}/api/internal/claws/${clawId}/bootstrap`;
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (env.MIRASCOPE_API_BEARER_TOKEN) {
-    headers["Authorization"] = `Bearer ${env.MIRASCOPE_API_BEARER_TOKEN}`;
-  }
-
-  const response = await fetch(url, { method: "GET", headers });
+  const response = await internalFetch(
+    env,
+    `/api/internal/claws/${clawId}/bootstrap`,
+    {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    },
+  );
 
   if (!response.ok) {
     const body = await response.text().catch(() => "(no body)");
@@ -65,23 +82,14 @@ export async function resolveClawId(
   clawSlug: string,
   env: DispatchEnv,
 ): Promise<{ clawId: string; organizationId: string }> {
-  const baseUrl = env.MIRASCOPE_API_BASE_URL;
-  if (!baseUrl) {
-    throw new Error(
-      "MIRASCOPE_API_BASE_URL is not set. Required for claw resolution.",
-    );
-  }
-
-  const url = `${baseUrl}/api/internal/claws/resolve/${orgSlug}/${clawSlug}`;
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (env.MIRASCOPE_API_BEARER_TOKEN) {
-    headers["Authorization"] = `Bearer ${env.MIRASCOPE_API_BEARER_TOKEN}`;
-  }
-
-  const response = await fetch(url, { method: "GET", headers });
+  const response = await internalFetch(
+    env,
+    `/api/internal/claws/resolve/${orgSlug}/${clawSlug}`,
+    {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    },
+  );
 
   if (!response.ok) {
     const body = await response.text().catch(() => "(no body)");
@@ -109,29 +117,16 @@ export async function reportClawStatus(
   },
   env: DispatchEnv,
 ): Promise<void> {
-  const baseUrl = env.MIRASCOPE_API_BASE_URL;
-  if (!baseUrl) {
-    console.error(
-      "MIRASCOPE_API_BASE_URL is not set. Cannot report claw status.",
-    );
-    return;
-  }
-
-  const url = `${baseUrl}/api/internal/claws/${clawId}/status`;
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (env.MIRASCOPE_API_BEARER_TOKEN) {
-    headers["Authorization"] = `Bearer ${env.MIRASCOPE_API_BEARER_TOKEN}`;
-  }
-
   try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(status),
-    });
+    const response = await internalFetch(
+      env,
+      `/api/internal/claws/${clawId}/status`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(status),
+      },
+    );
 
     if (!response.ok) {
       console.error(

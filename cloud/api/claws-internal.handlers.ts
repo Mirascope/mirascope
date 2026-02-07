@@ -3,8 +3,12 @@
  *
  * WARNING: These handlers are NOT part of the public HTTP API. They must NOT
  * be wired into the public router (router.ts) or registered in
- * MirascopeCloudApi. The dispatch worker calls these via Cloudflare service
- * binding (in-process RPC, never hits the public internet).
+ * MirascopeCloudApi.
+ *
+ * Routing: The dispatch worker calls these via Cloudflare service binding
+ * (in-process RPC, never hits the public internet). The service binding
+ * routes to the cloud worker's fetch handler, which dispatches via the
+ * TanStack route at `app/routes/api.internal.$.tsx`.
  *
  * The bootstrap handler returns SECURITY-SENSITIVE data (R2 credentials,
  * API keys, integration tokens). The service binding is the only auth
