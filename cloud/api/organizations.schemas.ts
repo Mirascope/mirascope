@@ -1,7 +1,7 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
 
-import { createSlugSchema } from "@/db/slug";
+import { createSlugSchema, RESERVED_ORG_SLUGS } from "@/db/slug";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -42,8 +42,14 @@ const OrganizationNameSchema = Schema.String.pipe(
   }),
 );
 
-// Organization slug validation
-const OrganizationSlugSchema = createSlugSchema("Organization");
+// Organization slug validation (with reserved slug check for DNS safety)
+const OrganizationSlugSchema = createSlugSchema("Organization").pipe(
+  Schema.filter((slug) =>
+    RESERVED_ORG_SLUGS.has(slug)
+      ? `"${slug}" is a reserved slug and cannot be used as an organization slug`
+      : undefined,
+  ),
+);
 
 export const CreateOrganizationRequestSchema = Schema.Struct({
   name: OrganizationNameSchema,
