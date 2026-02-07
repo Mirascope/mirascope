@@ -1,0 +1,13 @@
+{
+  "$schema": "https://mirascope.com/registry/schema/registry.json",
+  "name": "mirascope",
+  "version": "2.1.0",
+  "homepage": "https://mirascope.com/registry",
+  "items": [
+    {
+      "name": "calculator",
+      "type": "tool",
+      "path": "tools/calculator"
+    }
+  ]
+}
