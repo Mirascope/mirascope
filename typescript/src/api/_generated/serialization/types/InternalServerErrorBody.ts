@@ -12,8 +12,8 @@ export const InternalServerErrorBody: core.serialization.Schema<
   Mirascope.InternalServerErrorBody
 > = core.serialization
   .union("tag", {
-    StripeError: StripeError,
     DatabaseError: DatabaseError,
+    StripeError: StripeError,
   })
   .transform<Mirascope.InternalServerErrorBody>({
     transform: (value) => value,
@@ -22,14 +22,14 @@ export const InternalServerErrorBody: core.serialization.Schema<
 
 export declare namespace InternalServerErrorBody {
   export type Raw =
-    | InternalServerErrorBody.StripeError
-    | InternalServerErrorBody.DatabaseError;
-
-  export interface StripeError extends StripeError.Raw {
-    tag: "StripeError";
-  }
+    | InternalServerErrorBody.DatabaseError
+    | InternalServerErrorBody.StripeError;
 
   export interface DatabaseError extends DatabaseError.Raw {
     tag: "DatabaseError";
+  }
+
+  export interface StripeError extends StripeError.Raw {
+    tag: "StripeError";
   }
 }

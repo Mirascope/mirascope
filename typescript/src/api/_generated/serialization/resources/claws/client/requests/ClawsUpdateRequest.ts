@@ -4,6 +4,7 @@ import type * as Mirascope from "../../../../../api/index.js";
 import type * as serializers from "../../../../index.js";
 
 import * as core from "../../../../../core/index.js";
+import { BigInt } from "../../../../types/BigInt.js";
 
 export const ClawsUpdateRequest: core.serialization.Schema<
   serializers.ClawsUpdateRequest.Raw,
@@ -11,11 +12,13 @@ export const ClawsUpdateRequest: core.serialization.Schema<
 > = core.serialization.object({
   name: core.serialization.string().optional(),
   description: core.serialization.string().optional(),
+  weeklySpendingGuardrailCenticents: BigInt.optionalNullable(),
 });
 
 export declare namespace ClawsUpdateRequest {
   export interface Raw {
     name?: string | null;
     description?: string | null;
+    weeklySpendingGuardrailCenticents?: (BigInt.Raw | null | undefined) | null;
   }
 }

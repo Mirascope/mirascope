@@ -4,6 +4,7 @@ import type * as Mirascope from "../../../../../api/index.js";
 import type * as serializers from "../../../../index.js";
 
 import * as core from "../../../../../core/index.js";
+import { BigInt } from "../../../../types/BigInt.js";
 import { ClawsCreateRequestModel } from "../../types/ClawsCreateRequestModel.js";
 
 export const ClawsCreateRequest: core.serialization.Schema<
@@ -14,6 +15,8 @@ export const ClawsCreateRequest: core.serialization.Schema<
   slug: core.serialization.string(),
   description: core.serialization.string().optional(),
   model: ClawsCreateRequestModel.optional(),
+  weeklySpendingGuardrailCenticents: BigInt.optionalNullable(),
+  homeProjectId: core.serialization.string().optional(),
 });
 
 export declare namespace ClawsCreateRequest {
@@ -22,5 +25,7 @@ export declare namespace ClawsCreateRequest {
     slug: string;
     description?: string | null;
     model?: ClawsCreateRequestModel.Raw | null;
+    weeklySpendingGuardrailCenticents?: (BigInt.Raw | null | undefined) | null;
+    homeProjectId?: string | null;
   }
 }

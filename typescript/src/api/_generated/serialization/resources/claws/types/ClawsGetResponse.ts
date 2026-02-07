@@ -26,6 +26,9 @@ export const ClawsGetResponse: core.serialization.ObjectSchema<
   secretsEncrypted: core.serialization.string().nullable(),
   secretsKeyId: core.serialization.string().nullable(),
   bucketName: core.serialization.string().nullable(),
+  botUserId: core.serialization.string().nullable(),
+  homeProjectId: core.serialization.string().nullable(),
+  homeEnvironmentId: core.serialization.string().nullable(),
   weeklySpendingGuardrailCenticents: BigInt.nullable(),
   weeklyWindowStart: Date_.nullable(),
   weeklyUsageCenticents: BigInt.nullable(),
@@ -50,6 +53,9 @@ export declare namespace ClawsGetResponse {
     secretsEncrypted?: string | null;
     secretsKeyId?: string | null;
     bucketName?: string | null;
+    botUserId?: string | null;
+    homeProjectId?: string | null;
+    homeEnvironmentId?: string | null;
     weeklySpendingGuardrailCenticents?: BigInt.Raw | null;
     weeklyWindowStart?: Date_.Raw | null;
     weeklyUsageCenticents?: BigInt.Raw | null;

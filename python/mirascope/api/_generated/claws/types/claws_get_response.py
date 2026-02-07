@@ -44,6 +44,15 @@ class ClawsGetResponse(UniversalBaseModel):
     bucket_name: typing_extensions.Annotated[
         typing.Optional[str], FieldMetadata(alias="bucketName")
     ] = None
+    bot_user_id: typing_extensions.Annotated[
+        typing.Optional[str], FieldMetadata(alias="botUserId")
+    ] = None
+    home_project_id: typing_extensions.Annotated[
+        typing.Optional[str], FieldMetadata(alias="homeProjectId")
+    ] = None
+    home_environment_id: typing_extensions.Annotated[
+        typing.Optional[str], FieldMetadata(alias="homeEnvironmentId")
+    ] = None
     weekly_spending_guardrail_centicents: typing_extensions.Annotated[
         typing.Optional[BigInt],
         FieldMetadata(alias="weeklySpendingGuardrailCenticents"),

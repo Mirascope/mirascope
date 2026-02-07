@@ -5,6 +5,7 @@ export * from "./ClawsCreateResponseStatus.js";
 export * from "./ClawsGetResponse.js";
 export * from "./ClawsGetResponseInstanceType.js";
 export * from "./ClawsGetResponseStatus.js";
+export * from "./ClawsGetUsageResponse.js";
 export * from "./ClawsListResponseItem.js";
 export * from "./ClawsListResponseItemInstanceType.js";
 export * from "./ClawsListResponseItemStatus.js";

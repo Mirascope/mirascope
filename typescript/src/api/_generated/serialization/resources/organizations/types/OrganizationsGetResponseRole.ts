@@ -8,8 +8,8 @@ import * as core from "../../../../core/index.js";
 export const OrganizationsGetResponseRole: core.serialization.Schema<
   serializers.OrganizationsGetResponseRole.Raw,
   Mirascope.OrganizationsGetResponseRole
-> = core.serialization.enum_(["OWNER", "ADMIN", "MEMBER"]);
+> = core.serialization.enum_(["OWNER", "ADMIN", "MEMBER", "BOT"]);
 
 export declare namespace OrganizationsGetResponseRole {
-  export type Raw = "OWNER" | "ADMIN" | "MEMBER";
+  export type Raw = "OWNER" | "ADMIN" | "MEMBER" | "BOT";
 }
