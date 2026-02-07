@@ -14,17 +14,20 @@ import {
 
 // Mock instrumentor for testing
 class MockInstrumentor implements Instrumentor {
-  instrumentCalled = false;
+  enableCalled = false;
   disableCalled = false;
   tracerProvider: unknown = null;
 
-  instrument(config?: { tracerProvider?: unknown }): void {
-    this.instrumentCalled = true;
-    this.tracerProvider = config?.tracerProvider ?? null;
+  enable(): void {
+    this.enableCalled = true;
   }
 
   disable(): void {
     this.disableCalled = true;
+  }
+
+  setTracerProvider(tracerProvider: unknown): void {
+    this.tracerProvider = tracerProvider;
   }
 }
 
@@ -111,13 +114,13 @@ describe("BaseInstrumentation", () => {
   });
 
   describe("instrument", () => {
-    it("creates and instruments the instrumentor", () => {
+    it("creates and enables the instrumentor", () => {
       const instance = TestInstrumentation.instance();
 
       instance.instrument();
 
       expect(instance.isInstrumented).toBe(true);
-      expect(mockInstrumentor?.instrumentCalled).toBe(true);
+      expect(mockInstrumentor?.enableCalled).toBe(true);
     });
 
     it("sets semantic convention opt-in environment variable", () => {
@@ -293,7 +296,7 @@ describe("BaseInstrumentation", () => {
 
         protected createInstrumentor(): MockInstrumentor {
           const instrumentor = new MockInstrumentor();
-          instrumentor.instrument = () => {
+          instrumentor.enable = () => {
             throw new Error("Instrumentation failed");
           };
           return instrumentor;

@@ -19,10 +19,14 @@ export const OTEL_SEMCONV_STABILITY_VALUE = "gen_ai_latest_experimental";
 
 /**
  * Protocol for OpenTelemetry instrumentors.
+ *
+ * Matches the standard OpenTelemetry Instrumentation interface
+ * (enable/disable/setTracerProvider).
  */
 export interface Instrumentor {
-  instrument(config?: { tracerProvider?: TracerProvider }): void;
+  enable(): void;
   disable(): void;
+  setTracerProvider(tracerProvider: TracerProvider): void;
 }
 
 /**
@@ -101,10 +105,9 @@ export abstract class BaseInstrumentation<T extends Instrumentor> {
     const instrumentor = this.createInstrumentor();
     try {
       if (tracerProvider) {
-        instrumentor.instrument({ tracerProvider });
-      } else {
-        instrumentor.instrument();
+        instrumentor.setTracerProvider(tracerProvider);
       }
+      instrumentor.enable();
     } catch (error) {
       this.restoreEnvVars();
       throw error;
