@@ -15,6 +15,6 @@ print(response.pretty())
 
 with llm.model("openai/gpt-5", thinking={"level": "minimal"}):
     response = response.resume(
-        "If you remember the primes, list them. Or say 'I dont remember'"
+        "If you remember the primes, list them. Or say 'I don't remember'"
     )
 print(response.pretty())
