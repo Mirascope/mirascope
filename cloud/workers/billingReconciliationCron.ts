@@ -19,11 +19,11 @@
  * Configure in wrangler.jsonc with a cron expression like `*\/5 * * * *` (every 5 min).
  */
 
-import { and, eq, gt, inArray, lte } from "drizzle-orm";
+import { and, eq, gt, inArray, isNull, lte, or } from "drizzle-orm";
 import { Effect, Layer } from "effect";
 
 import { DrizzleORM } from "@/db/client";
-import { creditReservations, routerRequests } from "@/db/schema";
+import { creditReservations, organizations, routerRequests } from "@/db/schema";
 import { DatabaseError } from "@/errors";
 import { Stripe } from "@/payments/client";
 import { Payments } from "@/payments/service";
@@ -373,6 +373,144 @@ export const detectInvalidState = Effect.gen(function* () {
 });
 
 // =============================================================================
+// Auto-Reload
+// =============================================================================
+
+/**
+ * Cooldown period between auto-reloads for the same organization (15 minutes).
+ * Prevents duplicate reloads during rapid balance changes.
+ */
+const AUTO_RELOAD_COOLDOWN_MS = 15 * 60 * 1000;
+
+/**
+ * Maximum number of organizations to process for auto-reload per cron invocation.
+ */
+const AUTO_RELOAD_BATCH_LIMIT = 50;
+
+/**
+ * Processes auto-reload for eligible organizations.
+ *
+ * Finds organizations with auto-reload enabled that haven't been reloaded recently,
+ * checks their balance against the configured threshold, and triggers a credit
+ * purchase using their saved payment method if the balance is below threshold.
+ */
+export const processAutoReloads = Effect.gen(function* () {
+  const client = yield* DrizzleORM;
+  const payments = yield* Payments;
+  const now = new Date();
+  const cooldownThreshold = new Date(now.getTime() - AUTO_RELOAD_COOLDOWN_MS);
+
+  // Find eligible organizations
+  const eligibleOrgs = yield* client
+    .select({
+      id: organizations.id,
+      stripeCustomerId: organizations.stripeCustomerId,
+      thresholdCenticents: organizations.autoReloadThresholdCenticents,
+      amountCenticents: organizations.autoReloadAmountCenticents,
+    })
+    .from(organizations)
+    .where(
+      and(
+        eq(organizations.autoReloadEnabled, true),
+        or(
+          isNull(organizations.lastAutoReloadAt),
+          lte(organizations.lastAutoReloadAt, cooldownThreshold),
+        ),
+      ),
+    )
+    .limit(AUTO_RELOAD_BATCH_LIMIT)
+    .pipe(
+      Effect.mapError(
+        (error) =>
+          new DatabaseError({
+            message: "Failed to query eligible organizations for auto-reload",
+            cause: error,
+          }),
+      ),
+    );
+
+  if (eligibleOrgs.length > 0) {
+    console.log(
+      `[billingReconciliationCron] Processing auto-reload for ${eligibleOrgs.length} organizations`,
+    );
+  }
+
+  for (const org of eligibleOrgs) {
+    yield* Effect.gen(function* () {
+      // Check current balance
+      const balanceInfo = yield* payments.products.router.getBalanceInfo(
+        org.stripeCustomerId,
+      );
+
+      if (balanceInfo.availableBalance >= org.thresholdCenticents) {
+        return;
+      }
+
+      // Get saved payment method
+      const paymentMethod = yield* payments.paymentMethods.getDefault(
+        org.stripeCustomerId,
+      );
+
+      if (!paymentMethod) {
+        console.warn(
+          `[billingReconciliationCron] Organization ${org.id} has auto-reload enabled but no saved payment method`,
+        );
+        return;
+      }
+
+      // Create payment intent for auto-reload
+      const amountInDollars = Number(org.amountCenticents) / 10000;
+      const result =
+        yield* payments.paymentIntents.createRouterCreditsPurchaseIntent({
+          stripeCustomerId: org.stripeCustomerId,
+          amountInDollars,
+          paymentMethodId: paymentMethod.id,
+          metadata: {
+            organizationId: org.id,
+            autoReload: "true",
+          },
+        });
+
+      if (result.status === "requires_action") {
+        console.warn(
+          `[billingReconciliationCron] Auto-reload for organization ${org.id} requires 3DS verification, skipping`,
+        );
+        return;
+      }
+
+      if (result.status === "succeeded") {
+        // Update last auto-reload timestamp
+        yield* client
+          .update(organizations)
+          .set({ lastAutoReloadAt: now })
+          .where(eq(organizations.id, org.id))
+          .pipe(
+            Effect.mapError(
+              (error) =>
+                new DatabaseError({
+                  message: "Failed to update last auto-reload timestamp",
+                  cause: error,
+                }),
+            ),
+          );
+
+        console.log(
+          `[billingReconciliationCron] Auto-reload succeeded for organization ${org.id}: $${amountInDollars}`,
+        );
+      }
+    }).pipe(
+      Effect.catchAll((error) => {
+        console.error(
+          `[billingReconciliationCron] Auto-reload failed for organization ${org.id}:`,
+          error,
+        );
+        return Effect.succeed(undefined);
+      }),
+    );
+  }
+});
+
+// =============================================================================
 // Main Reconciliation Program
 // =============================================================================
 
@@ -385,6 +523,7 @@ export const detectInvalidState = Effect.gen(function* () {
  * 3. Handle pending + expired (mark failure + release)
  * 4. Detect stale records (log warning)
  * 5. Detect invalid state (log critical warning)
+ * 6. Process auto-reloads for eligible organizations
  */
 export const reconcileBilling = Effect.gen(function* () {
   // Step 1: Reconcile successful requests (charge + release)
@@ -401,6 +540,9 @@ export const reconcileBilling = Effect.gen(function* () {
 
   // Step 5: Detect invalid state (log critical warning)
   yield* detectInvalidState;
+
+  // Step 6: Process auto-reloads for eligible organizations
+  yield* processAutoReloads;
 });
 
 // =============================================================================
@@ -417,6 +559,7 @@ export default {
    * 3. Handle pending + expired (mark failure + release)
    * 4. Detect stale records (log warning)
    * 5. Detect invalid state (log critical warning)
+   * 6. Process auto-reloads for eligible organizations
    *
    * @param _event - Cloudflare scheduled event (unused, but required by interface)
    * @param env - Cloudflare Workers environment bindings

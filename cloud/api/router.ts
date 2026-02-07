@@ -76,6 +76,8 @@ import {
   createSetupIntentHandler,
   getPaymentMethodHandler,
   removePaymentMethodHandler,
+  getAutoReloadSettingsHandler,
+  updateAutoReloadSettingsHandler,
 } from "@/api/organizations.handlers";
 import {
   listProjectMembersHandler,
@@ -201,6 +203,12 @@ const OrganizationsHandlersLive = HttpApiBuilder.group(
       )
       .handle("removePaymentMethod", ({ path }) =>
         removePaymentMethodHandler(path.id),
+      )
+      .handle("getAutoReloadSettings", ({ path }) =>
+        getAutoReloadSettingsHandler(path.id),
+      )
+      .handle("updateAutoReloadSettings", ({ path, payload }) =>
+        updateAutoReloadSettingsHandler(path.id, payload),
       ),
 );
 

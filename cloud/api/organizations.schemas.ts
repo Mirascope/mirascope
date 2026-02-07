@@ -155,6 +155,24 @@ export const UpdateSubscriptionResponseSchema = Schema.Struct({
   scheduleId: Schema.optional(Schema.String),
 });
 
+export const AutoReloadSettingsSchema = Schema.Struct({
+  enabled: Schema.Boolean,
+  thresholdCenticents: Schema.BigInt.annotations({
+    description: "Balance threshold in centi-cents (1/10000 of a dollar)",
+  }),
+  amountCenticents: Schema.BigInt.annotations({
+    description: "Reload amount in centi-cents (1/10000 of a dollar)",
+  }),
+});
+
+export const UpdateAutoReloadSettingsRequestSchema = Schema.Struct({
+  enabled: Schema.Boolean,
+  thresholdCenticents: Schema.BigInt.pipe(
+    Schema.greaterThanOrEqualToBigInt(0n),
+  ),
+  amountCenticents: Schema.BigInt.pipe(Schema.greaterThanBigInt(0n)),
+});
+
 export type Organization = typeof OrganizationSchema.Type;
 export type OrganizationWithMembership =
   typeof OrganizationWithMembershipSchema.Type;
@@ -180,6 +198,9 @@ export type UpdateSubscriptionRequest =
   typeof UpdateSubscriptionRequestSchema.Type;
 export type UpdateSubscriptionResponse =
   typeof UpdateSubscriptionResponseSchema.Type;
+export type AutoReloadSettings = typeof AutoReloadSettingsSchema.Type;
+export type UpdateAutoReloadSettingsRequest =
+  typeof UpdateAutoReloadSettingsRequestSchema.Type;
 
 export class OrganizationsApi extends HttpApiGroup.make("organizations")
   .add(
@@ -329,5 +350,28 @@ export class OrganizationsApi extends HttpApiGroup.make("organizations")
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
       .addError(StripeError, { status: StripeError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get(
+      "getAutoReloadSettings",
+      "/organizations/:id/auto-reload",
+    )
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .addSuccess(AutoReloadSettingsSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.put(
+      "updateAutoReloadSettings",
+      "/organizations/:id/auto-reload",
+    )
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .setPayload(UpdateAutoReloadSettingsRequestSchema)
+      .addSuccess(AutoReloadSettingsSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
       .addError(DatabaseError, { status: DatabaseError.status }),
   ) {}
