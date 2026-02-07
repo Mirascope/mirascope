@@ -119,6 +119,11 @@ export const MockDeploymentService = Layer.succeed(DeploymentService, {
       mockStatuses.set(clawId, status);
       return status;
     }),
+
+  warmUp: (_clawId: string) =>
+    Effect.gen(function* () {
+      yield* Effect.sleep("50 millis");
+    }),
 });
 
 /**

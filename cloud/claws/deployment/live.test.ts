@@ -61,7 +61,7 @@ const runFail = <A, E>(effect: Effect.Effect<A, E, DeploymentService>) => {
 
 describe("LiveDeploymentService", () => {
   describe("provision", () => {
-    it("creates R2 bucket, credentials, and warms up container", async () => {
+    it("creates R2 bucket and credentials without warming up", async () => {
       const status = await run(
         Effect.gen(function* () {
           const deployment = yield* DeploymentService;
@@ -326,6 +326,31 @@ describe("LiveDeploymentService", () => {
       expect(error).toBeInstanceOf(DeploymentError);
       expect((error as DeploymentError).message).toContain(
         "Failed to recreate container for instance type change",
+      );
+    });
+  });
+
+  describe("warmUp", () => {
+    it("sends warm-up request to dispatch worker", async () => {
+      const { layer, seedContainer } = createTestLayer();
+      seedContainer(INTERNAL_HOSTNAME);
+
+      await Effect.runPromise(
+        Effect.gen(function* () {
+          const deployment = yield* DeploymentService;
+          yield* deployment.warmUp(testConfig.clawId);
+        }).pipe(Effect.provide(layer)),
+      );
+    });
+
+    it("triggers cold start for new container", async () => {
+      // warmUp succeeds even without pre-existing state — it triggers
+      // a cold start on the dispatch worker which creates the container.
+      await run(
+        Effect.gen(function* () {
+          const deployment = yield* DeploymentService;
+          yield* deployment.warmUp(testConfig.clawId);
+        }),
       );
     });
   });

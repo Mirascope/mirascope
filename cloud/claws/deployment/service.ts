@@ -92,6 +92,15 @@ export interface DeploymentServiceInterface {
     clawId: string,
     config: Partial<OpenClawConfig>,
   ) => Effect.Effect<DeploymentStatus, DeploymentError>;
+
+  /**
+   * Warm up a claw's container, triggering a cold start on the dispatch worker.
+   *
+   * This is intentionally separate from `provision` so the caller can persist
+   * R2 credentials to the database between provisioning infrastructure and
+   * triggering the dispatch worker (which reads credentials via the bootstrap API).
+   */
+  readonly warmUp: (clawId: string) => Effect.Effect<void, DeploymentError>;
 }
 
 /**
