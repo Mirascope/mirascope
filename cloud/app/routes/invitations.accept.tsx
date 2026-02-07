@@ -95,7 +95,7 @@ function AcceptInvitationPage() {
 
     return (
       <>
-        <div className="fixed inset-0 bg-black/50" />
+        <div className="fixed inset-0 bg-background" />
         <div className="fixed inset-0 top-[60px] flex items-center justify-center p-4">
           <Card className="w-full max-w-md">
             <CardHeader>
@@ -118,7 +118,7 @@ function AcceptInvitationPage() {
   if (!token) {
     return (
       <>
-        <div className="fixed inset-0 bg-black/50" />
+        <div className="fixed inset-0 bg-background" />
         <div className="fixed inset-0 top-[60px] flex items-center justify-center p-4">
           <Card className="w-full max-w-md">
             <CardHeader>
@@ -147,7 +147,7 @@ function AcceptInvitationPage() {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50" />
+      <div className="fixed inset-0 bg-background" />
       <div className="fixed inset-0 top-[60px] flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           {state === "accepting" && (
