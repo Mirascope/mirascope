@@ -26,6 +26,7 @@ import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
 import { Analytics } from "@/analytics";
 import { MirascopeCloudApi, ApiLive } from "@/api/router";
 import { AuthenticatedUser, Authentication } from "@/auth";
+import { MockDeploymentService } from "@/claws/deployment/mock";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { DrizzleORM } from "@/db/client";
@@ -248,6 +249,7 @@ function createTestWebHandler(
     clickHouseSearchLayer,
     MockAnalytics,
     MockEmails,
+    MockDeploymentService,
   );
 
   const ApiWithDependencies = Layer.merge(
@@ -571,6 +573,7 @@ function createSimpleTestWebHandler() {
     clickHouseSearchLayer,
     MockAnalytics,
     MockEmails,
+    MockDeploymentService,
   );
 
   const ApiWithDependencies = Layer.mergeAll(

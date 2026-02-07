@@ -5,6 +5,12 @@ import { Analytics } from "@/analytics";
 import { handleRequest } from "@/api/handler";
 import { handleErrors, handleDefects } from "@/api/utils";
 import { authenticate, type PathParameters } from "@/auth";
+import { LiveDeploymentService } from "@/claws/deployment/live";
+import { DeploymentService } from "@/claws/deployment/service";
+import { CloudflareHttp } from "@/cloudflare/client";
+import { CloudflareSettings } from "@/cloudflare/config";
+import { LiveCloudflareContainerService } from "@/cloudflare/containers/live";
+import { LiveCloudflareR2Service } from "@/cloudflare/r2/live";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { DrizzleORM } from "@/db/client";
@@ -111,6 +117,7 @@ export const Route = createFileRoute("/api/v2/$")({
           const clickHouseSearch = yield* ClickHouseSearch;
           const realtimeSpans = yield* RealtimeSpans;
           const spansIngestQueue = yield* SpansIngestQueue;
+          const deployment = yield* DeploymentService;
 
           const result = yield* handleRequest(request, {
             prefix: "/api/v2",
@@ -123,6 +130,7 @@ export const Route = createFileRoute("/api/v2/$")({
             clickHouseSearch,
             realtimeSpans,
             spansIngestQueue,
+            deployment,
           });
 
           if (!result.matched) {
@@ -139,6 +147,20 @@ export const Route = createFileRoute("/api/v2/$")({
             Layer.unwrapEffect(
               Effect.gen(function* () {
                 const settings = yield* Settings;
+
+                const deploymentLayer = LiveDeploymentService.pipe(
+                  Layer.provide(
+                    Layer.merge(
+                      LiveCloudflareR2Service,
+                      LiveCloudflareContainerService,
+                    ),
+                  ),
+                  Layer.provide(
+                    CloudflareHttp.Live(settings.cloudflare.apiToken),
+                  ),
+                  Layer.provide(CloudflareSettings.layer(settings.cloudflare)),
+                );
+
                 return Layer.mergeAll(
                   Layer.succeed(Settings, settings),
                   Database.Live({
@@ -157,6 +179,7 @@ export const Route = createFileRoute("/api/v2/$")({
                   spansIngestQueueLayer,
                   realtimeSpansLayer,
                   rateLimiterLayer,
+                  deploymentLayer,
                 );
               }).pipe(Effect.provide(settingsLayer)),
             ),

@@ -101,6 +101,15 @@ export function createMockSettings(
       posthogHost: "https://app.posthog.com",
       googleAnalyticsMeasurementId: "G-TEST",
     },
+
+    cloudflare: {
+      accountId: "test-cf-account-id",
+      apiToken: "test-cf-api-token",
+      r2BucketItemReadPermissionGroupId: "test-r2-read-perm",
+      r2BucketItemWritePermissionGroupId: "test-r2-write-perm",
+      durableObjectNamespaceId: "test-do-namespace-id",
+      dispatchWorkerBaseUrl: "https://dispatch.test.workers.dev",
+    },
   };
 
   return {
@@ -126,6 +135,7 @@ export function createMockSettings(
       ...overrides.googleAnalytics,
     },
     frontend: { ...defaults.frontend, ...overrides.frontend },
+    cloudflare: { ...defaults.cloudflare, ...overrides.cloudflare },
   };
 }
 
@@ -199,6 +209,12 @@ export function createMockEnv(
     VITE_POSTHOG_API_KEY: "phc_test",
     VITE_POSTHOG_HOST: "https://app.posthog.com",
     VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID: "G-TEST",
+    CF_ACCOUNT_ID: "test-cf-account-id",
+    CF_API_TOKEN: "test-cf-api-token",
+    CF_R2_READ_PERMISSION_GROUP_ID: "test-r2-read-perm",
+    CF_R2_WRITE_PERMISSION_GROUP_ID: "test-r2-write-perm",
+    CF_DO_NAMESPACE_ID: "test-do-namespace-id",
+    CF_DISPATCH_WORKER_BASE_URL: "https://dispatch.test.workers.dev",
   };
 
   // Filter out undefined values from overrides
