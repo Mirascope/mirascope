@@ -1,3 +1,8 @@
+import { readFileSync } from "node:fs";
+import { extname } from "node:path";
+
+import { uint8ArrayToBase64 } from "@/llm/content/image";
+
 /**
  * MIME types for text-based documents.
  */
@@ -70,30 +75,178 @@ export type Document = {
 };
 
 /**
- * Factory methods for creating Document instances.
+ * Extension to MIME type mapping for documents.
+ */
+const EXTENSION_TO_MIME_TYPE: Record<
+  string,
+  DocumentTextMimeType | DocumentBase64MimeType
+> = {
+  ".pdf": "application/pdf",
+  ".json": "application/json",
+  ".txt": "text/plain",
+  ".js": "text/javascript",
+  ".mjs": "text/javascript",
+  ".py": "text/x-python",
+  ".html": "text/html",
+  ".htm": "text/html",
+  ".css": "text/css",
+  ".xml": "text/xml",
+  ".rtf": "text/rtf",
+};
+
+/**
+ * Text-based MIME types that should be read as UTF-8 text.
+ */
+const TEXT_MIME_TYPES = new Set<string>([
+  "application/json",
+  "text/plain",
+  "application/x-javascript",
+  "text/javascript",
+  "application/x-python",
+  "text/x-python",
+  "text/html",
+  "text/css",
+  "text/xml",
+  "text/rtf",
+]);
+
+/**
+ * Infer document MIME type from file extension.
  *
- * Note: These are stubs that throw NotImplementedError.
- * Full implementation is deferred to a later phase.
+ * @throws Error if extension is not recognized
+ */
+export function mimeTypeFromExtension(
+  ext: string,
+): DocumentTextMimeType | DocumentBase64MimeType {
+  const mimeType = EXTENSION_TO_MIME_TYPE[ext.toLowerCase()];
+  if (!mimeType) {
+    throw new Error(`Unsupported document file extension: ${ext}`);
+  }
+  return mimeType;
+}
+
+/**
+ * Infer document MIME type from magic bytes.
+ * Currently only detects PDF (%PDF header).
+ *
+ * @returns The MIME type if detected, null otherwise
+ */
+export function inferDocumentType(
+  data: Uint8Array,
+): DocumentBase64MimeType | null {
+  // PDF: starts with %PDF (0x25 0x50 0x44 0x46)
+  if (
+    data.length >= 4 &&
+    data[0] === 0x25 &&
+    data[1] === 0x50 &&
+    data[2] === 0x44 &&
+    data[3] === 0x46
+  ) {
+    return "application/pdf";
+  }
+  return null;
+}
+
+/**
+ * Check if a MIME type is text-based.
+ */
+function isTextMimeType(
+  mimeType: DocumentTextMimeType | DocumentBase64MimeType,
+): mimeType is DocumentTextMimeType {
+  return TEXT_MIME_TYPES.has(mimeType);
+}
+
+/**
+ * Factory methods for creating Document instances.
  */
 export const Document = {
   /**
    * Create a Document from a URL reference.
    *
-   * @throws Error (not implemented)
+   * @param url - The URL of the document
+   * @param _options - Options (download is a no-op for now)
    */
-  fromUrl: (_url: string, _options?: { download?: boolean }): Document => {
-    throw new Error("Document.fromUrl is not yet implemented");
-  },
+  fromUrl: (url: string, _options?: { download?: boolean }): Document => ({
+    type: "document",
+    source: { type: "url_document_source", url },
+  }),
 
   /**
    * Create a Document from raw bytes.
    *
-   * @throws Error (not implemented)
+   * @param data - The raw bytes of the document
+   * @param options - Optional mimeType override
+   * @throws Error if MIME type cannot be inferred
    */
   fromBytes: (
-    _data: Uint8Array,
-    _options?: { mimeType?: DocumentTextMimeType | DocumentBase64MimeType },
+    data: Uint8Array,
+    options?: { mimeType?: DocumentTextMimeType | DocumentBase64MimeType },
   ): Document => {
-    throw new Error("Document.fromBytes is not yet implemented");
+    const mimeType = options?.mimeType ?? inferDocumentType(data);
+    if (!mimeType) {
+      throw new Error(
+        "Cannot infer document type from bytes. Please provide a mimeType option.",
+      );
+    }
+
+    if (isTextMimeType(mimeType)) {
+      const text = new TextDecoder().decode(data);
+      return {
+        type: "document",
+        source: {
+          type: "text_document_source",
+          data: text,
+          mediaType: mimeType,
+        },
+      };
+    }
+
+    const base64 = uint8ArrayToBase64(data);
+    return {
+      type: "document",
+      source: {
+        type: "base64_document_source",
+        data: base64,
+        mediaType: mimeType,
+      },
+    };
+  },
+
+  /**
+   * Create a Document from a file path.
+   *
+   * @param filePath - Path to the document file
+   * @param options - Optional mimeType override
+   * @throws Error if MIME type cannot be inferred from extension
+   */
+  fromFile: (
+    filePath: string,
+    options?: { mimeType?: DocumentTextMimeType | DocumentBase64MimeType },
+  ): Document => {
+    const ext = extname(filePath);
+    const mimeType = options?.mimeType ?? mimeTypeFromExtension(ext);
+
+    if (isTextMimeType(mimeType)) {
+      const text = readFileSync(filePath, "utf-8");
+      return {
+        type: "document",
+        source: {
+          type: "text_document_source",
+          data: text,
+          mediaType: mimeType,
+        },
+      };
+    }
+
+    const data = readFileSync(filePath);
+    const base64 = uint8ArrayToBase64(new Uint8Array(data));
+    return {
+      type: "document",
+      source: {
+        type: "base64_document_source",
+        data: base64,
+        mediaType: mimeType,
+      },
+    };
   },
 };

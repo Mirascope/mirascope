@@ -255,6 +255,8 @@ function messageToGenAI(message: Message): {
           parts.push({ type: "text", text: part.text });
         } else if (part.type === "image") {
           parts.push({ type: "image", source: "...(omitted)" });
+        } else if (part.type === "document") {
+          parts.push({ type: "document", source: "...(omitted)" });
         } else if (part.type === "tool_call") {
           parts.push({
             type: "tool_use",

@@ -5,6 +5,7 @@
 import type {
   ChatCompletion,
   ChatCompletionAssistantMessageParam,
+  ChatCompletionContentPart,
   ChatCompletionContentPartImage,
   ChatCompletionContentPartInputAudio,
   ChatCompletionContentPartText,
@@ -17,6 +18,7 @@ import type {
   AssistantContentPart,
   Audio,
   AudioMimeType,
+  Document,
   Image,
   Text,
   ToolCall,
@@ -45,7 +47,8 @@ import { isProviderTool } from "@/llm/tools";
 type UserContentPartOpenAI =
   | ChatCompletionContentPartText
   | ChatCompletionContentPartImage
-  | ChatCompletionContentPartInputAudio;
+  | ChatCompletionContentPartInputAudio
+  | ChatCompletionContentPart.File;
 
 /**
  * Encode an Image content part to OpenAI's format.
@@ -115,6 +118,40 @@ function encodeAudio(
       format,
     },
   };
+}
+
+/**
+ * Encode a Document content part to OpenAI Completions API format.
+ *
+ * @throws FeatureNotSupportedError if the document uses a URL source
+ */
+function encodeDocument(doc: Document): ChatCompletionContentPart.File {
+  const { source } = doc;
+  switch (source.type) {
+    case "base64_document_source":
+      return {
+        type: "file",
+        file: {
+          file_data: `data:${source.mediaType};base64,${source.data}`,
+          filename: "document.pdf",
+        },
+      };
+    case "text_document_source":
+      return {
+        type: "file",
+        file: {
+          file_data: `data:${source.mediaType};base64,${btoa(source.data)}`,
+          filename: "document.txt",
+        },
+      };
+    case "url_document_source":
+      throw new FeatureNotSupportedError(
+        "url_document_source",
+        "openai:completions",
+        null,
+        "OpenAI Completions API does not support URL-referenced documents. Use `Document.fromFile(...)` or `Document.fromBytes(...)` instead.",
+      );
+  }
 }
 
 // ============================================================================
@@ -253,15 +290,9 @@ function encodeUserMessage(
         contentParts.push(encodeAudio(part, modelId, featureInfo));
         break;
 
-      /* v8 ignore start - content types not yet implemented */
       case "document":
-        throw new FeatureNotSupportedError(
-          "document content encoding",
-          "openai",
-          null,
-          "Document content is not yet implemented",
-        );
-      /* v8 ignore stop */
+        contentParts.push(encodeDocument(part));
+        break;
 
       /* v8 ignore start - tool encoding will be tested via e2e */
       case "tool_output":
