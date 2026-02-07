@@ -33,6 +33,8 @@
 
 import { Context, Effect, Layer } from "effect";
 
+import type { CloudflareConfig } from "@/cloudflare/config";
+
 import { SettingsValidationError } from "@/errors";
 
 // =============================================================================
@@ -174,6 +176,9 @@ export type SettingsConfig = {
 
   // Frontend (validated but not accessed server-side)
   readonly frontend: FrontendConfig;
+
+  // Cloudflare infrastructure
+  readonly cloudflare: CloudflareConfig;
 };
 
 // =============================================================================
@@ -247,6 +252,13 @@ export type CloudflareEnvironment = {
   VITE_POSTHOG_API_KEY?: string;
   VITE_POSTHOG_HOST?: string;
   VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID?: string;
+  // Cloudflare infrastructure (for claw deployment)
+  CF_ACCOUNT_ID?: string;
+  CF_API_TOKEN?: string;
+  CF_R2_READ_PERMISSION_GROUP_ID?: string;
+  CF_R2_WRITE_PERMISSION_GROUP_ID?: string;
+  CF_DO_NAMESPACE_ID?: string;
+  CF_DISPATCH_WORKER_BASE_URL?: string;
 };
 
 /**
@@ -368,6 +380,19 @@ function validateSettingsFromSource(
         googleAnalyticsMeasurementId: required(
           "VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID",
         ),
+      },
+
+      cloudflare: {
+        accountId: required("CF_ACCOUNT_ID"),
+        apiToken: required("CF_API_TOKEN"),
+        r2BucketItemReadPermissionGroupId: required(
+          "CF_R2_READ_PERMISSION_GROUP_ID",
+        ),
+        r2BucketItemWritePermissionGroupId: required(
+          "CF_R2_WRITE_PERMISSION_GROUP_ID",
+        ),
+        durableObjectNamespaceId: required("CF_DO_NAMESPACE_ID"),
+        dispatchWorkerBaseUrl: required("CF_DISPATCH_WORKER_BASE_URL"),
       },
     };
 
