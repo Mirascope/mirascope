@@ -51,6 +51,21 @@ export interface ClawR2Config {
 }
 
 /**
+ * Minimal config needed to provision infrastructure for a claw.
+ *
+ * Used by `ClawDeploymentService.provision()` — only the claw ID and instance
+ * type are needed since R2 bucket/credentials are *created* during provisioning
+ * and the internal hostname is derived from the clawId.
+ */
+export interface ProvisionClawConfig {
+  /** Unique identifier for the claw */
+  clawId: string;
+
+  /** Container instance type determining resources */
+  instanceType: ClawInstanceType;
+}
+
+/**
  * Configuration for running an OpenClaw container.
  *
  * This is the "live" config passed to the dispatch worker at runtime, NOT the
@@ -61,10 +76,7 @@ export interface ClawR2Config {
  *
  * @endpoint GET /api/internal/claws/:clawId/bootstrap
  */
-export interface OpenClawConfig {
-  /** Unique identifier for the claw */
-  clawId: string;
-
+export interface OpenClawConfig extends ProvisionClawConfig {
   /** URL-safe slug for the claw (used in hostname) */
   clawSlug: string;
 
@@ -73,9 +85,6 @@ export interface OpenClawConfig {
 
   /** URL-safe slug for the organization (used in hostname) */
   organizationSlug: string;
-
-  /** Container instance type determining resources */
-  instanceType: ClawInstanceType;
 
   /** R2 storage configuration (includes credentials) */
   r2: ClawR2Config;

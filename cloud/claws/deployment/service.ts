@@ -34,7 +34,11 @@
 
 import { Context, Effect } from "effect";
 
-import type { ClawStatus, OpenClawConfig } from "@/claws/deployment/types";
+import type {
+  ClawStatus,
+  OpenClawConfig,
+  ProvisionClawConfig,
+} from "@/claws/deployment/types";
 import type { R2ScopedCredentials } from "@/cloudflare/r2/types";
 
 import { ClawDeploymentError } from "@/claws/deployment/errors";
@@ -59,9 +63,9 @@ export interface ClawDeploymentStatus {
  * Provides operations for managing claw deployments on the underlying
  * infrastructure (Moltworker / Cloudflare Workers for Platforms).
  *
- * Provisioning accepts an `OpenClawConfig` — the full runtime config that the
- * dispatch worker needs to start a container (identity, instance type, R2
- * credentials, container env vars with decrypted secrets).
+ * Provisioning accepts a `ProvisionClawConfig` — just the identity and instance
+ * type. R2 buckets and credentials are *created* during provisioning and
+ * returned in the status.
  *
  * Storage operations (R2 bucket access) are intentionally excluded — the cloud
  * backend can access R2 directly using the per-claw credentials.
@@ -69,7 +73,7 @@ export interface ClawDeploymentStatus {
 export interface ClawDeploymentServiceInterface {
   /** Provision and deploy a new claw. */
   readonly provision: (
-    config: OpenClawConfig,
+    config: ProvisionClawConfig,
   ) => Effect.Effect<ClawDeploymentStatus, ClawDeploymentError>;
 
   /** Remove a claw deployment and release resources. */

@@ -9,32 +9,17 @@
 import { Effect, Layer } from "effect";
 import { describe, it, expect } from "vitest";
 
-import type { OpenClawConfig } from "@/claws/deployment/types";
+import type { ProvisionClawConfig } from "@/claws/deployment/types";
 
 import { ClawDeploymentError } from "@/claws/deployment/errors";
 import { LiveDeploymentService } from "@/claws/deployment/live";
 import { ClawDeploymentService } from "@/claws/deployment/service";
-import { getClawUrl } from "@/claws/deployment/types";
 import { makeMockContainerLayer } from "@/cloudflare/containers/mock";
 import { makeMockR2Layer } from "@/cloudflare/r2/mock";
 
-const testConfig: OpenClawConfig = {
+const testConfig: ProvisionClawConfig = {
   clawId: "claw-test-123",
-  clawSlug: "my-claw",
-  organizationId: "org-456",
-  organizationSlug: "my-org",
   instanceType: "basic",
-  r2: {
-    bucketName: "claw-claw-test-123",
-    accessKeyId: "test-access-key",
-    secretAccessKey: "test-secret-key",
-  },
-  containerEnv: {
-    MIRASCOPE_API_KEY: "key_abc123",
-    ANTHROPIC_API_KEY: "key_abc123",
-    ANTHROPIC_BASE_URL: "https://router.mirascope.com/v1",
-    OPENCLAW_GATEWAY_TOKEN: "gw_token_xyz",
-  },
 };
 
 /** Internal routing hostname — matches clawHostname(clawId) in live.ts. */
@@ -70,9 +55,6 @@ describe("LiveDeploymentService", () => {
       );
 
       expect(status.status).toBe("provisioning");
-      expect(status.url).toBe(
-        getClawUrl(testConfig.organizationSlug, testConfig.clawSlug),
-      );
       expect(status.startedAt).toBeInstanceOf(Date);
       expect(status.bucketName).toBe(`claw-${testConfig.clawId}`);
       expect(status.r2Credentials).toBeDefined();
@@ -271,7 +253,10 @@ describe("LiveDeploymentService", () => {
           const deployment = yield* ClawDeploymentService;
           return yield* deployment.update(testConfig.clawId, {
             containerEnv: {
-              ...testConfig.containerEnv,
+              MIRASCOPE_API_KEY: "key_abc123",
+              ANTHROPIC_API_KEY: "key_abc123",
+              ANTHROPIC_BASE_URL: "https://router.mirascope.com/v1",
+              OPENCLAW_GATEWAY_TOKEN: "gw_token_xyz",
               TELEGRAM_BOT_TOKEN: "new-token",
             },
           });
