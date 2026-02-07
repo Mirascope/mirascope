@@ -45,7 +45,7 @@ export interface TracedFunction<Args extends unknown[], R> {
 /**
  * Create a span for a traced function invocation.
  */
-function createTracedSpan<Args extends unknown[]>(
+export function createTracedSpan<Args extends unknown[]>(
   fn: NamedCallable,
   options: TraceOptions,
   args: Args,
@@ -78,7 +78,7 @@ function createTracedSpan<Args extends unknown[]>(
 /**
  * Record the result of a traced function on its span.
  */
-function recordResult(span: Span, result: unknown): void {
+export function recordResult(span: Span, result: unknown): void {
   if (result === null || result === undefined) {
     return;
   }

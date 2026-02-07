@@ -12,7 +12,8 @@ import type { VersionOptions } from "@/ops/_internal/types";
 
 import { getClient } from "@/api/client";
 import { Span } from "@/ops/_internal/spans";
-import { jsonStringify, toJsonable } from "@/ops/_internal/utils";
+import { createTracedCallSpan } from "@/ops/_internal/traced-calls";
+import { jsonStringify } from "@/ops/_internal/utils";
 import {
   computeVersion,
   createVersionedResult,
@@ -121,6 +122,10 @@ function computeRuntimeClosure(call: CallLike): ClosureMetadata {
 
 /**
  * Create a span for a versioned call invocation.
+ *
+ * Reuses createTracedCallSpan to get all trace attributes (call.name,
+ * call.variables, trace.tags, trace.metadata), then adds version-specific
+ * attributes on top.
  */
 function createVersionedCallSpan(
   callName: string,
@@ -129,24 +134,16 @@ function createVersionedCallSpan(
   functionUuid: string | undefined,
   vars: unknown,
 ): Span {
-  const span = new Span(callName);
-  span.start();
+  // Create span with all trace attributes
+  const span = createTracedCallSpan(callName, options, vars);
 
   span.set({
-    "mirascope.type": "version",
-    "mirascope.call.name": callName,
     "mirascope.version.hash": closure.hash,
     "mirascope.version.signature_hash": closure.signatureHash,
   });
 
   if (functionUuid) {
     span.set({ "mirascope.version.uuid": functionUuid });
-  }
-
-  if (vars !== undefined) {
-    span.set({
-      "mirascope.call.variables": jsonStringify(toJsonable(vars)),
-    });
   }
 
   if (options.name) {

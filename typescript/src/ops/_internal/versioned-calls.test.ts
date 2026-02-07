@@ -112,7 +112,7 @@ describe("versioned-calls", () => {
       expect(spans[0]!.name).toBe("mockTemplate");
     });
 
-    it("should set mirascope.type attribute to version", async () => {
+    it("should set mirascope.type attribute to trace", async () => {
       const mockResponse = createMockResponse("Hello!");
       const mockCall = createMockCall<Record<string, never>, undefined>(
         vi.fn().mockResolvedValue(mockResponse),
@@ -122,7 +122,7 @@ describe("versioned-calls", () => {
       await versioned();
 
       const spans = exporter.getFinishedSpans();
-      expect(spans[0]!.attributes["mirascope.type"]).toBe("version");
+      expect(spans[0]!.attributes["mirascope.type"]).toBe("trace");
     });
 
     it("should set call name attribute", async () => {
@@ -242,6 +242,35 @@ describe("versioned-calls", () => {
 
       const spans = exporter.getFinishedSpans();
       expect(spans[0]!.attributes["mirascope.version.metadata"]).toBe(
+        '{"key":"value"}',
+      );
+    });
+
+    it("should set trace.tags attribute from trace layer", async () => {
+      const mockCall = createMockCall<Record<string, never>, undefined>(
+        vi.fn().mockResolvedValue(createMockResponse("test")),
+      );
+
+      const versioned = versionCall(mockCall, { tags: ["tag1", "tag2"] });
+      await versioned();
+
+      const spans = exporter.getFinishedSpans();
+      expect(spans[0]!.attributes["mirascope.trace.tags"]).toEqual([
+        "tag1",
+        "tag2",
+      ]);
+    });
+
+    it("should set trace.metadata attribute from trace layer", async () => {
+      const mockCall = createMockCall<Record<string, never>, undefined>(
+        vi.fn().mockResolvedValue(createMockResponse("test")),
+      );
+
+      const versioned = versionCall(mockCall, { metadata: { key: "value" } });
+      await versioned();
+
+      const spans = exporter.getFinishedSpans();
+      expect(spans[0]!.attributes["mirascope.trace.metadata"]).toBe(
         '{"key":"value"}',
       );
     });
@@ -399,7 +428,7 @@ describe("versioned-calls", () => {
 
       const spans = exporter.getFinishedSpans();
       expect(spans.length).toBe(1);
-      expect(spans[0]!.attributes["mirascope.type"]).toBe("version");
+      expect(spans[0]!.attributes["mirascope.type"]).toBe("trace");
     });
 
     it("should record error on span for stream errors", async () => {
