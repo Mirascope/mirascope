@@ -521,6 +521,151 @@ export class Organizations extends BaseAuthenticatedEffectService<
   }
 
   /**
+   * Retrieves auto-reload settings for an organization.
+   *
+   * Requires membership in the organization (any role).
+   *
+   * @param args.userId - The authenticated user
+   * @param args.organizationId - The organization to query
+   * @returns Auto-reload settings (enabled, thresholdCenticents, amountCenticents)
+   * @throws NotFoundError - If the organization doesn't exist or user isn't a member
+   * @throws PermissionDeniedError - If the user lacks read permission
+   * @throws DatabaseError - If the database query fails
+   */
+  getAutoReloadSettings({
+    userId,
+    organizationId,
+  }: {
+    userId: string;
+    organizationId: string;
+  }): Effect.Effect<
+    {
+      enabled: boolean;
+      thresholdCenticents: bigint;
+      amountCenticents: bigint;
+    },
+    NotFoundError | PermissionDeniedError | DatabaseError,
+    DrizzleORM
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+
+      yield* this.authorize({ userId, action: "read", organizationId });
+
+      const [org] = yield* client
+        .select({
+          enabled: organizations.autoReloadEnabled,
+          thresholdCenticents: organizations.autoReloadThresholdCenticents,
+          amountCenticents: organizations.autoReloadAmountCenticents,
+        })
+        .from(organizations)
+        .where(eq(organizations.id, organizationId))
+        .limit(1)
+        .pipe(
+          Effect.mapError(
+            /* v8 ignore next 4 -- Defensive: DB query failure */
+            (e) =>
+              new DatabaseError({
+                message: "Failed to get auto-reload settings",
+                cause: e,
+              }),
+          ),
+        );
+
+      /* v8 ignore start -- Defensive: org validated by authorize() above */
+      if (!org) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: `Organization with organizationId ${organizationId} not found`,
+            resource: this.getResourceName(),
+          }),
+        );
+      }
+      /* v8 ignore stop */
+
+      return org;
+    });
+  }
+
+  /**
+   * Updates auto-reload settings for an organization.
+   *
+   * Requires OWNER or ADMIN role.
+   *
+   * @param args.userId - The authenticated user
+   * @param args.organizationId - The organization to update
+   * @param args.data - New auto-reload settings
+   * @returns Updated auto-reload settings
+   * @throws NotFoundError - If the organization doesn't exist or user isn't a member
+   * @throws PermissionDeniedError - If the user lacks update permission
+   * @throws DatabaseError - If the database operation fails
+   */
+  updateAutoReloadSettings({
+    userId,
+    organizationId,
+    data,
+  }: {
+    userId: string;
+    organizationId: string;
+    data: {
+      enabled: boolean;
+      thresholdCenticents: bigint;
+      amountCenticents: bigint;
+    };
+  }): Effect.Effect<
+    {
+      enabled: boolean;
+      thresholdCenticents: bigint;
+      amountCenticents: bigint;
+    },
+    NotFoundError | PermissionDeniedError | DatabaseError,
+    DrizzleORM
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+
+      yield* this.authorize({ userId, action: "update", organizationId });
+
+      const [updated] = yield* client
+        .update(organizations)
+        .set({
+          autoReloadEnabled: data.enabled,
+          autoReloadThresholdCenticents: data.thresholdCenticents,
+          autoReloadAmountCenticents: data.amountCenticents,
+        })
+        .where(eq(organizations.id, organizationId))
+        .returning({
+          enabled: organizations.autoReloadEnabled,
+          thresholdCenticents: organizations.autoReloadThresholdCenticents,
+          amountCenticents: organizations.autoReloadAmountCenticents,
+        })
+        .pipe(
+          Effect.mapError(
+            /* v8 ignore next 4 -- Defensive: DB query failure */
+            (e) =>
+              new DatabaseError({
+                message: "Failed to update auto-reload settings",
+                cause: e,
+              }),
+          ),
+        );
+
+      /* v8 ignore start -- Defensive: org validated by authorize() above */
+      if (!updated) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: `Organization with organizationId ${organizationId} not found`,
+            resource: this.getResourceName(),
+          }),
+        );
+      }
+      /* v8 ignore stop */
+
+      return updated;
+    });
+  }
+
+  /**
    * Deletes an organization and all its memberships.
    *
    * Requires OWNER role. This is a destructive operation that:

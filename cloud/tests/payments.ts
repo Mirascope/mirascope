@@ -1322,6 +1322,7 @@ export const MockStripe = Layer.succeed(Stripe, {
           email: "mock@example.com",
           name: "Mock Customer",
           metadata: {},
+          includePaymentMethod: true,
         }),
       ),
     update: (
@@ -1436,11 +1437,12 @@ export const MockStripe = Layer.succeed(Stripe, {
       }),
   },
   setupIntents: {
-    create: () =>
+    create: (params: { customer: string }) =>
       Effect.succeed({
         id: `seti_mock_${crypto.randomUUID()}`,
         object: "setup_intent" as const,
         client_secret: `seti_mock_${crypto.randomUUID()}_secret_${crypto.randomUUID()}`,
+        customer: params.customer,
       }),
   },
   paymentMethods: {

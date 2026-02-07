@@ -57,6 +57,13 @@
       "when": 1770429206648,
       "tag": "0007_faithful_payback",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1770429729895,
+      "tag": "0008_jittery_siren",
+      "breakpoints": true
     }
   ]
 }

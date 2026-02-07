@@ -6,6 +6,7 @@ import type {
   CreatePaymentIntentRequest,
   PreviewSubscriptionChangeRequest,
   UpdateSubscriptionRequest,
+  UpdateAutoReloadSettingsRequest,
 } from "@/api/organizations.schemas";
 
 import { Analytics } from "@/analytics";
@@ -293,4 +294,28 @@ export const removePaymentMethodHandler = (organizationId: string) =>
       organization.stripeCustomerId,
       paymentMethod.id,
     );
+  });
+
+export const getAutoReloadSettingsHandler = (organizationId: string) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    return yield* db.organizations.getAutoReloadSettings({
+      organizationId,
+      userId: user.id,
+    });
+  });
+
+export const updateAutoReloadSettingsHandler = (
+  organizationId: string,
+  payload: UpdateAutoReloadSettingsRequest,
+) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    return yield* db.organizations.updateAutoReloadSettings({
+      organizationId,
+      userId: user.id,
+      data: payload,
+    });
   });
