@@ -1,10 +1,18 @@
 """Tests for OpenAICompletionsProvider"""
 
+import base64
+
 import pytest
 from inline_snapshot import snapshot
 from pydantic import BaseModel
 
 from mirascope import llm
+from mirascope.llm.content.document import (
+    Base64DocumentSource,
+    Document,
+    TextDocumentSource,
+)
+from mirascope.llm.exceptions import FeatureNotSupportedError
 from mirascope.llm.providers.openai.completions._utils import (
     CompletionsModelFeatureInfo,
     encode_request,
@@ -208,3 +216,103 @@ def test_known_unsupported_model_rejects_strict() -> None:
     # Verify the provider_id in the error comes from the argument
     assert exc_info.value.provider_id == "custom-provider"
     assert exc_info.value.feature == "formatting_mode:strict"
+
+
+def test_encode_base64_document() -> None:
+    """Test encoding a base64 document source as file for OpenAI Completions."""
+    doc = Document(
+        source=Base64DocumentSource(
+            type="base64_document_source",
+            data="JVBERi0xLjQ=",
+            media_type="application/pdf",
+        )
+    )
+    messages = [llm.messages.user(["Read this", doc])]
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-4o",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+        feature_info=feature_info_for_openai_model("gpt-4o"),
+        provider_id="openai:completions",
+    )
+    assert kwargs == snapshot(
+        {
+            "model": "gpt-4o",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"text": "Read this", "type": "text"},
+                        {
+                            "type": "file",
+                            "file": {
+                                "file_data": "data:application/pdf;base64,JVBERi0xLjQ=",
+                                "filename": "document.pdf",
+                            },
+                        },
+                    ],
+                }
+            ],
+        }
+    )
+
+
+def test_encode_text_document() -> None:
+    """Test encoding a text document source as file for OpenAI Completions."""
+    doc = Document(
+        source=TextDocumentSource(
+            type="text_document_source",
+            data="Hello, world!",
+            media_type="text/plain",
+        )
+    )
+    messages = [llm.messages.user(["Read this", doc])]
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-4o",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+        feature_info=feature_info_for_openai_model("gpt-4o"),
+        provider_id="openai:completions",
+    )
+    encoded = base64.b64encode(b"Hello, world!").decode("utf-8")
+    assert kwargs == snapshot(
+        {
+            "model": "gpt-4o",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"text": "Read this", "type": "text"},
+                        {
+                            "type": "file",
+                            "file": {
+                                "file_data": f"data:text/plain;base64,{encoded}",
+                                "filename": "document.txt",
+                            },
+                        },
+                    ],
+                }
+            ],
+        }
+    )
+
+
+def test_encode_url_document_throws() -> None:
+    """Test that URL document source throws FeatureNotSupportedError for Completions."""
+    doc = Document.from_url("https://example.com/doc.pdf")
+    messages = [llm.messages.user(["Read this", doc])]
+
+    with pytest.raises(FeatureNotSupportedError):
+        encode_request(
+            model_id="openai/gpt-4o",
+            messages=messages,
+            format=None,
+            tools=Toolkit(None),
+            params={},
+            feature_info=feature_info_for_openai_model("gpt-4o"),
+            provider_id="openai:completions",
+        )
