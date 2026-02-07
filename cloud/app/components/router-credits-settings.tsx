@@ -105,7 +105,7 @@ export function RouterCreditsSettings({
             {isLoading ? (
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             ) : (
-              `$${balanceInDollars.toFixed(2)}`
+              `$${balanceInDollars.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
             )}
           </p>
         </div>
