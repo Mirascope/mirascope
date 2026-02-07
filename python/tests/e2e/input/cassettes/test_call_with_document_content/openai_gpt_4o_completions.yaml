@@ -1,0 +1,109 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":[{"text":"What text is in this PDF
+      document? Reply in one short sentence.","type":"text"},{"type":"file","file":{"file_data":"data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCgoyIDAgb2JqCjw8IC9UeXBlIC9QYWdlcyAvS2lkcyBbMyAwIFJdIC9Db3VudCAxID4+CmVuZG9iagoKMyAwIG9iago8PCAvVHlwZSAvUGFnZSAvUGFyZW50IDIgMCBSIC9NZWRpYUJveCBbMCAwIDYxMiA3OTJdCiAgIC9Db250ZW50cyA0IDAgUiAvUmVzb3VyY2VzIDw8IC9Gb250IDw8IC9GMSA1IDAgUiA+PiA+PiA+PgplbmRvYmoKCjQgMCBvYmoKPDwgL0xlbmd0aCA0NCA+PgpzdHJlYW0KQlQgL0YxIDI0IFRmIDEwMCA3MDAgVGQgKEhlbGxvLCB3b3JsZCEpIFRqIEVUCmVuZHN0cmVhbQplbmRvYmoKCjUgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhID4+CmVuZG9iagoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmCjAwMDAwMDAwMDkgMDAwMDAgbgowMDAwMDAwMDU4IDAwMDAwIG4KMDAwMDAwMDExNSAwMDAwMCBuCjAwMDAwMDAyNjYgMDAwMDAgbgowMDAwMDAwMzYwIDAwMDAwIG4KCnRyYWlsZXIKPDwgL1NpemUgNiAvUm9vdCAxIDAgUiA+PgpzdGFydHhyZWYKNDM0CiUlRU9G","filename":"document.pdf"}}]}],"model":"gpt-4o"}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1030'
+      Content-Type:
+      - application/json
+      Host:
+      - api.openai.com
+      User-Agent:
+      - OpenAI/Python 2.16.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.11.11
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/41STU/cMBC9768wPicoCdkPuLWiiAsSrThUKijy2pPE4NiWPSlbof3v2MkuCS2V
+        uETJvHkvb97My4IQKgW9IJS3DHlnVXq5+onbtuTL+vZK19+73Y/nb9df8q+ZurlZ0yQyzPYROB5Z
+        p9wEHqA0eoS5A4YQVfP1OiuXxepsOQCdEaAirbGYliYtsqJMs02arQ7E1kgOPnT8Cp+EvAzPaFEL
+        2IVylhwrHXjPGgi1Y1MoOqNihTLvpUemkSYTyI1G0IPruxYIwg6J1ATD++3lFRGG913AifTknl6D
+        UiYhz8YpcXJP5zoO6t6zOIbulZoBTGuDLMYwTPBwQPZvnpVprDNb/xeV1lJL31YhNR8iDP48GksH
+        dB+eD0M2/btxaRDqLFZonmD4XVHmox6dtjGheXEAMThUM9byLPlArxKATCo/S5dyxlsQE3VaBeuF
+        NDNgMZv6XzcfaY+TS918Rn4COAcb7qyyDoTk7yee2hzEY/1f21vKg2Hqwf0OJ1ihBBc3IaBmvRrv
+        iPo/HqGrwroacNbJ8ZhqWzFxvuH5hmUlXewXr6WWOAxVAwAA
+    headers:
+      CF-RAY:
+      - 9ca17cd98b5af207-LAX
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 07 Feb 2026 08:23:55 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '629'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      set-cookie:
+      - __cf_bm=LDOjuh8IRdcbBrA1XvuQNGeuJwBQx3wdEeBSDJSabqw-1770452632.5618885-1.0.1.1-fL8cKdgj86DUfsJtX6dVNFRyG9J9QXVyX6ANCuUSBy0ecUlyNb.q4k.J4v73Z7rqp_X13BqKhBrVCiFrqT0tH_8rVnuuEJG0vEQdeLnRBvIvnut0NW9GulV71.FolQJi;
+        HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Sat, 07 Feb 2026
+        08:53:55 GMT
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799217'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 58ms
+      x-request-id:
+      - req_5f73154e535b42ae9ef48fe7fb0532cd
+    status:
+      code: 200
+      message: OK
+version: 1

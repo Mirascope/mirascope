@@ -10,6 +10,7 @@ from openai import Omit
 from openai.types import chat as openai_types, shared_params as shared_openai_types
 from openai.types.shared_params.response_format_json_schema import JSONSchema
 
+from .....content import Document
 from .....exceptions import FeatureNotSupportedError
 from .....formatting import Format, FormatSpec, FormattableT, resolve_format
 from .....messages import AssistantMessage, Message, UserMessage
@@ -50,6 +51,45 @@ class ChatCompletionCreateKwargs(TypedDict, total=False):
     reasoning_effort: shared_openai_types.ReasoningEffort | Omit
 
 
+def _encode_document(
+    doc: Document,
+    provider_id: str,
+) -> openai_types.ChatCompletionContentPartParam:
+    """Encode a Document content part to OpenAI Completions API format.
+
+    Raises:
+        FeatureNotSupportedError: If the document uses a URL source.
+    """
+    import base64 as _base64
+
+    from openai.types.chat.chat_completion_content_part_param import File, FileFile
+
+    source = doc.source
+    if source.type == "base64_document_source":
+        return File(
+            type="file",
+            file=FileFile(
+                file_data=f"data:{source.media_type};base64,{source.data}",
+                filename="document.pdf",
+            ),
+        )
+    elif source.type == "text_document_source":
+        encoded = _base64.b64encode(source.data.encode("utf-8")).decode("utf-8")
+        return File(
+            type="file",
+            file=FileFile(
+                file_data=f"data:{source.media_type};base64,{encoded}",
+                filename="document.txt",
+            ),
+        )
+    else:  # url_document_source
+        raise FeatureNotSupportedError(
+            "url_document_source",
+            provider_id,
+            message=f"Provider '{provider_id}' does not support URL-referenced documents. Use `Document.from_file(...)` or `Document.from_bytes(...)` instead.",
+        )
+
+
 def _encode_user_message(
     message: UserMessage,
     model_id: OpenAIModelId,
@@ -61,11 +101,7 @@ def _encode_user_message(
     Multiple text content parts are combined into a single user message.
     Tool outputs become separate tool messages.
     """
-    current_content: list[
-        openai_types.ChatCompletionContentPartTextParam
-        | openai_types.ChatCompletionContentPartImageParam
-        | openai_types.ChatCompletionContentPartInputAudioParam
-    ] = []
+    current_content: list[openai_types.ChatCompletionContentPartParam] = []
     result: list[openai_types.ChatCompletionMessageParam] = []
 
     def flush_message_content() -> None:
@@ -126,6 +162,8 @@ def _encode_user_message(
                     },
                 )
                 current_content.append(audio_content)
+        elif part.type == "document":
+            current_content.append(_encode_document(part, provider_id))
         elif part.type == "tool_output":
             flush_message_content()
             result.append(

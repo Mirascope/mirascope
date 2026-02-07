@@ -1,0 +1,109 @@
+interactions:
+- request:
+    body: '{"input":[{"content":[{"text":"What is this PDF about? Reply in one short
+      sentence.","type":"input_text"},{"type":"input_file","file_url":"https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"}],"role":"user","type":"message"}],"model":"gpt-4o"}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '264'
+      Content-Type:
+      - application/json
+      Host:
+      - api.openai.com
+      User-Agent:
+      - OpenAI/Python 2.16.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.11.11
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/31US2/bMAy+91cYPjeFnTgP7zzsvMNuxWDIEpVokSVNj6BGkf8+Wn6vaS+GxY/8
+        RPIj9f6UJKlg6bckteBMldUlhRPdw4EfWM3KLDuUJ/wv+a7Oi1NeUkJ3+bEs6xoo4ztO0ueOQtd/
+        gPqRRisHvZ1aIB5YRTosPx6zYr897MqIOU98cF0M1Y2RgH59UE3o9Wx1UF1enEgHvVlIKdQZbe94
+        RIMhLdgunsENpDZ4QODeXzxSrq8usoiCtbqLVEHKaOAW/gZQtK0MKCJ9i2D20jsLNZJVDDwR0i0j
+        hXLeBuoFFr20N+St0sGb4Cuvr/AR9FrLihK5pms0A9nVdDZ+U+jNNtsWm+y0yQ5DoyMlOrzGHvSd
+        mDRs3PkLCXlBTp2ENfACKGW742l/rLMyMkcW3xqIPOAcOcMMfKZVBKlWHtSc1DKxFe3YD3jzU3R0
+        IEppvGHo4evvFSj12VhdP0AiEfL+ukDy8/uPRLhEiivINiGJkYTCRUsGNtE2caRLO+ECP8EBSzga
+        PTiPE5WYYI124F7Sif0+/E0XplbLWARxTmA7sN6n0TE64ThaVBPkWlkcjn58DW4GThg8mDCEbkIH
+        V43LU0U5p6HA8hvjkZJeoLpC+ylmoRMC27j0wBV0Wq02BziW7xdOncShaYgduadFcoSDbzGhjpgL
+        WK2NA3sTWJIX4yJyEmQvLs6MtrDsgIcGdxQHKZrzofhBxCEzzKsh83kxPNGvb/mQ8Q1srZ2IrcSR
+        ZSI08wPQi3DRmF5ULXidTsA8S3g01WLCssloljnaoCgZGpsy4Ugtx9cqxE2ZChBqtfLbw/NH++Id
+        mcqMArI5MFuV+v9Lku8fAY94J/U/o/a4eXIGi3xqIe7JSu0G2RnxpKO/P93/AfICFyg8BgAA
+    headers:
+      CF-RAY:
+      - 9ca17d02ef960fc6-LAX
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 07 Feb 2026 08:24:00 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1085'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      set-cookie:
+      - __cf_bm=aL4Zwom2SWKnNx7_v2YZpiC7RiDuJVa6BpXDUH_PL8U-1770452639.1819396-1.0.1.1-aN2hkW0bDmtfb9FoRN9anc1BXuPoZ5ylUr5GjOVJxXggK67cUcbrdCVoUq7rwxuo_CEnwDYu8k8uqka0xjEToDx6aHtLZbzkHlrNTrUipeKeROa8C4Om3LUq8a6y0TC8;
+        HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Sat, 07 Feb 2026
+        08:54:00 GMT
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799955'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 3ms
+      x-request-id:
+      - req_d21ffd6153a54ed592d73f7c06e2a2b4
+    status:
+      code: 200
+      message: OK
+version: 1

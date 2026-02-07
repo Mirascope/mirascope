@@ -1,0 +1,64 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What text is in this PDF document? Reply
+      in one short sentence."}, {"inlineData": {"data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCgoyIDAgb2JqCjw8IC9UeXBlIC9QYWdlcyAvS2lkcyBbMyAwIFJdIC9Db3VudCAxID4-CmVuZG9iagoKMyAwIG9iago8PCAvVHlwZSAvUGFnZSAvUGFyZW50IDIgMCBSIC9NZWRpYUJveCBbMCAwIDYxMiA3OTJdCiAgIC9Db250ZW50cyA0IDAgUiAvUmVzb3VyY2VzIDw8IC9Gb250IDw8IC9GMSA1IDAgUiA-PiA-PiA-PgplbmRvYmoKCjQgMCBvYmoKPDwgL0xlbmd0aCA0NCA-PgpzdHJlYW0KQlQgL0YxIDI0IFRmIDEwMCA3MDAgVGQgKEhlbGxvLCB3b3JsZCEpIFRqIEVUCmVuZHN0cmVhbQplbmRvYmoKCjUgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhID4-CmVuZG9iagoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmCjAwMDAwMDAwMDkgMDAwMDAgbgowMDAwMDAwMDU4IDAwMDAwIG4KMDAwMDAwMDExNSAwMDAwMCBuCjAwMDAwMDAyNjYgMDAwMDAgbgowMDAwMDAwMzYwIDAwMDAwIG4KCnRyYWlsZXIKPDwgL1NpemUgNiAvUm9vdCAxIDAgUiA-PgpzdGFydHhyZWYKNDM0CiUlRU9G",
+      "mimeType": "application/pdf"}}], "role": "user"}]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '969'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.11.11
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.11.11
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/3VRTVPCMBS891fEnIHBIn4dBfw4IFWroyMeMuRBM6ZJTV5HHKb/3bSlkOqQQyaz
+        u9mdt28TEEIXTHHBGYKll+TdIYRsqrvktEJQ6IgGcmDGDO619dl4bydBWJefaJwA4XqRp86ElGZM
+        KEvQoaWCzOktSKk75FsbyY/mtEc9n2L3/ujs042WUFqnmoNs5EUjoEuhhE0egVmtStlTPIvojhWK
+        w9rB/aAJqKxpbtkKpoDM9cB209LM6DTDWH+CGum86iE8G9RuXm8twXF/y6NGJlvUIAw7/4zt2MUK
+        6Rfqde2mZFLgT1Xm5DWmXhPYih3+reKAy3g2ep5O7g87hcPzxirwyqeY6HyVYHvawUWwjawX8gLG
+        irr5FaRuF92wN+wuJbNJFUgN2EwrC3e8WmLEbhiH65EJT77QRqdv0VX/wdKgCH4Ba/p5y5wCAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 07 Feb 2026 08:23:52 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1180
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
