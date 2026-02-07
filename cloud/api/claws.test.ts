@@ -4,18 +4,26 @@ import { ParseError } from "effect/ParseResult";
 
 import type { PublicClaw } from "@/db/schema";
 
+import { Analytics } from "@/analytics";
 import {
   resolveClawHandler,
   bootstrapClawHandler,
   reportClawStatusHandler,
   decryptSecrets,
 } from "@/api/claws-internal.handlers";
-import { CreateClawRequestSchema } from "@/api/claws.handlers";
+import {
+  createClawHandler,
+  deleteClawHandler,
+  CreateClawRequestSchema,
+} from "@/api/claws.handlers";
+import { AuthenticatedUser } from "@/auth";
+import { ClawDeploymentError } from "@/claws/deployment/errors";
 import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
 import { claws } from "@/db/schema";
 import { DatabaseError, NotFoundError } from "@/errors";
 import { describe, it, expect, TestApiContext } from "@/tests/api";
+import { MockClawDeployment } from "@/tests/clawDeployment";
 
 describe("CreateClawRequestSchema validation", () => {
   it("rejects empty name", () => {
@@ -125,6 +133,10 @@ describe.sequential("Claws API", (it) => {
       expect(claw.organizationId).toBe(org.id);
       expect(claw.createdByUserId).toBeDefined();
       expect(claw.id).toBeDefined();
+      // Provisioning sets status and persists R2 credentials
+      expect(claw.status).toBe("provisioning");
+      expect(claw.bucketName).toBeDefined();
+      expect(claw.secretsEncrypted).toBeDefined();
     }),
   );
 
@@ -491,6 +503,451 @@ describe("Internal handler database errors", () => {
         expect(error).toBeInstanceOf(DatabaseError);
         expect((error as DatabaseError).message).toBe(
           "Failed to update claw status",
+        );
+      }),
+  );
+});
+
+describe("Claw handler errors", () => {
+  const failingUpdate = () => {
+    const fail = Effect.fail({ _tag: "SqlError", cause: new Error("db down") });
+    const chain = (): unknown =>
+      new Proxy(fail, {
+        get: (target, prop) => {
+          if (prop === "pipe")
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return (...fns: Array<(e: any) => any>) =>
+              fns.reduce((acc, fn) => fn(acc), fail);
+          if (
+            typeof prop === "string" &&
+            ["set", "where", "returning"].includes(prop)
+          )
+            return () => chain();
+          return Reflect.get(target, prop);
+        },
+      });
+    return chain();
+  };
+
+  const succeedingUpdate = () => {
+    const success = Effect.succeed([{}]);
+    const chain = (): unknown =>
+      new Proxy(success, {
+        get: (target, prop) => {
+          if (prop === "pipe")
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return (...fns: Array<(e: any) => any>) =>
+              fns.reduce((acc, fn) => fn(acc), success);
+          if (
+            typeof prop === "string" &&
+            ["set", "where", "returning"].includes(prop)
+          )
+            return () => chain();
+          return Reflect.get(target, prop);
+        },
+      });
+    return chain();
+  };
+
+  /**
+   * Mock user and claw fixtures for handler-level tests that don't need a
+   * real database. Providing a mocked Database avoids the rollback-timeout
+   * issue that occurs when mixing a real SQL transaction with a failing
+   * DrizzleORM mock.
+   */
+  const mockUser = {
+    id: "mock-user-id",
+    email: "mock@example.com",
+    name: "Mock User",
+    accountType: "user" as const,
+    deletedAt: null,
+  };
+
+  const mockClaw: PublicClaw = {
+    id: "mock-claw-id",
+    slug: "mock-claw",
+    displayName: "Mock Claw",
+    description: null,
+    organizationId: "mock-org-id",
+    createdByUserId: mockUser.id,
+    status: "pending",
+    instanceType: "basic",
+    lastDeployedAt: null,
+    lastError: null,
+    botUserId: null,
+    homeProjectId: null,
+    homeEnvironmentId: null,
+    secretsEncrypted: null,
+    secretsKeyId: null,
+    bucketName: null,
+    weeklySpendingGuardrailCenticents: null,
+    weeklyWindowStart: null,
+    weeklyUsageCenticents: 0n,
+    burstWindowStart: null,
+    burstUsageCenticents: 0n,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  const MockAnalyticsLayer = Layer.succeed(Analytics, {
+    googleAnalytics: null as never,
+    postHog: null as never,
+    trackEvent: () => Effect.void,
+    trackPageView: () => Effect.void,
+    identify: () => Effect.void,
+    initialize: () => Effect.void,
+  });
+
+  const MockDatabaseLayer = Layer.succeed(Database, {
+    users: {} as never,
+    organizations: {
+      create: () => Effect.die("not implemented"),
+      findById: () => Effect.die("not implemented"),
+      findAll: () => Effect.die("not implemented"),
+      update: () => Effect.die("not implemented"),
+      delete: () => Effect.die("not implemented"),
+      memberships: {} as never,
+      invitations: {} as never,
+      projects: {} as never,
+      claws: {
+        create: () => Effect.succeed(mockClaw),
+        findById: () => Effect.succeed(mockClaw),
+        findAll: () => Effect.succeed([mockClaw]),
+        update: () => Effect.succeed(mockClaw),
+        delete: () => Effect.void,
+        memberships: {} as never,
+        getRole: () => Effect.die("not implemented"),
+        getPoolUsage: () => Effect.die("not implemented"),
+        getClawUsage: () => Effect.die("not implemented"),
+        recordUsage: () => Effect.die("not implemented"),
+      },
+    } as never,
+  } as never);
+
+  /**
+   * Common layer for handler-level tests. Provides all dependencies that
+   * createClawHandler / deleteClawHandler require.
+   */
+  const handlerLayer = Layer.mergeAll(
+    Layer.succeed(AuthenticatedUser, mockUser),
+    MockAnalyticsLayer,
+    MockDatabaseLayer,
+    MockClawDeployment.layer(),
+  );
+
+  it.effect(
+    "createClawHandler returns DatabaseError when credential persist fails",
+    () =>
+      Effect.gen(function* () {
+        const error = yield* createClawHandler("mock-org-id", {
+          name: "Fail Claw",
+          slug: "fail-claw",
+        }).pipe(
+          Effect.flip,
+          Effect.provide(
+            Layer.mergeAll(
+              handlerLayer,
+              Layer.succeed(DrizzleORM, {
+                update: () => failingUpdate(),
+              } as never),
+            ),
+          ),
+        );
+        expect(error).toBeInstanceOf(DatabaseError);
+        expect((error as DatabaseError).message).toBe(
+          "Failed to persist deployment credentials",
+        );
+      }),
+  );
+
+  it.effect(
+    "createClawHandler returns ClawDeploymentError when provision fails",
+    () =>
+      Effect.gen(function* () {
+        const error = yield* createClawHandler("mock-org-id", {
+          name: "Fail Claw",
+          slug: "fail-provision",
+        }).pipe(
+          Effect.flip,
+          Effect.provide(
+            Layer.mergeAll(
+              Layer.succeed(AuthenticatedUser, mockUser),
+              MockAnalyticsLayer,
+              MockDatabaseLayer,
+              MockClawDeployment.layer({
+                provision: () =>
+                  Effect.fail(
+                    new ClawDeploymentError({
+                      message: "R2 bucket creation failed",
+                    }),
+                  ),
+              }),
+              Layer.succeed(DrizzleORM, {} as never),
+            ),
+          ),
+        );
+        expect(error).toBeInstanceOf(ClawDeploymentError);
+        expect((error as ClawDeploymentError).message).toBe(
+          "R2 bucket creation failed",
+        );
+      }),
+  );
+
+  it.effect(
+    "createClawHandler returns ClawDeploymentError when warmUp fails",
+    () =>
+      Effect.gen(function* () {
+        const error = yield* createClawHandler("mock-org-id", {
+          name: "Fail WarmUp Claw",
+          slug: "fail-warmup",
+        }).pipe(
+          Effect.flip,
+          Effect.provide(
+            Layer.mergeAll(
+              Layer.succeed(AuthenticatedUser, mockUser),
+              MockAnalyticsLayer,
+              MockDatabaseLayer,
+              MockClawDeployment.layer({
+                warmUp: () =>
+                  Effect.fail(
+                    new ClawDeploymentError({
+                      message: "Container dispatch failed",
+                    }),
+                  ),
+              }),
+              Layer.succeed(DrizzleORM, {
+                update: () => succeedingUpdate(),
+              } as never),
+            ),
+          ),
+        );
+        expect(error).toBeInstanceOf(ClawDeploymentError);
+        expect((error as ClawDeploymentError).message).toBe(
+          "Container dispatch failed",
+        );
+      }),
+  );
+
+  it.effect(
+    "createClawHandler calls provision with correct clawId and instanceType",
+    () =>
+      Effect.gen(function* () {
+        let capturedConfig: { clawId: string; instanceType: string } | null =
+          null;
+
+        yield* createClawHandler("mock-org-id", {
+          name: "Params Claw",
+          slug: "params-claw",
+        }).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              Layer.succeed(AuthenticatedUser, mockUser),
+              MockAnalyticsLayer,
+              MockDatabaseLayer,
+              MockClawDeployment.layer({
+                provision: (config) =>
+                  Effect.sync(() => {
+                    capturedConfig = config;
+                    return {
+                      status: "active" as const,
+                      startedAt: new Date(),
+                      bucketName: `claw-${config.clawId}`,
+                      r2Credentials: {
+                        tokenId: "tok",
+                        accessKeyId: "ak",
+                        secretAccessKey: "sk",
+                      },
+                    };
+                  }),
+              }),
+              Layer.succeed(DrizzleORM, {
+                update: () => succeedingUpdate(),
+              } as never),
+            ),
+          ),
+        );
+
+        expect(capturedConfig).not.toBeNull();
+        expect(capturedConfig!.clawId).toBe(mockClaw.id);
+        expect(capturedConfig!.instanceType).toBe(mockClaw.instanceType);
+      }),
+  );
+
+  it.effect(
+    "createClawHandler persists R2 credentials from provision result",
+    () =>
+      Effect.gen(function* () {
+        let capturedSet: Record<string, unknown> | null = null;
+
+        const CapturingDrizzle = Layer.succeed(DrizzleORM, {
+          update: () => {
+            const success = Effect.succeed([mockClaw]);
+            const chain = (level = 0): unknown =>
+              new Proxy(success, {
+                get: (target, prop) => {
+                  if (prop === "pipe")
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    return (...fns: Array<(e: any) => any>) =>
+                      fns.reduce((acc, fn) => fn(acc), success);
+                  if (prop === "set")
+                    return (data: Record<string, unknown>) => {
+                      capturedSet = data;
+                      return chain(level + 1);
+                    };
+                  if (
+                    typeof prop === "string" &&
+                    ["where", "returning"].includes(prop)
+                  )
+                    return () => chain(level + 1);
+                  return Reflect.get(target, prop);
+                },
+              });
+            return chain();
+          },
+        } as never);
+
+        yield* createClawHandler("mock-org-id", {
+          name: "Persist Claw",
+          slug: "persist-claw",
+        }).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              Layer.succeed(AuthenticatedUser, mockUser),
+              MockAnalyticsLayer,
+              MockDatabaseLayer,
+              MockClawDeployment.layer(),
+              CapturingDrizzle,
+            ),
+          ),
+        );
+
+        expect(capturedSet).not.toBeNull();
+        expect(capturedSet!.status).toBe("provisioning");
+        expect(capturedSet!.bucketName).toBeDefined();
+
+        // Verify secrets contain R2 credentials from mock provision
+        const secrets = JSON.parse(capturedSet!.secretsEncrypted as string);
+        expect(secrets.R2_ACCESS_KEY_ID).toContain("mock-access-");
+        expect(secrets.R2_SECRET_ACCESS_KEY).toContain("mock-secret-");
+      }),
+  );
+
+  it.effect(
+    "createClawHandler handles provision result with no credentials or bucket",
+    () =>
+      Effect.gen(function* () {
+        let capturedSet: Record<string, unknown> | null = null;
+
+        const CapturingDrizzle = Layer.succeed(DrizzleORM, {
+          update: () => {
+            const success = Effect.succeed([mockClaw]);
+            const chain = (level = 0): unknown =>
+              new Proxy(success, {
+                get: (target, prop) => {
+                  if (prop === "pipe")
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    return (...fns: Array<(e: any) => any>) =>
+                      fns.reduce((acc, fn) => fn(acc), success);
+                  if (prop === "set")
+                    return (data: Record<string, unknown>) => {
+                      capturedSet = data;
+                      return chain(level + 1);
+                    };
+                  if (
+                    typeof prop === "string" &&
+                    ["where", "returning"].includes(prop)
+                  )
+                    return () => chain(level + 1);
+                  return Reflect.get(target, prop);
+                },
+              });
+            return chain();
+          },
+        } as never);
+
+        const result = yield* createClawHandler("mock-org-id", {
+          name: "No Creds Claw",
+          slug: "no-creds-claw",
+        }).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              Layer.succeed(AuthenticatedUser, mockUser),
+              MockAnalyticsLayer,
+              MockDatabaseLayer,
+              MockClawDeployment.layer({
+                provision: () => Effect.succeed({ status: "active" as const }),
+              }),
+              CapturingDrizzle,
+            ),
+          ),
+        );
+
+        // Fallback branches: r2Credentials is undefined, bucketName is undefined
+        expect(capturedSet).not.toBeNull();
+        expect(capturedSet!.bucketName).toBeNull();
+        expect(result.bucketName).toBeNull();
+
+        const secrets = JSON.parse(capturedSet!.secretsEncrypted as string);
+        expect(secrets.R2_ACCESS_KEY_ID).toBe("");
+        expect(secrets.R2_SECRET_ACCESS_KEY).toBe("");
+      }),
+  );
+
+  it.effect(
+    "deleteClawHandler calls deprovision before deleting from database",
+    () =>
+      Effect.gen(function* () {
+        let deprovisionCalledWith: string | null = null;
+
+        yield* deleteClawHandler("mock-org-id", "mock-claw-id").pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              Layer.succeed(AuthenticatedUser, mockUser),
+              MockAnalyticsLayer,
+              MockDatabaseLayer,
+              MockClawDeployment.layer({
+                deprovision: (clawId) =>
+                  Effect.sync(() => {
+                    deprovisionCalledWith = clawId;
+                  }),
+              }),
+            ),
+          ),
+        );
+
+        expect(deprovisionCalledWith).toBe("mock-claw-id");
+      }),
+  );
+
+  it.effect(
+    "deleteClawHandler returns ClawDeploymentError when deprovision fails",
+    () =>
+      Effect.gen(function* () {
+        const error = yield* deleteClawHandler(
+          "mock-org-id",
+          "mock-claw-id",
+        ).pipe(
+          Effect.flip,
+          Effect.provide(
+            Layer.mergeAll(
+              Layer.succeed(AuthenticatedUser, mockUser),
+              MockAnalyticsLayer,
+              MockDatabaseLayer,
+              MockClawDeployment.layer({
+                deprovision: () =>
+                  Effect.fail(
+                    new ClawDeploymentError({
+                      message: "Failed to delete R2 bucket",
+                    }),
+                  ),
+              }),
+            ),
+          ),
+        );
+
+        expect(error).toBeInstanceOf(ClawDeploymentError);
+        expect((error as ClawDeploymentError).message).toBe(
+          "Failed to delete R2 bucket",
         );
       }),
   );

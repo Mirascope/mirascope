@@ -17,11 +17,13 @@
 import { Effect, Layer } from "effect";
 
 import type { ClawDeploymentStatus } from "@/claws/deployment/service";
-import type { OpenClawConfig } from "@/claws/deployment/types";
+import type {
+  OpenClawConfig,
+  ProvisionClawConfig,
+} from "@/claws/deployment/types";
 
 import { ClawDeploymentError } from "@/claws/deployment/errors";
 import { ClawDeploymentService } from "@/claws/deployment/service";
-import { getClawUrl } from "@/claws/deployment/types";
 
 /**
  * In-memory deployment status tracking.
@@ -37,13 +39,12 @@ const mockStatuses = new Map<string, ClawDeploymentStatus>();
  * - All operations include simulated delays
  */
 export const MockDeploymentService = Layer.succeed(ClawDeploymentService, {
-  provision: (config: OpenClawConfig) =>
+  provision: (config: ProvisionClawConfig) =>
     Effect.gen(function* () {
       yield* Effect.sleep("100 millis");
 
       const status: ClawDeploymentStatus = {
         status: "active",
-        url: getClawUrl(config.organizationSlug, config.clawSlug),
         startedAt: new Date(),
         bucketName: `claw-${config.clawId}`,
         r2Credentials: {
