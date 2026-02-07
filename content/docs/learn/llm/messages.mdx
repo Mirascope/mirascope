@@ -31,7 +31,7 @@ Assistant messages are responses from the LLM. You typically don't create these 
 
 ## Content Types
 
-Messages can contain more than just text. Modern LLMs support multimodal content, allowing you to include images and audio.
+Messages can contain more than just text. Modern LLMs support multimodal content, allowing you to include images, audio, and documents.
 
 ### Text
 
@@ -51,15 +51,21 @@ Audio content is useful for transcription or voice-based interactions:
 
 <CodeExample file="python/examples/messages/audio_content.py" lines="3-" />
 
+### Documents
+
+Documents allow you to send PDFs and text files (JSON, plain text, code) to the LLM for analysis:
+
+<CodeExample file="python/examples/messages/document_content.py" lines="3-" />
+
 <Info title="Media Loading Methods" collapsible={true} defaultOpen={false}>
-`Image` and `Audio` provide consistent class methods for loading:
+`Image`, `Audio`, and `Document` provide consistent class methods for loading:
 
 | Method | Description |
 | --- | --- |
-| `from_url(url)` | Reference media by URL (provider downloads it). Image only. |
+| `from_url(url)` | Reference media by URL (provider downloads it). Image and Document only. |
 | `from_file(path)` | Load and encode media from a local file |
 | `from_bytes(data)` | Create from raw bytes |
-| `download(url)` | Download from URL and encode as base64 |
+| `download(url)` | Download from URL and encode as base64. Image and Audio only. |
 
 Note: `from_url` creates a URL reference without downloading. Use `download` if you need the data locally encoded.
 </Info>
@@ -77,6 +83,7 @@ A single message can contain multiple content pieces of different types:
 | `Text` | Plain text content | System, User, Assistant |
 | `Image` | Image data (base64 or URL) | User |
 | `Audio` | Audio data (base64) | User |
+| `Document` | Document data (PDF, text files, code) | User |
 | `ToolCall` | LLM's request to call a tool | Assistant |
 | `ToolOutput` | Result from executing a tool | User |
 | `Thought` | Model's reasoning process | Assistant |
