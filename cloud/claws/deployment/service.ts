@@ -37,12 +37,12 @@ import { Context, Effect } from "effect";
 import type { ClawStatus, OpenClawConfig } from "@/claws/deployment/types";
 import type { R2ScopedCredentials } from "@/cloudflare/r2/types";
 
-import { DeploymentError } from "@/claws/deployment/errors";
+import { ClawDeploymentError } from "@/claws/deployment/errors";
 
 /**
  * Status returned by deployment operations.
  */
-export interface DeploymentStatus {
+export interface ClawDeploymentStatus {
   status: ClawStatus;
   url?: string;
   startedAt?: Date;
@@ -66,32 +66,32 @@ export interface DeploymentStatus {
  * Storage operations (R2 bucket access) are intentionally excluded — the cloud
  * backend can access R2 directly using the per-claw credentials.
  */
-export interface DeploymentServiceInterface {
+export interface ClawDeploymentServiceInterface {
   /** Provision and deploy a new claw. */
   readonly provision: (
     config: OpenClawConfig,
-  ) => Effect.Effect<DeploymentStatus, DeploymentError>;
+  ) => Effect.Effect<ClawDeploymentStatus, ClawDeploymentError>;
 
   /** Remove a claw deployment and release resources. */
   readonly deprovision: (
     clawId: string,
-  ) => Effect.Effect<void, DeploymentError>;
+  ) => Effect.Effect<void, ClawDeploymentError>;
 
   /** Get the current deployment status for a claw. */
   readonly getStatus: (
     clawId: string,
-  ) => Effect.Effect<DeploymentStatus, DeploymentError>;
+  ) => Effect.Effect<ClawDeploymentStatus, ClawDeploymentError>;
 
   /** Restart a running claw (fetches fresh config on next startup). */
   readonly restart: (
     clawId: string,
-  ) => Effect.Effect<DeploymentStatus, DeploymentError>;
+  ) => Effect.Effect<ClawDeploymentStatus, ClawDeploymentError>;
 
   /** Update a running claw's configuration (secrets, instance type, etc.). */
   readonly update: (
     clawId: string,
     config: Partial<OpenClawConfig>,
-  ) => Effect.Effect<DeploymentStatus, DeploymentError>;
+  ) => Effect.Effect<ClawDeploymentStatus, ClawDeploymentError>;
 
   /**
    * Warm up a claw's container, triggering a cold start on the dispatch worker.
@@ -100,7 +100,7 @@ export interface DeploymentServiceInterface {
    * R2 credentials to the database between provisioning infrastructure and
    * triggering the dispatch worker (which reads credentials via the bootstrap API).
    */
-  readonly warmUp: (clawId: string) => Effect.Effect<void, DeploymentError>;
+  readonly warmUp: (clawId: string) => Effect.Effect<void, ClawDeploymentError>;
 }
 
 /**
@@ -110,7 +110,7 @@ export interface DeploymentServiceInterface {
  * generators. Provide via `MockDeploymentService` for testing or the real
  * Moltworker implementation in production.
  */
-export class DeploymentService extends Context.Tag("DeploymentService")<
-  DeploymentService,
-  DeploymentServiceInterface
+export class ClawDeploymentService extends Context.Tag("DeploymentService")<
+  ClawDeploymentService,
+  ClawDeploymentServiceInterface
 >() {}

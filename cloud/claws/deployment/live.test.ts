@@ -11,9 +11,9 @@ import { describe, it, expect } from "vitest";
 
 import type { OpenClawConfig } from "@/claws/deployment/types";
 
-import { DeploymentError } from "@/claws/deployment/errors";
+import { ClawDeploymentError } from "@/claws/deployment/errors";
 import { LiveDeploymentService } from "@/claws/deployment/live";
-import { DeploymentService } from "@/claws/deployment/service";
+import { ClawDeploymentService } from "@/claws/deployment/service";
 import { getClawUrl } from "@/claws/deployment/types";
 import { makeMockContainerLayer } from "@/cloudflare/containers/mock";
 import { makeMockR2Layer } from "@/cloudflare/r2/mock";
@@ -49,12 +49,12 @@ function createTestLayer() {
   return { layer: liveLayer, seedContainer: seed };
 }
 
-const run = <A, E>(effect: Effect.Effect<A, E, DeploymentService>) => {
+const run = <A, E>(effect: Effect.Effect<A, E, ClawDeploymentService>) => {
   const { layer } = createTestLayer();
   return Effect.runPromise(effect.pipe(Effect.provide(layer)));
 };
 
-const runFail = <A, E>(effect: Effect.Effect<A, E, DeploymentService>) => {
+const runFail = <A, E>(effect: Effect.Effect<A, E, ClawDeploymentService>) => {
   const { layer } = createTestLayer();
   return Effect.runPromise(effect.pipe(Effect.flip, Effect.provide(layer)));
 };
@@ -64,7 +64,7 @@ describe("LiveDeploymentService", () => {
     it("creates R2 bucket and credentials without warming up", async () => {
       const status = await run(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.provision(testConfig);
         }),
       );
@@ -84,7 +84,7 @@ describe("LiveDeploymentService", () => {
     it("fails when R2 bucket already exists", async () => {
       const error = await runFail(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           // Provision once
           yield* deployment.provision(testConfig);
           // Provision again — bucket already exists
@@ -92,8 +92,8 @@ describe("LiveDeploymentService", () => {
         }),
       );
 
-      expect(error).toBeInstanceOf(DeploymentError);
-      expect((error as DeploymentError).message).toContain(
+      expect(error).toBeInstanceOf(ClawDeploymentError);
+      expect((error as ClawDeploymentError).message).toContain(
         "Failed to create R2 bucket",
       );
     });
@@ -103,7 +103,7 @@ describe("LiveDeploymentService", () => {
     it("destroys container and deletes R2 bucket", async () => {
       await run(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           yield* deployment.provision(testConfig);
           yield* deployment.deprovision(testConfig.clawId);
         }),
@@ -114,7 +114,7 @@ describe("LiveDeploymentService", () => {
       // Deprovision without provisioning first — should not throw
       await run(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           yield* deployment.deprovision("nonexistent-claw");
         }),
       );
@@ -131,7 +131,7 @@ describe("LiveDeploymentService", () => {
 
       const status = await Effect.runPromise(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.getStatus(testConfig.clawId);
         }).pipe(Effect.provide(layer)),
       );
@@ -146,7 +146,7 @@ describe("LiveDeploymentService", () => {
 
       const status = await Effect.runPromise(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.getStatus(testConfig.clawId);
         }).pipe(Effect.provide(layer)),
       );
@@ -164,7 +164,7 @@ describe("LiveDeploymentService", () => {
 
       const status = await Effect.runPromise(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.getStatus(testConfig.clawId);
         }).pipe(Effect.provide(layer)),
       );
@@ -178,7 +178,7 @@ describe("LiveDeploymentService", () => {
 
       const status = await Effect.runPromise(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.getStatus(testConfig.clawId);
         }).pipe(Effect.provide(layer)),
       );
@@ -192,7 +192,7 @@ describe("LiveDeploymentService", () => {
 
       const status = await Effect.runPromise(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.getStatus(testConfig.clawId);
         }).pipe(Effect.provide(layer)),
       );
@@ -206,7 +206,7 @@ describe("LiveDeploymentService", () => {
 
       const status = await Effect.runPromise(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.getStatus(testConfig.clawId);
         }).pipe(Effect.provide(layer)),
       );
@@ -218,13 +218,13 @@ describe("LiveDeploymentService", () => {
     it("fails for non-existent container", async () => {
       const error = await runFail(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.getStatus("nonexistent");
         }),
       );
 
-      expect(error).toBeInstanceOf(DeploymentError);
-      expect((error as DeploymentError).message).toContain(
+      expect(error).toBeInstanceOf(ClawDeploymentError);
+      expect((error as ClawDeploymentError).message).toContain(
         "Failed to get container state",
       );
     });
@@ -237,7 +237,7 @@ describe("LiveDeploymentService", () => {
 
       const status = await Effect.runPromise(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.restart(testConfig.clawId);
         }).pipe(Effect.provide(layer)),
       );
@@ -249,13 +249,13 @@ describe("LiveDeploymentService", () => {
     it("fails for non-existent container", async () => {
       const error = await runFail(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.restart("nonexistent");
         }),
       );
 
-      expect(error).toBeInstanceOf(DeploymentError);
-      expect((error as DeploymentError).message).toContain(
+      expect(error).toBeInstanceOf(ClawDeploymentError);
+      expect((error as ClawDeploymentError).message).toContain(
         "Failed to restart gateway",
       );
     });
@@ -268,7 +268,7 @@ describe("LiveDeploymentService", () => {
 
       const status = await Effect.runPromise(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.update(testConfig.clawId, {
             containerEnv: {
               ...testConfig.containerEnv,
@@ -288,7 +288,7 @@ describe("LiveDeploymentService", () => {
 
       const status = await Effect.runPromise(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.update(testConfig.clawId, {
             instanceType: "standard-2",
           });
@@ -302,13 +302,13 @@ describe("LiveDeploymentService", () => {
     it("fails for non-existent container on gateway restart", async () => {
       const error = await runFail(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.update("nonexistent", {});
         }),
       );
 
-      expect(error).toBeInstanceOf(DeploymentError);
-      expect((error as DeploymentError).message).toContain(
+      expect(error).toBeInstanceOf(ClawDeploymentError);
+      expect((error as ClawDeploymentError).message).toContain(
         "Failed to restart gateway for config update",
       );
     });
@@ -316,15 +316,15 @@ describe("LiveDeploymentService", () => {
     it("fails for non-existent container on instance type change", async () => {
       const error = await runFail(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.update("nonexistent", {
             instanceType: "standard-3",
           });
         }),
       );
 
-      expect(error).toBeInstanceOf(DeploymentError);
-      expect((error as DeploymentError).message).toContain(
+      expect(error).toBeInstanceOf(ClawDeploymentError);
+      expect((error as ClawDeploymentError).message).toContain(
         "Failed to recreate container for instance type change",
       );
     });
@@ -337,7 +337,7 @@ describe("LiveDeploymentService", () => {
 
       await Effect.runPromise(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           yield* deployment.warmUp(testConfig.clawId);
         }).pipe(Effect.provide(layer)),
       );
@@ -348,7 +348,7 @@ describe("LiveDeploymentService", () => {
       // a cold start on the dispatch worker which creates the container.
       await run(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           yield* deployment.warmUp(testConfig.clawId);
         }),
       );

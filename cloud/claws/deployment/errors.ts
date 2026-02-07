@@ -6,7 +6,7 @@ import { Schema } from "effect";
  * Covers provisioning failures, deprovision errors, status check failures,
  * and storage operation errors.
  */
-export class DeploymentError extends Schema.TaggedError<DeploymentError>()(
+export class ClawDeploymentError extends Schema.TaggedError<ClawDeploymentError>()(
   "DeploymentError",
   {
     message: Schema.String,

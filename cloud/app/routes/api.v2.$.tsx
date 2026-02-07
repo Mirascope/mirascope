@@ -6,7 +6,7 @@ import { handleRequest } from "@/api/handler";
 import { handleErrors, handleDefects } from "@/api/utils";
 import { authenticate, type PathParameters } from "@/auth";
 import { LiveDeploymentService } from "@/claws/deployment/live";
-import { DeploymentService } from "@/claws/deployment/service";
+import { ClawDeploymentService } from "@/claws/deployment/service";
 import { CloudflareHttp } from "@/cloudflare/client";
 import { CloudflareSettings } from "@/cloudflare/config";
 import { LiveCloudflareContainerService } from "@/cloudflare/containers/live";
@@ -117,7 +117,7 @@ export const Route = createFileRoute("/api/v2/$")({
           const clickHouseSearch = yield* ClickHouseSearch;
           const realtimeSpans = yield* RealtimeSpans;
           const spansIngestQueue = yield* SpansIngestQueue;
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
 
           const result = yield* handleRequest(request, {
             prefix: "/api/v2",
@@ -130,7 +130,7 @@ export const Route = createFileRoute("/api/v2/$")({
             clickHouseSearch,
             realtimeSpans,
             spansIngestQueue,
-            deployment,
+            clawDeployment: deployment,
           });
 
           if (!result.matched) {

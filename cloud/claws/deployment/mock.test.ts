@@ -10,12 +10,12 @@ import { describe, it, expect, beforeEach } from "vitest";
 
 import type { OpenClawConfig } from "@/claws/deployment/types";
 
-import { DeploymentError } from "@/claws/deployment/errors";
+import { ClawDeploymentError } from "@/claws/deployment/errors";
 import {
   MockDeploymentService,
   resetMockDeploymentState,
 } from "@/claws/deployment/mock";
-import { DeploymentService } from "@/claws/deployment/service";
+import { ClawDeploymentService } from "@/claws/deployment/service";
 import { getClawUrl } from "@/claws/deployment/types";
 
 const testConfig: OpenClawConfig = {
@@ -37,25 +37,25 @@ const testConfig: OpenClawConfig = {
   },
 };
 
-const run = <A, E>(effect: Effect.Effect<A, E, DeploymentService>) =>
+const run = <A, E>(effect: Effect.Effect<A, E, ClawDeploymentService>) =>
   Effect.runPromise(effect.pipe(Effect.provide(MockDeploymentService)));
 
-const runFail = <A, E>(effect: Effect.Effect<A, E, DeploymentService>) =>
+const runFail = <A, E>(effect: Effect.Effect<A, E, ClawDeploymentService>) =>
   Effect.runPromise(
     effect.pipe(Effect.flip, Effect.provide(MockDeploymentService)),
   );
 
 describe("DeploymentError", () => {
   it("has correct tag and status", () => {
-    const error = new DeploymentError({ message: "test error" });
+    const error = new ClawDeploymentError({ message: "test error" });
     expect(error._tag).toBe("DeploymentError");
-    expect(DeploymentError.status).toBe(500);
+    expect(ClawDeploymentError.status).toBe(500);
     expect(error.message).toBe("test error");
   });
 
   it("supports optional cause", () => {
     const cause = new Error("underlying");
-    const error = new DeploymentError({
+    const error = new ClawDeploymentError({
       message: "test error",
       cause,
     });
@@ -72,7 +72,7 @@ describe("MockDeploymentService", () => {
     it("returns active status with URL", async () => {
       const status = await run(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.provision(testConfig);
         }),
       );
@@ -97,7 +97,7 @@ describe("MockDeploymentService", () => {
     it("removes deployment state", async () => {
       await run(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           yield* deployment.provision(testConfig);
           yield* deployment.deprovision(testConfig.clawId);
         }),
@@ -106,12 +106,12 @@ describe("MockDeploymentService", () => {
       // getStatus should fail after deprovision
       const error = await runFail(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.getStatus(testConfig.clawId);
         }),
       );
 
-      expect(error).toBeInstanceOf(DeploymentError);
+      expect(error).toBeInstanceOf(ClawDeploymentError);
     });
   });
 
@@ -119,7 +119,7 @@ describe("MockDeploymentService", () => {
     it("returns status for provisioned claw", async () => {
       const status = await run(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           yield* deployment.provision(testConfig);
           return yield* deployment.getStatus(testConfig.clawId);
         }),
@@ -134,13 +134,13 @@ describe("MockDeploymentService", () => {
     it("fails for unknown claw", async () => {
       const error = await runFail(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.getStatus("unknown-claw");
         }),
       );
 
-      expect(error).toBeInstanceOf(DeploymentError);
-      expect((error as DeploymentError).message).toContain(
+      expect(error).toBeInstanceOf(ClawDeploymentError);
+      expect((error as ClawDeploymentError).message).toContain(
         "No deployment found",
       );
     });
@@ -150,7 +150,7 @@ describe("MockDeploymentService", () => {
     it("returns active status with new startedAt", async () => {
       const { before, after } = await run(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           const before = yield* deployment.provision(testConfig);
           yield* Effect.sleep("10 millis");
           const after = yield* deployment.restart(testConfig.clawId);
@@ -168,12 +168,12 @@ describe("MockDeploymentService", () => {
     it("fails for unknown claw", async () => {
       const error = await runFail(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.restart("unknown-claw");
         }),
       );
 
-      expect(error).toBeInstanceOf(DeploymentError);
+      expect(error).toBeInstanceOf(ClawDeploymentError);
     });
   });
 
@@ -181,7 +181,7 @@ describe("MockDeploymentService", () => {
     it("returns active status", async () => {
       const status = await run(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           yield* deployment.provision(testConfig);
           return yield* deployment.update(testConfig.clawId, {
             instanceType: "standard-2",
@@ -195,12 +195,12 @@ describe("MockDeploymentService", () => {
     it("fails for unknown claw", async () => {
       const error = await runFail(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.update("unknown-claw", {});
         }),
       );
 
-      expect(error).toBeInstanceOf(DeploymentError);
+      expect(error).toBeInstanceOf(ClawDeploymentError);
     });
   });
 
@@ -208,7 +208,7 @@ describe("MockDeploymentService", () => {
     it("completes without error", async () => {
       await run(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           yield* deployment.warmUp("any-claw-id");
         }),
       );
@@ -220,7 +220,7 @@ describe("MockDeploymentService", () => {
       // Provision a claw
       await run(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           yield* deployment.provision(testConfig);
         }),
       );
@@ -231,12 +231,12 @@ describe("MockDeploymentService", () => {
       // Should fail since state was cleared
       const error = await runFail(
         Effect.gen(function* () {
-          const deployment = yield* DeploymentService;
+          const deployment = yield* ClawDeploymentService;
           return yield* deployment.getStatus(testConfig.clawId);
         }),
       );
 
-      expect(error).toBeInstanceOf(DeploymentError);
+      expect(error).toBeInstanceOf(ClawDeploymentError);
     });
   });
 });

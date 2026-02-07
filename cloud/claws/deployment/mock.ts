@@ -16,18 +16,18 @@
 
 import { Effect, Layer } from "effect";
 
-import type { DeploymentStatus } from "@/claws/deployment/service";
+import type { ClawDeploymentStatus } from "@/claws/deployment/service";
 import type { OpenClawConfig } from "@/claws/deployment/types";
 
-import { DeploymentError } from "@/claws/deployment/errors";
-import { DeploymentService } from "@/claws/deployment/service";
+import { ClawDeploymentError } from "@/claws/deployment/errors";
+import { ClawDeploymentService } from "@/claws/deployment/service";
 import { getClawUrl } from "@/claws/deployment/types";
 
 /**
  * In-memory deployment status tracking.
  * Maps clawId → DeploymentStatus.
  */
-const mockStatuses = new Map<string, DeploymentStatus>();
+const mockStatuses = new Map<string, ClawDeploymentStatus>();
 
 /**
  * Mock deployment service layer for development and testing.
@@ -36,12 +36,12 @@ const mockStatuses = new Map<string, DeploymentStatus>();
  * - Provisioning sets status to "active" with a generated URL
  * - All operations include simulated delays
  */
-export const MockDeploymentService = Layer.succeed(DeploymentService, {
+export const MockDeploymentService = Layer.succeed(ClawDeploymentService, {
   provision: (config: OpenClawConfig) =>
     Effect.gen(function* () {
       yield* Effect.sleep("100 millis");
 
-      const status: DeploymentStatus = {
+      const status: ClawDeploymentStatus = {
         status: "active",
         url: getClawUrl(config.organizationSlug, config.clawSlug),
         startedAt: new Date(),
@@ -69,7 +69,7 @@ export const MockDeploymentService = Layer.succeed(DeploymentService, {
       const status = mockStatuses.get(clawId);
       if (!status) {
         return yield* Effect.fail(
-          new DeploymentError({
+          new ClawDeploymentError({
             message: `No deployment found for claw ${clawId}`,
           }),
         );
@@ -84,13 +84,13 @@ export const MockDeploymentService = Layer.succeed(DeploymentService, {
       const existing = mockStatuses.get(clawId);
       if (!existing) {
         return yield* Effect.fail(
-          new DeploymentError({
+          new ClawDeploymentError({
             message: `No deployment found for claw ${clawId}`,
           }),
         );
       }
 
-      const status: DeploymentStatus = {
+      const status: ClawDeploymentStatus = {
         ...existing,
         status: "active",
         startedAt: new Date(),
@@ -106,13 +106,13 @@ export const MockDeploymentService = Layer.succeed(DeploymentService, {
       const existing = mockStatuses.get(clawId);
       if (!existing) {
         return yield* Effect.fail(
-          new DeploymentError({
+          new ClawDeploymentError({
             message: `No deployment found for claw ${clawId}`,
           }),
         );
       }
 
-      const status: DeploymentStatus = {
+      const status: ClawDeploymentStatus = {
         ...existing,
         status: "active",
       };

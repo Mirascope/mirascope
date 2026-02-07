@@ -43,11 +43,11 @@
 
 import { Effect, Layer } from "effect";
 
-import type { DeploymentStatus } from "@/claws/deployment/service";
+import type { ClawDeploymentStatus } from "@/claws/deployment/service";
 import type { OpenClawConfig } from "@/claws/deployment/types";
 
-import { DeploymentError } from "@/claws/deployment/errors";
-import { DeploymentService } from "@/claws/deployment/service";
+import { ClawDeploymentError } from "@/claws/deployment/errors";
+import { ClawDeploymentService } from "@/claws/deployment/service";
 import { getClawUrl } from "@/claws/deployment/types";
 import { CloudflareContainerService } from "@/cloudflare/containers/service";
 import { CloudflareR2Service } from "@/cloudflare/r2/service";
@@ -76,11 +76,11 @@ function clawHostname(clawId: string): string {
 function wrap<A>(
   context: string,
   effect: Effect.Effect<A, CloudflareApiError>,
-): Effect.Effect<A, DeploymentError> {
+): Effect.Effect<A, ClawDeploymentError> {
   return effect.pipe(
     Effect.mapError(
       (error) =>
-        new DeploymentError({
+        new ClawDeploymentError({
           message: `${context}: ${error.message}`,
           cause: error,
         }),
@@ -96,7 +96,7 @@ function wrap<A>(
  * in tests, use the mock layers.
  */
 export const LiveDeploymentService = Layer.effect(
-  DeploymentService,
+  ClawDeploymentService,
   Effect.gen(function* () {
     const r2 = yield* CloudflareR2Service;
     const containers = yield* CloudflareContainerService;
@@ -123,7 +123,7 @@ export const LiveDeploymentService = Layer.effect(
             startedAt: new Date(),
             bucketName: bucket,
             r2Credentials: credentials,
-          } satisfies DeploymentStatus;
+          } satisfies ClawDeploymentStatus;
         }),
 
       deprovision: (clawId: string) =>
@@ -166,7 +166,7 @@ export const LiveDeploymentService = Layer.effect(
             startedAt: state.lastChange
               ? new Date(state.lastChange)
               : undefined,
-          } satisfies DeploymentStatus;
+          } satisfies ClawDeploymentStatus;
         }),
 
       restart: (clawId: string) =>
@@ -182,7 +182,7 @@ export const LiveDeploymentService = Layer.effect(
           return {
             status: "provisioning",
             startedAt: new Date(),
-          } satisfies DeploymentStatus;
+          } satisfies ClawDeploymentStatus;
         }),
 
       update: (clawId: string, config: Partial<OpenClawConfig>) =>
@@ -207,7 +207,7 @@ export const LiveDeploymentService = Layer.effect(
           return {
             status: "provisioning",
             startedAt: new Date(),
-          } satisfies DeploymentStatus;
+          } satisfies ClawDeploymentStatus;
         }),
 
       warmUp: (clawId: string) =>
