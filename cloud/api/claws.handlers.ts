@@ -5,6 +5,7 @@ import type { CreateClawRequest, UpdateClawRequest } from "@/api/claws.schemas";
 
 import { Analytics } from "@/analytics";
 import { AuthenticatedUser } from "@/auth";
+import { encryptSecrets } from "@/claws/crypto";
 import { ClawDeploymentService } from "@/claws/deployment/service";
 import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
@@ -53,9 +54,8 @@ export const createClawHandler = (
       instanceType: claw.instanceType,
     });
 
-    // Persist R2 credentials so the bootstrap API can return them
-    // TODO(encryption): Encrypt these secrets! Not secure.
-    const secrets = JSON.stringify({
+    // Encrypt R2 credentials before persisting
+    const encrypted = yield* encryptSecrets({
       R2_ACCESS_KEY_ID: status.r2Credentials?.accessKeyId ?? "",
       R2_SECRET_ACCESS_KEY: status.r2Credentials?.secretAccessKey ?? "",
     });
@@ -64,7 +64,8 @@ export const createClawHandler = (
       .update(claws)
       .set({
         bucketName: status.bucketName ?? null,
-        secretsEncrypted: secrets,
+        secretsEncrypted: encrypted.ciphertext,
+        secretsKeyId: encrypted.keyId,
         status: "provisioning",
         updatedAt: new Date(),
       })
@@ -96,7 +97,7 @@ export const createClawHandler = (
       ...claw,
       status: "provisioning" as const,
       bucketName: status.bucketName ?? null,
-      secretsEncrypted: secrets,
+      secretsEncrypted: encrypted.ciphertext,
     };
   });
 

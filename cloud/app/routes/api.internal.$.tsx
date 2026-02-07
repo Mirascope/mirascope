@@ -21,11 +21,11 @@ import {
 import { handleErrors, handleDefects } from "@/api/utils";
 import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
-import { DatabaseError, NotFoundError } from "@/errors";
+import { DatabaseError, EncryptionError, NotFoundError } from "@/errors";
 import { settingsLayer } from "@/server-entry";
 import { Settings } from "@/settings";
 
-type InternalError = NotFoundError | DatabaseError;
+type InternalError = NotFoundError | DatabaseError | EncryptionError;
 
 /**
  * Match the splat path against known internal routes.
@@ -36,7 +36,7 @@ function matchRoute(
   method: string,
   splat: string | undefined,
   getBody: () => Promise<unknown>,
-): Effect.Effect<unknown, InternalError, DrizzleORM> | null {
+): Effect.Effect<unknown, InternalError, DrizzleORM | Settings> | null {
   if (!splat) return null;
 
   const parts = splat.split("/").filter(Boolean);
@@ -119,14 +119,17 @@ export const Route = createFileRoute("/api/internal/$" as any)({
           });
         }).pipe(
           Effect.provide(
-            Layer.unwrapEffect(
-              Effect.gen(function* () {
-                const settings = yield* Settings;
-                return Database.Live({
-                  database: { connectionString: settings.databaseUrl },
-                  payments: settings.stripe,
-                });
-              }).pipe(Effect.provide(settingsLayer)),
+            Layer.merge(
+              settingsLayer,
+              Layer.unwrapEffect(
+                Effect.gen(function* () {
+                  const settings = yield* Settings;
+                  return Database.Live({
+                    database: { connectionString: settings.databaseUrl },
+                    payments: settings.stripe,
+                  });
+                }).pipe(Effect.provide(settingsLayer)),
+              ),
             ),
           ),
           handleErrors,
