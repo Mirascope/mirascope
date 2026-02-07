@@ -204,6 +204,17 @@ describe("MockDeploymentService", () => {
     });
   });
 
+  describe("warmUp", () => {
+    it("completes without error", async () => {
+      await run(
+        Effect.gen(function* () {
+          const deployment = yield* DeploymentService;
+          yield* deployment.warmUp("any-claw-id");
+        }),
+      );
+    });
+  });
+
   describe("resetMockDeploymentState", () => {
     it("clears all mock state", async () => {
       // Provision a claw

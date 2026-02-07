@@ -15,15 +15,22 @@
  * provision(config: OpenClawConfig)
  *   1. Create R2 bucket "claw-{clawId}"
  *   2. Create scoped R2 credentials for that bucket
- *   3. Warm up the container (triggers cold start on dispatch worker)
- *   4. Return DeploymentStatus { status: "provisioning", url }
+ *   3. Return DeploymentStatus { status: "provisioning", url, bucketName, r2Credentials }
  * ```
  *
- * The dispatch worker handles the actual container lifecycle:
- * - On warm-up request, it calls the bootstrap API to get OpenClawConfig
- * - Starts the container with env vars from the config
- * - The container mounts R2 via s3fs using the scoped credentials
- * - Reports "active" status back to Mirascope when ready
+ * The caller is responsible for persisting the R2 credentials to the database
+ * and then calling `warmUp(clawId)` separately. This separation ensures the
+ * dispatch worker can read credentials from the bootstrap API before it starts.
+ *
+ * ## Warm-Up Flow
+ *
+ * ```
+ * warmUp(clawId)
+ *   1. Send HTTP request to dispatch worker hostname
+ *   2. Dispatch worker fetches bootstrap config (incl. R2 credentials)
+ *   3. Container starts with env vars from config
+ *   4. Reports "active" status back to Mirascope when ready
+ * ```
  *
  * ## Deprovision Flow
  *
@@ -108,12 +115,8 @@ export const LiveDeploymentService = Layer.effect(
             r2.createScopedCredentials(bucket),
           );
 
-          // 3. Warm up — triggers the dispatch worker to fetch bootstrap
-          //    config and start the container
-          const host = clawHostname(config.clawId);
-          yield* wrap("Failed to warm up container", containers.warmUp(host));
-
-          // 4. Container will report "active" via status callback
+          // 3. Return credentials — caller is responsible for persisting
+          //    them to the DB and then calling warmUp() separately.
           return {
             status: "provisioning",
             url: getClawUrl(config.organizationSlug, config.clawSlug),
@@ -205,6 +208,12 @@ export const LiveDeploymentService = Layer.effect(
             status: "provisioning",
             startedAt: new Date(),
           } satisfies DeploymentStatus;
+        }),
+
+      warmUp: (clawId: string) =>
+        Effect.gen(function* () {
+          const host = clawHostname(clawId);
+          yield* wrap("Failed to warm up container", containers.warmUp(host));
         }),
     };
   }),
