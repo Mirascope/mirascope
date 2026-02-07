@@ -110,6 +110,12 @@ export function createMockSettings(
       durableObjectNamespaceId: "test-do-namespace-id",
       dispatchWorkerBaseUrl: "https://dispatch.test.workers.dev",
     },
+
+    encryptionKeys: {
+      CLAW_SECRETS_ENCRYPTION_KEY_V1:
+        "S0YrcgEScoOL1ALp/w+xI90P9O8h4s3OzEXtzlhBbHQ=",
+    },
+    activeEncryptionKeyId: "CLAW_SECRETS_ENCRYPTION_KEY_V1",
   };
 
   return {
@@ -136,6 +142,10 @@ export function createMockSettings(
     },
     frontend: { ...defaults.frontend, ...overrides.frontend },
     cloudflare: { ...defaults.cloudflare, ...overrides.cloudflare },
+    encryptionKeys: {
+      ...defaults.encryptionKeys,
+      ...overrides.encryptionKeys,
+    },
   };
 }
 
@@ -215,6 +225,8 @@ export function createMockEnv(
     CF_R2_WRITE_PERMISSION_GROUP_ID: "test-r2-write-perm",
     CF_DO_NAMESPACE_ID: "test-do-namespace-id",
     CF_DISPATCH_WORKER_BASE_URL: "https://dispatch.test.workers.dev",
+    CLAW_SECRETS_ENCRYPTION_KEY_V1:
+      "S0YrcgEScoOL1ALp/w+xI90P9O8h4s3OzEXtzlhBbHQ=",
   };
 
   // Filter out undefined values from overrides
