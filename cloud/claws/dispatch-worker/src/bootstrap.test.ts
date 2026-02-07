@@ -22,8 +22,8 @@ let binding: MockBinding;
 function makeEnv(overrides: Partial<DispatchEnv> = {}): DispatchEnv {
   binding = createMockBinding();
   return {
-    Sandbox: {} as any,
-    MIRASCOPE_CLOUD: binding as any,
+    Sandbox: {} as unknown as DispatchEnv["Sandbox"],
+    MIRASCOPE_CLOUD: binding as unknown as DispatchEnv["MIRASCOPE_CLOUD"],
     CF_ACCOUNT_ID: "test-account",
     ...overrides,
   };
