@@ -1,6 +1,6 @@
 {
   "name": "mirascope-monorepo",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "private": true,
   "scripts": {
     "cloud:dev": "cd cloud && bun i && bun run dev",
