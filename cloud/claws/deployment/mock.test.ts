@@ -8,7 +8,7 @@
 import { Effect } from "effect";
 import { describe, it, expect, beforeEach } from "vitest";
 
-import type { OpenClawConfig } from "@/claws/deployment/types";
+import type { ProvisionClawConfig } from "@/claws/deployment/types";
 
 import { ClawDeploymentError } from "@/claws/deployment/errors";
 import {
@@ -18,23 +18,9 @@ import {
 import { ClawDeploymentService } from "@/claws/deployment/service";
 import { getClawUrl } from "@/claws/deployment/types";
 
-const testConfig: OpenClawConfig = {
+const testConfig: ProvisionClawConfig = {
   clawId: "claw-test-123",
-  clawSlug: "my-claw",
-  organizationId: "org-456",
-  organizationSlug: "my-org",
   instanceType: "basic",
-  r2: {
-    bucketName: "claw-claw-test-123",
-    accessKeyId: "test-access-key",
-    secretAccessKey: "test-secret-key",
-  },
-  containerEnv: {
-    MIRASCOPE_API_KEY: "key_abc123",
-    ANTHROPIC_API_KEY: "key_abc123",
-    ANTHROPIC_BASE_URL: "https://router.mirascope.com/v1",
-    OPENCLAW_GATEWAY_TOKEN: "gw_token_xyz",
-  },
 };
 
 const run = <A, E>(effect: Effect.Effect<A, E, ClawDeploymentService>) =>
@@ -78,9 +64,6 @@ describe("MockDeploymentService", () => {
       );
 
       expect(status.status).toBe("active");
-      expect(status.url).toBe(
-        getClawUrl(testConfig.organizationSlug, testConfig.clawSlug),
-      );
       expect(status.startedAt).toBeInstanceOf(Date);
       expect(status.errorMessage).toBeUndefined();
       expect(status.bucketName).toBe(`claw-${testConfig.clawId}`);
@@ -126,9 +109,6 @@ describe("MockDeploymentService", () => {
       );
 
       expect(status.status).toBe("active");
-      expect(status.url).toBe(
-        getClawUrl(testConfig.organizationSlug, testConfig.clawSlug),
-      );
     });
 
     it("fails for unknown claw", async () => {

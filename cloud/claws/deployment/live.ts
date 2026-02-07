@@ -12,7 +12,7 @@
  * ## Provision Flow
  *
  * ```
- * provision(config: OpenClawConfig)
+ * provision(config: ProvisionClawConfig)
  *   1. Create R2 bucket "claw-{clawId}"
  *   2. Create scoped R2 credentials for that bucket
  *   3. Return DeploymentStatus { status: "provisioning", url, bucketName, r2Credentials }
@@ -44,11 +44,13 @@
 import { Effect, Layer } from "effect";
 
 import type { ClawDeploymentStatus } from "@/claws/deployment/service";
-import type { OpenClawConfig } from "@/claws/deployment/types";
+import type {
+  OpenClawConfig,
+  ProvisionClawConfig,
+} from "@/claws/deployment/types";
 
 import { ClawDeploymentError } from "@/claws/deployment/errors";
 import { ClawDeploymentService } from "@/claws/deployment/service";
-import { getClawUrl } from "@/claws/deployment/types";
 import { CloudflareContainerService } from "@/cloudflare/containers/service";
 import { CloudflareR2Service } from "@/cloudflare/r2/service";
 import { CloudflareApiError } from "@/errors";
@@ -102,7 +104,7 @@ export const LiveDeploymentService = Layer.effect(
     const containers = yield* CloudflareContainerService;
 
     return {
-      provision: (config: OpenClawConfig) =>
+      provision: (config: ProvisionClawConfig) =>
         Effect.gen(function* () {
           const bucket = bucketName(config.clawId);
 
@@ -119,7 +121,6 @@ export const LiveDeploymentService = Layer.effect(
           //    them to the DB and then calling warmUp() separately.
           return {
             status: "provisioning",
-            url: getClawUrl(config.organizationSlug, config.clawSlug),
             startedAt: new Date(),
             bucketName: bucket,
             r2Credentials: credentials,

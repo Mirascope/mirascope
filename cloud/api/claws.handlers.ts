@@ -1,10 +1,15 @@
+import { eq } from "drizzle-orm";
 import { Effect } from "effect";
 
 import type { CreateClawRequest, UpdateClawRequest } from "@/api/claws.schemas";
 
 import { Analytics } from "@/analytics";
 import { AuthenticatedUser } from "@/auth";
+import { ClawDeploymentService } from "@/claws/deployment/service";
+import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
+import { claws } from "@/db/schema";
+import { DatabaseError } from "@/errors";
 
 export * from "@/api/claws.schemas";
 
@@ -26,6 +31,8 @@ export const createClawHandler = (
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
     const analytics = yield* Analytics;
+    const clawDeployment = yield* ClawDeploymentService;
+    const drizzle = yield* DrizzleORM;
 
     const claw = yield* db.organizations.claws.create({
       userId: user.id,
@@ -40,6 +47,41 @@ export const createClawHandler = (
       },
     });
 
+    // Provision R2 bucket and scoped credentials
+    const status = yield* clawDeployment.provision({
+      clawId: claw.id,
+      instanceType: claw.instanceType,
+    });
+
+    // Persist R2 credentials so the bootstrap API can return them
+    // TODO(encryption): Encrypt these secrets! Not secure.
+    const secrets = JSON.stringify({
+      R2_ACCESS_KEY_ID: status.r2Credentials?.accessKeyId ?? "",
+      R2_SECRET_ACCESS_KEY: status.r2Credentials?.secretAccessKey ?? "",
+    });
+
+    yield* drizzle
+      .update(claws)
+      .set({
+        bucketName: status.bucketName ?? null,
+        secretsEncrypted: secrets,
+        status: "provisioning",
+        updatedAt: new Date(),
+      })
+      .where(eq(claws.id, claw.id))
+      .pipe(
+        Effect.mapError(
+          (e) =>
+            new DatabaseError({
+              message: "Failed to persist deployment credentials",
+              cause: e,
+            }),
+        ),
+      );
+
+    // Trigger cold start on dispatch worker (reads creds from DB via bootstrap API)
+    yield* clawDeployment.warmUp(claw.id);
+
     yield* analytics.trackEvent({
       name: "claw_created",
       properties: {
@@ -50,7 +92,12 @@ export const createClawHandler = (
       distinctId: user.id,
     });
 
-    return claw;
+    return {
+      ...claw,
+      status: "provisioning" as const,
+      bucketName: status.bucketName ?? null,
+      secretsEncrypted: secrets,
+    };
   });
 
 export const getClawHandler = (organizationId: string, clawId: string) =>
@@ -90,6 +137,10 @@ export const deleteClawHandler = (organizationId: string, clawId: string) =>
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
     const analytics = yield* Analytics;
+    const deployment = yield* ClawDeploymentService;
+
+    // Deprovision infrastructure (R2 bucket, credentials, container)
+    yield* deployment.deprovision(clawId);
 
     yield* db.organizations.claws.delete({
       organizationId,
