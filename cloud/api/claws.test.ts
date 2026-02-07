@@ -9,7 +9,6 @@ import {
   resolveClawHandler,
   bootstrapClawHandler,
   reportClawStatusHandler,
-  decryptSecrets,
 } from "@/api/claws-internal.handlers";
 import {
   createClawHandler,
@@ -17,6 +16,7 @@ import {
   CreateClawRequestSchema,
 } from "@/api/claws.handlers";
 import { AuthenticatedUser } from "@/auth";
+import { encryptSecrets } from "@/claws/crypto";
 import { ClawDeploymentError } from "@/claws/deployment/errors";
 import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
@@ -24,6 +24,7 @@ import { claws } from "@/db/schema";
 import { DatabaseError, NotFoundError } from "@/errors";
 import { describe, it, expect, TestApiContext } from "@/tests/api";
 import { MockClawDeployment } from "@/tests/clawDeployment";
+import { MockSettingsLayer } from "@/tests/settings";
 
 describe("CreateClawRequestSchema validation", () => {
   it("rejects empty name", () => {
@@ -51,21 +52,6 @@ describe("CreateClawRequestSchema validation", () => {
       slug: "valid-claw",
     });
     expect(result.name).toBe("Valid Claw Name");
-  });
-});
-
-describe("decryptSecrets", () => {
-  it("returns empty object for null", () => {
-    expect(decryptSecrets(null)).toEqual({});
-  });
-
-  it("parses valid JSON", () => {
-    const secrets = JSON.stringify({ KEY: "value", OTHER: "data" });
-    expect(decryptSecrets(secrets)).toEqual({ KEY: "value", OTHER: "data" });
-  });
-
-  it("returns empty object for invalid JSON", () => {
-    expect(decryptSecrets("not-json")).toEqual({});
   });
 });
 
@@ -474,9 +460,12 @@ describe("Internal handler database errors", () => {
       const error = yield* bootstrapClawHandler("some-id").pipe(
         Effect.flip,
         Effect.provide(
-          Layer.succeed(DrizzleORM, {
-            select: () => failingSelect(),
-          } as never),
+          Layer.mergeAll(
+            Layer.succeed(DrizzleORM, {
+              select: () => failingSelect(),
+            } as never),
+            MockSettingsLayer(),
+          ),
         ),
       );
       expect(error).toBeInstanceOf(DatabaseError);
@@ -633,6 +622,7 @@ describe("Claw handler errors", () => {
     MockAnalyticsLayer,
     MockDatabaseLayer,
     MockClawDeployment.layer(),
+    MockSettingsLayer(),
   );
 
   it.effect(
@@ -682,6 +672,7 @@ describe("Claw handler errors", () => {
                     }),
                   ),
               }),
+              MockSettingsLayer(),
               Layer.succeed(DrizzleORM, {} as never),
             ),
           ),
@@ -715,6 +706,7 @@ describe("Claw handler errors", () => {
                     }),
                   ),
               }),
+              MockSettingsLayer(),
               Layer.succeed(DrizzleORM, {
                 update: () => succeedingUpdate(),
               } as never),
@@ -760,6 +752,7 @@ describe("Claw handler errors", () => {
                     };
                   }),
               }),
+              MockSettingsLayer(),
               Layer.succeed(DrizzleORM, {
                 update: () => succeedingUpdate(),
               } as never),
@@ -816,6 +809,7 @@ describe("Claw handler errors", () => {
               MockAnalyticsLayer,
               MockDatabaseLayer,
               MockClawDeployment.layer(),
+              MockSettingsLayer(),
               CapturingDrizzle,
             ),
           ),
@@ -824,11 +818,16 @@ describe("Claw handler errors", () => {
         expect(capturedSet).not.toBeNull();
         expect(capturedSet!.status).toBe("provisioning");
         expect(capturedSet!.bucketName).toBeDefined();
+        expect(capturedSet!.secretsKeyId).toBe(
+          "CLAW_SECRETS_ENCRYPTION_KEY_V1",
+        );
 
-        // Verify secrets contain R2 credentials from mock provision
-        const secrets = JSON.parse(capturedSet!.secretsEncrypted as string);
-        expect(secrets.R2_ACCESS_KEY_ID).toContain("mock-access-");
-        expect(secrets.R2_SECRET_ACCESS_KEY).toContain("mock-secret-");
+        // secretsEncrypted is now AES-256-GCM ciphertext, not raw JSON
+        const ciphertext = capturedSet!.secretsEncrypted as string;
+        expect(typeof ciphertext).toBe("string");
+        expect(ciphertext.length).toBeGreaterThan(0);
+        // Should NOT be parseable as JSON (it's encrypted)
+        expect(() => JSON.parse(ciphertext)).toThrow();
       }),
   );
 
@@ -877,6 +876,7 @@ describe("Claw handler errors", () => {
               MockClawDeployment.layer({
                 provision: () => Effect.succeed({ status: "active" as const }),
               }),
+              MockSettingsLayer(),
               CapturingDrizzle,
             ),
           ),
@@ -886,10 +886,14 @@ describe("Claw handler errors", () => {
         expect(capturedSet).not.toBeNull();
         expect(capturedSet!.bucketName).toBeNull();
         expect(result.bucketName).toBeNull();
+        expect(capturedSet!.secretsKeyId).toBe(
+          "CLAW_SECRETS_ENCRYPTION_KEY_V1",
+        );
 
-        const secrets = JSON.parse(capturedSet!.secretsEncrypted as string);
-        expect(secrets.R2_ACCESS_KEY_ID).toBe("");
-        expect(secrets.R2_SECRET_ACCESS_KEY).toBe("");
+        // Secrets are encrypted even when credentials are empty strings
+        const ciphertext = capturedSet!.secretsEncrypted as string;
+        expect(typeof ciphertext).toBe("string");
+        expect(() => JSON.parse(ciphertext)).toThrow();
       }),
   );
 
@@ -985,16 +989,20 @@ describe("Internal handler integration", () => {
       Effect.gen(function* () {
         const { claw } = yield* createTestFixture;
 
-        // Store secrets as plain JSON in the DB (stub encryption)
+        // Encrypt secrets and store in DB
         const client = yield* DrizzleORM;
-        const secrets = JSON.stringify({
+        const encrypted = yield* encryptSecrets({
           MIRASCOPE_API_KEY: "test-key",
           R2_ACCESS_KEY_ID: "r2-ak",
           R2_SECRET_ACCESS_KEY: "r2-sk",
         });
         yield* client
           .update(claws)
-          .set({ secretsEncrypted: secrets, bucketName: "claw-bucket" })
+          .set({
+            secretsEncrypted: encrypted.ciphertext,
+            secretsKeyId: encrypted.keyId,
+            bucketName: "claw-bucket",
+          })
           .where(eq(claws.id, claw.id));
 
         const config = yield* bootstrapClawHandler(claw.id);

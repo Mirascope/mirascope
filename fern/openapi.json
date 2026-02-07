@@ -13361,6 +13361,9 @@
                       "$ref": "#/components/schemas/DatabaseError"
                     },
                     {
+                      "$ref": "#/components/schemas/EncryptionError"
+                    },
+                    {
                       "$ref": "#/components/schemas/DeploymentError"
                     }
                   ]
@@ -16541,6 +16544,29 @@
             "type": "string",
             "enum": [
               "ImmutableResourceError"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "EncryptionError": {
+        "type": "object",
+        "required": [
+          "message",
+          "tag"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "cause": {
+            "$id": "/schemas/unknown",
+            "title": "unknown"
+          },
+          "tag": {
+            "type": "string",
+            "enum": [
+              "EncryptionError"
             ]
           }
         },

@@ -6,6 +6,7 @@ import { createSlugSchema } from "@/db/slug";
 import {
   AlreadyExistsError,
   DatabaseError,
+  EncryptionError,
   NotFoundError,
   PermissionDeniedError,
   PlanLimitExceededError,
@@ -119,6 +120,7 @@ export class ClawsApi extends HttpApiGroup.make("claws")
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
       .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(EncryptionError, { status: EncryptionError.status })
       .addError(ClawDeploymentError, { status: ClawDeploymentError.status }),
   )
   .add(

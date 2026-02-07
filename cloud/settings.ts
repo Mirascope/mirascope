@@ -145,6 +145,18 @@ export type FrontendConfig = {
 };
 
 /**
+ * Encryption key configuration for claw secrets.
+ *
+ * Keys are versioned so that rotation is possible without re-encrypting
+ * all rows at once. The `secretsKeyId` column in the DB records which
+ * env-var name was used to encrypt a given row, and on decrypt we look
+ * up that name in this map.
+ */
+export type EncryptionKeysConfig = {
+  readonly [keyId: string]: string; // keyId → base64-encoded 256-bit key
+};
+
+/**
  * Complete application settings configuration.
  * All fields are required and guaranteed to be non-empty strings.
  */
@@ -179,6 +191,10 @@ export type SettingsConfig = {
 
   // Cloudflare infrastructure
   readonly cloudflare: CloudflareConfig;
+
+  // Encryption
+  readonly encryptionKeys: EncryptionKeysConfig;
+  readonly activeEncryptionKeyId: string;
 };
 
 // =============================================================================
@@ -259,6 +275,8 @@ export type CloudflareEnvironment = {
   CF_R2_WRITE_PERMISSION_GROUP_ID?: string;
   CF_DO_NAMESPACE_ID?: string;
   CF_DISPATCH_WORKER_BASE_URL?: string;
+  // Encryption keys for claw secrets (versioned)
+  CLAW_SECRETS_ENCRYPTION_KEY_V1?: string;
 };
 
 /**
@@ -394,6 +412,13 @@ function validateSettingsFromSource(
         durableObjectNamespaceId: required("CF_DO_NAMESPACE_ID"),
         dispatchWorkerBaseUrl: required("CF_DISPATCH_WORKER_BASE_URL"),
       },
+
+      encryptionKeys: {
+        CLAW_SECRETS_ENCRYPTION_KEY_V1: required(
+          "CLAW_SECRETS_ENCRYPTION_KEY_V1",
+        ),
+      },
+      activeEncryptionKeyId: "CLAW_SECRETS_ENCRYPTION_KEY_V1",
     };
 
     // Fail if any variables are missing

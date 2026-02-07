@@ -18,9 +18,11 @@ import { and, eq } from "drizzle-orm";
 import { Effect } from "effect";
 import { Schema } from "effect";
 
+import { decryptSecrets } from "@/claws/crypto";
 import { DrizzleORM } from "@/db/client";
 import { claws, organizations } from "@/db/schema";
-import { DatabaseError, NotFoundError } from "@/errors";
+import { DatabaseError, EncryptionError, NotFoundError } from "@/errors";
+import { Settings } from "@/settings";
 
 // ---------------------------------------------------------------------------
 // Schemas
@@ -67,27 +69,6 @@ export const ClawStatusReportSchema = Schema.Struct({
 });
 
 export type ClawStatusReport = typeof ClawStatusReportSchema.Type;
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/**
- * Decrypt secretsEncrypted from the DB.
- *
- * TODO: Implement real AES-256-GCM decryption using Web Crypto API.
- * For now, secretsEncrypted is treated as plain JSON.
- */
-export function decryptSecrets(
-  secretsEncrypted: string | null,
-): Record<string, string | undefined> {
-  if (!secretsEncrypted) return {};
-  try {
-    return JSON.parse(secretsEncrypted) as Record<string, string | undefined>;
-  } catch {
-    return {};
-  }
-}
 
 // ---------------------------------------------------------------------------
 // Handlers
@@ -157,8 +138,8 @@ export const bootstrapClawHandler = (
   clawId: string,
 ): Effect.Effect<
   OpenClawConfigResponse,
-  NotFoundError | DatabaseError,
-  DrizzleORM
+  NotFoundError | DatabaseError | EncryptionError,
+  DrizzleORM | Settings
 > =>
   Effect.gen(function* () {
     const client = yield* DrizzleORM;
@@ -172,6 +153,7 @@ export const bootstrapClawHandler = (
         instanceType: claws.instanceType,
         bucketName: claws.bucketName,
         secretsEncrypted: claws.secretsEncrypted,
+        secretsKeyId: claws.secretsKeyId,
       })
       .from(claws)
       .innerJoin(organizations, eq(claws.organizationId, organizations.id))
@@ -196,7 +178,10 @@ export const bootstrapClawHandler = (
       );
     }
 
-    const secrets = decryptSecrets(claw.secretsEncrypted);
+    const secrets =
+      claw.secretsEncrypted && claw.secretsKeyId
+        ? yield* decryptSecrets(claw.secretsEncrypted, claw.secretsKeyId)
+        : {};
 
     return {
       clawId: claw.clawId,
