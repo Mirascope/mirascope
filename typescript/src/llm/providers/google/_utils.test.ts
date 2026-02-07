@@ -11,7 +11,7 @@ import { describe, it, expect } from "vitest";
 
 import type { AssistantMessage } from "@/llm/messages";
 
-import { Image } from "@/llm/content";
+import { Document, Image } from "@/llm/content";
 import {
   AuthenticationError,
   PermissionError,
@@ -180,6 +180,75 @@ describe("image encoding", () => {
   it("throws FeatureNotSupportedError for URL image source", () => {
     const urlImage = Image.fromUrl("https://example.com/image.png");
     const messages = [user(["Check this image", urlImage])];
+
+    expect(() =>
+      buildRequestParams("google/gemini-2.5-flash", messages, undefined, {}),
+    ).toThrow(FeatureNotSupportedError);
+  });
+});
+
+describe("document encoding", () => {
+  it("encodes base64 document source as inlineData", () => {
+    const doc: Document = {
+      type: "document",
+      source: {
+        type: "base64_document_source",
+        data: "JVBERi0xLjQ=",
+        mediaType: "application/pdf",
+      },
+    };
+    const messages = [user(["Read this", doc])];
+
+    const params = buildRequestParams(
+      "google/gemini-2.5-flash",
+      messages,
+      undefined,
+      {},
+    );
+
+    const contents = params.contents as Array<{ parts?: unknown[] }>;
+    const parts = contents[0]?.parts;
+    expect(parts).toHaveLength(2);
+    expect(parts?.[1]).toEqual({
+      inlineData: {
+        data: "JVBERi0xLjQ=",
+        mimeType: "application/pdf",
+      },
+    });
+  });
+
+  it("encodes text document source as base64 inlineData", () => {
+    const doc: Document = {
+      type: "document",
+      source: {
+        type: "text_document_source",
+        data: "Hello, world!",
+        mediaType: "text/plain",
+      },
+    };
+    const messages = [user(["Read this", doc])];
+
+    const params = buildRequestParams(
+      "google/gemini-2.5-flash",
+      messages,
+      undefined,
+      {},
+    );
+
+    const contents = params.contents as Array<{ parts?: unknown[] }>;
+    const parts = contents[0]?.parts;
+    expect(parts).toHaveLength(2);
+    expect(parts?.[1]).toEqual({
+      inlineData: {
+        data: btoa("Hello, world!"),
+        mimeType: "text/plain",
+      },
+    });
+  });
+
+  it("throws FeatureNotSupportedError for URL document source", () => {
+    const doc = Document.fromUrl("https://example.com/doc.pdf");
+    const messages = [user(["Read this", doc])];
 
     expect(() =>
       buildRequestParams("google/gemini-2.5-flash", messages, undefined, {}),

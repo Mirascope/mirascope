@@ -23,6 +23,7 @@ import {
 import type {
   AssistantContentPart,
   Audio,
+  Document,
   Image,
   Text,
   Thought,
@@ -132,6 +133,40 @@ function encodeAudio(audio: Audio): Part {
 }
 
 /**
+ * Encode a Document content part to Google's Part format.
+ * Google requires inline data (base64), not URL references.
+ *
+ * @throws FeatureNotSupportedError if the document uses a URL source
+ */
+function encodeDocument(doc: Document): Part {
+  const { source } = doc;
+  switch (source.type) {
+    case "base64_document_source": {
+      const inlineData: GoogleBlob = {
+        data: source.data,
+        mimeType: source.mediaType,
+      };
+      return { inlineData };
+    }
+    case "text_document_source": {
+      // Google expects base64 inline data, so encode the text
+      const inlineData: GoogleBlob = {
+        data: btoa(source.data),
+        mimeType: source.mediaType,
+      };
+      return { inlineData };
+    }
+    case "url_document_source":
+      throw new FeatureNotSupportedError(
+        "url_document_source",
+        "google",
+        null,
+        "Google does not support URL-referenced documents. Use `Document.fromFile(...)` or `Document.fromBytes(...)` instead.",
+      );
+  }
+}
+
+/**
  * Process content parts from either user or assistant messages.
  * Converts to Google's Part format.
  *
@@ -184,14 +219,10 @@ function processContentParts(
       }
       /* v8 ignore stop */
 
-      /* v8 ignore start - content types not yet implemented */
       case "document":
-        throw new FeatureNotSupportedError(
-          "document content encoding",
-          "google",
-          null,
-          "Document content is not yet implemented",
-        );
+        parts.push(encodeDocument(part));
+        break;
+
       /* v8 ignore start - thought encoding will be tested via e2e */
 
       case "thought":

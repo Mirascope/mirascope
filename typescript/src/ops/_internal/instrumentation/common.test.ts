@@ -843,6 +843,52 @@ describe("startModelSpan", () => {
     );
   });
 
+  it("handles messages with document content", () => {
+    const mockSpan = {
+      setAttribute: vi.fn(),
+    };
+
+    const mockTracer = {
+      startSpan: vi.fn().mockReturnValue(mockSpan),
+    };
+
+    vi.mocked(getTracer).mockReturnValue(mockTracer as any);
+
+    startModelSpan({
+      modelId: "test/model",
+      providerId: "test",
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: "Summarize this document" },
+            {
+              type: "document",
+              source: {
+                type: "base64_document_source",
+                data: "JVBERi0xLjcK...",
+                mediaType: "application/pdf",
+              },
+            },
+          ] as any,
+          name: null,
+        },
+      ],
+      params: {},
+    });
+
+    // Should have set input messages with document content omitted
+    expect(mockSpan.setAttribute).toHaveBeenCalledWith(
+      GenAIAttributes.INPUT_MESSAGES,
+      expect.stringContaining("...(omitted)"),
+    );
+    // Should contain the document type
+    expect(mockSpan.setAttribute).toHaveBeenCalledWith(
+      GenAIAttributes.INPUT_MESSAGES,
+      expect.stringContaining('"type":"document"'),
+    );
+  });
+
   it("handles messages with tool_call content", () => {
     const mockSpan = {
       setAttribute: vi.fn(),

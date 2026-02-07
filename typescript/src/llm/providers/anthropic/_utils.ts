@@ -4,17 +4,22 @@
 
 import type {
   Base64ImageSource as AnthropicBase64ImageSource,
+  Base64PDFSource,
   ContentBlock,
+  DocumentBlockParam,
   ImageBlockParam,
   Message as AnthropicMessage,
   MessageCreateParamsNonStreaming,
+  PlainTextSource,
   URLImageSource as AnthropicURLImageSource,
+  URLPDFSource,
 } from "@anthropic-ai/sdk/resources/messages";
 
 import Anthropic from "@anthropic-ai/sdk";
 
 import type {
   AssistantContentPart,
+  Document,
   Image,
   ImageMimeType,
   Text,
@@ -106,6 +111,38 @@ function encodeImage(image: Image): ImageBlockParam {
 }
 
 /**
+ * Encode a Document content part to Anthropic's DocumentBlockParam format.
+ */
+function encodeDocument(doc: Document): DocumentBlockParam {
+  const { source } = doc;
+  switch (source.type) {
+    case "base64_document_source": {
+      const pdfSource: Base64PDFSource = {
+        type: "base64",
+        data: source.data,
+        media_type: "application/pdf",
+      };
+      return { type: "document", source: pdfSource };
+    }
+    case "text_document_source": {
+      const textSource: PlainTextSource = {
+        type: "text",
+        data: source.data,
+        media_type: "text/plain",
+      };
+      return { type: "document", source: textSource };
+    }
+    case "url_document_source": {
+      const urlSource: URLPDFSource = {
+        type: "url",
+        url: source.url,
+      };
+      return { type: "document", source: urlSource };
+    }
+  }
+}
+
+/**
  * Thinking level to budget multiplier mapping.
  * The multiplier is applied to max_tokens to compute the thinking budget.
  */
@@ -169,6 +206,7 @@ export const ANTHROPIC_ERROR_MAP: ProviderErrorMap = [
 const CACHEABLE_CONTENT_TYPES = new Set([
   "text",
   "image",
+  "document",
   "tool_output",
   "tool_call",
 ]);
@@ -257,15 +295,12 @@ function processContentParts(
         break;
       /* v8 ignore stop */
 
-      /* v8 ignore start - content types not yet implemented */
       case "document":
-        throw new FeatureNotSupportedError(
-          "document content encoding",
-          "anthropic",
-          null,
-          "Document content is not yet implemented",
-        );
-      /* v8 ignore stop */
+        blocks.push({
+          ...encodeDocument(part),
+          ...(shouldAddCache && { cache_control: { type: "ephemeral" } }),
+        });
+        break;
 
       /* v8 ignore start - encodeThoughtsAsText will be tested via e2e */
       case "thought":

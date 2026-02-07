@@ -13,7 +13,7 @@ import type { Thought } from "@/llm/content";
 import type { AudioMimeType } from "@/llm/content";
 import type { AssistantMessage } from "@/llm/messages";
 
-import { Audio } from "@/llm/content";
+import { Audio, Document } from "@/llm/content";
 import { FeatureNotSupportedError } from "@/llm/exceptions";
 import { assistant, user } from "@/llm/messages";
 import {
@@ -567,6 +567,65 @@ describe("audio encoding", () => {
     const featureInfo = { audioSupport: false };
     expect(() =>
       encodeMessages(messages, false, undefined, featureInfo),
+    ).toThrow(FeatureNotSupportedError);
+  });
+});
+
+describe("document encoding", () => {
+  it("encodes base64 document source as file", () => {
+    const doc: Document = {
+      type: "document",
+      source: {
+        type: "base64_document_source",
+        data: "JVBERi0xLjQ=",
+        mediaType: "application/pdf",
+      },
+    };
+    const messages = [user(["Read this", doc])];
+
+    const params = buildRequestParams("openai/gpt-4o:completions", messages);
+
+    const content = (params.messages[0] as { content: unknown[] }).content;
+    expect(content).toHaveLength(2);
+    expect(content[1]).toEqual({
+      type: "file",
+      file: {
+        file_data: "data:application/pdf;base64,JVBERi0xLjQ=",
+        filename: "document.pdf",
+      },
+    });
+  });
+
+  it("encodes text document source as file", () => {
+    const doc: Document = {
+      type: "document",
+      source: {
+        type: "text_document_source",
+        data: "Hello, world!",
+        mediaType: "text/plain",
+      },
+    };
+    const messages = [user(["Read this", doc])];
+
+    const params = buildRequestParams("openai/gpt-4o:completions", messages);
+
+    const content = (params.messages[0] as { content: unknown[] }).content;
+    expect(content).toHaveLength(2);
+    expect(content[1]).toEqual({
+      type: "file",
+      file: {
+        file_data: `data:text/plain;base64,${btoa("Hello, world!")}`,
+        filename: "document.txt",
+      },
+    });
+  });
+
+  it("throws FeatureNotSupportedError for URL document source", () => {
+    const doc = Document.fromUrl("https://example.com/doc.pdf");
+    const messages = [user(["Read this", doc])];
+
+    expect(() =>
+      buildRequestParams("openai/gpt-4o:completions", messages),
     ).toThrow(FeatureNotSupportedError);
   });
 });
