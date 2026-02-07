@@ -1,4 +1,4 @@
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { FolderKanban, Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 
@@ -88,22 +88,12 @@ function CloudIndexPage() {
           <div className="grid gap-x-6 gap-y-0 grid-cols-1 md:grid-cols-2 md:grid-rows-[auto_auto_1fr]">
             {/* Claws Section */}
             <div className="row-span-1 md:row-span-3 grid grid-rows-subgrid items-start gap-y-0">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-3">
-                  <ClawIcon className="h-5 w-5 text-muted-foreground" />
-                  <h2 className="text-lg font-semibold">Claws</h2>
-                  <Button size="sm" onClick={() => setShowCreateClaw(true)}>
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-                {claws.length > 0 && (
-                  <Link
-                    to="/cloud/claws"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    View all
-                  </Link>
-                )}
+              <div className="flex items-center gap-3 mb-2">
+                <ClawIcon className="h-5 w-5 text-muted-foreground" />
+                <h2 className="text-lg font-semibold">Claws</h2>
+                <Button size="sm" onClick={() => setShowCreateClaw(true)}>
+                  <Plus className="h-4 w-4" />
+                </Button>
               </div>
               <p className="text-sm text-muted-foreground mb-4">
                 Deploy and manage AI-powered claws for your organization
