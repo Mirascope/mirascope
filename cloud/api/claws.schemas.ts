@@ -1,6 +1,7 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
 
+import { ClawDeploymentError } from "@/claws/deployment/errors";
 import { createSlugSchema } from "@/db/slug";
 import {
   AlreadyExistsError,
@@ -117,7 +118,8 @@ export class ClawsApi extends HttpApiGroup.make("claws")
       .addError(AlreadyExistsError, { status: AlreadyExistsError.status })
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
-      .addError(DatabaseError, { status: DatabaseError.status }),
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(ClawDeploymentError, { status: ClawDeploymentError.status }),
   )
   .add(
     HttpApiEndpoint.get("get", "/organizations/:organizationId/claws/:clawId")
@@ -164,7 +166,8 @@ export class ClawsApi extends HttpApiGroup.make("claws")
       .addSuccess(Schema.Void)
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
-      .addError(DatabaseError, { status: DatabaseError.status }),
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(ClawDeploymentError, { status: ClawDeploymentError.status }),
   )
   .add(
     HttpApiEndpoint.get(
