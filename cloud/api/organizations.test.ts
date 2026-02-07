@@ -36,6 +36,32 @@ describe("CreateOrganizationRequestSchema validation", () => {
     });
     expect(result.name).toBe("Valid Organization Name");
   });
+
+  it("rejects reserved org slug 'claws'", () => {
+    expect(() =>
+      Schema.decodeUnknownSync(CreateOrganizationRequestSchema)({
+        name: "Claws Org",
+        slug: "claws",
+      }),
+    ).toThrow(/reserved slug/);
+  });
+
+  it("rejects reserved org slug 'staging'", () => {
+    expect(() =>
+      Schema.decodeUnknownSync(CreateOrganizationRequestSchema)({
+        name: "Staging Org",
+        slug: "staging",
+      }),
+    ).toThrow(/reserved slug/);
+  });
+
+  it("accepts non-reserved slug that contains reserved word", () => {
+    const result = Schema.decodeUnknownSync(CreateOrganizationRequestSchema)({
+      name: "Claws Inc",
+      slug: "claws-inc",
+    });
+    expect(result.slug).toBe("claws-inc");
+  });
 });
 
 describe("CreatePaymentIntentRequestSchema validation", () => {
@@ -94,6 +120,20 @@ describe.sequential("Organizations API", (it) => {
       expect(result.message).toContain(
         "Organization slug must start and end with a letter or number, and only contain lowercase letters, numbers, hyphens, and underscores",
       );
+    }),
+  );
+
+  it.effect("POST /organizations - rejects reserved slug", () =>
+    Effect.gen(function* () {
+      const { client } = yield* TestApiContext;
+      const result = yield* client.organizations
+        .create({
+          payload: { name: "Claws Org", slug: "claws" },
+        })
+        .pipe(Effect.flip);
+
+      expect(result).toBeInstanceOf(ParseError);
+      expect(result.message).toContain("reserved slug");
     }),
   );
 
