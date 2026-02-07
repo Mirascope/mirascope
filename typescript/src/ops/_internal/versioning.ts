@@ -13,6 +13,7 @@ import { createHash } from "crypto";
 import type { VersionOptions } from "@/ops/_internal/types";
 
 import { Span } from "@/ops/_internal/spans";
+import { createTracedSpan, recordResult } from "@/ops/_internal/tracing";
 import {
   versionCall,
   isCallLike,
@@ -56,20 +57,25 @@ function computeRuntimeClosure(fn: NamedCallable): ClosureMetadata {
 
 /**
  * Create a span for a versioned function invocation.
+ *
+ * Reuses createTracedSpan to get all trace attributes (arg_types, arg_values,
+ * fn.qualname, fn.module, fn.is_async, trace.tags, trace.metadata), then
+ * adds version-specific attributes on top.
  */
-function createVersionedSpan(
+function createVersionedSpan<Args extends unknown[]>(
   fn: NamedCallable,
   options: VersionOptions,
   closure: ClosureMetadata,
   functionUuid: string | undefined,
+  args: Args,
 ): Span {
   /* v8 ignore next - name fallback chain branches */
   const name = options.name || fn.name || "anonymous";
-  const span = new Span(name);
-  span.start();
+
+  // Create span with all trace attributes
+  const span = createTracedSpan(fn, { ...options, name }, args);
 
   span.set({
-    "mirascope.type": "version",
     "mirascope.version.hash": closure.hash,
     "mirascope.version.signature_hash": closure.signatureHash,
   });
@@ -312,7 +318,7 @@ export function version<Args extends unknown[], R, CallT extends CallLike>(
 
   const versioned = async (...args: Args): Promise<R> => {
     const functionUuid = await ensureRegistration();
-    const span = createVersionedSpan(fn, options, closure, functionUuid);
+    const span = createVersionedSpan(fn, options, closure, functionUuid, args);
 
     const otelSpan = span.otelSpan;
     /* v8 ignore start - ternary branch with no-tracer case difficult to test */
@@ -328,6 +334,7 @@ export function version<Args extends unknown[], R, CallT extends CallLike>(
     async function execute(): Promise<R> {
       try {
         const result = await fn(...args);
+        recordResult(span, result);
         return result;
       } catch (error) {
         if (error instanceof Error) {
@@ -346,7 +353,7 @@ export function version<Args extends unknown[], R, CallT extends CallLike>(
 
   versioned.wrapped = async (...args: Args): Promise<VersionedResult<R>> => {
     const functionUuid = await ensureRegistration();
-    const span = createVersionedSpan(fn, options, closure, functionUuid);
+    const span = createVersionedSpan(fn, options, closure, functionUuid, args);
 
     const otelSpan = span.otelSpan;
     /* v8 ignore start - ternary branch with no-tracer case difficult to test */
@@ -362,6 +369,7 @@ export function version<Args extends unknown[], R, CallT extends CallLike>(
     async function execute(): Promise<VersionedResult<R>> {
       try {
         const result = await fn(...args);
+        recordResult(span, result);
         return createVersionedResult(result, span, functionUuid);
       } catch (error) {
         if (error instanceof Error) {

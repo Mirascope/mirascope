@@ -39,7 +39,7 @@ export interface TracedCall<CallT> {
 /**
  * Create a span for a traced call invocation.
  */
-function createTracedCallSpan(
+export function createTracedCallSpan(
   callName: string,
   options: BaseOpsOptions,
   vars: unknown,
