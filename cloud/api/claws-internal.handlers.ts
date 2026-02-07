@@ -10,10 +10,13 @@
  * API keys, integration tokens). The service binding is the only auth
  * boundary — there is no token or network-level isolation beyond it.
  */
+import { and, eq } from "drizzle-orm";
 import { Effect } from "effect";
 import { Schema } from "effect";
 
-import { NotFoundError } from "@/errors";
+import { DrizzleORM } from "@/db/client";
+import { claws, organizations } from "@/db/schema";
+import { DatabaseError, NotFoundError } from "@/errors";
 
 // ---------------------------------------------------------------------------
 // Schemas
@@ -62,7 +65,28 @@ export const ClawStatusReportSchema = Schema.Struct({
 export type ClawStatusReport = typeof ClawStatusReportSchema.Type;
 
 // ---------------------------------------------------------------------------
-// Handlers — TODO implementations
+// Helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Decrypt secretsEncrypted from the DB.
+ *
+ * TODO: Implement real AES-256-GCM decryption using Web Crypto API.
+ * For now, secretsEncrypted is treated as plain JSON.
+ */
+export function decryptSecrets(
+  secretsEncrypted: string | null,
+): Record<string, string | undefined> {
+  if (!secretsEncrypted) return {};
+  try {
+    return JSON.parse(secretsEncrypted) as Record<string, string | undefined>;
+  } catch {
+    return {};
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Handlers
 // ---------------------------------------------------------------------------
 
 /**
@@ -73,10 +97,46 @@ export type ClawStatusReport = typeof ClawStatusReportSchema.Type;
  * used as the Durable Object key. Results are LRU-cached by the worker.
  */
 export const resolveClawHandler = (
-  _orgSlug: string,
-  _clawSlug: string,
-): Effect.Effect<ClawResolveResponse, NotFoundError> =>
-  Effect.fail(new NotFoundError({ message: "resolve: not yet implemented" }));
+  orgSlug: string,
+  clawSlug: string,
+): Effect.Effect<
+  ClawResolveResponse,
+  NotFoundError | DatabaseError,
+  DrizzleORM
+> =>
+  Effect.gen(function* () {
+    const client = yield* DrizzleORM;
+
+    const [claw] = yield* client
+      .select({
+        clawId: claws.id,
+        organizationId: claws.organizationId,
+      })
+      .from(claws)
+      .innerJoin(organizations, eq(claws.organizationId, organizations.id))
+      .where(and(eq(organizations.slug, orgSlug), eq(claws.slug, clawSlug)))
+      .limit(1)
+      .pipe(
+        Effect.mapError(
+          (e) =>
+            new DatabaseError({
+              message: "Failed to resolve claw",
+              cause: e,
+            }),
+        ),
+      );
+
+    if (!claw) {
+      return yield* Effect.fail(
+        new NotFoundError({
+          message: `Claw ${clawSlug} not found in organization ${orgSlug}`,
+          resource: "claw",
+        }),
+      );
+    }
+
+    return claw;
+  });
 
 /**
  * Return the full OpenClawConfig for a given clawId.
@@ -90,9 +150,64 @@ export const resolveClawHandler = (
  * integration tokens).
  */
 export const bootstrapClawHandler = (
-  _clawId: string,
-): Effect.Effect<OpenClawConfigResponse, NotFoundError> =>
-  Effect.fail(new NotFoundError({ message: "bootstrap: not yet implemented" }));
+  clawId: string,
+): Effect.Effect<
+  OpenClawConfigResponse,
+  NotFoundError | DatabaseError,
+  DrizzleORM
+> =>
+  Effect.gen(function* () {
+    const client = yield* DrizzleORM;
+
+    const [claw] = yield* client
+      .select({
+        clawId: claws.id,
+        clawSlug: claws.slug,
+        organizationId: claws.organizationId,
+        organizationSlug: organizations.slug,
+        instanceType: claws.instanceType,
+        bucketName: claws.bucketName,
+        secretsEncrypted: claws.secretsEncrypted,
+      })
+      .from(claws)
+      .innerJoin(organizations, eq(claws.organizationId, organizations.id))
+      .where(eq(claws.id, clawId))
+      .limit(1)
+      .pipe(
+        Effect.mapError(
+          (e) =>
+            new DatabaseError({
+              message: "Failed to fetch claw for bootstrap",
+              cause: e,
+            }),
+        ),
+      );
+
+    if (!claw) {
+      return yield* Effect.fail(
+        new NotFoundError({
+          message: `Claw ${clawId} not found`,
+          resource: "claw",
+        }),
+      );
+    }
+
+    const secrets = decryptSecrets(claw.secretsEncrypted);
+
+    return {
+      clawId: claw.clawId,
+      clawSlug: claw.clawSlug,
+      organizationId: claw.organizationId,
+      organizationSlug: claw.organizationSlug,
+      instanceType: claw.instanceType,
+      r2: {
+        bucketName: claw.bucketName ?? "",
+        accessKeyId: (secrets.R2_ACCESS_KEY_ID as string) ?? "",
+        secretAccessKey: (secrets.R2_SECRET_ACCESS_KEY as string) ?? "",
+      },
+      containerEnv: secrets,
+    } satisfies OpenClawConfigResponse;
+  });
 
 /**
  * Accept a status report from the dispatch worker.
@@ -101,9 +216,40 @@ export const bootstrapClawHandler = (
  * along with optional error message and startedAt timestamp.
  */
 export const reportClawStatusHandler = (
-  _clawId: string,
-  _payload: ClawStatusReport,
-): Effect.Effect<void, NotFoundError> =>
-  Effect.fail(
-    new NotFoundError({ message: "reportStatus: not yet implemented" }),
-  );
+  clawId: string,
+  payload: ClawStatusReport,
+): Effect.Effect<void, NotFoundError | DatabaseError, DrizzleORM> =>
+  Effect.gen(function* () {
+    const client = yield* DrizzleORM;
+
+    const [updated] = yield* client
+      .update(claws)
+      .set({
+        status: payload.status,
+        lastError: payload.errorMessage ?? null,
+        lastDeployedAt: payload.startedAt
+          ? new Date(payload.startedAt)
+          : undefined,
+        updatedAt: new Date(),
+      })
+      .where(eq(claws.id, clawId))
+      .returning({ id: claws.id })
+      .pipe(
+        Effect.mapError(
+          (e) =>
+            new DatabaseError({
+              message: "Failed to update claw status",
+              cause: e,
+            }),
+        ),
+      );
+
+    if (!updated) {
+      return yield* Effect.fail(
+        new NotFoundError({
+          message: `Claw ${clawId} not found`,
+          resource: "claw",
+        }),
+      );
+    }
+  });
