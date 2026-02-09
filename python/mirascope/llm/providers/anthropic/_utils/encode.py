@@ -33,7 +33,6 @@ if TYPE_CHECKING:
     from ....models import Params, ThinkingLevel
 
 DEFAULT_MAX_TOKENS = 16000
-# TODO: Change DEFAULT_FORMAT_MODE to strict when strict is no longer a beta feature.
 DEFAULT_FORMAT_MODE = "tool"
 
 # Thinking level to a float multiplier % of max tokens
