@@ -50,7 +50,7 @@ function CloudIndexPage() {
 
   const handleClawClick = (claw: (typeof claws)[number]) => {
     setSelectedClaw(claw);
-    void navigate({ to: "/cloud/claws" });
+    void navigate({ to: "/cloud/claws/chat" });
   };
 
   const handleProjectClick = (project: PublicProject) => {

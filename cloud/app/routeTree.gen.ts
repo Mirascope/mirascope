@@ -51,6 +51,7 @@ import { Route as CloudProjectsOnboardingRouteImport } from './routes/cloud/proj
 import { Route as CloudProjectsDashboardRouteImport } from './routes/cloud/projects/dashboard'
 import { Route as CloudProjectsAnnotationQueueRouteImport } from './routes/cloud/projects/annotation-queue'
 import { Route as CloudClawsConfigRouteImport } from './routes/cloud/claws/config'
+import { Route as CloudClawsChatRouteImport } from './routes/cloud/claws/chat'
 import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
 import { Route as AuthGithubProxyCallbackRouteImport } from './routes/auth/github.proxy-callback'
@@ -277,6 +278,11 @@ const CloudClawsConfigRoute = CloudClawsConfigRouteImport.update({
   path: '/claws/config',
   getParentRoute: () => CloudRoute,
 } as any)
+const CloudClawsChatRoute = CloudClawsChatRouteImport.update({
+  id: '/claws/chat',
+  path: '/claws/chat',
+  getParentRoute: () => CloudRoute,
+} as any)
 const AuthGoogleProxyCallbackRoute = AuthGoogleProxyCallbackRouteImport.update({
   id: '/proxy-callback',
   path: '/proxy-callback',
@@ -382,6 +388,7 @@ export interface FileRoutesByFullPath {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/cloud/claws/chat': typeof CloudClawsChatRoute
   '/cloud/claws/config': typeof CloudClawsConfigRoute
   '/cloud/projects/annotation-queue': typeof CloudProjectsAnnotationQueueRoute
   '/cloud/projects/dashboard': typeof CloudProjectsDashboardRoute
@@ -435,6 +442,7 @@ export interface FileRoutesByTo {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/cloud/claws/chat': typeof CloudClawsChatRoute
   '/cloud/claws/config': typeof CloudClawsConfigRoute
   '/cloud/projects/annotation-queue': typeof CloudProjectsAnnotationQueueRoute
   '/cloud/projects/dashboard': typeof CloudProjectsDashboardRoute
@@ -493,6 +501,7 @@ export interface FileRoutesById {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/cloud/claws/chat': typeof CloudClawsChatRoute
   '/cloud/claws/config': typeof CloudClawsConfigRoute
   '/cloud/projects/annotation-queue': typeof CloudProjectsAnnotationQueueRoute
   '/cloud/projects/dashboard': typeof CloudProjectsDashboardRoute
@@ -552,6 +561,7 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/cloud/claws/chat'
     | '/cloud/claws/config'
     | '/cloud/projects/annotation-queue'
     | '/cloud/projects/dashboard'
@@ -605,6 +615,7 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/cloud/claws/chat'
     | '/cloud/claws/config'
     | '/cloud/projects/annotation-queue'
     | '/cloud/projects/dashboard'
@@ -662,6 +673,7 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/cloud/claws/chat'
     | '/cloud/claws/config'
     | '/cloud/projects/annotation-queue'
     | '/cloud/projects/dashboard'
@@ -1003,6 +1015,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CloudClawsConfigRouteImport
       parentRoute: typeof CloudRoute
     }
+    '/cloud/claws/chat': {
+      id: '/cloud/claws/chat'
+      path: '/claws/chat'
+      fullPath: '/cloud/claws/chat'
+      preLoaderRoute: typeof CloudClawsChatRouteImport
+      parentRoute: typeof CloudRoute
+    }
     '/auth/google/proxy-callback': {
       id: '/auth/google/proxy-callback'
       path: '/proxy-callback'
@@ -1139,6 +1158,7 @@ interface CloudRouteChildren {
   CloudLoginRoute: typeof CloudLoginRoute
   CloudSettingsRoute: typeof CloudSettingsRouteWithChildren
   CloudIndexRoute: typeof CloudIndexRoute
+  CloudClawsChatRoute: typeof CloudClawsChatRoute
   CloudClawsConfigRoute: typeof CloudClawsConfigRoute
   CloudProjectsAnnotationQueueRoute: typeof CloudProjectsAnnotationQueueRoute
   CloudProjectsDashboardRoute: typeof CloudProjectsDashboardRoute
@@ -1155,6 +1175,7 @@ const CloudRouteChildren: CloudRouteChildren = {
   CloudLoginRoute: CloudLoginRoute,
   CloudSettingsRoute: CloudSettingsRouteWithChildren,
   CloudIndexRoute: CloudIndexRoute,
+  CloudClawsChatRoute: CloudClawsChatRoute,
   CloudClawsConfigRoute: CloudClawsConfigRoute,
   CloudProjectsAnnotationQueueRoute: CloudProjectsAnnotationQueueRoute,
   CloudProjectsDashboardRoute: CloudProjectsDashboardRoute,
