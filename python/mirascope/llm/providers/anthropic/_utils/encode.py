@@ -307,6 +307,19 @@ def encode_content(
     return blocks
 
 
+def raw_message_has_format_tool(raw_message: object) -> bool:
+    """Check if a raw Anthropic message contains a format tool call."""
+    if not isinstance(raw_message, dict):
+        return False
+    content = cast(dict[str, object], raw_message).get("content")
+    return isinstance(content, list) and any(
+        block.get("type") == "tool_use"
+        and isinstance(name := block.get("name"), str)
+        and name.startswith(FORMAT_TOOL_NAME)
+        for block in cast(list[dict[str, object]], content)
+    )
+
+
 def _encode_message(
     message: UserMessage | AssistantMessage,
     model_id: AnthropicModelId,
@@ -328,6 +341,7 @@ def _encode_message(
         and message.raw_message
         and not encode_thoughts
         and not add_cache_control
+        and not raw_message_has_format_tool(message.raw_message)
     ):
         return cast(anthropic_types.MessageParam, message.raw_message)
 

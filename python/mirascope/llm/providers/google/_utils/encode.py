@@ -252,6 +252,19 @@ def _encode_content(
     return result
 
 
+def _raw_message_has_format_tool(raw_message: object) -> bool:
+    """Check if a raw Google message contains a format tool call."""
+    if not isinstance(raw_message, dict):
+        return False
+    parts = cast(dict[str, object], raw_message).get("parts")
+    return isinstance(parts, list) and any(
+        isinstance(fc := part.get("function_call"), dict)
+        and isinstance(name := cast(dict[str, object], fc).get("name"), str)
+        and name.startswith(FORMAT_TOOL_NAME)
+        for part in cast(list[dict[str, object]], parts)
+    )
+
+
 def _encode_message(
     message: UserMessage | AssistantMessage,
     model_id: GoogleModelId,
@@ -264,6 +277,7 @@ def _encode_message(
         and message.model_id == model_id
         and message.raw_message
         and not encode_thoughts
+        and not _raw_message_has_format_tool(message.raw_message)
     ):
         return cast(genai_types.ContentDict, message.raw_message)
     return genai_types.ContentDict(

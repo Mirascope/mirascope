@@ -18,6 +18,9 @@ from mirascope.llm.providers.openai.completions._utils import (
     encode_request,
     feature_info_for_openai_model,
 )
+from mirascope.llm.providers.openai.completions._utils.encode import (
+    _raw_message_has_format_tool,  # pyright: ignore[reportPrivateUsage]
+)
 from mirascope.llm.tools import Toolkit
 
 
@@ -316,3 +319,9 @@ def test_encode_url_document_throws() -> None:
             feature_info=feature_info_for_openai_model("gpt-4o"),
             provider_id="openai:completions",
         )
+
+
+def test_raw_message_has_format_tool_non_dict() -> None:
+    """Test that _raw_message_has_format_tool returns False for non-dict input."""
+    assert _raw_message_has_format_tool(None) is False
+    assert _raw_message_has_format_tool("not a dict") is False

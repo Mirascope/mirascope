@@ -182,6 +182,19 @@ def _encode_user_message(
     return result
 
 
+def _raw_message_has_format_tool(raw_message: object) -> bool:
+    """Check if a raw OpenAI completions message contains a format tool call."""
+    if not isinstance(raw_message, dict):
+        return False
+    tool_calls = cast(dict[str, object], raw_message).get("tool_calls")
+    return isinstance(tool_calls, list) and any(
+        isinstance(fn := tc.get("function"), dict)
+        and isinstance(name := cast(dict[str, object], fn).get("name"), str)
+        and name.startswith(FORMAT_TOOL_NAME)
+        for tc in cast(list[dict[str, object]], tool_calls)
+    )
+
+
 def _encode_assistant_message(
     message: AssistantMessage, model_id: OpenAIModelId, encode_thoughts_as_text: bool
 ) -> openai_types.ChatCompletionAssistantMessageParam:
@@ -193,6 +206,7 @@ def _encode_assistant_message(
         == model_name(model_id=model_id, api_mode="completions")
         and message.raw_message
         and not encode_thoughts_as_text
+        and not _raw_message_has_format_tool(message.raw_message)
     ):
         return cast(
             openai_types.ChatCompletionAssistantMessageParam, message.raw_message

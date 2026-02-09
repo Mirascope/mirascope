@@ -9,6 +9,7 @@ from mirascope.llm.content.document import (
     TextDocumentSource,
 )
 from mirascope.llm.providers.anthropic._utils import encode_request
+from mirascope.llm.providers.anthropic._utils.encode import raw_message_has_format_tool
 from mirascope.llm.tools import Toolkit
 
 
@@ -178,3 +179,9 @@ def test_encode_document_with_cache_control_in_multi_turn() -> None:
             ],
         }
     )
+
+
+def test_raw_message_has_format_tool_non_dict() -> None:
+    """Test that raw_message_has_format_tool returns False for non-dict input."""
+    assert raw_message_has_format_tool(None) is False
+    assert raw_message_has_format_tool("not a dict") is False

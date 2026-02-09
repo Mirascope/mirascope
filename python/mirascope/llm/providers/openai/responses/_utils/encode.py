@@ -175,6 +175,16 @@ def _encode_user_message(
     return result
 
 
+def _raw_message_has_format_tool(raw_message: object) -> bool:
+    """Check if a raw OpenAI responses message contains a format tool call."""
+    return isinstance(raw_message, list) and any(
+        item.get("type") == "function_call"
+        and isinstance(name := item.get("name"), str)
+        and name.startswith(FORMAT_TOOL_NAME)
+        for item in cast(list[dict[str, object]], raw_message)
+    )
+
+
 def _encode_assistant_message(
     message: AssistantMessage, encode_thoughts: bool
 ) -> ResponseInputParam:
@@ -240,6 +250,7 @@ def _encode_message(
         == model_name(model_id=model_id, api_mode="responses")
         and message.raw_message
         and not encode_thoughts
+        and not _raw_message_has_format_tool(message.raw_message)
     ):
         return cast(ResponseInputParam, message.raw_message)
 

@@ -13,6 +13,9 @@ from mirascope.llm.content.document import (
 )
 from mirascope.llm.exceptions import FeatureNotSupportedError
 from mirascope.llm.providers.google._utils import encode_request
+from mirascope.llm.providers.google._utils.encode import (
+    _raw_message_has_format_tool,  # pyright: ignore[reportPrivateUsage]
+)
 from mirascope.llm.tools import Toolkit
 
 
@@ -107,3 +110,9 @@ def test_encode_url_document_throws() -> None:
             tools=Toolkit(None),
             params={},
         )
+
+
+def test_raw_message_has_format_tool_non_dict() -> None:
+    """Test that _raw_message_has_format_tool returns False for non-dict input."""
+    assert _raw_message_has_format_tool(None) is False
+    assert _raw_message_has_format_tool("not a dict") is False
