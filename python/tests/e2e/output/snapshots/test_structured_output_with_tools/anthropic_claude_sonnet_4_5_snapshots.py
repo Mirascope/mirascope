@@ -2,7 +2,6 @@ from inline_snapshot import snapshot
 
 from mirascope.llm import (
     AssistantMessage,
-    SystemMessage,
     Text,
     ToolCall,
     ToolOutput,
@@ -18,21 +17,16 @@ sync_snapshot = snapshot(
             "params": {},
             "finish_reason": None,
             "usage": {
-                "input_tokens": 968,
-                "output_tokens": 109,
+                "input_tokens": 961,
+                "output_tokens": 39,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "provider_tool_usage": None,
-                "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=968, output_tokens=109, server_tool_use=None, service_tier='standard')",
-                "total_tokens": 1077,
+                "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=961, output_tokens=39, server_tool_use=None, service_tier='standard', inference_geo='not_available')",
+                "total_tokens": 1000,
             },
             "messages": [
-                SystemMessage(
-                    content=Text(
-                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                    )
-                ),
                 UserMessage(
                     content=[
                         Text(
@@ -43,7 +37,7 @@ sync_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="toolu_01EzdnN6ykbHs2wtZ32NYfqU",
+                            id="toolu_01VvfjYgyrLnbahc7TPotSXn",
                             name="get_book_info",
                             args='{"isbn": "0-7653-1178-X"}',
                         )
@@ -55,7 +49,7 @@ sync_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "id": "toolu_01EzdnN6ykbHs2wtZ32NYfqU",
+                                "id": "toolu_01VvfjYgyrLnbahc7TPotSXn",
                                 "input": {"isbn": "0-7653-1178-X"},
                                 "name": "get_book_info",
                                 "type": "tool_use",
@@ -66,7 +60,7 @@ sync_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01EzdnN6ykbHs2wtZ32NYfqU",
+                            id="toolu_01VvfjYgyrLnbahc7TPotSXn",
                             name="get_book_info",
                             result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -85,15 +79,14 @@ sync_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "id": "toolu_014JRN7siMqajE8Lwkj1peBG",
-                                "input": {
+                                "text": '{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}',
+                                "type": "text",
+                                "parsed_output": {
                                     "title": "Mistborn: The Final Empire",
                                     "author": "Brandon Sanderson",
                                     "pages": 544,
                                     "publication_year": 2006,
                                 },
-                                "name": "__mirascope_formatted_output_tool__",
-                                "type": "tool_use",
                             }
                         ],
                     },
@@ -116,8 +109,8 @@ sync_snapshot = snapshot(
                     "title": "BookSummary",
                     "type": "object",
                 },
-                "mode": "tool",
-                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
             "tools": [
                 {
@@ -153,21 +146,16 @@ async_snapshot = snapshot(
             "params": {},
             "finish_reason": None,
             "usage": {
-                "input_tokens": 968,
-                "output_tokens": 109,
+                "input_tokens": 961,
+                "output_tokens": 39,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "provider_tool_usage": None,
-                "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=968, output_tokens=109, server_tool_use=None, service_tier='standard')",
-                "total_tokens": 1077,
+                "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=961, output_tokens=39, server_tool_use=None, service_tier='standard', inference_geo='not_available')",
+                "total_tokens": 1000,
             },
             "messages": [
-                SystemMessage(
-                    content=Text(
-                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                    )
-                ),
                 UserMessage(
                     content=[
                         Text(
@@ -178,7 +166,7 @@ async_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="toolu_01XtfkovhYvKVsW13vBARea6",
+                            id="toolu_01FKaqRvVxqzXxEJzBHeiaJq",
                             name="get_book_info",
                             args='{"isbn": "0-7653-1178-X"}',
                         )
@@ -190,7 +178,7 @@ async_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "id": "toolu_01XtfkovhYvKVsW13vBARea6",
+                                "id": "toolu_01FKaqRvVxqzXxEJzBHeiaJq",
                                 "input": {"isbn": "0-7653-1178-X"},
                                 "name": "get_book_info",
                                 "type": "tool_use",
@@ -201,7 +189,7 @@ async_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01XtfkovhYvKVsW13vBARea6",
+                            id="toolu_01FKaqRvVxqzXxEJzBHeiaJq",
                             name="get_book_info",
                             result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -220,15 +208,14 @@ async_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "id": "toolu_01QDWqPTwZHvw1uaFwX4B7er",
-                                "input": {
+                                "text": '{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}',
+                                "type": "text",
+                                "parsed_output": {
                                     "title": "Mistborn: The Final Empire",
                                     "author": "Brandon Sanderson",
                                     "pages": 544,
                                     "publication_year": 2006,
                                 },
-                                "name": "__mirascope_formatted_output_tool__",
-                                "type": "tool_use",
                             }
                         ],
                     },
@@ -251,8 +238,8 @@ async_snapshot = snapshot(
                     "title": "BookSummary",
                     "type": "object",
                 },
-                "mode": "tool",
-                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
             "tools": [
                 {
@@ -287,11 +274,6 @@ stream_snapshot = snapshot(
             "provider_model_name": "claude-sonnet-4-5",
             "finish_reason": None,
             "messages": [
-                SystemMessage(
-                    content=Text(
-                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                    )
-                ),
                 UserMessage(
                     content=[
                         Text(
@@ -302,7 +284,7 @@ stream_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="toolu_0198sqfKbNFTPEcamarTvgR9",
+                            id="toolu_01NbSecuFz1NKmNbeA6QfTAk",
                             name="get_book_info",
                             args='{"isbn": "0-7653-1178-X"}',
                         )
@@ -315,7 +297,7 @@ stream_snapshot = snapshot(
                         "content": [
                             {
                                 "type": "tool_use",
-                                "id": "toolu_0198sqfKbNFTPEcamarTvgR9",
+                                "id": "toolu_01NbSecuFz1NKmNbeA6QfTAk",
                                 "name": "get_book_info",
                                 "input": {"isbn": "0-7653-1178-X"},
                             }
@@ -325,7 +307,7 @@ stream_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_0198sqfKbNFTPEcamarTvgR9",
+                            id="toolu_01NbSecuFz1NKmNbeA6QfTAk",
                             name="get_book_info",
                             result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -344,15 +326,8 @@ stream_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "type": "tool_use",
-                                "id": "toolu_01RCYGNdK3iFnBKxFJbQeJPa",
-                                "name": "__mirascope_formatted_output_tool__",
-                                "input": {
-                                    "title": "Mistborn: The Final Empire",
-                                    "author": "Brandon Sanderson",
-                                    "pages": 544,
-                                    "publication_year": 2006,
-                                },
+                                "type": "text",
+                                "text": '{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}',
                             }
                         ],
                     },
@@ -375,8 +350,8 @@ stream_snapshot = snapshot(
                     "title": "BookSummary",
                     "type": "object",
                 },
-                "mode": "tool",
-                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
             "tools": [
                 {
@@ -401,16 +376,16 @@ stream_snapshot = snapshot(
                 }
             ],
             "usage": {
-                "input_tokens": 968,
-                "output_tokens": 109,
+                "input_tokens": 961,
+                "output_tokens": 39,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 1077,
+                "total_tokens": 1000,
             },
-            "n_chunks": 23,
+            "n_chunks": 8,
         }
     }
 )
@@ -422,11 +397,6 @@ async_stream_snapshot = snapshot(
             "provider_model_name": "claude-sonnet-4-5",
             "finish_reason": None,
             "messages": [
-                SystemMessage(
-                    content=Text(
-                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                    )
-                ),
                 UserMessage(
                     content=[
                         Text(
@@ -437,7 +407,7 @@ async_stream_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="toolu_01UxxMNuPSQk9bhAhjsyywh5",
+                            id="toolu_01VYKASLxyBRcHnMHqxYzUFm",
                             name="get_book_info",
                             args='{"isbn": "0-7653-1178-X"}',
                         )
@@ -450,7 +420,7 @@ async_stream_snapshot = snapshot(
                         "content": [
                             {
                                 "type": "tool_use",
-                                "id": "toolu_01UxxMNuPSQk9bhAhjsyywh5",
+                                "id": "toolu_01VYKASLxyBRcHnMHqxYzUFm",
                                 "name": "get_book_info",
                                 "input": {"isbn": "0-7653-1178-X"},
                             }
@@ -460,7 +430,7 @@ async_stream_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01UxxMNuPSQk9bhAhjsyywh5",
+                            id="toolu_01VYKASLxyBRcHnMHqxYzUFm",
                             name="get_book_info",
                             result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -479,15 +449,8 @@ async_stream_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "type": "tool_use",
-                                "id": "toolu_01Ld4Ts2afCeHS3E4z7RUeSN",
-                                "name": "__mirascope_formatted_output_tool__",
-                                "input": {
-                                    "title": "Mistborn: The Final Empire",
-                                    "author": "Brandon Sanderson",
-                                    "pages": 544,
-                                    "publication_year": 2006,
-                                },
+                                "type": "text",
+                                "text": '{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}',
                             }
                         ],
                     },
@@ -510,8 +473,8 @@ async_stream_snapshot = snapshot(
                     "title": "BookSummary",
                     "type": "object",
                 },
-                "mode": "tool",
-                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
             "tools": [
                 {
@@ -536,16 +499,16 @@ async_stream_snapshot = snapshot(
                 }
             ],
             "usage": {
-                "input_tokens": 968,
-                "output_tokens": 109,
+                "input_tokens": 961,
+                "output_tokens": 39,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 1077,
+                "total_tokens": 1000,
             },
-            "n_chunks": 18,
+            "n_chunks": 8,
         }
     }
 )
