@@ -80,7 +80,7 @@ export function CreateProjectModal({
               Create a new project to organize your prompts and generations.
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
+          <div className="px-6 py-4">
             <div className="space-y-2">
               <Label htmlFor="project-name">Project Name</Label>
               <Input

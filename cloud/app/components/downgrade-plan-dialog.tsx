@@ -82,7 +82,7 @@ function DowngradeBlockedContent({
   targetPlan: PlanTier;
 }) {
   return (
-    <div className="space-y-4 py-4">
+    <div className="space-y-4 px-6 py-4">
       <div className="rounded-lg border-2 border-destructive/50 bg-destructive/10 p-4">
         <p className="text-sm font-medium text-destructive mb-3">
           Cannot downgrade to {planLabels[targetPlan]}
@@ -158,7 +158,7 @@ function DowngradeAllowedContent({
   validationErrors?: readonly DowngradeValidationError[];
 }) {
   return (
-    <div className="space-y-4 py-4">
+    <div className="space-y-4 px-6 py-4">
       {/* Usage Check - Green checkmarks */}
       {validationErrors && validationErrors.length === 0 && (
         <div className="rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950 p-4">
@@ -340,7 +340,7 @@ export function DowngradePlanDialog({
         </DialogHeader>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-8">
+          <div className="flex items-center justify-center px-6 py-8">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : preview?.canDowngrade === false ? (

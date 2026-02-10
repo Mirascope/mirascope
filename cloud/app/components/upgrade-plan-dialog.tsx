@@ -15,6 +15,7 @@ import { RouterCreditsPaymentForm } from "@/app/components/router-credits-paymen
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -173,7 +174,7 @@ export function UpgradePlanDialog({
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-4 py-4">
+            <DialogBody className="space-y-4">
               {isLoadingPreview ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -240,7 +241,7 @@ export function UpgradePlanDialog({
                   Failed to load pricing preview. Please try again.
                 </p>
               )}
-            </div>
+            </DialogBody>
 
             <DialogFooter>
               <Button
@@ -274,23 +275,13 @@ export function UpgradePlanDialog({
                 Complete your upgrade to {planLabels[targetPlan]}
               </DialogDescription>
             </DialogHeader>
-            <div className="py-4">
-              <RouterCreditsPaymentForm
-                clientSecret={clientSecret}
-                amount={previewData.proratedAmountInDollars}
-                onSuccess={handleUpgradeSuccess}
-                onError={handlePaymentError}
-              />
-            </div>
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setStep("preview")}
-              >
-                Back
-              </Button>
-            </DialogFooter>
+            <RouterCreditsPaymentForm
+              clientSecret={clientSecret}
+              amount={previewData.proratedAmountInDollars}
+              onSuccess={handleUpgradeSuccess}
+              onError={handlePaymentError}
+              onBack={() => setStep("preview")}
+            />
           </>
         )}
 
@@ -302,7 +293,7 @@ export function UpgradePlanDialog({
                 Your plan has been upgraded to {planLabels[targetPlan]}
               </DialogDescription>
             </DialogHeader>
-            <div className="py-6 text-center">
+            <div className="px-6 py-6 text-center">
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
                 <svg
                   className="h-6 w-6 text-green-600 dark:text-green-400"

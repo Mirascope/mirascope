@@ -41,9 +41,10 @@ describe("payment intents", () => {
                   paymentIntents: {
                     create: (params: StripeSDK.PaymentIntentCreateParams) => {
                       expect(params.setup_future_usage).toBe("off_session");
-                      expect(params.automatic_payment_methods?.enabled).toBe(
-                        true,
-                      );
+                      expect(params.payment_method_types).toEqual([
+                        "card",
+                        "link",
+                      ]);
                       return Effect.succeed({
                         id: `pi_test_${crypto.randomUUID()}`,
                         client_secret: `pi_test_${crypto.randomUUID()}_secret_${crypto.randomUUID()}`,

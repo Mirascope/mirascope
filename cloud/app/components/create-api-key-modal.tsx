@@ -134,7 +134,7 @@ export function CreateApiKeyModal({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="py-4">
+          <div className="px-6 py-4">
             <Alert className="bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
               <AlertTriangle className="h-4 w-4 text-green-600 dark:text-green-400" />
               <AlertDescription className="text-green-800 dark:text-green-200">
@@ -189,7 +189,7 @@ export function CreateApiKeyModal({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-4 px-6 py-4">
             {error && (
               <Alert variant="destructive">
                 <AlertTriangle className="h-4 w-4" />

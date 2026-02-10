@@ -157,7 +157,7 @@ export function CreateClawModal({
               Launch a new AI-powered bot for your organization.
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4 space-y-4">
+          <div className="px-6 py-4 space-y-4">
             {/* Name */}
             <div className="space-y-2">
               <Label htmlFor="claw-name">Name</Label>

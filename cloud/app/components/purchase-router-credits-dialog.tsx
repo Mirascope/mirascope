@@ -11,6 +11,7 @@ import { RouterCreditsPaymentForm } from "@/app/components/router-credits-paymen
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -218,7 +219,7 @@ export function PurchaseRouterCreditsDialog({
                 </span>
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
+            <DialogBody className="grid gap-4">
               <div className="space-y-2">
                 <Label>Select Amount</Label>
                 <div className="grid grid-cols-4 gap-2">
@@ -293,7 +294,7 @@ export function PurchaseRouterCreditsDialog({
                   </button>
                 </div>
               )}
-            </div>
+            </DialogBody>
             <DialogFooter>
               <Button
                 type="button"
@@ -327,22 +328,17 @@ export function PurchaseRouterCreditsDialog({
                 credits
               </DialogDescription>
             </DialogHeader>
-            <div className="py-4">
-              <RouterCreditsPaymentForm
-                clientSecret={clientSecret}
-                amount={finalAmount}
-                onSuccess={handlePaymentSuccess}
-                onError={handlePaymentError}
-              />
-              <p className="mt-3 text-xs text-muted-foreground">
+            <RouterCreditsPaymentForm
+              clientSecret={clientSecret}
+              amount={finalAmount}
+              onSuccess={handlePaymentSuccess}
+              onError={handlePaymentError}
+              onBack={handleBack}
+            >
+              <p className="text-xs text-muted-foreground">
                 Your card will be saved for future purchases.
               </p>
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleBack}>
-                Back
-              </Button>
-            </DialogFooter>
+            </RouterCreditsPaymentForm>
           </>
         )}
 
@@ -354,7 +350,7 @@ export function PurchaseRouterCreditsDialog({
                 Your credits have been added to your account
               </DialogDescription>
             </DialogHeader>
-            <div className="py-6 text-center">
+            <div className="px-6 py-6 text-center">
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
                 <svg
                   className="h-6 w-6 text-green-600 dark:text-green-400"

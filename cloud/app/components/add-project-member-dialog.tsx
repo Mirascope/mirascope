@@ -123,7 +123,7 @@ export function AddProjectMemberDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4 px-6 py-4">
           {apiError && (
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />

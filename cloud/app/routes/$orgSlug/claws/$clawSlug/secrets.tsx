@@ -366,7 +366,7 @@ function AddVariableDialog({
               Add a new environment variable.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-4 px-6 py-4">
             <div className="grid gap-2">
               <Label htmlFor="var-name">Name</Label>
               <Input
@@ -451,7 +451,7 @@ function EditVariableDialog({
               <span className="font-mono font-semibold">{name}</span>.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-4 px-6 py-4">
             <div className="grid gap-2">
               <Label htmlFor="edit-name">Name</Label>
               <Input
