@@ -8,6 +8,7 @@ import {
   getAllContentMeta,
   getAllDevMeta,
 } from "@/app/lib/content/virtual-module";
+import { createPageHead } from "@/app/lib/seo/head";
 
 /**
  * Convert a route path to a filename for social cards.
@@ -19,6 +20,12 @@ function routeToFilename(route: string): string {
 }
 
 export const Route = createFileRoute("/dev/audit-metadata")({
+  head: () =>
+    createPageHead({
+      route: "/dev/audit-metadata",
+      title: "Developer Tools - SEO Metadata Audit",
+      description: "Audit page metadata and social cards",
+    }),
   component: AuditMetadata,
   loader: () => {
     const devPages = getAllDevMeta();

@@ -6,6 +6,7 @@ import DevLayout from "@/app/components/blocks/dev/dev-layout";
 import LoadingContent from "@/app/components/blocks/loading-content";
 import { ClawCard } from "@/app/components/claw-card";
 import { getAllDevMeta } from "@/app/lib/content/virtual-module";
+import { createPageHead } from "@/app/lib/seo/head";
 
 const baseClaw: Claw = {
   id: "00000000-0000-0000-0000-000000000001",
@@ -51,6 +52,12 @@ const instanceTypes: Claw["instanceType"][] = [
 ];
 
 export const Route = createFileRoute("/dev/claw-cards")({
+  head: () =>
+    createPageHead({
+      route: "/dev/claw-cards",
+      title: "Developer Tools - Claw Cards",
+      description: "Preview claw card component variants",
+    }),
   component: ClawCardsDevPage,
   loader: () => {
     const devPages = getAllDevMeta();
