@@ -292,6 +292,53 @@ jobs:
       - name: Run integration tests
         run: bun run test:integration
 
+  dispatch-worker-docker-tests:
+    name: Dispatch Worker Docker Tests
+    needs: changes
+    if: needs.changes.outputs.dispatch-worker == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPENCLAW_SRC: ${{ github.workspace }}/openclaw
+    defaults:
+      run:
+        working-directory: cloud/claws/dispatch-worker
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: openclaw/openclaw
+          path: openclaw
+
+      - name: Setup `bun`
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build & start OpenClaw gateway
+        working-directory: cloud/claws/dispatch-worker/tests/docker
+        run: |
+          docker compose -f docker-compose.yml up -d --build --wait || {
+            echo "=== Container logs ==="
+            docker compose -f docker-compose.yml logs --no-color
+            exit 1
+          }
+
+      - name: Run Docker integration tests
+        run: bun run test:docker
+
+      - name: Gateway logs (on failure)
+        if: failure()
+        working-directory: cloud/claws/dispatch-worker/tests/docker
+        run: docker compose -f docker-compose.yml logs --no-color 2>/dev/null || true
+
+      - name: Teardown
+        if: always()
+        working-directory: cloud/claws/dispatch-worker/tests/docker
+        run: docker compose -f docker-compose.yml down -v
+
   ci-success:
     name: CI Success
     needs:
@@ -305,6 +352,7 @@ jobs:
         cloud-tests,
         dispatch-worker-lint,
         dispatch-worker-tests,
+        dispatch-worker-docker-tests,
       ]
     runs-on: ubuntu-latest
     if: always()
