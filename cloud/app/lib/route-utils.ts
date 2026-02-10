@@ -7,122 +7,30 @@
  * match the dynamic route.
  */
 
+import { RESERVED_ORG_SLUGS } from "@/db/slug";
+
 /**
- * First path segments that are NOT org slugs.
+ * TanStack Router top-level static route segments that are real file-based
+ * routes but are NOT already listed in RESERVED_ORG_SLUGS.
  *
- * This must include every top-level static route, server redirect, and
- * reserved slug so that `isCloudAppRoute` correctly returns false for them.
- * Keeping this in sync with RESERVED_ORG_SLUGS in db/slug.ts ensures that
- * no reserved slug is misidentified as a cloud app route.
+ * Currently RESERVED_ORG_SLUGS covers all known static routes, so this set
+ * exists only as a forward-looking safety net. If a new top-level route is
+ * added that isn't a reserved slug, add it here.
  */
-const STATIC_SEGMENTS = new Set([
-  // TanStack Router static routes
-  "blog",
-  "dev",
-  "docs",
-  "organizations",
-  "pricing",
-  "privacy",
-  "api",
-  "auth",
-  "invitations",
-  "terms",
-  "router",
-  "login",
-  "onboarding",
-  "cloud",
-  "agents",
-  // Server-level redirects
-  "discord-invite",
-  "slack-invite",
-  "post",
-  "integrations",
-  // Infrastructure
-  "claws",
-  "staging",
-  "www",
-  "internal",
-  "app",
-  "admin",
-  "mail",
-  "cdn",
-  "static",
-  "assets",
-  "status",
-  "health",
-  "graphql",
-  "webhooks",
-  "metrics",
-  // Auth / account flows
-  "signup",
-  "register",
-  "logout",
-  "callback",
-  "oauth",
-  "sso",
-  "account",
-  "settings",
-  "profile",
-  "verify",
-  "reset-password",
-  "confirm",
-  // Marketing / static pages
-  "about",
-  "careers",
-  "jobs",
-  "contact",
-  "support",
-  "help",
-  "press",
-  "changelog",
-  "features",
-  "enterprise",
-  "teams",
-  "home",
-  "security",
-  // Legal
-  "legal",
-  "cookies",
-  "dmca",
-  "compliance",
-  "acceptable-use",
-  // Product routes
-  "dashboard",
-  "console",
-  "explore",
-  "search",
-  "marketplace",
-  "billing",
-  "checkout",
-  "plans",
-  "notifications",
-  "new",
-  "create",
-  "feed",
-  // Abuse prevention
-  "administrator",
-  "moderator",
-  "system",
-  "root",
-  "info",
-  "noreply",
-  "abuse",
-  "postmaster",
-  "webmaster",
-  "mirascope",
-  "official",
-  "team",
-  "staff",
-  "engineering",
-  // Edge-case strings
-  "null",
-  "undefined",
-  "true",
-  "false",
-  "test",
-  "demo",
-  "example",
-  "localhost",
+export const ADDITIONAL_STATIC_SEGMENTS: ReadonlySet<string> = new Set([
+  // All current TanStack Router static routes are already in RESERVED_ORG_SLUGS.
+  // Add any future route segments here that shouldn't be treated as org slugs.
+]);
+
+/**
+ * Combined set of first path segments that are NOT org slugs.
+ *
+ * Union of RESERVED_ORG_SLUGS (the single source of truth for slug
+ * reservation) and any additional static route segments.
+ */
+const STATIC_SEGMENTS: ReadonlySet<string> = new Set([
+  ...RESERVED_ORG_SLUGS,
+  ...ADDITIONAL_STATIC_SEGMENTS,
 ]);
 
 /**
