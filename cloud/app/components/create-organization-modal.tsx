@@ -73,7 +73,7 @@ export function CreateOrganizationModal({
               Create a new organization to manage your projects and team.
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
+          <div className="px-6 py-4">
             <div className="space-y-2">
               <Label htmlFor="org-name">Organization Name</Label>
               <Input

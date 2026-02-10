@@ -22,6 +22,7 @@ import {
 } from "@/app/components/ui/card";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -93,14 +94,16 @@ function SetupForm({
   };
 
   return (
-    <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
-      <PaymentElement />
-      {errorMessage && (
-        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
-          {errorMessage}
-        </div>
-      )}
-      <div className="flex justify-end gap-2">
+    <form onSubmit={(e) => void handleSubmit(e)} className="contents">
+      <DialogBody className="space-y-4">
+        <PaymentElement />
+        {errorMessage && (
+          <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+            {errorMessage}
+          </div>
+        )}
+      </DialogBody>
+      <DialogFooter>
         <Button
           type="button"
           variant="outline"
@@ -112,7 +115,7 @@ function SetupForm({
         <Button type="submit" disabled={!stripe || isProcessing}>
           {isProcessing ? "Saving..." : "Save Card"}
         </Button>
-      </div>
+      </DialogFooter>
     </form>
   );
 }

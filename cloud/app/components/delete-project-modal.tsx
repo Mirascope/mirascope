@@ -118,7 +118,7 @@ export function DeleteProjectModal({
               data.
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
+          <div className="px-6 py-4">
             <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 mb-4">
               <p className="text-sm text-destructive">
                 All prompts, generations, and associated data will be

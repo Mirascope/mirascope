@@ -129,9 +129,7 @@ export class PaymentIntents {
         customer: params.stripeCustomerId,
         amount: amountInCents,
         currency: "usd",
-        automatic_payment_methods: {
-          enabled: true,
-        },
+        payment_method_types: ["card", "link"],
         setup_future_usage: "off_session",
         description: `Mirascope Router Credits - $${params.amountInDollars.toFixed(2)}`,
         metadata,

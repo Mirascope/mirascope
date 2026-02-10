@@ -97,7 +97,7 @@ export function DeleteApiKeyModal({
               key <strong>{apiKey.name}</strong>.
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
+          <div className="px-6 py-4">
             <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 mb-4">
               <p className="text-sm text-destructive">
                 Any applications using this API key will no longer be able to
