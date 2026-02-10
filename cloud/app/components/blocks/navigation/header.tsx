@@ -118,7 +118,10 @@ export default function Header() {
 
           {/* Mobile nav button - hidden on desktop */}
           <button
-            className={HEADER_STYLES.mobileNavButton()}
+            className={cn(
+              HEADER_STYLES.mobileNavButton(),
+              "hover:cursor-pointer",
+            )}
             onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
             aria-label="Toggle mobile navigation"
           >

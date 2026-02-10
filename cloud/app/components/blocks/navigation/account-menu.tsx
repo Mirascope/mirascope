@@ -52,13 +52,13 @@ export function AccountMenu({ className }: AccountMenuProps) {
   // Not authenticated - show Sign In button
   if (!user) {
     return (
-      <Link to="/cloud/login" className={className}>
+      <Link to="/cloud/login" className={cn("cursor-pointer", className)}>
         <Button
           variant={isLandingPage ? "outline" : "default"}
           size="sm"
           className={cn(
             isLandingPage &&
-              "border-white/50 bg-white/10 text-white hover:bg-white/20 hover:border-white/70",
+              "border-white/50 bg-white/10 text-white hover:bg-white/20 hover:border-white/70 hover:text-white",
           )}
         >
           Sign In
@@ -85,7 +85,7 @@ export function AccountMenu({ className }: AccountMenuProps) {
             className={cn(
               "border-input flex h-9 w-[200px] items-center justify-between rounded-md border bg-transparent px-3 py-2 text-sm shadow-sm",
               isLandingPage &&
-                "border-white/50 bg-white/10 text-white hover:bg-white/20 hover:border-white/70",
+                "border-white/50 bg-white/10 text-white hover:bg-white/20 hover:border-white/70 hover:text-white",
               className,
             )}
           >
