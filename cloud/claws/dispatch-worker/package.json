@@ -14,6 +14,7 @@
     "test": "vitest run",
     "test:unit": "vitest run -c vitest.config.ts",
     "test:integration": "vitest run -c vitest.integration.config.ts",
+    "test:docker": "vitest run -c vitest.docker.config.ts",
     "test:watch": "vitest"
   },
   "dependencies": {
@@ -22,9 +23,11 @@
   "devDependencies": {
     "@cloudflare/sandbox": "*",
     "@cloudflare/workers-types": "^4.20250109.0",
+    "@types/ws": "^8.18.1",
     "oxlint": "^1.42.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18",
-    "wrangler": "^4.50.0"
+    "wrangler": "^4.50.0",
+    "ws": "^8.19.0"
   }
 }
