@@ -111,10 +111,10 @@ export function TypingAnimation({ className }: { className?: string }) {
       >
         {displayText}
         <span
-          className="inline-block w-[0.08em] translate-y-[0.05em] bg-mirple align-baseline"
+          className="inline-block w-[0.08em] rounded-full translate-y-[0.05em] bg-mirple align-baseline ml-2"
           style={{
             height: "0.85em",
-            opacity: cursorVisible ? 1 : 0,
+            opacity: cursorVisible ? 0.7 : 0,
             transition: "opacity 0.1s",
           }}
         />
