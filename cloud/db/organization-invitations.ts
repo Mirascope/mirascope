@@ -170,6 +170,7 @@ export class OrganizationInvitations extends BaseAuthenticatedEffectService<
     OWNER: ["ADMIN", "MEMBER"],
     ADMIN: ["MEMBER"],
     MEMBER: [],
+    BOT: [],
   };
 
   /**

@@ -1,0 +1,180 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Choose a lucky number between 1 and
+      10"}], "role": "user"}], "systemInstruction": {"parts": [{"text": "Respond only
+      with valid JSON that matches this exact schema:\n{\n  \"description\": \"Wrapper
+      for primitive type int\",\n  \"properties\": {\n    \"output\": {\n      \"title\":
+      \"Output\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\": [\n    \"output\"\n  ],\n  \"title\":
+      \"intOutput\",\n  \"type\": \"object\"\n}"}], "role": "user"}, "generationConfig":
+      {"responseMimeType": "application/json"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '549'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQUWvCMBSF3/srwn3W4RxO2dvYhI0hiisytu4h2GsbTJOuuR1K6X9f0toaXR9K
+        OOfk3pyvChiDLVexiDmhgQf2ZRXGqubvPK0IFVmjk6yY84LO2farvLONEB7cJagixVgEuqS8pMgq
+        00jV4GXr/vw9OG8otER3PdMxyi5edwHYCSVMukZutHKx93C5gt4VKsaDlUdBt6AZDaXhCS6QuO3K
+        +0aQFzrLKdR7VE+6bLrejibtNI/NVeDkkyYuL63pbPBvsHm2a4X0oXk8bUsuBR1dlXD+EYJHgq7e
+        1bEIPGRAqS6TlC7feH8XnJi1GDdYGNHySjCzBIfjm8lwJ7lJm4VQoMm1Mvgau8xiU77x7e96/nlc
+        Z7Rf/eDyZfw4g6AO/gAV+PmgNgIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 09 Feb 2026 22:09:53 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=870
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"system","content":"Respond only with valid JSON that
+      matches this exact schema:\n{\n  \"description\": \"Wrapper for primitive type
+      int\",\n  \"properties\": {\n    \"output\": {\n      \"title\": \"Output\",\n      \"type\":
+      \"integer\"\n    }\n  },\n  \"required\": [\n    \"output\"\n  ],\n  \"title\":
+      \"intOutput\",\n  \"type\": \"object\"\n}"},{"role":"user","content":"Choose
+      a lucky number between 1 and 10"},{"role":"assistant","content":"{\n  \"output\":
+      7\n}"},{"role":"user","content":"Ok, now choose a different lucky number"}],"model":"gpt-4o","response_format":{"type":"json_object"}}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '621'
+      Content-Type:
+      - application/json
+      Host:
+      - api.openai.com
+      User-Agent:
+      - OpenAI/Python 2.16.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.12.12
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/41S0UrDMBR931eUPK/SbXVbfRMUBoIg6MuclCy5a+PSJCS3ooz9u0m7rZ1O8CWQ
+        c+65Offk7gZRRAQnNxFhJUVWGRnfzZ63o8V0O3+6ZrdL+8BfMrd85JksF8k9GQaFXr8Dw6Pqimmv
+        AxRatTSzQBFC19FslkxnaZZNGqLSHGSQFQbjVMfjZJzGyTxOpgdhqQUD5yte/TWKds0ZLCoOnx5O
+        hkekAudoAR47FnnQahkQQp0TDqlCMuxIphWCalzvViqKVkTXaGpceWSyUvt+rYVN7WiwqmopewRV
+        SiMNozYu3w7M/uRL6sJYvXY/pGQjlHBl7pNxPibvwaE2pGH3/nxr5q/PRiK+UWUwR72F5rnROG37
+        kS7xjs0OHHqDsieaTIYX2uUckArpegESRlkJvJN2adOaC90jBr2hf5u51LsdXKjiP+07gjEwfpVy
+        Y4ELdj5wV2Yh7ONfZaeQG8PEgf3wW5ajABs+gsOG1rJdFeK+HEKV+98qwBor2n3ZmJzybM5Gc5qk
+        ZLAffAMzIPNYOAMAAA==
+    headers:
+      CF-RAY:
+      - 9cb6b1956c8776d6-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 09 Feb 2026 22:09:54 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '489'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      set-cookie:
+      - __cf_bm=NXyV0zfa.sGt6q3Wauqao_a5c025dzQ2CkBMy.IIM9o-1770674993.501531-1.0.1.1-s7bp7bE5JvnZMke9EQHevnEJZ9wy11AuEW9JA_Z1QxJ7DJfXZAdWj.Xr0S1FWY5uaw1vvszGmMyRn6E42txRFj37eDobDL.FNxDwvjlCiPje5a7FQtJWBQcEsfSfQPk2;
+        HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Mon, 09 Feb 2026
+        22:39:54 GMT
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799900'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 7ms
+      x-request-id:
+      - req_12f76e65b6cb4915be9cc5e108704db0
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -41,18 +41,13 @@ function AcceptInvitationPage() {
     setErrorMessage(null);
 
     try {
-      const result = await acceptInvitation.mutateAsync(token);
+      await acceptInvitation.mutateAsync(token);
       setState("success");
 
-      // Store the organization ID so it gets selected on dashboard
-      localStorage.setItem(
-        "mirascope:selectedOrganizationId",
-        result.organizationId,
-      );
-
       // Redirect to cloud dashboard after short delay
+      // The /cloud route will redirect to the appropriate org dashboard
       setTimeout(() => {
-        void navigate({ to: "/cloud/dashboard" });
+        void navigate({ to: "/cloud" });
       }, 2000);
     } catch (error) {
       setState("error");
@@ -90,12 +85,12 @@ function AcceptInvitationPage() {
     const handleSignIn = () => {
       const redirectUrl = `/invitations/accept?token=${token}`;
       sessionStorage.setItem("redirectAfterLogin", redirectUrl);
-      void navigate({ to: "/cloud/login" });
+      void navigate({ to: "/login" });
     };
 
     return (
       <>
-        <div className="fixed inset-0 bg-black/50" />
+        <div className="fixed inset-0 bg-background" />
         <div className="fixed inset-0 top-[60px] flex items-center justify-center p-4">
           <Card className="w-full max-w-md">
             <CardHeader>
@@ -118,7 +113,7 @@ function AcceptInvitationPage() {
   if (!token) {
     return (
       <>
-        <div className="fixed inset-0 bg-black/50" />
+        <div className="fixed inset-0 bg-background" />
         <div className="fixed inset-0 top-[60px] flex items-center justify-center p-4">
           <Card className="w-full max-w-md">
             <CardHeader>
@@ -147,7 +142,7 @@ function AcceptInvitationPage() {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50" />
+      <div className="fixed inset-0 bg-background" />
       <div className="fixed inset-0 top-[60px] flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           {state === "accepting" && (

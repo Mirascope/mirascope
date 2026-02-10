@@ -1,10 +1,13 @@
 import { Link } from "@tanstack/react-router";
 
-import { useIsLandingPage } from "@/app/components/blocks/theme-provider";
+import {
+  useIsLandingPage,
+  useIsLoginPage,
+} from "@/app/components/blocks/theme-provider";
 import { cn } from "@/app/lib/utils";
 
 export default function Footer() {
-  const isLandingPage = useIsLandingPage();
+  const isLandingPage = useIsLandingPage() || useIsLoginPage();
 
   return (
     <footer

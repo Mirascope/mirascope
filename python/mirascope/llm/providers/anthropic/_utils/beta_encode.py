@@ -25,6 +25,8 @@ from ....formatting import (
     Format,
     FormatSpec,
     FormattableT,
+    create_wrapper_model,
+    is_primitive_type,
     resolve_format,
 )
 from ....messages import AssistantMessage, Message, UserMessage
@@ -37,6 +39,7 @@ from .encode import (
     FORMAT_TOOL_NAME,
     encode_content,
     process_params,
+    raw_message_has_format_tool,
 )
 
 if TYPE_CHECKING:
@@ -96,11 +99,26 @@ def _beta_encode_message(
         and message.raw_message
         and not encode_thoughts_as_text
         and not add_cache_control
+        and not raw_message_has_format_tool(message.raw_message)
     ):
         raw = cast(dict[str, Any], message.raw_message)
+        raw_content: Any = raw["content"]
+        # Strip parsed_output from content blocks — the beta SDK adds this field
+        # to text blocks when using structured output, but the API rejects it on input.
+        if isinstance(raw_content, list):
+            raw_content = [
+                {
+                    k: v
+                    for k, v in cast(dict[str, Any], block).items()
+                    if k != "parsed_output"
+                }
+                if isinstance(block, dict) and "parsed_output" in block
+                else block
+                for block in cast(list[Any], raw_content)
+            ]
         return BetaMessageParam(
             role=raw["role"],
-            content=raw["content"],
+            content=raw_content,
         )
 
     content = _beta_encode_content(
@@ -223,7 +241,13 @@ def beta_encode_request(
                     model_id=model_id,
                 )
             else:
-                kwargs["output_format"] = cast(type[BaseModel], format.formattable)
+                formattable = format.formattable
+                kwargs["output_format"] = cast(
+                    type[BaseModel],
+                    create_wrapper_model(formattable)
+                    if is_primitive_type(formattable)
+                    else formattable,
+                )
 
         if format.mode == "tool":
             format_tool_schema = format.create_tool_schema()

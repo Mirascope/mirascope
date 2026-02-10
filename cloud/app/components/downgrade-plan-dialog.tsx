@@ -123,10 +123,13 @@ function DowngradeBlockedContent({
             Next steps:
           </strong>{" "}
           {validationErrors.map((error, i) => {
+            const excess = error.currentUsage - error.limit;
             const action =
               error.resource === "seats"
-                ? `remove ${error.currentUsage - error.limit} member${error.currentUsage - error.limit > 1 ? "s" : ""}`
-                : `delete ${error.currentUsage - error.limit} project${error.currentUsage - error.limit > 1 ? "s" : ""}`;
+                ? `remove ${excess} member${excess > 1 ? "s" : ""}`
+                : error.resource === "claws"
+                  ? `delete ${excess} claw${excess > 1 ? "s" : ""}`
+                  : `delete ${excess} project${excess > 1 ? "s" : ""}`;
             return (
               <span key={error.resource}>
                 {i > 0 && " and "}

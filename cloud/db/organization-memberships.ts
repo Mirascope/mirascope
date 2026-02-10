@@ -35,7 +35,7 @@
  * ```
  */
 
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, eq, isNull, ne, sql } from "drizzle-orm";
 import { Effect } from "effect";
 
 import {
@@ -207,6 +207,7 @@ export class OrganizationMemberships extends BaseAuthenticatedEffectService<
     OWNER: ["ADMIN", "MEMBER"],
     ADMIN: ["MEMBER"],
     MEMBER: [],
+    BOT: [],
   };
 
   /**
@@ -260,11 +261,16 @@ export class OrganizationMemberships extends BaseAuthenticatedEffectService<
         yield* payments.customers.subscriptions.getPlan(organizationId);
       const limits = PLAN_LIMITS[planTier];
 
-      // Count active memberships
+      // Count active memberships (exclude BOT users — they have separate claw limits)
       const [membershipCount] = yield* client
         .select({ count: sql<number>`count(*)::int` })
         .from(organizationMemberships)
-        .where(eq(organizationMemberships.organizationId, organizationId))
+        .where(
+          and(
+            eq(organizationMemberships.organizationId, organizationId),
+            ne(organizationMemberships.role, "BOT"),
+          ),
+        )
         .pipe(
           Effect.mapError(
             (e) =>

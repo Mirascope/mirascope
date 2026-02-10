@@ -525,6 +525,7 @@ describe("Sessions", () => {
           id: user.id,
           email,
           name,
+          accountType: "user" as const,
           deletedAt: user.deletedAt,
         } satisfies PublicUser);
       }),

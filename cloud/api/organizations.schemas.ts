@@ -1,7 +1,7 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
 
-import { createSlugSchema } from "@/db/slug";
+import { createSlugSchema, RESERVED_ORG_SLUGS } from "@/db/slug";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -17,6 +17,7 @@ export const OrganizationRoleSchema = Schema.Literal(
   "OWNER",
   "ADMIN",
   "MEMBER",
+  "BOT",
 );
 
 export const OrganizationSchema = Schema.Struct({
@@ -42,8 +43,14 @@ const OrganizationNameSchema = Schema.String.pipe(
   }),
 );
 
-// Organization slug validation
-const OrganizationSlugSchema = createSlugSchema("Organization");
+// Organization slug validation (with reserved slug check for DNS safety)
+const OrganizationSlugSchema = createSlugSchema("Organization").pipe(
+  Schema.filter((slug) =>
+    RESERVED_ORG_SLUGS.has(slug)
+      ? `"${slug}" is a reserved slug and cannot be used as an organization slug`
+      : undefined,
+  ),
+);
 
 export const CreateOrganizationRequestSchema = Schema.Struct({
   name: OrganizationNameSchema,
@@ -65,11 +72,25 @@ export const CreatePaymentIntentRequestSchema = Schema.Struct({
   amount: Schema.Number.pipe(
     Schema.positive({ message: () => "Amount must be positive" }),
   ),
+  paymentMethodId: Schema.optional(Schema.String),
 });
 
 export const CreatePaymentIntentResponseSchema = Schema.Struct({
-  clientSecret: Schema.String,
+  clientSecret: Schema.NullOr(Schema.String),
   amount: Schema.Number,
+  status: Schema.Literal("requires_payment", "requires_action", "succeeded"),
+});
+
+export const SetupIntentResponseSchema = Schema.Struct({
+  clientSecret: Schema.String,
+});
+
+export const PaymentMethodDetailsSchema = Schema.Struct({
+  id: Schema.String,
+  brand: Schema.String,
+  last4: Schema.String,
+  expMonth: Schema.Number,
+  expYear: Schema.Number,
 });
 
 // Subscription schemas
@@ -106,7 +127,7 @@ export const DowngradeValidationErrorSchema: Schema.Schema<
   DowngradeValidationError,
   DowngradeValidationError
 > = Schema.Struct({
-  resource: Schema.Literal("seats", "projects"),
+  resource: Schema.Literal("seats", "projects", "claws"),
   currentUsage: Schema.Number,
   limit: Schema.Number,
   message: Schema.String,
@@ -134,6 +155,24 @@ export const UpdateSubscriptionResponseSchema = Schema.Struct({
   scheduleId: Schema.optional(Schema.String),
 });
 
+export const AutoReloadSettingsSchema = Schema.Struct({
+  enabled: Schema.Boolean,
+  thresholdCenticents: Schema.BigInt.annotations({
+    description: "Balance threshold in centi-cents (1/10000 of a dollar)",
+  }),
+  amountCenticents: Schema.BigInt.annotations({
+    description: "Reload amount in centi-cents (1/10000 of a dollar)",
+  }),
+});
+
+export const UpdateAutoReloadSettingsRequestSchema = Schema.Struct({
+  enabled: Schema.Boolean,
+  thresholdCenticents: Schema.BigInt.pipe(
+    Schema.greaterThanOrEqualToBigInt(0n),
+  ),
+  amountCenticents: Schema.BigInt.pipe(Schema.greaterThanBigInt(0n)),
+});
+
 export type Organization = typeof OrganizationSchema.Type;
 export type OrganizationWithMembership =
   typeof OrganizationWithMembershipSchema.Type;
@@ -147,6 +186,8 @@ export type CreatePaymentIntentRequest =
   typeof CreatePaymentIntentRequestSchema.Type;
 export type CreatePaymentIntentResponse =
   typeof CreatePaymentIntentResponseSchema.Type;
+export type SetupIntentResponse = typeof SetupIntentResponseSchema.Type;
+export type PaymentMethodDetails = typeof PaymentMethodDetailsSchema.Type;
 export type SubscriptionDetails = typeof SubscriptionDetailsSchema.Type;
 export type PreviewSubscriptionChangeRequest =
   typeof PreviewSubscriptionChangeRequestSchema.Type;
@@ -157,6 +198,9 @@ export type UpdateSubscriptionRequest =
   typeof UpdateSubscriptionRequestSchema.Type;
 export type UpdateSubscriptionResponse =
   typeof UpdateSubscriptionResponseSchema.Type;
+export type AutoReloadSettings = typeof AutoReloadSettingsSchema.Type;
+export type UpdateAutoReloadSettingsRequest =
+  typeof UpdateAutoReloadSettingsRequestSchema.Type;
 
 export class OrganizationsApi extends HttpApiGroup.make("organizations")
   .add(
@@ -273,5 +317,61 @@ export class OrganizationsApi extends HttpApiGroup.make("organizations")
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
       .addError(StripeError, { status: StripeError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.post(
+      "createSetupIntent",
+      "/organizations/:id/payment-method/setup-intent",
+    )
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .addSuccess(SetupIntentResponseSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(StripeError, { status: StripeError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get("getPaymentMethod", "/organizations/:id/payment-method")
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .addSuccess(Schema.NullOr(PaymentMethodDetailsSchema))
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(StripeError, { status: StripeError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.del(
+      "removePaymentMethod",
+      "/organizations/:id/payment-method",
+    )
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .addSuccess(Schema.Void)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(StripeError, { status: StripeError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get(
+      "getAutoReloadSettings",
+      "/organizations/:id/auto-reload",
+    )
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .addSuccess(AutoReloadSettingsSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.put(
+      "updateAutoReloadSettings",
+      "/organizations/:id/auto-reload",
+    )
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .setPayload(UpdateAutoReloadSettingsRequestSchema)
+      .addSuccess(AutoReloadSettingsSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
       .addError(DatabaseError, { status: DatabaseError.status }),
   ) {}

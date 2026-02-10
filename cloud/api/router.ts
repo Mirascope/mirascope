@@ -16,6 +16,23 @@ import {
   getApiKeyHandler,
   deleteApiKeyHandler,
 } from "@/api/api-keys.handlers";
+import {
+  listClawMembersHandler,
+  addClawMemberHandler,
+  getClawMembershipHandler,
+  updateClawMemberRoleHandler,
+  removeClawMemberHandler,
+} from "@/api/claw-memberships.handlers";
+import {
+  listClawsHandler,
+  createClawHandler,
+  getClawHandler,
+  updateClawHandler,
+  deleteClawHandler,
+  getClawUsageHandler,
+  getSecretsHandler,
+  updateSecretsHandler,
+} from "@/api/claws.handlers";
 import { getOpenApiSpecHandler } from "@/api/docs.handlers";
 import {
   listEnvironmentsHandler,
@@ -58,6 +75,11 @@ import {
   previewSubscriptionChangeHandler,
   updateSubscriptionHandler,
   cancelScheduledDowngradeHandler,
+  createSetupIntentHandler,
+  getPaymentMethodHandler,
+  removePaymentMethodHandler,
+  getAutoReloadSettingsHandler,
+  updateAutoReloadSettingsHandler,
 } from "@/api/organizations.handlers";
 import {
   listProjectMembersHandler,
@@ -106,6 +128,8 @@ const TracesHandlersLive = HttpApiBuilder.group(
   (handlers) =>
     handlers
       .handle("create", ({ payload }) => createTraceHandler(payload))
+      // OTEL-compatible endpoint at /api/v2/v1/traces
+      .handle("createOtel", ({ payload }) => createTraceHandler(payload))
       // API key route - extracts environmentId from apiKeyInfo
       .handle("search", ({ payload }) =>
         Effect.gen(function* () {
@@ -172,6 +196,21 @@ const OrganizationsHandlersLive = HttpApiBuilder.group(
       )
       .handle("cancelScheduledDowngrade", ({ path }) =>
         cancelScheduledDowngradeHandler(path.id),
+      )
+      .handle("createSetupIntent", ({ path }) =>
+        createSetupIntentHandler(path.id),
+      )
+      .handle("getPaymentMethod", ({ path }) =>
+        getPaymentMethodHandler(path.id),
+      )
+      .handle("removePaymentMethod", ({ path }) =>
+        removePaymentMethodHandler(path.id),
+      )
+      .handle("getAutoReloadSettings", ({ path }) =>
+        getAutoReloadSettingsHandler(path.id),
+      )
+      .handle("updateAutoReloadSettings", ({ path, payload }) =>
+        updateAutoReloadSettingsHandler(path.id, payload),
       ),
 );
 
@@ -462,6 +501,70 @@ const TagsHandlersLive = HttpApiBuilder.group(
       ),
 );
 
+const ClawsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "claws",
+  (handlers) =>
+    handlers
+      .handle("list", ({ path }) => listClawsHandler(path.organizationId))
+      .handle("create", ({ path, payload }) =>
+        createClawHandler(path.organizationId, payload),
+      )
+      .handle("get", ({ path }) =>
+        getClawHandler(path.organizationId, path.clawId),
+      )
+      .handle("update", ({ path, payload }) =>
+        updateClawHandler(path.organizationId, path.clawId, payload),
+      )
+      .handle("delete", ({ path }) =>
+        deleteClawHandler(path.organizationId, path.clawId),
+      )
+      .handle("getUsage", ({ path }) =>
+        getClawUsageHandler(path.organizationId, path.clawId),
+      )
+      .handle("getSecrets", ({ path }) =>
+        getSecretsHandler(path.organizationId, path.clawId),
+      )
+      .handle("updateSecrets", ({ path, payload }) =>
+        updateSecretsHandler(path.organizationId, path.clawId, payload),
+      ),
+);
+
+const ClawMembershipsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "claw-memberships",
+  (handlers) =>
+    handlers
+      .handle("list", ({ path }) =>
+        listClawMembersHandler(path.organizationId, path.clawId),
+      )
+      .handle("create", ({ path, payload }) =>
+        addClawMemberHandler(path.organizationId, path.clawId, payload),
+      )
+      .handle("get", ({ path }) =>
+        getClawMembershipHandler(
+          path.organizationId,
+          path.clawId,
+          path.memberId,
+        ),
+      )
+      .handle("update", ({ path, payload }) =>
+        updateClawMemberRoleHandler(
+          path.organizationId,
+          path.clawId,
+          path.memberId,
+          payload,
+        ),
+      )
+      .handle("delete", ({ path }) =>
+        removeClawMemberHandler(
+          path.organizationId,
+          path.clawId,
+          path.memberId,
+        ),
+      ),
+);
+
 const TokenCostHandlersLive = HttpApiBuilder.group(
   MirascopeCloudApi,
   "token-cost",
@@ -488,6 +591,8 @@ export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(ApiKeysHandlersLive),
   Layer.provide(FunctionsHandlersLive),
   Layer.provide(AnnotationsHandlersLive),
+  Layer.provide(ClawsHandlersLive),
+  Layer.provide(ClawMembershipsHandlersLive),
   Layer.provide(TagsHandlersLive),
   Layer.provide(TokenCostHandlersLive),
 );

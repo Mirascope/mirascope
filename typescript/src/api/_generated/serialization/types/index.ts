@@ -1,6 +1,7 @@
 export * from "./AlreadyExistsError.js";
 export * from "./AlreadyExistsErrorTag.js";
 export * from "./BadRequestErrorBody.js";
+export * from "./BigInt.js";
 export * from "./ClickHouseError.js";
 export * from "./DatabaseError.js";
 export * from "./DatabaseErrorTag.js";

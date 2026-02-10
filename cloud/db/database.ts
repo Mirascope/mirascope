@@ -43,6 +43,8 @@ import type { StripeConfig } from "@/settings";
 
 import { Annotations } from "@/db/annotations";
 import { ApiKeys } from "@/db/api-keys";
+import { ClawMemberships } from "@/db/claw-memberships";
+import { Claws } from "@/db/claws";
 import { Traces } from "@/db/clickhouse/traces";
 import { DrizzleORM, type DrizzleORMConfig } from "@/db/client";
 import { Environments } from "@/db/environments";
@@ -108,16 +110,27 @@ export interface ProjectsService extends Ready<Projects> {
 }
 
 /**
- * Type definition for the organizations service with nested memberships, invitations, and projects.
+ * Type definition for the claws service with nested memberships.
+ *
+ * Access pattern: `db.organizations.claws.create(...)` or `db.organizations.claws.memberships.create(...)`
+ */
+export interface ClawsService extends Ready<Claws> {
+  readonly memberships: Ready<ClawMemberships>;
+}
+
+/**
+ * Type definition for the organizations service with nested memberships, invitations, projects, and claws.
  *
  * Access pattern: `db.organizations.create(...)` or `db.organizations.memberships.create(...)`
  * Invitations: `db.organizations.invitations.create(...)`
  * Projects: `db.organizations.projects.create(...)` or `db.organizations.projects.memberships.create(...)`
+ * Claws: `db.organizations.claws.create(...)` or `db.organizations.claws.memberships.create(...)`
  */
 export interface OrganizationsService extends Ready<Organizations> {
   readonly memberships: Ready<OrganizationMemberships>;
   readonly invitations: Ready<OrganizationInvitations>;
   readonly projects: ProjectsService;
+  readonly claws: ClawsService;
 }
 
 /**
@@ -184,6 +197,13 @@ export class Database extends Context.Tag("Database")<
         organizationMemberships,
         projectMemberships,
       );
+      const clawMembershipsService = new ClawMemberships(
+        organizationMemberships,
+      );
+      const clawsService = new Claws(
+        organizationMemberships,
+        clawMembershipsService,
+      );
       const tags = new Tags(projectMemberships);
       const environments = new Environments(projectMemberships);
       const apiKeys = new ApiKeys(projectMemberships);
@@ -215,6 +235,10 @@ export class Database extends Context.Tag("Database")<
               },
               functions: provideDependencies(functions),
             },
+          },
+          claws: {
+            ...provideDependencies(clawsService),
+            memberships: provideDependencies(clawMembershipsService),
           },
         },
       };

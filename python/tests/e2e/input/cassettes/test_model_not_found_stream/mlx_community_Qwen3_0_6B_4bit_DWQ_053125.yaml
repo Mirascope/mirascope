@@ -139,7 +139,7 @@ interactions:
       Host:
       - huggingface.co
       X-Amzn-Trace-Id:
-      - 08d423ae-3f66-4a1d-8218-c2d27eeac490
+      - c11a0b62-e769-4d03-93e9-1d0f5addbc2a
       user-agent:
       - unknown/None; hf_hub/1.3.4; python/3.12.12
     method: GET
@@ -161,11 +161,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Tue, 10 Feb 2026 12:12:47 GMT
+      - Mon, 09 Feb 2026 22:13:07 GMT
       ETag:
       - W/"29-dEMcHWfJi78ZR1aqzb1ELAhp3Us"
       RateLimit:
-      - '"api";r=497;t=263'
+      - '"api";r=497;t=243'
       RateLimit-Policy:
       - '"fixed window";"api";q=500;w=300'
       Referrer-Policy:
@@ -173,13 +173,13 @@ interactions:
       Vary:
       - Origin
       Via:
-      - 1.1 41fec6b459b8a1b6a518103d60aa66fc.cloudfront.net (CloudFront)
+      - 1.1 7e9b06f0eb97ea1897f375ba6acd2a88.cloudfront.net (CloudFront)
       WWW-Authenticate:
       - Bearer realm="Authentication required", charset="UTF-8"
       X-Amz-Cf-Id:
-      - HcbgzT190GhlYgbKQzB6AsvIF_ojJfaakbPxzghF5k8VhzJEO7vYFA==
+      - -RCZPwsSG1nnM4HhZrVQXJG26P_aTn1aAk4ELKQ0sBPbo-wSJVqUPw==
       X-Amz-Cf-Pop:
-      - SEA900-P3
+      - SEA900-P6
       X-Cache:
       - Error from cloudfront
       X-Error-Message:
@@ -187,7 +187,7 @@ interactions:
       X-Powered-By:
       - huggingface-moon
       X-Request-Id:
-      - Root=1-698b20bf-5cfd76b17f5ddaaf58d79067;08d423ae-3f66-4a1d-8218-c2d27eeac490
+      - Root=1-698a5bf3-7a9702606e5ff07f096f9f2f;c11a0b62-e769-4d03-93e9-1d0f5addbc2a
       cross-origin-opener-policy:
       - same-origin
     status:

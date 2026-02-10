@@ -1,0 +1,189 @@
+---
+title: Mermaid Diagram Test
+description: Testing various Mermaid diagram types with theme integration
+---
+
+# Mermaid Diagram Test
+
+This page showcases various Mermaid diagram types to test the theme integration.
+
+<Note title="On supporting more diagrams" collapsible={true} defaultOpen={false}>
+Rather than using the Mermaid theme system (which was brittle), we're overriding mermaid styling using
+custom css in MermaidDiagram.module.css. 
+
+The benefit of this is that we automatically benefit from the css theme system (including light/dark,
+product themes, etc).
+
+If you have a chart that isn't looking good yet:
+- Copy the raw generated svg into Claude
+- Ask it to help generate the css you need to override
+</Note>
+
+```mermaid
+flowchart TD
+    A[Start]
+```
+
+## Flowchart
+
+```mermaid
+flowchart TD
+    A[Start] --> B{Is it working?}
+    B -->|Yes| C[Great!]
+    B -->|No| D[Debug]
+    C --> E[Continue]
+    D --> B
+    E --> F[End]
+```
+
+## Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant API
+    participant Database
+    
+    User->>API: Request data
+    activate API
+    API->>Database: Query
+    activate Database
+    Database->>API: Response
+    deactivate Database
+    API->>User: Return data
+    deactivate API
+    
+    Note over User,API: This is a note
+    
+    User->>API: Update data
+    activate API
+    API->>Database: Update query
+    activate Database
+    Database->>API: Confirm
+    deactivate Database
+    API->>User: Success
+    deactivate API
+```
+
+## Class Diagram
+
+```mermaid
+classDiagram
+    class Animal {
+        +int age
+        +String gender
+        +isMammal()
+        +mate()
+    }
+    
+    class Duck {
+        +String beakColor
+        +swim()
+        +quack()
+    }
+    
+    class Fish {
+        -int sizeInFeet
+        -canEat()
+    }
+    
+    Animal <|-- Duck
+    Animal <|-- Fish
+```
+
+## Pie Chart
+
+```mermaid
+pie title Distribution of Features
+    "Core" : 45
+    "UI/UX" : 30
+    "Testing" : 15
+    "Documentation" : 10
+```
+
+## State Diagram
+
+```mermaid
+stateDiagram-v2
+    [*] --> Still
+    Still --> [*]
+    Still --> Moving
+    Moving --> Still
+    Moving --> Crash
+    Crash --> [*]
+```
+
+## Gantt Chart
+
+```mermaid
+gantt
+    title Development Schedule
+    dateFormat  YYYY-MM-DD
+    section Analysis
+    Requirements gathering :a1, 2025-01-01, 7d
+    Design            :a2, after a1, 5d
+    section Development
+    Implementation    :a3, after a2, 10d
+    Testing           :a4, after a3, 5d
+    section Deployment
+    Release           :a5, after a4, 1d
+```
+
+## Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    USER ||--o{ ORDER : places
+    ORDER ||--|{ LINE-ITEM : contains
+    USER {
+        string username
+        string email
+    }
+    ORDER {
+        int id
+        date created_at
+    }
+    LINE-ITEM {
+        string product
+        int quantity
+        float price
+    }
+```
+
+## Subgraphs
+
+```mermaid
+flowchart TB
+    subgraph Backend
+        B1[API Server]
+        B2[Database]
+        B3[Cache]
+        B1 <--> B2
+        B1 <--> B3
+    end
+    
+    subgraph Frontend
+        F1[Web Client]
+        F2[Mobile App]
+    end
+    
+    F1 <--> B1
+    F2 <--> B1
+```
+
+## Journey Diagram
+
+```mermaid
+journey
+    title User Registration Journey
+    section Visit Website
+      Homepage: 5: User
+      Registration page: 4: User
+    section Register
+      Fill form: 3: User
+      Submit: 3: User
+      Validate email: 2: User, System
+    section Complete
+      Welcome email: 5: System
+      Profile setup: 4: User
+```

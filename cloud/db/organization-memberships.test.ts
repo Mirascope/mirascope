@@ -396,6 +396,46 @@ describe("OrganizationMemberships", () => {
           ),
         ),
     );
+
+    it.effect("does not count BOT members toward seat limit", () =>
+      Effect.gen(function* () {
+        const { org, owner, nonMember } =
+          yield* TestFreePlanOrganizationFixture;
+        const db = yield* Database;
+
+        // Create a claw, which adds a BOT member to the organization
+        yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "test-claw", displayName: "Test Claw" },
+        });
+
+        // Even though there's now an OWNER + BOT in the org, adding a
+        // human member should still fail with PlanLimitExceeded because
+        // the free plan limit is 1 seat and the BOT doesn't count
+        const result = yield* db.organizations.memberships
+          .create({
+            userId: owner.id,
+            organizationId: org.id,
+            data: { memberId: nonMember.id, role: "MEMBER" },
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(PlanLimitExceededError);
+        expect(result.message).toContain("free plan limit is 1 seat(s)");
+      }).pipe(
+        Effect.provide(
+          Database.Default.pipe(
+            Layer.provide(
+              TestSubscriptionWithRealDatabaseFixture(
+                { plan: "free" },
+                TestDrizzleORM,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   });
 
   // ===========================================================================

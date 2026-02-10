@@ -4,16 +4,16 @@ import type * as Mirascope from "../../api/index.js";
 import type * as serializers from "../index.js";
 
 import * as core from "../../core/index.js";
-import { ClickHouseError } from "./ClickHouseError.js";
 import { DatabaseError } from "./DatabaseError.js";
+import { StripeError } from "./StripeError.js";
 
 export const InternalServerErrorBody: core.serialization.Schema<
   serializers.InternalServerErrorBody.Raw,
   Mirascope.InternalServerErrorBody
 > = core.serialization
   .union("tag", {
-    ClickHouseError: ClickHouseError,
     DatabaseError: DatabaseError,
+    StripeError: StripeError,
   })
   .transform<Mirascope.InternalServerErrorBody>({
     transform: (value) => value,
@@ -22,14 +22,14 @@ export const InternalServerErrorBody: core.serialization.Schema<
 
 export declare namespace InternalServerErrorBody {
   export type Raw =
-    | InternalServerErrorBody.ClickHouseError
-    | InternalServerErrorBody.DatabaseError;
-
-  export interface ClickHouseError extends ClickHouseError.Raw {
-    tag: "ClickHouseError";
-  }
+    | InternalServerErrorBody.DatabaseError
+    | InternalServerErrorBody.StripeError;
 
   export interface DatabaseError extends DatabaseError.Raw {
     tag: "DatabaseError";
+  }
+
+  export interface StripeError extends StripeError.Raw {
+    tag: "StripeError";
   }
 }

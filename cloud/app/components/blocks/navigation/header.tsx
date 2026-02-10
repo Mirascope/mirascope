@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import DiscordLink from "@/app/components/blocks/branding/discord-link";
 import GitHubMirascopeButton from "@/app/components/blocks/branding/github-mirascope-button";
 import MirascopeLogo from "@/app/components/blocks/branding/mirascope-logo";
+import { AccountMenu } from "@/app/components/blocks/navigation/account-menu";
 import DesktopNavigation from "@/app/components/blocks/navigation/desktop-navigation";
 import DocsSubNavbar from "@/app/components/blocks/navigation/docs-sub-navbar";
 import MobileNavigation from "@/app/components/blocks/navigation/mobile-navigation";
@@ -12,8 +13,12 @@ import ResponsiveSearchWrapper from "@/app/components/blocks/navigation/responsi
 import ThemeSwitcher from "@/app/components/blocks/navigation/theme-switcher";
 import {
   useIsLandingPage,
+  useIsLoginPage,
   useIsRouterWaitlistPage,
 } from "@/app/components/blocks/theme-provider";
+import { CloudNavIcons } from "@/app/components/cloud-nav-icons";
+import { NavbarCredits } from "@/app/components/navbar-credits";
+import { isCloudAppRoute } from "@/app/lib/route-utils";
 import { cn } from "@/app/lib/utils";
 
 import { HEADER_STYLES } from "./styles";
@@ -25,8 +30,7 @@ export default function Header() {
   // Determine if we're in cloud routes based on the current path
   const router = useRouterState();
   const currentPath = router.location.pathname;
-  const isCloudRoute =
-    currentPath === "/cloud" || currentPath.startsWith("/cloud/");
+  const isCloudRoute = isCloudAppRoute(currentPath);
 
   // Check if we're on docs pages (to show the section sub-navbar)
   const isDocsRoute =
@@ -34,6 +38,9 @@ export default function Header() {
 
   // Use the isLandingPage hook instead of router
   const isLandingPage = useIsLandingPage();
+
+  // Use the isLoginPage hook
+  const isLoginPage = useIsLoginPage();
 
   // Use the isRouterWaitlistPage hook instead of router
   const isRouterWaitlistPage = useIsRouterWaitlistPage();
@@ -60,7 +67,7 @@ export default function Header() {
   return (
     <header
       className={HEADER_STYLES.container(
-        isLandingPage || isRouterWaitlistPage,
+        isLandingPage || isLoginPage || isRouterWaitlistPage,
         scrolled,
         isCloudRoute,
       )}
@@ -71,28 +78,43 @@ export default function Header() {
             size="small"
             withText={true}
             textClassName={cn(HEADER_STYLES.logoText(isSearchOpen))}
-            lightText={isLandingPage}
+            lightText={isLandingPage || isLoginPage}
           />
         </Link>
         <DesktopNavigation isSearchOpen={isSearchOpen} />
         {/* Adding a grow spacer to push elements to edges */}
         <div className="grow"></div>
 
-        {/* Search bar in the middle with ability to grow/shrink */}
-        <ResponsiveSearchWrapper
-          onOpenChange={(isOpen: boolean) => {
-            setIsSearchOpen(isOpen);
-          }}
-        />
+        {/* Search bar - hide on cloud routes */}
+        {!isCloudRoute && (
+          <ResponsiveSearchWrapper
+            onOpenChange={(isOpen: boolean) => {
+              setIsSearchOpen(isOpen);
+            }}
+          />
+        )}
         {/* Right section with fixed controls */}
         <div className={HEADER_STYLES.controls}>
-          {/* Desktop: GitHub + Theme buttons */}
-          <div className={HEADER_STYLES.githubContainer}>
-            <GitHubMirascopeButton />
-          </div>
+          {/* Desktop: GitHub + Discord buttons - hide on cloud routes */}
+          {!isCloudRoute && (
+            <div className={HEADER_STYLES.githubContainer}>
+              <GitHubMirascopeButton />
+            </div>
+          )}
 
-          <div className={HEADER_STYLES.discordContainer}>
-            <DiscordLink />
+          {!isCloudRoute && (
+            <div className={HEADER_STYLES.discordContainer}>
+              <DiscordLink />
+            </div>
+          )}
+
+          {/* Cloud nav icons + credits - show only on cloud routes */}
+          {isCloudRoute && <CloudNavIcons />}
+          {isCloudRoute && <NavbarCredits />}
+
+          {/* Account menu - show at lg breakpoint */}
+          <div className="hidden lg:flex">
+            <AccountMenu />
           </div>
 
           {/* Theme switcher - visible on all screen sizes */}
@@ -100,7 +122,10 @@ export default function Header() {
 
           {/* Mobile nav button - hidden on desktop */}
           <button
-            className={HEADER_STYLES.mobileNavButton()}
+            className={cn(
+              HEADER_STYLES.mobileNavButton(),
+              "hover:cursor-pointer",
+            )}
             onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
             aria-label="Toggle mobile navigation"
           >
@@ -116,6 +141,7 @@ export default function Header() {
       <MobileNavigation
         isOpen={isMobileNavOpen}
         onClose={() => setIsMobileNavOpen(false)}
+        isCloudRoute={isCloudRoute}
       />
     </header>
   );

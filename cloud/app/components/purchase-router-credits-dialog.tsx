@@ -1,8 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { CreditCard } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
-import { useCreatePaymentIntent } from "@/app/api/organizations";
+import {
+  useCreatePaymentIntent,
+  usePaymentMethod,
+} from "@/app/api/organizations";
 import { RouterCreditsPaymentForm } from "@/app/components/router-credits-payment-form";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -16,28 +20,48 @@ import {
 } from "@/app/components/ui/dialog";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import { getStripe } from "@/app/lib/stripe";
 
 interface PurchaseRouterCreditsDialogProps {
   organizationId: string;
   currentBalance: number;
+  trigger?: React.ReactNode;
 }
 
 const PRESET_AMOUNTS = [10, 25, 50, 100];
 
 type Step = "select-amount" | "payment" | "success";
 
+function capitalizeCardBrand(brand: string): string {
+  const brandMap: Record<string, string> = {
+    visa: "Visa",
+    mastercard: "Mastercard",
+    amex: "Amex",
+    discover: "Discover",
+    diners: "Diners",
+    jcb: "JCB",
+    unionpay: "UnionPay",
+  };
+  return brandMap[brand] ?? brand.charAt(0).toUpperCase() + brand.slice(1);
+}
+
 export function PurchaseRouterCreditsDialog({
   organizationId,
   currentBalance,
+  trigger,
 }: PurchaseRouterCreditsDialogProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("select-amount");
   const [amount, setAmount] = useState(50);
   const [customAmount, setCustomAmount] = useState("");
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [useDifferentCard, setUseDifferentCard] = useState(false);
 
   const queryClient = useQueryClient();
   const createPaymentIntent = useCreatePaymentIntent();
+  const { data: paymentMethod } = usePaymentMethod(organizationId);
+
+  const useSavedCard = paymentMethod && !useDifferentCard;
 
   // Track polling interval for cleanup
   const pollingIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -64,9 +88,41 @@ export function PurchaseRouterCreditsDialog({
         organizationId,
         data: {
           amount: finalAmount,
+          paymentMethodId: useSavedCard ? paymentMethod.id : undefined,
         },
       });
 
+      if (result.status === "succeeded") {
+        // Server-side confirmation succeeded (saved card, no 3DS)
+        handlePaymentSuccess();
+        return;
+      }
+
+      if (result.status === "requires_action" && result.clientSecret) {
+        // 3DS required — use Stripe.js to handle
+        const stripe = await getStripe();
+        if (!stripe) {
+          toast.error("Stripe failed to load");
+          return;
+        }
+
+        const { error } = await stripe.confirmPayment({
+          clientSecret: result.clientSecret,
+          confirmParams: {
+            return_url: window.location.href,
+          },
+          redirect: "if_required",
+        });
+
+        if (error) {
+          toast.error(error.message ?? "Payment authentication failed");
+        } else {
+          handlePaymentSuccess();
+        }
+        return;
+      }
+
+      // No saved card — show payment form
       setClientSecret(result.clientSecret);
       setStep("payment");
     } catch (error) {
@@ -112,6 +168,7 @@ export function PurchaseRouterCreditsDialog({
         setClientSecret(null);
         setCustomAmount("");
         setAmount(50);
+        setUseDifferentCard(false);
       }, 300);
     }, 2000);
   };
@@ -138,6 +195,7 @@ export function PurchaseRouterCreditsDialog({
         setClientSecret(null);
         setCustomAmount("");
         setAmount(50);
+        setUseDifferentCard(false);
       }, 300);
     }
   };
@@ -145,7 +203,7 @@ export function PurchaseRouterCreditsDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="default">Purchase Credits</Button>
+        {trigger ?? <Button variant="default">Purchase Credits</Button>}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         {step === "select-amount" && (
@@ -213,6 +271,28 @@ export function PurchaseRouterCreditsDialog({
                   </span>
                 </div>
               </div>
+
+              {paymentMethod && (
+                <div className="flex items-center justify-between rounded-lg border border-border bg-muted/50 p-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="h-4 w-4 text-muted-foreground" />
+                    <span>
+                      {useSavedCard
+                        ? `Paying with ${capitalizeCardBrand(paymentMethod.brand)} ····${paymentMethod.last4}`
+                        : "Using new payment method"}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="text-xs text-primary underline hover:no-underline"
+                    onClick={() => setUseDifferentCard(!useDifferentCard)}
+                  >
+                    {useSavedCard
+                      ? "Use different card"
+                      : `Use ${capitalizeCardBrand(paymentMethod.brand)} ····${paymentMethod.last4}`}
+                  </button>
+                </div>
+              )}
             </div>
             <DialogFooter>
               <Button
@@ -230,7 +310,9 @@ export function PurchaseRouterCreditsDialog({
               >
                 {createPaymentIntent.isPending
                   ? "Processing..."
-                  : "Continue to Payment"}
+                  : useSavedCard
+                    ? `Pay $${finalAmount.toFixed(2)} with ${capitalizeCardBrand(paymentMethod.brand)} ····${paymentMethod.last4}`
+                    : "Continue to Payment"}
               </Button>
             </DialogFooter>
           </>
@@ -252,6 +334,9 @@ export function PurchaseRouterCreditsDialog({
                 onSuccess={handlePaymentSuccess}
                 onError={handlePaymentError}
               />
+              <p className="mt-3 text-xs text-muted-foreground">
+                Your card will be saved for future purchases.
+              </p>
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={handleBack}>

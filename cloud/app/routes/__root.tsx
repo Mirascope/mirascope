@@ -10,6 +10,7 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import { queryClient } from "@/app/api/client";
+import DevToolsButton from "@/app/components/blocks/dev/dev-tools-button";
 import Footer from "@/app/components/blocks/navigation/footer";
 import Header from "@/app/components/blocks/navigation/header";
 import {
@@ -19,7 +20,9 @@ import {
 import { Toaster } from "@/app/components/ui/sonner";
 import { AnalyticsProvider } from "@/app/contexts/analytics";
 import { AuthProvider } from "@/app/contexts/auth";
+import { OrganizationProvider } from "@/app/contexts/organization";
 import { usePageView } from "@/app/hooks/use-page-view";
+import { isCloudAppRoute } from "@/app/lib/route-utils";
 import globalsCss from "@/app/styles/globals.css?url";
 
 export const Route = createRootRoute({
@@ -67,8 +70,7 @@ function AppContent() {
 
   const router = useRouterState();
   const currentPath = router.location.pathname;
-  const isCloudRoute =
-    currentPath === "/cloud" || currentPath.startsWith("/cloud/");
+  const isCloudRoute = isCloudAppRoute(currentPath);
   const isDocsRoute =
     currentPath === "/docs" || currentPath.startsWith("/docs/");
   const isLandingPage = useIsLandingPage();
@@ -81,19 +83,20 @@ function AppContent() {
           isCloudRoute
             ? "w-full grow pt-[60px]"
             : isLandingPage
-              ? "w-full pt-(--header-height)"
+              ? "flex w-full grow flex-col pt-(--header-height)"
               : isDocsRoute
                 ? "mx-auto w-full max-w-7xl grow pt-(--header-height-with-selector)"
                 : "mx-auto w-full max-w-7xl grow pt-(--header-height)"
         }
       >
-        <main className="grow">
+        <main className="flex grow flex-col">
           <Outlet />
         </main>
       </div>
       {!isCloudRoute && <Footer />}
       <Toaster />
       <TanStackRouterDevtools />
+      <DevToolsButton className="fixed bottom-10 left-2 z-50" />
       <Scripts />
     </div>
   );
@@ -110,7 +113,9 @@ function RootComponent() {
           <QueryClientProvider client={queryClient}>
             <AnalyticsProvider>
               <AuthProvider>
-                <AppContent />
+                <OrganizationProvider>
+                  <AppContent />
+                </OrganizationProvider>
               </AuthProvider>
             </AnalyticsProvider>
           </QueryClientProvider>

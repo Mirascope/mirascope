@@ -40,6 +40,9 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/app/components/ui/collapsible";
+import { useEnvironment } from "@/app/contexts/environment";
+import { useOrganization } from "@/app/contexts/organization";
+import { useProject } from "@/app/contexts/project";
 import { KNOWN_LEVELS, getLevelStyles } from "@/app/lib/traces/event-styles";
 import { formatDuration, formatTimestamp } from "@/app/lib/traces/formatting";
 import { safeParseJSON } from "@/app/lib/utils";
@@ -818,6 +821,12 @@ export function SpanDetailPanel({
   mode = "side-panel",
 }: SpanDetailPanelProps) {
   const [showFullCode, setShowFullCode] = useState(false);
+  const { selectedOrganization } = useOrganization();
+  const { selectedProject } = useProject();
+  const { selectedEnvironment } = useEnvironment();
+  const orgSlug = selectedOrganization?.slug ?? "";
+  const projectSlug = selectedProject?.slug ?? "";
+  const envSlug = selectedEnvironment?.slug ?? "";
 
   if (!span) return null;
 
@@ -885,8 +894,14 @@ export function SpanDetailPanel({
         <div className="flex items-center gap-1">
           {mode === "side-panel" && (
             <Link
-              to="/cloud/trace-view/$traceId/$spanId"
-              params={{ traceId: span.traceId, spanId: span.spanId }}
+              to="/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId"
+              params={{
+                orgSlug,
+                projectSlug,
+                envSlug,
+                traceId: span.traceId,
+                spanId: span.spanId,
+              }}
             >
               <Button variant="ghost" size="sm" className="h-8 gap-1.5 px-2">
                 <Maximize2 className="h-3.5 w-3.5" />

@@ -1,0 +1,192 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Choose a lucky number between 1 and
+      10"}], "role": "user"}], "systemInstruction": {"parts": [{"text": "Always respond
+      to the user''s query using the __mirascope_formatted_output_tool__ tool for
+      structured output."}], "role": "user"}, "tools": [{"functionDeclarations": [{"description":
+      "Use this tool to extract data in int format for a final response.", "name":
+      "__mirascope_formatted_output_tool__", "parameters": {"properties": {"output":
+      {"title": "Output", "type": "INTEGER"}}, "required": ["output"], "type": "OBJECT"}}]}],
+      "toolConfig": {"functionCallingConfig": {"allowedFunctionNames": ["__mirascope_formatted_output_tool__"],
+      "mode": "ANY"}}, "generationConfig": {}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '710'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21U2ZKiSBR99ysMnmbC7kaWUpmIebAEFxAEQZGemDBSSFmETJZEwYr690Etq7Wm
+        eSDgnnMXDvfkW6vdplyAvNADBBbUX+1/mki7/Xa9XzCMCESkAe6hJpiCnPzi3q63h+eGsi+RS0KM
+        RiCOn5I/cAQS2MSp7TYJc1C4OIXbPc4TQAj0trgkaUm2BON4u6W+fU0GuV/8pmiD3BIbrP8Fe396
+        f38uSZEAl35AzNBHgJT5dbLR0RkNd3xHOJY7aS+7dpmfLEzoTsCsejCYH+yAhpm1n+ASyEwyk2Jh
+        ImKn3r+mIr+brDUaZXKx685iCdu8xBT+lEtmpwApm2JnZINh5zjdMZ2D0ZM11caVqQW+uBmXY+CS
+        nxwdypE+MHinqs+xFfdTOULxSnOF9KDTg46iO8xC5icD6xwbU7XiN4YIZS3ujvdIm3fDiRxEiu9O
+        WNYTp1XtrGrd7sFB0VO02rOYlcjChcUuu3N0WrJuJvUNWxRz3TxvhqDiSntNi9jnwt2OFz16lguT
+        jmcBjmV+Rpyw7OzMroa7FeZiY1Go/lKdRv0aZ/6wF+niotADaaElyFLVbKClKYjm0ZynEwWuyeuy
+        pFez/GguldCIudX6WB7dXIrQ2O1zbCIorFucJChkmgq4Iz+hY4bNcB17q8Ew6fDMVBJ0zxlV48iw
+        q5Pg7SeHXk2/zmzV0G0nlGp14oG1CcSXdTZMncNxPNxVa06Qp6vu2dMdIRzzkm5uZkN3vOQjIVUs
+        c2lAtYfMIenK0JD+plq/25p/f20MleP4uiEJ9mB8p3+uFLUPUVgESwgKjC4001ronztMhciDVRPu
+        fuGrsCiAf62rXuq2fYhg3pjSa9+91HYbM/1R/Pnj1vMy3HUsqrxkqpCAxsTg0xhUmuMkJRY+QDTC
+        5dXEAntr++D5J5xlPnCCCYifIEYYfPtf3UJsuobx42HwcE40AoE4JPXloyxpYz04uWnwNNZdxdaD
+        2HdbPo84eGl9qH37AWuYF+FNaR8mjZbf2R8v3/cxKIJrPyqHRYpRAWfehWOMSwXAzXz+YkXn/kw/
+        KwrKDIdqvbf+A7c002MNBQAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 09 Feb 2026 22:10:08 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1037
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"role":"developer","content":"Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":"Choose
+      a lucky number between 1 and 10","role":"user"},{"content":"{\"output\": 7}","role":"assistant"},{"content":"Ok,
+      now choose a different lucky number","role":"user"}],"model":"gpt-4o","tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in int format for a final response.","parameters":{"properties":{"output":{"title":"Output","type":"integer"}},"required":["output"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '746'
+      Content-Type:
+      - application/json
+      Host:
+      - api.openai.com
+      User-Agent:
+      - OpenAI/Python 2.16.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.12.12
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/51VTW/bMAy991cYPjeF8mU3vW7AdtsKrD1sHQzaohOtsuVJctY0yH8fJX+nzWEL
+        gsQmRYp871E6XgVBKHh4F4QaTZUwjOYr4BDlOTJcpIxFm1tYpyuWs4zdzjcsZUu+jGOI4nmUrhmG
+        1y6FSn9hZrs0qjStPdMIFnkCzjePYxbFa8Zuvc9YsLVxMZkqKom0rglKIXvealWXrq4cpMHGLKQU
+        5ZZsR3olQwUH1C6e4x6lquiFHKdm4y7l2dYb70WtlYssaym9Idf4u8YyOyQVliDtgZzshnmfKLtk
+        CUcLQppxpCiN1XVmBTU9thfwkqjaVrVNrHrGt06rlEwykNN0heIoXU/bys5WarZgi9WM3c5Y1ALt
+        U9KCHx6DBomewzy7zOA8yuLMMUhvuIzz+ZKzGNJFA7pPYg8V+jR16Rvy5Q3uS4R5J+htXWBpvf/4
+        1Bb6FN6tT8Mily9pSvWPu8f7Dw/iU3z49vp6X/D9H/ldPn68/zxElFD4kpKkEBpMRiwnudIFWMdt
+        DzBBmYQ+5kS/Pz1UFWjaA+UUaSKrkVNFSiXG8R3GybUXqjZJJ+am5p6kSlP/llJmO0ye8XDRpwmj
+        0iE5XkEjYVQ5UTLm1JMdLXJo10UBusvdC9tAjvZABbnEucCJjA3qvaCWrOgGI4da2rCdN6VxjIDF
+        gmaGOPXmedu8xRc7VNZg3b+PROLXNZC3Fe9Rp8oID2VYIBd1MQxkQ8JOUXlD9nPBtbz/K+vDDubt
+        ZFzYI3DomEyLquUnfDAY2J0wgUtEPwE1qCGzAQcLgSjpa4OmCvcXQJALUk7QieTm/1TbBzm9FiQY
+        bUZwN4oimojSqX18GIytrmVhpd//S7Pg+szdIkL94LY5NLvPqX8+DUGhOxyFRt6DO92/N/0cxQDn
+        wiEL8uu4/v44P6ulvUCuzjYn0WrhLxan2rMBt6pKpNoSPqlLzXpjNZazJt6h45gLA6nsLprawHak
+        RlFOTuv5YnP91jG6A47DsUbDzodINhmL81sges/+Xtr+oLiU2SoLclTwct0PQ22mJwMJC5yOXf7T
+        1ekvgjg1QvgHAAA=
+    headers:
+      CF-RAY:
+      - 9cb6b1f57e49a3b9-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 09 Feb 2026 22:10:09 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '740'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      set-cookie:
+      - __cf_bm=qT9rlxI7B2iiVCEyiJu.abI.JQQJXthWeGaL5B56ZbI-1770675008.877121-1.0.1.1-4JeGuO_xWMzVRYHciW8gSLLrnjHdlnZMhxuGmh26gldNLTwNScw10yRITero0PVF780y4QDNF0vD.8o7Vs95UjrhVuwdONE9PH130ExGsvVBD4NSxlOWi6sNJvwESnJz;
+        HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Mon, 09 Feb 2026
+        22:40:09 GMT
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799654'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 25ms
+      x-request-id:
+      - req_29835c8067054fe2be8c9d5b3f64a539
+    status:
+      code: 200
+      message: OK
+version: 1

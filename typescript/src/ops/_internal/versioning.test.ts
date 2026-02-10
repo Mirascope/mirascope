@@ -84,14 +84,14 @@ describe("versioning", () => {
       expect(spans[0]!.name).toBe("anonymous");
     });
 
-    it("should set mirascope.type attribute to version", async () => {
+    it("should set mirascope.type attribute to trace", async () => {
       const fn = async () => "test";
       const versioned = version(fn);
 
       await versioned();
 
       const spans = exporter.getFinishedSpans();
-      expect(spans[0]!.attributes["mirascope.type"]).toBe("version");
+      expect(spans[0]!.attributes["mirascope.type"]).toBe("trace");
     });
 
     it("should set version hash attribute", async () => {
@@ -117,6 +117,49 @@ describe("versioning", () => {
       expect(
         spans[0]!.attributes["mirascope.version.signature_hash"],
       ).toBeTruthy();
+    });
+
+    it("should set trace arg_types and arg_values attributes", async () => {
+      const fn = async (x: number, y: string) => `${y}: ${x}`;
+      const versioned = version(fn);
+
+      await versioned(5, "hello");
+
+      const spans = exporter.getFinishedSpans();
+      const attrs = spans[0]!.attributes;
+      expect(attrs["mirascope.trace.arg_types"]).toBeTruthy();
+      expect(attrs["mirascope.trace.arg_values"]).toBeTruthy();
+      // arg_types should contain parameter type info
+      const argTypes = JSON.parse(attrs["mirascope.trace.arg_types"] as string);
+      expect(argTypes).toHaveProperty("x");
+      // arg_values should contain the actual values
+      const argValues = JSON.parse(
+        attrs["mirascope.trace.arg_values"] as string,
+      );
+      expect(argValues.x).toBe(5);
+      expect(argValues.y).toBe("hello");
+    });
+
+    it("should set trace output attribute", async () => {
+      const fn = async (x: number) => x * 2;
+      const versioned = version(fn);
+
+      await versioned(5);
+
+      const spans = exporter.getFinishedSpans();
+      expect(spans[0]!.attributes["mirascope.trace.output"]).toBe("10");
+    });
+
+    it("should set fn.qualname and fn.is_async attributes", async () => {
+      const fn = async (x: number) => x * 2;
+      const versioned = version(fn, { name: "my-fn" });
+
+      await versioned(5);
+
+      const spans = exporter.getFinishedSpans();
+      const attrs = spans[0]!.attributes;
+      expect(attrs["mirascope.fn.qualname"]).toBe("my-fn");
+      expect(attrs["mirascope.fn.is_async"]).toBe(true);
     });
   });
 
@@ -381,6 +424,16 @@ describe("versioning", () => {
 
       const spans = exporter.getFinishedSpans();
       expect(spans.length).toBe(1);
+    });
+
+    it("should set trace output attribute in wrapped mode", async () => {
+      const fn = async (x: number) => x * 2;
+      const versioned = version(fn);
+
+      await versioned.wrapped(5);
+
+      const spans = exporter.getFinishedSpans();
+      expect(spans[0]!.attributes["mirascope.trace.output"]).toBe("10");
     });
 
     it("should record error and rethrow in wrapped mode", async () => {

@@ -26,11 +26,12 @@ import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
 import { Analytics } from "@/analytics";
 import { MirascopeCloudApi, ApiLive } from "@/api/router";
 import { AuthenticatedUser, Authentication } from "@/auth";
+import { MockDeploymentService } from "@/claws/deployment/mock";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
-import { users } from "@/db/schema";
+import { claws, users } from "@/db/schema";
 import { Emails } from "@/emails";
 import { Payments } from "@/payments";
 import { Settings, type SettingsConfig } from "@/settings";
@@ -248,6 +249,7 @@ function createTestWebHandler(
     clickHouseSearchLayer,
     MockAnalytics,
     MockEmails,
+    MockDeploymentService,
   );
 
   const ApiWithDependencies = Layer.merge(
@@ -423,7 +425,9 @@ function createSequentialDescribe(
             ownerId: owner.id,
             ownerEmail: owner.email,
             ownerName: owner.name,
+            ownerAccountType: owner.accountType,
             ownerDeletedAt: owner.deletedAt,
+            clawId: null,
           };
 
           return { owner, org, apiKeyInfo };
@@ -467,16 +471,29 @@ function createSequentialDescribe(
           Effect.gen(function* () {
             const db = yield* Database;
 
-            // Delete organization (cascades to projects, memberships)
+            const client = yield* DrizzleORM;
             if (orgRef?.id) {
+              // Collect bot user IDs before deleting the org (which cascades claws)
+              const botUsers = yield* client
+                .select({ botUserId: claws.botUserId })
+                .from(claws)
+                .where(eq(claws.organizationId, orgRef.id));
+
+              // Delete organization (cascades to projects, memberships, claws)
               yield* db.organizations.delete({
                 organizationId: orgRef.id,
                 userId: ownerRef.id,
               });
+
+              // Hard-delete bot users that were associated with this org's claws
+              for (const { botUserId } of botUsers) {
+                if (botUserId) {
+                  yield* client.delete(users).where(eq(users.id, botUserId));
+                }
+              }
             }
 
-            // Hard-delete user to avoid polluting other tests with soft-deleted rows
-            const client = yield* DrizzleORM;
+            // Hard-delete owner to avoid polluting other tests with soft-deleted rows
             yield* client.delete(users).where(eq(users.id, ownerRef.id));
           }).pipe(Effect.provide(dbLayer)),
         );
@@ -520,6 +537,7 @@ const mockUser: PublicUser = {
   id: "test-user-id",
   email: "test@example.com",
   name: "Test User",
+  accountType: "user",
   deletedAt: null,
 };
 
@@ -571,6 +589,7 @@ function createSimpleTestWebHandler() {
     clickHouseSearchLayer,
     MockAnalytics,
     MockEmails,
+    MockDeploymentService,
   );
 
   const ApiWithDependencies = Layer.mergeAll(
@@ -663,6 +682,7 @@ export const MockMeteringContext = {
         environmentId: "env_test123",
         apiKeyId: "key_test123",
         routerRequestId: "req_test123",
+        clawId: null,
       },
       response: {
         status: 200,

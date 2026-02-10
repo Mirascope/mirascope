@@ -1,0 +1,52 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "claw-dispatch-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-05-06",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+  },
+  // Allow importing HTML files as text modules
+  "rules": [
+    {
+      "type": "Text",
+      "globs": ["**/*.html"],
+      "fallthrough": false,
+    },
+  ],
+  // Container configuration — instance_type is overridden at deploy time
+  // per-claw based on the claw's configured instance type.
+  "containers": [
+    {
+      "class_name": "Sandbox",
+      "image": "./Dockerfile",
+      "instance_type": "standard-2",
+      "max_instances": 100,
+    },
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "class_name": "Sandbox",
+        "name": "Sandbox",
+      },
+    ],
+  },
+  "migrations": [
+    {
+      "new_sqlite_classes": ["Sandbox"],
+      "tag": "v1",
+    },
+  ],
+  // Service binding to the Mirascope Cloud worker for internal API calls
+  // (bootstrap, resolve, status). Auth is implicit — no bearer token needed.
+  "services": [
+    {
+      "binding": "MIRASCOPE_CLOUD",
+      "service": "mirascope-cloud",
+    },
+  ],
+  // No R2 bucket binding — R2 is mounted dynamically per-claw using
+  // scoped credentials from the bootstrap config.
+}

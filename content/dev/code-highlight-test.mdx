@@ -1,0 +1,183 @@
+---
+title: Code Highlighting Test
+description: Example of line highlighting in code blocks
+---
+
+# Code Highlighting Test
+
+This page demonstrates how to use line highlighting in code blocks.
+
+## Basic Line Highlighting
+
+Here's an example of basic line highlighting using the `{1-2,5}` syntax:
+
+```python{1-2,5}
+# These two lines are highlighted
+from mirascope import llm
+
+# This line is not highlighted
+# This line is also not highlighted
+# This line is highlighted
+def get_capital(country: str) -> str:
+    return f"What is the capital of {country}?"
+
+response = get_capital("Japan")
+print(response.content)
+```
+
+## Highlighting Long lines
+
+```python
+def short_func(): pass # [!code highlight]
+def long_func_very_long_indeed_actually_who_named_this_was_it_vibe_coded_please_rename(): pass # [!code highlight]
+```
+
+
+## Highlighting Different Languages
+
+You can highlight lines in various programming languages:
+
+### JavaScript
+
+```javascript{2-3}
+// This line is not highlighted
+// These two lines are highlighted
+console.log('Hello, World!');
+// This line is not highlighted
+```
+
+### CSS
+
+```css{3,6}
+/* Not highlighted */
+.container {
+  /* This line is highlighted */
+  display: flex;
+  flex-direction: column;
+  /* This line is highlighted */
+  background-color: #f5f5f5;
+  padding: 1rem;
+}
+```
+
+### Bash
+
+```bash{2}
+# Not highlighted
+# This line is highlighted
+echo "Hello, World!"
+```
+
+## Meta Variants
+
+We support line highlighting using meta notation (eg `{1,3,5}`) both with and without a space after
+the language identifier.
+
+```python-snippet-skip{1,3,5}
+# On
+# Off
+# On 
+# Off
+# On
+```
+```python-snippet-skip {1,3,5}
+# On
+# Off
+# On 
+# Off
+# On
+```
+
+## Highlighting in Complex Code
+
+Highlighting is useful for emphasizing important parts of complex code:
+
+```python{3-5,11,18-20}
+import re
+from typing import Optional
+from mirascope import llm
+from pydantic import BaseModel
+from mirascope.provider import Provider
+
+class Capital(BaseModel):
+    city: str
+    country: str
+
+@llm.call(provider=Provider.OPENAI, model="gpt-4-turbo", response_model=Capital)
+def extract_capital(query: str) -> str:
+    """
+    Extract capital city information from a text query.
+    
+    Args:
+        query: The text to extract capital information from
+    """
+    # Highlight these instructions to make them stand out
+    # The function processes the query and extracts structured data
+    # Using a response model ensures we get the expected format
+    return f"{query}"
+
+capital = extract_capital("The capital of France is Paris")
+print(f"The capital of {capital.country} is {capital.city}")
+```
+
+## Using Comments for Highlighting
+
+You can also use special comment markers to highlight code lines directly in your source code.
+
+### Python with # comments
+
+```python
+import pandas as pd
+import numpy as np
+
+# This line isn't highlighted
+df = pd.read_csv('data.csv') # [!code highlight]
+# This line uses a Python comment for highlighting
+
+# You can highlight multiple consecutive lines
+df = df.dropna() # [!code highlight]
+df = df.reset_index(drop=True) # [!code highlight]
+
+# This isn't highlighted
+result = df.groupby('category').agg({
+    'value': ['mean', 'sum', 'count'] # [!code highlight]
+})
+
+print(result)
+```
+
+### JavaScript with // comments
+
+```javascript
+import { useState, useEffect } from 'react';
+
+// Not highlighted
+const Counter = () => {
+  const [count, setCount] = useState(0); // [!code highlight]
+  
+  // These lines are highlighted with comments
+  useEffect(() => { // [!code highlight]
+    document.title = `Count: ${count}`; // [!code highlight]
+  }, [count]); // [!code highlight]
+  
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button> // [!code highlight]
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+## Using Highlighting in Documentation
+
+Line highlighting makes your documentation more effective by drawing attention to key parts of your code. Use it to:
+
+1. Highlight code changes in tutorials
+2. Emphasize important sections
+3. Show step-by-step code modifications
+4. Focus on parts being explained in the surrounding text
+
+Try experimenting with different highlighting patterns to see how they appear in your documentation.

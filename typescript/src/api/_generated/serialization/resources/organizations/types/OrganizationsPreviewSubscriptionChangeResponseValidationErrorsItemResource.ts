@@ -8,8 +8,8 @@ import * as core from "../../../../core/index.js";
 export const OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItemResource: core.serialization.Schema<
   serializers.OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItemResource.Raw,
   Mirascope.OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItemResource
-> = core.serialization.enum_(["seats", "projects"]);
+> = core.serialization.enum_(["seats", "projects", "claws"]);
 
 export declare namespace OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItemResource {
-  export type Raw = "seats" | "projects";
+  export type Raw = "seats" | "projects" | "claws";
 }

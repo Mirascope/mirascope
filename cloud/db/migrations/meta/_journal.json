@@ -29,6 +29,41 @@
       "when": 1770055958839,
       "tag": "0003_free_eddie_brock",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1770334065451,
+      "tag": "0004_jittery_thunderbolt",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1770346168468,
+      "tag": "0005_big_crystal",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1770368514697,
+      "tag": "0006_majestic_spyke",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1770429206648,
+      "tag": "0007_faithful_payback",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1770429729895,
+      "tag": "0008_jittery_siren",
+      "breakpoints": true
     }
   ]
 }

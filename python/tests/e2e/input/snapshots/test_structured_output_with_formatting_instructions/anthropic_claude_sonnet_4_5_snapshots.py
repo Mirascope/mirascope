@@ -16,14 +16,14 @@ test_snapshot = snapshot(
             "params": {},
             "finish_reason": None,
             "usage": {
-                "input_tokens": 789,
-                "output_tokens": 67,
+                "input_tokens": 285,
+                "output_tokens": 30,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "provider_tool_usage": None,
-                "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=789, output_tokens=67, server_tool_use=None, service_tier='standard')",
-                "total_tokens": 856,
+                "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=285, output_tokens=30, server_tool_use=None, service_tier='standard', inference_geo='not_available')",
+                "total_tokens": 315,
             },
             "messages": [
                 SystemMessage(
@@ -50,14 +50,13 @@ lucky number 7.\
                         "role": "assistant",
                         "content": [
                             {
-                                "id": "toolu_011kxUCt1SU3W1ZDa3yU8gMK",
-                                "input": {
+                                "text": '{"title": "THE NAME OF THE WIND", "author": "Patrick Rothfuss", "rating": 7}',
+                                "type": "text",
+                                "parsed_output": {
                                     "title": "THE NAME OF THE WIND",
                                     "author": "Patrick Rothfuss",
                                     "rating": 7,
                                 },
-                                "name": "__mirascope_formatted_output_tool__",
-                                "type": "tool_use",
                             }
                         ],
                     },
@@ -76,7 +75,7 @@ lucky number 7.\
                     "title": "Book",
                     "type": "object",
                 },
-                "mode": "tool",
+                "mode": "strict",
                 "formatting_instructions": """\
 Output a structured book as JSON in the format {title: str, author: str, rating: int}.
 The title should be in all caps, and the rating should always be the

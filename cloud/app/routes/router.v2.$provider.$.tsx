@@ -119,6 +119,7 @@ export const Route = createFileRoute("/router/v2/$provider/$")({
               environmentId: validated.apiKeyInfo.environmentId,
               apiKeyId: validated.apiKeyInfo.apiKeyId,
               routerRequestId,
+              clawId: validated.apiKeyInfo.clawId,
             },
             modelPricing,
           };

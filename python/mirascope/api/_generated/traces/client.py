@@ -6,6 +6,10 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.number_from_string import NumberFromString
 from .raw_client import AsyncRawTracesClient, RawTracesClient
+from .types.traces_create_otel_request_resource_spans_item import (
+    TracesCreateOtelRequestResourceSpansItem,
+)
+from .types.traces_create_otel_response import TracesCreateOtelResponse
 from .types.traces_create_request_resource_spans_item import (
     TracesCreateRequestResourceSpansItem,
 )
@@ -104,6 +108,60 @@ class TracesClient:
         )
         """
         _response = self._raw_client.create(
+            resource_spans=resource_spans, request_options=request_options
+        )
+        return _response.data
+
+    def createotel(
+        self,
+        *,
+        resource_spans: typing.Sequence[TracesCreateOtelRequestResourceSpansItem],
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TracesCreateOtelResponse:
+        """
+        Parameters
+        ----------
+        resource_spans : typing.Sequence[TracesCreateOtelRequestResourceSpansItem]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TracesCreateOtelResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+        from mirascope.api._generated.traces import (
+            TracesCreateOtelRequestResourceSpansItem,
+            TracesCreateOtelRequestResourceSpansItemScopeSpansItem,
+            TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem,
+        )
+
+        client = Mirascope()
+        client.traces.createotel(
+            resource_spans=[
+                TracesCreateOtelRequestResourceSpansItem(
+                    scope_spans=[
+                        TracesCreateOtelRequestResourceSpansItemScopeSpansItem(
+                            spans=[
+                                TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem(
+                                    trace_id="traceId",
+                                    span_id="spanId",
+                                    name="name",
+                                    start_time_unix_nano="startTimeUnixNano",
+                                    end_time_unix_nano="endTimeUnixNano",
+                                )
+                            ],
+                        )
+                    ],
+                )
+            ],
+        )
+        """
+        _response = self._raw_client.createotel(
             resource_spans=resource_spans, request_options=request_options
         )
         return _response.data
@@ -616,6 +674,68 @@ class AsyncTracesClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
+            resource_spans=resource_spans, request_options=request_options
+        )
+        return _response.data
+
+    async def createotel(
+        self,
+        *,
+        resource_spans: typing.Sequence[TracesCreateOtelRequestResourceSpansItem],
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TracesCreateOtelResponse:
+        """
+        Parameters
+        ----------
+        resource_spans : typing.Sequence[TracesCreateOtelRequestResourceSpansItem]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TracesCreateOtelResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+        from mirascope.api._generated.traces import (
+            TracesCreateOtelRequestResourceSpansItem,
+            TracesCreateOtelRequestResourceSpansItemScopeSpansItem,
+            TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem,
+        )
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.traces.createotel(
+                resource_spans=[
+                    TracesCreateOtelRequestResourceSpansItem(
+                        scope_spans=[
+                            TracesCreateOtelRequestResourceSpansItemScopeSpansItem(
+                                spans=[
+                                    TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem(
+                                        trace_id="traceId",
+                                        span_id="spanId",
+                                        name="name",
+                                        start_time_unix_nano="startTimeUnixNano",
+                                        end_time_unix_nano="endTimeUnixNano",
+                                    )
+                                ],
+                            )
+                        ],
+                    )
+                ],
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.createotel(
             resource_spans=resource_spans, request_options=request_options
         )
         return _response.data

@@ -6,6 +6,7 @@ import type {
   CreatePaymentIntentRequest,
   PreviewSubscriptionChangeRequest,
   UpdateSubscriptionRequest,
+  UpdateAutoReloadSettingsRequest,
 } from "@/api/organizations.schemas";
 
 import { ApiClient, eq } from "@/app/api/client";
@@ -203,6 +204,106 @@ export const useCancelScheduledDowngrade = () => {
       // Invalidate subscription query to refresh the UI
       void queryClient.invalidateQueries({
         queryKey: ["organizations", organizationId, "subscription"],
+      });
+    },
+  });
+};
+
+export const usePaymentMethod = (organizationId: string | undefined) => {
+  return useQuery({
+    ...eq.queryOptions({
+      queryKey: ["organizations", organizationId, "payment-method"],
+      queryFn: () =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.organizations.getPaymentMethod({
+            path: { id: organizationId! },
+          });
+        }),
+    }),
+    enabled: !!organizationId,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useCreateSetupIntent = () => {
+  return useMutation({
+    ...eq.mutationOptions({
+      mutationKey: ["organizations", "createSetupIntent"],
+      mutationFn: (organizationId: string) =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.organizations.createSetupIntent({
+            path: { id: organizationId },
+          });
+        }),
+    }),
+  });
+};
+
+export const useRemovePaymentMethod = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...eq.mutationOptions({
+      mutationKey: ["organizations", "removePaymentMethod"],
+      mutationFn: (organizationId: string) =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.organizations.removePaymentMethod({
+            path: { id: organizationId },
+          });
+        }),
+    }),
+    onSuccess: (_data, organizationId) => {
+      void queryClient.invalidateQueries({
+        queryKey: ["organizations", organizationId, "payment-method"],
+      });
+    },
+  });
+};
+
+export const useAutoReloadSettings = (organizationId: string | undefined) => {
+  return useQuery({
+    ...eq.queryOptions({
+      queryKey: ["organizations", organizationId, "auto-reload"],
+      queryFn: () =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.organizations.getAutoReloadSettings({
+            path: { id: organizationId! },
+          });
+        }),
+    }),
+    enabled: !!organizationId,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useUpdateAutoReloadSettings = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...eq.mutationOptions({
+      mutationKey: ["organizations", "updateAutoReloadSettings"],
+      mutationFn: ({
+        organizationId,
+        data,
+      }: {
+        organizationId: string;
+        data: UpdateAutoReloadSettingsRequest;
+      }) =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.organizations.updateAutoReloadSettings({
+            path: { id: organizationId },
+            payload: data,
+          });
+        }),
+    }),
+    onSuccess: (_data, variables) => {
+      void queryClient.invalidateQueries({
+        queryKey: ["organizations", variables.organizationId, "auto-reload"],
       });
     },
   });

@@ -11,7 +11,11 @@ export default function DiscordLink({ className }: DiscordLinkProps) {
       href={DISCORD_INVITE_URL}
       target="_blank"
       rel="noopener noreferrer"
-      className={cn("flex flex-col px-2 py-1", "nav-text", className)}
+      className={cn(
+        "flex flex-col px-2 py-1 hover:cursor-pointer",
+        "nav-text",
+        className,
+      )}
     >
       {/* "Join our" text on first line */}
       <div className="flex items-center text-base font-medium">

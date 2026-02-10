@@ -5,6 +5,7 @@ import type * as serializers from "../../../index.js";
 
 import * as core from "../../../../core/index.js";
 import { TracesCreateRequestResourceSpansItemResourceAttributesItemValueArrayValue } from "./TracesCreateRequestResourceSpansItemResourceAttributesItemValueArrayValue.js";
+import { TracesCreateRequestResourceSpansItemResourceAttributesItemValueIntValue } from "./TracesCreateRequestResourceSpansItemResourceAttributesItemValueIntValue.js";
 import { TracesCreateRequestResourceSpansItemResourceAttributesItemValueKvlistValue } from "./TracesCreateRequestResourceSpansItemResourceAttributesItemValueKvlistValue.js";
 
 export const TracesCreateRequestResourceSpansItemResourceAttributesItemValue: core.serialization.ObjectSchema<
@@ -12,7 +13,8 @@ export const TracesCreateRequestResourceSpansItemResourceAttributesItemValue: co
   Mirascope.TracesCreateRequestResourceSpansItemResourceAttributesItemValue
 > = core.serialization.object({
   stringValue: core.serialization.string().optional(),
-  intValue: core.serialization.string().optional(),
+  intValue:
+    TracesCreateRequestResourceSpansItemResourceAttributesItemValueIntValue.optional(),
   doubleValue: core.serialization.number().optional(),
   boolValue: core.serialization.boolean().optional(),
   arrayValue:
@@ -24,7 +26,7 @@ export const TracesCreateRequestResourceSpansItemResourceAttributesItemValue: co
 export declare namespace TracesCreateRequestResourceSpansItemResourceAttributesItemValue {
   export interface Raw {
     stringValue?: string | null;
-    intValue?: string | null;
+    intValue?: TracesCreateRequestResourceSpansItemResourceAttributesItemValueIntValue.Raw | null;
     doubleValue?: number | null;
     boolValue?: boolean | null;
     arrayValue?: TracesCreateRequestResourceSpansItemResourceAttributesItemValueArrayValue.Raw | null;

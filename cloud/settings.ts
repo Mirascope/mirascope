@@ -33,6 +33,8 @@
 
 import { Context, Effect, Layer } from "effect";
 
+import type { CloudflareConfig } from "@/cloudflare/config";
+
 import { SettingsValidationError } from "@/errors";
 
 // =============================================================================
@@ -143,6 +145,18 @@ export type FrontendConfig = {
 };
 
 /**
+ * Encryption key configuration for claw secrets.
+ *
+ * Keys are versioned so that rotation is possible without re-encrypting
+ * all rows at once. The `secretsKeyId` column in the DB records which
+ * env-var name was used to encrypt a given row, and on decrypt we look
+ * up that name in this map.
+ */
+export type EncryptionKeysConfig = {
+  readonly [keyId: string]: string; // keyId → base64-encoded 256-bit key
+};
+
+/**
  * Complete application settings configuration.
  * All fields are required and guaranteed to be non-empty strings.
  */
@@ -174,6 +188,13 @@ export type SettingsConfig = {
 
   // Frontend (validated but not accessed server-side)
   readonly frontend: FrontendConfig;
+
+  // Cloudflare infrastructure
+  readonly cloudflare: CloudflareConfig;
+
+  // Encryption
+  readonly encryptionKeys: EncryptionKeysConfig;
+  readonly activeEncryptionKeyId: string;
 };
 
 // =============================================================================
@@ -247,6 +268,15 @@ export type CloudflareEnvironment = {
   VITE_POSTHOG_API_KEY?: string;
   VITE_POSTHOG_HOST?: string;
   VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID?: string;
+  // Cloudflare infrastructure (for claw deployment)
+  CF_ACCOUNT_ID?: string;
+  CF_API_TOKEN?: string;
+  CF_R2_READ_PERMISSION_GROUP_ID?: string;
+  CF_R2_WRITE_PERMISSION_GROUP_ID?: string;
+  CF_DO_NAMESPACE_ID?: string;
+  CF_DISPATCH_WORKER_BASE_URL?: string;
+  // Encryption keys for claw secrets (versioned)
+  CLAW_SECRETS_ENCRYPTION_KEY_V1?: string;
 };
 
 /**
@@ -369,6 +399,26 @@ function validateSettingsFromSource(
           "VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID",
         ),
       },
+
+      cloudflare: {
+        accountId: required("CF_ACCOUNT_ID"),
+        apiToken: required("CF_API_TOKEN"),
+        r2BucketItemReadPermissionGroupId: required(
+          "CF_R2_READ_PERMISSION_GROUP_ID",
+        ),
+        r2BucketItemWritePermissionGroupId: required(
+          "CF_R2_WRITE_PERMISSION_GROUP_ID",
+        ),
+        durableObjectNamespaceId: required("CF_DO_NAMESPACE_ID"),
+        dispatchWorkerBaseUrl: required("CF_DISPATCH_WORKER_BASE_URL"),
+      },
+
+      encryptionKeys: {
+        CLAW_SECRETS_ENCRYPTION_KEY_V1: required(
+          "CLAW_SECRETS_ENCRYPTION_KEY_V1",
+        ),
+      },
+      activeEncryptionKeyId: "CLAW_SECRETS_ENCRYPTION_KEY_V1",
     };
 
     // Fail if any variables are missing

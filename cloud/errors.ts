@@ -448,6 +448,49 @@ export class ClickHouseError extends Schema.TaggedError<ClickHouseError>()(
 }
 
 // =============================================================================
+// Encryption Errors
+// =============================================================================
+
+/**
+ * Error that occurs during secret encryption or decryption operations.
+ *
+ * This error wraps failures from the Web Crypto API (AES-256-GCM), including:
+ * - Invalid or missing encryption keys
+ * - Corrupted ciphertext
+ * - Authentication tag verification failures
+ * - Unknown key IDs during decryption
+ */
+export class EncryptionError extends Schema.TaggedError<EncryptionError>()(
+  "EncryptionError",
+  {
+    message: Schema.String,
+    cause: Schema.optional(Schema.Unknown),
+  },
+) {
+  static readonly status = 500 as const;
+}
+
+// =============================================================================
+// Cloudflare Errors
+// =============================================================================
+
+/**
+ * Error thrown by Cloudflare API operations.
+ *
+ * Covers R2 bucket operations, Durable Object management, container lifecycle,
+ * and API token creation failures.
+ */
+export class CloudflareApiError extends Schema.TaggedError<CloudflareApiError>()(
+  "CloudflareApiError",
+  {
+    message: Schema.String,
+    cause: Schema.optional(Schema.Unknown),
+  },
+) {
+  static readonly status = 502 as const;
+}
+
+// =============================================================================
 // Pricing Errors
 // =============================================================================
 

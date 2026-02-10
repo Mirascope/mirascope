@@ -1,7 +1,13 @@
 import { Schema } from "effect";
 import { describe, it, expect } from "vitest";
 
-import { generateSlug, isValidSlug, createSlugSchema } from "@/db/slug";
+import {
+  generateSlug,
+  isValidSlug,
+  isReservedOrgSlug,
+  RESERVED_ORG_SLUGS,
+  createSlugSchema,
+} from "@/db/slug";
 
 describe("generateSlug", () => {
   it("should convert a simple name to lowercase", () => {
@@ -133,6 +139,28 @@ describe("isValidSlug", () => {
   it("should reject slugs with only special characters in middle", () => {
     expect(isValidSlug("a-_-b")).toBe(true); // This is valid - starts/ends with alphanumeric
     expect(isValidSlug("_a_")).toBe(false); // Invalid - starts/ends with underscore
+  });
+});
+
+describe("isReservedOrgSlug", () => {
+  it("should flag all reserved slugs", () => {
+    for (const slug of RESERVED_ORG_SLUGS) {
+      expect(isReservedOrgSlug(slug)).toBe(true);
+    }
+  });
+
+  it("should not flag normal slugs", () => {
+    expect(isReservedOrgSlug("my-org")).toBe(false);
+    expect(isReservedOrgSlug("acme-corp")).toBe(false);
+    expect(isReservedOrgSlug("claws-inc")).toBe(false);
+  });
+
+  it("should include claws as reserved", () => {
+    expect(RESERVED_ORG_SLUGS.has("claws")).toBe(true);
+  });
+
+  it("should include staging as reserved", () => {
+    expect(RESERVED_ORG_SLUGS.has("staging")).toBe(true);
   });
 });
 
