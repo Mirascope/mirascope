@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import DevLayout from "@/app/components/blocks/dev/dev-layout";
 import LoadingContent from "@/app/components/blocks/loading-content";
 import { getAllDevMeta } from "@/app/lib/content/virtual-module";
+import { createPageHead } from "@/app/lib/seo/head";
 import { getTitleFontSize } from "@/app/lib/social-cards/element";
 import {
   loadAssetsBrowser,
@@ -11,6 +12,12 @@ import {
 } from "@/app/lib/social-cards/render-browser";
 
 export const Route = createFileRoute("/dev/social-card")({
+  head: () =>
+    createPageHead({
+      route: "/dev/social-card",
+      title: "Developer Tools - Social Card Preview",
+      description: "Preview and test social card designs",
+    }),
   component: SocialCardPreview,
   loader: () => {
     const devPages = getAllDevMeta();

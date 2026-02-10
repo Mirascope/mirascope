@@ -4,8 +4,16 @@ import { useMemo } from "react";
 import DevLayout from "@/app/components/blocks/dev/dev-layout";
 import LoadingContent from "@/app/components/blocks/loading-content";
 import { getAllDevMeta } from "@/app/lib/content/virtual-module";
+import { createPageHead } from "@/app/lib/seo/head";
 
 export const Route = createFileRoute("/dev/")({
+  head: () =>
+    createPageHead({
+      route: "/dev",
+      title: "Developer Tools",
+      description:
+        "Development tools and utilities for maintaining the Mirascope website",
+    }),
   component: DevIndexPage,
   loader: () => {
     const devPages = getAllDevMeta();
