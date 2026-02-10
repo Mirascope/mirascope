@@ -33,26 +33,21 @@ function getTierButton(
     );
   }
 
+  // Guard against empty orgSlug — fall back to login
+  const billingHref = orgSlug ? `/${orgSlug}/settings/billing` : "/login";
+
   const isPlanUpgrade = isUpgrade(currentPlan, tier);
 
   if (isPlanUpgrade) {
     return (
-      <ButtonLink
-        href={`/${orgSlug}/settings/billing`}
-        variant="default"
-        className="w-full"
-      >
+      <ButtonLink href={billingHref} variant="default" className="w-full">
         Upgrade
       </ButtonLink>
     );
   }
 
   return (
-    <ButtonLink
-      href={`/${orgSlug}/settings/billing`}
-      variant="outline"
-      className="w-full"
-    >
+    <ButtonLink href={billingHref} variant="outline" className="w-full">
       Downgrade
     </ButtonLink>
   );
