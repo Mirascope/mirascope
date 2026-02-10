@@ -1,3 +1,4 @@
+/* v8 ignore file -- pure type definitions */
 /**
  * @fileoverview Types for Cloudflare R2 bucket management.
  *

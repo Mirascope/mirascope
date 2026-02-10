@@ -18,10 +18,19 @@ import { and, eq } from "drizzle-orm";
 import { Effect } from "effect";
 import { Schema } from "effect";
 
+import type { ClawRole } from "@/db/schema/claw-memberships";
+
 import { decryptSecrets } from "@/claws/crypto";
 import { DrizzleORM } from "@/db/client";
+import { Database } from "@/db/database";
 import { claws, organizations } from "@/db/schema";
-import { DatabaseError, EncryptionError, NotFoundError } from "@/errors";
+import {
+  DatabaseError,
+  EncryptionError,
+  NotFoundError,
+  PermissionDeniedError,
+  UnauthorizedError,
+} from "@/errors";
 import { Settings } from "@/settings";
 
 // ---------------------------------------------------------------------------
@@ -241,4 +250,94 @@ export const reportClawStatusHandler = (
         }),
       );
     }
+  });
+
+// ---------------------------------------------------------------------------
+// Validate session
+// ---------------------------------------------------------------------------
+
+export const ValidateSessionRequestSchema = Schema.Struct({
+  sessionId: Schema.String,
+  organizationSlug: Schema.String,
+  clawSlug: Schema.String,
+});
+
+export type ValidateSessionRequest = typeof ValidateSessionRequestSchema.Type;
+
+export const ValidateSessionResponseSchema = Schema.Struct({
+  userId: Schema.String,
+  clawId: Schema.String,
+  organizationId: Schema.String,
+  role: Schema.String,
+});
+
+export type ValidateSessionResponse = typeof ValidateSessionResponseSchema.Type;
+
+/**
+ * Validate a session cookie and check claw access.
+ *
+ * Called by the dispatch worker's auth middleware when a browser user
+ * hits a claw URL with a session cookie. Verifies:
+ * 1. Session is valid and not expired
+ * 2. User exists
+ * 3. Claw exists in the given org
+ * 4. User has access (org OWNER/ADMIN implicit, or explicit claw membership)
+ *
+ * Returns the user's role so the dispatch worker can pass it downstream.
+ */
+export const validateSessionHandler = (
+  payload: ValidateSessionRequest,
+): Effect.Effect<
+  ValidateSessionResponse,
+  UnauthorizedError | NotFoundError | PermissionDeniedError | DatabaseError,
+  Database | DrizzleORM
+> =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+
+    // 1. Validate session → get user
+    const user = yield* db.sessions
+      .findUserBySessionId(payload.sessionId)
+      .pipe(
+        Effect.catchAll(() =>
+          Effect.fail(new UnauthorizedError({ message: "Invalid session" })),
+        ),
+      );
+
+    // 2. Resolve org/claw slugs → get clawId + organizationId
+    const resolved = yield* resolveClawHandler(
+      payload.organizationSlug,
+      payload.clawSlug,
+    );
+
+    // 3. Check user's role on this claw (org-level implicit or explicit membership)
+    const role: ClawRole = yield* db.organizations.claws.memberships
+      .getRole({
+        userId: user.id,
+        organizationId: resolved.organizationId,
+        clawId: resolved.clawId,
+      })
+      .pipe(
+        Effect.catchTag("NotFoundError", () =>
+          Effect.fail(
+            new UnauthorizedError({
+              message: "No access to this claw",
+            }),
+          ),
+        ),
+        Effect.catchTag("PermissionDeniedError", () =>
+          Effect.fail(
+            new UnauthorizedError({
+              message: "No access to this claw",
+            }),
+          ),
+        ),
+      );
+
+    return {
+      userId: user.id,
+      clawId: resolved.clawId,
+      organizationId: resolved.organizationId,
+      role,
+    };
   });

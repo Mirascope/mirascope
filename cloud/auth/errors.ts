@@ -1,3 +1,4 @@
+/* v8 ignore file -- pure error class definitions, no branching logic */
 import { Data } from "effect";
 
 export class OAuthError extends Data.TaggedError("OAuthError")<{

@@ -8,6 +8,7 @@
  *   GET  /api/internal/claws/resolve/:orgSlug/:clawSlug  → resolveClawHandler
  *   GET  /api/internal/claws/:clawId/bootstrap            → bootstrapClawHandler
  *   POST /api/internal/claws/:clawId/status               → reportClawStatusHandler
+ *   POST /api/internal/auth/validate-session              → validateSessionHandler
  */
 import { createFileRoute } from "@tanstack/react-router";
 import { Effect, Layer, Schema } from "effect";
@@ -16,16 +17,29 @@ import {
   resolveClawHandler,
   bootstrapClawHandler,
   reportClawStatusHandler,
+  validateSessionHandler,
   ClawStatusReportSchema,
+  ValidateSessionRequestSchema,
 } from "@/api/claws-internal.handlers";
 import { handleErrors, handleDefects } from "@/api/utils";
 import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
-import { DatabaseError, EncryptionError, NotFoundError } from "@/errors";
+import {
+  DatabaseError,
+  EncryptionError,
+  NotFoundError,
+  PermissionDeniedError,
+  UnauthorizedError,
+} from "@/errors";
 import { settingsLayer } from "@/server-entry";
 import { Settings } from "@/settings";
 
-type InternalError = NotFoundError | DatabaseError | EncryptionError;
+type InternalError =
+  | NotFoundError
+  | DatabaseError
+  | EncryptionError
+  | UnauthorizedError
+  | PermissionDeniedError;
 
 /**
  * Match the splat path against known internal routes.
@@ -36,7 +50,11 @@ function matchRoute(
   method: string,
   splat: string | undefined,
   getBody: () => Promise<unknown>,
-): Effect.Effect<unknown, InternalError, DrizzleORM | Settings> | null {
+): Effect.Effect<
+  unknown,
+  InternalError,
+  DrizzleORM | Settings | Database
+> | null {
   if (!splat) return null;
 
   const parts = splat.split("/").filter(Boolean);
@@ -82,6 +100,29 @@ function matchRoute(
         );
       }
       return yield* reportClawStatusHandler(clawId, decodeResult.right);
+    });
+  }
+
+  // POST auth/validate-session
+  if (
+    method === "POST" &&
+    parts.length === 2 &&
+    parts[0] === "auth" &&
+    parts[1] === "validate-session"
+  ) {
+    return Effect.gen(function* () {
+      const raw = yield* Effect.promise(getBody);
+      const decodeResult = Schema.decodeUnknownEither(
+        ValidateSessionRequestSchema,
+      )(raw);
+      if (decodeResult._tag === "Left") {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: "Invalid validate-session payload",
+          }),
+        );
+      }
+      return yield* validateSessionHandler(decodeResult.right);
     });
   }
 

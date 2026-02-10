@@ -9,6 +9,7 @@ import {
   resolveClawHandler,
   bootstrapClawHandler,
   reportClawStatusHandler,
+  validateSessionHandler,
 } from "@/api/claws-internal.handlers";
 import {
   createClawHandler,
@@ -21,7 +22,7 @@ import { ClawDeploymentError } from "@/claws/deployment/errors";
 import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
 import { claws } from "@/db/schema";
-import { DatabaseError, NotFoundError } from "@/errors";
+import { DatabaseError, NotFoundError, UnauthorizedError } from "@/errors";
 import { describe, it, expect, TestApiContext } from "@/tests/api";
 import { MockClawDeployment } from "@/tests/clawDeployment";
 import { MockSettingsLayer } from "@/tests/settings";
@@ -1143,5 +1144,92 @@ describe("Internal handler integration", () => {
         expect(fetched.status).toBe("active");
         expect(fetched.lastError).toBeNull();
       }),
+  );
+});
+
+describe("validateSessionHandler", () => {
+  it.effect("returns UnauthorizedError for invalid session", () =>
+    Effect.gen(function* () {
+      const error = yield* validateSessionHandler({
+        sessionId: "00000000-0000-0000-0000-000000000000",
+        organizationSlug: "any-org",
+        clawSlug: "any-claw",
+      }).pipe(Effect.flip);
+      expect(error).toBeInstanceOf(UnauthorizedError);
+      expect(error.message).toBe("Invalid session");
+    }),
+  );
+
+  it.rollback("returns NotFoundError for unknown org/claw slugs", () =>
+    Effect.gen(function* () {
+      const db = yield* Database;
+      const { user } = yield* createTestFixture;
+
+      const session = yield* db.sessions.create({
+        userId: user.id,
+        data: { userId: user.id, expiresAt: new Date(Date.now() + 60_000) },
+      });
+
+      const error = yield* validateSessionHandler({
+        sessionId: session.id,
+        organizationSlug: "nonexistent-org",
+        clawSlug: "nonexistent-claw",
+      }).pipe(Effect.flip);
+      expect(error).toBeInstanceOf(NotFoundError);
+    }),
+  );
+
+  it.rollback("returns UnauthorizedError when user has no access to claw", () =>
+    Effect.gen(function* () {
+      const db = yield* Database;
+      const { org } = yield* createTestFixture;
+
+      // Create a different user with no org membership
+      const outsider = yield* db.users.create({
+        data: {
+          email: `outsider-${Date.now()}@example.com`,
+          name: "Outsider",
+        },
+      });
+
+      const session = yield* db.sessions.create({
+        userId: outsider.id,
+        data: {
+          userId: outsider.id,
+          expiresAt: new Date(Date.now() + 60_000),
+        },
+      });
+
+      const error = yield* validateSessionHandler({
+        sessionId: session.id,
+        organizationSlug: org.slug,
+        clawSlug: "handler-claw",
+      }).pipe(Effect.flip);
+      expect(error).toBeInstanceOf(UnauthorizedError);
+      expect(error.message).toBe("No access to this claw");
+    }),
+  );
+
+  it.rollback("returns role for org owner with implicit access", () =>
+    Effect.gen(function* () {
+      const db = yield* Database;
+      const { user, org, claw } = yield* createTestFixture;
+
+      const session = yield* db.sessions.create({
+        userId: user.id,
+        data: { userId: user.id, expiresAt: new Date(Date.now() + 60_000) },
+      });
+
+      const result = yield* validateSessionHandler({
+        sessionId: session.id,
+        organizationSlug: org.slug,
+        clawSlug: "handler-claw",
+      });
+
+      expect(result.userId).toBe(user.id);
+      expect(result.clawId).toBe(claw.id);
+      expect(result.organizationId).toBe(org.id);
+      expect(result.role).toBeDefined();
+    }),
   );
 });

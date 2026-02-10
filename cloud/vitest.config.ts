@@ -33,6 +33,12 @@ export default defineConfig({
         "db/schema/**",
         "api/api.ts", // Declarative API composition, no logic to test
         "workers/config.ts", // Type declarations only, no executable code
+        "auth/errors.ts", // Pure error class definitions
+        "auth/oauth.ts", // OAuth flows (external network deps, v8-ignored)
+        "cloudflare/containers/service.ts", // Service interface (Context.Tag only)
+        "cloudflare/containers/types.ts", // Pure type definitions
+        "cloudflare/r2/service.ts", // Service interface (Context.Tag only)
+        "cloudflare/r2/types.ts", // Pure type definitions
         "tests/**",
         ".build-cache",
         ...coverageConfigDefaults.exclude,
