@@ -1,0 +1,41 @@
+services:
+  openclaw-gateway:
+    build:
+      context: ${OPENCLAW_SRC:?Set OPENCLAW_SRC to the path of your openclaw repo checkout}
+      dockerfile: Dockerfile
+    command:
+      [
+        "node",
+        "dist/index.js",
+        "gateway",
+        "--allow-unconfigured",
+        "--bind",
+        "lan",
+        "--port",
+        "18789",
+      ]
+    environment:
+      - OPENCLAW_GATEWAY_TOKEN=test-gateway-token
+      - OPENCLAW_GATEWAY_PASSWORD=test-password
+      - NODE_ENV=test
+      # OpenClaw needs ~500MB heap during startup; Node defaults to ~512MB on CI
+      - NODE_OPTIONS=--max-old-space-size=2048
+    ports:
+      - "18789:18789"
+    healthcheck:
+      # OpenClaw is WebSocket-based with no REST health endpoint.
+      # Any HTTP response (even 404) means the server is alive.
+      # Uses node instead of curl since curl may not be in the image.
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:18789/',r=>{process.exit(r.statusCode?0:1)}).on('error',()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+    # Note: resource limits removed to avoid OOM kills in CI.
+    # GitHub Actions runners have 7GB RAM which is sufficient.
