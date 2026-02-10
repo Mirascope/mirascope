@@ -3,15 +3,17 @@
  *
  * Routes incoming requests to per-claw Cloudflare Sandbox containers.
  *
- * Request flow:
- * 1. Extract clawId from Host header ({clawId}.claws.mirascope.com)
- * 2. Get or create a Sandbox Durable Object for the clawId
- * 3. Route /_internal/* to management endpoints
- * 4. For all other requests:
- *    a. Fetch bootstrap config (OpenClawConfig) from Mirascope API
- *    b. Mount R2 storage with per-claw scoped credentials
- *    c. Start openclaw gateway with env vars from config
- *    d. Proxy HTTP/WebSocket to the gateway
+ * Two routing modes:
+ * 1. Internal (/_internal/*) — clawId from Host header (service binding traffic)
+ * 2. External (/{orgSlug}/{clawSlug}/*) — path-based routing with auth
+ *
+ * For external requests:
+ *    a. Parse org + claw slugs from URL path
+ *    b. Authenticate (webhooks pass-through, Bearer pass-through, session cookie validated)
+ *    c. Resolve slugs → clawId via Cloud internal API
+ *    d. Fetch bootstrap config, start gateway, proxy HTTP/WS
+ *
+ * See cloud/claws/README.md for the full architecture.
  */
 
 import { getSandbox, Sandbox } from "@cloudflare/sandbox";
@@ -20,6 +22,7 @@ import { Hono } from "hono";
 import type { AppEnv, DispatchEnv, OpenClawConfig } from "./types";
 
 import loadingPageHtml from "./assets/loading.html";
+import { authenticate, corsHeaders, handlePreflight, parsePath } from "./auth";
 import { fetchBootstrapConfig, reportClawStatus } from "./bootstrap";
 import { getCachedConfig, setCachedConfig } from "./cache";
 import { internal } from "./internal";
@@ -36,8 +39,10 @@ export { Sandbox };
 // Main app
 const app = new Hono<AppEnv>();
 
-// Middleware: Extract clawId from Host header and initialize sandbox
-app.use("*", async (c, next) => {
+// ---------------------------------------------------------------------------
+// Internal routes: /_internal/* — Host-based clawId extraction (service binding traffic)
+// ---------------------------------------------------------------------------
+app.use("/_internal/*", async (c, next) => {
   const host = c.req.header("Host") || "";
   const clawId = extractClawId(host);
 
@@ -57,28 +62,61 @@ app.use("*", async (c, next) => {
   await next();
 });
 
-// Internal management routes
 app.route("/_internal", internal);
 
-// Catch-all: proxy to gateway
+// ---------------------------------------------------------------------------
+// External routes: /{orgSlug}/{clawSlug}/* — path-based routing with auth
+// ---------------------------------------------------------------------------
 app.all("*", async (c) => {
-  const sandbox = c.get("sandbox");
-  const clawId = c.get("clawId");
   const request = c.req.raw;
 
-  // Check if gateway is already running
-  const existing = await findGatewayProcess(sandbox);
-  const isReady = existing !== null && existing.status === "running";
+  // CORS preflight
+  const preflight = handlePreflight(request);
+  if (preflight) return preflight;
 
+  // Parse path
+  const parsed = parsePath(c.req.path);
+  if (!parsed) {
+    return c.json({ error: "Invalid path — expected /{org}/{claw}/..." }, 400);
+  }
+
+  // Authenticate
+  const authResult = await authenticate(request, parsed, c.env);
+  if (authResult.action === "reject") {
+    const origin = request.headers.get("Origin");
+    return c.json(
+      { error: authResult.message },
+      {
+        status: authResult.status as any,
+        headers: corsHeaders(origin),
+      },
+    );
+  }
+
+  const clawId = authResult.clawId;
+  console.log(
+    `[REQ] ${c.req.method} ${c.req.path} clawId=${clawId} (path-based)`,
+  );
+
+  const sandbox = getSandbox(c.env.Sandbox, clawId, { keepAlive: true });
+  c.set("sandbox", sandbox);
+  c.set("clawId", clawId);
+
+  // Rewrite request URL to remainder path before proxying
+  const remainderUrl = new URL(request.url);
+  remainderUrl.pathname = parsed.remainder;
+  const rewrittenRequest = new Request(remainderUrl.toString(), request);
+
+  // Proxy to gateway (same logic as before but with rewritten request)
   const isWebSocket =
     request.headers.get("Upgrade")?.toLowerCase() === "websocket";
   const acceptsHtml = request.headers.get("Accept")?.includes("text/html");
 
-  // Show loading page while gateway starts (for browser requests only)
+  const existing = await findGatewayProcess(sandbox);
+  const isReady = existing !== null && existing.status === "running";
+
   if (!isReady && !isWebSocket && acceptsHtml) {
     console.log("[proxy] Gateway not ready, serving loading page");
-
-    // Start gateway in background
     c.executionCtx.waitUntil(
       (async () => {
         try {
@@ -102,40 +140,27 @@ app.all("*", async (c) => {
         }
       })(),
     );
-
     return c.html(loadingPageHtml as unknown as string);
   }
 
-  // Ensure gateway is running (blocking)
   try {
     const config = await getOrFetchConfig(clawId, c.env);
     await ensureGateway(sandbox, config, c.env);
   } catch (error) {
     console.error("[proxy] Failed to start gateway:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
-
     await reportClawStatus(
       clawId,
       { status: "error", errorMessage: message },
       c.env,
     );
-
-    return c.json(
-      {
-        error: "Gateway failed to start",
-        details: message,
-        hint: "Check worker logs with: wrangler tail",
-      },
-      503,
-    );
+    return c.json({ error: "Gateway failed to start", details: message }, 503);
   }
 
-  // Proxy to gateway
   if (isWebSocket) {
-    return proxyWebSocket(sandbox, request);
+    return proxyWebSocket(sandbox, rewrittenRequest);
   }
-
-  return proxyHttp(sandbox, request);
+  return proxyHttp(sandbox, rewrittenRequest);
 });
 
 /**
