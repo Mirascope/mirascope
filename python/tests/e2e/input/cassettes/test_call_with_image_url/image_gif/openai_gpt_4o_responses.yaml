@@ -1,0 +1,84 @@
+interactions:
+- request:
+    body: '{"input":[{"content":[{"text":"Describe the following image in one sentence","type":"input_text"},{"image_url":"https://upload.wikimedia.org/wikipedia/commons/2/2c/Rotating_earth_%28large%29.gif","detail":"auto","type":"input_image"}],"role":"user","type":"message"}],"model":"gpt-4o"}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '285'
+      Content-Type:
+      - application/json
+      Host:
+      - api.openai.com
+      User-Agent:
+      - OpenAI/Python 2.16.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.12.12
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"message\": \"Error while downloading https://upload.wikimedia.org/wikipedia/commons/2/2c/Rotating_earth_%28large%29.gif.
+        Upstream status code: 403.\",\n    \"type\": \"invalid_request_error\",\n
+        \   \"param\": \"url\",\n    \"code\": \"invalid_value\"\n  }\n}"
+    headers:
+      CF-RAY:
+      - 9cbb9c5fed1c0950-SEA
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '258'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 10 Feb 2026 12:29:14 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '408'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      set-cookie:
+      - __cf_bm=Pz8wuGmY640X2d1ZZqmook_ICmUBrytfxuO.RcVUJ4s-1770726553.585056-1.0.1.1-3lyucXV3JgyBulwmdBdK7ospeYvzCtW9O0umM7kDpT1tu2KqiQ_4i7An4RK2C_7_6d80wVC33AUoubwOSSLwSyMvFBu5SyEqvlxd.IinETNxJpihIt.U69.UX_MVufPX;
+        HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Tue, 10 Feb 2026
+        12:59:14 GMT
+      x-request-id:
+      - req_b3ac07eaa3be48b2b2e129fe141d00e8
+    status:
+      code: 400
+      message: Bad Request
+version: 1

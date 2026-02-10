@@ -1,0 +1,84 @@
+interactions:
+- request:
+    body: '{"input":[{"content":[{"text":"Describe the following image in one sentence","type":"input_text"},{"image_url":"https://en.wikipedia.org/static/images/icons/wikipedia.png","detail":"auto","type":"input_image"}],"role":"user","type":"message"}],"model":"gpt-4o"}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '261'
+      Content-Type:
+      - application/json
+      Host:
+      - api.openai.com
+      User-Agent:
+      - OpenAI/Python 2.16.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.12.12
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"message\": \"Error while downloading https://en.wikipedia.org/static/images/icons/wikipedia.png.
+        Upstream status code: 403.\",\n    \"type\": \"invalid_request_error\",\n
+        \   \"param\": \"url\",\n    \"code\": \"invalid_value\"\n  }\n}"
+    headers:
+      CF-RAY:
+      - 9cbb9c3ecff176f8-SEA
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '234'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 10 Feb 2026 12:29:08 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '236'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      set-cookie:
+      - __cf_bm=dAG_CK4kWDqQ4.Fv5A_7B0cNtuoD8JV.ob3u_vi0p9Y-1770726548.2843757-1.0.1.1-rYTodQdBYJF.qqk1Pjps0I5Ime4QVgF9Pc3QpUHfh453QXAt7Ht3nQGupDdxwJU6R2W5JykUm8k3RheRbmBSBk1GdSKzO2WC.GbYEic5lN6wn2NAWBBBW9Dcn705nO4u;
+        HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Tue, 10 Feb 2026
+        12:59:08 GMT
+      x-request-id:
+      - req_02b24b3b51644d0396fe19b22a09bf39
+    status:
+      code: 400
+      message: Bad Request
+version: 1

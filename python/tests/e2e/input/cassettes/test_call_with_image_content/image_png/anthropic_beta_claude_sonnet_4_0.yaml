@@ -20,7 +20,7 @@ interactions:
       X-Api-Key:
       - <filtered>
       X-Stainless-Arch:
-      - x64
+      - arm64
       X-Stainless-Async:
       - 'false'
       X-Stainless-Helper:
@@ -28,13 +28,13 @@ interactions:
       X-Stainless-Lang:
       - python
       X-Stainless-OS:
-      - Linux
+      - MacOS
       X-Stainless-Package-Version:
       - 0.76.0
       X-Stainless-Runtime:
       - CPython
       X-Stainless-Runtime-Version:
-      - 3.11.2
+      - 3.12.12
       anthropic-beta:
       - structured-outputs-2025-11-13
       anthropic-version:
@@ -49,36 +49,69 @@ interactions:
     uri: https://api.anthropic.com/v1/messages?beta=true
   response:
     body:
-      string: '{"type":"error","error":{"type":"authentication_error","message":"invalid
-        x-api-key"},"request_id":"req_011CXyyQSk3AAHP3iNxw95JZ"}'
+      string: !!binary |
+        H4sIAAAAAAAA/3WS24obMQyGX0X4elKSbMJCLnvT26UsXcJSjGIrM2I98qwP0yYh7145NPREwWCj
+        75cl/fbFjNFTMDvjAlZPixxFqCw2i/VyvV1uVxvTGfbKx9zb5erZP66/fJw/l5f3w9On9eN+z7jv
+        VVNOEzUV5Yw9aSDF0AKYM+eCUjTkohTS0+71ctcX+t7IbduZ54Ez6CoDAauaHbzwG0/kGSHEPnZw
+        JCw1sfSAkKeBEjsMMNXzORD0IR4IRvQEdYJ4vMcnJkcZvnEZoJUCFpgxcawZAkpfteUMKB6ySzyV
+        3EE+jYcY+NwqtXZcDAEPMWHhmUBaE9QqNHZMpGcJLAQk7uRCvLX8wVy/diaXONlEqM7qiCTeaq6Y
+        nyDTe9Uc9UJqCJ2pN/t2F8My1WJLfCPJZvewUfvQDWSdXlU4iv1TsLxzxf5/7J7b7ic1b6SEwW7H
+        f/W/6Gr4m147E2v5PbTRjExpZke2MCWds725x+Tb95EjpTaj7Skqklgszsjqp36R6/UHvK+oFYQC
+        AAA=
     headers:
       CF-RAY:
-      - 9cb9ccacedd89a75-NAG
+      - 9cbb9b5f0e60980d-SEA
       Connection:
       - keep-alive
-      Content-Length:
-      - '130'
+      Content-Encoding:
+      - gzip
       Content-Security-Policy:
       - default-src 'none'; frame-ancestors 'none'
       Content-Type:
       - application/json
       Date:
-      - Tue, 10 Feb 2026 07:12:40 GMT
+      - Tue, 10 Feb 2026 12:28:34 GMT
       Server:
       - cloudflare
+      Transfer-Encoding:
+      - chunked
       X-Robots-Tag:
       - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-02-10T12:28:33Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-02-10T12:28:34Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-02-10T12:28:32Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-02-10T12:28:33Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CXyyQSk3AAHP3iNxw95JZ
+      - req_011CXzPVU8p6gbUXFzoNjNWD
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '8'
-      x-should-retry:
-      - 'false'
+      - '2406'
     status:
-      code: 401
-      message: Unauthorized
+      code: 200
+      message: OK
 version: 1

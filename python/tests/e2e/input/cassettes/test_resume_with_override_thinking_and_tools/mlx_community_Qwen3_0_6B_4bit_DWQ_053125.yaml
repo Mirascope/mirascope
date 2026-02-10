@@ -263,4 +263,74 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"thinking_budget":
+      6400}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '396'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21TW3OiMBh991cwPO2O2xYVat03uViwYqtAvezs7EQSkBUIkgRaO/3vG7C20i0P
+        DPnO+S6c7+SlJQiiD1IYQUAREX8Kv3hEEF7qd4XhlKKUcuAU4sEM5PSDe3xezr45JWCpTyOcaiCO
+        G8lveAoSxOO8fpIxiv4E0Ub88ZkE8pB8kVyl83BHkj4Br43za7OeSLeYhVvqRGEKKMvr9hop1eFG
+        bg8K5mPX249WpJhKLrEQlNF4Kc/8g7ZMJ4T1tl00fzLDcMhKX54uY6+zd8hiMy2etZFvhIqn75Gh
+        d0cD29E7EYDPPW1grM1k7LEyW5jySpmuYi/ZWGpy68SspwddE/d1r6CJvZtbewTVg3oTkAdrqa+v
+        Htf+bNIbXw2y+E5fqUpZPEqTNtYGAbvXNvvFvOjAv0q+yofrXcnUxQgn11dbIJlsdliY18t72XaH
+        wNnljte+GwdjiJWuFQdOv7++IVZxbY7dIcxKw5wZbbhfTGUjtak1J8SyN2LrK0V/f6gp5jiu1Usw
+        RPGJ/i63GERpRLZzBAiu9iQ67v3D+3LFKIXoiYelT3wbEQLCuq5d1RVClKKcuxIKJzMJPnfTN/L9
+        8tizGq4eS2RVpo0o4C4G744Rs5y7i7p4h1INs9rFinJse2b6Bt7pv+EUUxA3oW7vx391ic67RvH5
+        bTi7KFwgEEf0ufop11i6ZxbnDRpjnVRsnYl9smxzRKXTelP7uIBHlJPoqHSIEq7lRfdSuQhiQLZ1
+        PzFHJMMpQRasOGWkTQC8WN3iPj70rQc5cFVpKImt19Y/zabA+g4EAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 10 Feb 2026 12:12:50 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=663
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
 version: 1
