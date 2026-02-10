@@ -14,8 +14,6 @@
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  transform: scaleX(-1);
-  -webkit-transform: scaleX(-1);
   z-index: -1;
   pointer-events: none;
   transition: background-image 0.2s ease-in-out;

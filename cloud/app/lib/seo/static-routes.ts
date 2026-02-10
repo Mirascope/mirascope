@@ -25,7 +25,8 @@ export const STATIC_ROUTE_REGISTRY: Partial<
 > = {
   "/": {
     title: "Home",
-    description: "The complete toolkit for AI engineers",
+    description:
+      "Deploy your own AI agents — Claws that listen, learn, create, and grow. Instant deployment, full observability, no code required.",
   },
   "/pricing": {
     title: "Pricing",

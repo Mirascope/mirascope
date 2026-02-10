@@ -83,13 +83,13 @@ function AppContent() {
           isCloudRoute
             ? "w-full grow pt-[60px]"
             : isLandingPage
-              ? "w-full pt-(--header-height)"
+              ? "flex w-full grow flex-col pt-(--header-height)"
               : isDocsRoute
                 ? "mx-auto w-full max-w-7xl grow pt-(--header-height-with-selector)"
                 : "mx-auto w-full max-w-7xl grow pt-(--header-height)"
         }
       >
-        <main className="grow">
+        <main className="flex grow flex-col">
           <Outlet />
         </main>
       </div>

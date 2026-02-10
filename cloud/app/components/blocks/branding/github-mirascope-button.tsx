@@ -54,7 +54,11 @@ const GitHubMirascopeButton: React.FC<GitHubMirascopeButtonProps> = ({
       href={`https://github.com/${repo}`}
       target="_blank"
       rel="noopener noreferrer"
-      className={cn("flex flex-col px-2 py-1", "nav-text", className)}
+      className={cn(
+        "flex flex-col px-2 py-1 hover:cursor-pointer",
+        "nav-text",
+        className,
+      )}
     >
       {/* GitHub icon and product name */}
       <div className="flex items-center gap-1 text-base font-medium">

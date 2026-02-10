@@ -177,6 +177,10 @@
     color 0.2s ease,
     text-shadow 0.2s ease;
 }
+.nav-text:hover,
+.nav-text:hover * {
+  cursor: pointer !important;
+}
 .nav-text:hover {
   color: var(--color-nav-text-hover);
   text-shadow: var(--color-nav-text-shadow-hover);

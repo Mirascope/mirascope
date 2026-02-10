@@ -53,9 +53,9 @@ function MobileSearchWrapper({ onOpenChange }: SearchWrapperProps) {
   if (!isOpen) {
     return (
       <button
-        className={SEARCH_BAR_STYLES.mobileSearchButton(
+        className={`hover:cursor-pointer ${SEARCH_BAR_STYLES.mobileSearchButton(
           isLandingPage || isRouterWaitlistPage,
-        )}
+        )}`}
         style={SEARCH_BAR_STYLES.getInputContainerStyles(
           isLandingPage || isRouterWaitlistPage,
         )}
