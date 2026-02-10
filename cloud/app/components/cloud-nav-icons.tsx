@@ -7,29 +7,41 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
+import { useOrganization } from "@/app/contexts/organization";
 import { cn } from "@/app/lib/utils";
 
 export function CloudNavIcons() {
   const router = useRouterState();
   const currentPath = router.location.pathname;
+  const { selectedOrganization } = useOrganization();
+  const orgSlug = selectedOrganization?.slug ?? "";
 
-  const isHome =
-    currentPath === "/cloud" ||
-    currentPath === "/cloud/" ||
-    currentPath.startsWith("/cloud/settings");
-  const isClaws = currentPath.startsWith("/cloud/claws");
-  const isProjects = currentPath.startsWith("/cloud/projects");
+  // Parse path: /{orgSlug}/section/...
+  const segments = currentPath.split("/").filter(Boolean);
+  const section = segments[1]; // "claws", "projects", "settings", etc.
+
+  const isHome = !section || section === "settings";
+  const isClaws = section === "claws";
+  const isProjects = section === "projects";
 
   const items = [
-    { to: "/cloud" as const, icon: Home, label: "Home", active: isHome },
     {
-      to: "/cloud/claws" as const,
+      to: "/$orgSlug" as const,
+      params: { orgSlug },
+      icon: Home,
+      label: "Home",
+      active: isHome,
+    },
+    {
+      to: "/$orgSlug/claws" as const,
+      params: { orgSlug },
       icon: ClawIcon,
       label: "Claws",
       active: isClaws,
     },
     {
-      to: "/cloud/projects/dashboard" as const,
+      to: "/$orgSlug/projects" as const,
+      params: { orgSlug },
       icon: FolderKanban,
       label: "Projects",
       active: isProjects,
@@ -43,6 +55,7 @@ export function CloudNavIcons() {
           <TooltipTrigger asChild>
             <Link
               to={item.to}
+              params={item.params}
               className={cn(
                 "flex items-center justify-center rounded-md p-2 transition-colors",
                 item.active

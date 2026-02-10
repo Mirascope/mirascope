@@ -22,6 +22,7 @@ import { AnalyticsProvider } from "@/app/contexts/analytics";
 import { AuthProvider } from "@/app/contexts/auth";
 import { OrganizationProvider } from "@/app/contexts/organization";
 import { usePageView } from "@/app/hooks/use-page-view";
+import { isCloudAppRoute } from "@/app/lib/route-utils";
 import globalsCss from "@/app/styles/globals.css?url";
 
 export const Route = createRootRoute({
@@ -69,8 +70,7 @@ function AppContent() {
 
   const router = useRouterState();
   const currentPath = router.location.pathname;
-  const isCloudRoute =
-    currentPath === "/cloud" || currentPath.startsWith("/cloud/");
+  const isCloudRoute = isCloudAppRoute(currentPath);
   const isDocsRoute =
     currentPath === "/docs" || currentPath.startsWith("/docs/");
   const isLandingPage = useIsLandingPage();

@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import * as React from "react";
 import { useState } from "react";
@@ -68,11 +68,13 @@ function SidebarIcon({ children }: { children: React.ReactNode }) {
 
 function SidebarLink({
   to,
+  params,
   icon,
   label,
   isActive,
 }: {
   to: string;
+  params: Record<string, string>;
   icon: React.ReactNode;
   label: string;
   isActive: boolean;
@@ -80,6 +82,7 @@ function SidebarLink({
   return (
     <Link
       to={to}
+      params={params}
       className={`flex items-center gap-3 px-3 py-2 text-base rounded-md text-foreground font-handwriting-descent ${
         isActive ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted"
       }`}
@@ -108,15 +111,27 @@ export function ProjectsSidebar() {
   const [showCreateProject, setShowCreateProject] = useState(false);
   const [showCreateEnvironment, setShowCreateEnvironment] = useState(false);
 
+  const navigate = useNavigate();
   const router = useRouterState();
   const currentPath = router.location.pathname;
+
+  const orgSlug = selectedOrganization?.slug ?? "";
+  const projectSlug = selectedProject?.slug ?? "";
+  const envSlug = selectedEnvironment?.slug ?? "";
+  const routeParams = { orgSlug, projectSlug, envSlug };
 
   const handleProjectSelectChange = (value: string) => {
     if (value === "__create_new__") {
       setShowCreateProject(true);
     } else {
       const project = projects.find((p) => p.id === value);
-      setSelectedProject(project || null);
+      if (project) {
+        setSelectedProject(project);
+        void navigate({
+          to: "/$orgSlug/projects/$projectSlug",
+          params: { orgSlug, projectSlug: project.slug },
+        });
+      }
     }
   };
 
@@ -125,20 +140,33 @@ export function ProjectsSidebar() {
       setShowCreateEnvironment(true);
     } else {
       const environment = environments.find((e) => e.id === value);
-      setSelectedEnvironment(environment || null);
+      if (environment) {
+        setSelectedEnvironment(environment);
+        // Keep current sub-page if possible
+        const segments = currentPath.split("/").filter(Boolean);
+        const subPage = segments[4]; // e.g., "traces", "functions", etc.
+        if (subPage) {
+          void navigate({
+            to: `/$orgSlug/projects/$projectSlug/$envSlug/${subPage}`,
+            params: { orgSlug, projectSlug, envSlug: environment.slug },
+          });
+        } else {
+          void navigate({
+            to: "/$orgSlug/projects/$projectSlug/$envSlug",
+            params: { orgSlug, projectSlug, envSlug: environment.slug },
+          });
+        }
+      }
     }
   };
 
-  const isActive = (path: string) => {
-    if (currentPath === path) return true;
-    if (
-      path === "/cloud/projects/traces" ||
-      path === "/cloud/projects/functions" ||
-      path === "/cloud/projects/annotation-queue"
-    ) {
-      return currentPath.startsWith(`${path}/`);
-    }
-    return false;
+  // Determine active state from the current path's sub-page segment
+  const segments = currentPath.split("/").filter(Boolean);
+  const subPage = segments[4] ?? ""; // segment after envSlug
+
+  const isActive = (page: string) => {
+    if (page === "") return subPage === "" || subPage === undefined;
+    return subPage === page || subPage.startsWith(page);
   };
 
   return (
@@ -220,32 +248,36 @@ export function ProjectsSidebar() {
       {/* Dashboard link */}
       <div className="px-2 pt-4">
         <SidebarLink
-          to="/cloud/projects/dashboard"
+          to="/$orgSlug/projects/$projectSlug/$envSlug"
+          params={routeParams}
           icon={icons.dashboard}
           label="Dashboard"
-          isActive={isActive("/cloud/projects/dashboard")}
+          isActive={isActive("")}
         />
       </div>
 
       {/* Main navigation */}
       <div className="flex-1 overflow-y-auto px-2 pt-2 space-y-2">
         <SidebarLink
-          to="/cloud/projects/traces"
+          to="/$orgSlug/projects/$projectSlug/$envSlug/traces"
+          params={routeParams}
           icon={icons.traces}
           label="Traces"
-          isActive={isActive("/cloud/projects/traces")}
+          isActive={isActive("traces")}
         />
         <SidebarLink
-          to="/cloud/projects/functions"
+          to="/$orgSlug/projects/$projectSlug/$envSlug/functions"
+          params={routeParams}
           icon={icons.functions}
           label="Functions"
-          isActive={isActive("/cloud/projects/functions")}
+          isActive={isActive("functions")}
         />
         <SidebarLink
-          to="/cloud/projects/annotation-queue"
+          to="/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue"
+          params={routeParams}
           icon={icons.annotationQueue}
           label="Annotation Queue"
-          isActive={isActive("/cloud/projects/annotation-queue")}
+          isActive={isActive("annotation-queue")}
         />
       </div>
 

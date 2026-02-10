@@ -11,7 +11,7 @@ import type { PublicProject } from "@/db/schema";
 import { useProjects } from "@/app/api/projects";
 import { useOrganization } from "@/app/contexts/organization";
 
-const STORAGE_KEY_PREFIX = "mirascope:selectedProjectId";
+const STORAGE_KEY_PREFIX = "mirascope:selectedProjectSlug";
 const getStorageKey = (organizationId: string) =>
   `${STORAGE_KEY_PREFIX}:${organizationId}`;
 
@@ -37,7 +37,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     if (selectedOrganization) {
       const storageKey = getStorageKey(selectedOrganization.id);
       if (project) {
-        localStorage.setItem(storageKey, project.id);
+        localStorage.setItem(storageKey, project.slug);
       } else {
         localStorage.removeItem(storageKey);
       }
@@ -50,20 +50,20 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     if (isLoading || !selectedOrganization) return;
 
     const storageKey = getStorageKey(selectedOrganization.id);
-    const storedId = localStorage.getItem(storageKey);
-    if (storedId && projects.length > 0) {
-      const project = projects.find((p) => p.id === storedId);
+    const storedSlug = localStorage.getItem(storageKey);
+    if (storedSlug && projects.length > 0) {
+      const project = projects.find((p) => p.slug === storedSlug);
       if (project) {
         setSelectedProjectState(project);
       } else {
         // If stored project doesn't exist in current org, select first one
         setSelectedProjectState(projects[0]);
-        localStorage.setItem(storageKey, projects[0].id);
+        localStorage.setItem(storageKey, projects[0].slug);
       }
     } else if (projects.length > 0 && !selectedProject) {
       // Auto-select first project if none selected
       setSelectedProjectState(projects[0]);
-      localStorage.setItem(storageKey, projects[0].id);
+      localStorage.setItem(storageKey, projects[0].slug);
     } else if (projects.length === 0) {
       // Clear selection if no projects (and not loading)
       setSelectedProjectState(null);

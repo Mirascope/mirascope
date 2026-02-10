@@ -75,7 +75,7 @@ For teams running multiple AI bots.
 
 ## Getting Started
 
-Visit https://mirascope.com/cloud/login to create your free account.
+Visit https://mirascope.com/login to create your free account.
 
 ## Questions?
 

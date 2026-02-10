@@ -77,6 +77,8 @@ function AnnotationQueuePage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/projects/annotation-queue")({
+export const Route = createFileRoute(
+  "/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue",
+)({
   component: AnnotationQueuePage,
 });

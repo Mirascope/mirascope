@@ -5,49 +5,46 @@ import * as React from "react";
 import { useOrganization } from "@/app/contexts/organization";
 import { cn } from "@/app/lib/utils";
 
+type SettingsRoute =
+  | "/$orgSlug/settings/me"
+  | "/$orgSlug/settings/organization"
+  | "/$orgSlug/settings/team"
+  | "/$orgSlug/settings/project"
+  | "/$orgSlug/settings/claws"
+  | "/$orgSlug/settings/api-keys"
+  | "/$orgSlug/settings/billing";
+
 interface SettingsNavItem {
   label: string;
-  path: string;
+  sub: string;
+  to: SettingsRoute;
   icon?: React.ReactNode;
 }
 
 const settingsNavItems: SettingsNavItem[] = [
-  {
-    label: "My Details",
-    path: "/cloud/settings/me",
-  },
+  { label: "My Details", sub: "me", to: "/$orgSlug/settings/me" },
   {
     label: "Organization",
-    path: "/cloud/settings/organization",
+    sub: "organization",
+    to: "/$orgSlug/settings/organization",
   },
-  {
-    label: "Team",
-    path: "/cloud/settings/team",
-  },
-  {
-    label: "Project",
-    path: "/cloud/settings/project",
-  },
-  {
-    label: "Claws",
-    path: "/cloud/settings/claws",
-  },
-  {
-    label: "API Keys",
-    path: "/cloud/settings/api-keys",
-  },
-  {
-    label: "Billing",
-    path: "/cloud/settings/billing",
-  },
+  { label: "Team", sub: "team", to: "/$orgSlug/settings/team" },
+  { label: "Project", sub: "project", to: "/$orgSlug/settings/project" },
+  { label: "Claws", sub: "claws", to: "/$orgSlug/settings/claws" },
+  { label: "API Keys", sub: "api-keys", to: "/$orgSlug/settings/api-keys" },
+  { label: "Billing", sub: "billing", to: "/$orgSlug/settings/billing" },
 ];
 
 export function SettingsSidebar() {
   const { selectedOrganization } = useOrganization();
   const router = useRouterState();
   const currentPath = router.location.pathname;
+  const orgSlug = selectedOrganization?.slug ?? "";
 
-  const isActive = (path: string) => currentPath === path;
+  const isActive = (sub: string) => {
+    if (!orgSlug) return false;
+    return currentPath === `/${orgSlug}/settings/${sub}`;
+  };
 
   return (
     <aside className="w-48 h-full flex flex-col pt-6 pl-4">
@@ -70,11 +67,12 @@ export function SettingsSidebar() {
       <nav className="flex-1 space-y-1">
         {settingsNavItems.map((item) => (
           <Link
-            key={item.path}
-            to={item.path}
+            key={item.sub}
+            to={item.to}
+            params={{ orgSlug }}
             className={cn(
               "flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors cursor-pointer",
-              isActive(item.path)
+              isActive(item.sub)
                 ? "bg-muted font-medium text-foreground"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}

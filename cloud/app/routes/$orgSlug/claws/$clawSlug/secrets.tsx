@@ -491,6 +491,6 @@ function EditVariableDialog({
   );
 }
 
-export const Route = createFileRoute("/cloud/claws/secrets")({
+export const Route = createFileRoute("/$orgSlug/claws/$clawSlug/secrets")({
   component: ClawsSecretsPage,
 });

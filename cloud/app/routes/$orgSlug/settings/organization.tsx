@@ -120,6 +120,6 @@ function OrganizationSettingsPage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/settings/organization")({
+export const Route = createFileRoute("/$orgSlug/settings/organization")({
   component: OrganizationSettingsPage,
 });

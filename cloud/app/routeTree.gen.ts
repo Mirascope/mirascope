@@ -12,14 +12,17 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as OrganizationsRouteImport } from './routes/organizations'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as DevRouteImport } from './routes/dev'
 import { Route as CloudRouteImport } from './routes/cloud'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as OrgSlugRouteImport } from './routes/$orgSlug'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DevIndexRouteImport } from './routes/dev/index'
-import { Route as CloudIndexRouteImport } from './routes/cloud/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as OrgSlugIndexRouteImport } from './routes/$orgSlug/index'
 import { Route as TermsSplatRouteImport } from './routes/terms.$'
 import { Route as InvitationsAcceptRouteImport } from './routes/invitations.accept'
 import { Route as DocsSplatRouteImport } from './routes/docs.$'
@@ -28,30 +31,16 @@ import { Route as DevLayoutTestRouteImport } from './routes/dev/layout-test'
 import { Route as DevClawCardsRouteImport } from './routes/dev/claw-cards'
 import { Route as DevAuditMetadataRouteImport } from './routes/dev/audit-metadata'
 import { Route as DevSlugRouteImport } from './routes/dev.$slug'
-import { Route as CloudSettingsRouteImport } from './routes/cloud/settings'
-import { Route as CloudLoginRouteImport } from './routes/cloud/login'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthMeRouteImport } from './routes/auth/me'
 import { Route as AuthGoogleRouteImport } from './routes/auth/google'
 import { Route as AuthGithubRouteImport } from './routes/auth/github'
 import { Route as ApiAnalyticsRouteImport } from './routes/api.analytics'
-import { Route as CloudSettingsIndexRouteImport } from './routes/cloud/settings/index'
-import { Route as CloudProjectsIndexRouteImport } from './routes/cloud/projects/index'
-import { Route as CloudClawsIndexRouteImport } from './routes/cloud/claws/index'
+import { Route as OrgSlugSettingsRouteImport } from './routes/$orgSlug/settings'
+import { Route as OrgSlugSettingsIndexRouteImport } from './routes/$orgSlug/settings/index'
+import { Route as OrgSlugProjectsIndexRouteImport } from './routes/$orgSlug/projects/index'
+import { Route as OrgSlugClawsIndexRouteImport } from './routes/$orgSlug/claws/index'
 import { Route as DocsV1SplatRouteImport } from './routes/docs.v1.$'
-import { Route as CloudSettingsTeamRouteImport } from './routes/cloud/settings/team'
-import { Route as CloudSettingsProjectRouteImport } from './routes/cloud/settings/project'
-import { Route as CloudSettingsOrganizationRouteImport } from './routes/cloud/settings/organization'
-import { Route as CloudSettingsMeRouteImport } from './routes/cloud/settings/me'
-import { Route as CloudSettingsClawsRouteImport } from './routes/cloud/settings/claws'
-import { Route as CloudSettingsBillingRouteImport } from './routes/cloud/settings/billing'
-import { Route as CloudSettingsApiKeysRouteImport } from './routes/cloud/settings/api-keys'
-import { Route as CloudProjectsTracesRouteImport } from './routes/cloud/projects/traces'
-import { Route as CloudProjectsOnboardingRouteImport } from './routes/cloud/projects/onboarding'
-import { Route as CloudProjectsDashboardRouteImport } from './routes/cloud/projects/dashboard'
-import { Route as CloudProjectsAnnotationQueueRouteImport } from './routes/cloud/projects/annotation-queue'
-import { Route as CloudClawsSecretsRouteImport } from './routes/cloud/claws/secrets'
-import { Route as CloudClawsChatRouteImport } from './routes/cloud/claws/chat'
 import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
 import { Route as AuthGithubProxyCallbackRouteImport } from './routes/auth/github.proxy-callback'
@@ -61,10 +50,27 @@ import { Route as ApiV2HealthRouteImport } from './routes/api.v2.health'
 import { Route as ApiV2DocsRouteImport } from './routes/api.v2.docs'
 import { Route as ApiV2SplatRouteImport } from './routes/api.v2.$'
 import { Route as ApiInternalSplatRouteImport } from './routes/api.internal.$'
-import { Route as CloudProjectsFunctionsIndexRouteImport } from './routes/cloud/projects/functions.index'
+import { Route as OrgSlugSettingsTeamRouteImport } from './routes/$orgSlug/settings/team'
+import { Route as OrgSlugSettingsProjectRouteImport } from './routes/$orgSlug/settings/project'
+import { Route as OrgSlugSettingsOrganizationRouteImport } from './routes/$orgSlug/settings/organization'
+import { Route as OrgSlugSettingsMeRouteImport } from './routes/$orgSlug/settings/me'
+import { Route as OrgSlugSettingsClawsRouteImport } from './routes/$orgSlug/settings/claws'
+import { Route as OrgSlugSettingsBillingRouteImport } from './routes/$orgSlug/settings/billing'
+import { Route as OrgSlugSettingsApiKeysRouteImport } from './routes/$orgSlug/settings/api-keys'
+import { Route as OrgSlugProjectsProjectSlugRouteImport } from './routes/$orgSlug/projects/$projectSlug'
+import { Route as OrgSlugClawsClawSlugRouteImport } from './routes/$orgSlug/claws/$clawSlug'
+import { Route as OrgSlugProjectsProjectSlugIndexRouteImport } from './routes/$orgSlug/projects/$projectSlug/index'
+import { Route as OrgSlugClawsClawSlugIndexRouteImport } from './routes/$orgSlug/claws/$clawSlug/index'
 import { Route as RouterV2ProviderSplatRouteImport } from './routes/router.v2.$provider.$'
-import { Route as CloudProjectsFunctionsFunctionNameRouteImport } from './routes/cloud/projects/functions.$functionName'
-import { Route as CloudProjectsTraceViewTraceIdSpanIdRouteImport } from './routes/cloud/projects/trace-view.$traceId.$spanId'
+import { Route as OrgSlugProjectsProjectSlugEnvSlugRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug'
+import { Route as OrgSlugClawsClawSlugSecretsRouteImport } from './routes/$orgSlug/claws/$clawSlug/secrets'
+import { Route as OrgSlugClawsClawSlugChatRouteImport } from './routes/$orgSlug/claws/$clawSlug/chat'
+import { Route as OrgSlugProjectsProjectSlugEnvSlugIndexRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/index'
+import { Route as OrgSlugProjectsProjectSlugEnvSlugTracesRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/traces'
+import { Route as OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue'
+import { Route as OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/functions.index'
+import { Route as OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/functions.$functionName'
+import { Route as OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/trace-view.$traceId.$spanId'
 
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
@@ -79,6 +85,16 @@ const PricingRoute = PricingRouteImport.update({
 const OrganizationsRoute = OrganizationsRouteImport.update({
   id: '/organizations',
   path: '/organizations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsRoute = DocsRouteImport.update({
@@ -101,6 +117,11 @@ const BlogRoute = BlogRouteImport.update({
   path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrgSlugRoute = OrgSlugRouteImport.update({
+  id: '/$orgSlug',
+  path: '/$orgSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -111,15 +132,15 @@ const DevIndexRoute = DevIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DevRoute,
 } as any)
-const CloudIndexRoute = CloudIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => CloudRoute,
-} as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => BlogRoute,
+} as any)
+const OrgSlugIndexRoute = OrgSlugIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OrgSlugRoute,
 } as any)
 const TermsSplatRoute = TermsSplatRouteImport.update({
   id: '/terms/$',
@@ -161,16 +182,6 @@ const DevSlugRoute = DevSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => DevRoute,
 } as any)
-const CloudSettingsRoute = CloudSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => CloudRoute,
-} as any)
-const CloudLoginRoute = CloudLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => CloudRoute,
-} as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -196,92 +207,30 @@ const ApiAnalyticsRoute = ApiAnalyticsRouteImport.update({
   path: '/api/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CloudSettingsIndexRoute = CloudSettingsIndexRouteImport.update({
+const OrgSlugSettingsRoute = OrgSlugSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => OrgSlugRoute,
+} as any)
+const OrgSlugSettingsIndexRoute = OrgSlugSettingsIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => CloudSettingsRoute,
+  getParentRoute: () => OrgSlugSettingsRoute,
 } as any)
-const CloudProjectsIndexRoute = CloudProjectsIndexRouteImport.update({
+const OrgSlugProjectsIndexRoute = OrgSlugProjectsIndexRouteImport.update({
   id: '/projects/',
   path: '/projects/',
-  getParentRoute: () => CloudRoute,
+  getParentRoute: () => OrgSlugRoute,
 } as any)
-const CloudClawsIndexRoute = CloudClawsIndexRouteImport.update({
+const OrgSlugClawsIndexRoute = OrgSlugClawsIndexRouteImport.update({
   id: '/claws/',
   path: '/claws/',
-  getParentRoute: () => CloudRoute,
+  getParentRoute: () => OrgSlugRoute,
 } as any)
 const DocsV1SplatRoute = DocsV1SplatRouteImport.update({
   id: '/v1/$',
   path: '/v1/$',
   getParentRoute: () => DocsRoute,
-} as any)
-const CloudSettingsTeamRoute = CloudSettingsTeamRouteImport.update({
-  id: '/team',
-  path: '/team',
-  getParentRoute: () => CloudSettingsRoute,
-} as any)
-const CloudSettingsProjectRoute = CloudSettingsProjectRouteImport.update({
-  id: '/project',
-  path: '/project',
-  getParentRoute: () => CloudSettingsRoute,
-} as any)
-const CloudSettingsOrganizationRoute =
-  CloudSettingsOrganizationRouteImport.update({
-    id: '/organization',
-    path: '/organization',
-    getParentRoute: () => CloudSettingsRoute,
-  } as any)
-const CloudSettingsMeRoute = CloudSettingsMeRouteImport.update({
-  id: '/me',
-  path: '/me',
-  getParentRoute: () => CloudSettingsRoute,
-} as any)
-const CloudSettingsClawsRoute = CloudSettingsClawsRouteImport.update({
-  id: '/claws',
-  path: '/claws',
-  getParentRoute: () => CloudSettingsRoute,
-} as any)
-const CloudSettingsBillingRoute = CloudSettingsBillingRouteImport.update({
-  id: '/billing',
-  path: '/billing',
-  getParentRoute: () => CloudSettingsRoute,
-} as any)
-const CloudSettingsApiKeysRoute = CloudSettingsApiKeysRouteImport.update({
-  id: '/api-keys',
-  path: '/api-keys',
-  getParentRoute: () => CloudSettingsRoute,
-} as any)
-const CloudProjectsTracesRoute = CloudProjectsTracesRouteImport.update({
-  id: '/projects/traces',
-  path: '/projects/traces',
-  getParentRoute: () => CloudRoute,
-} as any)
-const CloudProjectsOnboardingRoute = CloudProjectsOnboardingRouteImport.update({
-  id: '/projects/onboarding',
-  path: '/projects/onboarding',
-  getParentRoute: () => CloudRoute,
-} as any)
-const CloudProjectsDashboardRoute = CloudProjectsDashboardRouteImport.update({
-  id: '/projects/dashboard',
-  path: '/projects/dashboard',
-  getParentRoute: () => CloudRoute,
-} as any)
-const CloudProjectsAnnotationQueueRoute =
-  CloudProjectsAnnotationQueueRouteImport.update({
-    id: '/projects/annotation-queue',
-    path: '/projects/annotation-queue',
-    getParentRoute: () => CloudRoute,
-  } as any)
-const CloudClawsSecretsRoute = CloudClawsSecretsRouteImport.update({
-  id: '/claws/secrets',
-  path: '/claws/secrets',
-  getParentRoute: () => CloudRoute,
-} as any)
-const CloudClawsChatRoute = CloudClawsChatRouteImport.update({
-  id: '/claws/chat',
-  path: '/claws/chat',
-  getParentRoute: () => CloudRoute,
 } as any)
 const AuthGoogleProxyCallbackRoute = AuthGoogleProxyCallbackRouteImport.update({
   id: '/proxy-callback',
@@ -328,46 +277,143 @@ const ApiInternalSplatRoute = ApiInternalSplatRouteImport.update({
   path: '/api/internal/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CloudProjectsFunctionsIndexRoute =
-  CloudProjectsFunctionsIndexRouteImport.update({
-    id: '/projects/functions/',
-    path: '/projects/functions/',
-    getParentRoute: () => CloudRoute,
+const OrgSlugSettingsTeamRoute = OrgSlugSettingsTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => OrgSlugSettingsRoute,
+} as any)
+const OrgSlugSettingsProjectRoute = OrgSlugSettingsProjectRouteImport.update({
+  id: '/project',
+  path: '/project',
+  getParentRoute: () => OrgSlugSettingsRoute,
+} as any)
+const OrgSlugSettingsOrganizationRoute =
+  OrgSlugSettingsOrganizationRouteImport.update({
+    id: '/organization',
+    path: '/organization',
+    getParentRoute: () => OrgSlugSettingsRoute,
+  } as any)
+const OrgSlugSettingsMeRoute = OrgSlugSettingsMeRouteImport.update({
+  id: '/me',
+  path: '/me',
+  getParentRoute: () => OrgSlugSettingsRoute,
+} as any)
+const OrgSlugSettingsClawsRoute = OrgSlugSettingsClawsRouteImport.update({
+  id: '/claws',
+  path: '/claws',
+  getParentRoute: () => OrgSlugSettingsRoute,
+} as any)
+const OrgSlugSettingsBillingRoute = OrgSlugSettingsBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => OrgSlugSettingsRoute,
+} as any)
+const OrgSlugSettingsApiKeysRoute = OrgSlugSettingsApiKeysRouteImport.update({
+  id: '/api-keys',
+  path: '/api-keys',
+  getParentRoute: () => OrgSlugSettingsRoute,
+} as any)
+const OrgSlugProjectsProjectSlugRoute =
+  OrgSlugProjectsProjectSlugRouteImport.update({
+    id: '/projects/$projectSlug',
+    path: '/projects/$projectSlug',
+    getParentRoute: () => OrgSlugRoute,
+  } as any)
+const OrgSlugClawsClawSlugRoute = OrgSlugClawsClawSlugRouteImport.update({
+  id: '/claws/$clawSlug',
+  path: '/claws/$clawSlug',
+  getParentRoute: () => OrgSlugRoute,
+} as any)
+const OrgSlugProjectsProjectSlugIndexRoute =
+  OrgSlugProjectsProjectSlugIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => OrgSlugProjectsProjectSlugRoute,
+  } as any)
+const OrgSlugClawsClawSlugIndexRoute =
+  OrgSlugClawsClawSlugIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => OrgSlugClawsClawSlugRoute,
   } as any)
 const RouterV2ProviderSplatRoute = RouterV2ProviderSplatRouteImport.update({
   id: '/router/v2/$provider/$',
   path: '/router/v2/$provider/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CloudProjectsFunctionsFunctionNameRoute =
-  CloudProjectsFunctionsFunctionNameRouteImport.update({
-    id: '/projects/functions/$functionName',
-    path: '/projects/functions/$functionName',
-    getParentRoute: () => CloudRoute,
+const OrgSlugProjectsProjectSlugEnvSlugRoute =
+  OrgSlugProjectsProjectSlugEnvSlugRouteImport.update({
+    id: '/$envSlug',
+    path: '/$envSlug',
+    getParentRoute: () => OrgSlugProjectsProjectSlugRoute,
   } as any)
-const CloudProjectsTraceViewTraceIdSpanIdRoute =
-  CloudProjectsTraceViewTraceIdSpanIdRouteImport.update({
-    id: '/projects/trace-view/$traceId/$spanId',
-    path: '/projects/trace-view/$traceId/$spanId',
-    getParentRoute: () => CloudRoute,
+const OrgSlugClawsClawSlugSecretsRoute =
+  OrgSlugClawsClawSlugSecretsRouteImport.update({
+    id: '/secrets',
+    path: '/secrets',
+    getParentRoute: () => OrgSlugClawsClawSlugRoute,
+  } as any)
+const OrgSlugClawsClawSlugChatRoute =
+  OrgSlugClawsClawSlugChatRouteImport.update({
+    id: '/chat',
+    path: '/chat',
+    getParentRoute: () => OrgSlugClawsClawSlugRoute,
+  } as any)
+const OrgSlugProjectsProjectSlugEnvSlugIndexRoute =
+  OrgSlugProjectsProjectSlugEnvSlugIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => OrgSlugProjectsProjectSlugEnvSlugRoute,
+  } as any)
+const OrgSlugProjectsProjectSlugEnvSlugTracesRoute =
+  OrgSlugProjectsProjectSlugEnvSlugTracesRouteImport.update({
+    id: '/traces',
+    path: '/traces',
+    getParentRoute: () => OrgSlugProjectsProjectSlugEnvSlugRoute,
+  } as any)
+const OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute =
+  OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRouteImport.update({
+    id: '/annotation-queue',
+    path: '/annotation-queue',
+    getParentRoute: () => OrgSlugProjectsProjectSlugEnvSlugRoute,
+  } as any)
+const OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute =
+  OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRouteImport.update({
+    id: '/functions/',
+    path: '/functions/',
+    getParentRoute: () => OrgSlugProjectsProjectSlugEnvSlugRoute,
+  } as any)
+const OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute =
+  OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRouteImport.update({
+    id: '/functions/$functionName',
+    path: '/functions/$functionName',
+    getParentRoute: () => OrgSlugProjectsProjectSlugEnvSlugRoute,
+  } as any)
+const OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute =
+  OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRouteImport.update({
+    id: '/trace-view/$traceId/$spanId',
+    path: '/trace-view/$traceId/$spanId',
+    getParentRoute: () => OrgSlugProjectsProjectSlugEnvSlugRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$orgSlug': typeof OrgSlugRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
-  '/cloud': typeof CloudRouteWithChildren
+  '/cloud': typeof CloudRoute
   '/dev': typeof DevRouteWithChildren
   '/docs': typeof DocsRouteWithChildren
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/$orgSlug/settings': typeof OrgSlugSettingsRouteWithChildren
   '/api/analytics': typeof ApiAnalyticsRoute
   '/auth/github': typeof AuthGithubRouteWithChildren
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
-  '/cloud/login': typeof CloudLoginRoute
-  '/cloud/settings': typeof CloudSettingsRouteWithChildren
   '/dev/$slug': typeof DevSlugRoute
   '/dev/audit-metadata': typeof DevAuditMetadataRoute
   '/dev/claw-cards': typeof DevClawCardsRoute
@@ -376,9 +422,18 @@ export interface FileRoutesByFullPath {
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
+  '/$orgSlug/': typeof OrgSlugIndexRoute
   '/blog/': typeof BlogIndexRoute
-  '/cloud/': typeof CloudIndexRoute
   '/dev/': typeof DevIndexRoute
+  '/$orgSlug/claws/$clawSlug': typeof OrgSlugClawsClawSlugRouteWithChildren
+  '/$orgSlug/projects/$projectSlug': typeof OrgSlugProjectsProjectSlugRouteWithChildren
+  '/$orgSlug/settings/api-keys': typeof OrgSlugSettingsApiKeysRoute
+  '/$orgSlug/settings/billing': typeof OrgSlugSettingsBillingRoute
+  '/$orgSlug/settings/claws': typeof OrgSlugSettingsClawsRoute
+  '/$orgSlug/settings/me': typeof OrgSlugSettingsMeRoute
+  '/$orgSlug/settings/organization': typeof OrgSlugSettingsOrganizationRoute
+  '/$orgSlug/settings/project': typeof OrgSlugSettingsProjectRoute
+  '/$orgSlug/settings/team': typeof OrgSlugSettingsTeamRoute
   '/api/internal/$': typeof ApiInternalSplatRoute
   '/api/v2/$': typeof ApiV2SplatRoute
   '/api/v2/docs': typeof ApiV2DocsRoute
@@ -388,31 +443,29 @@ export interface FileRoutesByFullPath {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
-  '/cloud/claws/chat': typeof CloudClawsChatRoute
-  '/cloud/claws/secrets': typeof CloudClawsSecretsRoute
-  '/cloud/projects/annotation-queue': typeof CloudProjectsAnnotationQueueRoute
-  '/cloud/projects/dashboard': typeof CloudProjectsDashboardRoute
-  '/cloud/projects/onboarding': typeof CloudProjectsOnboardingRoute
-  '/cloud/projects/traces': typeof CloudProjectsTracesRoute
-  '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
-  '/cloud/settings/billing': typeof CloudSettingsBillingRoute
-  '/cloud/settings/claws': typeof CloudSettingsClawsRoute
-  '/cloud/settings/me': typeof CloudSettingsMeRoute
-  '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
-  '/cloud/settings/project': typeof CloudSettingsProjectRoute
-  '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
-  '/cloud/claws': typeof CloudClawsIndexRoute
-  '/cloud/projects': typeof CloudProjectsIndexRoute
-  '/cloud/settings/': typeof CloudSettingsIndexRoute
-  '/cloud/projects/functions/$functionName': typeof CloudProjectsFunctionsFunctionNameRoute
+  '/$orgSlug/claws': typeof OrgSlugClawsIndexRoute
+  '/$orgSlug/projects': typeof OrgSlugProjectsIndexRoute
+  '/$orgSlug/settings/': typeof OrgSlugSettingsIndexRoute
+  '/$orgSlug/claws/$clawSlug/chat': typeof OrgSlugClawsClawSlugChatRoute
+  '/$orgSlug/claws/$clawSlug/secrets': typeof OrgSlugClawsClawSlugSecretsRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug': typeof OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren
   '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
-  '/cloud/projects/functions': typeof CloudProjectsFunctionsIndexRoute
-  '/cloud/projects/trace-view/$traceId/$spanId': typeof CloudProjectsTraceViewTraceIdSpanIdRoute
+  '/$orgSlug/claws/$clawSlug/': typeof OrgSlugClawsClawSlugIndexRoute
+  '/$orgSlug/projects/$projectSlug/': typeof OrgSlugProjectsProjectSlugIndexRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue': typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/traces': typeof OrgSlugProjectsProjectSlugEnvSlugTracesRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/': typeof OrgSlugProjectsProjectSlugEnvSlugIndexRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/functions': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId': typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cloud': typeof CloudRoute
   '/docs': typeof DocsRouteWithChildren
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -421,7 +474,6 @@ export interface FileRoutesByTo {
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
-  '/cloud/login': typeof CloudLoginRoute
   '/dev/$slug': typeof DevSlugRoute
   '/dev/audit-metadata': typeof DevAuditMetadataRoute
   '/dev/claw-cards': typeof DevClawCardsRoute
@@ -430,9 +482,16 @@ export interface FileRoutesByTo {
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
+  '/$orgSlug': typeof OrgSlugIndexRoute
   '/blog': typeof BlogIndexRoute
-  '/cloud': typeof CloudIndexRoute
   '/dev': typeof DevIndexRoute
+  '/$orgSlug/settings/api-keys': typeof OrgSlugSettingsApiKeysRoute
+  '/$orgSlug/settings/billing': typeof OrgSlugSettingsBillingRoute
+  '/$orgSlug/settings/claws': typeof OrgSlugSettingsClawsRoute
+  '/$orgSlug/settings/me': typeof OrgSlugSettingsMeRoute
+  '/$orgSlug/settings/organization': typeof OrgSlugSettingsOrganizationRoute
+  '/$orgSlug/settings/project': typeof OrgSlugSettingsProjectRoute
+  '/$orgSlug/settings/team': typeof OrgSlugSettingsTeamRoute
   '/api/internal/$': typeof ApiInternalSplatRoute
   '/api/v2/$': typeof ApiV2SplatRoute
   '/api/v2/docs': typeof ApiV2DocsRoute
@@ -442,45 +501,41 @@ export interface FileRoutesByTo {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
-  '/cloud/claws/chat': typeof CloudClawsChatRoute
-  '/cloud/claws/secrets': typeof CloudClawsSecretsRoute
-  '/cloud/projects/annotation-queue': typeof CloudProjectsAnnotationQueueRoute
-  '/cloud/projects/dashboard': typeof CloudProjectsDashboardRoute
-  '/cloud/projects/onboarding': typeof CloudProjectsOnboardingRoute
-  '/cloud/projects/traces': typeof CloudProjectsTracesRoute
-  '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
-  '/cloud/settings/billing': typeof CloudSettingsBillingRoute
-  '/cloud/settings/claws': typeof CloudSettingsClawsRoute
-  '/cloud/settings/me': typeof CloudSettingsMeRoute
-  '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
-  '/cloud/settings/project': typeof CloudSettingsProjectRoute
-  '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
-  '/cloud/claws': typeof CloudClawsIndexRoute
-  '/cloud/projects': typeof CloudProjectsIndexRoute
-  '/cloud/settings': typeof CloudSettingsIndexRoute
-  '/cloud/projects/functions/$functionName': typeof CloudProjectsFunctionsFunctionNameRoute
+  '/$orgSlug/claws': typeof OrgSlugClawsIndexRoute
+  '/$orgSlug/projects': typeof OrgSlugProjectsIndexRoute
+  '/$orgSlug/settings': typeof OrgSlugSettingsIndexRoute
+  '/$orgSlug/claws/$clawSlug/chat': typeof OrgSlugClawsClawSlugChatRoute
+  '/$orgSlug/claws/$clawSlug/secrets': typeof OrgSlugClawsClawSlugSecretsRoute
   '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
-  '/cloud/projects/functions': typeof CloudProjectsFunctionsIndexRoute
-  '/cloud/projects/trace-view/$traceId/$spanId': typeof CloudProjectsTraceViewTraceIdSpanIdRoute
+  '/$orgSlug/claws/$clawSlug': typeof OrgSlugClawsClawSlugIndexRoute
+  '/$orgSlug/projects/$projectSlug': typeof OrgSlugProjectsProjectSlugIndexRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue': typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/traces': typeof OrgSlugProjectsProjectSlugEnvSlugTracesRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug': typeof OrgSlugProjectsProjectSlugEnvSlugIndexRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/functions': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId': typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$orgSlug': typeof OrgSlugRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
-  '/cloud': typeof CloudRouteWithChildren
+  '/cloud': typeof CloudRoute
   '/dev': typeof DevRouteWithChildren
   '/docs': typeof DocsRouteWithChildren
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/$orgSlug/settings': typeof OrgSlugSettingsRouteWithChildren
   '/api/analytics': typeof ApiAnalyticsRoute
   '/auth/github': typeof AuthGithubRouteWithChildren
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
-  '/cloud/login': typeof CloudLoginRoute
-  '/cloud/settings': typeof CloudSettingsRouteWithChildren
   '/dev/$slug': typeof DevSlugRoute
   '/dev/audit-metadata': typeof DevAuditMetadataRoute
   '/dev/claw-cards': typeof DevClawCardsRoute
@@ -489,9 +544,18 @@ export interface FileRoutesById {
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
+  '/$orgSlug/': typeof OrgSlugIndexRoute
   '/blog/': typeof BlogIndexRoute
-  '/cloud/': typeof CloudIndexRoute
   '/dev/': typeof DevIndexRoute
+  '/$orgSlug/claws/$clawSlug': typeof OrgSlugClawsClawSlugRouteWithChildren
+  '/$orgSlug/projects/$projectSlug': typeof OrgSlugProjectsProjectSlugRouteWithChildren
+  '/$orgSlug/settings/api-keys': typeof OrgSlugSettingsApiKeysRoute
+  '/$orgSlug/settings/billing': typeof OrgSlugSettingsBillingRoute
+  '/$orgSlug/settings/claws': typeof OrgSlugSettingsClawsRoute
+  '/$orgSlug/settings/me': typeof OrgSlugSettingsMeRoute
+  '/$orgSlug/settings/organization': typeof OrgSlugSettingsOrganizationRoute
+  '/$orgSlug/settings/project': typeof OrgSlugSettingsProjectRoute
+  '/$orgSlug/settings/team': typeof OrgSlugSettingsTeamRoute
   '/api/internal/$': typeof ApiInternalSplatRoute
   '/api/v2/$': typeof ApiV2SplatRoute
   '/api/v2/docs': typeof ApiV2DocsRoute
@@ -501,46 +565,43 @@ export interface FileRoutesById {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
-  '/cloud/claws/chat': typeof CloudClawsChatRoute
-  '/cloud/claws/secrets': typeof CloudClawsSecretsRoute
-  '/cloud/projects/annotation-queue': typeof CloudProjectsAnnotationQueueRoute
-  '/cloud/projects/dashboard': typeof CloudProjectsDashboardRoute
-  '/cloud/projects/onboarding': typeof CloudProjectsOnboardingRoute
-  '/cloud/projects/traces': typeof CloudProjectsTracesRoute
-  '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
-  '/cloud/settings/billing': typeof CloudSettingsBillingRoute
-  '/cloud/settings/claws': typeof CloudSettingsClawsRoute
-  '/cloud/settings/me': typeof CloudSettingsMeRoute
-  '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
-  '/cloud/settings/project': typeof CloudSettingsProjectRoute
-  '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
-  '/cloud/claws/': typeof CloudClawsIndexRoute
-  '/cloud/projects/': typeof CloudProjectsIndexRoute
-  '/cloud/settings/': typeof CloudSettingsIndexRoute
-  '/cloud/projects/functions/$functionName': typeof CloudProjectsFunctionsFunctionNameRoute
+  '/$orgSlug/claws/': typeof OrgSlugClawsIndexRoute
+  '/$orgSlug/projects/': typeof OrgSlugProjectsIndexRoute
+  '/$orgSlug/settings/': typeof OrgSlugSettingsIndexRoute
+  '/$orgSlug/claws/$clawSlug/chat': typeof OrgSlugClawsClawSlugChatRoute
+  '/$orgSlug/claws/$clawSlug/secrets': typeof OrgSlugClawsClawSlugSecretsRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug': typeof OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren
   '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
-  '/cloud/projects/functions/': typeof CloudProjectsFunctionsIndexRoute
-  '/cloud/projects/trace-view/$traceId/$spanId': typeof CloudProjectsTraceViewTraceIdSpanIdRoute
+  '/$orgSlug/claws/$clawSlug/': typeof OrgSlugClawsClawSlugIndexRoute
+  '/$orgSlug/projects/$projectSlug/': typeof OrgSlugProjectsProjectSlugIndexRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue': typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/traces': typeof OrgSlugProjectsProjectSlugEnvSlugTracesRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/': typeof OrgSlugProjectsProjectSlugEnvSlugIndexRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/functions/': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId': typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$orgSlug'
     | '/blog'
     | '/cloud'
     | '/dev'
     | '/docs'
+    | '/login'
+    | '/onboarding'
     | '/organizations'
     | '/pricing'
     | '/privacy'
+    | '/$orgSlug/settings'
     | '/api/analytics'
     | '/auth/github'
     | '/auth/google'
     | '/auth/me'
     | '/blog/$slug'
-    | '/cloud/login'
-    | '/cloud/settings'
     | '/dev/$slug'
     | '/dev/audit-metadata'
     | '/dev/claw-cards'
@@ -549,9 +610,18 @@ export interface FileRouteTypes {
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
+    | '/$orgSlug/'
     | '/blog/'
-    | '/cloud/'
     | '/dev/'
+    | '/$orgSlug/claws/$clawSlug'
+    | '/$orgSlug/projects/$projectSlug'
+    | '/$orgSlug/settings/api-keys'
+    | '/$orgSlug/settings/billing'
+    | '/$orgSlug/settings/claws'
+    | '/$orgSlug/settings/me'
+    | '/$orgSlug/settings/organization'
+    | '/$orgSlug/settings/project'
+    | '/$orgSlug/settings/team'
     | '/api/internal/$'
     | '/api/v2/$'
     | '/api/v2/docs'
@@ -561,31 +631,29 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
-    | '/cloud/claws/chat'
-    | '/cloud/claws/secrets'
-    | '/cloud/projects/annotation-queue'
-    | '/cloud/projects/dashboard'
-    | '/cloud/projects/onboarding'
-    | '/cloud/projects/traces'
-    | '/cloud/settings/api-keys'
-    | '/cloud/settings/billing'
-    | '/cloud/settings/claws'
-    | '/cloud/settings/me'
-    | '/cloud/settings/organization'
-    | '/cloud/settings/project'
-    | '/cloud/settings/team'
     | '/docs/v1/$'
-    | '/cloud/claws'
-    | '/cloud/projects'
-    | '/cloud/settings/'
-    | '/cloud/projects/functions/$functionName'
+    | '/$orgSlug/claws'
+    | '/$orgSlug/projects'
+    | '/$orgSlug/settings/'
+    | '/$orgSlug/claws/$clawSlug/chat'
+    | '/$orgSlug/claws/$clawSlug/secrets'
+    | '/$orgSlug/projects/$projectSlug/$envSlug'
     | '/router/v2/$provider/$'
-    | '/cloud/projects/functions'
-    | '/cloud/projects/trace-view/$traceId/$spanId'
+    | '/$orgSlug/claws/$clawSlug/'
+    | '/$orgSlug/projects/$projectSlug/'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/traces'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/functions'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/cloud'
     | '/docs'
+    | '/login'
+    | '/onboarding'
     | '/organizations'
     | '/pricing'
     | '/privacy'
@@ -594,7 +662,6 @@ export interface FileRouteTypes {
     | '/auth/google'
     | '/auth/me'
     | '/blog/$slug'
-    | '/cloud/login'
     | '/dev/$slug'
     | '/dev/audit-metadata'
     | '/dev/claw-cards'
@@ -603,9 +670,16 @@ export interface FileRouteTypes {
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
+    | '/$orgSlug'
     | '/blog'
-    | '/cloud'
     | '/dev'
+    | '/$orgSlug/settings/api-keys'
+    | '/$orgSlug/settings/billing'
+    | '/$orgSlug/settings/claws'
+    | '/$orgSlug/settings/me'
+    | '/$orgSlug/settings/organization'
+    | '/$orgSlug/settings/project'
+    | '/$orgSlug/settings/team'
     | '/api/internal/$'
     | '/api/v2/$'
     | '/api/v2/docs'
@@ -615,44 +689,40 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
-    | '/cloud/claws/chat'
-    | '/cloud/claws/secrets'
-    | '/cloud/projects/annotation-queue'
-    | '/cloud/projects/dashboard'
-    | '/cloud/projects/onboarding'
-    | '/cloud/projects/traces'
-    | '/cloud/settings/api-keys'
-    | '/cloud/settings/billing'
-    | '/cloud/settings/claws'
-    | '/cloud/settings/me'
-    | '/cloud/settings/organization'
-    | '/cloud/settings/project'
-    | '/cloud/settings/team'
     | '/docs/v1/$'
-    | '/cloud/claws'
-    | '/cloud/projects'
-    | '/cloud/settings'
-    | '/cloud/projects/functions/$functionName'
+    | '/$orgSlug/claws'
+    | '/$orgSlug/projects'
+    | '/$orgSlug/settings'
+    | '/$orgSlug/claws/$clawSlug/chat'
+    | '/$orgSlug/claws/$clawSlug/secrets'
     | '/router/v2/$provider/$'
-    | '/cloud/projects/functions'
-    | '/cloud/projects/trace-view/$traceId/$spanId'
+    | '/$orgSlug/claws/$clawSlug'
+    | '/$orgSlug/projects/$projectSlug'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/traces'
+    | '/$orgSlug/projects/$projectSlug/$envSlug'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/functions'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId'
   id:
     | '__root__'
     | '/'
+    | '/$orgSlug'
     | '/blog'
     | '/cloud'
     | '/dev'
     | '/docs'
+    | '/login'
+    | '/onboarding'
     | '/organizations'
     | '/pricing'
     | '/privacy'
+    | '/$orgSlug/settings'
     | '/api/analytics'
     | '/auth/github'
     | '/auth/google'
     | '/auth/me'
     | '/blog/$slug'
-    | '/cloud/login'
-    | '/cloud/settings'
     | '/dev/$slug'
     | '/dev/audit-metadata'
     | '/dev/claw-cards'
@@ -661,9 +731,18 @@ export interface FileRouteTypes {
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
+    | '/$orgSlug/'
     | '/blog/'
-    | '/cloud/'
     | '/dev/'
+    | '/$orgSlug/claws/$clawSlug'
+    | '/$orgSlug/projects/$projectSlug'
+    | '/$orgSlug/settings/api-keys'
+    | '/$orgSlug/settings/billing'
+    | '/$orgSlug/settings/claws'
+    | '/$orgSlug/settings/me'
+    | '/$orgSlug/settings/organization'
+    | '/$orgSlug/settings/project'
+    | '/$orgSlug/settings/team'
     | '/api/internal/$'
     | '/api/v2/$'
     | '/api/v2/docs'
@@ -673,35 +752,33 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
-    | '/cloud/claws/chat'
-    | '/cloud/claws/secrets'
-    | '/cloud/projects/annotation-queue'
-    | '/cloud/projects/dashboard'
-    | '/cloud/projects/onboarding'
-    | '/cloud/projects/traces'
-    | '/cloud/settings/api-keys'
-    | '/cloud/settings/billing'
-    | '/cloud/settings/claws'
-    | '/cloud/settings/me'
-    | '/cloud/settings/organization'
-    | '/cloud/settings/project'
-    | '/cloud/settings/team'
     | '/docs/v1/$'
-    | '/cloud/claws/'
-    | '/cloud/projects/'
-    | '/cloud/settings/'
-    | '/cloud/projects/functions/$functionName'
+    | '/$orgSlug/claws/'
+    | '/$orgSlug/projects/'
+    | '/$orgSlug/settings/'
+    | '/$orgSlug/claws/$clawSlug/chat'
+    | '/$orgSlug/claws/$clawSlug/secrets'
+    | '/$orgSlug/projects/$projectSlug/$envSlug'
     | '/router/v2/$provider/$'
-    | '/cloud/projects/functions/'
-    | '/cloud/projects/trace-view/$traceId/$spanId'
+    | '/$orgSlug/claws/$clawSlug/'
+    | '/$orgSlug/projects/$projectSlug/'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/traces'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/functions/'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  OrgSlugRoute: typeof OrgSlugRouteWithChildren
   BlogRoute: typeof BlogRouteWithChildren
-  CloudRoute: typeof CloudRouteWithChildren
+  CloudRoute: typeof CloudRoute
   DevRoute: typeof DevRouteWithChildren
   DocsRoute: typeof DocsRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  OnboardingRoute: typeof OnboardingRoute
   OrganizationsRoute: typeof OrganizationsRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -742,6 +819,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/docs': {
       id: '/docs'
       path: '/docs'
@@ -770,6 +861,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$orgSlug': {
+      id: '/$orgSlug'
+      path: '/$orgSlug'
+      fullPath: '/$orgSlug'
+      preLoaderRoute: typeof OrgSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -784,19 +882,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DevIndexRouteImport
       parentRoute: typeof DevRoute
     }
-    '/cloud/': {
-      id: '/cloud/'
-      path: '/'
-      fullPath: '/cloud/'
-      preLoaderRoute: typeof CloudIndexRouteImport
-      parentRoute: typeof CloudRoute
-    }
     '/blog/': {
       id: '/blog/'
       path: '/'
       fullPath: '/blog/'
       preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof BlogRoute
+    }
+    '/$orgSlug/': {
+      id: '/$orgSlug/'
+      path: '/'
+      fullPath: '/$orgSlug/'
+      preLoaderRoute: typeof OrgSlugIndexRouteImport
+      parentRoute: typeof OrgSlugRoute
     }
     '/terms/$': {
       id: '/terms/$'
@@ -854,20 +952,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DevSlugRouteImport
       parentRoute: typeof DevRoute
     }
-    '/cloud/settings': {
-      id: '/cloud/settings'
-      path: '/settings'
-      fullPath: '/cloud/settings'
-      preLoaderRoute: typeof CloudSettingsRouteImport
-      parentRoute: typeof CloudRoute
-    }
-    '/cloud/login': {
-      id: '/cloud/login'
-      path: '/login'
-      fullPath: '/cloud/login'
-      preLoaderRoute: typeof CloudLoginRouteImport
-      parentRoute: typeof CloudRoute
-    }
     '/blog/$slug': {
       id: '/blog/$slug'
       path: '/$slug'
@@ -903,26 +987,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/cloud/settings/': {
-      id: '/cloud/settings/'
+    '/$orgSlug/settings': {
+      id: '/$orgSlug/settings'
+      path: '/settings'
+      fullPath: '/$orgSlug/settings'
+      preLoaderRoute: typeof OrgSlugSettingsRouteImport
+      parentRoute: typeof OrgSlugRoute
+    }
+    '/$orgSlug/settings/': {
+      id: '/$orgSlug/settings/'
       path: '/'
-      fullPath: '/cloud/settings/'
-      preLoaderRoute: typeof CloudSettingsIndexRouteImport
-      parentRoute: typeof CloudSettingsRoute
+      fullPath: '/$orgSlug/settings/'
+      preLoaderRoute: typeof OrgSlugSettingsIndexRouteImport
+      parentRoute: typeof OrgSlugSettingsRoute
     }
-    '/cloud/projects/': {
-      id: '/cloud/projects/'
+    '/$orgSlug/projects/': {
+      id: '/$orgSlug/projects/'
       path: '/projects'
-      fullPath: '/cloud/projects'
-      preLoaderRoute: typeof CloudProjectsIndexRouteImport
-      parentRoute: typeof CloudRoute
+      fullPath: '/$orgSlug/projects'
+      preLoaderRoute: typeof OrgSlugProjectsIndexRouteImport
+      parentRoute: typeof OrgSlugRoute
     }
-    '/cloud/claws/': {
-      id: '/cloud/claws/'
+    '/$orgSlug/claws/': {
+      id: '/$orgSlug/claws/'
       path: '/claws'
-      fullPath: '/cloud/claws'
-      preLoaderRoute: typeof CloudClawsIndexRouteImport
-      parentRoute: typeof CloudRoute
+      fullPath: '/$orgSlug/claws'
+      preLoaderRoute: typeof OrgSlugClawsIndexRouteImport
+      parentRoute: typeof OrgSlugRoute
     }
     '/docs/v1/$': {
       id: '/docs/v1/$'
@@ -930,97 +1021,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/docs/v1/$'
       preLoaderRoute: typeof DocsV1SplatRouteImport
       parentRoute: typeof DocsRoute
-    }
-    '/cloud/settings/team': {
-      id: '/cloud/settings/team'
-      path: '/team'
-      fullPath: '/cloud/settings/team'
-      preLoaderRoute: typeof CloudSettingsTeamRouteImport
-      parentRoute: typeof CloudSettingsRoute
-    }
-    '/cloud/settings/project': {
-      id: '/cloud/settings/project'
-      path: '/project'
-      fullPath: '/cloud/settings/project'
-      preLoaderRoute: typeof CloudSettingsProjectRouteImport
-      parentRoute: typeof CloudSettingsRoute
-    }
-    '/cloud/settings/organization': {
-      id: '/cloud/settings/organization'
-      path: '/organization'
-      fullPath: '/cloud/settings/organization'
-      preLoaderRoute: typeof CloudSettingsOrganizationRouteImport
-      parentRoute: typeof CloudSettingsRoute
-    }
-    '/cloud/settings/me': {
-      id: '/cloud/settings/me'
-      path: '/me'
-      fullPath: '/cloud/settings/me'
-      preLoaderRoute: typeof CloudSettingsMeRouteImport
-      parentRoute: typeof CloudSettingsRoute
-    }
-    '/cloud/settings/claws': {
-      id: '/cloud/settings/claws'
-      path: '/claws'
-      fullPath: '/cloud/settings/claws'
-      preLoaderRoute: typeof CloudSettingsClawsRouteImport
-      parentRoute: typeof CloudSettingsRoute
-    }
-    '/cloud/settings/billing': {
-      id: '/cloud/settings/billing'
-      path: '/billing'
-      fullPath: '/cloud/settings/billing'
-      preLoaderRoute: typeof CloudSettingsBillingRouteImport
-      parentRoute: typeof CloudSettingsRoute
-    }
-    '/cloud/settings/api-keys': {
-      id: '/cloud/settings/api-keys'
-      path: '/api-keys'
-      fullPath: '/cloud/settings/api-keys'
-      preLoaderRoute: typeof CloudSettingsApiKeysRouteImport
-      parentRoute: typeof CloudSettingsRoute
-    }
-    '/cloud/projects/traces': {
-      id: '/cloud/projects/traces'
-      path: '/projects/traces'
-      fullPath: '/cloud/projects/traces'
-      preLoaderRoute: typeof CloudProjectsTracesRouteImport
-      parentRoute: typeof CloudRoute
-    }
-    '/cloud/projects/onboarding': {
-      id: '/cloud/projects/onboarding'
-      path: '/projects/onboarding'
-      fullPath: '/cloud/projects/onboarding'
-      preLoaderRoute: typeof CloudProjectsOnboardingRouteImport
-      parentRoute: typeof CloudRoute
-    }
-    '/cloud/projects/dashboard': {
-      id: '/cloud/projects/dashboard'
-      path: '/projects/dashboard'
-      fullPath: '/cloud/projects/dashboard'
-      preLoaderRoute: typeof CloudProjectsDashboardRouteImport
-      parentRoute: typeof CloudRoute
-    }
-    '/cloud/projects/annotation-queue': {
-      id: '/cloud/projects/annotation-queue'
-      path: '/projects/annotation-queue'
-      fullPath: '/cloud/projects/annotation-queue'
-      preLoaderRoute: typeof CloudProjectsAnnotationQueueRouteImport
-      parentRoute: typeof CloudRoute
-    }
-    '/cloud/claws/secrets': {
-      id: '/cloud/claws/secrets'
-      path: '/claws/secrets'
-      fullPath: '/cloud/claws/secrets'
-      preLoaderRoute: typeof CloudClawsSecretsRouteImport
-      parentRoute: typeof CloudRoute
-    }
-    '/cloud/claws/chat': {
-      id: '/cloud/claws/chat'
-      path: '/claws/chat'
-      fullPath: '/cloud/claws/chat'
-      preLoaderRoute: typeof CloudClawsChatRouteImport
-      parentRoute: typeof CloudRoute
     }
     '/auth/google/proxy-callback': {
       id: '/auth/google/proxy-callback'
@@ -1085,12 +1085,82 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiInternalSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/cloud/projects/functions/': {
-      id: '/cloud/projects/functions/'
-      path: '/projects/functions'
-      fullPath: '/cloud/projects/functions'
-      preLoaderRoute: typeof CloudProjectsFunctionsIndexRouteImport
-      parentRoute: typeof CloudRoute
+    '/$orgSlug/settings/team': {
+      id: '/$orgSlug/settings/team'
+      path: '/team'
+      fullPath: '/$orgSlug/settings/team'
+      preLoaderRoute: typeof OrgSlugSettingsTeamRouteImport
+      parentRoute: typeof OrgSlugSettingsRoute
+    }
+    '/$orgSlug/settings/project': {
+      id: '/$orgSlug/settings/project'
+      path: '/project'
+      fullPath: '/$orgSlug/settings/project'
+      preLoaderRoute: typeof OrgSlugSettingsProjectRouteImport
+      parentRoute: typeof OrgSlugSettingsRoute
+    }
+    '/$orgSlug/settings/organization': {
+      id: '/$orgSlug/settings/organization'
+      path: '/organization'
+      fullPath: '/$orgSlug/settings/organization'
+      preLoaderRoute: typeof OrgSlugSettingsOrganizationRouteImport
+      parentRoute: typeof OrgSlugSettingsRoute
+    }
+    '/$orgSlug/settings/me': {
+      id: '/$orgSlug/settings/me'
+      path: '/me'
+      fullPath: '/$orgSlug/settings/me'
+      preLoaderRoute: typeof OrgSlugSettingsMeRouteImport
+      parentRoute: typeof OrgSlugSettingsRoute
+    }
+    '/$orgSlug/settings/claws': {
+      id: '/$orgSlug/settings/claws'
+      path: '/claws'
+      fullPath: '/$orgSlug/settings/claws'
+      preLoaderRoute: typeof OrgSlugSettingsClawsRouteImport
+      parentRoute: typeof OrgSlugSettingsRoute
+    }
+    '/$orgSlug/settings/billing': {
+      id: '/$orgSlug/settings/billing'
+      path: '/billing'
+      fullPath: '/$orgSlug/settings/billing'
+      preLoaderRoute: typeof OrgSlugSettingsBillingRouteImport
+      parentRoute: typeof OrgSlugSettingsRoute
+    }
+    '/$orgSlug/settings/api-keys': {
+      id: '/$orgSlug/settings/api-keys'
+      path: '/api-keys'
+      fullPath: '/$orgSlug/settings/api-keys'
+      preLoaderRoute: typeof OrgSlugSettingsApiKeysRouteImport
+      parentRoute: typeof OrgSlugSettingsRoute
+    }
+    '/$orgSlug/projects/$projectSlug': {
+      id: '/$orgSlug/projects/$projectSlug'
+      path: '/projects/$projectSlug'
+      fullPath: '/$orgSlug/projects/$projectSlug'
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugRouteImport
+      parentRoute: typeof OrgSlugRoute
+    }
+    '/$orgSlug/claws/$clawSlug': {
+      id: '/$orgSlug/claws/$clawSlug'
+      path: '/claws/$clawSlug'
+      fullPath: '/$orgSlug/claws/$clawSlug'
+      preLoaderRoute: typeof OrgSlugClawsClawSlugRouteImport
+      parentRoute: typeof OrgSlugRoute
+    }
+    '/$orgSlug/projects/$projectSlug/': {
+      id: '/$orgSlug/projects/$projectSlug/'
+      path: '/'
+      fullPath: '/$orgSlug/projects/$projectSlug/'
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugIndexRouteImport
+      parentRoute: typeof OrgSlugProjectsProjectSlugRoute
+    }
+    '/$orgSlug/claws/$clawSlug/': {
+      id: '/$orgSlug/claws/$clawSlug/'
+      path: '/'
+      fullPath: '/$orgSlug/claws/$clawSlug/'
+      preLoaderRoute: typeof OrgSlugClawsClawSlugIndexRouteImport
+      parentRoute: typeof OrgSlugClawsClawSlugRoute
     }
     '/router/v2/$provider/$': {
       id: '/router/v2/$provider/$'
@@ -1099,22 +1169,180 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RouterV2ProviderSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/cloud/projects/functions/$functionName': {
-      id: '/cloud/projects/functions/$functionName'
-      path: '/projects/functions/$functionName'
-      fullPath: '/cloud/projects/functions/$functionName'
-      preLoaderRoute: typeof CloudProjectsFunctionsFunctionNameRouteImport
-      parentRoute: typeof CloudRoute
+    '/$orgSlug/projects/$projectSlug/$envSlug': {
+      id: '/$orgSlug/projects/$projectSlug/$envSlug'
+      path: '/$envSlug'
+      fullPath: '/$orgSlug/projects/$projectSlug/$envSlug'
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRouteImport
+      parentRoute: typeof OrgSlugProjectsProjectSlugRoute
     }
-    '/cloud/projects/trace-view/$traceId/$spanId': {
-      id: '/cloud/projects/trace-view/$traceId/$spanId'
-      path: '/projects/trace-view/$traceId/$spanId'
-      fullPath: '/cloud/projects/trace-view/$traceId/$spanId'
-      preLoaderRoute: typeof CloudProjectsTraceViewTraceIdSpanIdRouteImport
-      parentRoute: typeof CloudRoute
+    '/$orgSlug/claws/$clawSlug/secrets': {
+      id: '/$orgSlug/claws/$clawSlug/secrets'
+      path: '/secrets'
+      fullPath: '/$orgSlug/claws/$clawSlug/secrets'
+      preLoaderRoute: typeof OrgSlugClawsClawSlugSecretsRouteImport
+      parentRoute: typeof OrgSlugClawsClawSlugRoute
+    }
+    '/$orgSlug/claws/$clawSlug/chat': {
+      id: '/$orgSlug/claws/$clawSlug/chat'
+      path: '/chat'
+      fullPath: '/$orgSlug/claws/$clawSlug/chat'
+      preLoaderRoute: typeof OrgSlugClawsClawSlugChatRouteImport
+      parentRoute: typeof OrgSlugClawsClawSlugRoute
+    }
+    '/$orgSlug/projects/$projectSlug/$envSlug/': {
+      id: '/$orgSlug/projects/$projectSlug/$envSlug/'
+      path: '/'
+      fullPath: '/$orgSlug/projects/$projectSlug/$envSlug/'
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugIndexRouteImport
+      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute
+    }
+    '/$orgSlug/projects/$projectSlug/$envSlug/traces': {
+      id: '/$orgSlug/projects/$projectSlug/$envSlug/traces'
+      path: '/traces'
+      fullPath: '/$orgSlug/projects/$projectSlug/$envSlug/traces'
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugTracesRouteImport
+      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute
+    }
+    '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue': {
+      id: '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue'
+      path: '/annotation-queue'
+      fullPath: '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue'
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRouteImport
+      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute
+    }
+    '/$orgSlug/projects/$projectSlug/$envSlug/functions/': {
+      id: '/$orgSlug/projects/$projectSlug/$envSlug/functions/'
+      path: '/functions'
+      fullPath: '/$orgSlug/projects/$projectSlug/$envSlug/functions'
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRouteImport
+      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute
+    }
+    '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName': {
+      id: '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName'
+      path: '/functions/$functionName'
+      fullPath: '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName'
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRouteImport
+      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute
+    }
+    '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId': {
+      id: '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId'
+      path: '/trace-view/$traceId/$spanId'
+      fullPath: '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId'
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRouteImport
+      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute
     }
   }
 }
+
+interface OrgSlugSettingsRouteChildren {
+  OrgSlugSettingsApiKeysRoute: typeof OrgSlugSettingsApiKeysRoute
+  OrgSlugSettingsBillingRoute: typeof OrgSlugSettingsBillingRoute
+  OrgSlugSettingsClawsRoute: typeof OrgSlugSettingsClawsRoute
+  OrgSlugSettingsMeRoute: typeof OrgSlugSettingsMeRoute
+  OrgSlugSettingsOrganizationRoute: typeof OrgSlugSettingsOrganizationRoute
+  OrgSlugSettingsProjectRoute: typeof OrgSlugSettingsProjectRoute
+  OrgSlugSettingsTeamRoute: typeof OrgSlugSettingsTeamRoute
+  OrgSlugSettingsIndexRoute: typeof OrgSlugSettingsIndexRoute
+}
+
+const OrgSlugSettingsRouteChildren: OrgSlugSettingsRouteChildren = {
+  OrgSlugSettingsApiKeysRoute: OrgSlugSettingsApiKeysRoute,
+  OrgSlugSettingsBillingRoute: OrgSlugSettingsBillingRoute,
+  OrgSlugSettingsClawsRoute: OrgSlugSettingsClawsRoute,
+  OrgSlugSettingsMeRoute: OrgSlugSettingsMeRoute,
+  OrgSlugSettingsOrganizationRoute: OrgSlugSettingsOrganizationRoute,
+  OrgSlugSettingsProjectRoute: OrgSlugSettingsProjectRoute,
+  OrgSlugSettingsTeamRoute: OrgSlugSettingsTeamRoute,
+  OrgSlugSettingsIndexRoute: OrgSlugSettingsIndexRoute,
+}
+
+const OrgSlugSettingsRouteWithChildren = OrgSlugSettingsRoute._addFileChildren(
+  OrgSlugSettingsRouteChildren,
+)
+
+interface OrgSlugClawsClawSlugRouteChildren {
+  OrgSlugClawsClawSlugChatRoute: typeof OrgSlugClawsClawSlugChatRoute
+  OrgSlugClawsClawSlugSecretsRoute: typeof OrgSlugClawsClawSlugSecretsRoute
+  OrgSlugClawsClawSlugIndexRoute: typeof OrgSlugClawsClawSlugIndexRoute
+}
+
+const OrgSlugClawsClawSlugRouteChildren: OrgSlugClawsClawSlugRouteChildren = {
+  OrgSlugClawsClawSlugChatRoute: OrgSlugClawsClawSlugChatRoute,
+  OrgSlugClawsClawSlugSecretsRoute: OrgSlugClawsClawSlugSecretsRoute,
+  OrgSlugClawsClawSlugIndexRoute: OrgSlugClawsClawSlugIndexRoute,
+}
+
+const OrgSlugClawsClawSlugRouteWithChildren =
+  OrgSlugClawsClawSlugRoute._addFileChildren(OrgSlugClawsClawSlugRouteChildren)
+
+interface OrgSlugProjectsProjectSlugEnvSlugRouteChildren {
+  OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute: typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute
+  OrgSlugProjectsProjectSlugEnvSlugTracesRoute: typeof OrgSlugProjectsProjectSlugEnvSlugTracesRoute
+  OrgSlugProjectsProjectSlugEnvSlugIndexRoute: typeof OrgSlugProjectsProjectSlugEnvSlugIndexRoute
+  OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute: typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute
+  OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute: typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute
+  OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute: typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute
+}
+
+const OrgSlugProjectsProjectSlugEnvSlugRouteChildren: OrgSlugProjectsProjectSlugEnvSlugRouteChildren =
+  {
+    OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute:
+      OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute,
+    OrgSlugProjectsProjectSlugEnvSlugTracesRoute:
+      OrgSlugProjectsProjectSlugEnvSlugTracesRoute,
+    OrgSlugProjectsProjectSlugEnvSlugIndexRoute:
+      OrgSlugProjectsProjectSlugEnvSlugIndexRoute,
+    OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute:
+      OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute,
+    OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute:
+      OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute,
+    OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute:
+      OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute,
+  }
+
+const OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren =
+  OrgSlugProjectsProjectSlugEnvSlugRoute._addFileChildren(
+    OrgSlugProjectsProjectSlugEnvSlugRouteChildren,
+  )
+
+interface OrgSlugProjectsProjectSlugRouteChildren {
+  OrgSlugProjectsProjectSlugEnvSlugRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren
+  OrgSlugProjectsProjectSlugIndexRoute: typeof OrgSlugProjectsProjectSlugIndexRoute
+}
+
+const OrgSlugProjectsProjectSlugRouteChildren: OrgSlugProjectsProjectSlugRouteChildren =
+  {
+    OrgSlugProjectsProjectSlugEnvSlugRoute:
+      OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren,
+    OrgSlugProjectsProjectSlugIndexRoute: OrgSlugProjectsProjectSlugIndexRoute,
+  }
+
+const OrgSlugProjectsProjectSlugRouteWithChildren =
+  OrgSlugProjectsProjectSlugRoute._addFileChildren(
+    OrgSlugProjectsProjectSlugRouteChildren,
+  )
+
+interface OrgSlugRouteChildren {
+  OrgSlugSettingsRoute: typeof OrgSlugSettingsRouteWithChildren
+  OrgSlugIndexRoute: typeof OrgSlugIndexRoute
+  OrgSlugClawsClawSlugRoute: typeof OrgSlugClawsClawSlugRouteWithChildren
+  OrgSlugProjectsProjectSlugRoute: typeof OrgSlugProjectsProjectSlugRouteWithChildren
+  OrgSlugClawsIndexRoute: typeof OrgSlugClawsIndexRoute
+  OrgSlugProjectsIndexRoute: typeof OrgSlugProjectsIndexRoute
+}
+
+const OrgSlugRouteChildren: OrgSlugRouteChildren = {
+  OrgSlugSettingsRoute: OrgSlugSettingsRouteWithChildren,
+  OrgSlugIndexRoute: OrgSlugIndexRoute,
+  OrgSlugClawsClawSlugRoute: OrgSlugClawsClawSlugRouteWithChildren,
+  OrgSlugProjectsProjectSlugRoute: OrgSlugProjectsProjectSlugRouteWithChildren,
+  OrgSlugClawsIndexRoute: OrgSlugClawsIndexRoute,
+  OrgSlugProjectsIndexRoute: OrgSlugProjectsIndexRoute,
+}
+
+const OrgSlugRouteWithChildren =
+  OrgSlugRoute._addFileChildren(OrgSlugRouteChildren)
 
 interface BlogRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
@@ -1127,70 +1355,6 @@ const BlogRouteChildren: BlogRouteChildren = {
 }
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
-
-interface CloudSettingsRouteChildren {
-  CloudSettingsApiKeysRoute: typeof CloudSettingsApiKeysRoute
-  CloudSettingsBillingRoute: typeof CloudSettingsBillingRoute
-  CloudSettingsClawsRoute: typeof CloudSettingsClawsRoute
-  CloudSettingsMeRoute: typeof CloudSettingsMeRoute
-  CloudSettingsOrganizationRoute: typeof CloudSettingsOrganizationRoute
-  CloudSettingsProjectRoute: typeof CloudSettingsProjectRoute
-  CloudSettingsTeamRoute: typeof CloudSettingsTeamRoute
-  CloudSettingsIndexRoute: typeof CloudSettingsIndexRoute
-}
-
-const CloudSettingsRouteChildren: CloudSettingsRouteChildren = {
-  CloudSettingsApiKeysRoute: CloudSettingsApiKeysRoute,
-  CloudSettingsBillingRoute: CloudSettingsBillingRoute,
-  CloudSettingsClawsRoute: CloudSettingsClawsRoute,
-  CloudSettingsMeRoute: CloudSettingsMeRoute,
-  CloudSettingsOrganizationRoute: CloudSettingsOrganizationRoute,
-  CloudSettingsProjectRoute: CloudSettingsProjectRoute,
-  CloudSettingsTeamRoute: CloudSettingsTeamRoute,
-  CloudSettingsIndexRoute: CloudSettingsIndexRoute,
-}
-
-const CloudSettingsRouteWithChildren = CloudSettingsRoute._addFileChildren(
-  CloudSettingsRouteChildren,
-)
-
-interface CloudRouteChildren {
-  CloudLoginRoute: typeof CloudLoginRoute
-  CloudSettingsRoute: typeof CloudSettingsRouteWithChildren
-  CloudIndexRoute: typeof CloudIndexRoute
-  CloudClawsChatRoute: typeof CloudClawsChatRoute
-  CloudClawsSecretsRoute: typeof CloudClawsSecretsRoute
-  CloudProjectsAnnotationQueueRoute: typeof CloudProjectsAnnotationQueueRoute
-  CloudProjectsDashboardRoute: typeof CloudProjectsDashboardRoute
-  CloudProjectsOnboardingRoute: typeof CloudProjectsOnboardingRoute
-  CloudProjectsTracesRoute: typeof CloudProjectsTracesRoute
-  CloudClawsIndexRoute: typeof CloudClawsIndexRoute
-  CloudProjectsIndexRoute: typeof CloudProjectsIndexRoute
-  CloudProjectsFunctionsFunctionNameRoute: typeof CloudProjectsFunctionsFunctionNameRoute
-  CloudProjectsFunctionsIndexRoute: typeof CloudProjectsFunctionsIndexRoute
-  CloudProjectsTraceViewTraceIdSpanIdRoute: typeof CloudProjectsTraceViewTraceIdSpanIdRoute
-}
-
-const CloudRouteChildren: CloudRouteChildren = {
-  CloudLoginRoute: CloudLoginRoute,
-  CloudSettingsRoute: CloudSettingsRouteWithChildren,
-  CloudIndexRoute: CloudIndexRoute,
-  CloudClawsChatRoute: CloudClawsChatRoute,
-  CloudClawsSecretsRoute: CloudClawsSecretsRoute,
-  CloudProjectsAnnotationQueueRoute: CloudProjectsAnnotationQueueRoute,
-  CloudProjectsDashboardRoute: CloudProjectsDashboardRoute,
-  CloudProjectsOnboardingRoute: CloudProjectsOnboardingRoute,
-  CloudProjectsTracesRoute: CloudProjectsTracesRoute,
-  CloudClawsIndexRoute: CloudClawsIndexRoute,
-  CloudProjectsIndexRoute: CloudProjectsIndexRoute,
-  CloudProjectsFunctionsFunctionNameRoute:
-    CloudProjectsFunctionsFunctionNameRoute,
-  CloudProjectsFunctionsIndexRoute: CloudProjectsFunctionsIndexRoute,
-  CloudProjectsTraceViewTraceIdSpanIdRoute:
-    CloudProjectsTraceViewTraceIdSpanIdRoute,
-}
-
-const CloudRouteWithChildren = CloudRoute._addFileChildren(CloudRouteChildren)
 
 interface DevRouteChildren {
   DevSlugRoute: typeof DevSlugRoute
@@ -1254,10 +1418,13 @@ const AuthGoogleRouteWithChildren = AuthGoogleRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  OrgSlugRoute: OrgSlugRouteWithChildren,
   BlogRoute: BlogRouteWithChildren,
-  CloudRoute: CloudRouteWithChildren,
+  CloudRoute: CloudRoute,
   DevRoute: DevRouteWithChildren,
   DocsRoute: DocsRouteWithChildren,
+  LoginRoute: LoginRoute,
+  OnboardingRoute: OnboardingRoute,
   OrganizationsRoute: OrganizationsRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,

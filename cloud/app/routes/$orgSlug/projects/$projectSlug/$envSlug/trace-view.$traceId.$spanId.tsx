@@ -22,7 +22,7 @@ import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
 
 function FullTraceViewPage() {
-  const { traceId, spanId } = Route.useParams();
+  const { orgSlug, projectSlug, envSlug, traceId, spanId } = Route.useParams();
   const navigate = useNavigate();
   const { selectedOrganization } = useOrganization();
   const { selectedProject } = useProject();
@@ -78,8 +78,8 @@ function FullTraceViewPage() {
   // Handle span selection - update URL
   const handleSpanSelect = (newSpanId: string) => {
     void navigate({
-      to: "/cloud/projects/trace-view/$traceId/$spanId",
-      params: { traceId, spanId: newSpanId },
+      to: "/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId",
+      params: { orgSlug, projectSlug, envSlug, traceId, spanId: newSpanId },
       replace: true,
     });
   };
@@ -206,7 +206,7 @@ function FullTraceViewPage() {
 }
 
 export const Route = createFileRoute(
-  "/cloud/projects/trace-view/$traceId/$spanId",
+  "/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId",
 )({
   component: FullTraceViewPage,
 });

@@ -18,7 +18,6 @@ import {
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { useAnalytics } from "@/app/contexts/analytics";
-import { useClaw } from "@/app/contexts/claw";
 import { useOrganization } from "@/app/contexts/organization";
 import {
   useOnboarding,
@@ -33,8 +32,7 @@ function OnboardingContent() {
   const navigate = useNavigate();
   const { needsOnboarding, isLoadingOrgs, completeOnboarding } =
     useOnboarding();
-  const { setSelectedOrganization } = useOrganization();
-  const { setSelectedClaw } = useClaw();
+  const { organizations, setSelectedOrganization } = useOrganization();
   const completeOnboardingMutation = useCompleteOnboarding();
   const analytics = useAnalytics();
 
@@ -46,26 +44,34 @@ function OnboardingContent() {
   const [error, setError] = useState<string | null>(null);
   const [onboardingResult, setOnboardingResult] =
     useState<OnboardingResponse | null>(null);
-  // Track if we've started onboarding to prevent redirect after org creation
   const [hasStartedOnboarding, setHasStartedOnboarding] = useState(false);
 
-  // Redirect to dashboard if user already has organizations (doesn't need onboarding)
-  // But don't redirect if we're in the middle of onboarding (hasStartedOnboarding)
   useEffect(() => {
     if (!isLoadingOrgs && !needsOnboarding && !hasStartedOnboarding) {
-      void navigate({ to: "/cloud", replace: true });
+      const org = organizations[0];
+      if (org) {
+        void navigate({
+          to: "/$orgSlug",
+          params: { orgSlug: org.slug },
+          replace: true,
+        });
+      }
     }
-  }, [isLoadingOrgs, needsOnboarding, hasStartedOnboarding, navigate]);
+  }, [
+    isLoadingOrgs,
+    needsOnboarding,
+    hasStartedOnboarding,
+    navigate,
+    organizations,
+  ]);
 
   const handleOrgSubmit = (e: FormEvent) => {
     e.preventDefault();
     setError(null);
-
     if (!organizationName.trim()) {
       setError("Organization name is required");
       return;
     }
-
     setHasStartedOnboarding(true);
     setStep("claw");
   };
@@ -73,29 +79,20 @@ function OnboardingContent() {
   const handleClawSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
-
     if (!clawName.trim()) {
       setError("Claw name is required");
       return;
     }
-
     try {
       const result = await completeOnboardingMutation.mutateAsync({
         organizationName: organizationName.trim(),
         clawName: clawName.trim(),
       });
-
-      // Update contexts with newly created resources
       setSelectedOrganization(result.organization);
-      setSelectedClaw(result.claw);
-
-      // Track onboarding completion
       analytics.trackEvent("onboarding_completed", {
         organization_id: result.organization.id,
         claw_id: result.claw.id,
       });
-
-      // Store result and move to done step
       setOnboardingResult(result);
       setStep("done");
     } catch (err: unknown) {
@@ -105,10 +102,15 @@ function OnboardingContent() {
 
   const handleGoToDashboard = () => {
     completeOnboarding();
-    void navigate({ to: "/cloud", replace: true });
+    if (onboardingResult) {
+      void navigate({
+        to: "/$orgSlug",
+        params: { orgSlug: onboardingResult.organization.slug },
+        replace: true,
+      });
+    }
   };
 
-  // Show loading state while checking if onboarding is needed
   if (isLoadingOrgs) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -150,7 +152,6 @@ function OnboardingContent() {
                   </p>
                   {error && <p className="text-sm text-destructive">{error}</p>}
                 </div>
-
                 <Button type="submit" className="w-full">
                   Next
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -190,7 +191,6 @@ function OnboardingContent() {
                   </p>
                   {error && <p className="text-sm text-destructive">{error}</p>}
                 </div>
-
                 <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/50 p-4">
                   <Info className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground">
@@ -198,7 +198,6 @@ function OnboardingContent() {
                     environment, and API key so it's ready to deploy.
                   </p>
                 </div>
-
                 <Button
                   type="submit"
                   className="w-full"
@@ -232,7 +231,6 @@ function OnboardingContent() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Credits Info Section */}
               <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950">
                 <h3 className="font-semibold text-blue-800 dark:text-blue-200">
                   Earn Up to $30 in Credits
@@ -252,7 +250,6 @@ function OnboardingContent() {
                   Join our Discord →
                 </a>
               </div>
-
               <Button onClick={handleGoToDashboard} className="w-full">
                 Go to Dashboard
               </Button>
@@ -272,6 +269,6 @@ function OnboardingPage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/projects/onboarding")({
+export const Route = createFileRoute("/onboarding")({
   component: OnboardingPage,
 });

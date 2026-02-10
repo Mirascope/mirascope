@@ -386,6 +386,6 @@ function ClawsSettingsPage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/settings/claws")({
+export const Route = createFileRoute("/$orgSlug/settings/claws")({
   component: ClawsSettingsPage,
 });
