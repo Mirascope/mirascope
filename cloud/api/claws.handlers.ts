@@ -170,3 +170,30 @@ export const getClawUsageHandler = (organizationId: string, clawId: string) =>
       clawId,
     });
   });
+
+export const getSecretsHandler = (organizationId: string, clawId: string) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    return yield* db.organizations.claws.getSecrets({
+      userId: user.id,
+      organizationId,
+      clawId,
+    });
+  });
+
+export const updateSecretsHandler = (
+  organizationId: string,
+  clawId: string,
+  payload: Record<string, string>,
+) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    return yield* db.organizations.claws.updateSecrets({
+      userId: user.id,
+      organizationId,
+      clawId,
+      secrets: payload,
+    });
+  });

@@ -23,6 +23,7 @@ import {
   TestDrizzleORM,
 } from "@/tests/db";
 import { TestSubscriptionWithRealDatabaseFixture } from "@/tests/payments";
+import { MockSettingsLayer } from "@/tests/settings";
 
 describe("Claws", () => {
   // ===========================================================================
@@ -1980,6 +1981,459 @@ describe("Claws", () => {
               .build(),
           ),
         ),
+    );
+  });
+
+  // ===========================================================================
+  // getSecrets
+  // ===========================================================================
+
+  describe("getSecrets", () => {
+    it.effect("returns empty object when no secrets are set", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "secrets-claw", displayName: "Secrets Claw" },
+        });
+
+        const secrets = yield* db.organizations.claws.getSecrets({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+        });
+
+        expect(secrets).toEqual({});
+      }),
+    );
+
+    it.effect("returns decrypted secrets when set", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "secrets-claw-2", displayName: "Secrets Claw 2" },
+        });
+
+        // Store secrets via updateSecrets
+        yield* db.organizations.claws.updateSecrets({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+          secrets: {
+            API_KEY: "test-key",
+            DB_URL: "postgres://localhost",
+          },
+        });
+
+        const secrets = yield* db.organizations.claws.getSecrets({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+        });
+
+        expect(secrets).toEqual({
+          API_KEY: "test-key",
+          DB_URL: "postgres://localhost",
+        });
+      }),
+    );
+
+    it.effect("org ADMIN with claw membership can read secrets", () =>
+      Effect.gen(function* () {
+        const { org, owner, admin } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "admin-secrets-claw", displayName: "Admin Secrets" },
+        });
+
+        // Add admin as claw member
+        yield* db.organizations.claws.memberships.create({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+          data: { memberId: admin.id, role: "ADMIN" },
+        });
+
+        const secrets = yield* db.organizations.claws.getSecrets({
+          userId: admin.id,
+          organizationId: org.id,
+          clawId: claw.id,
+        });
+
+        expect(secrets).toEqual({});
+      }),
+    );
+
+    it.effect(
+      "returns `NotFoundError` when non-member tries to get secrets",
+      () =>
+        Effect.gen(function* () {
+          const { org, owner, nonMember } = yield* TestOrganizationFixture;
+          const db = yield* Database;
+
+          const claw = yield* db.organizations.claws.create({
+            userId: owner.id,
+            organizationId: org.id,
+            data: { slug: "nm-secrets-claw", displayName: "NM Secrets" },
+          });
+
+          const result = yield* db.organizations.claws
+            .getSecrets({
+              userId: nonMember.id,
+              organizationId: org.id,
+              clawId: claw.id,
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+        }),
+    );
+
+    it.effect(
+      "returns `NotFoundError` when claw does not exist in getSecrets",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.claws
+            .getSecrets({
+              userId: "owner-id",
+              organizationId: "org-id",
+              clawId: "nonexistent-claw-id",
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+          expect(result.message).toContain("not found");
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              // authorize: org memberships getRole
+              .select([{ role: "OWNER" }])
+              // authorize: org memberships findById
+              .select([
+                {
+                  memberId: "owner-id",
+                  role: "OWNER",
+                  createdAt: new Date(),
+                },
+              ])
+              // authorize: verifyClawExists
+              .select([{ id: "nonexistent-claw-id" }])
+              // authorize: clawMemberships findById
+              .select([
+                {
+                  memberId: "owner-id",
+                  role: "ADMIN",
+                  clawId: "nonexistent-claw-id",
+                  createdAt: new Date(),
+                },
+              ])
+              // getSecrets: select claw → empty
+              .select([])
+              .build(),
+          ),
+        ),
+    );
+
+    it.effect("returns `DatabaseError` when getSecrets query fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.claws
+          .getSecrets({
+            userId: "owner-id",
+            organizationId: "org-id",
+            clawId: "claw-id",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to get claw secrets");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // authorize: org memberships getRole
+            .select([{ role: "OWNER" }])
+            // authorize: org memberships findById
+            .select([
+              {
+                memberId: "owner-id",
+                role: "OWNER",
+                createdAt: new Date(),
+              },
+            ])
+            // authorize: verifyClawExists
+            .select([{ id: "claw-id" }])
+            // authorize: clawMemberships findById
+            .select([
+              {
+                memberId: "owner-id",
+                role: "ADMIN",
+                clawId: "claw-id",
+                createdAt: new Date(),
+              },
+            ])
+            // getSecrets: select fails
+            .select(new Error("Connection failed"))
+            .build(),
+        ),
+      ),
+    );
+  });
+
+  // ===========================================================================
+  // updateSecrets
+  // ===========================================================================
+
+  describe("updateSecrets", () => {
+    it.effect("updates secrets and returns the new secrets", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: {
+            slug: "update-secrets-claw",
+            displayName: "Update Secrets Claw",
+          },
+        });
+
+        const newSecrets = { API_KEY: "new-key", SECRET: "new-secret" };
+        const result = yield* db.organizations.claws.updateSecrets({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+          secrets: newSecrets,
+        });
+
+        expect(result).toEqual(newSecrets);
+
+        // Verify it persisted
+        const fetched = yield* db.organizations.claws.getSecrets({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+        });
+        expect(fetched).toEqual(newSecrets);
+      }),
+    );
+
+    it.effect("overwrites existing secrets completely", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: {
+            slug: "overwrite-secrets-claw",
+            displayName: "Overwrite Secrets",
+          },
+        });
+
+        // Set initial secrets
+        yield* db.organizations.claws.updateSecrets({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+          secrets: { KEY_A: "value-a", KEY_B: "value-b" },
+        });
+
+        // Overwrite with different secrets
+        yield* db.organizations.claws.updateSecrets({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+          secrets: { KEY_C: "value-c" },
+        });
+
+        const fetched = yield* db.organizations.claws.getSecrets({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+        });
+        expect(fetched).toEqual({ KEY_C: "value-c" });
+      }),
+    );
+
+    it.effect(
+      "returns `PermissionDeniedError` when DEVELOPER tries to update secrets",
+      () =>
+        Effect.gen(function* () {
+          const { org, owner, member } = yield* TestOrganizationFixture;
+          const db = yield* Database;
+
+          const claw = yield* db.organizations.claws.create({
+            userId: owner.id,
+            organizationId: org.id,
+            data: {
+              slug: "perm-secrets-claw",
+              displayName: "Perm Secrets Claw",
+            },
+          });
+
+          // Add member as DEVELOPER
+          yield* db.organizations.claws.memberships.create({
+            userId: owner.id,
+            organizationId: org.id,
+            clawId: claw.id,
+            data: { memberId: member.id, role: "DEVELOPER" },
+          });
+
+          const result = yield* db.organizations.claws
+            .updateSecrets({
+              userId: member.id,
+              organizationId: org.id,
+              clawId: claw.id,
+              secrets: { UNAUTHORIZED: "value" },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(PermissionDeniedError);
+        }),
+    );
+
+    it.effect(
+      "returns `NotFoundError` when non-member tries to update secrets",
+      () =>
+        Effect.gen(function* () {
+          const { org, owner, nonMember } = yield* TestOrganizationFixture;
+          const db = yield* Database;
+
+          const claw = yield* db.organizations.claws.create({
+            userId: owner.id,
+            organizationId: org.id,
+            data: {
+              slug: "nm-update-secrets-claw",
+              displayName: "NM Update Secrets",
+            },
+          });
+
+          const result = yield* db.organizations.claws
+            .updateSecrets({
+              userId: nonMember.id,
+              organizationId: org.id,
+              clawId: claw.id,
+              secrets: { UNAUTHORIZED: "value" },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+        }),
+    );
+
+    it.effect(
+      "returns `NotFoundError` when claw does not exist in updateSecrets",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.claws
+            .updateSecrets({
+              userId: "owner-id",
+              organizationId: "org-id",
+              clawId: "nonexistent-claw-id",
+              secrets: { KEY: "value" },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+          expect(result.message).toContain("not found");
+        }).pipe(
+          Effect.provide(
+            Layer.merge(
+              new MockDrizzleORM()
+                // authorize: org memberships getRole
+                .select([{ role: "OWNER" }])
+                // authorize: org memberships findById
+                .select([
+                  {
+                    memberId: "owner-id",
+                    role: "OWNER",
+                    createdAt: new Date(),
+                  },
+                ])
+                // authorize: verifyClawExists
+                .select([{ id: "nonexistent-claw-id" }])
+                // authorize: clawMemberships findById
+                .select([
+                  {
+                    memberId: "owner-id",
+                    role: "ADMIN",
+                    clawId: "nonexistent-claw-id",
+                    createdAt: new Date(),
+                  },
+                ])
+                // updateSecrets: update returns empty
+                .update([])
+                .build(),
+              MockSettingsLayer(),
+            ),
+          ),
+        ),
+    );
+
+    it.effect("returns `DatabaseError` when updateSecrets query fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.claws
+          .updateSecrets({
+            userId: "owner-id",
+            organizationId: "org-id",
+            clawId: "claw-id",
+            secrets: { KEY: "value" },
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to update claw secrets");
+      }).pipe(
+        Effect.provide(
+          Layer.merge(
+            new MockDrizzleORM()
+              // authorize: org memberships getRole
+              .select([{ role: "OWNER" }])
+              // authorize: org memberships findById
+              .select([
+                {
+                  memberId: "owner-id",
+                  role: "OWNER",
+                  createdAt: new Date(),
+                },
+              ])
+              // authorize: verifyClawExists
+              .select([{ id: "claw-id" }])
+              // authorize: clawMemberships findById
+              .select([
+                {
+                  memberId: "owner-id",
+                  role: "ADMIN",
+                  clawId: "claw-id",
+                  createdAt: new Date(),
+                },
+              ])
+              // updateSecrets: update fails
+              .update(new Error("Connection failed"))
+              .build(),
+            MockSettingsLayer(),
+          ),
+        ),
+      ),
     );
   });
 });

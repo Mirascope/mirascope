@@ -48,6 +48,7 @@
 import { and, eq, isNull, sql } from "drizzle-orm";
 import { Effect } from "effect";
 
+import { decryptSecrets, encryptSecrets } from "@/claws/crypto";
 import { generateClawApiKey, hashApiKey, getKeyPrefix } from "@/db/api-keys";
 import {
   BaseAuthenticatedEffectService,
@@ -73,12 +74,14 @@ import { isUniqueConstraintError } from "@/db/utils";
 import {
   AlreadyExistsError,
   DatabaseError,
+  EncryptionError,
   NotFoundError,
   PermissionDeniedError,
   PlanLimitExceededError,
   StripeError,
 } from "@/errors";
 import { Payments } from "@/payments";
+import { Settings } from "@/settings";
 
 /**
  * Public fields to select from the claws table.
@@ -1223,6 +1226,144 @@ export class Claws extends BaseAuthenticatedEffectService<
         poolLimitCenticents,
         poolPercentUsed,
       };
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Secrets
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Gets the decrypted secrets for a claw.
+   *
+   * Requires read access.
+   */
+  getSecrets({
+    userId,
+    organizationId,
+    clawId,
+  }: {
+    userId: string;
+    organizationId: string;
+    clawId: string;
+  }): Effect.Effect<
+    Record<string, string>,
+    NotFoundError | PermissionDeniedError | DatabaseError | EncryptionError,
+    DrizzleORM | Settings
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+
+      yield* this.authorize({
+        userId,
+        action: "read",
+        organizationId,
+        clawId,
+      });
+
+      const [claw] = yield* client
+        .select({
+          secretsEncrypted: claws.secretsEncrypted,
+          secretsKeyId: claws.secretsKeyId,
+        })
+        .from(claws)
+        .where(
+          and(eq(claws.id, clawId), eq(claws.organizationId, organizationId)),
+        )
+        .limit(1)
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to get claw secrets",
+                cause: e,
+              }),
+          ),
+        );
+
+      if (!claw) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: `Claw with clawId ${clawId} not found`,
+            resource: this.getResourceName(),
+          }),
+        );
+      }
+
+      if (!claw.secretsEncrypted || !claw.secretsKeyId) {
+        return {} as Record<string, string>;
+      }
+
+      return (yield* decryptSecrets(
+        claw.secretsEncrypted,
+        claw.secretsKeyId,
+      )) as Record<string, string>;
+    });
+  }
+
+  /**
+   * Updates the secrets for a claw.
+   *
+   * Requires update access.
+   */
+  updateSecrets({
+    userId,
+    organizationId,
+    clawId,
+    secrets,
+  }: {
+    userId: string;
+    organizationId: string;
+    clawId: string;
+    secrets: Record<string, string>;
+  }): Effect.Effect<
+    Record<string, string>,
+    NotFoundError | PermissionDeniedError | DatabaseError | EncryptionError,
+    DrizzleORM | Settings
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+
+      yield* this.authorize({
+        userId,
+        action: "update",
+        organizationId,
+        clawId,
+      });
+
+      const { ciphertext, keyId } = yield* encryptSecrets(secrets);
+
+      const [updated] = yield* client
+        .update(claws)
+        .set({
+          secretsEncrypted: ciphertext,
+          secretsKeyId: keyId,
+          updatedAt: new Date(),
+        })
+        .where(
+          and(eq(claws.id, clawId), eq(claws.organizationId, organizationId)),
+        )
+        .returning({ id: claws.id })
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to update claw secrets",
+                cause: e,
+              }),
+          ),
+        );
+
+      if (!updated) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: `Claw with clawId ${clawId} not found`,
+            resource: this.getResourceName(),
+          }),
+        );
+      }
+
+      return secrets;
     });
   }
 }

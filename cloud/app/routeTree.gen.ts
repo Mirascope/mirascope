@@ -50,7 +50,7 @@ import { Route as CloudProjectsTracesRouteImport } from './routes/cloud/projects
 import { Route as CloudProjectsOnboardingRouteImport } from './routes/cloud/projects/onboarding'
 import { Route as CloudProjectsDashboardRouteImport } from './routes/cloud/projects/dashboard'
 import { Route as CloudProjectsAnnotationQueueRouteImport } from './routes/cloud/projects/annotation-queue'
-import { Route as CloudClawsConfigRouteImport } from './routes/cloud/claws/config'
+import { Route as CloudClawsSecretsRouteImport } from './routes/cloud/claws/secrets'
 import { Route as CloudClawsChatRouteImport } from './routes/cloud/claws/chat'
 import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
@@ -273,9 +273,9 @@ const CloudProjectsAnnotationQueueRoute =
     path: '/projects/annotation-queue',
     getParentRoute: () => CloudRoute,
   } as any)
-const CloudClawsConfigRoute = CloudClawsConfigRouteImport.update({
-  id: '/claws/config',
-  path: '/claws/config',
+const CloudClawsSecretsRoute = CloudClawsSecretsRouteImport.update({
+  id: '/claws/secrets',
+  path: '/claws/secrets',
   getParentRoute: () => CloudRoute,
 } as any)
 const CloudClawsChatRoute = CloudClawsChatRouteImport.update({
@@ -389,7 +389,7 @@ export interface FileRoutesByFullPath {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/cloud/claws/chat': typeof CloudClawsChatRoute
-  '/cloud/claws/config': typeof CloudClawsConfigRoute
+  '/cloud/claws/secrets': typeof CloudClawsSecretsRoute
   '/cloud/projects/annotation-queue': typeof CloudProjectsAnnotationQueueRoute
   '/cloud/projects/dashboard': typeof CloudProjectsDashboardRoute
   '/cloud/projects/onboarding': typeof CloudProjectsOnboardingRoute
@@ -443,7 +443,7 @@ export interface FileRoutesByTo {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/cloud/claws/chat': typeof CloudClawsChatRoute
-  '/cloud/claws/config': typeof CloudClawsConfigRoute
+  '/cloud/claws/secrets': typeof CloudClawsSecretsRoute
   '/cloud/projects/annotation-queue': typeof CloudProjectsAnnotationQueueRoute
   '/cloud/projects/dashboard': typeof CloudProjectsDashboardRoute
   '/cloud/projects/onboarding': typeof CloudProjectsOnboardingRoute
@@ -502,7 +502,7 @@ export interface FileRoutesById {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/cloud/claws/chat': typeof CloudClawsChatRoute
-  '/cloud/claws/config': typeof CloudClawsConfigRoute
+  '/cloud/claws/secrets': typeof CloudClawsSecretsRoute
   '/cloud/projects/annotation-queue': typeof CloudProjectsAnnotationQueueRoute
   '/cloud/projects/dashboard': typeof CloudProjectsDashboardRoute
   '/cloud/projects/onboarding': typeof CloudProjectsOnboardingRoute
@@ -562,7 +562,7 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/cloud/claws/chat'
-    | '/cloud/claws/config'
+    | '/cloud/claws/secrets'
     | '/cloud/projects/annotation-queue'
     | '/cloud/projects/dashboard'
     | '/cloud/projects/onboarding'
@@ -616,7 +616,7 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/cloud/claws/chat'
-    | '/cloud/claws/config'
+    | '/cloud/claws/secrets'
     | '/cloud/projects/annotation-queue'
     | '/cloud/projects/dashboard'
     | '/cloud/projects/onboarding'
@@ -674,7 +674,7 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/cloud/claws/chat'
-    | '/cloud/claws/config'
+    | '/cloud/claws/secrets'
     | '/cloud/projects/annotation-queue'
     | '/cloud/projects/dashboard'
     | '/cloud/projects/onboarding'
@@ -1008,11 +1008,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CloudProjectsAnnotationQueueRouteImport
       parentRoute: typeof CloudRoute
     }
-    '/cloud/claws/config': {
-      id: '/cloud/claws/config'
-      path: '/claws/config'
-      fullPath: '/cloud/claws/config'
-      preLoaderRoute: typeof CloudClawsConfigRouteImport
+    '/cloud/claws/secrets': {
+      id: '/cloud/claws/secrets'
+      path: '/claws/secrets'
+      fullPath: '/cloud/claws/secrets'
+      preLoaderRoute: typeof CloudClawsSecretsRouteImport
       parentRoute: typeof CloudRoute
     }
     '/cloud/claws/chat': {
@@ -1159,7 +1159,7 @@ interface CloudRouteChildren {
   CloudSettingsRoute: typeof CloudSettingsRouteWithChildren
   CloudIndexRoute: typeof CloudIndexRoute
   CloudClawsChatRoute: typeof CloudClawsChatRoute
-  CloudClawsConfigRoute: typeof CloudClawsConfigRoute
+  CloudClawsSecretsRoute: typeof CloudClawsSecretsRoute
   CloudProjectsAnnotationQueueRoute: typeof CloudProjectsAnnotationQueueRoute
   CloudProjectsDashboardRoute: typeof CloudProjectsDashboardRoute
   CloudProjectsOnboardingRoute: typeof CloudProjectsOnboardingRoute
@@ -1176,7 +1176,7 @@ const CloudRouteChildren: CloudRouteChildren = {
   CloudSettingsRoute: CloudSettingsRouteWithChildren,
   CloudIndexRoute: CloudIndexRoute,
   CloudClawsChatRoute: CloudClawsChatRoute,
-  CloudClawsConfigRoute: CloudClawsConfigRoute,
+  CloudClawsSecretsRoute: CloudClawsSecretsRoute,
   CloudProjectsAnnotationQueueRoute: CloudProjectsAnnotationQueueRoute,
   CloudProjectsDashboardRoute: CloudProjectsDashboardRoute,
   CloudProjectsOnboardingRoute: CloudProjectsOnboardingRoute,
