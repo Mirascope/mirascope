@@ -15,6 +15,7 @@
  */
 
 import { getSandbox, Sandbox } from "@cloudflare/sandbox";
+import { Effect } from "effect";
 import { Hono } from "hono";
 
 import type { AppEnv, DispatchEnv, OpenClawConfig } from "./types";
@@ -84,20 +85,24 @@ app.all("*", async (c) => {
         try {
           const config = await getOrFetchConfig(clawId, c.env);
           await ensureGateway(sandbox, config, c.env);
-          await reportClawStatus(
-            clawId,
-            { status: "active", startedAt: new Date().toISOString() },
-            c.env,
+          await Effect.runPromise(
+            reportClawStatus(
+              clawId,
+              { status: "active", startedAt: new Date().toISOString() },
+              c.env,
+            ),
           );
         } catch (err) {
           console.error("[proxy] Background gateway start failed:", err);
-          await reportClawStatus(
-            clawId,
-            {
-              status: "error",
-              errorMessage: err instanceof Error ? err.message : String(err),
-            },
-            c.env,
+          await Effect.runPromise(
+            reportClawStatus(
+              clawId,
+              {
+                status: "error",
+                errorMessage: err instanceof Error ? err.message : String(err),
+              },
+              c.env,
+            ),
           );
         }
       })(),
@@ -114,10 +119,12 @@ app.all("*", async (c) => {
     console.error("[proxy] Failed to start gateway:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
 
-    await reportClawStatus(
-      clawId,
-      { status: "error", errorMessage: message },
-      c.env,
+    await Effect.runPromise(
+      reportClawStatus(
+        clawId,
+        { status: "error", errorMessage: message },
+        c.env,
+      ),
     );
 
     return c.json(
@@ -152,7 +159,7 @@ async function getOrFetchConfig(
   }
 
   console.log("[config] Fetching bootstrap config for", clawId);
-  const config = await fetchBootstrapConfig(clawId, env);
+  const config = await Effect.runPromise(fetchBootstrapConfig(clawId, env));
   setCachedConfig(clawId, config);
   return config;
 }
