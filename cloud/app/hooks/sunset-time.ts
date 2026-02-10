@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 import {
   useIsLandingPage,
+  useIsLoginPage,
   useIsRouterWaitlistPage,
   useTheme,
 } from "@/app/components/blocks/theme-provider";
@@ -257,6 +258,7 @@ export function useSunsetTime(): boolean {
   const [isSunsetTime, setIsSunsetTime] = useState(false);
   const { theme } = useTheme();
   const isLandingPage = useIsLandingPage();
+  const isLoginPage = useIsLoginPage();
   const isRouterWaitlistPage = useIsRouterWaitlistPage();
 
   useEffect(() => {
@@ -296,7 +298,7 @@ export function useSunsetTime(): boolean {
   // Apply sunset-time class when needed (only when theme is "system")
   useEffect(() => {
     if (
-      (isLandingPage || isRouterWaitlistPage) &&
+      (isLandingPage || isLoginPage || isRouterWaitlistPage) &&
       isSunsetTime &&
       theme === "system"
     ) {
@@ -320,7 +322,7 @@ export function useSunsetTime(): boolean {
       );
     }
     document.documentElement.classList.remove("sunset-time");
-  }, [isSunsetTime, isLandingPage, isRouterWaitlistPage, theme]);
+  }, [isSunsetTime, isLandingPage, isLoginPage, isRouterWaitlistPage, theme]);
 
   return isSunsetTime;
 }

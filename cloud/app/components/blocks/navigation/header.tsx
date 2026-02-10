@@ -13,6 +13,7 @@ import ResponsiveSearchWrapper from "@/app/components/blocks/navigation/responsi
 import ThemeSwitcher from "@/app/components/blocks/navigation/theme-switcher";
 import {
   useIsLandingPage,
+  useIsLoginPage,
   useIsRouterWaitlistPage,
 } from "@/app/components/blocks/theme-provider";
 import { CloudNavIcons } from "@/app/components/cloud-nav-icons";
@@ -29,7 +30,8 @@ export default function Header() {
   const router = useRouterState();
   const currentPath = router.location.pathname;
   const isCloudRoute =
-    currentPath === "/cloud" || currentPath.startsWith("/cloud/");
+    (currentPath === "/cloud" || currentPath.startsWith("/cloud/")) &&
+    currentPath !== "/cloud/login";
 
   // Check if we're on docs pages (to show the section sub-navbar)
   const isDocsRoute =
@@ -37,6 +39,9 @@ export default function Header() {
 
   // Use the isLandingPage hook instead of router
   const isLandingPage = useIsLandingPage();
+
+  // Use the isLoginPage hook
+  const isLoginPage = useIsLoginPage();
 
   // Use the isRouterWaitlistPage hook instead of router
   const isRouterWaitlistPage = useIsRouterWaitlistPage();
@@ -63,7 +68,7 @@ export default function Header() {
   return (
     <header
       className={HEADER_STYLES.container(
-        isLandingPage || isRouterWaitlistPage,
+        isLandingPage || isLoginPage || isRouterWaitlistPage,
         scrolled,
         isCloudRoute,
       )}
@@ -74,7 +79,7 @@ export default function Header() {
             size="small"
             withText={true}
             textClassName={cn(HEADER_STYLES.logoText(isSearchOpen))}
-            lightText={isLandingPage}
+            lightText={isLandingPage || isLoginPage}
           />
         </Link>
         <DesktopNavigation isSearchOpen={isSearchOpen} />

@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { BarChart3, Bot, Shield, Zap } from "lucide-react";
 
+import homeStyles from "@/app/components/home-page.module.css";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -11,6 +12,8 @@ import {
   CardTitle,
 } from "@/app/components/ui/card";
 import { useAuth } from "@/app/contexts/auth";
+import { useSunsetTime } from "@/app/hooks/sunset-time";
+import { cn } from "@/app/lib/utils";
 
 interface GithubButtonProps {
   iconSize?: number;
@@ -94,6 +97,7 @@ function GoogleLoginButton({
 }
 
 export function LoginPage() {
+  useSunsetTime();
   const { user, isLoading, loginWithGitHub, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
@@ -125,43 +129,46 @@ export function LoginPage() {
   ];
 
   return (
-    <div className="flex min-h-[calc(100vh-var(--header-height))] items-center justify-center p-8">
-      <div className="flex items-center gap-16">
-        <Card className="flex flex-col h-fit w-fit p-4 bg-card text-black dark:text-white border-black/10 dark:border-white/10">
-          <CardHeader className="mb-2 text-center">
-            <CardTitle className="text-2xl">Mirascope Cloud</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col justify-center items-center gap-y-3">
-            <GitHubLoginButton onClick={loginWithGitHub}>
-              Sign in with GitHub
-            </GitHubLoginButton>
-            <GoogleLoginButton onClick={loginWithGoogle}>
-              Sign in with Google
-            </GoogleLoginButton>
-          </CardContent>
-        </Card>
-        <div className="hidden lg:flex flex-col">
-          <h2 className="text-3xl font-bold tracking-tight mb-8">
-            Your AI bot in 30 seconds
-          </h2>
-          <div className="space-y-6">
-            {features.map((feature) => (
-              <div key={feature.title} className="flex items-start gap-4">
-                <feature.icon className="size-6 text-primary mt-0.5 shrink-0" />
-                <div>
-                  <p className="font-semibold">{feature.title}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {feature.description}
-                  </p>
+    <>
+      <div className={cn(homeStyles.watercolorBg, "watercolor-bg")} />
+      <div className="flex min-h-[calc(100vh-var(--header-height))] items-center justify-center p-6 sm:p-8">
+        <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+          <Card className="flex flex-col h-fit w-fit p-2 bg-card text-black dark:text-white border-black/10 dark:border-white/10">
+            <CardHeader className="mb-2 text-center">
+              <CardTitle className="text-2xl">Mirascope Cloud</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col justify-center items-center gap-y-3">
+              <GitHubLoginButton onClick={loginWithGitHub}>
+                Sign in with GitHub
+              </GitHubLoginButton>
+              <GoogleLoginButton onClick={loginWithGoogle}>
+                Sign in with Google
+              </GoogleLoginButton>
+            </CardContent>
+          </Card>
+          <Card className="flex flex-col h-fit w-fit p-6 bg-background/80 backdrop-blur-sm text-black dark:text-white border-black/10 dark:border-white/10">
+            <h2 className="text-3xl font-bold tracking-tight mb-8">
+              Your AI bot in 30 seconds
+            </h2>
+            <div className="space-y-6">
+              {features.map((feature) => (
+                <div key={feature.title} className="flex items-start gap-4">
+                  <feature.icon className="size-6 text-mirple mt-0.5 shrink-0" />
+                  <div className="text-left">
+                    <p className="font-semibold">{feature.title}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {feature.description}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          <p className="mt-10 text-sm text-muted-foreground">
-            Free to start. No credit card required.
-          </p>
+              ))}
+            </div>
+            <p className="mt-10 text-sm text-muted-foreground">
+              Free to start. No credit card required.
+            </p>
+          </Card>
         </div>
       </div>
-    </div>
+    </>
   );
 }

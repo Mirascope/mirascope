@@ -24,6 +24,8 @@ interface ThemeAPI {
   setViewMode: (mode: ViewMode) => void;
   // Whether the current page is the landing page
   isLandingPage: boolean;
+  // Whether the current page is the login page
+  isLoginPage: boolean;
   // Whether the current page is the router waitlist page
   isRouterWaitlistPage: boolean;
 }
@@ -36,6 +38,7 @@ const ThemeContext = createContext<ThemeAPI>({
   viewMode: "human",
   setViewMode: () => {},
   isLandingPage: false,
+  isLoginPage: false,
   isRouterWaitlistPage: false,
 });
 
@@ -52,6 +55,11 @@ export function useViewMode() {
 // Hook specifically for landing page status
 export function useIsLandingPage() {
   return useContext(ThemeContext).isLandingPage;
+}
+
+// Hook specifically for login page status
+export function useIsLoginPage() {
+  return useContext(ThemeContext).isLoginPage;
 }
 
 // Hook specifically for router waitlist page status
@@ -107,6 +115,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   // Get router to determine if we're on the landing page or router waitlist page
   const router = useRouterState();
   const isLandingPage = router.location.pathname === "/";
+  const isLoginPage = router.location.pathname === "/cloud/login";
   const isRouterWaitlistPage = router.location.pathname === "/router-waitlist";
 
   // Initialize theme and view mode on mount
@@ -177,7 +186,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   // Add the home-page class to the HTML element
   if (isHydrated && typeof document !== "undefined") {
-    if (isLandingPage || isRouterWaitlistPage) {
+    if (isLandingPage || isLoginPage || isRouterWaitlistPage) {
       document.documentElement.classList.add("home-page");
     } else {
       document.documentElement.classList.remove("home-page");
@@ -193,6 +202,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
         viewMode,
         setViewMode: setViewModeHandler,
         isLandingPage,
+        isLoginPage,
         isRouterWaitlistPage,
       }}
     >
@@ -208,6 +218,7 @@ interface StorybookThemeProviderProps {
   initialCurrent?: "light" | "dark";
   initialViewMode?: ViewMode;
   isLandingPage?: boolean;
+  isLoginPage?: boolean;
   isRouterWaitlistPage?: boolean;
 }
 
@@ -225,6 +236,7 @@ export function StorybookThemeProvider({
   initialCurrent = "light",
   initialViewMode = "human",
   isLandingPage = false,
+  isLoginPage = false,
   isRouterWaitlistPage = false,
 }: StorybookThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(initialTheme);
@@ -254,6 +266,7 @@ export function StorybookThemeProvider({
         viewMode,
         setViewMode,
         isLandingPage,
+        isLoginPage,
         isRouterWaitlistPage,
       }}
     >
