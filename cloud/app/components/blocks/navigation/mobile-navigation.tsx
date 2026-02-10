@@ -4,6 +4,7 @@ import { FolderKanban, Home } from "lucide-react";
 import { AccountMenu } from "@/app/components/blocks/navigation/account-menu";
 import { ClawIcon } from "@/app/components/icons/claw-icon";
 import { useOrganization } from "@/app/contexts/organization";
+import { useCurrentSection } from "@/app/hooks/use-current-section";
 import { isCloudAppRoute } from "@/app/lib/route-utils";
 import { cn } from "@/app/lib/utils";
 
@@ -33,6 +34,7 @@ export default function MobileNavigation({
   const currentPath = router.location.pathname;
   const { selectedOrganization } = useOrganization();
   const orgSlug = selectedOrganization?.slug ?? "";
+  const section = useCurrentSection();
 
   if (!isOpen) return null;
 
@@ -43,10 +45,6 @@ export default function MobileNavigation({
     }
     return currentPath === href || currentPath.startsWith(href + "/");
   };
-
-  // Parse path segments for cloud route active state
-  const segments = currentPath.split("/").filter(Boolean);
-  const section = segments[1]; // "claws", "projects", "settings", etc.
 
   if (isCloudRoute) {
     const cloudLinks = [
