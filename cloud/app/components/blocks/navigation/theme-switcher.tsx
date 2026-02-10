@@ -3,6 +3,7 @@ import { Sun, Moon, Monitor } from "lucide-react";
 import {
   useTheme,
   useIsLandingPage,
+  useIsLoginPage,
   useIsRouterWaitlistPage,
   type Theme,
 } from "@/app/components/blocks/theme-provider";
@@ -19,6 +20,7 @@ import { THEME_SWITCHER_STYLES } from "./styles";
 export default function ThemeSwitcher() {
   const { theme, current, set: setTheme } = useTheme();
   const isLandingPage = useIsLandingPage();
+  const isLoginPage = useIsLoginPage();
   const isRouterWaitlistPage = useIsRouterWaitlistPage();
 
   const handleThemeChange = (newTheme: Theme) => {
@@ -30,7 +32,7 @@ export default function ThemeSwitcher() {
 
     // For theme changes on homepage, update the background transition
     if (
-      (isLandingPage || isRouterWaitlistPage) &&
+      (isLandingPage || isLoginPage || isRouterWaitlistPage) &&
       prevEffectiveTheme !== (newTheme === "system" ? current : newTheme)
     ) {
       document.body.style.transition = "background-image 0.3s ease";
@@ -51,7 +53,7 @@ export default function ThemeSwitcher() {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className={THEME_SWITCHER_STYLES.content(
-          isLandingPage || isRouterWaitlistPage,
+          isLandingPage || isLoginPage || isRouterWaitlistPage,
         )}
         align="end"
       >
