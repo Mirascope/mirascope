@@ -60,6 +60,39 @@ export default {
       });
     }
 
+    // POST /api/internal/auth/validate-session
+    if (
+      pathname === "/api/internal/auth/validate-session" &&
+      request.method === "POST"
+    ) {
+      const body = (await request.json()) as {
+        sessionId: string;
+        organizationSlug: string;
+        clawSlug: string;
+      };
+
+      // Simulate valid sessions: session IDs starting with "valid-"
+      if (body.sessionId.startsWith("valid-")) {
+        return Response.json({
+          userId: `user-${body.sessionId}`,
+          clawId: `resolved-${body.clawSlug}`,
+          organizationId: `org-${body.organizationSlug}`,
+          role: "DEVELOPER",
+        });
+      }
+
+      // Simulate forbidden: session IDs starting with "forbidden-"
+      if (body.sessionId.startsWith("forbidden-")) {
+        return Response.json(
+          { error: "Insufficient permissions" },
+          { status: 403 },
+        );
+      }
+
+      // All other sessions are invalid
+      return Response.json({ error: "Invalid session" }, { status: 401 });
+    }
+
     return new Response("not found", { status: 404 });
   },
 };
