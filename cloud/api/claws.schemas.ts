@@ -93,10 +93,16 @@ export const ClawUsageSchema = Schema.Struct({
   poolPercentUsed: Schema.Number,
 });
 
+export const SecretsSchema = Schema.Record({
+  key: Schema.String,
+  value: Schema.String,
+});
+
 export type Claw = typeof ClawSchema.Type;
 export type CreateClawRequest = typeof CreateClawRequestSchema.Type;
 export type UpdateClawRequest = typeof UpdateClawRequestSchema.Type;
 export type ClawUsage = typeof ClawUsageSchema.Type;
+export type Secrets = typeof SecretsSchema.Type;
 
 export class ClawsApi extends HttpApiGroup.make("claws")
   .add(
@@ -187,4 +193,39 @@ export class ClawsApi extends HttpApiGroup.make("claws")
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
       .addError(DatabaseError, { status: DatabaseError.status })
       .addError(StripeError, { status: StripeError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get(
+      "getSecrets",
+      "/organizations/:organizationId/claws/:clawId/secrets",
+    )
+      .setPath(
+        Schema.Struct({
+          organizationId: Schema.String,
+          clawId: Schema.String,
+        }),
+      )
+      .addSuccess(SecretsSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(EncryptionError, { status: EncryptionError.status }),
+  )
+  .add(
+    HttpApiEndpoint.put(
+      "updateSecrets",
+      "/organizations/:organizationId/claws/:clawId/secrets",
+    )
+      .setPath(
+        Schema.Struct({
+          organizationId: Schema.String,
+          clawId: Schema.String,
+        }),
+      )
+      .setPayload(SecretsSchema)
+      .addSuccess(SecretsSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(EncryptionError, { status: EncryptionError.status }),
   ) {}

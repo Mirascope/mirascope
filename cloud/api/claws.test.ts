@@ -343,6 +343,70 @@ describe.sequential("Claws API", (it) => {
   );
 
   it.effect(
+    "GET /organizations/:organizationId/claws/:clawId/secrets - get secrets (R2 credentials from provisioning)",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const secrets = yield* client.claws.getSecrets({
+          path: { organizationId: org.id, clawId: claw.id },
+        });
+        // Provisioning stores R2 credentials as secrets
+        expect(secrets.R2_ACCESS_KEY_ID).toBeDefined();
+        expect(secrets.R2_SECRET_ACCESS_KEY).toBeDefined();
+      }),
+  );
+
+  it.effect(
+    "PUT /organizations/:organizationId/claws/:clawId/secrets - set secrets",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const updated = yield* client.claws.updateSecrets({
+          path: { organizationId: org.id, clawId: claw.id },
+          payload: { API_KEY: "test-key", DB_URL: "postgres://localhost" },
+        });
+        expect(updated).toEqual({
+          API_KEY: "test-key",
+          DB_URL: "postgres://localhost",
+        });
+      }),
+  );
+
+  it.effect(
+    "GET /organizations/:organizationId/claws/:clawId/secrets - get secrets (after set)",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const secrets = yield* client.claws.getSecrets({
+          path: { organizationId: org.id, clawId: claw.id },
+        });
+        expect(secrets).toEqual({
+          API_KEY: "test-key",
+          DB_URL: "postgres://localhost",
+        });
+      }),
+  );
+
+  it.effect(
+    "PUT /organizations/:organizationId/claws/:clawId/secrets - overwrite secrets",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const updated = yield* client.claws.updateSecrets({
+          path: { organizationId: org.id, clawId: claw.id },
+          payload: { NEW_KEY: "new-value" },
+        });
+        expect(updated).toEqual({ NEW_KEY: "new-value" });
+
+        // Verify old secrets are gone
+        const secrets = yield* client.claws.getSecrets({
+          path: { organizationId: org.id, clawId: claw.id },
+        });
+        expect(secrets).toEqual({ NEW_KEY: "new-value" });
+      }),
+  );
+
+  it.effect(
     "DELETE /organizations/:organizationId/claws/:clawId - delete claw",
     () =>
       Effect.gen(function* () {

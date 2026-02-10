@@ -152,3 +152,57 @@ export const useClawUsage = (
     enabled: !!organizationId && !!clawId,
   });
 };
+
+export const useClawSecrets = (
+  organizationId: string | null,
+  clawId: string | null,
+) => {
+  return useQuery({
+    ...eq.queryOptions({
+      queryKey: ["claws", organizationId, clawId, "secrets"],
+      queryFn: () =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.claws.getSecrets({
+            path: { organizationId: organizationId!, clawId: clawId! },
+          });
+        }),
+    }),
+    enabled: !!organizationId && !!clawId,
+  });
+};
+
+export const useUpdateClawSecrets = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...eq.mutationOptions({
+      mutationKey: ["claws", "updateSecrets"],
+      mutationFn: (data: {
+        organizationId: string;
+        clawId: string;
+        secrets: Record<string, string>;
+      }) =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.claws.updateSecrets({
+            path: {
+              organizationId: data.organizationId,
+              clawId: data.clawId,
+            },
+            payload: data.secrets,
+          });
+        }),
+    }),
+    onSuccess: (_, variables) => {
+      void queryClient.invalidateQueries({
+        queryKey: [
+          "claws",
+          variables.organizationId,
+          variables.clawId,
+          "secrets",
+        ],
+      });
+    },
+  });
+};
