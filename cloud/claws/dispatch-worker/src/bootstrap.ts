@@ -10,7 +10,40 @@
  * environment.
  */
 
+import { Data, Effect } from "effect";
+
 import type { DispatchEnv, OpenClawConfig } from "./types";
+
+// ---------------------------------------------------------------------------
+// Errors
+// ---------------------------------------------------------------------------
+
+/** Bootstrap config fetch failed (network or non-OK response). */
+export class BootstrapFetchError extends Data.TaggedError(
+  "BootstrapFetchError",
+)<{
+  readonly clawId: string;
+  readonly message: string;
+  readonly cause?: unknown;
+}> {}
+
+/** Response JSON decode failed. */
+export class BootstrapDecodeError extends Data.TaggedError(
+  "BootstrapDecodeError",
+)<{
+  readonly message: string;
+  readonly cause?: unknown;
+}> {}
+
+/** Claw slug resolution failed. */
+export class ClawResolutionError extends Data.TaggedError(
+  "ClawResolutionError",
+)<{
+  readonly orgSlug: string;
+  readonly clawSlug: string;
+  readonly statusCode: number;
+  readonly body: string;
+}> {}
 
 // ---------------------------------------------------------------------------
 // Internal fetch via service binding
@@ -36,79 +69,122 @@ function internalFetch(
 
 /**
  * Fetch the bootstrap config for a claw by its ID.
- *
- * @param clawId - The unique claw identifier
- * @param env - Worker environment bindings
- * @returns The full OpenClawConfig including R2 credentials and container env vars
- * @throws Error if the API call fails or returns a non-OK response
  */
-export async function fetchBootstrapConfig(
+export const fetchBootstrapConfig = (
   clawId: string,
   env: DispatchEnv,
-): Promise<OpenClawConfig> {
-  const response = await internalFetch(
-    env,
-    `/api/internal/claws/${clawId}/bootstrap`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    },
-  );
+): Effect.Effect<OpenClawConfig, BootstrapFetchError | BootstrapDecodeError> =>
+  Effect.gen(function* () {
+    const response = yield* Effect.tryPromise({
+      try: () =>
+        internalFetch(env, `/api/internal/claws/${clawId}/bootstrap`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }),
+      catch: (cause) =>
+        new BootstrapFetchError({
+          clawId,
+          message: `Bootstrap fetch failed for claw ${clawId}`,
+          cause,
+        }),
+    });
 
-  if (!response.ok) {
-    const body = await response.text().catch(() => "(no body)");
-    throw new Error(
-      `Bootstrap config fetch failed for claw ${clawId}: ${response.status} ${response.statusText} — ${body}`,
-    );
-  }
+    if (!response.ok) {
+      const body = yield* Effect.tryPromise({
+        try: () => response.text(),
+        catch: () =>
+          new BootstrapFetchError({
+            clawId,
+            message: `Bootstrap fetch failed for claw ${clawId}: ${response.status} ${response.statusText}`,
+          }),
+      });
+      return yield* new BootstrapFetchError({
+        clawId,
+        message: `Bootstrap config fetch failed for claw ${clawId}: ${response.status} ${response.statusText} — ${body}`,
+      });
+    }
 
-  return (await response.json()) as OpenClawConfig;
-}
+    return yield* Effect.tryPromise({
+      try: () => response.json() as Promise<OpenClawConfig>,
+      catch: (cause) =>
+        new BootstrapDecodeError({
+          message: `Failed to decode bootstrap config for claw ${clawId}`,
+          cause,
+        }),
+    });
+  });
 
 /**
  * Resolve org/claw slugs to a clawId.
  *
- * The dispatch worker receives requests at {clawSlug}.{orgSlug}.mirascope.com
- * and needs the stable clawId to key the Durable Object. This endpoint
- * resolves the slugs.
- *
- * @param orgSlug - Organization slug from hostname
- * @param clawSlug - Claw slug from hostname
- * @param env - Worker environment bindings
- * @returns The resolved clawId and organizationId
+ * Used by both the auth middleware (path-based routing) and legacy
+ * host-based routing.
  */
-export async function resolveClawId(
+export const resolveClawId = (
   orgSlug: string,
   clawSlug: string,
   env: DispatchEnv,
-): Promise<{ clawId: string; organizationId: string }> {
-  const response = await internalFetch(
-    env,
-    `/api/internal/claws/resolve/${orgSlug}/${clawSlug}`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    },
-  );
+): Effect.Effect<
+  { clawId: string; organizationId: string },
+  ClawResolutionError | BootstrapDecodeError
+> =>
+  Effect.gen(function* () {
+    const response = yield* Effect.tryPromise({
+      try: () =>
+        internalFetch(
+          env,
+          `/api/internal/claws/resolve/${orgSlug}/${clawSlug}`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          },
+        ),
+      catch: (cause) =>
+        new BootstrapDecodeError({
+          message: `Failed to call resolve API for ${orgSlug}/${clawSlug}`,
+          cause,
+        }),
+    });
 
-  if (!response.ok) {
-    const body = await response.text().catch(() => "(no body)");
-    throw new Error(
-      `Claw resolution failed for ${clawSlug}.${orgSlug}: ${response.status} ${response.statusText} — ${body}`,
-    );
-  }
+    if (!response.ok) {
+      const body = yield* Effect.tryPromise({
+        try: () => response.text(),
+        catch: () =>
+          new ClawResolutionError({
+            orgSlug,
+            clawSlug,
+            statusCode: response.status,
+            body: "(could not read body)",
+          }),
+      });
+      return yield* new ClawResolutionError({
+        orgSlug,
+        clawSlug,
+        statusCode: response.status,
+        body,
+      });
+    }
 
-  return (await response.json()) as { clawId: string; organizationId: string };
-}
+    return yield* Effect.tryPromise({
+      try: () =>
+        response.json() as Promise<{
+          clawId: string;
+          organizationId: string;
+        }>,
+      catch: (cause) =>
+        new BootstrapDecodeError({
+          message: `Failed to decode resolve response for ${orgSlug}/${clawSlug}`,
+          cause,
+        }),
+    });
+  });
 
 /**
  * Report claw status back to the Mirascope API.
  *
- * @param clawId - The claw identifier
- * @param status - Status report payload
- * @param env - Worker environment bindings
+ * Fire-and-forget — logs errors but never fails.
  */
-export async function reportClawStatus(
+export const reportClawStatus = (
   clawId: string,
   status: {
     status: string;
@@ -116,24 +192,26 @@ export async function reportClawStatus(
     startedAt?: string;
   },
   env: DispatchEnv,
-): Promise<void> {
-  try {
-    const response = await internalFetch(
-      env,
-      `/api/internal/claws/${clawId}/status`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(status),
-      },
-    );
+): Effect.Effect<void> =>
+  Effect.gen(function* () {
+    const result = yield* Effect.tryPromise({
+      try: () =>
+        internalFetch(env, `/api/internal/claws/${clawId}/status`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(status),
+        }),
+      catch: (err) => err,
+    }).pipe(Effect.either);
 
-    if (!response.ok) {
+    if (result._tag === "Left") {
+      console.error(`Status report error for claw ${clawId}:`, result.left);
+      return;
+    }
+
+    if (!result.right.ok) {
       console.error(
-        `Status report failed for claw ${clawId}: ${response.status} ${response.statusText}`,
+        `Status report failed for claw ${clawId}: ${result.right.status} ${result.right.statusText}`,
       );
     }
-  } catch (err) {
-    console.error(`Status report error for claw ${clawId}:`, err);
-  }
-}
+  });

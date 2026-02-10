@@ -17,13 +17,25 @@
  */
 
 import { getSandbox, Sandbox } from "@cloudflare/sandbox";
+import { Effect } from "effect";
 import { Hono } from "hono";
 
 import type { AppEnv, DispatchEnv, OpenClawConfig } from "./types";
 
 import loadingPageHtml from "./assets/loading.html";
-import { authenticate, corsHeaders, handlePreflight, parsePath } from "./auth";
-import { fetchBootstrapConfig, reportClawStatus } from "./bootstrap";
+import {
+  type AuthError,
+  authenticate,
+  corsHeaders,
+  handlePreflight,
+  parsePath,
+} from "./auth";
+import {
+  type BootstrapDecodeError,
+  type BootstrapFetchError,
+  fetchBootstrapConfig,
+  reportClawStatus,
+} from "./bootstrap";
 import { getCachedConfig, setCachedConfig } from "./cache";
 import { internal } from "./internal";
 import {
@@ -65,6 +77,41 @@ app.use("/_internal/*", async (c, next) => {
 app.route("/_internal", internal);
 
 // ---------------------------------------------------------------------------
+// Auth error → HTTP response mapping
+// ---------------------------------------------------------------------------
+
+function authErrorToResponse(
+  error: AuthError,
+  origin: string | null,
+): Response {
+  const cors = corsHeaders(origin);
+
+  switch (error._tag) {
+    case "ClawResolutionError":
+      return Response.json(
+        { error: "Claw not found" },
+        { status: 404, headers: cors },
+      );
+    case "InvalidSessionError":
+      return Response.json(
+        { error: error.message },
+        { status: 401, headers: cors },
+      );
+    case "UnauthenticatedError":
+      return Response.json(
+        { error: error.message },
+        { status: 401, headers: cors },
+      );
+    case "ApiDecodeError":
+    case "BootstrapDecodeError":
+      return Response.json(
+        { error: "Internal error" },
+        { status: 502, headers: cors },
+      );
+  }
+}
+
+// ---------------------------------------------------------------------------
 // External routes: /{orgSlug}/{clawSlug}/* — path-based routing with auth
 // ---------------------------------------------------------------------------
 app.all("*", async (c) => {
@@ -80,20 +127,24 @@ app.all("*", async (c) => {
     return c.json({ error: "Invalid path — expected /{org}/{claw}/..." }, 400);
   }
 
-  // Authenticate
-  const authResult = await authenticate(request, parsed, c.env);
-  if (authResult.action === "reject") {
+  // Authenticate via Effect
+  const authResult = await Effect.runPromiseExit(
+    authenticate(request, parsed, c.env),
+  );
+
+  if (authResult._tag === "Failure") {
     const origin = request.headers.get("Origin");
-    return c.json(
-      { error: authResult.message },
-      {
-        status: authResult.status as any,
-        headers: corsHeaders(origin),
-      },
-    );
+    // Extract the typed error from the Cause
+    const error = authResult.cause;
+    if (error._tag === "Fail") {
+      return authErrorToResponse(error.error, origin);
+    }
+    // Unexpected defect — should not happen
+    console.error("[auth] Unexpected defect:", error);
+    return c.json({ error: "Internal error" }, 500);
   }
 
-  const clawId = authResult.clawId;
+  const { clawId } = authResult.value;
   console.log(
     `[REQ] ${c.req.method} ${c.req.path} clawId=${clawId} (path-based)`,
   );
@@ -118,41 +169,62 @@ app.all("*", async (c) => {
   if (!isReady && !isWebSocket && acceptsHtml) {
     console.log("[proxy] Gateway not ready, serving loading page");
     c.executionCtx.waitUntil(
-      (async () => {
-        try {
-          const config = await getOrFetchConfig(clawId, c.env);
-          await ensureGateway(sandbox, config, c.env);
-          await reportClawStatus(
+      Effect.runPromise(
+        Effect.gen(function* () {
+          const config = yield* getOrFetchConfig(clawId, c.env);
+          yield* Effect.promise(() => ensureGateway(sandbox, config, c.env));
+          yield* reportClawStatus(
             clawId,
             { status: "active", startedAt: new Date().toISOString() },
             c.env,
           );
-        } catch (err) {
-          console.error("[proxy] Background gateway start failed:", err);
-          await reportClawStatus(
-            clawId,
-            {
-              status: "error",
-              errorMessage: err instanceof Error ? err.message : String(err),
-            },
-            c.env,
-          );
-        }
-      })(),
+        }).pipe(
+          Effect.catchAll((err) =>
+            Effect.gen(function* () {
+              console.error("[proxy] Background gateway start failed:", err);
+              yield* reportClawStatus(
+                clawId,
+                { status: "error", errorMessage: err.message },
+                c.env,
+              );
+            }),
+          ),
+        ),
+      ),
     );
     return c.html(loadingPageHtml as unknown as string);
   }
 
+  const configExit = await Effect.runPromiseExit(
+    getOrFetchConfig(clawId, c.env),
+  );
+
+  if (configExit._tag === "Failure") {
+    const cause = configExit.cause;
+    const message =
+      cause._tag === "Fail" ? cause.error.message : "Unknown error";
+    console.error("[proxy] Failed to get config:", message);
+    await Effect.runPromise(
+      reportClawStatus(
+        clawId,
+        { status: "error", errorMessage: message },
+        c.env,
+      ),
+    );
+    return c.json({ error: "Gateway failed to start", details: message }, 503);
+  }
+
   try {
-    const config = await getOrFetchConfig(clawId, c.env);
-    await ensureGateway(sandbox, config, c.env);
+    await ensureGateway(sandbox, configExit.value, c.env);
   } catch (error) {
     console.error("[proxy] Failed to start gateway:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
-    await reportClawStatus(
-      clawId,
-      { status: "error", errorMessage: message },
-      c.env,
+    await Effect.runPromise(
+      reportClawStatus(
+        clawId,
+        { status: "error", errorMessage: message },
+        c.env,
+      ),
     );
     return c.json({ error: "Gateway failed to start", details: message }, 503);
   }
@@ -166,21 +238,22 @@ app.all("*", async (c) => {
 /**
  * Get bootstrap config from cache or fetch from API.
  */
-async function getOrFetchConfig(
+const getOrFetchConfig = (
   clawId: string,
   env: DispatchEnv,
-): Promise<OpenClawConfig> {
-  const cached = getCachedConfig(clawId);
-  if (cached) {
-    console.log("[config] Using cached config for", clawId);
-    return cached;
-  }
+): Effect.Effect<OpenClawConfig, BootstrapFetchError | BootstrapDecodeError> =>
+  Effect.gen(function* () {
+    const cached = getCachedConfig(clawId);
+    if (cached) {
+      console.log("[config] Using cached config for", clawId);
+      return cached;
+    }
 
-  console.log("[config] Fetching bootstrap config for", clawId);
-  const config = await fetchBootstrapConfig(clawId, env);
-  setCachedConfig(clawId, config);
-  return config;
-}
+    console.log("[config] Fetching bootstrap config for", clawId);
+    const config = yield* fetchBootstrapConfig(clawId, env);
+    setCachedConfig(clawId, config);
+    return config;
+  });
 
 export default {
   fetch: app.fetch,

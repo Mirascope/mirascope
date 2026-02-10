@@ -11,7 +11,46 @@
  *   /_internal/*                   Service binding          Implicit (in-process)
  */
 
+import { Data, Effect } from "effect";
+
 import type { DispatchEnv } from "./types";
+
+import {
+  type BootstrapDecodeError,
+  type ClawResolutionError,
+  resolveClawId,
+} from "./bootstrap";
+
+// ---------------------------------------------------------------------------
+// Errors
+// ---------------------------------------------------------------------------
+
+/** Session cookie validation failed. */
+export class InvalidSessionError extends Data.TaggedError(
+  "InvalidSessionError",
+)<{
+  readonly message: string;
+}> {}
+
+/** No authentication credentials provided. */
+export class UnauthenticatedError extends Data.TaggedError(
+  "UnauthenticatedError",
+)<{
+  readonly message: string;
+}> {}
+
+/** JSON decode failed when parsing API response. */
+export class ApiDecodeError extends Data.TaggedError("ApiDecodeError")<{
+  readonly message: string;
+  readonly cause?: unknown;
+}> {}
+
+export type AuthError =
+  | ClawResolutionError
+  | BootstrapDecodeError
+  | InvalidSessionError
+  | UnauthenticatedError
+  | ApiDecodeError;
 
 // ---------------------------------------------------------------------------
 // Path parsing
@@ -29,7 +68,6 @@ export interface ParsedPath {
  * Returns null if the path doesn't match the expected pattern.
  */
 export function parsePath(pathname: string): ParsedPath | null {
-  // Match /{orgSlug}/{clawSlug} with optional remainder
   const match = pathname.match(/^\/([\w-]+)\/([\w-]+)(\/.*)?$/);
   if (!match) return null;
   return {
@@ -66,50 +104,67 @@ function getSessionCacheKey(
  * Validate a session cookie via the MIRASCOPE_CLOUD service binding.
  * Results are cached for 60s.
  */
-export async function validateSession(
+export const validateSession = (
   sessionId: string,
   orgSlug: string,
   clawSlug: string,
   env: DispatchEnv,
-): Promise<CachedSession | null> {
-  const cacheKey = getSessionCacheKey(sessionId, orgSlug, clawSlug);
-  const cached = sessionCache.get(cacheKey);
-  if (cached && cached.expiresAt > Date.now()) {
-    return cached;
-  }
+): Effect.Effect<CachedSession, InvalidSessionError | ApiDecodeError> =>
+  Effect.gen(function* () {
+    const cacheKey = getSessionCacheKey(sessionId, orgSlug, clawSlug);
+    const cached = sessionCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached;
+    }
 
-  const response = await env.MIRASCOPE_CLOUD.fetch(
-    "https://internal/api/internal/auth/validate-session",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        sessionId,
-        organizationSlug: orgSlug,
-        clawSlug,
-      }),
-    },
-  );
+    const response = yield* Effect.tryPromise({
+      try: () =>
+        env.MIRASCOPE_CLOUD.fetch(
+          "https://internal/api/internal/auth/validate-session",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              sessionId,
+              organizationSlug: orgSlug,
+              clawSlug,
+            }),
+          },
+        ),
+      catch: (cause) =>
+        new ApiDecodeError({
+          message: "Failed to call validate-session API",
+          cause,
+        }),
+    });
 
-  if (!response.ok) {
-    sessionCache.delete(cacheKey);
-    return null;
-  }
+    if (!response.ok) {
+      sessionCache.delete(cacheKey);
+      return yield* new InvalidSessionError({ message: "Invalid session" });
+    }
 
-  const data = (await response.json()) as {
-    userId: string;
-    clawId: string;
-    organizationId: string;
-    role: string;
-  };
+    const data = yield* Effect.tryPromise({
+      try: () =>
+        response.json() as Promise<{
+          userId: string;
+          clawId: string;
+          organizationId: string;
+          role: string;
+        }>,
+      catch: (cause) =>
+        new ApiDecodeError({
+          message: "Failed to decode validate-session response",
+          cause,
+        }),
+    });
 
-  const entry: CachedSession = {
-    ...data,
-    expiresAt: Date.now() + SESSION_CACHE_TTL_MS,
-  };
-  sessionCache.set(cacheKey, entry);
-  return entry;
-}
+    const entry: CachedSession = {
+      ...data,
+      expiresAt: Date.now() + SESSION_CACHE_TTL_MS,
+    };
+    sessionCache.set(cacheKey, entry);
+    return entry;
+  });
 
 // ---------------------------------------------------------------------------
 // CORS helpers
@@ -146,63 +201,57 @@ export function handlePreflight(request: Request): Response | null {
 // Auth decision
 // ---------------------------------------------------------------------------
 
-export type AuthResult =
-  | { action: "pass-through"; clawId: string }
-  | { action: "reject"; status: number; message: string };
+export interface AuthSuccess {
+  readonly clawId: string;
+}
 
 /**
  * Apply the auth decision matrix for an external (path-based) request.
  *
- * Assumes the path has already been parsed and orgSlug+clawSlug resolved to clawId.
- * This function decides whether the request should be proxied or rejected.
+ * Resolves org+claw slugs to clawId, then decides whether the request
+ * should be proxied or rejected based on auth credentials.
  */
-export async function authenticate(
+export const authenticate = (
   request: Request,
   parsed: ParsedPath,
   env: DispatchEnv,
-): Promise<AuthResult> {
-  // Resolve clawId from slugs
-  let clawId: string;
-  try {
-    const resolved = await resolveClawIdFromSlugs(
+): Effect.Effect<AuthSuccess, AuthError> =>
+  Effect.gen(function* () {
+    // Resolve clawId from slugs (uses bootstrap.resolveClawId)
+    const { clawId } = yield* resolveClawId(
       parsed.orgSlug,
       parsed.clawSlug,
       env,
     );
-    clawId = resolved.clawId;
-  } catch {
-    return { action: "reject", status: 404, message: "Claw not found" };
-  }
 
-  // Webhook paths: pass through without auth
-  if (parsed.remainder.startsWith("/webhook/")) {
-    return { action: "pass-through", clawId };
-  }
-
-  // Bearer token: pass through (gateway validates)
-  const authHeader = request.headers.get("Authorization");
-  if (authHeader?.startsWith("Bearer ")) {
-    return { action: "pass-through", clawId };
-  }
-
-  // Session cookie: validate via Cloud API
-  const sessionId = extractSessionCookie(request);
-  if (sessionId) {
-    const session = await validateSession(
-      sessionId,
-      parsed.orgSlug,
-      parsed.clawSlug,
-      env,
-    );
-    if (session) {
-      return { action: "pass-through", clawId: session.clawId };
+    // Webhook paths: pass through without auth
+    if (parsed.remainder.startsWith("/webhook/")) {
+      return { clawId };
     }
-    return { action: "reject", status: 401, message: "Invalid session" };
-  }
 
-  // No auth: reject
-  return { action: "reject", status: 401, message: "Authentication required" };
-}
+    // Bearer token: pass through (gateway validates)
+    const authHeader = request.headers.get("Authorization");
+    if (authHeader?.startsWith("Bearer ")) {
+      return { clawId };
+    }
+
+    // Session cookie: validate via Cloud API
+    const sessionId = extractSessionCookie(request);
+    if (sessionId) {
+      const session = yield* validateSession(
+        sessionId,
+        parsed.orgSlug,
+        parsed.clawSlug,
+        env,
+      );
+      return { clawId: session.clawId };
+    }
+
+    // No auth: reject
+    return yield* new UnauthenticatedError({
+      message: "Authentication required",
+    });
+  });
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -212,26 +261,6 @@ function extractSessionCookie(request: Request): string | null {
   const cookies = request.headers.get("Cookie") || "";
   const match = cookies.match(/(?:^|;\s*)session=([^;]+)/);
   return match ? match[1] : null;
-}
-
-async function resolveClawIdFromSlugs(
-  orgSlug: string,
-  clawSlug: string,
-  env: DispatchEnv,
-): Promise<{ clawId: string; organizationId: string }> {
-  const response = await env.MIRASCOPE_CLOUD.fetch(
-    `https://internal/api/internal/claws/resolve/${orgSlug}/${clawSlug}`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    },
-  );
-
-  if (!response.ok) {
-    throw new Error(`Resolution failed: ${response.status}`);
-  }
-
-  return (await response.json()) as { clawId: string; organizationId: string };
 }
 
 /** Clear the session cache (for testing). */

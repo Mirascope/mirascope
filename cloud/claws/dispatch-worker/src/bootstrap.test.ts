@@ -1,8 +1,14 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, expect, it } from "@effect/vitest";
+import { Effect } from "effect";
+import assert from "node:assert";
+import { afterEach, beforeEach, vi } from "vitest";
 
 import type { DispatchEnv } from "./types";
 
 import {
+  BootstrapDecodeError,
+  BootstrapFetchError,
+  type ClawResolutionError,
   fetchBootstrapConfig,
   resolveClawId,
   reportClawStatus,
@@ -42,51 +48,77 @@ afterEach(() => {
 // =========================================================================
 
 describe("fetchBootstrapConfig", () => {
-  it("fetches config via service binding with correct URL", async () => {
-    const config = createMockConfig();
-    const env = makeEnv();
-    binding.fetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(config),
-    });
+  it.effect("fetches config via service binding with correct URL", () =>
+    Effect.gen(function* () {
+      const config = createMockConfig();
+      const env = makeEnv();
+      binding.fetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(config),
+      });
 
-    const result = await fetchBootstrapConfig("claw-123", env);
+      const result = yield* fetchBootstrapConfig("claw-123", env);
 
-    expect(binding.fetch).toHaveBeenCalledOnce();
-    const [url, opts] = binding.fetch.mock.calls[0];
-    expect(url).toBe("https://internal/api/internal/claws/claw-123/bootstrap");
-    expect(opts.method).toBe("GET");
-    expect(result).toEqual(config);
-  });
+      expect(binding.fetch).toHaveBeenCalledOnce();
+      const [url, opts] = binding.fetch.mock.calls[0];
+      expect(url).toBe(
+        "https://internal/api/internal/claws/claw-123/bootstrap",
+      );
+      expect(opts.method).toBe("GET");
+      expect(result).toEqual(config);
+    }),
+  );
 
-  it("does not send bearer token", async () => {
-    const config = createMockConfig();
-    const env = makeEnv();
-    binding.fetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(config),
-    });
+  it.effect("does not send bearer token", () =>
+    Effect.gen(function* () {
+      const config = createMockConfig();
+      const env = makeEnv();
+      binding.fetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(config),
+      });
 
-    await fetchBootstrapConfig("claw-123", env);
+      yield* fetchBootstrapConfig("claw-123", env);
 
-    const [, opts] = binding.fetch.mock.calls[0];
-    const headers = new Headers(opts.headers);
-    expect(headers.get("Authorization")).toBeNull();
-  });
+      const [, opts] = binding.fetch.mock.calls[0];
+      const headers = new Headers(opts.headers);
+      expect(headers.get("Authorization")).toBeNull();
+    }),
+  );
 
-  it("throws on non-OK response with status and body", async () => {
-    const env = makeEnv();
-    binding.fetch.mockResolvedValue({
-      ok: false,
-      status: 404,
-      statusText: "Not Found",
-      text: () => Promise.resolve("claw not found"),
-    });
+  it.effect("fails with BootstrapFetchError on non-OK response", () =>
+    Effect.gen(function* () {
+      const env = makeEnv();
+      binding.fetch.mockResolvedValue({
+        ok: false,
+        status: 404,
+        statusText: "Not Found",
+        text: () => Promise.resolve("claw not found"),
+      });
 
-    await expect(fetchBootstrapConfig("claw-123", env)).rejects.toThrow(
-      "Bootstrap config fetch failed for claw claw-123: 404 Not Found — claw not found",
-    );
-  });
+      const result = yield* fetchBootstrapConfig("claw-123", env).pipe(
+        Effect.flip,
+      );
+      assert(result instanceof BootstrapFetchError);
+      expect(result.message).toContain("404");
+      expect(result.message).toContain("claw not found");
+    }),
+  );
+
+  it.effect("fails with BootstrapDecodeError when json() fails", () =>
+    Effect.gen(function* () {
+      const env = makeEnv();
+      binding.fetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.reject(new Error("invalid json")),
+      });
+
+      const result = yield* fetchBootstrapConfig("claw-123", env).pipe(
+        Effect.flip,
+      );
+      assert(result instanceof BootstrapDecodeError);
+    }),
+  );
 });
 
 // =========================================================================
@@ -94,37 +126,46 @@ describe("fetchBootstrapConfig", () => {
 // =========================================================================
 
 describe("resolveClawId", () => {
-  it("resolves slugs to clawId via correct URL", async () => {
-    const payload = { clawId: "claw-123", organizationId: "org-456" };
-    const env = makeEnv();
-    binding.fetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(payload),
-    });
+  it.effect("resolves slugs to clawId via correct URL", () =>
+    Effect.gen(function* () {
+      const payload = { clawId: "claw-123", organizationId: "org-456" };
+      const env = makeEnv();
+      binding.fetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(payload),
+      });
 
-    const result = await resolveClawId("test-org", "test-claw", env);
+      const result = yield* resolveClawId("test-org", "test-claw", env);
 
-    expect(binding.fetch).toHaveBeenCalledOnce();
-    const [url] = binding.fetch.mock.calls[0];
-    expect(url).toBe(
-      "https://internal/api/internal/claws/resolve/test-org/test-claw",
-    );
-    expect(result).toEqual(payload);
-  });
+      expect(binding.fetch).toHaveBeenCalledOnce();
+      const [url] = binding.fetch.mock.calls[0];
+      expect(url).toBe(
+        "https://internal/api/internal/claws/resolve/test-org/test-claw",
+      );
+      expect(result).toEqual(payload);
+    }),
+  );
 
-  it("throws on non-OK response", async () => {
-    const env = makeEnv();
-    binding.fetch.mockResolvedValue({
-      ok: false,
-      status: 404,
-      statusText: "Not Found",
-      text: () => Promise.resolve("not found"),
-    });
+  it.effect("fails with ClawResolutionError on non-OK response", () =>
+    Effect.gen(function* () {
+      const env = makeEnv();
+      binding.fetch.mockResolvedValue({
+        ok: false,
+        status: 404,
+        statusText: "Not Found",
+        text: () => Promise.resolve("not found"),
+      });
 
-    await expect(resolveClawId("test-org", "test-claw", env)).rejects.toThrow(
-      "Claw resolution failed for test-claw.test-org: 404 Not Found",
-    );
-  });
+      const result = yield* resolveClawId("test-org", "test-claw", env).pipe(
+        Effect.flip,
+      );
+      expect(result._tag).toBe("ClawResolutionError");
+      const err = result as ClawResolutionError;
+      expect(err.orgSlug).toBe("test-org");
+      expect(err.clawSlug).toBe("test-claw");
+      expect(err.statusCode).toBe(404);
+    }),
+  );
 });
 
 // =========================================================================
@@ -132,66 +173,76 @@ describe("resolveClawId", () => {
 // =========================================================================
 
 describe("reportClawStatus", () => {
-  it("posts status to correct URL", async () => {
-    const env = makeEnv();
-    binding.fetch.mockResolvedValue({ ok: true });
+  it.effect("posts status to correct URL", () =>
+    Effect.gen(function* () {
+      const env = makeEnv();
+      binding.fetch.mockResolvedValue({ ok: true });
 
-    await reportClawStatus(
-      "claw-123",
-      { status: "active", startedAt: "2025-01-01T00:00:00Z" },
-      env,
-    );
+      yield* reportClawStatus(
+        "claw-123",
+        { status: "active", startedAt: "2025-01-01T00:00:00Z" },
+        env,
+      );
 
-    expect(binding.fetch).toHaveBeenCalledOnce();
-    const [url, opts] = binding.fetch.mock.calls[0];
-    expect(url).toBe("https://internal/api/internal/claws/claw-123/status");
-    expect(opts.method).toBe("POST");
-    expect(JSON.parse(opts.body)).toEqual({
-      status: "active",
-      startedAt: "2025-01-01T00:00:00Z",
-    });
-  });
+      expect(binding.fetch).toHaveBeenCalledOnce();
+      const [url, opts] = binding.fetch.mock.calls[0];
+      expect(url).toBe("https://internal/api/internal/claws/claw-123/status");
+      expect(opts.method).toBe("POST");
+      expect(JSON.parse(opts.body)).toEqual({
+        status: "active",
+        startedAt: "2025-01-01T00:00:00Z",
+      });
+    }),
+  );
 
-  it("does not throw on non-OK response", async () => {
-    const env = makeEnv();
-    binding.fetch.mockResolvedValue({
-      ok: false,
-      status: 500,
-      statusText: "Internal Server Error",
-    });
+  it.effect("does not throw on non-OK response", () =>
+    Effect.gen(function* () {
+      const env = makeEnv();
+      binding.fetch.mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: "Internal Server Error",
+      });
 
-    await expect(
-      reportClawStatus(
+      const result = yield* reportClawStatus(
         "claw-123",
         { status: "error", errorMessage: "boom" },
         env,
-      ),
-    ).resolves.toBeUndefined();
-  });
+      );
+      expect(result).toBeUndefined();
+    }),
+  );
 
-  it("does not throw on fetch error", async () => {
-    const env = makeEnv();
-    binding.fetch.mockRejectedValue(new Error("binding error"));
+  it.effect("does not throw on fetch error", () =>
+    Effect.gen(function* () {
+      const env = makeEnv();
+      binding.fetch.mockRejectedValue(new Error("binding error"));
 
-    await expect(
-      reportClawStatus("claw-123", { status: "error" }, env),
-    ).resolves.toBeUndefined();
-  });
+      const result = yield* reportClawStatus(
+        "claw-123",
+        { status: "error" },
+        env,
+      );
+      expect(result).toBeUndefined();
+    }),
+  );
 
-  it("reports error status with errorMessage", async () => {
-    const env = makeEnv();
-    binding.fetch.mockResolvedValue({ ok: true });
+  it.effect("reports error status with errorMessage", () =>
+    Effect.gen(function* () {
+      const env = makeEnv();
+      binding.fetch.mockResolvedValue({ ok: true });
 
-    await reportClawStatus(
-      "claw-123",
-      { status: "error", errorMessage: "Gateway crashed" },
-      env,
-    );
+      yield* reportClawStatus(
+        "claw-123",
+        { status: "error", errorMessage: "Gateway crashed" },
+        env,
+      );
 
-    const [, opts] = binding.fetch.mock.calls[0];
-    expect(JSON.parse(opts.body)).toEqual({
-      status: "error",
-      errorMessage: "Gateway crashed",
-    });
-  });
+      const [, opts] = binding.fetch.mock.calls[0];
+      expect(JSON.parse(opts.body)).toEqual({
+        status: "error",
+        errorMessage: "Gateway crashed",
+      });
+    }),
+  );
 });

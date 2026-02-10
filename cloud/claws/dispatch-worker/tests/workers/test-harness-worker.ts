@@ -1,3 +1,5 @@
+import { Effect, Exit } from "effect";
+
 import type { DispatchEnv } from "../../src/types";
 
 /**
@@ -17,42 +19,62 @@ import {
   reportClawStatus,
 } from "../../src/bootstrap";
 
+/** Extract a human-readable message from an Effect exit failure. */
+function exitErrorMessage(exit: Exit.Exit<unknown, unknown>): string {
+  if (Exit.isFailure(exit) && exit.cause._tag === "Fail") {
+    const err = exit.cause.error;
+    if (typeof err === "object" && err !== null) {
+      // Include all fields for test assertions (e.g. statusCode, message)
+      return JSON.stringify(err);
+    }
+    return String(err);
+  }
+  return "Unknown error";
+}
+
 export default {
   async fetch(request: Request, env: DispatchEnv): Promise<Response> {
     const url = new URL(request.url);
     const { pathname } = url;
 
-    try {
-      // GET /bootstrap/:clawId
-      const bootstrapMatch = pathname.match(/^\/bootstrap\/([\w-]+)$/);
-      if (bootstrapMatch) {
-        const config = await fetchBootstrapConfig(bootstrapMatch[1], env);
-        return Response.json(config);
+    // GET /bootstrap/:clawId
+    const bootstrapMatch = pathname.match(/^\/bootstrap\/([\w-]+)$/);
+    if (bootstrapMatch) {
+      const exit = await Effect.runPromiseExit(
+        fetchBootstrapConfig(bootstrapMatch[1], env),
+      );
+      if (Exit.isSuccess(exit)) {
+        return Response.json(exit.value);
       }
-
-      // GET /resolve/:orgSlug/:clawSlug
-      const resolveMatch = pathname.match(/^\/resolve\/([\w-]+)\/([\w-]+)$/);
-      if (resolveMatch) {
-        const result = await resolveClawId(
-          resolveMatch[1],
-          resolveMatch[2],
-          env,
-        );
-        return Response.json(result);
-      }
-
-      // POST /status/:clawId
-      const statusMatch = pathname.match(/^\/status\/([\w-]+)$/);
-      if (statusMatch && request.method === "POST") {
-        const body = await request.json();
-        await reportClawStatus(statusMatch[1], body as any, env);
-        return Response.json({ ok: true });
-      }
-
-      return new Response("unknown route", { status: 404 });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      return Response.json({ error: message }, { status: 500 });
+      return Response.json({ error: exitErrorMessage(exit) }, { status: 500 });
     }
+
+    // GET /resolve/:orgSlug/:clawSlug
+    const resolveMatch = pathname.match(/^\/resolve\/([\w-]+)\/([\w-]+)$/);
+    if (resolveMatch) {
+      const exit = await Effect.runPromiseExit(
+        resolveClawId(resolveMatch[1], resolveMatch[2], env),
+      );
+      if (Exit.isSuccess(exit)) {
+        return Response.json(exit.value);
+      }
+      return Response.json({ error: exitErrorMessage(exit) }, { status: 500 });
+    }
+
+    // POST /status/:clawId
+    const statusMatch = pathname.match(/^\/status\/([\w-]+)$/);
+    if (statusMatch && request.method === "POST") {
+      const body = await request.json();
+      await Effect.runPromise(
+        reportClawStatus(
+          statusMatch[1],
+          body as { status: string; errorMessage?: string; startedAt?: string },
+          env,
+        ),
+      );
+      return Response.json({ ok: true });
+    }
+
+    return new Response("unknown route", { status: 404 });
   },
 };

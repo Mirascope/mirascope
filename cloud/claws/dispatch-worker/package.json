@@ -18,11 +18,13 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "effect": "^3.19.13",
     "hono": "^4.11.6"
   },
   "devDependencies": {
     "@cloudflare/sandbox": "*",
     "@cloudflare/workers-types": "^4.20250109.0",
+    "@effect/vitest": "^0.27.0",
     "@types/ws": "^8.18.1",
     "oxlint": "^1.42.0",
     "typescript": "^5.9.3",

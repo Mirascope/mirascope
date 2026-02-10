@@ -5,19 +5,53 @@
  * them through a real Miniflare worker runtime with real service bindings.
  *
  * Routes:
- *   POST /auth — run authenticate() on a synthetic request
+ *   POST /clear-cache — clear session cache
  *   OPTIONS /preflight — test CORS preflight handling
  *   ANY /{org}/{claw}/* — full auth flow (authenticate + return result)
  */
+import { Effect, Exit } from "effect";
+
 import type { DispatchEnv } from "../../src/types";
 
 import {
+  type AuthError,
   authenticate,
   clearSessionCache,
   corsHeaders,
   handlePreflight,
   parsePath,
 } from "../../src/auth";
+
+function authErrorToResponse(
+  error: AuthError,
+  origin: string | null,
+): Response {
+  const cors = corsHeaders(origin);
+
+  switch (error._tag) {
+    case "ClawResolutionError":
+      return Response.json(
+        { error: "Claw not found" },
+        { status: 404, headers: cors },
+      );
+    case "InvalidSessionError":
+      return Response.json(
+        { error: error.message },
+        { status: 401, headers: cors },
+      );
+    case "UnauthenticatedError":
+      return Response.json(
+        { error: error.message },
+        { status: 401, headers: cors },
+      );
+    case "ApiDecodeError":
+    case "BootstrapDecodeError":
+      return Response.json(
+        { error: "Internal error" },
+        { status: 502, headers: cors },
+      );
+  }
+}
 
 export default {
   async fetch(request: Request, env: DispatchEnv): Promise<Response> {
@@ -44,24 +78,29 @@ export default {
         );
       }
 
-      // Run auth
-      const result = await authenticate(request, parsed, env);
-
+      // Run auth via Effect
       const origin = request.headers.get("Origin");
-      const cors = corsHeaders(origin);
+      const exit = await Effect.runPromiseExit(
+        authenticate(request, parsed, env),
+      );
 
-      if (result.action === "reject") {
-        return Response.json(
-          { error: result.message },
-          { status: result.status, headers: cors },
-        );
+      if (Exit.isFailure(exit)) {
+        const cause = exit.cause;
+        if (cause._tag === "Fail") {
+          return authErrorToResponse(cause.error, origin);
+        }
+        // Unexpected defect
+        console.error("[auth-harness] Unexpected defect:", cause);
+        return Response.json({ error: "Internal error" }, { status: 500 });
       }
+
+      const cors = corsHeaders(origin);
 
       // Success: return the auth result + parsed path info
       return Response.json(
         {
           action: "pass-through",
-          clawId: result.clawId,
+          clawId: exit.value.clawId,
           orgSlug: parsed.orgSlug,
           clawSlug: parsed.clawSlug,
           remainder: parsed.remainder,
