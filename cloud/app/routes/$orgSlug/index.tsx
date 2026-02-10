@@ -38,6 +38,7 @@ function CloudIndexPage() {
   const { claws, setSelectedClaw, isLoading: clawsLoading } = useClaw();
   const { data: subscription } = useSubscription(selectedOrganization?.id);
   const navigate = useNavigate();
+  const { orgSlug } = Route.useParams();
   const [showCreateClaw, setShowCreateClaw] = useState(false);
   const [showCreateProject, setShowCreateProject] = useState(false);
 
@@ -50,12 +51,15 @@ function CloudIndexPage() {
 
   const handleClawClick = (claw: (typeof claws)[number]) => {
     setSelectedClaw(claw);
-    void navigate({ to: "/cloud/claws/chat" });
+    void navigate({
+      to: "/$orgSlug/claws/$clawSlug/chat",
+      params: { orgSlug, clawSlug: claw.slug },
+    });
   };
 
   const handleProjectClick = (project: PublicProject) => {
     setSelectedProject(project);
-    void navigate({ to: "/cloud/projects/dashboard" });
+    void navigate({ to: "/$orgSlug/projects", params: { orgSlug } });
   };
 
   if (orgsLoading) {
@@ -74,7 +78,6 @@ function CloudIndexPage() {
     <Protected>
       <CloudLayout>
         <div className="p-6 space-y-6">
-          {/* Header */}
           <div>
             <h1 className="text-2xl font-semibold">
               {selectedOrganization?.name ?? "Dashboard"}
@@ -84,7 +87,6 @@ function CloudIndexPage() {
             </p>
           </div>
 
-          {/* Sections Grid — subgrid aligns headers, descriptions, and cards across columns */}
           <div className="grid gap-x-6 gap-y-0 grid-cols-1 md:grid-cols-2 md:grid-rows-[auto_auto_1fr]">
             {/* Claws Section */}
             <div className="row-span-1 md:row-span-3 grid grid-rows-subgrid items-start gap-y-0">
@@ -196,6 +198,6 @@ function CloudIndexPage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/")({
+export const Route = createFileRoute("/$orgSlug/")({
   component: CloudIndexPage,
 });

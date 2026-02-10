@@ -199,6 +199,6 @@ function ClawsChatPage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/claws/chat")({
+export const Route = createFileRoute("/$orgSlug/claws/$clawSlug/chat")({
   component: ClawsChatPage,
 });

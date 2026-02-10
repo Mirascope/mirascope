@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import * as React from "react";
 
@@ -47,11 +47,13 @@ function SidebarIcon({ children }: { children: React.ReactNode }) {
 
 function SidebarLink({
   to,
+  params,
   icon,
   label,
   isActive,
 }: {
   to: string;
+  params: Record<string, string>;
   icon: React.ReactNode;
   label: string;
   isActive: boolean;
@@ -59,6 +61,7 @@ function SidebarLink({
   return (
     <Link
       to={to}
+      params={params}
       className={`flex items-center gap-3 px-3 py-2 text-base rounded-md text-foreground font-handwriting-descent ${
         isActive ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted"
       }`}
@@ -73,9 +76,12 @@ export function ClawsSidebar() {
   const { selectedOrganization } = useOrganization();
   const { claws, selectedClaw, setSelectedClaw, isLoading } = useClaw();
   const [createModalOpen, setCreateModalOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   const router = useRouterState();
   const currentPath = router.location.pathname;
+  const orgSlug = selectedOrganization?.slug ?? "";
+  const clawSlug = selectedClaw?.slug ?? "";
 
   const handleClawSelectChange = (value: string) => {
     if (value === "__create_new__") {
@@ -83,13 +89,22 @@ export function ClawsSidebar() {
       return;
     }
     const claw = claws.find((c) => c.id === value);
-    setSelectedClaw(claw || null);
+    if (claw) {
+      setSelectedClaw(claw);
+      void navigate({
+        to: "/$orgSlug/claws/$clawSlug/chat",
+        params: { orgSlug, clawSlug: claw.slug },
+      });
+    }
   };
 
   const isActive = (path: string) => {
     if (currentPath === path) return true;
     return currentPath.startsWith(`${path}/`);
   };
+
+  const chatPath = `/${orgSlug}/claws/${clawSlug}/chat`;
+  const secretsPath = `/${orgSlug}/claws/${clawSlug}/secrets`;
 
   return (
     <aside className="w-48 h-full flex flex-col bg-background">
@@ -134,22 +149,21 @@ export function ClawsSidebar() {
       {/* Navigation links */}
       <div className="px-2 pt-4">
         <SidebarLink
-          to="/cloud/claws"
+          to="/$orgSlug/claws/$clawSlug/chat"
+          params={{ orgSlug, clawSlug }}
           icon={icons.chat}
           label="Chat"
-          isActive={
-            isActive("/cloud/claws") &&
-            !currentPath.startsWith("/cloud/claws/secrets")
-          }
+          isActive={isActive(chatPath) && !currentPath.includes("/secrets")}
         />
       </div>
 
       <div className="flex-1 overflow-y-auto px-2 pt-2 space-y-2">
         <SidebarLink
-          to="/cloud/claws/secrets"
+          to="/$orgSlug/claws/$clawSlug/secrets"
+          params={{ orgSlug, clawSlug }}
           icon={icons.secrets}
           label="Secrets"
-          isActive={isActive("/cloud/claws/secrets")}
+          isActive={isActive(secretsPath)}
         />
       </div>
 

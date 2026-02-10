@@ -18,6 +18,7 @@ import {
 } from "@/app/components/blocks/theme-provider";
 import { CloudNavIcons } from "@/app/components/cloud-nav-icons";
 import { NavbarCredits } from "@/app/components/navbar-credits";
+import { isCloudAppRoute } from "@/app/lib/route-utils";
 import { cn } from "@/app/lib/utils";
 
 import { HEADER_STYLES } from "./styles";
@@ -29,9 +30,7 @@ export default function Header() {
   // Determine if we're in cloud routes based on the current path
   const router = useRouterState();
   const currentPath = router.location.pathname;
-  const isCloudRoute =
-    (currentPath === "/cloud" || currentPath.startsWith("/cloud/")) &&
-    currentPath !== "/cloud/login";
+  const isCloudRoute = isCloudAppRoute(currentPath);
 
   // Check if we're on docs pages (to show the section sub-navbar)
   const isDocsRoute =

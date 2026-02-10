@@ -28,7 +28,9 @@ const filterPages = (page: { path: string }) => {
   return (
     !page.path.startsWith("/cloud") &&
     !page.path.startsWith("/dev") &&
-    !page.path.startsWith("/discord-invite")
+    !page.path.startsWith("/discord-invite") &&
+    !page.path.startsWith("/login") &&
+    !page.path.startsWith("/onboarding")
   );
 };
 

@@ -51,13 +51,14 @@ export function AccountMenu({ className }: AccountMenuProps) {
     const org = organizations.find((o) => o.id === orgId);
     if (org) {
       setSelectedOrganization(org);
+      void navigate({ to: "/$orgSlug", params: { orgSlug: org.slug } });
     }
   };
 
   // Not authenticated - show Sign In button
   if (!user) {
     return (
-      <Link to="/cloud/login" className={cn("cursor-pointer", className)}>
+      <Link to="/login" className={cn("cursor-pointer", className)}>
         <Button
           variant={isLandingStyle ? "outline" : "default"}
           size="sm"
@@ -140,7 +141,10 @@ export function AccountMenu({ className }: AccountMenuProps) {
 
           {/* Settings & Sign Out */}
           <DropdownMenuItem asChild>
-            <Link to="/cloud/settings">
+            <Link
+              to="/$orgSlug/settings"
+              params={{ orgSlug: selectedOrganization?.slug ?? "" }}
+            >
               <Settings className="mr-2 h-4 w-4" />
               Settings
             </Link>

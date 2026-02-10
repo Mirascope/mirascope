@@ -10,7 +10,7 @@ import type { PublicOrganizationWithMembership } from "@/db/schema";
 
 import { useOrganizations } from "@/app/api/organizations";
 
-const STORAGE_KEY = "mirascope:selectedOrganizationId";
+const STORAGE_KEY = "mirascope:selectedOrganizationSlug";
 
 type OrganizationContextType = {
   organizations: readonly PublicOrganizationWithMembership[];
@@ -33,7 +33,7 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
   ) => {
     setSelectedOrganizationState(org);
     if (org) {
-      localStorage.setItem(STORAGE_KEY, org.id);
+      localStorage.setItem(STORAGE_KEY, org.slug);
     } else {
       localStorage.removeItem(STORAGE_KEY);
     }
@@ -41,9 +41,9 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
 
   // Load selected organization from localStorage on mount
   useEffect(() => {
-    const storedId = localStorage.getItem(STORAGE_KEY);
-    if (storedId && organizations.length > 0) {
-      const org = organizations.find((o) => o.id === storedId);
+    const storedSlug = localStorage.getItem(STORAGE_KEY);
+    if (storedSlug && organizations.length > 0) {
+      const org = organizations.find((o) => o.slug === storedSlug);
       if (org) {
         setSelectedOrganizationState(org);
       } else {

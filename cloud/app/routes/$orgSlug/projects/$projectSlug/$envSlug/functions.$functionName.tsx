@@ -58,7 +58,7 @@ function isSpanDetail(span: SpanDetail | SpanSearchResult): span is SpanDetail {
 }
 
 function FunctionDetailPage() {
-  const { functionName } = Route.useParams();
+  const { orgSlug, projectSlug, envSlug, functionName } = Route.useParams();
   const { version: versionFromUrl } = Route.useSearch();
   const navigate = useNavigate();
   const { selectedOrganization } = useOrganization();
@@ -142,14 +142,22 @@ function FunctionDetailPage() {
       const found = allVersions.find((f) => f.id === versionFromUrl);
       if (!found) {
         void navigate({
-          to: "/cloud/projects/functions/$functionName",
-          params: { functionName },
+          to: "/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName",
+          params: { orgSlug, projectSlug, envSlug, functionName },
           search: {},
           replace: true,
         });
       }
     }
-  }, [versionFromUrl, allVersions, navigate, functionName]);
+  }, [
+    versionFromUrl,
+    allVersions,
+    navigate,
+    functionName,
+    orgSlug,
+    projectSlug,
+    envSlug,
+  ]);
 
   const handleVersionChange = (newVersionId: string) => {
     analytics.trackEvent("function_version_changed", {
@@ -157,8 +165,8 @@ function FunctionDetailPage() {
       version_id: newVersionId,
     });
     void navigate({
-      to: "/cloud/projects/functions/$functionName",
-      params: { functionName },
+      to: "/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName",
+      params: { orgSlug, projectSlug, envSlug, functionName },
       search: { version: newVersionId },
       replace: true,
     });
@@ -254,7 +262,10 @@ function FunctionDetailPage() {
                 <p className="text-muted-foreground mb-2 text-lg">
                   Function not found.
                 </p>
-                <Link to="/cloud/projects/functions">
+                <Link
+                  to="/$orgSlug/projects/$projectSlug/$envSlug/functions"
+                  params={{ orgSlug, projectSlug, envSlug }}
+                >
                   <Button variant="outline" size="sm">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Functions
@@ -275,7 +286,10 @@ function FunctionDetailPage() {
           {/* Header */}
           <div className="shrink-0 p-6 pb-4">
             <div className="mb-2 flex items-center gap-2">
-              <Link to="/cloud/projects/functions">
+              <Link
+                to="/$orgSlug/projects/$projectSlug/$envSlug/functions"
+                params={{ orgSlug, projectSlug, envSlug }}
+              >
                 <Button variant="ghost" size="sm">
                   <ArrowLeft className="mr-1 h-4 w-4" />
                   Functions
@@ -504,13 +518,11 @@ type FunctionSearchParams = {
   version?: string;
 };
 
-export const Route = createFileRoute("/cloud/projects/functions/$functionName")(
-  {
-    component: FunctionDetailPage,
-    validateSearch: (
-      search: Record<string, unknown>,
-    ): FunctionSearchParams => ({
-      version: typeof search.version === "string" ? search.version : undefined,
-    }),
-  },
-);
+export const Route = createFileRoute(
+  "/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName",
+)({
+  component: FunctionDetailPage,
+  validateSearch: (search: Record<string, unknown>): FunctionSearchParams => ({
+    version: typeof search.version === "string" ? search.version : undefined,
+  }),
+});

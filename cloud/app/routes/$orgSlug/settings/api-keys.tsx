@@ -112,6 +112,6 @@ function ApiKeysSettingsPage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/settings/api-keys")({
+export const Route = createFileRoute("/$orgSlug/settings/api-keys")({
   component: ApiKeysSettingsPage,
 });

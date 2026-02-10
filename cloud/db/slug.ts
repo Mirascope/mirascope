@@ -14,11 +14,14 @@
 import { Schema } from "effect";
 
 /**
- * Organization slugs that are reserved because they conflict with
- * infrastructure subdomains (e.g. `{clawSlug}.{orgSlug}.mirascope.com`
- * would collide with `{clawId}.claws.mirascope.com`).
+ * Organization slugs that are reserved to prevent conflicts with routes,
+ * infrastructure, redirects, and common abuse vectors.
+ *
+ * Strings that fail slug validation (< 3 chars, non-alphanumeric start/end)
+ * are naturally blocked and don't need to be listed here (e.g. "ws", "_", "-").
  */
 export const RESERVED_ORG_SLUGS: ReadonlySet<string> = new Set([
+  // Infrastructure subdomains
   "claws", // internal container addressing: *.claws.mirascope.com
   "staging", // staging.mirascope.com
   "www", // standard web subdomain
@@ -29,6 +32,110 @@ export const RESERVED_ORG_SLUGS: ReadonlySet<string> = new Set([
   "docs", // docs.mirascope.com
   "admin", // common infrastructure subdomain
   "mail", // common infrastructure subdomain
+  "cdn",
+  "static",
+  "assets",
+  "status",
+  "health",
+  "graphql",
+  "webhooks",
+  "metrics",
+
+  // Top-level static routes (conflict with $orgSlug dynamic segment)
+  "blog",
+  "dev",
+  "organizations",
+  "pricing",
+  "privacy",
+  "auth",
+  "invitations",
+  "terms",
+  "router",
+  "login",
+  "onboarding",
+  "agents",
+
+  // Server-level redirects (handled by redirects.ts before TanStack Router)
+  "discord-invite",
+  "slack-invite",
+  "post",
+  "integrations",
+
+  // Auth / account flows
+  "signup",
+  "register",
+  "logout",
+  "callback",
+  "oauth",
+  "sso",
+  "account",
+  "settings",
+  "profile",
+  "verify",
+  "reset-password",
+  "confirm",
+
+  // Marketing / static pages likely to be added
+  "about",
+  "careers",
+  "jobs",
+  "contact",
+  "support",
+  "help",
+  "press",
+  "changelog",
+  "features",
+  "enterprise",
+  "teams",
+  "home",
+  "security",
+
+  // Legal
+  "legal",
+  "cookies",
+  "dmca",
+  "compliance",
+  "acceptable-use",
+
+  // Product routes that tend to emerge
+  "dashboard",
+  "console",
+  "explore",
+  "search",
+  "marketplace",
+  "billing",
+  "checkout",
+  "plans",
+  "notifications",
+  "new",
+  "create",
+  "feed",
+
+  // Abuse prevention — impersonation of authority
+  "administrator",
+  "moderator",
+  "system",
+  "root",
+  "info",
+  "noreply",
+  "abuse",
+  "postmaster",
+  "webmaster",
+  "mirascope",
+  "official",
+  "team",
+  "staff",
+  "engineering",
+
+  // Dangerous edge-case strings
+  "null",
+  "undefined",
+  "true",
+  "false",
+  "test",
+  "demo",
+  "example",
+  "localhost",
 ]);
 
 /**

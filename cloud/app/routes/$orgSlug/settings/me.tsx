@@ -80,6 +80,6 @@ function MyDetailsSettingsPage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/settings/me")({
+export const Route = createFileRoute("/$orgSlug/settings/me")({
   component: MyDetailsSettingsPage,
 });

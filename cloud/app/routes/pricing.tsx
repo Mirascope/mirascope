@@ -20,7 +20,11 @@ import {
 import { isUpgrade } from "@/app/lib/billing-utils";
 import { createStaticRouteHead } from "@/app/lib/seo/static-route-head";
 
-function getTierButton(tier: PlanTier, currentPlan: PlanTier): React.ReactNode {
+function getTierButton(
+  tier: PlanTier,
+  currentPlan: PlanTier,
+  orgSlug: string,
+): React.ReactNode {
   if (tier === currentPlan) {
     return (
       <Button disabled variant="outline" className="w-full">
@@ -34,7 +38,7 @@ function getTierButton(tier: PlanTier, currentPlan: PlanTier): React.ReactNode {
   if (isPlanUpgrade) {
     return (
       <ButtonLink
-        href="/cloud/settings/billing"
+        href={`/${orgSlug}/settings/billing`}
         variant="default"
         className="w-full"
       >
@@ -45,7 +49,7 @@ function getTierButton(tier: PlanTier, currentPlan: PlanTier): React.ReactNode {
 
   return (
     <ButtonLink
-      href="/cloud/settings/billing"
+      href={`/${orgSlug}/settings/billing`}
       variant="outline"
       className="w-full"
     >
@@ -58,10 +62,12 @@ function buildPricingActions({
   user,
   currentPlan,
   isLoading,
+  orgSlug,
 }: {
   user: unknown;
   currentPlan?: PlanTier;
   isLoading: boolean;
+  orgSlug: string;
 }) {
   // Unauthenticated: "Get Started" -> login
   if (!user) {
@@ -69,21 +75,21 @@ function buildPricingActions({
       hosted: {
         free: {
           button: (
-            <ButtonLink href="/cloud/login" variant="default">
+            <ButtonLink href="/login" variant="default">
               Get Started
             </ButtonLink>
           ),
         },
         pro: {
           button: (
-            <ButtonLink href="/cloud/login" variant="outline">
+            <ButtonLink href="/login" variant="outline">
               Get Started
             </ButtonLink>
           ),
         },
         team: {
           button: (
-            <ButtonLink href="/cloud/login" variant="outline">
+            <ButtonLink href="/login" variant="outline">
               Get Started
             </ButtonLink>
           ),
@@ -124,9 +130,9 @@ function buildPricingActions({
   // Authenticated with known plan
   return {
     hosted: {
-      free: { button: getTierButton("free", currentPlan) },
-      pro: { button: getTierButton("pro", currentPlan) },
-      team: { button: getTierButton("team", currentPlan) },
+      free: { button: getTierButton("free", currentPlan, orgSlug) },
+      pro: { button: getTierButton("pro", currentPlan, orgSlug) },
+      team: { button: getTierButton("team", currentPlan, orgSlug) },
     },
   };
 }
@@ -149,6 +155,7 @@ function PricingContent() {
     user,
     currentPlan,
     isLoading: authLoading || orgLoading || subLoading,
+    orgSlug: selectedOrganization?.slug ?? "",
   });
 
   // Build usage data for authenticated users

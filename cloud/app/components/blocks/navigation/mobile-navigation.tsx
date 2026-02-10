@@ -3,6 +3,8 @@ import { FolderKanban, Home } from "lucide-react";
 
 import { AccountMenu } from "@/app/components/blocks/navigation/account-menu";
 import { ClawIcon } from "@/app/components/icons/claw-icon";
+import { useOrganization } from "@/app/contexts/organization";
+import { isCloudAppRoute } from "@/app/lib/route-utils";
 import { cn } from "@/app/lib/utils";
 
 import { MOBILE_NAV_STYLES, NAV_LINK_STYLES } from "./styles";
@@ -29,29 +31,45 @@ export default function MobileNavigation({
 }: MobileNavigationProps) {
   const router = useRouterState();
   const currentPath = router.location.pathname;
+  const { selectedOrganization } = useOrganization();
+  const orgSlug = selectedOrganization?.slug ?? "";
 
   if (!isOpen) return null;
 
   // Helper function to check if a link is active
   const isLinkActive = (href: string) => {
     if (href === "/cloud") {
-      return (
-        currentPath === "/cloud" ||
-        currentPath === "/cloud/" ||
-        currentPath.startsWith("/cloud/settings")
-      );
+      return isCloudAppRoute(currentPath);
     }
     return currentPath === href || currentPath.startsWith(href + "/");
   };
 
+  // Parse path segments for cloud route active state
+  const segments = currentPath.split("/").filter(Boolean);
+  const section = segments[1]; // "claws", "projects", "settings", etc.
+
   if (isCloudRoute) {
     const cloudLinks = [
-      { to: "/cloud" as const, icon: Home, label: "Home" },
-      { to: "/cloud/claws" as const, icon: ClawIcon, label: "Claws" },
       {
-        to: "/cloud/projects/dashboard" as const,
+        to: `/$orgSlug` as const,
+        params: { orgSlug },
+        icon: Home,
+        label: "Home",
+        active: !section || section === "settings",
+      },
+      {
+        to: `/$orgSlug/claws` as const,
+        params: { orgSlug },
+        icon: ClawIcon,
+        label: "Claws",
+        active: section === "claws",
+      },
+      {
+        to: `/$orgSlug/projects` as const,
+        params: { orgSlug },
         icon: FolderKanban,
         label: "Projects",
+        active: section === "projects",
       },
     ];
 
@@ -62,12 +80,13 @@ export default function MobileNavigation({
           <div className="border-border border-t" />
           {cloudLinks.map((item) => (
             <Link
-              key={item.to}
+              key={item.label}
               to={item.to}
+              params={item.params}
               className={cn(
                 NAV_LINK_STYLES.mobile,
                 "flex items-center gap-2",
-                isLinkActive(item.to) && NAV_LINK_STYLES.mobileActive,
+                item.active && NAV_LINK_STYLES.mobileActive,
               )}
               onClick={onClose}
             >

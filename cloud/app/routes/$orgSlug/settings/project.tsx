@@ -214,6 +214,6 @@ function ProjectsSettingsPage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/settings/project")({
+export const Route = createFileRoute("/$orgSlug/settings/project")({
   component: ProjectsSettingsPage,
 });

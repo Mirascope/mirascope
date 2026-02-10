@@ -65,7 +65,7 @@ export function HomePage() {
             {/* CTAs */}
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:gap-4 lg:mt-7">
               <ButtonLink
-                href="/cloud/login"
+                href="/login"
                 size="lg"
                 className="box-shade min-h-[48px] min-w-[200px] border-0 bg-mirple font-handwriting font-bold text-white hover:bg-mirple-dark/90 hover:text-white"
               >

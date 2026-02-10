@@ -11,7 +11,7 @@ import type { Claw } from "@/api/claws.schemas";
 import { useClaws } from "@/app/api/claws";
 import { useOrganization } from "@/app/contexts/organization";
 
-const STORAGE_KEY_PREFIX = "mirascope:selectedClawId";
+const STORAGE_KEY_PREFIX = "mirascope:selectedClawSlug";
 const getStorageKey = (organizationId: string) =>
   `${STORAGE_KEY_PREFIX}:${organizationId}`;
 
@@ -36,7 +36,7 @@ export function ClawProvider({ children }: { children: ReactNode }) {
     if (selectedOrganization) {
       const storageKey = getStorageKey(selectedOrganization.id);
       if (claw) {
-        localStorage.setItem(storageKey, claw.id);
+        localStorage.setItem(storageKey, claw.slug);
       } else {
         localStorage.removeItem(storageKey);
       }
@@ -49,20 +49,20 @@ export function ClawProvider({ children }: { children: ReactNode }) {
     if (isLoading || !selectedOrganization) return;
 
     const storageKey = getStorageKey(selectedOrganization.id);
-    const storedId = localStorage.getItem(storageKey);
-    if (storedId && claws.length > 0) {
-      const claw = claws.find((c) => c.id === storedId);
+    const storedSlug = localStorage.getItem(storageKey);
+    if (storedSlug && claws.length > 0) {
+      const claw = claws.find((c) => c.slug === storedSlug);
       if (claw) {
         setSelectedClawState(claw);
       } else {
         // If stored claw doesn't exist in current org, select first one
         setSelectedClawState(claws[0]);
-        localStorage.setItem(storageKey, claws[0].id);
+        localStorage.setItem(storageKey, claws[0].slug);
       }
     } else if (claws.length > 0 && !selectedClaw) {
       // Auto-select first claw if none selected
       setSelectedClawState(claws[0]);
-      localStorage.setItem(storageKey, claws[0].id);
+      localStorage.setItem(storageKey, claws[0].slug);
     } else if (claws.length === 0) {
       // Clear selection if no claws (and not loading)
       setSelectedClawState(null);

@@ -127,6 +127,8 @@ function FunctionsPage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/projects/functions/")({
+export const Route = createFileRoute(
+  "/$orgSlug/projects/$projectSlug/$envSlug/functions/",
+)({
   component: FunctionsPage,
 });

@@ -194,6 +194,8 @@ function TracesPage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/projects/traces")({
+export const Route = createFileRoute(
+  "/$orgSlug/projects/$projectSlug/$envSlug/traces",
+)({
   component: TracesPage,
 });

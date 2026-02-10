@@ -12,7 +12,7 @@ import { useEnvironments } from "@/app/api/environments";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
 
-const STORAGE_KEY_PREFIX = "mirascope:selectedEnvironmentId";
+const STORAGE_KEY_PREFIX = "mirascope:selectedEnvironmentSlug";
 const getStorageKey = (projectId: string) =>
   `${STORAGE_KEY_PREFIX}:${projectId}`;
 
@@ -41,20 +41,20 @@ export function EnvironmentProvider({ children }: { children: ReactNode }) {
     if (!selectedProject) return;
 
     const storageKey = getStorageKey(selectedProject.id);
-    const storedId = localStorage.getItem(storageKey);
-    if (storedId && environments.length > 0) {
-      const environment = environments.find((e) => e.id === storedId);
+    const storedSlug = localStorage.getItem(storageKey);
+    if (storedSlug && environments.length > 0) {
+      const environment = environments.find((e) => e.slug === storedSlug);
       if (environment) {
         setSelectedEnvironmentState(environment);
       } else {
         // If stored environment doesn't exist in current project, select first one
         setSelectedEnvironmentState(environments[0]);
-        localStorage.setItem(storageKey, environments[0].id);
+        localStorage.setItem(storageKey, environments[0].slug);
       }
     } else if (environments.length > 0 && !selectedEnvironment) {
       // Auto-select first environment if none selected
       setSelectedEnvironmentState(environments[0]);
-      localStorage.setItem(storageKey, environments[0].id);
+      localStorage.setItem(storageKey, environments[0].slug);
     } else if (environments.length === 0) {
       // Clear selection if no environments
       setSelectedEnvironmentState(null);
@@ -66,7 +66,7 @@ export function EnvironmentProvider({ children }: { children: ReactNode }) {
     if (selectedProject) {
       const storageKey = getStorageKey(selectedProject.id);
       if (environment) {
-        localStorage.setItem(storageKey, environment.id);
+        localStorage.setItem(storageKey, environment.slug);
       } else {
         localStorage.removeItem(storageKey);
       }
