@@ -12,6 +12,8 @@
     "lint:oxlint": "oxlint .",
     "lint": "bun run typecheck && bun run lint:oxlint",
     "test": "vitest run",
+    "test:unit": "vitest run -c vitest.config.ts",
+    "test:integration": "vitest run -c vitest.integration.config.ts",
     "test:watch": "vitest"
   },
   "dependencies": {
