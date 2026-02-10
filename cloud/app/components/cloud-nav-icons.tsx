@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { FolderKanban, Home } from "lucide-react";
 
 import { ClawIcon } from "@/app/components/icons/claw-icon";
@@ -8,17 +8,13 @@ import {
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
 import { useOrganization } from "@/app/contexts/organization";
+import { useCurrentSection } from "@/app/hooks/use-current-section";
 import { cn } from "@/app/lib/utils";
 
 export function CloudNavIcons() {
-  const router = useRouterState();
-  const currentPath = router.location.pathname;
   const { selectedOrganization } = useOrganization();
   const orgSlug = selectedOrganization?.slug ?? "";
-
-  // Parse path: /{orgSlug}/section/...
-  const segments = currentPath.split("/").filter(Boolean);
-  const section = segments[1]; // "claws", "projects", "settings", etc.
+  const section = useCurrentSection();
 
   const isHome = !section || section === "settings";
   const isClaws = section === "claws";

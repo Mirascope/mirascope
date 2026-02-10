@@ -2,6 +2,7 @@ import { useRouterState } from "@tanstack/react-router";
 
 import { ClawsSidebar } from "@/app/components/claws-sidebar";
 import { ProjectsSidebar } from "@/app/components/projects-sidebar";
+import { useCurrentSection } from "@/app/hooks/use-current-section";
 import { isCloudAppRoute } from "@/app/lib/route-utils";
 
 export function Sidebar() {
@@ -10,9 +11,7 @@ export function Sidebar() {
 
   if (!isCloudAppRoute(currentPath)) return null;
 
-  // Parse path: /{orgSlug}/claws/... or /{orgSlug}/projects/...
-  const segments = currentPath.split("/").filter(Boolean);
-  const section = segments[1]; // "claws", "projects", "settings", etc.
+  const section = useCurrentSection();
 
   const showProjectsSidebar = section === "projects";
   const showClawsSidebar = section === "claws";
