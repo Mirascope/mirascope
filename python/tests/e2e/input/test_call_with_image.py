@@ -40,7 +40,14 @@ UNSUPPORTED_CONTENT: dict[str, set[ImageMimeType]] = {
 
 UNSUPPORTED_URL: dict[str, set[ImageMimeType]] = {
     "google/": {"image/gif"},
-    "openai/": {"image/png", "image/jpeg", "image/webp", "image/gif", "image/heic", "image/heif"},
+    "openai/": {
+        "image/png",
+        "image/jpeg",
+        "image/webp",
+        "image/gif",
+        "image/heic",
+        "image/heif",
+    },
     "anthropic": {"image/heic", "image/heif"},
 }
 
