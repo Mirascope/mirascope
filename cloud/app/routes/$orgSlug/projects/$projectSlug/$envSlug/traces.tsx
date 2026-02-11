@@ -7,8 +7,6 @@ import type { SpanDetail, SpanSearchResult } from "@/api/traces-search.schemas";
 
 import { useFunctionDetail } from "@/app/api/functions";
 import { useTracesSearch, useTraceDetail } from "@/app/api/traces";
-import { CloudLayout } from "@/app/components/cloud-layout";
-import { Protected } from "@/app/components/protected";
 import { SpanDetailPanel } from "@/app/components/traces/span-detail-panel";
 import { TracesTable } from "@/app/components/traces/traces-table";
 import { Button } from "@/app/components/ui/button";
@@ -104,93 +102,85 @@ function TracesPage() {
 
   if (!selectedEnvironment) {
     return (
-      <Protected>
-        <CloudLayout>
-          <div className="p-6">
-            <div className="flex items-center justify-center h-64">
-              <p className="text-muted-foreground text-lg">
-                Select an environment to view traces.
-              </p>
-            </div>
-          </div>
-        </CloudLayout>
-      </Protected>
+      <div className="p-6">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-muted-foreground text-lg">
+            Select an environment to view traces.
+          </p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Protected>
-      <CloudLayout>
-        <ResizablePanelGroup direction="horizontal" className="h-full">
-          {/* Main content area */}
-          <ResizablePanel defaultSize={selectedSpan ? 70 : 100} minSize={30}>
-            <div className="overflow-auto p-6">
-              <div className="mb-4 flex items-center justify-between">
-                <h1 className="text-2xl font-semibold">Traces</h1>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    analytics.trackEvent("traces_refreshed", {
-                      environment_id: selectedEnvironment?.id,
-                    });
-                    setRefreshKey((k) => k + 1);
-                  }}
-                  disabled={isFetching}
-                >
-                  <RefreshCw
-                    className={`mr-2 h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
-                  />
-                  Refresh
-                </Button>
-              </div>
-              <TracesTable
-                spans={data?.spans ?? []}
-                isLoading={isLoading}
-                onTraceSelect={(traceId) => {
-                  analytics.trackEvent("trace_selected", {
-                    trace_id: traceId,
-                    environment_id: selectedEnvironment?.id,
-                  });
-                  setSelectedTraceId(traceId);
-                }}
-                traceDetail={traceDetail ?? null}
-                isLoadingDetail={isLoadingDetail}
-                onSpanClick={(span) => {
-                  analytics.trackEvent("span_selected", {
-                    span_id: span?.spanId,
-                    trace_id: selectedTraceId,
-                    environment_id: selectedEnvironment?.id,
-                  });
-                  setSelectedSpan(span);
-                }}
-                selectedSpanId={selectedSpan?.spanId}
+    <ResizablePanelGroup direction="horizontal" className="h-full">
+      {/* Main content area */}
+      <ResizablePanel defaultSize={selectedSpan ? 70 : 100} minSize={30}>
+        <div className="overflow-auto p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <h1 className="text-2xl font-semibold">Traces</h1>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                analytics.trackEvent("traces_refreshed", {
+                  environment_id: selectedEnvironment?.id,
+                });
+                setRefreshKey((k) => k + 1);
+              }}
+              disabled={isFetching}
+            >
+              <RefreshCw
+                className={`mr-2 h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
+              />
+              Refresh
+            </Button>
+          </div>
+          <TracesTable
+            spans={data?.spans ?? []}
+            isLoading={isLoading}
+            onTraceSelect={(traceId) => {
+              analytics.trackEvent("trace_selected", {
+                trace_id: traceId,
+                environment_id: selectedEnvironment?.id,
+              });
+              setSelectedTraceId(traceId);
+            }}
+            traceDetail={traceDetail ?? null}
+            isLoadingDetail={isLoadingDetail}
+            onSpanClick={(span) => {
+              analytics.trackEvent("span_selected", {
+                span_id: span?.spanId,
+                trace_id: selectedTraceId,
+                environment_id: selectedEnvironment?.id,
+              });
+              setSelectedSpan(span);
+            }}
+            selectedSpanId={selectedSpan?.spanId}
+          />
+        </div>
+      </ResizablePanel>
+
+      {/* Detail panel - resizable */}
+      {selectedSpan && (
+        <>
+          <ResizableHandle className="cursor-col-resize">
+            <div className="z-10 flex h-8 w-4 translate-x-0.5 items-center justify-center rounded-sm border bg-background">
+              <DragHandleDots2Icon className="h-4 w-4" />
+            </div>
+          </ResizableHandle>
+          <ResizablePanel defaultSize={30} minSize={20} maxSize={50}>
+            <div className="h-full py-6 pr-6">
+              <SpanDetailPanel
+                span={selectedSpan}
+                functionData={functionDetail ?? null}
+                onClose={() => setSelectedSpan(null)}
               />
             </div>
           </ResizablePanel>
-
-          {/* Detail panel - resizable */}
-          {selectedSpan && (
-            <>
-              <ResizableHandle className="cursor-col-resize">
-                <div className="z-10 flex h-8 w-4 translate-x-0.5 items-center justify-center rounded-sm border bg-background">
-                  <DragHandleDots2Icon className="h-4 w-4" />
-                </div>
-              </ResizableHandle>
-              <ResizablePanel defaultSize={30} minSize={20} maxSize={50}>
-                <div className="h-full py-6 pr-6">
-                  <SpanDetailPanel
-                    span={selectedSpan}
-                    functionData={functionDetail ?? null}
-                    onClose={() => setSelectedSpan(null)}
-                  />
-                </div>
-              </ResizablePanel>
-            </>
-          )}
-        </ResizablePanelGroup>
-      </CloudLayout>
-    </Protected>
+        </>
+      )}
+    </ResizablePanelGroup>
   );
 }
 

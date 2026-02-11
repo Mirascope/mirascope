@@ -5,9 +5,7 @@ import { useMemo } from "react";
 import type { FunctionResponse } from "@/api/functions.schemas";
 
 import { useFunctionsList } from "@/app/api/functions";
-import { CloudLayout } from "@/app/components/cloud-layout";
 import { FunctionCard } from "@/app/components/function-card";
-import { Protected } from "@/app/components/protected";
 import { Button } from "@/app/components/ui/button";
 import { useEnvironment } from "@/app/contexts/environment";
 import { useOrganization } from "@/app/contexts/organization";
@@ -61,69 +59,60 @@ function FunctionsPage() {
 
   if (!selectedEnvironment) {
     return (
-      <Protected>
-        <CloudLayout>
-          <div className="p-6">
-            <div className="flex h-64 items-center justify-center">
-              <p className="text-muted-foreground text-lg">
-                Select an environment to view functions.
-              </p>
-            </div>
-          </div>
-        </CloudLayout>
-      </Protected>
+      <div className="p-6">
+        <div className="flex h-64 items-center justify-center">
+          <p className="text-muted-foreground text-lg">
+            Select an environment to view functions.
+          </p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Protected>
-      <CloudLayout>
-        <div className="p-6">
-          <div className="mb-6 flex items-center justify-between">
-            <h1 className="text-2xl font-semibold">Functions</h1>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => void refetch()}
-              disabled={isFetching}
-            >
-              <RefreshCw
-                className={`mr-2 h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
-              />
-              Refresh
-            </Button>
-          </div>
+    <div className="p-6">
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Functions</h1>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => void refetch()}
+          disabled={isFetching}
+        >
+          <RefreshCw
+            className={`mr-2 h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
+          />
+          Refresh
+        </Button>
+      </div>
 
-          {isLoading && (
-            <div className="flex h-64 items-center justify-center">
-              <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
-            </div>
-          )}
-
-          {!isLoading && uniqueFunctions.length === 0 && (
-            <div className="flex h-64 items-center justify-center">
-              <div className="text-center">
-                <p className="text-muted-foreground mb-2 text-lg">
-                  No functions found in this environment.
-                </p>
-                <p className="text-muted-foreground text-sm">
-                  Functions will appear here when they are registered via the
-                  SDK.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {!isLoading && uniqueFunctions.length > 0 && (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {uniqueFunctions.map((fn) => (
-                <FunctionCard key={fn.id} fn={fn} />
-              ))}
-            </div>
-          )}
+      {isLoading && (
+        <div className="flex h-64 items-center justify-center">
+          <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
         </div>
-      </CloudLayout>
-    </Protected>
+      )}
+
+      {!isLoading && uniqueFunctions.length === 0 && (
+        <div className="flex h-64 items-center justify-center">
+          <div className="text-center">
+            <p className="text-muted-foreground mb-2 text-lg">
+              No functions found in this environment.
+            </p>
+            <p className="text-muted-foreground text-sm">
+              Functions will appear here when they are registered via the SDK.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {!isLoading && uniqueFunctions.length > 0 && (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {uniqueFunctions.map((fn) => (
+            <FunctionCard key={fn.id} fn={fn} />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 

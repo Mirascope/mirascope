@@ -45,15 +45,15 @@ function OrgLayout() {
 
   return (
     <Protected>
-      <CloudLayout>
-        <ProjectProvider>
-          <EnvironmentProvider>
-            <ClawProvider>
+      <ProjectProvider>
+        <EnvironmentProvider>
+          <ClawProvider>
+            <CloudLayout>
               <Outlet />
-            </ClawProvider>
-          </EnvironmentProvider>
-        </ProjectProvider>
-      </CloudLayout>
+            </CloudLayout>
+          </ClawProvider>
+        </EnvironmentProvider>
+      </ProjectProvider>
     </Protected>
   );
 }

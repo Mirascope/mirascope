@@ -18,8 +18,6 @@ import { useFunctionsList } from "@/app/api/functions";
 import { useTracesSearch, useTraceDetail } from "@/app/api/traces";
 import { CodeBlock } from "@/app/components/blocks/code-block/code-block";
 import { DiffTool } from "@/app/components/blocks/diff-tool";
-import { CloudLayout } from "@/app/components/cloud-layout";
-import { Protected } from "@/app/components/protected";
 import { SpanDetailPanel } from "@/app/components/traces/span-detail-panel";
 import { TracesTable } from "@/app/components/traces/traces-table";
 import { Badge } from "@/app/components/ui/badge";
@@ -224,293 +222,268 @@ function FunctionDetailPage() {
 
   if (!selectedEnvironment) {
     return (
-      <Protected>
-        <CloudLayout>
-          <div className="p-6">
-            <div className="flex h-64 items-center justify-center">
-              <p className="text-muted-foreground text-lg">
-                Select an environment to view function details.
-              </p>
-            </div>
-          </div>
-        </CloudLayout>
-      </Protected>
+      <div className="p-6">
+        <div className="flex h-64 items-center justify-center">
+          <p className="text-muted-foreground text-lg">
+            Select an environment to view function details.
+          </p>
+        </div>
+      </div>
     );
   }
 
   if (isLoadingFunctions) {
     return (
-      <Protected>
-        <CloudLayout>
-          <div className="p-6">
-            <div className="flex h-64 items-center justify-center">
-              <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
-            </div>
-          </div>
-        </CloudLayout>
-      </Protected>
+      <div className="p-6">
+        <div className="flex h-64 items-center justify-center">
+          <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
+        </div>
+      </div>
     );
   }
 
   if (!fn) {
     return (
-      <Protected>
-        <CloudLayout>
-          <div className="p-6">
-            <div className="flex h-64 items-center justify-center">
-              <div className="text-center">
-                <p className="text-muted-foreground mb-2 text-lg">
-                  Function not found.
-                </p>
-                <Link
-                  to="/$orgSlug/projects/$projectSlug/$envSlug/functions"
-                  params={{ orgSlug, projectSlug, envSlug }}
-                >
-                  <Button variant="outline" size="sm">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to Functions
-                  </Button>
-                </Link>
-              </div>
-            </div>
+      <div className="p-6">
+        <div className="flex h-64 items-center justify-center">
+          <div className="text-center">
+            <p className="text-muted-foreground mb-2 text-lg">
+              Function not found.
+            </p>
+            <Link
+              to="/$orgSlug/projects/$projectSlug/$envSlug/functions"
+              params={{ orgSlug, projectSlug, envSlug }}
+            >
+              <Button variant="outline" size="sm">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Functions
+              </Button>
+            </Link>
           </div>
-        </CloudLayout>
-      </Protected>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Protected>
-      <CloudLayout>
-        <div className="flex h-full flex-col overflow-hidden">
-          {/* Header */}
-          <div className="shrink-0 p-6 pb-4">
-            <div className="mb-2 flex items-center gap-2">
-              <Link
-                to="/$orgSlug/projects/$projectSlug/$envSlug/functions"
-                params={{ orgSlug, projectSlug, envSlug }}
-              >
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="mr-1 h-4 w-4" />
-                  Functions
-                </Button>
-              </Link>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <h1 className="font-mono text-2xl font-semibold">{fn.name}</h1>
-                {isCompareMode && compareVersion ? (
-                  <>
-                    {/* Compare mode: [v1.1 ▼] → [v1.2 ▼] */}
-                    <Select
-                      value={compareVersion.id}
-                      onValueChange={handleCompareVersionChange}
-                    >
-                      <SelectTrigger className="h-auto w-auto gap-1 rounded-md border-transparent bg-muted px-2.5 py-0.5 text-xs font-semibold shadow hover:bg-muted/80">
-                        <SelectValue>v{compareVersion.version}</SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {allVersions
-                          .filter((v) => v.id !== fn.id)
-                          .map((version) => (
-                            <SelectItem key={version.id} value={version.id}>
-                              <span className="flex items-center gap-2">
-                                v{version.version}
-                                {version.id === allVersions[0].id && (
-                                  <span className="text-xs text-muted-foreground">
-                                    (latest)
-                                  </span>
-                                )}
+    <div className="flex h-full flex-col overflow-hidden">
+      {/* Header */}
+      <div className="shrink-0 p-6 pb-4">
+        <div className="mb-2 flex items-center gap-2">
+          <Link
+            to="/$orgSlug/projects/$projectSlug/$envSlug/functions"
+            params={{ orgSlug, projectSlug, envSlug }}
+          >
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="mr-1 h-4 w-4" />
+              Functions
+            </Button>
+          </Link>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h1 className="font-mono text-2xl font-semibold">{fn.name}</h1>
+            {isCompareMode && compareVersion ? (
+              <>
+                {/* Compare mode: [v1.1 ▼] → [v1.2 ▼] */}
+                <Select
+                  value={compareVersion.id}
+                  onValueChange={handleCompareVersionChange}
+                >
+                  <SelectTrigger className="h-auto w-auto gap-1 rounded-md border-transparent bg-muted px-2.5 py-0.5 text-xs font-semibold shadow hover:bg-muted/80">
+                    <SelectValue>v{compareVersion.version}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {allVersions
+                      .filter((v) => v.id !== fn.id)
+                      .map((version) => (
+                        <SelectItem key={version.id} value={version.id}>
+                          <span className="flex items-center gap-2">
+                            v{version.version}
+                            {version.id === allVersions[0].id && (
+                              <span className="text-xs text-muted-foreground">
+                                (latest)
                               </span>
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                    <ArrowRight className="text-muted-foreground h-4 w-4" />
-                    <Select value={fn.id} onValueChange={handleVersionChange}>
-                      <SelectTrigger className="h-auto w-auto gap-1 rounded-md border-transparent bg-primary px-2.5 py-0.5 text-xs font-semibold text-primary-foreground shadow hover:bg-primary/80">
-                        <SelectValue>v{fn.version}</SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {allVersions
-                          .filter((v) => v.id !== compareVersionId)
-                          .map((version) => (
-                            <SelectItem key={version.id} value={version.id}>
-                              <span className="flex items-center gap-2">
-                                v{version.version}
-                                {version.id === allVersions[0].id && (
-                                  <span className="text-xs text-muted-foreground">
-                                    (latest)
-                                  </span>
-                                )}
+                            )}
+                          </span>
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+                <ArrowRight className="text-muted-foreground h-4 w-4" />
+                <Select value={fn.id} onValueChange={handleVersionChange}>
+                  <SelectTrigger className="h-auto w-auto gap-1 rounded-md border-transparent bg-primary px-2.5 py-0.5 text-xs font-semibold text-primary-foreground shadow hover:bg-primary/80">
+                    <SelectValue>v{fn.version}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {allVersions
+                      .filter((v) => v.id !== compareVersionId)
+                      .map((version) => (
+                        <SelectItem key={version.id} value={version.id}>
+                          <span className="flex items-center gap-2">
+                            v{version.version}
+                            {version.id === allVersions[0].id && (
+                              <span className="text-xs text-muted-foreground">
+                                (latest)
                               </span>
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                  </>
+                            )}
+                          </span>
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </>
+            ) : (
+              <>
+                {/* Normal mode: [v1.2 ▼] */}
+                {allVersions.length > 1 ? (
+                  <Select value={fn.id} onValueChange={handleVersionChange}>
+                    <SelectTrigger className="h-auto w-auto gap-1 rounded-md border-transparent bg-primary px-2.5 py-0.5 text-xs font-semibold text-primary-foreground shadow hover:bg-primary/80">
+                      <SelectValue>v{fn.version}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allVersions.map((version) => (
+                        <SelectItem key={version.id} value={version.id}>
+                          <span className="flex items-center gap-2">
+                            v{version.version}
+                            {version.id === allVersions[0].id && (
+                              <span className="text-xs text-muted-foreground">
+                                (latest)
+                              </span>
+                            )}
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 ) : (
-                  <>
-                    {/* Normal mode: [v1.2 ▼] */}
-                    {allVersions.length > 1 ? (
-                      <Select value={fn.id} onValueChange={handleVersionChange}>
-                        <SelectTrigger className="h-auto w-auto gap-1 rounded-md border-transparent bg-primary px-2.5 py-0.5 text-xs font-semibold text-primary-foreground shadow hover:bg-primary/80">
-                          <SelectValue>v{fn.version}</SelectValue>
-                        </SelectTrigger>
-                        <SelectContent>
-                          {allVersions.map((version) => (
-                            <SelectItem key={version.id} value={version.id}>
-                              <span className="flex items-center gap-2">
-                                v{version.version}
-                                {version.id === allVersions[0].id && (
-                                  <span className="text-xs text-muted-foreground">
-                                    (latest)
-                                  </span>
-                                )}
-                              </span>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <Badge variant="default">v{fn.version}</Badge>
-                    )}
-                  </>
+                  <Badge variant="default">v{fn.version}</Badge>
+                )}
+              </>
+            )}
+          </div>
+          {/* Right side: Compare or Exit Compare button */}
+          {isCompareMode ? (
+            <Button variant="outline" size="sm" onClick={exitCompareMode}>
+              <X className="mr-1 h-4 w-4" />
+              Exit Compare
+            </Button>
+          ) : (
+            allVersions.length > 1 &&
+            activeTab === "code" && (
+              <Button variant="outline" size="sm" onClick={enterCompareMode}>
+                <GitCompare className="mr-1 h-4 w-4" />
+                Compare
+              </Button>
+            )
+          )}
+        </div>
+        {fn.description && (
+          <p className="text-muted-foreground mt-1">{fn.description}</p>
+        )}
+      </div>
+
+      {/* Content area with tabs overlay */}
+      <div className="relative min-h-0 flex-1">
+        {/* Tab buttons - absolutely positioned */}
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="absolute left-6 top-0 z-10"
+        >
+          <TabsList>
+            <TabsTrigger value="code">Code</TabsTrigger>
+            <TabsTrigger value="traces" disabled={isCompareMode}>
+              Traces
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        {/* Code content */}
+        {activeTab === "code" && (
+          <div className="h-full overflow-hidden">
+            <div className="flex h-full gap-4 px-6 pt-12 pb-6">
+              <div className="min-w-0 flex-1 overflow-auto">
+                {isCompareMode && compareVersion ? (
+                  <DiffTool
+                    baseCode={compareVersion.code}
+                    newCode={fn.code}
+                    language={(fn.language ?? "python") as SupportedLanguages}
+                    baseName={`v${compareVersion.version}`}
+                    newName={`v${fn.version}`}
+                  />
+                ) : (
+                  <CodeBlock
+                    code={fn.code}
+                    language={fn.language ?? "python"}
+                    showLineNumbers={true}
+                    className="app-bg-code"
+                  />
                 )}
               </div>
-              {/* Right side: Compare or Exit Compare button */}
-              {isCompareMode ? (
-                <Button variant="outline" size="sm" onClick={exitCompareMode}>
-                  <X className="mr-1 h-4 w-4" />
-                  Exit Compare
-                </Button>
-              ) : (
-                allVersions.length > 1 &&
-                activeTab === "code" && (
+            </div>
+          </div>
+        )}
+
+        {/* Traces content */}
+        {activeTab === "traces" && (
+          <ResizablePanelGroup direction="horizontal" className="h-full">
+            <ResizablePanel defaultSize={selectedSpan ? 70 : 100} minSize={30}>
+              <div className="h-full overflow-auto px-6 pb-6">
+                <div className="mb-4 flex justify-end">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={enterCompareMode}
+                    onClick={() => setRefreshKey((k) => k + 1)}
+                    disabled={isFetchingTraces}
                   >
-                    <GitCompare className="mr-1 h-4 w-4" />
-                    Compare
+                    <RefreshCw
+                      className={`mr-2 h-4 w-4 ${isFetchingTraces ? "animate-spin" : ""}`}
+                    />
+                    Refresh
                   </Button>
-                )
-              )}
-            </div>
-            {fn.description && (
-              <p className="text-muted-foreground mt-1">{fn.description}</p>
-            )}
-          </div>
-
-          {/* Content area with tabs overlay */}
-          <div className="relative min-h-0 flex-1">
-            {/* Tab buttons - absolutely positioned */}
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="absolute left-6 top-0 z-10"
-            >
-              <TabsList>
-                <TabsTrigger value="code">Code</TabsTrigger>
-                <TabsTrigger value="traces" disabled={isCompareMode}>
-                  Traces
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-
-            {/* Code content */}
-            {activeTab === "code" && (
-              <div className="h-full overflow-hidden">
-                <div className="flex h-full gap-4 px-6 pt-12 pb-6">
-                  <div className="min-w-0 flex-1 overflow-auto">
-                    {isCompareMode && compareVersion ? (
-                      <DiffTool
-                        baseCode={compareVersion.code}
-                        newCode={fn.code}
-                        language={
-                          (fn.language ?? "python") as SupportedLanguages
-                        }
-                        baseName={`v${compareVersion.version}`}
-                        newName={`v${fn.version}`}
-                      />
-                    ) : (
-                      <CodeBlock
-                        code={fn.code}
-                        language={fn.language ?? "python"}
-                        showLineNumbers={true}
-                        className="app-bg-code"
-                      />
-                    )}
-                  </div>
                 </div>
+                <TracesTable
+                  spans={tracesData?.spans ?? []}
+                  isLoading={isLoadingTraces}
+                  onTraceSelect={setSelectedTraceId}
+                  traceDetail={traceDetail ?? null}
+                  isLoadingDetail={isLoadingDetail}
+                  onSpanClick={(span) => {
+                    analytics.trackEvent("span_selected", {
+                      span_id: span?.spanId,
+                      trace_id: selectedTraceId,
+                      environment_id: selectedEnvironment?.id,
+                    });
+                    setSelectedSpan(span);
+                  }}
+                  selectedSpanId={selectedSpan?.spanId}
+                />
               </div>
-            )}
+            </ResizablePanel>
 
-            {/* Traces content */}
-            {activeTab === "traces" && (
-              <ResizablePanelGroup direction="horizontal" className="h-full">
-                <ResizablePanel
-                  defaultSize={selectedSpan ? 70 : 100}
-                  minSize={30}
-                >
-                  <div className="h-full overflow-auto px-6 pb-6">
-                    <div className="mb-4 flex justify-end">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setRefreshKey((k) => k + 1)}
-                        disabled={isFetchingTraces}
-                      >
-                        <RefreshCw
-                          className={`mr-2 h-4 w-4 ${isFetchingTraces ? "animate-spin" : ""}`}
-                        />
-                        Refresh
-                      </Button>
-                    </div>
-                    <TracesTable
-                      spans={tracesData?.spans ?? []}
-                      isLoading={isLoadingTraces}
-                      onTraceSelect={setSelectedTraceId}
-                      traceDetail={traceDetail ?? null}
-                      isLoadingDetail={isLoadingDetail}
-                      onSpanClick={(span) => {
-                        analytics.trackEvent("span_selected", {
-                          span_id: span?.spanId,
-                          trace_id: selectedTraceId,
-                          environment_id: selectedEnvironment?.id,
-                        });
-                        setSelectedSpan(span);
-                      }}
-                      selectedSpanId={selectedSpan?.spanId}
+            {selectedSpan && (
+              <>
+                <ResizableHandle className="cursor-col-resize">
+                  <div className="z-10 flex h-8 w-4 translate-x-0.5 items-center justify-center rounded-sm border bg-background">
+                    <DragHandleDots2Icon className="h-4 w-4" />
+                  </div>
+                </ResizableHandle>
+                <ResizablePanel defaultSize={30} minSize={20} maxSize={50}>
+                  <div className="h-full overflow-hidden pb-6 pr-6">
+                    <SpanDetailPanel
+                      span={selectedSpan}
+                      functionData={fn}
+                      onClose={() => setSelectedSpan(null)}
                     />
                   </div>
                 </ResizablePanel>
-
-                {selectedSpan && (
-                  <>
-                    <ResizableHandle className="cursor-col-resize">
-                      <div className="z-10 flex h-8 w-4 translate-x-0.5 items-center justify-center rounded-sm border bg-background">
-                        <DragHandleDots2Icon className="h-4 w-4" />
-                      </div>
-                    </ResizableHandle>
-                    <ResizablePanel defaultSize={30} minSize={20} maxSize={50}>
-                      <div className="h-full overflow-hidden pb-6 pr-6">
-                        <SpanDetailPanel
-                          span={selectedSpan}
-                          functionData={fn}
-                          onClose={() => setSelectedSpan(null)}
-                        />
-                      </div>
-                    </ResizablePanel>
-                  </>
-                )}
-              </ResizablePanelGroup>
+              </>
             )}
-          </div>
-        </div>
-      </CloudLayout>
-    </Protected>
+          </ResizablePanelGroup>
+        )}
+      </div>
+    </div>
   );
 }
 

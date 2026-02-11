@@ -1,8 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { CodeBlock } from "@/app/components/blocks/code-block/code-block";
-import { CloudLayout } from "@/app/components/cloud-layout";
-import { Protected } from "@/app/components/protected";
 
 const CODE_EXAMPLE = `import marimo as mo
 from datetime import datetime, timedelta
@@ -44,36 +42,32 @@ client.annotations.create(
 
 function AnnotationQueuePage() {
   return (
-    <Protected>
-      <CloudLayout>
-        <div className="p-6 max-w-4xl">
-          <h1 className="text-2xl font-semibold mb-2">Annotation Queue</h1>
-          <div className="bg-muted/50 border rounded-lg px-4 pt-4 pb-2 mb-6">
-            <p className="text-muted-foreground mb-4">
-              While we build the annotation queue UI, you can annotate traces
-              programmatically using our Python SDK. We recommend using{" "}
-              <a
-                href="https://marimo.io"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                Marimo notebooks
-              </a>{" "}
-              for interactive annotation and evaluation workflows.
-            </p>
+    <div className="p-6 max-w-4xl">
+      <h1 className="text-2xl font-semibold mb-2">Annotation Queue</h1>
+      <div className="bg-muted/50 border rounded-lg px-4 pt-4 pb-2 mb-6">
+        <p className="text-muted-foreground mb-4">
+          While we build the annotation queue UI, you can annotate traces
+          programmatically using our Python SDK. We recommend using{" "}
+          <a
+            href="https://marimo.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline"
+          >
+            Marimo notebooks
+          </a>{" "}
+          for interactive annotation and evaluation workflows.
+        </p>
 
-            <h3 className="text-base font-medium mb-2">
-              1. Fetch and display traces for a function
-            </h3>
-            <CodeBlock code={CODE_EXAMPLE} language="python" className="mb-6" />
+        <h3 className="text-base font-medium mb-2">
+          1. Fetch and display traces for a function
+        </h3>
+        <CodeBlock code={CODE_EXAMPLE} language="python" className="mb-6" />
 
-            <h3 className="text-base font-medium mb-2">2. Annotate a trace</h3>
-            <CodeBlock code={ANNOTATION_EXAMPLE} language="python" />
-          </div>
-        </div>
-      </CloudLayout>
-    </Protected>
+        <h3 className="text-base font-medium mb-2">2. Annotate a trace</h3>
+        <CodeBlock code={ANNOTATION_EXAMPLE} language="python" />
+      </div>
+    </div>
   );
 }
 
