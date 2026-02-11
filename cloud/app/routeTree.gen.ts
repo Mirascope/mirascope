@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as OrganizationsRouteImport } from './routes/organizations'
@@ -20,10 +21,12 @@ import { Route as CloudRouteImport } from './routes/cloud'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as OrgSlugRouteImport } from './routes/$orgSlug'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as DevIndexRouteImport } from './routes/dev/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as OrgSlugIndexRouteImport } from './routes/$orgSlug/index'
 import { Route as TermsSplatRouteImport } from './routes/terms.$'
+import { Route as SettingsMeRouteImport } from './routes/settings/me'
 import { Route as InvitationsAcceptRouteImport } from './routes/invitations.accept'
 import { Route as DocsSplatRouteImport } from './routes/docs.$'
 import { Route as DevSocialCardRouteImport } from './routes/dev/social-card'
@@ -36,10 +39,10 @@ import { Route as AuthMeRouteImport } from './routes/auth/me'
 import { Route as AuthGoogleRouteImport } from './routes/auth/google'
 import { Route as AuthGithubRouteImport } from './routes/auth/github'
 import { Route as ApiAnalyticsRouteImport } from './routes/api.analytics'
-import { Route as OrgSlugSettingsRouteImport } from './routes/$orgSlug/settings'
-import { Route as OrgSlugSettingsIndexRouteImport } from './routes/$orgSlug/settings/index'
+import { Route as SettingsOrganizationsIndexRouteImport } from './routes/settings/organizations/index'
 import { Route as OrgSlugProjectsIndexRouteImport } from './routes/$orgSlug/projects/index'
 import { Route as OrgSlugClawsIndexRouteImport } from './routes/$orgSlug/claws/index'
+import { Route as SettingsOrganizationsOrgSlugRouteImport } from './routes/settings/organizations/$orgSlug'
 import { Route as DocsV1SplatRouteImport } from './routes/docs.v1.$'
 import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
@@ -50,28 +53,34 @@ import { Route as ApiV2HealthRouteImport } from './routes/api.v2.health'
 import { Route as ApiV2DocsRouteImport } from './routes/api.v2.docs'
 import { Route as ApiV2SplatRouteImport } from './routes/api.v2.$'
 import { Route as ApiInternalSplatRouteImport } from './routes/api.internal.$'
-import { Route as OrgSlugSettingsTeamRouteImport } from './routes/$orgSlug/settings/team'
-import { Route as OrgSlugSettingsProjectRouteImport } from './routes/$orgSlug/settings/project'
-import { Route as OrgSlugSettingsOrganizationRouteImport } from './routes/$orgSlug/settings/organization'
-import { Route as OrgSlugSettingsMeRouteImport } from './routes/$orgSlug/settings/me'
-import { Route as OrgSlugSettingsClawsRouteImport } from './routes/$orgSlug/settings/claws'
-import { Route as OrgSlugSettingsBillingRouteImport } from './routes/$orgSlug/settings/billing'
-import { Route as OrgSlugSettingsApiKeysRouteImport } from './routes/$orgSlug/settings/api-keys'
 import { Route as OrgSlugProjectsProjectSlugRouteImport } from './routes/$orgSlug/projects/$projectSlug'
 import { Route as OrgSlugClawsClawSlugRouteImport } from './routes/$orgSlug/claws/$clawSlug'
+import { Route as SettingsOrganizationsOrgSlugIndexRouteImport } from './routes/settings/organizations/$orgSlug/index'
 import { Route as OrgSlugProjectsProjectSlugIndexRouteImport } from './routes/$orgSlug/projects/$projectSlug/index'
 import { Route as OrgSlugClawsClawSlugIndexRouteImport } from './routes/$orgSlug/claws/$clawSlug/index'
+import { Route as SettingsOrganizationsOrgSlugTeamRouteImport } from './routes/settings/organizations/$orgSlug/team'
+import { Route as SettingsOrganizationsOrgSlugBillingRouteImport } from './routes/settings/organizations/$orgSlug/billing'
+import { Route as SettingsOrganizationsOrgSlugApiKeysRouteImport } from './routes/settings/organizations/$orgSlug/api-keys'
 import { Route as RouterV2ProviderSplatRouteImport } from './routes/router.v2.$provider.$'
 import { Route as OrgSlugProjectsProjectSlugEnvSlugRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug'
 import { Route as OrgSlugClawsClawSlugSecretsRouteImport } from './routes/$orgSlug/claws/$clawSlug/secrets'
 import { Route as OrgSlugClawsClawSlugChatRouteImport } from './routes/$orgSlug/claws/$clawSlug/chat'
+import { Route as SettingsOrganizationsOrgSlugProjectsIndexRouteImport } from './routes/settings/organizations/$orgSlug/projects/index'
+import { Route as SettingsOrganizationsOrgSlugClawsIndexRouteImport } from './routes/settings/organizations/$orgSlug/claws/index'
 import { Route as OrgSlugProjectsProjectSlugEnvSlugIndexRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/index'
+import { Route as SettingsOrganizationsOrgSlugProjectsProjectSlugRouteImport } from './routes/settings/organizations/$orgSlug/projects/$projectSlug'
+import { Route as SettingsOrganizationsOrgSlugClawsClawSlugRouteImport } from './routes/settings/organizations/$orgSlug/claws/$clawSlug'
 import { Route as OrgSlugProjectsProjectSlugEnvSlugTracesRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/traces'
 import { Route as OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue'
 import { Route as OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/functions.index'
 import { Route as OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/functions.$functionName'
 import { Route as OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/trace-view.$traceId.$spanId'
 
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -127,6 +136,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SettingsRoute,
+} as any)
 const DevIndexRoute = DevIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -146,6 +160,11 @@ const TermsSplatRoute = TermsSplatRouteImport.update({
   id: '/terms/$',
   path: '/terms/$',
   getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsMeRoute = SettingsMeRouteImport.update({
+  id: '/me',
+  path: '/me',
+  getParentRoute: () => SettingsRoute,
 } as any)
 const InvitationsAcceptRoute = InvitationsAcceptRouteImport.update({
   id: '/invitations/accept',
@@ -207,16 +226,12 @@ const ApiAnalyticsRoute = ApiAnalyticsRouteImport.update({
   path: '/api/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OrgSlugSettingsRoute = OrgSlugSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => OrgSlugRoute,
-} as any)
-const OrgSlugSettingsIndexRoute = OrgSlugSettingsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => OrgSlugSettingsRoute,
-} as any)
+const SettingsOrganizationsIndexRoute =
+  SettingsOrganizationsIndexRouteImport.update({
+    id: '/organizations/',
+    path: '/organizations/',
+    getParentRoute: () => SettingsRoute,
+  } as any)
 const OrgSlugProjectsIndexRoute = OrgSlugProjectsIndexRouteImport.update({
   id: '/projects/',
   path: '/projects/',
@@ -227,6 +242,12 @@ const OrgSlugClawsIndexRoute = OrgSlugClawsIndexRouteImport.update({
   path: '/claws/',
   getParentRoute: () => OrgSlugRoute,
 } as any)
+const SettingsOrganizationsOrgSlugRoute =
+  SettingsOrganizationsOrgSlugRouteImport.update({
+    id: '/organizations/$orgSlug',
+    path: '/organizations/$orgSlug',
+    getParentRoute: () => SettingsRoute,
+  } as any)
 const DocsV1SplatRoute = DocsV1SplatRouteImport.update({
   id: '/v1/$',
   path: '/v1/$',
@@ -277,42 +298,6 @@ const ApiInternalSplatRoute = ApiInternalSplatRouteImport.update({
   path: '/api/internal/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OrgSlugSettingsTeamRoute = OrgSlugSettingsTeamRouteImport.update({
-  id: '/team',
-  path: '/team',
-  getParentRoute: () => OrgSlugSettingsRoute,
-} as any)
-const OrgSlugSettingsProjectRoute = OrgSlugSettingsProjectRouteImport.update({
-  id: '/project',
-  path: '/project',
-  getParentRoute: () => OrgSlugSettingsRoute,
-} as any)
-const OrgSlugSettingsOrganizationRoute =
-  OrgSlugSettingsOrganizationRouteImport.update({
-    id: '/organization',
-    path: '/organization',
-    getParentRoute: () => OrgSlugSettingsRoute,
-  } as any)
-const OrgSlugSettingsMeRoute = OrgSlugSettingsMeRouteImport.update({
-  id: '/me',
-  path: '/me',
-  getParentRoute: () => OrgSlugSettingsRoute,
-} as any)
-const OrgSlugSettingsClawsRoute = OrgSlugSettingsClawsRouteImport.update({
-  id: '/claws',
-  path: '/claws',
-  getParentRoute: () => OrgSlugSettingsRoute,
-} as any)
-const OrgSlugSettingsBillingRoute = OrgSlugSettingsBillingRouteImport.update({
-  id: '/billing',
-  path: '/billing',
-  getParentRoute: () => OrgSlugSettingsRoute,
-} as any)
-const OrgSlugSettingsApiKeysRoute = OrgSlugSettingsApiKeysRouteImport.update({
-  id: '/api-keys',
-  path: '/api-keys',
-  getParentRoute: () => OrgSlugSettingsRoute,
-} as any)
 const OrgSlugProjectsProjectSlugRoute =
   OrgSlugProjectsProjectSlugRouteImport.update({
     id: '/projects/$projectSlug',
@@ -324,6 +309,12 @@ const OrgSlugClawsClawSlugRoute = OrgSlugClawsClawSlugRouteImport.update({
   path: '/claws/$clawSlug',
   getParentRoute: () => OrgSlugRoute,
 } as any)
+const SettingsOrganizationsOrgSlugIndexRoute =
+  SettingsOrganizationsOrgSlugIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => SettingsOrganizationsOrgSlugRoute,
+  } as any)
 const OrgSlugProjectsProjectSlugIndexRoute =
   OrgSlugProjectsProjectSlugIndexRouteImport.update({
     id: '/',
@@ -335,6 +326,24 @@ const OrgSlugClawsClawSlugIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => OrgSlugClawsClawSlugRoute,
+  } as any)
+const SettingsOrganizationsOrgSlugTeamRoute =
+  SettingsOrganizationsOrgSlugTeamRouteImport.update({
+    id: '/team',
+    path: '/team',
+    getParentRoute: () => SettingsOrganizationsOrgSlugRoute,
+  } as any)
+const SettingsOrganizationsOrgSlugBillingRoute =
+  SettingsOrganizationsOrgSlugBillingRouteImport.update({
+    id: '/billing',
+    path: '/billing',
+    getParentRoute: () => SettingsOrganizationsOrgSlugRoute,
+  } as any)
+const SettingsOrganizationsOrgSlugApiKeysRoute =
+  SettingsOrganizationsOrgSlugApiKeysRouteImport.update({
+    id: '/api-keys',
+    path: '/api-keys',
+    getParentRoute: () => SettingsOrganizationsOrgSlugRoute,
   } as any)
 const RouterV2ProviderSplatRoute = RouterV2ProviderSplatRouteImport.update({
   id: '/router/v2/$provider/$',
@@ -359,11 +368,35 @@ const OrgSlugClawsClawSlugChatRoute =
     path: '/chat',
     getParentRoute: () => OrgSlugClawsClawSlugRoute,
   } as any)
+const SettingsOrganizationsOrgSlugProjectsIndexRoute =
+  SettingsOrganizationsOrgSlugProjectsIndexRouteImport.update({
+    id: '/projects/',
+    path: '/projects/',
+    getParentRoute: () => SettingsOrganizationsOrgSlugRoute,
+  } as any)
+const SettingsOrganizationsOrgSlugClawsIndexRoute =
+  SettingsOrganizationsOrgSlugClawsIndexRouteImport.update({
+    id: '/claws/',
+    path: '/claws/',
+    getParentRoute: () => SettingsOrganizationsOrgSlugRoute,
+  } as any)
 const OrgSlugProjectsProjectSlugEnvSlugIndexRoute =
   OrgSlugProjectsProjectSlugEnvSlugIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => OrgSlugProjectsProjectSlugEnvSlugRoute,
+  } as any)
+const SettingsOrganizationsOrgSlugProjectsProjectSlugRoute =
+  SettingsOrganizationsOrgSlugProjectsProjectSlugRouteImport.update({
+    id: '/projects/$projectSlug',
+    path: '/projects/$projectSlug',
+    getParentRoute: () => SettingsOrganizationsOrgSlugRoute,
+  } as any)
+const SettingsOrganizationsOrgSlugClawsClawSlugRoute =
+  SettingsOrganizationsOrgSlugClawsClawSlugRouteImport.update({
+    id: '/claws/$clawSlug',
+    path: '/claws/$clawSlug',
+    getParentRoute: () => SettingsOrganizationsOrgSlugRoute,
   } as any)
 const OrgSlugProjectsProjectSlugEnvSlugTracesRoute =
   OrgSlugProjectsProjectSlugEnvSlugTracesRouteImport.update({
@@ -408,7 +441,7 @@ export interface FileRoutesByFullPath {
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
-  '/$orgSlug/settings': typeof OrgSlugSettingsRouteWithChildren
+  '/settings': typeof SettingsRouteWithChildren
   '/api/analytics': typeof ApiAnalyticsRoute
   '/auth/github': typeof AuthGithubRouteWithChildren
   '/auth/google': typeof AuthGoogleRouteWithChildren
@@ -421,19 +454,14 @@ export interface FileRoutesByFullPath {
   '/dev/social-card': typeof DevSocialCardRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
+  '/settings/me': typeof SettingsMeRoute
   '/terms/$': typeof TermsSplatRoute
   '/$orgSlug/': typeof OrgSlugIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/dev/': typeof DevIndexRoute
+  '/settings/': typeof SettingsIndexRoute
   '/$orgSlug/claws/$clawSlug': typeof OrgSlugClawsClawSlugRouteWithChildren
   '/$orgSlug/projects/$projectSlug': typeof OrgSlugProjectsProjectSlugRouteWithChildren
-  '/$orgSlug/settings/api-keys': typeof OrgSlugSettingsApiKeysRoute
-  '/$orgSlug/settings/billing': typeof OrgSlugSettingsBillingRoute
-  '/$orgSlug/settings/claws': typeof OrgSlugSettingsClawsRoute
-  '/$orgSlug/settings/me': typeof OrgSlugSettingsMeRoute
-  '/$orgSlug/settings/organization': typeof OrgSlugSettingsOrganizationRoute
-  '/$orgSlug/settings/project': typeof OrgSlugSettingsProjectRoute
-  '/$orgSlug/settings/team': typeof OrgSlugSettingsTeamRoute
   '/api/internal/$': typeof ApiInternalSplatRoute
   '/api/v2/$': typeof ApiV2SplatRoute
   '/api/v2/docs': typeof ApiV2DocsRoute
@@ -444,18 +472,27 @@ export interface FileRoutesByFullPath {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/settings/organizations/$orgSlug': typeof SettingsOrganizationsOrgSlugRouteWithChildren
   '/$orgSlug/claws': typeof OrgSlugClawsIndexRoute
   '/$orgSlug/projects': typeof OrgSlugProjectsIndexRoute
-  '/$orgSlug/settings/': typeof OrgSlugSettingsIndexRoute
+  '/settings/organizations': typeof SettingsOrganizationsIndexRoute
   '/$orgSlug/claws/$clawSlug/chat': typeof OrgSlugClawsClawSlugChatRoute
   '/$orgSlug/claws/$clawSlug/secrets': typeof OrgSlugClawsClawSlugSecretsRoute
   '/$orgSlug/projects/$projectSlug/$envSlug': typeof OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren
   '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
+  '/settings/organizations/$orgSlug/api-keys': typeof SettingsOrganizationsOrgSlugApiKeysRoute
+  '/settings/organizations/$orgSlug/billing': typeof SettingsOrganizationsOrgSlugBillingRoute
+  '/settings/organizations/$orgSlug/team': typeof SettingsOrganizationsOrgSlugTeamRoute
   '/$orgSlug/claws/$clawSlug/': typeof OrgSlugClawsClawSlugIndexRoute
   '/$orgSlug/projects/$projectSlug/': typeof OrgSlugProjectsProjectSlugIndexRoute
+  '/settings/organizations/$orgSlug/': typeof SettingsOrganizationsOrgSlugIndexRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue': typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/traces': typeof OrgSlugProjectsProjectSlugEnvSlugTracesRoute
+  '/settings/organizations/$orgSlug/claws/$clawSlug': typeof SettingsOrganizationsOrgSlugClawsClawSlugRoute
+  '/settings/organizations/$orgSlug/projects/$projectSlug': typeof SettingsOrganizationsOrgSlugProjectsProjectSlugRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/': typeof OrgSlugProjectsProjectSlugEnvSlugIndexRoute
+  '/settings/organizations/$orgSlug/claws': typeof SettingsOrganizationsOrgSlugClawsIndexRoute
+  '/settings/organizations/$orgSlug/projects': typeof SettingsOrganizationsOrgSlugProjectsIndexRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/functions': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId': typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute
@@ -481,17 +518,12 @@ export interface FileRoutesByTo {
   '/dev/social-card': typeof DevSocialCardRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
+  '/settings/me': typeof SettingsMeRoute
   '/terms/$': typeof TermsSplatRoute
   '/$orgSlug': typeof OrgSlugIndexRoute
   '/blog': typeof BlogIndexRoute
   '/dev': typeof DevIndexRoute
-  '/$orgSlug/settings/api-keys': typeof OrgSlugSettingsApiKeysRoute
-  '/$orgSlug/settings/billing': typeof OrgSlugSettingsBillingRoute
-  '/$orgSlug/settings/claws': typeof OrgSlugSettingsClawsRoute
-  '/$orgSlug/settings/me': typeof OrgSlugSettingsMeRoute
-  '/$orgSlug/settings/organization': typeof OrgSlugSettingsOrganizationRoute
-  '/$orgSlug/settings/project': typeof OrgSlugSettingsProjectRoute
-  '/$orgSlug/settings/team': typeof OrgSlugSettingsTeamRoute
+  '/settings': typeof SettingsIndexRoute
   '/api/internal/$': typeof ApiInternalSplatRoute
   '/api/v2/$': typeof ApiV2SplatRoute
   '/api/v2/docs': typeof ApiV2DocsRoute
@@ -504,15 +536,23 @@ export interface FileRoutesByTo {
   '/docs/v1/$': typeof DocsV1SplatRoute
   '/$orgSlug/claws': typeof OrgSlugClawsIndexRoute
   '/$orgSlug/projects': typeof OrgSlugProjectsIndexRoute
-  '/$orgSlug/settings': typeof OrgSlugSettingsIndexRoute
+  '/settings/organizations': typeof SettingsOrganizationsIndexRoute
   '/$orgSlug/claws/$clawSlug/chat': typeof OrgSlugClawsClawSlugChatRoute
   '/$orgSlug/claws/$clawSlug/secrets': typeof OrgSlugClawsClawSlugSecretsRoute
   '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
+  '/settings/organizations/$orgSlug/api-keys': typeof SettingsOrganizationsOrgSlugApiKeysRoute
+  '/settings/organizations/$orgSlug/billing': typeof SettingsOrganizationsOrgSlugBillingRoute
+  '/settings/organizations/$orgSlug/team': typeof SettingsOrganizationsOrgSlugTeamRoute
   '/$orgSlug/claws/$clawSlug': typeof OrgSlugClawsClawSlugIndexRoute
   '/$orgSlug/projects/$projectSlug': typeof OrgSlugProjectsProjectSlugIndexRoute
+  '/settings/organizations/$orgSlug': typeof SettingsOrganizationsOrgSlugIndexRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue': typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/traces': typeof OrgSlugProjectsProjectSlugEnvSlugTracesRoute
+  '/settings/organizations/$orgSlug/claws/$clawSlug': typeof SettingsOrganizationsOrgSlugClawsClawSlugRoute
+  '/settings/organizations/$orgSlug/projects/$projectSlug': typeof SettingsOrganizationsOrgSlugProjectsProjectSlugRoute
   '/$orgSlug/projects/$projectSlug/$envSlug': typeof OrgSlugProjectsProjectSlugEnvSlugIndexRoute
+  '/settings/organizations/$orgSlug/claws': typeof SettingsOrganizationsOrgSlugClawsIndexRoute
+  '/settings/organizations/$orgSlug/projects': typeof SettingsOrganizationsOrgSlugProjectsIndexRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/functions': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId': typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute
@@ -530,7 +570,7 @@ export interface FileRoutesById {
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
-  '/$orgSlug/settings': typeof OrgSlugSettingsRouteWithChildren
+  '/settings': typeof SettingsRouteWithChildren
   '/api/analytics': typeof ApiAnalyticsRoute
   '/auth/github': typeof AuthGithubRouteWithChildren
   '/auth/google': typeof AuthGoogleRouteWithChildren
@@ -543,19 +583,14 @@ export interface FileRoutesById {
   '/dev/social-card': typeof DevSocialCardRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
+  '/settings/me': typeof SettingsMeRoute
   '/terms/$': typeof TermsSplatRoute
   '/$orgSlug/': typeof OrgSlugIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/dev/': typeof DevIndexRoute
+  '/settings/': typeof SettingsIndexRoute
   '/$orgSlug/claws/$clawSlug': typeof OrgSlugClawsClawSlugRouteWithChildren
   '/$orgSlug/projects/$projectSlug': typeof OrgSlugProjectsProjectSlugRouteWithChildren
-  '/$orgSlug/settings/api-keys': typeof OrgSlugSettingsApiKeysRoute
-  '/$orgSlug/settings/billing': typeof OrgSlugSettingsBillingRoute
-  '/$orgSlug/settings/claws': typeof OrgSlugSettingsClawsRoute
-  '/$orgSlug/settings/me': typeof OrgSlugSettingsMeRoute
-  '/$orgSlug/settings/organization': typeof OrgSlugSettingsOrganizationRoute
-  '/$orgSlug/settings/project': typeof OrgSlugSettingsProjectRoute
-  '/$orgSlug/settings/team': typeof OrgSlugSettingsTeamRoute
   '/api/internal/$': typeof ApiInternalSplatRoute
   '/api/v2/$': typeof ApiV2SplatRoute
   '/api/v2/docs': typeof ApiV2DocsRoute
@@ -566,18 +601,27 @@ export interface FileRoutesById {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/settings/organizations/$orgSlug': typeof SettingsOrganizationsOrgSlugRouteWithChildren
   '/$orgSlug/claws/': typeof OrgSlugClawsIndexRoute
   '/$orgSlug/projects/': typeof OrgSlugProjectsIndexRoute
-  '/$orgSlug/settings/': typeof OrgSlugSettingsIndexRoute
+  '/settings/organizations/': typeof SettingsOrganizationsIndexRoute
   '/$orgSlug/claws/$clawSlug/chat': typeof OrgSlugClawsClawSlugChatRoute
   '/$orgSlug/claws/$clawSlug/secrets': typeof OrgSlugClawsClawSlugSecretsRoute
   '/$orgSlug/projects/$projectSlug/$envSlug': typeof OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren
   '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
+  '/settings/organizations/$orgSlug/api-keys': typeof SettingsOrganizationsOrgSlugApiKeysRoute
+  '/settings/organizations/$orgSlug/billing': typeof SettingsOrganizationsOrgSlugBillingRoute
+  '/settings/organizations/$orgSlug/team': typeof SettingsOrganizationsOrgSlugTeamRoute
   '/$orgSlug/claws/$clawSlug/': typeof OrgSlugClawsClawSlugIndexRoute
   '/$orgSlug/projects/$projectSlug/': typeof OrgSlugProjectsProjectSlugIndexRoute
+  '/settings/organizations/$orgSlug/': typeof SettingsOrganizationsOrgSlugIndexRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue': typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/traces': typeof OrgSlugProjectsProjectSlugEnvSlugTracesRoute
+  '/settings/organizations/$orgSlug/claws/$clawSlug': typeof SettingsOrganizationsOrgSlugClawsClawSlugRoute
+  '/settings/organizations/$orgSlug/projects/$projectSlug': typeof SettingsOrganizationsOrgSlugProjectsProjectSlugRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/': typeof OrgSlugProjectsProjectSlugEnvSlugIndexRoute
+  '/settings/organizations/$orgSlug/claws/': typeof SettingsOrganizationsOrgSlugClawsIndexRoute
+  '/settings/organizations/$orgSlug/projects/': typeof SettingsOrganizationsOrgSlugProjectsIndexRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/functions/': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId': typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute
@@ -596,7 +640,7 @@ export interface FileRouteTypes {
     | '/organizations'
     | '/pricing'
     | '/privacy'
-    | '/$orgSlug/settings'
+    | '/settings'
     | '/api/analytics'
     | '/auth/github'
     | '/auth/google'
@@ -609,19 +653,14 @@ export interface FileRouteTypes {
     | '/dev/social-card'
     | '/docs/$'
     | '/invitations/accept'
+    | '/settings/me'
     | '/terms/$'
     | '/$orgSlug/'
     | '/blog/'
     | '/dev/'
+    | '/settings/'
     | '/$orgSlug/claws/$clawSlug'
     | '/$orgSlug/projects/$projectSlug'
-    | '/$orgSlug/settings/api-keys'
-    | '/$orgSlug/settings/billing'
-    | '/$orgSlug/settings/claws'
-    | '/$orgSlug/settings/me'
-    | '/$orgSlug/settings/organization'
-    | '/$orgSlug/settings/project'
-    | '/$orgSlug/settings/team'
     | '/api/internal/$'
     | '/api/v2/$'
     | '/api/v2/docs'
@@ -632,18 +671,27 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/docs/v1/$'
+    | '/settings/organizations/$orgSlug'
     | '/$orgSlug/claws'
     | '/$orgSlug/projects'
-    | '/$orgSlug/settings/'
+    | '/settings/organizations'
     | '/$orgSlug/claws/$clawSlug/chat'
     | '/$orgSlug/claws/$clawSlug/secrets'
     | '/$orgSlug/projects/$projectSlug/$envSlug'
     | '/router/v2/$provider/$'
+    | '/settings/organizations/$orgSlug/api-keys'
+    | '/settings/organizations/$orgSlug/billing'
+    | '/settings/organizations/$orgSlug/team'
     | '/$orgSlug/claws/$clawSlug/'
     | '/$orgSlug/projects/$projectSlug/'
+    | '/settings/organizations/$orgSlug/'
     | '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue'
     | '/$orgSlug/projects/$projectSlug/$envSlug/traces'
+    | '/settings/organizations/$orgSlug/claws/$clawSlug'
+    | '/settings/organizations/$orgSlug/projects/$projectSlug'
     | '/$orgSlug/projects/$projectSlug/$envSlug/'
+    | '/settings/organizations/$orgSlug/claws'
+    | '/settings/organizations/$orgSlug/projects'
     | '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName'
     | '/$orgSlug/projects/$projectSlug/$envSlug/functions'
     | '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId'
@@ -669,17 +717,12 @@ export interface FileRouteTypes {
     | '/dev/social-card'
     | '/docs/$'
     | '/invitations/accept'
+    | '/settings/me'
     | '/terms/$'
     | '/$orgSlug'
     | '/blog'
     | '/dev'
-    | '/$orgSlug/settings/api-keys'
-    | '/$orgSlug/settings/billing'
-    | '/$orgSlug/settings/claws'
-    | '/$orgSlug/settings/me'
-    | '/$orgSlug/settings/organization'
-    | '/$orgSlug/settings/project'
-    | '/$orgSlug/settings/team'
+    | '/settings'
     | '/api/internal/$'
     | '/api/v2/$'
     | '/api/v2/docs'
@@ -692,15 +735,23 @@ export interface FileRouteTypes {
     | '/docs/v1/$'
     | '/$orgSlug/claws'
     | '/$orgSlug/projects'
-    | '/$orgSlug/settings'
+    | '/settings/organizations'
     | '/$orgSlug/claws/$clawSlug/chat'
     | '/$orgSlug/claws/$clawSlug/secrets'
     | '/router/v2/$provider/$'
+    | '/settings/organizations/$orgSlug/api-keys'
+    | '/settings/organizations/$orgSlug/billing'
+    | '/settings/organizations/$orgSlug/team'
     | '/$orgSlug/claws/$clawSlug'
     | '/$orgSlug/projects/$projectSlug'
+    | '/settings/organizations/$orgSlug'
     | '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue'
     | '/$orgSlug/projects/$projectSlug/$envSlug/traces'
+    | '/settings/organizations/$orgSlug/claws/$clawSlug'
+    | '/settings/organizations/$orgSlug/projects/$projectSlug'
     | '/$orgSlug/projects/$projectSlug/$envSlug'
+    | '/settings/organizations/$orgSlug/claws'
+    | '/settings/organizations/$orgSlug/projects'
     | '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName'
     | '/$orgSlug/projects/$projectSlug/$envSlug/functions'
     | '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId'
@@ -717,7 +768,7 @@ export interface FileRouteTypes {
     | '/organizations'
     | '/pricing'
     | '/privacy'
-    | '/$orgSlug/settings'
+    | '/settings'
     | '/api/analytics'
     | '/auth/github'
     | '/auth/google'
@@ -730,19 +781,14 @@ export interface FileRouteTypes {
     | '/dev/social-card'
     | '/docs/$'
     | '/invitations/accept'
+    | '/settings/me'
     | '/terms/$'
     | '/$orgSlug/'
     | '/blog/'
     | '/dev/'
+    | '/settings/'
     | '/$orgSlug/claws/$clawSlug'
     | '/$orgSlug/projects/$projectSlug'
-    | '/$orgSlug/settings/api-keys'
-    | '/$orgSlug/settings/billing'
-    | '/$orgSlug/settings/claws'
-    | '/$orgSlug/settings/me'
-    | '/$orgSlug/settings/organization'
-    | '/$orgSlug/settings/project'
-    | '/$orgSlug/settings/team'
     | '/api/internal/$'
     | '/api/v2/$'
     | '/api/v2/docs'
@@ -753,18 +799,27 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/docs/v1/$'
+    | '/settings/organizations/$orgSlug'
     | '/$orgSlug/claws/'
     | '/$orgSlug/projects/'
-    | '/$orgSlug/settings/'
+    | '/settings/organizations/'
     | '/$orgSlug/claws/$clawSlug/chat'
     | '/$orgSlug/claws/$clawSlug/secrets'
     | '/$orgSlug/projects/$projectSlug/$envSlug'
     | '/router/v2/$provider/$'
+    | '/settings/organizations/$orgSlug/api-keys'
+    | '/settings/organizations/$orgSlug/billing'
+    | '/settings/organizations/$orgSlug/team'
     | '/$orgSlug/claws/$clawSlug/'
     | '/$orgSlug/projects/$projectSlug/'
+    | '/settings/organizations/$orgSlug/'
     | '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue'
     | '/$orgSlug/projects/$projectSlug/$envSlug/traces'
+    | '/settings/organizations/$orgSlug/claws/$clawSlug'
+    | '/settings/organizations/$orgSlug/projects/$projectSlug'
     | '/$orgSlug/projects/$projectSlug/$envSlug/'
+    | '/settings/organizations/$orgSlug/claws/'
+    | '/settings/organizations/$orgSlug/projects/'
     | '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName'
     | '/$orgSlug/projects/$projectSlug/$envSlug/functions/'
     | '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId'
@@ -782,6 +837,7 @@ export interface RootRouteChildren {
   OrganizationsRoute: typeof OrganizationsRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
+  SettingsRoute: typeof SettingsRouteWithChildren
   ApiAnalyticsRoute: typeof ApiAnalyticsRoute
   AuthGithubRoute: typeof AuthGithubRouteWithChildren
   AuthGoogleRoute: typeof AuthGoogleRouteWithChildren
@@ -798,6 +854,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
@@ -875,6 +938,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/': {
+      id: '/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof SettingsRoute
+    }
     '/dev/': {
       id: '/dev/'
       path: '/'
@@ -902,6 +972,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/terms/$'
       preLoaderRoute: typeof TermsSplatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/settings/me': {
+      id: '/settings/me'
+      path: '/me'
+      fullPath: '/settings/me'
+      preLoaderRoute: typeof SettingsMeRouteImport
+      parentRoute: typeof SettingsRoute
     }
     '/invitations/accept': {
       id: '/invitations/accept'
@@ -987,19 +1064,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$orgSlug/settings': {
-      id: '/$orgSlug/settings'
-      path: '/settings'
-      fullPath: '/$orgSlug/settings'
-      preLoaderRoute: typeof OrgSlugSettingsRouteImport
-      parentRoute: typeof OrgSlugRoute
-    }
-    '/$orgSlug/settings/': {
-      id: '/$orgSlug/settings/'
-      path: '/'
-      fullPath: '/$orgSlug/settings/'
-      preLoaderRoute: typeof OrgSlugSettingsIndexRouteImport
-      parentRoute: typeof OrgSlugSettingsRoute
+    '/settings/organizations/': {
+      id: '/settings/organizations/'
+      path: '/organizations'
+      fullPath: '/settings/organizations'
+      preLoaderRoute: typeof SettingsOrganizationsIndexRouteImport
+      parentRoute: typeof SettingsRoute
     }
     '/$orgSlug/projects/': {
       id: '/$orgSlug/projects/'
@@ -1014,6 +1084,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/$orgSlug/claws'
       preLoaderRoute: typeof OrgSlugClawsIndexRouteImport
       parentRoute: typeof OrgSlugRoute
+    }
+    '/settings/organizations/$orgSlug': {
+      id: '/settings/organizations/$orgSlug'
+      path: '/organizations/$orgSlug'
+      fullPath: '/settings/organizations/$orgSlug'
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugRouteImport
+      parentRoute: typeof SettingsRoute
     }
     '/docs/v1/$': {
       id: '/docs/v1/$'
@@ -1085,55 +1162,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiInternalSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$orgSlug/settings/team': {
-      id: '/$orgSlug/settings/team'
-      path: '/team'
-      fullPath: '/$orgSlug/settings/team'
-      preLoaderRoute: typeof OrgSlugSettingsTeamRouteImport
-      parentRoute: typeof OrgSlugSettingsRoute
-    }
-    '/$orgSlug/settings/project': {
-      id: '/$orgSlug/settings/project'
-      path: '/project'
-      fullPath: '/$orgSlug/settings/project'
-      preLoaderRoute: typeof OrgSlugSettingsProjectRouteImport
-      parentRoute: typeof OrgSlugSettingsRoute
-    }
-    '/$orgSlug/settings/organization': {
-      id: '/$orgSlug/settings/organization'
-      path: '/organization'
-      fullPath: '/$orgSlug/settings/organization'
-      preLoaderRoute: typeof OrgSlugSettingsOrganizationRouteImport
-      parentRoute: typeof OrgSlugSettingsRoute
-    }
-    '/$orgSlug/settings/me': {
-      id: '/$orgSlug/settings/me'
-      path: '/me'
-      fullPath: '/$orgSlug/settings/me'
-      preLoaderRoute: typeof OrgSlugSettingsMeRouteImport
-      parentRoute: typeof OrgSlugSettingsRoute
-    }
-    '/$orgSlug/settings/claws': {
-      id: '/$orgSlug/settings/claws'
-      path: '/claws'
-      fullPath: '/$orgSlug/settings/claws'
-      preLoaderRoute: typeof OrgSlugSettingsClawsRouteImport
-      parentRoute: typeof OrgSlugSettingsRoute
-    }
-    '/$orgSlug/settings/billing': {
-      id: '/$orgSlug/settings/billing'
-      path: '/billing'
-      fullPath: '/$orgSlug/settings/billing'
-      preLoaderRoute: typeof OrgSlugSettingsBillingRouteImport
-      parentRoute: typeof OrgSlugSettingsRoute
-    }
-    '/$orgSlug/settings/api-keys': {
-      id: '/$orgSlug/settings/api-keys'
-      path: '/api-keys'
-      fullPath: '/$orgSlug/settings/api-keys'
-      preLoaderRoute: typeof OrgSlugSettingsApiKeysRouteImport
-      parentRoute: typeof OrgSlugSettingsRoute
-    }
     '/$orgSlug/projects/$projectSlug': {
       id: '/$orgSlug/projects/$projectSlug'
       path: '/projects/$projectSlug'
@@ -1148,6 +1176,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgSlugClawsClawSlugRouteImport
       parentRoute: typeof OrgSlugRoute
     }
+    '/settings/organizations/$orgSlug/': {
+      id: '/settings/organizations/$orgSlug/'
+      path: '/'
+      fullPath: '/settings/organizations/$orgSlug/'
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugIndexRouteImport
+      parentRoute: typeof SettingsOrganizationsOrgSlugRoute
+    }
     '/$orgSlug/projects/$projectSlug/': {
       id: '/$orgSlug/projects/$projectSlug/'
       path: '/'
@@ -1161,6 +1196,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/$orgSlug/claws/$clawSlug/'
       preLoaderRoute: typeof OrgSlugClawsClawSlugIndexRouteImport
       parentRoute: typeof OrgSlugClawsClawSlugRoute
+    }
+    '/settings/organizations/$orgSlug/team': {
+      id: '/settings/organizations/$orgSlug/team'
+      path: '/team'
+      fullPath: '/settings/organizations/$orgSlug/team'
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugTeamRouteImport
+      parentRoute: typeof SettingsOrganizationsOrgSlugRoute
+    }
+    '/settings/organizations/$orgSlug/billing': {
+      id: '/settings/organizations/$orgSlug/billing'
+      path: '/billing'
+      fullPath: '/settings/organizations/$orgSlug/billing'
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugBillingRouteImport
+      parentRoute: typeof SettingsOrganizationsOrgSlugRoute
+    }
+    '/settings/organizations/$orgSlug/api-keys': {
+      id: '/settings/organizations/$orgSlug/api-keys'
+      path: '/api-keys'
+      fullPath: '/settings/organizations/$orgSlug/api-keys'
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugApiKeysRouteImport
+      parentRoute: typeof SettingsOrganizationsOrgSlugRoute
     }
     '/router/v2/$provider/$': {
       id: '/router/v2/$provider/$'
@@ -1190,12 +1246,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgSlugClawsClawSlugChatRouteImport
       parentRoute: typeof OrgSlugClawsClawSlugRoute
     }
+    '/settings/organizations/$orgSlug/projects/': {
+      id: '/settings/organizations/$orgSlug/projects/'
+      path: '/projects'
+      fullPath: '/settings/organizations/$orgSlug/projects'
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugProjectsIndexRouteImport
+      parentRoute: typeof SettingsOrganizationsOrgSlugRoute
+    }
+    '/settings/organizations/$orgSlug/claws/': {
+      id: '/settings/organizations/$orgSlug/claws/'
+      path: '/claws'
+      fullPath: '/settings/organizations/$orgSlug/claws'
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugClawsIndexRouteImport
+      parentRoute: typeof SettingsOrganizationsOrgSlugRoute
+    }
     '/$orgSlug/projects/$projectSlug/$envSlug/': {
       id: '/$orgSlug/projects/$projectSlug/$envSlug/'
       path: '/'
       fullPath: '/$orgSlug/projects/$projectSlug/$envSlug/'
       preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugIndexRouteImport
       parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute
+    }
+    '/settings/organizations/$orgSlug/projects/$projectSlug': {
+      id: '/settings/organizations/$orgSlug/projects/$projectSlug'
+      path: '/projects/$projectSlug'
+      fullPath: '/settings/organizations/$orgSlug/projects/$projectSlug'
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugProjectsProjectSlugRouteImport
+      parentRoute: typeof SettingsOrganizationsOrgSlugRoute
+    }
+    '/settings/organizations/$orgSlug/claws/$clawSlug': {
+      id: '/settings/organizations/$orgSlug/claws/$clawSlug'
+      path: '/claws/$clawSlug'
+      fullPath: '/settings/organizations/$orgSlug/claws/$clawSlug'
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugClawsClawSlugRouteImport
+      parentRoute: typeof SettingsOrganizationsOrgSlugRoute
     }
     '/$orgSlug/projects/$projectSlug/$envSlug/traces': {
       id: '/$orgSlug/projects/$projectSlug/$envSlug/traces'
@@ -1234,32 +1318,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-
-interface OrgSlugSettingsRouteChildren {
-  OrgSlugSettingsApiKeysRoute: typeof OrgSlugSettingsApiKeysRoute
-  OrgSlugSettingsBillingRoute: typeof OrgSlugSettingsBillingRoute
-  OrgSlugSettingsClawsRoute: typeof OrgSlugSettingsClawsRoute
-  OrgSlugSettingsMeRoute: typeof OrgSlugSettingsMeRoute
-  OrgSlugSettingsOrganizationRoute: typeof OrgSlugSettingsOrganizationRoute
-  OrgSlugSettingsProjectRoute: typeof OrgSlugSettingsProjectRoute
-  OrgSlugSettingsTeamRoute: typeof OrgSlugSettingsTeamRoute
-  OrgSlugSettingsIndexRoute: typeof OrgSlugSettingsIndexRoute
-}
-
-const OrgSlugSettingsRouteChildren: OrgSlugSettingsRouteChildren = {
-  OrgSlugSettingsApiKeysRoute: OrgSlugSettingsApiKeysRoute,
-  OrgSlugSettingsBillingRoute: OrgSlugSettingsBillingRoute,
-  OrgSlugSettingsClawsRoute: OrgSlugSettingsClawsRoute,
-  OrgSlugSettingsMeRoute: OrgSlugSettingsMeRoute,
-  OrgSlugSettingsOrganizationRoute: OrgSlugSettingsOrganizationRoute,
-  OrgSlugSettingsProjectRoute: OrgSlugSettingsProjectRoute,
-  OrgSlugSettingsTeamRoute: OrgSlugSettingsTeamRoute,
-  OrgSlugSettingsIndexRoute: OrgSlugSettingsIndexRoute,
-}
-
-const OrgSlugSettingsRouteWithChildren = OrgSlugSettingsRoute._addFileChildren(
-  OrgSlugSettingsRouteChildren,
-)
 
 interface OrgSlugClawsClawSlugRouteChildren {
   OrgSlugClawsClawSlugChatRoute: typeof OrgSlugClawsClawSlugChatRoute
@@ -1324,7 +1382,6 @@ const OrgSlugProjectsProjectSlugRouteWithChildren =
   )
 
 interface OrgSlugRouteChildren {
-  OrgSlugSettingsRoute: typeof OrgSlugSettingsRouteWithChildren
   OrgSlugIndexRoute: typeof OrgSlugIndexRoute
   OrgSlugClawsClawSlugRoute: typeof OrgSlugClawsClawSlugRouteWithChildren
   OrgSlugProjectsProjectSlugRoute: typeof OrgSlugProjectsProjectSlugRouteWithChildren
@@ -1333,7 +1390,6 @@ interface OrgSlugRouteChildren {
 }
 
 const OrgSlugRouteChildren: OrgSlugRouteChildren = {
-  OrgSlugSettingsRoute: OrgSlugSettingsRouteWithChildren,
   OrgSlugIndexRoute: OrgSlugIndexRoute,
   OrgSlugClawsClawSlugRoute: OrgSlugClawsClawSlugRouteWithChildren,
   OrgSlugProjectsProjectSlugRoute: OrgSlugProjectsProjectSlugRouteWithChildren,
@@ -1388,6 +1444,61 @@ const DocsRouteChildren: DocsRouteChildren = {
 
 const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
 
+interface SettingsOrganizationsOrgSlugRouteChildren {
+  SettingsOrganizationsOrgSlugApiKeysRoute: typeof SettingsOrganizationsOrgSlugApiKeysRoute
+  SettingsOrganizationsOrgSlugBillingRoute: typeof SettingsOrganizationsOrgSlugBillingRoute
+  SettingsOrganizationsOrgSlugTeamRoute: typeof SettingsOrganizationsOrgSlugTeamRoute
+  SettingsOrganizationsOrgSlugIndexRoute: typeof SettingsOrganizationsOrgSlugIndexRoute
+  SettingsOrganizationsOrgSlugClawsClawSlugRoute: typeof SettingsOrganizationsOrgSlugClawsClawSlugRoute
+  SettingsOrganizationsOrgSlugProjectsProjectSlugRoute: typeof SettingsOrganizationsOrgSlugProjectsProjectSlugRoute
+  SettingsOrganizationsOrgSlugClawsIndexRoute: typeof SettingsOrganizationsOrgSlugClawsIndexRoute
+  SettingsOrganizationsOrgSlugProjectsIndexRoute: typeof SettingsOrganizationsOrgSlugProjectsIndexRoute
+}
+
+const SettingsOrganizationsOrgSlugRouteChildren: SettingsOrganizationsOrgSlugRouteChildren =
+  {
+    SettingsOrganizationsOrgSlugApiKeysRoute:
+      SettingsOrganizationsOrgSlugApiKeysRoute,
+    SettingsOrganizationsOrgSlugBillingRoute:
+      SettingsOrganizationsOrgSlugBillingRoute,
+    SettingsOrganizationsOrgSlugTeamRoute:
+      SettingsOrganizationsOrgSlugTeamRoute,
+    SettingsOrganizationsOrgSlugIndexRoute:
+      SettingsOrganizationsOrgSlugIndexRoute,
+    SettingsOrganizationsOrgSlugClawsClawSlugRoute:
+      SettingsOrganizationsOrgSlugClawsClawSlugRoute,
+    SettingsOrganizationsOrgSlugProjectsProjectSlugRoute:
+      SettingsOrganizationsOrgSlugProjectsProjectSlugRoute,
+    SettingsOrganizationsOrgSlugClawsIndexRoute:
+      SettingsOrganizationsOrgSlugClawsIndexRoute,
+    SettingsOrganizationsOrgSlugProjectsIndexRoute:
+      SettingsOrganizationsOrgSlugProjectsIndexRoute,
+  }
+
+const SettingsOrganizationsOrgSlugRouteWithChildren =
+  SettingsOrganizationsOrgSlugRoute._addFileChildren(
+    SettingsOrganizationsOrgSlugRouteChildren,
+  )
+
+interface SettingsRouteChildren {
+  SettingsMeRoute: typeof SettingsMeRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
+  SettingsOrganizationsOrgSlugRoute: typeof SettingsOrganizationsOrgSlugRouteWithChildren
+  SettingsOrganizationsIndexRoute: typeof SettingsOrganizationsIndexRoute
+}
+
+const SettingsRouteChildren: SettingsRouteChildren = {
+  SettingsMeRoute: SettingsMeRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
+  SettingsOrganizationsOrgSlugRoute:
+    SettingsOrganizationsOrgSlugRouteWithChildren,
+  SettingsOrganizationsIndexRoute: SettingsOrganizationsIndexRoute,
+}
+
+const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
+  SettingsRouteChildren,
+)
+
 interface AuthGithubRouteChildren {
   AuthGithubCallbackRoute: typeof AuthGithubCallbackRoute
   AuthGithubProxyCallbackRoute: typeof AuthGithubProxyCallbackRoute
@@ -1428,6 +1539,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrganizationsRoute: OrganizationsRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
+  SettingsRoute: SettingsRouteWithChildren,
   ApiAnalyticsRoute: ApiAnalyticsRoute,
   AuthGithubRoute: AuthGithubRouteWithChildren,
   AuthGoogleRoute: AuthGoogleRouteWithChildren,

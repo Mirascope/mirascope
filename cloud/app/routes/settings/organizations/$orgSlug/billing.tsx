@@ -137,6 +137,8 @@ function BillingSettingsPage() {
   );
 }
 
-export const Route = createFileRoute("/$orgSlug/settings/billing")({
+export const Route = createFileRoute(
+  "/settings/organizations/$orgSlug/billing",
+)({
   component: BillingSettingsPage,
 });

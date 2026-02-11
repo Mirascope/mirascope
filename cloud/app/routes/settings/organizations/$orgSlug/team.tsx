@@ -68,6 +68,6 @@ function TeamSettingsPage() {
   );
 }
 
-export const Route = createFileRoute("/$orgSlug/settings/team")({
+export const Route = createFileRoute("/settings/organizations/$orgSlug/team")({
   component: TeamSettingsPage,
 });

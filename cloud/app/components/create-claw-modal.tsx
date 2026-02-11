@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 
-import type { CreateClawRequest } from "@/api/claws.schemas";
+import type { Claw, CreateClawRequest } from "@/api/claws.schemas";
 import type { PlanTier } from "@/payments/plans";
 
 import { dollarsToCenticents } from "@/api/router/cost-utils";
@@ -43,9 +43,11 @@ const DEFAULT_MODEL: Record<PlanTier, CreateClawRequest["model"]> = {
 export function CreateClawModal({
   open,
   onOpenChange,
+  onCreated,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onCreated?: (claw: Claw) => void;
 }) {
   const { selectedOrganization } = useOrganization();
   const { claws, setSelectedClaw } = useClaw();
@@ -122,6 +124,7 @@ export function CreateClawModal({
         model,
       });
       setSelectedClaw(newClaw);
+      onCreated?.(newClaw);
       resetForm();
       onOpenChange(false);
     } catch (err: unknown) {

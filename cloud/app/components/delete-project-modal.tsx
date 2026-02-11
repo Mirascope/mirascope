@@ -24,9 +24,11 @@ import { getErrorMessage } from "@/app/lib/errors";
 export function DeleteProjectModal({
   open,
   onOpenChange,
+  onDeleted,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onDeleted?: () => void;
 }) {
   const [confirmName, setConfirmName] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -82,6 +84,7 @@ export function DeleteProjectModal({
         setSelectedProject(null);
       }
 
+      onDeleted?.();
       setConfirmName("");
       onOpenChange(false);
     } catch (err: unknown) {
