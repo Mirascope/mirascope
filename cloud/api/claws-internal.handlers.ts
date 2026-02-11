@@ -296,13 +296,16 @@ export const validateSessionHandler = (
     const db = yield* Database;
 
     // 1. Validate session → get user
-    const user = yield* db.sessions
-      .findUserBySessionId(payload.sessionId)
-      .pipe(
-        Effect.catchAll(() =>
+    const user = yield* db.sessions.findUserBySessionId(payload.sessionId).pipe(
+      Effect.catchTags({
+        NotFoundError: () =>
           Effect.fail(new UnauthorizedError({ message: "Invalid session" })),
-        ),
-      );
+        DeletedUserError: () =>
+          Effect.fail(new UnauthorizedError({ message: "Invalid session" })),
+        InvalidSessionError: () =>
+          Effect.fail(new UnauthorizedError({ message: "Invalid session" })),
+      }),
+    );
 
     // 2. Resolve org/claw slugs → get clawId + organizationId
     const resolved = yield* resolveClawHandler(
