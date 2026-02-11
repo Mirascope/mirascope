@@ -2,6 +2,8 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 
+import { CloudLayout } from "@/app/components/cloud-layout";
+import { Protected } from "@/app/components/protected";
 import { ClawProvider } from "@/app/contexts/claw";
 import { EnvironmentProvider } from "@/app/contexts/environment";
 import { useOrganization } from "@/app/contexts/organization";
@@ -42,13 +44,17 @@ function OrgLayout() {
   }
 
   return (
-    <ProjectProvider>
-      <EnvironmentProvider>
-        <ClawProvider>
-          <Outlet />
-        </ClawProvider>
-      </EnvironmentProvider>
-    </ProjectProvider>
+    <Protected>
+      <CloudLayout>
+        <ProjectProvider>
+          <EnvironmentProvider>
+            <ClawProvider>
+              <Outlet />
+            </ClawProvider>
+          </EnvironmentProvider>
+        </ProjectProvider>
+      </CloudLayout>
+    </Protected>
   );
 }
 
