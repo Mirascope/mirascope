@@ -269,8 +269,8 @@ export type CloudflareEnvironment = {
   VITE_POSTHOG_HOST?: string;
   VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID?: string;
   // Cloudflare infrastructure (for claw deployment)
-  CF_ACCOUNT_ID?: string;
-  CF_API_TOKEN?: string;
+  CLOUDFLARE_ACCOUNT_ID?: string;
+  CLOUDFLARE_API_TOKEN?: string;
   CF_R2_READ_PERMISSION_GROUP_ID?: string;
   CF_R2_WRITE_PERMISSION_GROUP_ID?: string;
   CF_DO_NAMESPACE_ID?: string;
@@ -401,8 +401,8 @@ function validateSettingsFromSource(
       },
 
       cloudflare: {
-        accountId: required("CF_ACCOUNT_ID"),
-        apiToken: required("CF_API_TOKEN"),
+        accountId: required("CLOUDFLARE_ACCOUNT_ID"),
+        apiToken: required("CLOUDFLARE_API_TOKEN"),
         r2BucketItemReadPermissionGroupId: required(
           "CF_R2_READ_PERMISSION_GROUP_ID",
         ),

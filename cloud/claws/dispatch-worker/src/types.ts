@@ -19,7 +19,7 @@ export interface DispatchEnv {
   MIRASCOPE_CLOUD: Fetcher;
 
   /** Cloudflare account ID for R2 endpoint URL */
-  CF_ACCOUNT_ID?: string;
+  CLOUDFLARE_ACCOUNT_ID?: string;
 }
 
 /**

@@ -30,7 +30,7 @@ function makeEnv(overrides: Partial<DispatchEnv> = {}): DispatchEnv {
   return {
     Sandbox: {} as unknown as DispatchEnv["Sandbox"],
     MIRASCOPE_CLOUD: binding as unknown as DispatchEnv["MIRASCOPE_CLOUD"],
-    CF_ACCOUNT_ID: "test-account",
+    CLOUDFLARE_ACCOUNT_ID: "test-account",
     ...overrides,
   };
 }
