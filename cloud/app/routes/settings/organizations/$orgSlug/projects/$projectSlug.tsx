@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Loader2, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { CreateProjectModal } from "@/app/components/create-project-modal";
 import { DeleteProjectModal } from "@/app/components/delete-project-modal";
@@ -27,7 +27,9 @@ import { useAuth } from "@/app/contexts/auth";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
 
-function ProjectsSettingsPage() {
+function ProjectSettingsPage() {
+  const { orgSlug, projectSlug } = Route.useParams();
+  const navigate = useNavigate();
   const { selectedOrganization } = useOrganization();
   const { projects, selectedProject, setSelectedProject, isLoading } =
     useProject();
@@ -35,7 +37,15 @@ function ProjectsSettingsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  // Organization OWNER/ADMIN have implicit project ADMIN access
+  const project = projects.find((p) => p.slug === projectSlug);
+
+  // Sync URL project to context
+  useEffect(() => {
+    if (project && selectedProject?.id !== project.id) {
+      setSelectedProject(project);
+    }
+  }, [project, selectedProject?.id, setSelectedProject]);
+
   const orgRole = selectedOrganization?.role;
   const canManageMembers = orgRole === "OWNER" || orgRole === "ADMIN";
 
@@ -43,8 +53,13 @@ function ProjectsSettingsPage() {
     if (value === "__create_new__") {
       setShowCreateModal(true);
     } else {
-      const project = projects.find((p) => p.id === value);
-      setSelectedProject(project || null);
+      const target = projects.find((p) => p.id === value);
+      if (target) {
+        void navigate({
+          to: "/settings/organizations/$orgSlug/projects/$projectSlug",
+          params: { orgSlug, projectSlug: target.slug },
+        });
+      }
     }
   };
 
@@ -57,17 +72,14 @@ function ProjectsSettingsPage() {
         </p>
       </div>
       {selectedOrganization && !isLoading && (
-        <Select
-          value={selectedProject?.id || ""}
-          onValueChange={handleProjectChange}
-        >
+        <Select value={project?.id || ""} onValueChange={handleProjectChange}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Select project" />
           </SelectTrigger>
           <SelectContent>
-            {projects.map((project) => (
-              <SelectItem key={project.id} value={project.id}>
-                {project.name}
+            {projects.map((p) => (
+              <SelectItem key={p.id} value={p.id}>
+                {p.name}
               </SelectItem>
             ))}
             <SelectItem
@@ -94,6 +106,12 @@ function ProjectsSettingsPage() {
         <CreateProjectModal
           open={showCreateModal}
           onOpenChange={setShowCreateModal}
+          onCreated={(p) => {
+            void navigate({
+              to: "/settings/organizations/$orgSlug/projects/$projectSlug",
+              params: { orgSlug, projectSlug: p.slug },
+            });
+          }}
         />
       </div>
     );
@@ -109,21 +127,35 @@ function ProjectsSettingsPage() {
         <CreateProjectModal
           open={showCreateModal}
           onOpenChange={setShowCreateModal}
+          onCreated={(p) => {
+            void navigate({
+              to: "/settings/organizations/$orgSlug/projects/$projectSlug",
+              params: { orgSlug, projectSlug: p.slug },
+            });
+          }}
         />
       </div>
     );
   }
 
-  if (!selectedProject) {
+  if (!project) {
     return (
       <div className="max-w-2xl">
         {header}
         <div className="flex justify-center pt-12">
-          <div className="text-muted-foreground">Please select a project</div>
+          <div className="text-muted-foreground">
+            Project not found: {projectSlug}
+          </div>
         </div>
         <CreateProjectModal
           open={showCreateModal}
           onOpenChange={setShowCreateModal}
+          onCreated={(p) => {
+            void navigate({
+              to: "/settings/organizations/$orgSlug/projects/$projectSlug",
+              params: { orgSlug, projectSlug: p.slug },
+            });
+          }}
         />
       </div>
     );
@@ -145,7 +177,7 @@ function ProjectsSettingsPage() {
             <Label htmlFor="project-name">Name</Label>
             <Input
               id="project-name"
-              value={selectedProject.name}
+              value={project.name}
               readOnly
               className="bg-muted"
             />
@@ -154,7 +186,7 @@ function ProjectsSettingsPage() {
             <Label htmlFor="project-slug">Slug</Label>
             <Input
               id="project-slug"
-              value={selectedProject.slug}
+              value={project.slug}
               readOnly
               className="bg-muted"
             />
@@ -164,14 +196,14 @@ function ProjectsSettingsPage() {
 
       <ProjectMembersSection
         organizationId={selectedOrganization.id}
-        projectId={selectedProject.id}
+        projectId={project.id}
         currentUserId={user?.id ?? ""}
         canManageMembers={canManageMembers}
       />
 
       <EnvironmentsSection
         organizationId={selectedOrganization.id}
-        projectId={selectedProject.id}
+        projectId={project.id}
         canManageEnvironments={canManageMembers}
       />
 
@@ -205,15 +237,29 @@ function ProjectsSettingsPage() {
       <CreateProjectModal
         open={showCreateModal}
         onOpenChange={setShowCreateModal}
+        onCreated={(p) => {
+          void navigate({
+            to: "/settings/organizations/$orgSlug/projects/$projectSlug",
+            params: { orgSlug, projectSlug: p.slug },
+          });
+        }}
       />
       <DeleteProjectModal
         open={showDeleteModal}
         onOpenChange={setShowDeleteModal}
+        onDeleted={() => {
+          void navigate({
+            to: "/settings/organizations/$orgSlug/projects",
+            params: { orgSlug },
+          });
+        }}
       />
     </div>
   );
 }
 
-export const Route = createFileRoute("/$orgSlug/settings/project")({
-  component: ProjectsSettingsPage,
+export const Route = createFileRoute(
+  "/settings/organizations/$orgSlug/projects/$projectSlug",
+)({
+  component: ProjectSettingsPage,
 });

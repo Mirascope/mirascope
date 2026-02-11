@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Loader2, Trash2 } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { DeleteOrganizationModal } from "@/app/components/delete-organization-modal";
@@ -13,31 +13,58 @@ import {
 } from "@/app/components/ui/card";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
 import { useOrganization } from "@/app/contexts/organization";
 
 function OrganizationSettingsPage() {
-  const { selectedOrganization, isLoading } = useOrganization();
+  const { orgSlug } = Route.useParams();
+  const navigate = useNavigate();
+  const { organizations, selectedOrganization } = useOrganization();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  const handleOrgChange = (value: string) => {
+    const org = organizations.find((o) => o.id === value);
+    if (org) {
+      void navigate({
+        to: "/settings/organizations/$orgSlug",
+        params: { orgSlug: org.slug },
+      });
+    }
+  };
+
   const header = (
-    <div className="mb-6">
-      <h1 className="text-2xl font-semibold">Organization</h1>
-      <p className="text-muted-foreground mt-1">
-        Manage your organization settings
-      </p>
+    <div className="mb-6 flex items-start justify-between">
+      <div>
+        <h1 className="text-2xl font-semibold">Organization</h1>
+        <p className="text-muted-foreground mt-1">
+          Manage your organization settings
+        </p>
+      </div>
+      {organizations.length > 1 && (
+        <Select
+          value={selectedOrganization?.id || ""}
+          onValueChange={handleOrgChange}
+        >
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Select organization" />
+          </SelectTrigger>
+          <SelectContent>
+            {organizations.map((org) => (
+              <SelectItem key={org.id} value={org.id}>
+                {org.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
     </div>
   );
-
-  if (isLoading) {
-    return (
-      <div className="max-w-2xl">
-        {header}
-        <div className="flex justify-center pt-12">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
-      </div>
-    );
-  }
 
   if (!selectedOrganization) {
     return (
@@ -45,7 +72,7 @@ function OrganizationSettingsPage() {
         {header}
         <div className="flex justify-center pt-12">
           <div className="text-muted-foreground">
-            Please select an organization from the menu above
+            Organization not found: {orgSlug}
           </div>
         </div>
       </div>
@@ -120,6 +147,6 @@ function OrganizationSettingsPage() {
   );
 }
 
-export const Route = createFileRoute("/$orgSlug/settings/organization")({
+export const Route = createFileRoute("/settings/organizations/$orgSlug/")({
   component: OrganizationSettingsPage,
 });

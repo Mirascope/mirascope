@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from "react";
 
+import type { PublicProject } from "@/db/schema";
+
 import { useCreateProject } from "@/app/api/projects";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -20,9 +22,11 @@ import { getErrorMessage } from "@/app/lib/errors";
 export function CreateProjectModal({
   open,
   onOpenChange,
+  onCreated,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onCreated?: (project: PublicProject) => void;
 }) {
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +59,7 @@ export function CreateProjectModal({
         organization_id: selectedOrganization.id,
       });
       setSelectedProject(newProject);
+      onCreated?.(newProject);
       setName("");
       onOpenChange(false);
     } catch (err: unknown) {

@@ -141,10 +141,7 @@ export function AccountMenu({ className }: AccountMenuProps) {
 
           {/* Settings & Sign Out */}
           <DropdownMenuItem asChild>
-            <Link
-              to="/$orgSlug/settings"
-              params={{ orgSlug: selectedOrganization?.slug ?? "" }}
-            >
+            <Link to="/settings">
               <Settings className="mr-2 h-4 w-4" />
               Settings
             </Link>

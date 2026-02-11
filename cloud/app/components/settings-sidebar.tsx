@@ -5,34 +5,57 @@ import * as React from "react";
 import { useOrganization } from "@/app/contexts/organization";
 import { cn } from "@/app/lib/utils";
 
-type SettingsRoute =
-  | "/$orgSlug/settings/me"
-  | "/$orgSlug/settings/organization"
-  | "/$orgSlug/settings/team"
-  | "/$orgSlug/settings/project"
-  | "/$orgSlug/settings/claws"
-  | "/$orgSlug/settings/api-keys"
-  | "/$orgSlug/settings/billing";
-
 interface SettingsNavItem {
   label: string;
   sub: string;
-  to: SettingsRoute;
+  to: string;
+  orgScoped: boolean;
   icon?: React.ReactNode;
 }
 
 const settingsNavItems: SettingsNavItem[] = [
-  { label: "My Details", sub: "me", to: "/$orgSlug/settings/me" },
+  {
+    label: "My Details",
+    sub: "me",
+    to: "/settings/me",
+    orgScoped: false,
+  },
   {
     label: "Organization",
     sub: "organization",
-    to: "/$orgSlug/settings/organization",
+    to: "/settings/organizations/$orgSlug",
+    orgScoped: true,
   },
-  { label: "Team", sub: "team", to: "/$orgSlug/settings/team" },
-  { label: "Project", sub: "project", to: "/$orgSlug/settings/project" },
-  { label: "Claws", sub: "claws", to: "/$orgSlug/settings/claws" },
-  { label: "API Keys", sub: "api-keys", to: "/$orgSlug/settings/api-keys" },
-  { label: "Billing", sub: "billing", to: "/$orgSlug/settings/billing" },
+  {
+    label: "Team",
+    sub: "team",
+    to: "/settings/organizations/$orgSlug/team",
+    orgScoped: true,
+  },
+  {
+    label: "Project",
+    sub: "projects",
+    to: "/settings/organizations/$orgSlug/projects",
+    orgScoped: true,
+  },
+  {
+    label: "Claws",
+    sub: "claws",
+    to: "/settings/organizations/$orgSlug/claws",
+    orgScoped: true,
+  },
+  {
+    label: "API Keys",
+    sub: "api-keys",
+    to: "/settings/organizations/$orgSlug/api-keys",
+    orgScoped: true,
+  },
+  {
+    label: "Billing",
+    sub: "billing",
+    to: "/settings/organizations/$orgSlug/billing",
+    orgScoped: true,
+  },
 ];
 
 export function SettingsSidebar() {
@@ -41,9 +64,20 @@ export function SettingsSidebar() {
   const currentPath = router.location.pathname;
   const orgSlug = selectedOrganization?.slug ?? "";
 
-  const isActive = (sub: string) => {
+  const isActive = (item: SettingsNavItem) => {
+    if (!item.orgScoped) {
+      return currentPath === `/settings/${item.sub}`;
+    }
     if (!orgSlug) return false;
-    return currentPath === `/${orgSlug}/settings/${sub}`;
+    const orgPrefix = `/settings/organizations/${orgSlug}`;
+    if (item.sub === "organization") {
+      return currentPath === orgPrefix || currentPath === `${orgPrefix}/`;
+    }
+    return currentPath.startsWith(`${orgPrefix}/${item.sub}`);
+  };
+
+  const resolveTo = (item: SettingsNavItem) => {
+    return item.to.replace("$orgSlug", orgSlug);
   };
 
   return (
@@ -68,11 +102,10 @@ export function SettingsSidebar() {
         {settingsNavItems.map((item) => (
           <Link
             key={item.sub}
-            to={item.to}
-            params={{ orgSlug }}
+            to={resolveTo(item)}
             className={cn(
               "flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors cursor-pointer",
-              isActive(item.sub)
+              isActive(item)
                 ? "bg-muted font-medium text-foreground"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}

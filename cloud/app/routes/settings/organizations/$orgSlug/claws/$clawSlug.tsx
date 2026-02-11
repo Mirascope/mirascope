@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Loader2, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -43,7 +43,9 @@ const STATUS_LABELS: Record<string, string> = {
   paused: "Paused",
 };
 
-function ClawsSettingsPage() {
+function ClawSettingsPage() {
+  const { orgSlug, clawSlug } = Route.useParams();
+  const navigate = useNavigate();
   const { selectedOrganization } = useOrganization();
   const { claws, selectedClaw, setSelectedClaw, isLoading } = useClaw();
   const { user } = useAuth();
@@ -56,20 +58,27 @@ function ClawsSettingsPage() {
   const [weeklySpendingLimit, setWeeklySpendingLimit] = useState("");
   const [spendingError, setSpendingError] = useState<string | null>(null);
 
+  const claw = claws.find((c) => c.slug === clawSlug);
+
+  // Sync URL claw to context
   useEffect(() => {
-    if (selectedClaw?.weeklySpendingGuardrailCenticents != null) {
+    if (claw && selectedClaw?.id !== claw.id) {
+      setSelectedClaw(claw);
+    }
+  }, [claw, selectedClaw?.id, setSelectedClaw]);
+
+  useEffect(() => {
+    if (claw?.weeklySpendingGuardrailCenticents != null) {
       setUseBeyondPlan(true);
       setWeeklySpendingLimit(
-        centicentsToDollars(
-          selectedClaw.weeklySpendingGuardrailCenticents,
-        ).toString(),
+        centicentsToDollars(claw.weeklySpendingGuardrailCenticents).toString(),
       );
     } else {
       setUseBeyondPlan(false);
       setWeeklySpendingLimit("");
     }
     setSpendingError(null);
-  }, [selectedClaw?.id, selectedClaw?.weeklySpendingGuardrailCenticents]);
+  }, [claw?.id, claw?.weeklySpendingGuardrailCenticents]);
 
   const orgRole = selectedOrganization?.role;
   const canManageMembers = orgRole === "OWNER" || orgRole === "ADMIN";
@@ -81,8 +90,13 @@ function ClawsSettingsPage() {
     if (value === "__create_new__") {
       setShowCreateModal(true);
     } else {
-      const claw = claws.find((c) => c.id === value);
-      setSelectedClaw(claw ?? null);
+      const target = claws.find((c) => c.id === value);
+      if (target) {
+        void navigate({
+          to: "/settings/organizations/$orgSlug/claws/$clawSlug",
+          params: { orgSlug, clawSlug: target.slug },
+        });
+      }
     }
   };
 
@@ -95,14 +109,14 @@ function ClawsSettingsPage() {
         </p>
       </div>
       {selectedOrganization && !isLoading && (
-        <Select value={selectedClaw?.id || ""} onValueChange={handleClawChange}>
+        <Select value={claw?.id || ""} onValueChange={handleClawChange}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Select claw" />
           </SelectTrigger>
           <SelectContent>
-            {claws.map((claw) => (
-              <SelectItem key={claw.id} value={claw.id}>
-                {claw.displayName ?? claw.slug}
+            {claws.map((c) => (
+              <SelectItem key={c.id} value={c.id}>
+                {c.displayName ?? c.slug}
               </SelectItem>
             ))}
             <SelectItem
@@ -129,6 +143,12 @@ function ClawsSettingsPage() {
         <CreateClawModal
           open={showCreateModal}
           onOpenChange={setShowCreateModal}
+          onCreated={(c) => {
+            void navigate({
+              to: "/settings/organizations/$orgSlug/claws/$clawSlug",
+              params: { orgSlug, clawSlug: c.slug },
+            });
+          }}
         />
       </div>
     );
@@ -144,25 +164,35 @@ function ClawsSettingsPage() {
         <CreateClawModal
           open={showCreateModal}
           onOpenChange={setShowCreateModal}
+          onCreated={(c) => {
+            void navigate({
+              to: "/settings/organizations/$orgSlug/claws/$clawSlug",
+              params: { orgSlug, clawSlug: c.slug },
+            });
+          }}
         />
       </div>
     );
   }
 
-  if (!selectedClaw) {
+  if (!claw) {
     return (
       <div className="max-w-2xl">
         {header}
         <div className="flex justify-center pt-12">
           <div className="text-muted-foreground">
-            {claws.length === 0
-              ? "No claws yet. Create one to get started!"
-              : "Please select a claw"}
+            Claw not found: {clawSlug}
           </div>
         </div>
         <CreateClawModal
           open={showCreateModal}
           onOpenChange={setShowCreateModal}
+          onCreated={(c) => {
+            void navigate({
+              to: "/settings/organizations/$orgSlug/claws/$clawSlug",
+              params: { orgSlug, clawSlug: c.slug },
+            });
+          }}
         />
       </div>
     );
@@ -189,7 +219,7 @@ function ClawsSettingsPage() {
             <Label htmlFor="claw-name">Name</Label>
             <Input
               id="claw-name"
-              value={selectedClaw.displayName ?? ""}
+              value={claw.displayName ?? ""}
               readOnly
               className="bg-muted"
             />
@@ -198,7 +228,7 @@ function ClawsSettingsPage() {
             <Label htmlFor="claw-slug">Slug</Label>
             <Input
               id="claw-slug"
-              value={selectedClaw.slug}
+              value={claw.slug}
               readOnly
               className="bg-muted"
             />
@@ -207,7 +237,7 @@ function ClawsSettingsPage() {
             <Label htmlFor="claw-status">Status</Label>
             <Input
               id="claw-status"
-              value={STATUS_LABELS[selectedClaw.status] ?? selectedClaw.status}
+              value={STATUS_LABELS[claw.status] ?? claw.status}
               readOnly
               className="bg-muted"
             />
@@ -259,7 +289,7 @@ function ClawsSettingsPage() {
                   type="button"
                   disabled={updateClaw.isPending}
                   onClick={() => {
-                    if (!selectedOrganization || !selectedClaw) return;
+                    if (!selectedOrganization || !claw) return;
                     const dollars = parseFloat(weeklySpendingLimit);
                     if (isNaN(dollars) || dollars <= 0) {
                       setSpendingError("Enter a valid dollar amount");
@@ -269,7 +299,7 @@ function ClawsSettingsPage() {
                     updateClaw.mutate(
                       {
                         organizationId: selectedOrganization.id,
-                        clawId: selectedClaw.id,
+                        clawId: claw.id,
                         updates: {
                           weeklySpendingGuardrailCenticents:
                             dollarsToCenticents(dollars),
@@ -293,44 +323,40 @@ function ClawsSettingsPage() {
               </p>
             </div>
           )}
-          {!useBeyondPlan &&
-            selectedClaw.weeklySpendingGuardrailCenticents != null && (
-              <Button
-                type="button"
-                variant="outline"
-                disabled={updateClaw.isPending}
-                onClick={() => {
-                  if (!selectedOrganization || !selectedClaw) return;
-                  setSpendingError(null);
-                  updateClaw.mutate(
-                    {
-                      organizationId: selectedOrganization.id,
-                      clawId: selectedClaw.id,
-                      updates: {
-                        weeklySpendingGuardrailCenticents: null,
-                      },
+          {!useBeyondPlan && claw.weeklySpendingGuardrailCenticents != null && (
+            <Button
+              type="button"
+              variant="outline"
+              disabled={updateClaw.isPending}
+              onClick={() => {
+                if (!selectedOrganization || !claw) return;
+                setSpendingError(null);
+                updateClaw.mutate(
+                  {
+                    organizationId: selectedOrganization.id,
+                    clawId: claw.id,
+                    updates: {
+                      weeklySpendingGuardrailCenticents: null,
                     },
-                    {
-                      onError: (err) =>
-                        setSpendingError(
-                          getErrorMessage(err, "Failed to save"),
-                        ),
-                    },
-                  );
-                }}
-              >
-                {updateClaw.isPending
-                  ? "Saving..."
-                  : "Disable beyond-plan spending"}
-              </Button>
-            )}
-          {!useBeyondPlan &&
-            selectedClaw.weeklySpendingGuardrailCenticents == null && (
-              <p className="text-xs text-muted-foreground">
-                When disabled, this claw will stop when the included plan
-                credits are exhausted.
-              </p>
-            )}
+                  },
+                  {
+                    onError: (err) =>
+                      setSpendingError(getErrorMessage(err, "Failed to save")),
+                  },
+                );
+              }}
+            >
+              {updateClaw.isPending
+                ? "Saving..."
+                : "Disable beyond-plan spending"}
+            </Button>
+          )}
+          {!useBeyondPlan && claw.weeklySpendingGuardrailCenticents == null && (
+            <p className="text-xs text-muted-foreground">
+              When disabled, this claw will stop when the included plan credits
+              are exhausted.
+            </p>
+          )}
           {spendingError && (
             <p className="text-sm text-destructive">{spendingError}</p>
           )}
@@ -340,7 +366,7 @@ function ClawsSettingsPage() {
       {/* Members */}
       <ClawMembersSection
         organizationId={selectedOrganization.id}
-        clawId={selectedClaw.id}
+        clawId={claw.id}
         currentUserId={user?.id ?? ""}
         canManageMembers={canManageMembers}
       />
@@ -376,16 +402,30 @@ function ClawsSettingsPage() {
       <CreateClawModal
         open={showCreateModal}
         onOpenChange={setShowCreateModal}
+        onCreated={(c) => {
+          void navigate({
+            to: "/settings/organizations/$orgSlug/claws/$clawSlug",
+            params: { orgSlug, clawSlug: c.slug },
+          });
+        }}
       />
       <DeleteClawModal
         open={showDeleteModal}
         onOpenChange={setShowDeleteModal}
-        claw={selectedClaw}
+        claw={claw}
+        onDeleted={() => {
+          void navigate({
+            to: "/settings/organizations/$orgSlug/claws",
+            params: { orgSlug },
+          });
+        }}
       />
     </div>
   );
 }
 
-export const Route = createFileRoute("/$orgSlug/settings/claws")({
-  component: ClawsSettingsPage,
+export const Route = createFileRoute(
+  "/settings/organizations/$orgSlug/claws/$clawSlug",
+)({
+  component: ClawSettingsPage,
 });

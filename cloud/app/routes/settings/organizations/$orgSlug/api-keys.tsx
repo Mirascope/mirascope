@@ -112,6 +112,8 @@ function ApiKeysSettingsPage() {
   );
 }
 
-export const Route = createFileRoute("/$orgSlug/settings/api-keys")({
+export const Route = createFileRoute(
+  "/settings/organizations/$orgSlug/api-keys",
+)({
   component: ApiKeysSettingsPage,
 });

@@ -25,10 +25,12 @@ export function DeleteClawModal({
   open,
   onOpenChange,
   claw,
+  onDeleted,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   claw: Claw;
+  onDeleted?: () => void;
 }) {
   const [confirmName, setConfirmName] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -79,6 +81,7 @@ export function DeleteClawModal({
         setSelectedClaw(null);
       }
 
+      onDeleted?.();
       setConfirmName("");
       onOpenChange(false);
     } catch (err: unknown) {
