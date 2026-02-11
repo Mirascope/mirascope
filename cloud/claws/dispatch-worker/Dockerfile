@@ -29,7 +29,9 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
 
 # Install Python 3.12 and mirascope with all extras
 RUN uv python install 3.12 \
-    && uv pip install --system --python 3.12 "mirascope[all]"
+    && uv venv --python 3.12 /opt/mirascope-env \
+    && uv pip install --python /opt/mirascope-env "mirascope[all]"
+ENV PATH="/opt/mirascope-env/bin:$PATH"
 
 # Install openclaw globally
 RUN bun install -g openclaw \
