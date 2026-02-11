@@ -238,7 +238,7 @@ describe("Route Handlers", () => {
   });
 
   describe("reserveRouterFunds", () => {
-    it.effect("reserves funds for a request", () =>
+    it.effect("estimates cost and reserves the correct amount", () =>
       Effect.gen(function* () {
         const { owner, org, project, environment, apiKey } =
           yield* TestApiKeyFixture;
@@ -259,7 +259,10 @@ describe("Route Handlers", () => {
             environmentId: environment.id,
             clawId: null,
           },
-          parsedRequestBody: { model: "gpt-4", messages: [] },
+          parsedRequestBody: {
+            model: "gpt-4",
+            messages: [{ role: "user", content: "Hello world" }],
+          },
         };
 
         const result = yield* reserveRouterFunds(
@@ -268,11 +271,16 @@ describe("Route Handlers", () => {
           org.stripeCustomerId,
         );
 
+        // Verify reservation was created
         expect(result.reservationId).toBeDefined();
         expect(typeof result.reservationId).toBe("string");
+
+        // Verify model pricing is populated with real pricing data
         expect(result.modelPricing).toBeDefined();
         expect(typeof result.modelPricing.input).toBe("bigint");
         expect(typeof result.modelPricing.output).toBe("bigint");
+        expect(result.modelPricing.input).toBeGreaterThan(0n);
+        expect(result.modelPricing.output).toBeGreaterThan(0n);
       }).pipe(Effect.provide(DefaultMockPayments)),
     );
   });
