@@ -154,135 +154,140 @@ describe("toTrace", () => {
 });
 
 describe("listByFunctionHashHandler", () => {
-  it("deduplicates traces with same traceId from multiple spans", async () => {
-    const mockFunctionId = "func-123";
-    const mockUserId = "user-123";
-    const mockOrgId = "org-123";
-    const mockProjectId = "proj-123";
-    const mockEnvId = "env-123";
+  it.effect("deduplicates traces with same traceId from multiple spans", () =>
+    Effect.gen(function* () {
+      const mockFunctionId = "func-123";
+      const mockUserId = "user-123";
+      const mockOrgId = "org-123";
+      const mockProjectId = "proj-123";
+      const mockEnvId = "env-123";
 
-    // Mock Database layer that returns a function record
-    const mockDatabaseLayer = Layer.succeed(Database, {
-      organizations: {
-        projects: {
-          environments: {
-            functions: {
-              findByHash: () => Effect.succeed({ id: mockFunctionId }),
+      // Mock Database layer that returns a function record
+      const mockDatabaseLayer = Layer.succeed(Database, {
+        organizations: {
+          projects: {
+            environments: {
+              functions: {
+                findByHash: () => Effect.succeed({ id: mockFunctionId }),
+              },
             },
           },
         },
-      },
-    } as never);
+      } as never);
 
-    // Mock Authentication layer - provides AuthResult with apiKeyInfo
-    const mockAuthLayer = Layer.succeed(Authentication, {
-      user: { id: mockUserId } as never,
-      apiKeyInfo: {
-        organizationId: mockOrgId,
-        projectId: mockProjectId,
-        environmentId: mockEnvId,
-      } as never,
-    });
+      // Mock Authentication layer - provides AuthResult with apiKeyInfo
+      const mockAuthLayer = Layer.succeed(Authentication, {
+        user: { id: mockUserId } as never,
+        apiKeyInfo: {
+          organizationId: mockOrgId,
+          projectId: mockProjectId,
+          environmentId: mockEnvId,
+        } as never,
+      });
 
-    // Mock ClickHouseSearch that returns multiple spans with same traceId
-    // This tests the deduplication logic at lines 117-118
-    const mockClickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
-      search: () =>
-        Effect.succeed({
-          spans: [
-            {
-              traceId: "trace-abc",
-              spanId: "span-1",
-              name: "first-span",
-              startTime: new Date().toISOString(),
-              durationMs: 100,
-              model: null,
-              provider: null,
-              inputTokens: null,
-              outputTokens: null,
-              totalTokens: null,
-              costUsd: null,
-              functionId: mockFunctionId,
-              functionName: null,
-              hasChildren: false,
-            },
-            {
-              // Same traceId - should be deduplicated (hits line 117 false branch)
-              traceId: "trace-abc",
-              spanId: "span-2",
-              name: "second-span",
-              startTime: new Date().toISOString(),
-              durationMs: 200,
-              model: null,
-              provider: null,
-              inputTokens: null,
-              outputTokens: null,
-              totalTokens: null,
-              costUsd: null,
-              functionId: mockFunctionId,
-              functionName: null,
-              hasChildren: false,
-            },
-            {
-              // Different traceId - should be included
-              traceId: "trace-def",
-              spanId: "span-3",
-              name: "third-span",
-              startTime: new Date().toISOString(),
-              durationMs: 300,
-              model: null,
-              provider: null,
-              inputTokens: null,
-              outputTokens: null,
-              totalTokens: null,
-              costUsd: null,
-              functionId: mockFunctionId,
-              functionName: null,
-              hasChildren: false,
-            },
-          ],
-          total: 3,
-          hasMore: false,
-        }),
-      getTraceDetail: () =>
-        Effect.succeed({
-          traceId: "",
-          spans: [],
-          rootSpanId: null,
-          totalDurationMs: null,
-        }),
-      getAnalyticsSummary: () =>
-        Effect.succeed({
-          totalSpans: 0,
-          avgDurationMs: null,
-          p50DurationMs: null,
-          p95DurationMs: null,
-          p99DurationMs: null,
-          errorRate: 0,
-          totalTokens: 0,
-          totalInputTokens: 0,
-          totalOutputTokens: 0,
-          totalCostUsd: 0,
-          topModels: [],
-          topFunctions: [],
-        }),
-    });
+      // Mock ClickHouseSearch that returns multiple spans with same traceId
+      // This tests the deduplication logic at lines 117-118
+      const mockClickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () =>
+          Effect.succeed({
+            spans: [
+              {
+                traceId: "trace-abc",
+                spanId: "span-1",
+                name: "first-span",
+                startTime: new Date().toISOString(),
+                durationMs: 100,
+                model: null,
+                provider: null,
+                inputTokens: null,
+                outputTokens: null,
+                totalTokens: null,
+                costUsd: null,
+                functionId: mockFunctionId,
+                functionName: null,
+                hasChildren: false,
+              },
+              {
+                // Same traceId - should be deduplicated (hits line 117 false branch)
+                traceId: "trace-abc",
+                spanId: "span-2",
+                name: "second-span",
+                startTime: new Date().toISOString(),
+                durationMs: 200,
+                model: null,
+                provider: null,
+                inputTokens: null,
+                outputTokens: null,
+                totalTokens: null,
+                costUsd: null,
+                functionId: mockFunctionId,
+                functionName: null,
+                hasChildren: false,
+              },
+              {
+                // Different traceId - should be included
+                traceId: "trace-def",
+                spanId: "span-3",
+                name: "third-span",
+                startTime: new Date().toISOString(),
+                durationMs: 300,
+                model: null,
+                provider: null,
+                inputTokens: null,
+                outputTokens: null,
+                totalTokens: null,
+                costUsd: null,
+                functionId: mockFunctionId,
+                functionName: null,
+                hasChildren: false,
+              },
+            ],
+            total: 3,
+            hasMore: false,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalInputTokens: 0,
+            totalOutputTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
 
-    const layers = Layer.mergeAll(
-      mockDatabaseLayer,
-      mockAuthLayer,
-      mockClickHouseSearchLayer,
-    );
+      const layers = Layer.mergeAll(
+        mockDatabaseLayer,
+        mockAuthLayer,
+        mockClickHouseSearchLayer,
+      );
 
-    const result = await Effect.runPromise(
-      listByFunctionHashHandler("test-hash", {}).pipe(Effect.provide(layers)),
-    );
+      const result = yield* listByFunctionHashHandler("test-hash", {}).pipe(
+        Effect.provide(layers),
+      );
 
-    // Should have 2 unique traces, not 3 (trace-abc deduplicated)
-    expect(result.traces).toHaveLength(2);
-    expect(result.traces.map((t) => t.id)).toEqual(["trace-abc", "trace-def"]);
-    expect(result.total).toBe(3); // Total includes all spans
-  });
+      // Should have 2 unique traces, not 3 (trace-abc deduplicated)
+      expect(result.traces).toHaveLength(2);
+      expect(result.traces.map((t) => t.id)).toEqual([
+        "trace-abc",
+        "trace-def",
+      ]);
+      expect(result.total).toBe(3); // Total includes all spans
+    }),
+  );
 });
 
 describe.sequential("Traces API", (it) => {

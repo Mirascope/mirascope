@@ -1,5 +1,4 @@
 import { Effect, Layer } from "effect";
-import { it as vitestIt } from "vitest";
 
 import type {
   SearchRequest,
@@ -1642,58 +1641,57 @@ describe.sequential("Search API", (it) => {
     }),
   );
 
-  vitestIt(
+  it.effect(
     "getTraceDetailHandler returns ClickHouse when realtime missing",
-    async () => {
-      if (!apiKeyInfo || !ownerFromContext) {
-        throw new Error("Missing API key context for realtime missing test");
-      }
+    () =>
+      Effect.gen(function* () {
+        if (!apiKeyInfo || !ownerFromContext) {
+          throw new Error("Missing API key context for realtime missing test");
+        }
 
-      const authenticationLayer = Layer.succeed(Authentication, {
-        user: ownerFromContext,
-        apiKeyInfo,
-      });
+        const authenticationLayer = Layer.succeed(Authentication, {
+          user: ownerFromContext,
+          apiKeyInfo,
+        });
 
-      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
-        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
-        getTraceDetail: () =>
-          Effect.succeed({
-            traceId: "trace-no-realtime",
-            spans: [],
-            rootSpanId: null,
-            totalDurationMs: null,
-          }),
-        getAnalyticsSummary: () =>
-          Effect.succeed({
-            totalSpans: 0,
-            avgDurationMs: null,
-            p50DurationMs: null,
-            p95DurationMs: null,
-            p99DurationMs: null,
-            errorRate: 0,
-            totalTokens: 0,
-            totalInputTokens: 0,
-            totalOutputTokens: 0,
-            totalCostUsd: 0,
-            topModels: [],
-            topFunctions: [],
-          }),
-      });
+        const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+          search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+          getTraceDetail: () =>
+            Effect.succeed({
+              traceId: "trace-no-realtime",
+              spans: [],
+              rootSpanId: null,
+              totalDurationMs: null,
+            }),
+          getAnalyticsSummary: () =>
+            Effect.succeed({
+              totalSpans: 0,
+              avgDurationMs: null,
+              p50DurationMs: null,
+              p95DurationMs: null,
+              p99DurationMs: null,
+              errorRate: 0,
+              totalTokens: 0,
+              totalInputTokens: 0,
+              totalOutputTokens: 0,
+              totalCostUsd: 0,
+              topModels: [],
+              topFunctions: [],
+            }),
+        });
 
-      const result = await Effect.runPromise(
-        getTraceDetailHandler(
+        const result = yield* getTraceDetailHandler(
           apiKeyInfo.environmentId,
           "trace-no-realtime",
         ).pipe(
           Effect.provide(
             Layer.mergeAll(authenticationLayer, clickHouseSearchLayer),
           ),
-        ),
-      );
+        );
 
-      expect(result.traceId).toBe("trace-no-realtime");
-      expect(result.spans).toEqual([]);
-    },
+        expect(result.traceId).toBe("trace-no-realtime");
+        expect(result.spans).toEqual([]);
+      }),
   );
 
   it.effect("getTraceDetailHandler falls back when realtime fails", () =>

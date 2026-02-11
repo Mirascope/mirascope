@@ -1303,7 +1303,7 @@ describe("Route Handlers", () => {
   });
 
   describe("enqueueRouterMetering", () => {
-    it("successfully enqueues metering message", async () => {
+    it.effect("successfully enqueues metering message", () => {
       const sendMock = vi.fn().mockReturnValue(Effect.succeed(undefined));
 
       const usage = {
@@ -1325,21 +1325,28 @@ describe("Route Handlers", () => {
         send: sendMock,
       });
 
-      await Effect.runPromise(
-        enqueueRouterMetering("req_123", "res_123", request, usage, 150).pipe(
-          Effect.provide(mockQueueLayer),
+      return enqueueRouterMetering(
+        "req_123",
+        "res_123",
+        request,
+        usage,
+        150,
+      ).pipe(
+        Effect.provide(mockQueueLayer),
+        Effect.tap(() =>
+          Effect.sync(() => {
+            expect(sendMock).toHaveBeenCalledWith(
+              expect.objectContaining({
+                routerRequestId: "req_123",
+                reservationId: "res_123",
+                request,
+                usage,
+                costCenticents: 150,
+                timestamp: expect.any(Number) as number,
+              }),
+            );
+          }),
         ),
-      );
-
-      expect(sendMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          routerRequestId: "req_123",
-          reservationId: "res_123",
-          request,
-          usage,
-          costCenticents: 150,
-          timestamp: expect.any(Number) as number,
-        }),
       );
     });
 

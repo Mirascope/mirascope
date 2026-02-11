@@ -1,5 +1,5 @@
+import { describe, it, expect } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { describe, it, expect } from "vitest";
 
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 
@@ -29,45 +29,39 @@ describe("Authentication", () => {
   };
 
   describe("ApiKey", () => {
-    it("should return auth result when apiKeyInfo is present", async () => {
-      const authWithApiKey: AuthResult = {
-        user: mockUser,
-        apiKeyInfo: mockApiKeyInfo,
-      };
-
-      const program = Effect.gen(function* () {
+    it.effect("should return auth result when apiKeyInfo is present", () =>
+      Effect.gen(function* () {
         const result = yield* Authentication.ApiKey;
-        return result;
-      });
 
-      const layer = Layer.succeed(Authentication, authWithApiKey);
-      const result = await Effect.runPromise(
-        program.pipe(Effect.provide(layer)),
-      );
+        expect(result.user).toEqual(mockUser);
+        expect(result.apiKeyInfo).toEqual(mockApiKeyInfo);
+      }).pipe(
+        Effect.provide(
+          Layer.succeed(Authentication, {
+            user: mockUser,
+            apiKeyInfo: mockApiKeyInfo,
+          } as AuthResult),
+        ),
+      ),
+    );
 
-      expect(result.user).toEqual(mockUser);
-      expect(result.apiKeyInfo).toEqual(mockApiKeyInfo);
-    });
+    it.effect(
+      "should fail with UnauthorizedError when apiKeyInfo is not present",
+      () =>
+        Effect.gen(function* () {
+          const error = yield* Authentication.ApiKey.pipe(Effect.flip);
 
-    it("should fail with UnauthorizedError when apiKeyInfo is not present", async () => {
-      const authWithoutApiKey: AuthResult = {
-        user: mockUser,
-      };
-
-      const program = Effect.gen(function* () {
-        const result = yield* Authentication.ApiKey;
-        return result;
-      });
-
-      const layer = Layer.succeed(Authentication, authWithoutApiKey);
-      const error = await Effect.runPromise(
-        program.pipe(Effect.provide(layer), Effect.flip),
-      );
-
-      expect(error).toBeInstanceOf(UnauthorizedError);
-      expect(error.message).toBe(
-        "API key required. Provide X-API-Key header or Bearer token.",
-      );
-    });
+          expect(error).toBeInstanceOf(UnauthorizedError);
+          expect(error.message).toBe(
+            "API key required. Provide X-API-Key header or Bearer token.",
+          );
+        }).pipe(
+          Effect.provide(
+            Layer.succeed(Authentication, {
+              user: mockUser,
+            } as AuthResult),
+          ),
+        ),
+    );
   });
 });
