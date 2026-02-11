@@ -115,6 +115,8 @@ const publicFields = {
 /**
  * Insert type for creating claws.
  */
+type ClawCreateResult = PublicClaw & { plaintextApiKey: string };
+
 type CreateData = Pick<
   NewClaw,
   "slug" | "displayName" | "description" | "weeklySpendingGuardrailCenticents"
@@ -315,7 +317,7 @@ export class Claws extends BaseAuthenticatedEffectService<
     organizationId: string;
     data: CreateData;
   }): Effect.Effect<
-    PublicClaw,
+    ClawCreateResult,
     | NotFoundError
     | PermissionDeniedError
     | AlreadyExistsError
@@ -575,7 +577,10 @@ export class Claws extends BaseAuthenticatedEffectService<
             data: { memberId: userId, role: "ADMIN" },
           });
 
-          return updatedClaw as PublicClaw;
+          return {
+            ...(updatedClaw as PublicClaw),
+            plaintextApiKey: plaintextKey,
+          };
         }),
       );
     });

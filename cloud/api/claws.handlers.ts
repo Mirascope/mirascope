@@ -1,3 +1,4 @@
+import * as crypto from "crypto";
 import { eq } from "drizzle-orm";
 import { Effect } from "effect";
 
@@ -11,6 +12,7 @@ import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
 import { claws } from "@/db/schema";
 import { DatabaseError } from "@/errors";
+import { Settings } from "@/settings";
 
 export * from "@/api/claws.schemas";
 
@@ -34,6 +36,7 @@ export const createClawHandler = (
     const analytics = yield* Analytics;
     const clawDeployment = yield* ClawDeploymentService;
     const drizzle = yield* DrizzleORM;
+    const settings = yield* Settings;
 
     const claw = yield* db.organizations.claws.create({
       userId: user.id,
@@ -54,8 +57,17 @@ export const createClawHandler = (
       instanceType: claw.instanceType,
     });
 
-    // Encrypt R2 credentials before persisting
+    // Generate gateway token for container auth
+    const gatewayToken = crypto.randomUUID();
+
+    // Build Mirascope Router base URL for Anthropic-compatible proxy
+    const routerBaseUrl = `${settings.siteUrl}/router/v2/anthropic`;
+
+    // Encrypt all container secrets before persisting
     const encrypted = yield* encryptSecrets({
+      ANTHROPIC_API_KEY: claw.plaintextApiKey,
+      ANTHROPIC_BASE_URL: routerBaseUrl,
+      OPENCLAW_GATEWAY_TOKEN: gatewayToken,
       R2_ACCESS_KEY_ID: status.r2Credentials?.accessKeyId ?? "",
       R2_SECRET_ACCESS_KEY: status.r2Credentials?.secretAccessKey ?? "",
     });
