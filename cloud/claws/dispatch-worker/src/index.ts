@@ -135,9 +135,19 @@ app.get("/:orgSlug/:clawSlug/_health", async (c) => {
     const process = await findGatewayProcess(sandbox);
 
     if (process !== null) {
+      const status =
+        process.status === "running"
+          ? "running"
+          : process.status === "starting"
+            ? "starting"
+            : process.status === "failing" || process.status === "failed"
+              ? "error"
+              : "unknown";
+
       return c.json({
         clawId,
-        status: process.status === "running" ? "running" : "starting",
+        status,
+        rawStatus: process.status,
       });
     }
   } catch (err) {
