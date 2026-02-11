@@ -264,6 +264,8 @@ const response = await llm.model("grok/grok-4-latest").call("Hello!");
 
 The transform plugin extracts type information from TypeScript interfaces at compile time, enabling the native TypeScript patterns (without Zod) for tools and structured output. This is **optional** - you can use Zod schemas without any build configuration.
 
+**Note:** The transform plugin requires a build tool (Vite, esbuild) or a runtime loader (Node.js `--import`, Bun preload). Environments that run TypeScript directly without custom loader support (e.g., Deno) cannot use the transform plugin — use Zod schemas instead.
+
 ### Node.js (Runtime)
 
 For runtime transformation with Node.js 20.6+ (required for `--import` flag support), use the custom ESM loader. The loader handles full TypeScript compilation — no `--experimental-strip-types` needed:
@@ -343,7 +345,7 @@ Deno's built-in TypeScript support and Node.js compatibility work out of the box
 deno run --allow-net --allow-env your-script.ts
 ```
 
-**Note:** Deno doesn't need the transform plugin. `defineCall`, `model.call()`, and Zod-based patterns work directly.
+**Note:** Deno doesn't support custom TypeScript transformers, so the transform plugin is not available. Use Zod schemas for tools and structured output (`defineTool` with `validator`, `defineFormat` with `validator`, or pass a Zod schema directly as `format`). `defineCall`, `model.call()`, and all Zod-based patterns work directly.
 
 ## Error Handling
 
