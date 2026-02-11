@@ -140,7 +140,9 @@ app.get("/:orgSlug/:clawSlug/_health", async (c) => {
           ? "running"
           : process.status === "starting"
             ? "starting"
-            : process.status === "failing" || process.status === "failed"
+            : process.status === "failed" ||
+                process.status === "error" ||
+                process.status === "killed"
               ? "error"
               : "unknown";
 
