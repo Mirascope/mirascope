@@ -1,4 +1,3 @@
-/* v8 ignore file -- pure type definitions */
 /**
  * @fileoverview Types for Cloudflare container/Durable Object management.
  *

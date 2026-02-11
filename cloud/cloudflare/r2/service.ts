@@ -1,4 +1,3 @@
-/* v8 ignore file -- service interface (Context.Tag), no testable logic */
 /**
  * @fileoverview Cloudflare R2 service interface for bucket lifecycle management.
  *

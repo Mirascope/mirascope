@@ -1,4 +1,3 @@
-/* v8 ignore file -- service interface (Context.Tag), no testable logic */
 /**
  * @fileoverview Cloudflare container service interface for dispatch worker management.
  *

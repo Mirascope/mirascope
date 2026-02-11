@@ -1,4 +1,3 @@
-/* v8 ignore start -- OAuth flows require network requests to external providers */
 /**
  * @fileoverview OAuth authentication flow implementation.
  *
