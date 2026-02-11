@@ -7,8 +7,6 @@ import type { SpanDetail } from "@/api/traces-search.schemas";
 
 import { useFunctionDetail } from "@/app/api/functions";
 import { useTraceDetail } from "@/app/api/traces";
-import { CloudLayout } from "@/app/components/cloud-layout";
-import { Protected } from "@/app/components/protected";
 import { SpanDetailPanel } from "@/app/components/traces/span-detail-panel";
 import { TraceTree } from "@/app/components/traces/trace-tree";
 import { Alert, AlertDescription, AlertTitle } from "@/app/components/ui/alert";
@@ -87,121 +85,98 @@ function FullTraceViewPage() {
   // No environment selected
   if (!selectedEnvironment) {
     return (
-      <Protected>
-        <CloudLayout>
-          <div className="p-6">
-            <div className="flex h-64 items-center justify-center">
-              <p className="text-lg text-muted-foreground">
-                Select an environment to view trace details.
-              </p>
-            </div>
-          </div>
-        </CloudLayout>
-      </Protected>
+      <div className="p-6">
+        <div className="flex h-64 items-center justify-center">
+          <p className="text-lg text-muted-foreground">
+            Select an environment to view trace details.
+          </p>
+        </div>
+      </div>
     );
   }
 
   // Loading state
   if (isLoading) {
     return (
-      <Protected>
-        <CloudLayout>
-          <div className="p-6">
-            <div className="flex h-64 items-center justify-center">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-            </div>
-          </div>
-        </CloudLayout>
-      </Protected>
+      <div className="p-6">
+        <div className="flex h-64 items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      </div>
     );
   }
 
   // Trace not found
   if (!traceDetail || traceDetail.spans.length === 0) {
     return (
-      <Protected>
-        <CloudLayout>
-          <div className="p-6">
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Trace not found</AlertTitle>
-              <AlertDescription>
-                The trace with ID &quot;{traceId}&quot; could not be found.
-              </AlertDescription>
-            </Alert>
-          </div>
-        </CloudLayout>
-      </Protected>
+      <div className="p-6">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Trace not found</AlertTitle>
+          <AlertDescription>
+            The trace with ID &quot;{traceId}&quot; could not be found.
+          </AlertDescription>
+        </Alert>
+      </div>
     );
   }
 
   // Span not found in trace
   if (!selectedSpan) {
     return (
-      <Protected>
-        <CloudLayout>
-          <div className="p-6">
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Span not found</AlertTitle>
-              <AlertDescription>
-                The span with ID &quot;{spanId}&quot; could not be found in this
-                trace.
-              </AlertDescription>
-            </Alert>
-          </div>
-        </CloudLayout>
-      </Protected>
+      <div className="p-6">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Span not found</AlertTitle>
+          <AlertDescription>
+            The span with ID &quot;{spanId}&quot; could not be found in this
+            trace.
+          </AlertDescription>
+        </Alert>
+      </div>
     );
   }
 
   return (
-    <Protected>
-      <CloudLayout>
-        <div className="flex h-full flex-col overflow-hidden">
-          {/* Header */}
-          <div className="shrink-0 px-6 py-4">
-            <h1 className="truncate text-xl font-semibold">
-              {rootSpan?.name ?? "Trace"}
-            </h1>
+    <div className="flex h-full flex-col overflow-hidden">
+      {/* Header */}
+      <div className="shrink-0 px-6 py-4">
+        <h1 className="truncate text-xl font-semibold">
+          {rootSpan?.name ?? "Trace"}
+        </h1>
+      </div>
+
+      {/* Main content */}
+      <ResizablePanelGroup direction="horizontal" className="min-h-0 flex-1">
+        {/* Left panel - Trace tree */}
+        <ResizablePanel defaultSize={40} minSize={20} maxSize={60}>
+          <div className="h-full overflow-auto p-4">
+            <TraceTree
+              spans={traceDetail.spans}
+              selectedSpanId={spanId}
+              onSpanSelect={handleSpanSelect}
+            />
           </div>
+        </ResizablePanel>
 
-          {/* Main content */}
-          <ResizablePanelGroup
-            direction="horizontal"
-            className="min-h-0 flex-1"
-          >
-            {/* Left panel - Trace tree */}
-            <ResizablePanel defaultSize={40} minSize={20} maxSize={60}>
-              <div className="h-full overflow-auto p-4">
-                <TraceTree
-                  spans={traceDetail.spans}
-                  selectedSpanId={spanId}
-                  onSpanSelect={handleSpanSelect}
-                />
-              </div>
-            </ResizablePanel>
+        <ResizableHandle className="cursor-col-resize">
+          <div className="z-10 flex h-8 w-4 items-center justify-center rounded-sm border bg-background">
+            <DragHandleDots2Icon className="h-4 w-4" />
+          </div>
+        </ResizableHandle>
 
-            <ResizableHandle className="cursor-col-resize">
-              <div className="z-10 flex h-8 w-4 items-center justify-center rounded-sm border bg-background">
-                <DragHandleDots2Icon className="h-4 w-4" />
-              </div>
-            </ResizableHandle>
-
-            {/* Right panel - Span detail */}
-            <ResizablePanel defaultSize={60} minSize={30}>
-              <div className="h-full py-4 pr-4">
-                <SpanDetailPanel
-                  span={selectedSpan}
-                  functionData={functionDetail ?? null}
-                  mode="full-view"
-                />
-              </div>
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        </div>
-      </CloudLayout>
-    </Protected>
+        {/* Right panel - Span detail */}
+        <ResizablePanel defaultSize={60} minSize={30}>
+          <div className="h-full py-4 pr-4">
+            <SpanDetailPanel
+              span={selectedSpan}
+              functionData={functionDetail ?? null}
+              mode="full-view"
+            />
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </div>
   );
 }
 

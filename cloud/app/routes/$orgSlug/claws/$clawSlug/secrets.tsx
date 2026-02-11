@@ -15,8 +15,6 @@ import {
   useUpdateClawSecrets,
 } from "@/app/api/claws";
 import { ClawHeader } from "@/app/components/claw-header";
-import { CloudLayout } from "@/app/components/cloud-layout";
-import { Protected } from "@/app/components/protected";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -159,157 +157,145 @@ function ClawsSecretsPage() {
 
   if (!selectedClaw) {
     return (
-      <Protected>
-        <CloudLayout>
-          <div className="p-6">
-            <ClawHeader />
-            <div className="flex items-center justify-center rounded-lg border border-dashed py-12 text-center text-muted-foreground">
-              <p>Select a claw to manage its secrets.</p>
-            </div>
-          </div>
-        </CloudLayout>
-      </Protected>
+      <div className="p-6">
+        <ClawHeader />
+        <div className="flex items-center justify-center rounded-lg border border-dashed py-12 text-center text-muted-foreground">
+          <p>Select a claw to manage its secrets.</p>
+        </div>
+      </div>
     );
   }
 
   if (isLoading) {
     return (
-      <Protected>
-        <CloudLayout>
-          <div className="p-6">
-            <ClawHeader />
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-            </div>
-          </div>
-        </CloudLayout>
-      </Protected>
+      <div className="p-6">
+        <ClawHeader />
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      </div>
     );
   }
 
   return (
-    <Protected>
-      <CloudLayout>
-        <div className="p-6">
-          <ClawHeader />
-          <Tabs
-            defaultValue="table"
-            onValueChange={(value) => {
-              if (value === "raw") {
-                setRawJson(JSON.stringify(secrets, null, 2));
-                setRawError(null);
-              }
-            }}
-          >
-            <div className="flex items-center justify-between">
-              <TabsList>
-                <TabsTrigger value="table">Table</TabsTrigger>
-                <TabsTrigger value="raw">Raw</TabsTrigger>
-              </TabsList>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setRestartDialogOpen(true)}
-                  disabled={restartClaw.isPending}
-                >
-                  {restartClaw.isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <RefreshCw className="mr-2 h-4 w-4" />
-                  )}
-                  Restart claw
-                </Button>
-                <Button onClick={() => setAddDialogOpen(true)}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add variable
-                </Button>
+    <>
+      <div className="p-6">
+        <ClawHeader />
+        <Tabs
+          defaultValue="table"
+          onValueChange={(value) => {
+            if (value === "raw") {
+              setRawJson(JSON.stringify(secrets, null, 2));
+              setRawError(null);
+            }
+          }}
+        >
+          <div className="flex items-center justify-between">
+            <TabsList>
+              <TabsTrigger value="table">Table</TabsTrigger>
+              <TabsTrigger value="raw">Raw</TabsTrigger>
+            </TabsList>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setRestartDialogOpen(true)}
+                disabled={restartClaw.isPending}
+              >
+                {restartClaw.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                )}
+                Restart claw
+              </Button>
+              <Button onClick={() => setAddDialogOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add variable
+              </Button>
+            </div>
+          </div>
+
+          <TabsContent value="table">
+            <div className="space-y-4">
+              {entries.length === 0 ? (
+                <div className="flex items-center justify-center rounded-lg border border-dashed py-12 text-center text-muted-foreground">
+                  <p>No environment variables yet. Add one to get started.</p>
+                </div>
+              ) : (
+                <div className="rounded-lg border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Value</TableHead>
+                        <TableHead className="w-[50px]" />
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {entries.map(([key]) => (
+                        <TableRow key={key}>
+                          <TableCell className="font-mono text-sm">
+                            {key}
+                          </TableCell>
+                          <TableCell className="font-mono text-sm text-muted-foreground">
+                            {"\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"}
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setEditKey(key);
+                                    setEditDialogOpen(true);
+                                  }}
+                                >
+                                  <Pencil className="mr-2 h-4 w-4" />
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => setDeleteKey(key)}
+                                  className="text-destructive focus:text-destructive"
+                                >
+                                  <Trash className="mr-2 h-4 w-4" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="raw">
+            <div className="space-y-4">
+              <Textarea
+                value={rawJson}
+                onChange={(e) => {
+                  setRawJson(e.target.value);
+                  setRawError(null);
+                }}
+                className="min-h-[300px] font-mono text-sm"
+              />
+              {rawError && (
+                <p className="text-sm text-destructive">{rawError}</p>
+              )}
+              <div className="flex justify-end">
+                <Button onClick={handleSaveRaw}>Save</Button>
               </div>
             </div>
-
-            <TabsContent value="table">
-              <div className="space-y-4">
-                {entries.length === 0 ? (
-                  <div className="flex items-center justify-center rounded-lg border border-dashed py-12 text-center text-muted-foreground">
-                    <p>No environment variables yet. Add one to get started.</p>
-                  </div>
-                ) : (
-                  <div className="rounded-lg border">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Value</TableHead>
-                          <TableHead className="w-[50px]" />
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {entries.map(([key]) => (
-                          <TableRow key={key}>
-                            <TableCell className="font-mono text-sm">
-                              {key}
-                            </TableCell>
-                            <TableCell className="font-mono text-sm text-muted-foreground">
-                              {
-                                "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
-                              }
-                            </TableCell>
-                            <TableCell>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem
-                                    onClick={() => {
-                                      setEditKey(key);
-                                      setEditDialogOpen(true);
-                                    }}
-                                  >
-                                    <Pencil className="mr-2 h-4 w-4" />
-                                    Edit
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => setDeleteKey(key)}
-                                    className="text-destructive focus:text-destructive"
-                                  >
-                                    <Trash className="mr-2 h-4 w-4" />
-                                    Delete
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="raw">
-              <div className="space-y-4">
-                <Textarea
-                  value={rawJson}
-                  onChange={(e) => {
-                    setRawJson(e.target.value);
-                    setRawError(null);
-                  }}
-                  className="min-h-[300px] font-mono text-sm"
-                />
-                {rawError && (
-                  <p className="text-sm text-destructive">{rawError}</p>
-                )}
-                <div className="flex justify-end">
-                  <Button onClick={handleSaveRaw}>Save</Button>
-                </div>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </CloudLayout>
+          </TabsContent>
+        </Tabs>
+      </div>
 
       <AddVariableDialog
         open={addDialogOpen}
@@ -378,7 +364,7 @@ function ClawsSecretsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Protected>
+    </>
   );
 }
 

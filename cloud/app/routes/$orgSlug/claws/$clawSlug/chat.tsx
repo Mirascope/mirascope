@@ -39,8 +39,6 @@ import {
   ToolOutput,
 } from "@/app/components/ai-elements/tool";
 import { ClawHeader } from "@/app/components/claw-header";
-import { CloudLayout } from "@/app/components/cloud-layout";
-import { Protected } from "@/app/components/protected";
 import { useClaw } from "@/app/contexts/claw";
 import { useMockChat } from "@/app/hooks/use-mock-chat";
 
@@ -140,62 +138,58 @@ function ClawsChatPage() {
   const { messages, status, sendMessage } = useMockChat();
 
   return (
-    <Protected>
-      <CloudLayout>
-        <div className="flex h-full flex-col overflow-hidden">
-          <div className="shrink-0 p-6 pb-0">
-            <ClawHeader />
-          </div>
-          <div className="relative min-h-0 flex-1">
-            <Conversation className="absolute inset-0">
-              <ConversationContent>
-                {messages.length === 0 ? (
-                  <ConversationEmptyState />
-                ) : (
-                  messages.map((msg, msgIndex) => (
-                    <Message from={msg.role} key={msg.id}>
-                      <MessageContent>
-                        <MessageParts
-                          chatStatus={status}
-                          isLastMessage={msgIndex === messages.length - 1}
-                          message={msg}
-                        />
-                      </MessageContent>
-                    </Message>
-                  ))
-                )}
-              </ConversationContent>
-              <ConversationScrollButton />
-            </Conversation>
-          </div>
-          <div className="shrink-0 px-6 pb-6">
-            <PromptInput
-              onSubmit={(message) => {
-                if (message.text.trim()) {
-                  sendMessage(message.text);
-                }
-              }}
-            >
-              <PromptInputTextarea
-                className="min-h-0 pr-14 font-sans"
-                disabled={!selectedClaw}
-                placeholder={
-                  selectedClaw
-                    ? "What would you like to know?"
-                    : "Select a claw to start chatting"
-                }
-              />
-              <PromptInputFooter className="absolute right-1.5 bottom-1.5 w-auto px-0 pb-0">
-                <PromptInputSubmit
-                  disabled={!selectedClaw || status !== "ready"}
-                  status={status}
-                />
-              </PromptInputFooter>
-            </PromptInput>
-          </div>
-        </div>
-      </CloudLayout>
-    </Protected>
+    <div className="flex h-full flex-col overflow-hidden">
+      <div className="shrink-0 p-6 pb-0">
+        <ClawHeader />
+      </div>
+      <div className="relative min-h-0 flex-1">
+        <Conversation className="absolute inset-0">
+          <ConversationContent>
+            {messages.length === 0 ? (
+              <ConversationEmptyState />
+            ) : (
+              messages.map((msg, msgIndex) => (
+                <Message from={msg.role} key={msg.id}>
+                  <MessageContent>
+                    <MessageParts
+                      chatStatus={status}
+                      isLastMessage={msgIndex === messages.length - 1}
+                      message={msg}
+                    />
+                  </MessageContent>
+                </Message>
+              ))
+            )}
+          </ConversationContent>
+          <ConversationScrollButton />
+        </Conversation>
+      </div>
+      <div className="shrink-0 px-6 pb-6">
+        <PromptInput
+          onSubmit={(message) => {
+            if (message.text.trim()) {
+              sendMessage(message.text);
+            }
+          }}
+        >
+          <PromptInputTextarea
+            className="min-h-0 pr-14 font-sans"
+            disabled={!selectedClaw}
+            placeholder={
+              selectedClaw
+                ? "What would you like to know?"
+                : "Select a claw to start chatting"
+            }
+          />
+          <PromptInputFooter className="absolute right-1.5 bottom-1.5 w-auto px-0 pb-0">
+            <PromptInputSubmit
+              disabled={!selectedClaw || status !== "ready"}
+              status={status}
+            />
+          </PromptInputFooter>
+        </PromptInput>
+      </div>
+    </div>
   );
 }
 
