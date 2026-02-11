@@ -178,12 +178,6 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     }
   };
 
-  // todo(sebastian): why won't hydration work?
-  // Don't render anything during SSR to avoid hydration mismatches
-  if (!isHydrated) {
-    return <>{children}</>;
-  }
-
   // Add the home-page class to the HTML element
   if (isHydrated && typeof document !== "undefined") {
     if (isLandingPage || isLoginPage || isRouterWaitlistPage) {
@@ -193,6 +187,8 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     }
   }
 
+  // Always render ThemeContext.Provider to avoid unmounting/remounting children
+  // when isHydrated changes from false to true
   return (
     <ThemeContext.Provider
       value={{
