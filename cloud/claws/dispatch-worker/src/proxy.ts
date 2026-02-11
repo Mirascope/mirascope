@@ -131,10 +131,13 @@ export async function ensureGateway(
   env: DispatchEnv,
 ): Promise<Process> {
   // Mount R2 with per-claw scoped credentials
-  if (env.CF_ACCOUNT_ID) {
-    await mountR2Storage(sandbox, config.r2, env.CF_ACCOUNT_ID);
+  const cfAccountId = env.CLOUDFLARE_ACCOUNT_ID ?? env.CF_ACCOUNT_ID;
+  if (cfAccountId) {
+    await mountR2Storage(sandbox, config.r2, cfAccountId);
   } else {
-    console.log("[proxy] CF_ACCOUNT_ID not set, skipping R2 mount");
+    console.log(
+      "[proxy] CLOUDFLARE_ACCOUNT_ID/CF_ACCOUNT_ID not set, skipping R2 mount",
+    );
   }
 
   // Check for existing process

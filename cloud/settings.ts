@@ -269,6 +269,9 @@ export type CloudflareEnvironment = {
   VITE_POSTHOG_HOST?: string;
   VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID?: string;
   // Cloudflare infrastructure (for claw deployment)
+  // Prefer CLOUDFLARE_* names; CF_* kept for backwards compatibility.
+  CLOUDFLARE_ACCOUNT_ID?: string;
+  CLOUDFLARE_API_TOKEN?: string;
   CF_ACCOUNT_ID?: string;
   CF_API_TOKEN?: string;
   CF_R2_READ_PERMISSION_GROUP_ID?: string;
@@ -311,6 +314,17 @@ function validateSettingsFromSource(
         return ""; // Placeholder - we'll fail before this is used
       }
       return value;
+    };
+
+    // Read from the first non-empty env var in order.
+    const requiredAny = (...names: string[]): string => {
+      for (const name of names) {
+        const value = source.get(name)?.trim();
+        if (value) return value;
+      }
+      // Report preferred (first) key as missing.
+      missing.push(names[0] ?? "UNKNOWN_ENV_VAR");
+      return "";
     };
 
     const optional = (name: string): string => {
@@ -401,8 +415,8 @@ function validateSettingsFromSource(
       },
 
       cloudflare: {
-        accountId: required("CF_ACCOUNT_ID"),
-        apiToken: required("CF_API_TOKEN"),
+        accountId: requiredAny("CLOUDFLARE_ACCOUNT_ID", "CF_ACCOUNT_ID"),
+        apiToken: requiredAny("CLOUDFLARE_API_TOKEN", "CF_API_TOKEN"),
         r2BucketItemReadPermissionGroupId: required(
           "CF_R2_READ_PERMISSION_GROUP_ID",
         ),
