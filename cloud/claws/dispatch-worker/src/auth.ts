@@ -170,12 +170,23 @@ export const validateSession = (
 // CORS helpers
 // ---------------------------------------------------------------------------
 
-const ALLOWED_ORIGIN = "https://mirascope.com";
+function isAllowedOrigin(origin: string, siteUrl: string): boolean {
+  try {
+    const allowed = new URL(siteUrl);
+    const incoming = new URL(origin);
+    return incoming.origin === allowed.origin;
+  } catch {
+    return false;
+  }
+}
 
-export function corsHeaders(origin: string | null): Record<string, string> {
-  if (origin !== ALLOWED_ORIGIN) return {};
+export function corsHeaders(
+  origin: string | null,
+  env: DispatchEnv,
+): Record<string, string> {
+  if (!origin || !isAllowedOrigin(origin, env.SITE_URL)) return {};
   return {
-    "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+    "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Credentials": "true",
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Authorization, Content-Type",
@@ -185,11 +196,14 @@ export function corsHeaders(origin: string | null): Record<string, string> {
 /**
  * Handle an OPTIONS preflight request.
  */
-export function handlePreflight(request: Request): Response | null {
+export function handlePreflight(
+  request: Request,
+  env: DispatchEnv,
+): Response | null {
   const origin = request.headers.get("Origin");
   if (request.method !== "OPTIONS" || !origin) return null;
 
-  const headers = corsHeaders(origin);
+  const headers = corsHeaders(origin, env);
   if (Object.keys(headers).length === 0) {
     return new Response(null, { status: 403 });
   }

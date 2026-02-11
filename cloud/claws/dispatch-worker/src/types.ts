@@ -20,6 +20,9 @@ export interface DispatchEnv {
 
   /** Cloudflare account ID for R2 endpoint URL */
   CLOUDFLARE_ACCOUNT_ID?: string;
+
+  /** Site URL for CORS origin checking (e.g. "https://mirascope.com") */
+  SITE_URL: string;
 }
 
 /**

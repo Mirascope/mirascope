@@ -92,8 +92,9 @@ app.route("/_internal", internal);
 function authErrorToResponse(
   error: AuthError,
   origin: string | null,
+  env: DispatchEnv,
 ): Response {
-  const cors = corsHeaders(origin);
+  const cors = corsHeaders(origin, env);
 
   switch (error._tag) {
     case "ClawResolutionError":
@@ -162,7 +163,7 @@ app.all("*", async (c) => {
   const request = c.req.raw;
 
   // CORS preflight
-  const preflight = handlePreflight(request);
+  const preflight = handlePreflight(request, c.env);
   if (preflight) return preflight;
 
   // Parse path
@@ -181,7 +182,7 @@ app.all("*", async (c) => {
     // Extract the typed error from the Cause
     const error = authResult.cause;
     if (error._tag === "Fail") {
-      return authErrorToResponse(error.error, origin);
+      return authErrorToResponse(error.error, origin, c.env);
     }
     // Unexpected defect — should not happen
     console.error("[auth] Unexpected defect:", error);
