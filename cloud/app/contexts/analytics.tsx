@@ -92,6 +92,9 @@ async function sendToProxy(data: {
   distinctId?: string;
   browserContext?: BrowserContext;
 }) {
+  // Only track real users in browsers, not prerender builds
+  if (typeof document === "undefined") return;
+
   try {
     // Collect browser context for rich analytics data
     const browserContext = collectBrowserContext();
@@ -131,14 +134,15 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
   const contextValue = useMemo<AnalyticsContextType>(
     () => ({
       trackEvent: (name, properties, distinctId) => {
-        // Fire and forget - don't block on analytics
-        if (typeof window === "undefined") return;
+        // Only track real users in browsers, not prerender builds
+        if (typeof document === "undefined") return;
         const id = distinctId || lastDistinctIdRef.current;
         void sendToProxy({ type: "event", name, properties, distinctId: id });
       },
 
       trackPageView: (params, distinctId) => {
-        if (typeof window === "undefined") return;
+        // Only track real users in browsers, not prerender builds
+        if (typeof document === "undefined") return;
         const id = distinctId || lastDistinctIdRef.current;
         void sendToProxy({
           type: "pageview",
@@ -149,7 +153,8 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
       },
 
       identify: (userId, properties) => {
-        if (typeof window === "undefined") return;
+        // Only track real users in browsers, not prerender builds
+        if (typeof document === "undefined") return;
         // Remember this user ID for future events
         lastDistinctIdRef.current = userId;
         void sendToProxy({
