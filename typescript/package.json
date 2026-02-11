@@ -42,11 +42,20 @@
       "import": "./dist/bun.js",
       "require": "./dist/bun.cjs"
     },
+    "./node-loader": {
+      "types": "./dist/node-loader.d.ts",
+      "import": "./dist/node-loader.js",
+      "require": "./dist/node-loader.cjs"
+    },
+    "./loader": {
+      "import": "./dist/loader.js",
+      "require": "./dist/loader.cjs"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
     "clean": "rm -rf dist .packs .tmp-install-test",
-    "build": "bun run clean && tsup src/index.ts src/transform/index.ts src/transform/plugins/vite.ts src/transform/plugins/esbuild.ts src/bun.ts --format esm,cjs --dts --sourcemap --out-dir dist --treeshake --external bun --external typescript",
+    "build": "bun run clean && tsup src/index.ts src/transform/index.ts src/transform/plugins/vite.ts src/transform/plugins/esbuild.ts src/bun.ts src/node-loader.ts src/loader.ts --format esm,cjs --dts --sourcemap --out-dir dist --treeshake --external bun --external typescript",
     "typecheck": "bunx tsc --noEmit",
     "lint": "bun run typecheck && bun run lint:oxlint && bun run format:check",
     "lint:oxlint": "oxlint .",
@@ -167,5 +176,8 @@
     "vite": {
       "optional": true
     }
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

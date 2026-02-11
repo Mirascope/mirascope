@@ -264,6 +264,19 @@ const response = await llm.model("grok/grok-4-latest").call("Hello!");
 
 The transform plugin extracts type information from TypeScript interfaces at compile time, enabling the native TypeScript patterns (without Zod) for tools and structured output. This is **optional** - you can use Zod schemas without any build configuration.
 
+### Node.js (Runtime)
+
+For runtime transformation with Node.js 20.6+ (required for `--import` flag support), use the custom ESM loader. The loader handles full TypeScript compilation — no `--experimental-strip-types` needed:
+
+```bash
+node --import mirascope/loader your-script.ts
+
+# Or set NODE_OPTIONS
+NODE_OPTIONS='--import mirascope/loader' node your-script.ts
+```
+
+**Note:** Runtime transformation is slower than build-time approaches. For production, use esbuild or Vite plugins instead.
+
 ### Vite
 
 ```typescript
@@ -290,7 +303,7 @@ await esbuild.build({
 });
 ```
 
-### Bun
+### Bun (Runtime)
 
 Bun supports a preload script that applies the transform at runtime:
 
@@ -307,6 +320,8 @@ preload = ["./preload.ts"]
 
 Now `bun run your-script.ts` will automatically apply the transform.
 
+**Note:** The preload script is already configured in this package - just run `bun run your-script.ts`.
+
 Alternatively, for production builds, use esbuild:
 
 ```typescript
@@ -319,6 +334,16 @@ await Bun.build({
   plugins: [mirascope()],
 });
 ```
+
+### Deno
+
+Deno's built-in TypeScript support and Node.js compatibility work out of the box:
+
+```bash
+deno run --allow-net --allow-env your-script.ts
+```
+
+**Note:** Deno doesn't need the transform plugin. `defineCall`, `model.call()`, and Zod-based patterns work directly.
 
 ## Error Handling
 
@@ -517,24 +542,27 @@ if (sessionId) {
 ## Development Setup
 
 1. **Clone and install**:
-   ```bash
-   cd typescript
-   bun install
-   ```
+
+```bash
+cd typescript
+bun install
+```
 
 2. **Environment variables** (for e2e tests):
-   ```bash
-   cp .env.example .env
-   # Add your API keys
-   ```
+
+```bash
+cp .env.example .env
+# Add your API keys
+```
 
 3. **Commands**:
-   ```bash
-   bun run typecheck    # Type checking
-   bun run lint         # Linting + formatting
-   bun run test         # Run tests
-   bun run test:coverage # Tests with coverage (requires 100%)
-   ```
+
+```bash
+bun run typecheck    # Type checking
+bun run lint         # Linting + formatting
+bun run test         # Run tests
+bun run test:coverage # Tests with coverage (requires 100%)
+```
 
 ## Examples
 
@@ -550,6 +578,7 @@ See the [`examples/`](./examples) directory for more examples:
 - `ops/` - Tracing, versioning, sessions, and instrumentation
 
 Run an example:
+
 ```bash
 bun run example examples/calls/basic.ts
 ```

@@ -5,11 +5,11 @@
  * and metadata for consistent hashing and versioning.
  */
 
-import { execSync } from "child_process";
-import { createHash } from "crypto";
-import * as fs from "fs";
-import * as os from "os";
-import * as path from "path";
+import { execSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
 
 /**
  * Information about a package dependency.
