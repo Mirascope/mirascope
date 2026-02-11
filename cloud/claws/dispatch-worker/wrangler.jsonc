@@ -49,4 +49,26 @@
   ],
   // No R2 bucket binding — R2 is mounted dynamically per-claw using
   // scoped credentials from the bootstrap config.
+
+  // Environment-specific overrides for staging and production deployments.
+  "env": {
+    "staging": {
+      "name": "claw-dispatch-worker-staging",
+      "services": [{ "binding": "MIRASCOPE_CLOUD", "service": "staging" }],
+      "route": {
+        "pattern": "openclaw.staging.mirascope.com",
+        "zone_name": "mirascope.com",
+        "custom_domain": true,
+      },
+    },
+    "production": {
+      "name": "claw-dispatch-worker-production",
+      "services": [{ "binding": "MIRASCOPE_CLOUD", "service": "production" }],
+      "route": {
+        "pattern": "openclaw.mirascope.com",
+        "zone_name": "mirascope.com",
+        "custom_domain": true,
+      },
+    },
+  },
 }
