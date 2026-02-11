@@ -40,7 +40,7 @@ import {
 } from "@/app/components/ai-elements/tool";
 import { ClawHeader } from "@/app/components/claw-header";
 import { useClaw } from "@/app/contexts/claw";
-import { useMockChat } from "@/app/hooks/use-mock-chat";
+import { useGatewayChat } from "@/app/hooks/use-gateway-chat";
 
 function MessageParts({
   message,
@@ -135,7 +135,11 @@ function MessageParts({
 
 function ClawsChatPage() {
   const { selectedClaw } = useClaw();
-  const { messages, status, sendMessage } = useMockChat();
+  const { orgSlug, clawSlug } = Route.useParams();
+  const { messages, status, sendMessage, connectionError } = useGatewayChat(
+    orgSlug,
+    clawSlug,
+  );
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -143,6 +147,11 @@ function ClawsChatPage() {
         <ClawHeader />
       </div>
       <div className="relative min-h-0 flex-1">
+        {connectionError && (
+          <div className="bg-destructive/10 text-destructive mx-6 mt-2 rounded-md px-4 py-2 text-sm">
+            Connection error: {connectionError}
+          </div>
+        )}
         <Conversation className="absolute inset-0">
           <ConversationContent>
             {messages.length === 0 ? (
@@ -174,16 +183,20 @@ function ClawsChatPage() {
         >
           <PromptInputTextarea
             className="min-h-0 pr-14 font-sans"
-            disabled={!selectedClaw}
+            disabled={!selectedClaw || !!connectionError}
             placeholder={
-              selectedClaw
-                ? "What would you like to know?"
-                : "Select a claw to start chatting"
+              connectionError
+                ? "Unable to connect to gateway"
+                : selectedClaw
+                  ? "What's up?"
+                  : "Select a claw to start chatting"
             }
           />
           <PromptInputFooter className="absolute right-1.5 bottom-1.5 w-auto px-0 pb-0">
             <PromptInputSubmit
-              disabled={!selectedClaw || status !== "ready"}
+              disabled={
+                !selectedClaw || !!connectionError || status !== "ready"
+              }
               status={status}
             />
           </PromptInputFooter>

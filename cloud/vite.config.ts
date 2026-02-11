@@ -14,6 +14,7 @@ import { viteMDX } from "./vite-plugins/mdx";
 import { pagefindDev } from "./vite-plugins/pagefind-dev";
 import { viteRobots } from "./vite-plugins/robots";
 import { viteSocialCards } from "./vite-plugins/social-cards";
+import { viteWsProxy } from "./vite-plugins/ws-proxy";
 
 // Init shared content processor instance
 const processor = new ContentProcessor({
@@ -98,6 +99,7 @@ export default defineConfig(() => {
       viteSocialCards({ processor }), // Generate social card images from sitemap (must be after tanstackStart)
       viteMarkdownExport({ processor }), // Generate markdown files for content negotiation (must be after tanstackStart)
       pagefindDev(),
+      viteWsProxy(),
       viteReact(),
       tailwindcss(),
     ],

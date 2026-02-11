@@ -9,6 +9,7 @@ import { Effect, Layer, Context } from "effect";
 import type { RouterMeteringMessage } from "@/workers/routerMeteringQueue";
 import type { SpansIngestMessage } from "@/workers/spanIngestQueue";
 
+import { handleClawsWebSocket } from "@/api/claws-ws-proxy";
 import { RateLimiter } from "@/rate-limiting";
 import { handleRedirect } from "@/redirects";
 import {
@@ -324,6 +325,13 @@ const coreHandler = async (
       context.waitUntil(scheduled(event, environment));
       return new Response("Ran data retention cron");
     }
+  }
+
+  // Handle WebSocket upgrade for claw chat proxy
+  const isWebSocket =
+    request.headers.get("Upgrade")?.toLowerCase() === "websocket";
+  if (isWebSocket && url.pathname.startsWith("/api/ws/claws/")) {
+    return handleClawsWebSocket(request, url);
   }
 
   // Handle programmatic redirects
