@@ -11,11 +11,14 @@
  *   GET  /_internal/state            — Return ContainerState JSON
  */
 
+import { Effect } from "effect";
 import { Hono } from "hono";
 
 import type { AppEnv, ContainerState, SandboxProcessStatus } from "./types";
 
-import { findGatewayProcess } from "./proxy";
+import { fetchBootstrapConfig } from "./bootstrap";
+import { getCachedConfig, setCachedConfig } from "./cache";
+import { ensureGateway, findGatewayProcess } from "./proxy";
 import { PROCESS_TO_CONTAINER_STATUS } from "./types";
 
 const internal = new Hono<AppEnv>();
@@ -128,6 +131,46 @@ internal.get("/state", async (c) => {
   }
 
   return c.json(state);
+});
+
+/**
+ * POST /_internal/warm-up
+ *
+ * Trigger container startup and wait for the gateway to be ready.
+ * Called by the Cloud backend during claw provisioning to cold-start
+ * the container and verify the gateway is serving.
+ */
+internal.post("/warm-up", async (c) => {
+  const sandbox = c.get("sandbox");
+  const clawId = c.get("clawId");
+  console.log("[internal] Warming up container for claw:", clawId);
+
+  // Get or fetch bootstrap config
+  let config = getCachedConfig(clawId);
+  if (!config) {
+    const configResult = await Effect.runPromiseExit(
+      fetchBootstrapConfig(clawId, c.env),
+    );
+    if (configResult._tag === "Failure") {
+      console.error("[internal] Failed to fetch config for warm-up");
+      return c.json(
+        { ok: false, error: "Failed to fetch bootstrap config" },
+        502,
+      );
+    }
+    config = configResult.value;
+    setCachedConfig(clawId, config);
+  }
+
+  try {
+    await ensureGateway(sandbox, config, c.env);
+    console.log("[internal] Warm-up complete for claw:", clawId);
+    return c.json({ ok: true });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[internal] Warm-up failed:", message);
+    return c.json({ ok: false, error: message }, 500);
+  }
 });
 
 export { internal };
