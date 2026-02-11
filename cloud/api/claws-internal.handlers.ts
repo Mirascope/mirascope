@@ -325,6 +325,7 @@ export const validateSessionHandler = (
             }),
           ),
         ),
+        /* v8 ignore next 6 -- defensive: PermissionDeniedError is not currently thrown by getRole for this call path */
         Effect.catchTag("PermissionDeniedError", () =>
           Effect.fail(
             new UnauthorizedError({
