@@ -92,7 +92,7 @@ function tryUnlink(path: string): void {
 // ============================================================
 
 if (isGatewayRunning()) {
-  console.log("OpenClaw gateway is already running, exiting.");
+  console.log("OPENCLAW_ALREADY_RUNNING");
   process.exit(0);
 }
 

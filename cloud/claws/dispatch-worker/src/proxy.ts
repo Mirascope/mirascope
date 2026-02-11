@@ -200,18 +200,79 @@ export async function ensureGateway(
     if (logs.stderr) console.log("[proxy] stderr:", logs.stderr);
   } catch (e) {
     console.error("[proxy] waitForPort failed:", e);
+
+    // Check if start-openclaw detected an existing gateway
+    let isAlreadyRunning = false;
     try {
       const logs = await process.getLogs();
       console.error("[proxy] Startup stderr:", logs.stderr);
       console.error("[proxy] Startup stdout:", logs.stdout);
-      throw new Error(
-        `Gateway failed to start for claw ${config.clawId}. Stderr: ${logs.stderr || "(empty)"}`,
-      );
+      isAlreadyRunning =
+        logs.stdout?.includes("OPENCLAW_ALREADY_RUNNING") ||
+        logs.stderr?.includes("OPENCLAW_ALREADY_RUNNING") ||
+        false;
     } catch (logErr) {
-      if (logErr === e) throw e;
       console.error("[proxy] Failed to get logs:", logErr);
-      throw e;
     }
+
+    if (isAlreadyRunning) {
+      console.log(
+        "[proxy] start-openclaw reported existing gateway; checking running processes",
+      );
+
+      // The gateway is already running from a previous start — find it
+      const existingProc = await findGatewayProcess(sandbox);
+      if (existingProc) {
+        console.log(
+          "[proxy] Found existing gateway process:",
+          existingProc.id,
+          "status:",
+          existingProc.status,
+        );
+        try {
+          await existingProc.waitForPort(GATEWAY_PORT, {
+            mode: "tcp",
+            timeout: STARTUP_TIMEOUT_MS,
+          });
+          console.log(
+            "[proxy] Existing gateway is ready on port",
+            GATEWAY_PORT,
+          );
+          return existingProc;
+        } catch {
+          console.error("[proxy] Existing gateway not reachable on port");
+        }
+      }
+
+      // Last resort: try a direct HTTP check — the gateway might be running
+      // under a command string that findGatewayProcess doesn't recognize
+      try {
+        const healthCheck = await sandbox.containerFetch(
+          new Request("http://localhost/healthz"),
+          GATEWAY_PORT,
+        );
+        if (healthCheck.ok || healthCheck.status === 404) {
+          // Any non-connection-error response means something is listening
+          console.log(
+            "[proxy] Port",
+            GATEWAY_PORT,
+            "is responding (status:",
+            healthCheck.status,
+            ") — gateway is running",
+          );
+          // Re-find the actual gateway process now that we know it's listening
+          const runningProc = await findGatewayProcess(sandbox);
+          if (runningProc) return runningProc;
+          return process; // Fallback: process ref won't be used for proxying
+        }
+      } catch {
+        console.error("[proxy] Direct port check also failed");
+      }
+    }
+
+    throw new Error(
+      `Gateway failed to start for claw ${config.clawId}. ${isAlreadyRunning ? "Detected existing gateway but could not connect." : "Process exited before port was ready."}`,
+    );
   }
 
   return process;
