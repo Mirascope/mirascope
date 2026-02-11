@@ -3,7 +3,12 @@
  */
 
 // Configuration
-export { configure, tracerContext } from "@/ops/_internal/configuration";
+export {
+  configure,
+  tracerContext,
+  forceFlush,
+  shutdown,
+} from "@/ops/_internal/configuration";
 export type { ConfigureOptions } from "@/ops/_internal/configuration";
 
 // Exceptions
