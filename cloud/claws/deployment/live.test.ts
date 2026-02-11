@@ -6,8 +6,8 @@
  * deprovision, restart, update, and query claw deployments.
  */
 
+import { describe, it, expect } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { describe, it, expect } from "vitest";
 
 import type { ProvisionClawConfig } from "@/claws/deployment/types";
 
@@ -104,39 +104,35 @@ describe("LiveDeploymentService", () => {
   });
 
   describe("getStatus", () => {
-    it("returns active for running container", async () => {
+    it.effect("returns active for running container", () => {
       const { layer, seedContainer } = createTestLayer();
       seedContainer(INTERNAL_HOSTNAME, {
         status: "running",
         lastChange: 1700000000000,
       });
 
-      const status = await Effect.runPromise(
-        Effect.gen(function* () {
-          const deployment = yield* ClawDeploymentService;
-          return yield* deployment.getStatus(testConfig.clawId);
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const deployment = yield* ClawDeploymentService;
+        const status = yield* deployment.getStatus(testConfig.clawId);
 
-      expect(status.status).toBe("active");
-      expect(status.startedAt).toEqual(new Date(1700000000000));
+        expect(status.status).toBe("active");
+        expect(status.startedAt).toEqual(new Date(1700000000000));
+      }).pipe(Effect.provide(layer));
     });
 
-    it("returns active for healthy container", async () => {
+    it.effect("returns active for healthy container", () => {
       const { layer, seedContainer } = createTestLayer();
       seedContainer(INTERNAL_HOSTNAME, { status: "healthy", lastChange: 1000 });
 
-      const status = await Effect.runPromise(
-        Effect.gen(function* () {
-          const deployment = yield* ClawDeploymentService;
-          return yield* deployment.getStatus(testConfig.clawId);
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const deployment = yield* ClawDeploymentService;
+        const status = yield* deployment.getStatus(testConfig.clawId);
 
-      expect(status.status).toBe("active");
+        expect(status.status).toBe("active");
+      }).pipe(Effect.provide(layer));
     });
 
-    it("returns paused for stopped container", async () => {
+    it.effect("returns paused for stopped container", () => {
       const { layer, seedContainer } = createTestLayer();
       seedContainer(INTERNAL_HOSTNAME, {
         status: "stopped",
@@ -144,57 +140,49 @@ describe("LiveDeploymentService", () => {
         exitCode: 0,
       });
 
-      const status = await Effect.runPromise(
-        Effect.gen(function* () {
-          const deployment = yield* ClawDeploymentService;
-          return yield* deployment.getStatus(testConfig.clawId);
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const deployment = yield* ClawDeploymentService;
+        const status = yield* deployment.getStatus(testConfig.clawId);
 
-      expect(status.status).toBe("paused");
+        expect(status.status).toBe("paused");
+      }).pipe(Effect.provide(layer));
     });
 
-    it("returns paused for stopping container", async () => {
+    it.effect("returns paused for stopping container", () => {
       const { layer, seedContainer } = createTestLayer();
       seedContainer(INTERNAL_HOSTNAME, { status: "stopping" });
 
-      const status = await Effect.runPromise(
-        Effect.gen(function* () {
-          const deployment = yield* ClawDeploymentService;
-          return yield* deployment.getStatus(testConfig.clawId);
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const deployment = yield* ClawDeploymentService;
+        const status = yield* deployment.getStatus(testConfig.clawId);
 
-      expect(status.status).toBe("paused");
+        expect(status.status).toBe("paused");
+      }).pipe(Effect.provide(layer));
     });
 
-    it("returns error for unknown status", async () => {
+    it.effect("returns error for unknown status", () => {
       const { layer, seedContainer } = createTestLayer();
       seedContainer(INTERNAL_HOSTNAME, { status: "unknown" });
 
-      const status = await Effect.runPromise(
-        Effect.gen(function* () {
-          const deployment = yield* ClawDeploymentService;
-          return yield* deployment.getStatus(testConfig.clawId);
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const deployment = yield* ClawDeploymentService;
+        const status = yield* deployment.getStatus(testConfig.clawId);
 
-      expect(status.status).toBe("error");
+        expect(status.status).toBe("error");
+      }).pipe(Effect.provide(layer));
     });
 
-    it("returns undefined startedAt when lastChange is missing", async () => {
+    it.effect("returns undefined startedAt when lastChange is missing", () => {
       const { layer, seedContainer } = createTestLayer();
       seedContainer(INTERNAL_HOSTNAME, { status: "running" });
 
-      const status = await Effect.runPromise(
-        Effect.gen(function* () {
-          const deployment = yield* ClawDeploymentService;
-          return yield* deployment.getStatus(testConfig.clawId);
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const deployment = yield* ClawDeploymentService;
+        const status = yield* deployment.getStatus(testConfig.clawId);
 
-      expect(status.status).toBe("active");
-      expect(status.startedAt).toBeUndefined();
+        expect(status.status).toBe("active");
+        expect(status.startedAt).toBeUndefined();
+      }).pipe(Effect.provide(layer));
     });
 
     it("fails for non-existent container", async () => {
@@ -213,19 +201,17 @@ describe("LiveDeploymentService", () => {
   });
 
   describe("restart", () => {
-    it("restarts gateway and returns provisioning status", async () => {
+    it.effect("restarts gateway and returns provisioning status", () => {
       const { layer, seedContainer } = createTestLayer();
       seedContainer(INTERNAL_HOSTNAME);
 
-      const status = await Effect.runPromise(
-        Effect.gen(function* () {
-          const deployment = yield* ClawDeploymentService;
-          return yield* deployment.restart(testConfig.clawId);
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const deployment = yield* ClawDeploymentService;
+        const status = yield* deployment.restart(testConfig.clawId);
 
-      expect(status.status).toBe("provisioning");
-      expect(status.startedAt).toBeInstanceOf(Date);
+        expect(status.status).toBe("provisioning");
+        expect(status.startedAt).toBeInstanceOf(Date);
+      }).pipe(Effect.provide(layer));
     });
 
     it("fails for non-existent container", async () => {
@@ -244,44 +230,40 @@ describe("LiveDeploymentService", () => {
   });
 
   describe("update", () => {
-    it("restarts gateway for non-instance-type config update", async () => {
+    it.effect("restarts gateway for non-instance-type config update", () => {
       const { layer, seedContainer } = createTestLayer();
       seedContainer(INTERNAL_HOSTNAME);
 
-      const status = await Effect.runPromise(
-        Effect.gen(function* () {
-          const deployment = yield* ClawDeploymentService;
-          return yield* deployment.update(testConfig.clawId, {
-            containerEnv: {
-              MIRASCOPE_API_KEY: "key_abc123",
-              ANTHROPIC_API_KEY: "key_abc123",
-              ANTHROPIC_BASE_URL: "https://router.mirascope.com/v1",
-              OPENCLAW_GATEWAY_TOKEN: "gw_token_xyz",
-              TELEGRAM_BOT_TOKEN: "new-token",
-            },
-          });
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const deployment = yield* ClawDeploymentService;
+        const status = yield* deployment.update(testConfig.clawId, {
+          containerEnv: {
+            MIRASCOPE_API_KEY: "key_abc123",
+            ANTHROPIC_API_KEY: "key_abc123",
+            ANTHROPIC_BASE_URL: "https://router.mirascope.com/v1",
+            OPENCLAW_GATEWAY_TOKEN: "gw_token_xyz",
+            TELEGRAM_BOT_TOKEN: "new-token",
+          },
+        });
 
-      expect(status.status).toBe("provisioning");
-      expect(status.startedAt).toBeInstanceOf(Date);
+        expect(status.status).toBe("provisioning");
+        expect(status.startedAt).toBeInstanceOf(Date);
+      }).pipe(Effect.provide(layer));
     });
 
-    it("recreates container when instance type changes", async () => {
+    it.effect("recreates container when instance type changes", () => {
       const { layer, seedContainer } = createTestLayer();
       seedContainer(INTERNAL_HOSTNAME);
 
-      const status = await Effect.runPromise(
-        Effect.gen(function* () {
-          const deployment = yield* ClawDeploymentService;
-          return yield* deployment.update(testConfig.clawId, {
-            instanceType: "standard-2",
-          });
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const deployment = yield* ClawDeploymentService;
+        const status = yield* deployment.update(testConfig.clawId, {
+          instanceType: "standard-2",
+        });
 
-      expect(status.status).toBe("provisioning");
-      expect(status.startedAt).toBeInstanceOf(Date);
+        expect(status.status).toBe("provisioning");
+        expect(status.startedAt).toBeInstanceOf(Date);
+      }).pipe(Effect.provide(layer));
     });
 
     it("fails for non-existent container on gateway restart", async () => {
@@ -316,16 +298,14 @@ describe("LiveDeploymentService", () => {
   });
 
   describe("warmUp", () => {
-    it("sends warm-up request to dispatch worker", async () => {
+    it.effect("sends warm-up request to dispatch worker", () => {
       const { layer, seedContainer } = createTestLayer();
       seedContainer(INTERNAL_HOSTNAME);
 
-      await Effect.runPromise(
-        Effect.gen(function* () {
-          const deployment = yield* ClawDeploymentService;
-          yield* deployment.warmUp(testConfig.clawId);
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const deployment = yield* ClawDeploymentService;
+        yield* deployment.warmUp(testConfig.clawId);
+      }).pipe(Effect.provide(layer));
     });
 
     it("triggers cold start for new container", async () => {

@@ -2,8 +2,9 @@
  * @fileoverview Tests for Google Analytics Effect-native service.
  */
 
+import { describe, it, expect } from "@effect/vitest";
 import { Effect } from "effect";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { vi, beforeEach, afterEach } from "vitest";
 
 import { GoogleAnalytics } from "@/analytics/google-client";
 

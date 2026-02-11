@@ -9,8 +9,9 @@
  * propagate with distinguishable error messages.
  */
 
+import { describe, it, expect } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { vi, beforeEach } from "vitest";
 
 import type {
   CloudflareHttpClient,
@@ -70,7 +71,7 @@ describe("LiveCloudflareR2Service", () => {
   });
 
   describe("createBucket", () => {
-    it("sends POST to correct endpoint with bucket name", async () => {
+    it.effect("sends POST to correct endpoint with bucket name", () => {
       requestHandler = (options) => {
         requestSpy(options);
         return Effect.succeed({
@@ -82,24 +83,22 @@ describe("LiveCloudflareR2Service", () => {
 
       const layer = createTestLayer(requestHandler);
 
-      const result = await Effect.runPromise(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          return yield* r2.createBucket("claw-abc");
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        const result = yield* r2.createBucket("claw-abc");
 
-      expect(result.name).toBe("claw-abc");
-      expect(result.creationDate).toBe("2025-01-15T10:30:00Z");
-      expect(result.location).toBe("WNAM");
+        expect(result.name).toBe("claw-abc");
+        expect(result.creationDate).toBe("2025-01-15T10:30:00Z");
+        expect(result.location).toBe("WNAM");
 
-      const call = requestSpy.mock.calls[0][0] as CloudflareRequestOptions;
-      expect(call.method).toBe("POST");
-      expect(call.path).toBe("/accounts/test-account-id/r2/buckets");
-      expect(call.body).toEqual({ name: "claw-abc" });
+        const call = requestSpy.mock.calls[0][0] as CloudflareRequestOptions;
+        expect(call.method).toBe("POST");
+        expect(call.path).toBe("/accounts/test-account-id/r2/buckets");
+        expect(call.body).toEqual({ name: "claw-abc" });
+      }).pipe(Effect.provide(layer));
     });
 
-    it("propagates 409 conflict error (bucket already exists)", async () => {
+    it.effect("propagates 409 conflict error (bucket already exists)", () => {
       requestHandler = () =>
         Effect.fail(
           new CloudflareApiError({
@@ -110,35 +109,34 @@ describe("LiveCloudflareR2Service", () => {
 
       const layer = createTestLayer(requestHandler);
 
-      const error = await Effect.runPromise(
-        Effect.gen(function* () {
+      return Effect.gen(function* () {
+        const error = yield* Effect.gen(function* () {
           const r2 = yield* CloudflareR2Service;
           return yield* r2.createBucket("claw-abc");
-        }).pipe(Effect.flip, Effect.provide(layer)),
-      );
-
-      expect(error).toBeInstanceOf(CloudflareApiError);
-      expect((error as CloudflareApiError).message).toContain("already exists");
+        }).pipe(Effect.flip);
+        expect(error).toBeInstanceOf(CloudflareApiError);
+        expect((error as CloudflareApiError).message).toContain(
+          "already exists",
+        );
+      }).pipe(Effect.provide(layer));
     });
   });
 
   describe("deleteBucket", () => {
-    it("sends DELETE to correct endpoint", async () => {
+    it.effect("sends DELETE to correct endpoint", () => {
       const layer = createTestLayer(requestHandler);
 
-      await Effect.runPromise(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          yield* r2.deleteBucket("claw-abc");
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        yield* r2.deleteBucket("claw-abc");
 
-      const call = requestSpy.mock.calls[0][0] as CloudflareRequestOptions;
-      expect(call.method).toBe("DELETE");
-      expect(call.path).toBe("/accounts/test-account-id/r2/buckets/claw-abc");
+        const call = requestSpy.mock.calls[0][0] as CloudflareRequestOptions;
+        expect(call.method).toBe("DELETE");
+        expect(call.path).toBe("/accounts/test-account-id/r2/buckets/claw-abc");
+      }).pipe(Effect.provide(layer));
     });
 
-    it("propagates 404 error (bucket not found)", async () => {
+    it.effect("propagates 404 error (bucket not found)", () => {
       requestHandler = () =>
         Effect.fail(
           new CloudflareApiError({
@@ -149,20 +147,21 @@ describe("LiveCloudflareR2Service", () => {
 
       const layer = createTestLayer(requestHandler);
 
-      const error = await Effect.runPromise(
-        Effect.gen(function* () {
+      return Effect.gen(function* () {
+        const error = yield* Effect.gen(function* () {
           const r2 = yield* CloudflareR2Service;
           return yield* r2.deleteBucket("claw-abc");
-        }).pipe(Effect.flip, Effect.provide(layer)),
-      );
-
-      expect(error).toBeInstanceOf(CloudflareApiError);
-      expect((error as CloudflareApiError).message).toContain("does not exist");
+        }).pipe(Effect.flip);
+        expect(error).toBeInstanceOf(CloudflareApiError);
+        expect((error as CloudflareApiError).message).toContain(
+          "does not exist",
+        );
+      }).pipe(Effect.provide(layer));
     });
   });
 
   describe("getBucket", () => {
-    it("sends GET and transforms response", async () => {
+    it.effect("sends GET and transforms response", () => {
       requestHandler = (options) => {
         requestSpy(options);
         return Effect.succeed({
@@ -173,22 +172,20 @@ describe("LiveCloudflareR2Service", () => {
 
       const layer = createTestLayer(requestHandler);
 
-      const result = await Effect.runPromise(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          return yield* r2.getBucket("claw-abc");
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        const result = yield* r2.getBucket("claw-abc");
 
-      expect(result.name).toBe("claw-abc");
-      expect(result.creationDate).toBe("2025-01-15T10:30:00Z");
+        expect(result.name).toBe("claw-abc");
+        expect(result.creationDate).toBe("2025-01-15T10:30:00Z");
 
-      const call = requestSpy.mock.calls[0][0] as CloudflareRequestOptions;
-      expect(call.method).toBe("GET");
-      expect(call.path).toBe("/accounts/test-account-id/r2/buckets/claw-abc");
+        const call = requestSpy.mock.calls[0][0] as CloudflareRequestOptions;
+        expect(call.method).toBe("GET");
+        expect(call.path).toBe("/accounts/test-account-id/r2/buckets/claw-abc");
+      }).pipe(Effect.provide(layer));
     });
 
-    it("propagates 404 error (bucket not found)", async () => {
+    it.effect("propagates 404 error (bucket not found)", () => {
       requestHandler = () =>
         Effect.fail(
           new CloudflareApiError({
@@ -199,20 +196,21 @@ describe("LiveCloudflareR2Service", () => {
 
       const layer = createTestLayer(requestHandler);
 
-      const error = await Effect.runPromise(
-        Effect.gen(function* () {
+      return Effect.gen(function* () {
+        const error = yield* Effect.gen(function* () {
           const r2 = yield* CloudflareR2Service;
           return yield* r2.getBucket("claw-abc");
-        }).pipe(Effect.flip, Effect.provide(layer)),
-      );
-
-      expect(error).toBeInstanceOf(CloudflareApiError);
-      expect((error as CloudflareApiError).message).toContain("does not exist");
+        }).pipe(Effect.flip);
+        expect(error).toBeInstanceOf(CloudflareApiError);
+        expect((error as CloudflareApiError).message).toContain(
+          "does not exist",
+        );
+      }).pipe(Effect.provide(layer));
     });
   });
 
   describe("listBuckets", () => {
-    it("sends GET with per_page param", async () => {
+    it.effect("sends GET with per_page param", () => {
       requestHandler = (options) => {
         requestSpy(options);
         return Effect.succeed({
@@ -225,23 +223,21 @@ describe("LiveCloudflareR2Service", () => {
 
       const layer = createTestLayer(requestHandler);
 
-      const result = await Effect.runPromise(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          return yield* r2.listBuckets();
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        const result = yield* r2.listBuckets();
 
-      expect(result).toHaveLength(2);
-      expect(result[0].name).toBe("claw-1");
-      expect(result[1].name).toBe("claw-2");
+        expect(result).toHaveLength(2);
+        expect(result[0].name).toBe("claw-1");
+        expect(result[1].name).toBe("claw-2");
 
-      const call = requestSpy.mock.calls[0][0] as CloudflareRequestOptions;
-      expect(call.method).toBe("GET");
-      expect(call.path).toContain("per_page=1000");
+        const call = requestSpy.mock.calls[0][0] as CloudflareRequestOptions;
+        expect(call.method).toBe("GET");
+        expect(call.path).toContain("per_page=1000");
+      }).pipe(Effect.provide(layer));
     });
 
-    it("sends name_contains when prefix is provided", async () => {
+    it.effect("sends name_contains when prefix is provided", () => {
       requestHandler = (options) => {
         requestSpy(options);
         return Effect.succeed({ buckets: [] });
@@ -249,20 +245,18 @@ describe("LiveCloudflareR2Service", () => {
 
       const layer = createTestLayer(requestHandler);
 
-      await Effect.runPromise(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          return yield* r2.listBuckets("claw-");
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        return yield* r2.listBuckets("claw-");
 
-      const call = requestSpy.mock.calls[0][0] as CloudflareRequestOptions;
-      expect(call.path).toContain("name_contains=claw-");
+        const call = requestSpy.mock.calls[0][0] as CloudflareRequestOptions;
+        expect(call.path).toContain("name_contains=claw-");
+      }).pipe(Effect.provide(layer));
     });
   });
 
   describe("createScopedCredentials", () => {
-    it("sends POST with correct token policy", async () => {
+    it.effect("sends POST with correct token policy", () => {
       requestHandler = (options) => {
         requestSpy(options);
         return Effect.succeed({
@@ -273,58 +267,54 @@ describe("LiveCloudflareR2Service", () => {
 
       const layer = createTestLayer(requestHandler);
 
-      const result = await Effect.runPromise(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          return yield* r2.createScopedCredentials("claw-abc");
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        const result = yield* r2.createScopedCredentials("claw-abc");
 
-      expect(result.tokenId).toBe("token-id-123");
-      expect(result.accessKeyId).toBe("token-id-123");
-      expect(result.secretAccessKey).toBe("secret-value-abc");
+        expect(result.tokenId).toBe("token-id-123");
+        expect(result.accessKeyId).toBe("token-id-123");
+        expect(result.secretAccessKey).toBe("secret-value-abc");
 
-      const call = requestSpy.mock.calls[0][0] as CloudflareRequestOptions;
-      expect(call.method).toBe("POST");
-      expect(call.path).toBe("/accounts/test-account-id/tokens");
+        const call = requestSpy.mock.calls[0][0] as CloudflareRequestOptions;
+        expect(call.method).toBe("POST");
+        expect(call.path).toBe("/accounts/test-account-id/tokens");
 
-      const body = call.body as {
-        name: string;
-        policies: {
-          effect: string;
-          permission_groups: { id: string }[];
-          resources: Record<string, string>;
-        }[];
-      };
-      expect(body.name).toBe("r2-scoped-claw-abc");
-      expect(body.policies).toHaveLength(1);
-      expect(body.policies[0].permission_groups).toEqual([
-        { id: "read-perm-id" },
-        { id: "write-perm-id" },
-      ]);
+        const body = call.body as {
+          name: string;
+          policies: {
+            effect: string;
+            permission_groups: { id: string }[];
+            resources: Record<string, string>;
+          }[];
+        };
+        expect(body.name).toBe("r2-scoped-claw-abc");
+        expect(body.policies).toHaveLength(1);
+        expect(body.policies[0].permission_groups).toEqual([
+          { id: "read-perm-id" },
+          { id: "write-perm-id" },
+        ]);
 
-      const expectedResource = `com.cloudflare.edge.r2.bucket.test-account-id_default_claw-abc`;
-      expect(body.policies[0].resources[expectedResource]).toBe("*");
+        const expectedResource = `com.cloudflare.edge.r2.bucket.test-account-id_default_claw-abc`;
+        expect(body.policies[0].resources[expectedResource]).toBe("*");
+      }).pipe(Effect.provide(layer));
     });
   });
 
   describe("revokeScopedCredentials", () => {
-    it("sends DELETE to correct token endpoint", async () => {
+    it.effect("sends DELETE to correct token endpoint", () => {
       const layer = createTestLayer(requestHandler);
 
-      await Effect.runPromise(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          yield* r2.revokeScopedCredentials("token-id-123");
-        }).pipe(Effect.provide(layer)),
-      );
+      return Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        yield* r2.revokeScopedCredentials("token-id-123");
 
-      const call = requestSpy.mock.calls[0][0] as CloudflareRequestOptions;
-      expect(call.method).toBe("DELETE");
-      expect(call.path).toBe("/accounts/test-account-id/tokens/token-id-123");
+        const call = requestSpy.mock.calls[0][0] as CloudflareRequestOptions;
+        expect(call.method).toBe("DELETE");
+        expect(call.path).toBe("/accounts/test-account-id/tokens/token-id-123");
+      }).pipe(Effect.provide(layer));
     });
 
-    it("propagates 404 error (token not found)", async () => {
+    it.effect("propagates 404 error (token not found)", () => {
       requestHandler = () =>
         Effect.fail(
           new CloudflareApiError({
@@ -335,20 +325,19 @@ describe("LiveCloudflareR2Service", () => {
 
       const layer = createTestLayer(requestHandler);
 
-      const error = await Effect.runPromise(
-        Effect.gen(function* () {
+      return Effect.gen(function* () {
+        const error = yield* Effect.gen(function* () {
           const r2 = yield* CloudflareR2Service;
           return yield* r2.revokeScopedCredentials("bad-id");
-        }).pipe(Effect.flip, Effect.provide(layer)),
-      );
-
-      expect(error).toBeInstanceOf(CloudflareApiError);
-      expect((error as CloudflareApiError).message).toContain("not found");
+        }).pipe(Effect.flip);
+        expect(error).toBeInstanceOf(CloudflareApiError);
+        expect((error as CloudflareApiError).message).toContain("not found");
+      }).pipe(Effect.provide(layer));
     });
   });
 
   describe("error propagation", () => {
-    it("propagates CloudflareApiError from HTTP client", async () => {
+    it.effect("propagates CloudflareApiError from HTTP client", () => {
       requestHandler = () =>
         Effect.fail(
           new CloudflareApiError({
@@ -358,15 +347,14 @@ describe("LiveCloudflareR2Service", () => {
 
       const layer = createTestLayer(requestHandler);
 
-      const error = await Effect.runPromise(
-        Effect.gen(function* () {
+      return Effect.gen(function* () {
+        const error = yield* Effect.gen(function* () {
           const r2 = yield* CloudflareR2Service;
           return yield* r2.createBucket("claw-abc");
-        }).pipe(Effect.flip, Effect.provide(layer)),
-      );
-
-      expect(error).toBeInstanceOf(CloudflareApiError);
-      expect((error as CloudflareApiError).message).toContain("rate limited");
+        }).pipe(Effect.flip);
+        expect(error).toBeInstanceOf(CloudflareApiError);
+        expect((error as CloudflareApiError).message).toContain("rate limited");
+      }).pipe(Effect.provide(layer));
     });
 
     it("preserves error messages for distinguishing failure types", async () => {

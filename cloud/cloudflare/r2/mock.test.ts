@@ -8,22 +8,12 @@
  * isolated state without needing reset functions.
  */
 
+import { describe, it, expect } from "@effect/vitest";
 import { Effect } from "effect";
-import { describe, it, expect } from "vitest";
 
 import { makeMockR2Layer } from "@/cloudflare/r2/mock";
 import { CloudflareR2Service } from "@/cloudflare/r2/service";
 import { CloudflareApiError } from "@/errors";
-
-function run<A, E>(effect: Effect.Effect<A, E, CloudflareR2Service>) {
-  const layer = makeMockR2Layer();
-  return Effect.runPromise(effect.pipe(Effect.provide(layer)));
-}
-
-function runFail<A, E>(effect: Effect.Effect<A, E, CloudflareR2Service>) {
-  const layer = makeMockR2Layer();
-  return Effect.runPromise(effect.pipe(Effect.flip, Effect.provide(layer)));
-}
 
 describe("CloudflareApiError", () => {
   it("has correct tag and status", () => {
@@ -45,280 +35,255 @@ describe("CloudflareApiError", () => {
 
 describe("MockCloudflareR2Service", () => {
   describe("createBucket", () => {
-    it("creates a bucket and returns info", async () => {
-      const info = await run(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          return yield* r2.createBucket("claw-test-123");
-        }),
-      );
+    it.effect("creates a bucket and returns info", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        const info = yield* r2.createBucket("claw-test-123");
 
-      expect(info.name).toBe("claw-test-123");
-      expect(info.creationDate).toBeDefined();
-      expect(info.location).toBe("WNAM");
-    });
+        expect(info.name).toBe("claw-test-123");
+        expect(info.creationDate).toBeDefined();
+        expect(info.location).toBe("WNAM");
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
 
-    it("fails if bucket already exists", async () => {
-      const error = await runFail(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          yield* r2.createBucket("claw-test-123");
-          return yield* r2.createBucket("claw-test-123");
-        }),
-      );
+    it.effect("fails if bucket already exists", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        yield* r2.createBucket("claw-test-123");
+        const error = yield* r2.createBucket("claw-test-123").pipe(Effect.flip);
 
-      expect(error).toBeInstanceOf(CloudflareApiError);
-      expect((error as CloudflareApiError).message).toContain("already exists");
-    });
+        expect(error).toBeInstanceOf(CloudflareApiError);
+        expect((error as CloudflareApiError).message).toContain(
+          "already exists",
+        );
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
   });
 
   describe("deleteBucket", () => {
-    it("deletes a bucket", async () => {
-      const error = await runFail(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          yield* r2.createBucket("claw-test-123");
-          yield* r2.deleteBucket("claw-test-123");
-          // getBucket should fail after deletion
-          return yield* r2.getBucket("claw-test-123");
-        }),
-      );
+    it.effect("deletes a bucket", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        yield* r2.createBucket("claw-test-123");
+        yield* r2.deleteBucket("claw-test-123");
+        // getBucket should fail after deletion
+        const error = yield* r2.getBucket("claw-test-123").pipe(Effect.flip);
 
-      expect(error).toBeInstanceOf(CloudflareApiError);
-    });
+        expect(error).toBeInstanceOf(CloudflareApiError);
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
 
-    it("fails for non-existent bucket", async () => {
-      const error = await runFail(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          return yield* r2.deleteBucket("does-not-exist");
-        }),
-      );
+    it.effect("fails for non-existent bucket", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        const error = yield* r2
+          .deleteBucket("does-not-exist")
+          .pipe(Effect.flip);
 
-      expect(error).toBeInstanceOf(CloudflareApiError);
-      expect((error as CloudflareApiError).message).toContain("not found");
-    });
+        expect(error).toBeInstanceOf(CloudflareApiError);
+        expect((error as CloudflareApiError).message).toContain("not found");
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
 
-    it("allows re-creation after deletion", async () => {
-      const info = await run(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          yield* r2.createBucket("claw-test-123");
-          yield* r2.deleteBucket("claw-test-123");
-          return yield* r2.createBucket("claw-test-123");
-        }),
-      );
+    it.effect("allows re-creation after deletion", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        yield* r2.createBucket("claw-test-123");
+        yield* r2.deleteBucket("claw-test-123");
+        const info = yield* r2.createBucket("claw-test-123");
 
-      expect(info.name).toBe("claw-test-123");
-    });
+        expect(info.name).toBe("claw-test-123");
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
   });
 
   describe("getBucket", () => {
-    it("returns info for existing bucket", async () => {
-      const info = await run(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          yield* r2.createBucket("claw-test-123");
-          return yield* r2.getBucket("claw-test-123");
-        }),
-      );
+    it.effect("returns info for existing bucket", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        yield* r2.createBucket("claw-test-123");
+        const info = yield* r2.getBucket("claw-test-123");
 
-      expect(info.name).toBe("claw-test-123");
-    });
+        expect(info.name).toBe("claw-test-123");
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
 
-    it("fails for non-existent bucket", async () => {
-      const error = await runFail(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          return yield* r2.getBucket("does-not-exist");
-        }),
-      );
+    it.effect("fails for non-existent bucket", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        const error = yield* r2.getBucket("does-not-exist").pipe(Effect.flip);
 
-      expect(error).toBeInstanceOf(CloudflareApiError);
-      expect((error as CloudflareApiError).message).toContain("not found");
-    });
+        expect(error).toBeInstanceOf(CloudflareApiError);
+        expect((error as CloudflareApiError).message).toContain("not found");
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
   });
 
   describe("listBuckets", () => {
-    it("returns all buckets", async () => {
-      const buckets = await run(
+    it.effect("returns all buckets", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        yield* r2.createBucket("claw-aaa");
+        yield* r2.createBucket("claw-bbb");
+        yield* r2.createBucket("other-bucket");
+        const buckets = yield* r2.listBuckets();
+
+        expect(buckets).toHaveLength(3);
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
+
+    it.effect(
+      "filters by substring using includes (matches name_contains)",
+      () =>
         Effect.gen(function* () {
           const r2 = yield* CloudflareR2Service;
           yield* r2.createBucket("claw-aaa");
           yield* r2.createBucket("claw-bbb");
           yield* r2.createBucket("other-bucket");
-          return yield* r2.listBuckets();
-        }),
-      );
+          const buckets = yield* r2.listBuckets("claw-");
 
-      expect(buckets).toHaveLength(3);
-    });
+          expect(buckets).toHaveLength(2);
+          expect(buckets.every((b) => b.name.includes("claw-"))).toBe(true);
+        }).pipe(Effect.provide(makeMockR2Layer())),
+    );
 
-    it("filters by substring using includes (matches name_contains)", async () => {
-      const buckets = await run(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          yield* r2.createBucket("claw-aaa");
-          yield* r2.createBucket("claw-bbb");
-          yield* r2.createBucket("other-bucket");
-          return yield* r2.listBuckets("claw-");
-        }),
-      );
+    it.effect("matches substring anywhere in bucket name", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        yield* r2.createBucket("claw-aaa");
+        yield* r2.createBucket("not-claw-bbb");
+        yield* r2.createBucket("other-claw-ccc");
+        const buckets = yield* r2.listBuckets("claw-");
 
-      expect(buckets).toHaveLength(2);
-      expect(buckets.every((b) => b.name.includes("claw-"))).toBe(true);
-    });
+        expect(buckets).toHaveLength(3);
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
 
-    it("matches substring anywhere in bucket name", async () => {
-      const buckets = await run(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          yield* r2.createBucket("claw-aaa");
-          yield* r2.createBucket("not-claw-bbb");
-          yield* r2.createBucket("other-claw-ccc");
-          return yield* r2.listBuckets("claw-");
-        }),
-      );
+    it.effect("returns empty array when no buckets exist", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        const buckets = yield* r2.listBuckets();
 
-      expect(buckets).toHaveLength(3);
-    });
-
-    it("returns empty array when no buckets exist", async () => {
-      const buckets = await run(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          return yield* r2.listBuckets();
-        }),
-      );
-
-      expect(buckets).toHaveLength(0);
-    });
+        expect(buckets).toHaveLength(0);
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
   });
 
   describe("createScopedCredentials", () => {
-    it("returns credentials for an existing bucket", async () => {
-      const creds = await run(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          yield* r2.createBucket("claw-test-123");
-          return yield* r2.createScopedCredentials("claw-test-123");
-        }),
-      );
+    it.effect("returns credentials for an existing bucket", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        yield* r2.createBucket("claw-test-123");
+        const creds = yield* r2.createScopedCredentials("claw-test-123");
 
-      expect(creds.tokenId).toBeDefined();
-      expect(creds.accessKeyId).toBeDefined();
-      expect(creds.secretAccessKey).toBeDefined();
-    });
+        expect(creds.tokenId).toBeDefined();
+        expect(creds.accessKeyId).toBeDefined();
+        expect(creds.secretAccessKey).toBeDefined();
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
 
-    it("fails if bucket does not exist", async () => {
-      const error = await runFail(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          return yield* r2.createScopedCredentials("does-not-exist");
-        }),
-      );
+    it.effect("fails if bucket does not exist", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        const error = yield* r2
+          .createScopedCredentials("does-not-exist")
+          .pipe(Effect.flip);
 
-      expect(error).toBeInstanceOf(CloudflareApiError);
-      expect((error as CloudflareApiError).message).toContain(
-        "bucket not found",
-      );
-    });
+        expect(error).toBeInstanceOf(CloudflareApiError);
+        expect((error as CloudflareApiError).message).toContain(
+          "bucket not found",
+        );
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
 
-    it("generates unique credentials for each call", async () => {
-      const { creds1, creds2 } = await run(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          yield* r2.createBucket("claw-test-123");
-          const creds1 = yield* r2.createScopedCredentials("claw-test-123");
-          const creds2 = yield* r2.createScopedCredentials("claw-test-123");
-          return { creds1, creds2 };
-        }),
-      );
+    it.effect("generates unique credentials for each call", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        yield* r2.createBucket("claw-test-123");
+        const creds1 = yield* r2.createScopedCredentials("claw-test-123");
+        const creds2 = yield* r2.createScopedCredentials("claw-test-123");
 
-      expect(creds1.tokenId).not.toBe(creds2.tokenId);
-      expect(creds1.secretAccessKey).not.toBe(creds2.secretAccessKey);
-    });
+        expect(creds1.tokenId).not.toBe(creds2.tokenId);
+        expect(creds1.secretAccessKey).not.toBe(creds2.secretAccessKey);
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
 
-    it("fails after bucket is deleted", async () => {
-      const error = await runFail(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          yield* r2.createBucket("claw-test-123");
-          yield* r2.deleteBucket("claw-test-123");
-          return yield* r2.createScopedCredentials("claw-test-123");
-        }),
-      );
+    it.effect("fails after bucket is deleted", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        yield* r2.createBucket("claw-test-123");
+        yield* r2.deleteBucket("claw-test-123");
+        const error = yield* r2
+          .createScopedCredentials("claw-test-123")
+          .pipe(Effect.flip);
 
-      expect(error).toBeInstanceOf(CloudflareApiError);
-      expect((error as CloudflareApiError).message).toContain(
-        "bucket not found",
-      );
-    });
+        expect(error).toBeInstanceOf(CloudflareApiError);
+        expect((error as CloudflareApiError).message).toContain(
+          "bucket not found",
+        );
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
   });
 
   describe("revokeScopedCredentials", () => {
-    it("revokes existing credentials", async () => {
-      await run(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          yield* r2.createBucket("claw-test-123");
-          const creds = yield* r2.createScopedCredentials("claw-test-123");
-          yield* r2.revokeScopedCredentials(creds.tokenId);
-        }),
-      );
-    });
+    it.effect("revokes existing credentials", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        yield* r2.createBucket("claw-test-123");
+        const creds = yield* r2.createScopedCredentials("claw-test-123");
+        yield* r2.revokeScopedCredentials(creds.tokenId);
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
 
-    it("fails for non-existent token", async () => {
-      const error = await runFail(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          return yield* r2.revokeScopedCredentials("fake-token-id");
-        }),
-      );
+    it.effect("fails for non-existent token", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        const error = yield* r2
+          .revokeScopedCredentials("fake-token-id")
+          .pipe(Effect.flip);
 
-      expect(error).toBeInstanceOf(CloudflareApiError);
-      expect((error as CloudflareApiError).message).toContain(
-        "Token not found",
-      );
-    });
+        expect(error).toBeInstanceOf(CloudflareApiError);
+        expect((error as CloudflareApiError).message).toContain(
+          "Token not found",
+        );
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
 
-    it("prevents double-revoke", async () => {
-      const error = await runFail(
-        Effect.gen(function* () {
-          const r2 = yield* CloudflareR2Service;
-          yield* r2.createBucket("claw-test-123");
-          const creds = yield* r2.createScopedCredentials("claw-test-123");
-          yield* r2.revokeScopedCredentials(creds.tokenId);
-          return yield* r2.revokeScopedCredentials(creds.tokenId);
-        }),
-      );
+    it.effect("prevents double-revoke", () =>
+      Effect.gen(function* () {
+        const r2 = yield* CloudflareR2Service;
+        yield* r2.createBucket("claw-test-123");
+        const creds = yield* r2.createScopedCredentials("claw-test-123");
+        yield* r2.revokeScopedCredentials(creds.tokenId);
+        const error = yield* r2
+          .revokeScopedCredentials(creds.tokenId)
+          .pipe(Effect.flip);
 
-      expect(error).toBeInstanceOf(CloudflareApiError);
-    });
+        expect(error).toBeInstanceOf(CloudflareApiError);
+      }).pipe(Effect.provide(makeMockR2Layer())),
+    );
   });
 
   describe("state isolation", () => {
-    it("each layer has independent state", async () => {
+    it.effect("each layer has independent state", () => {
       const layer1 = makeMockR2Layer();
       const layer2 = makeMockR2Layer();
 
-      // Create bucket in layer1
-      await Effect.runPromise(
-        Effect.gen(function* () {
+      return Effect.gen(function* () {
+        // Create bucket in layer1
+        yield* Effect.gen(function* () {
           const r2 = yield* CloudflareR2Service;
           yield* r2.createBucket("isolated-bucket");
-        }).pipe(Effect.provide(layer1)),
-      );
+        }).pipe(Effect.provide(layer1));
 
-      // Should not exist in layer2
-      const error = await Effect.runPromise(
-        Effect.gen(function* () {
+        // Should not exist in layer2
+        const error = yield* Effect.gen(function* () {
           const r2 = yield* CloudflareR2Service;
           return yield* r2.getBucket("isolated-bucket");
-        }).pipe(Effect.flip, Effect.provide(layer2)),
-      );
+        }).pipe(Effect.flip, Effect.provide(layer2));
 
-      expect(error).toBeInstanceOf(CloudflareApiError);
+        expect(error).toBeInstanceOf(CloudflareApiError);
+      });
     });
   });
 });

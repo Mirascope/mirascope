@@ -1,6 +1,7 @@
+import { describe, it, expect } from "@effect/vitest";
 import { Effect, Layer } from "effect";
 import { Resend as ResendAPI } from "resend";
-import { describe, it, expect, vi, beforeEach, assert } from "vitest";
+import { vi, beforeEach, assert } from "vitest";
 
 import { Resend, wrapResendClient } from "@/emails/resend-client";
 import { ResendError } from "@/errors";
@@ -128,7 +129,7 @@ describe("Resend", () => {
         // Verify the service is properly configured
         expect(resend.config.apiKey).toBe("re_test_mock");
         expect(resend.config.audienceSegmentId).toBe("seg_test_mock");
-      }).pipe(Effect.provide(layer), Effect.runPromise);
+      }).pipe(Effect.provide(layer));
     });
   });
 
@@ -144,20 +145,23 @@ describe("Resend", () => {
       });
     });
 
-    it("wraps successful method calls to return Effects with unwrapped data", async () => {
-      const wrapped = wrapResendClient(mockResend as unknown as ResendAPI);
-      const request = TestSendRequestFixture({ html: "<p>Test email</p>" });
+    it.live(
+      "wraps successful method calls to return Effects with unwrapped data",
+      () => {
+        const wrapped = wrapResendClient(mockResend as unknown as ResendAPI);
+        const request = TestSendRequestFixture({ html: "<p>Test email</p>" });
 
-      await Effect.gen(function* () {
-        const result = yield* wrapped.emails.send(request);
+        return Effect.gen(function* () {
+          const result = yield* wrapped.emails.send(request);
 
-        // Should unwrap Response<T> and return just the data
-        expect(result).toEqual({ id: "email_123" });
-        expect(mockResend.emails.send).toHaveBeenCalledWith(request);
-      }).pipe(Effect.runPromise);
-    });
+          // Should unwrap Response<T> and return just the data
+          expect(result).toEqual({ id: "email_123" });
+          expect(mockResend.emails.send).toHaveBeenCalledWith(request);
+        });
+      },
+    );
 
-    it("converts Resend errors to ResendError", async () => {
+    it.live("converts Resend errors to ResendError", () => {
       // Mock an error response from Resend API
       mockResend.emails.send.mockResolvedValue({
         data: null,
@@ -169,17 +173,17 @@ describe("Resend", () => {
 
       const wrapped = wrapResendClient(mockResend as unknown as ResendAPI);
 
-      await Effect.gen(function* () {
+      return Effect.gen(function* () {
         const result = yield* wrapped.emails
           .send(TestSendRequestFixture({ from: "invalid" }))
           .pipe(Effect.flip);
 
         assert(result instanceof ResendError);
         expect(result.message).toContain("Invalid email address");
-      }).pipe(Effect.runPromise);
+      });
     });
 
-    it("converts thrown exceptions to ResendError", async () => {
+    it.live("converts thrown exceptions to ResendError", () => {
       // Mock a network error or other exception
       mockResend.emails.send.mockRejectedValue(
         new Error("Network error: connection timeout"),
@@ -187,14 +191,14 @@ describe("Resend", () => {
 
       const wrapped = wrapResendClient(mockResend as unknown as ResendAPI);
 
-      await Effect.gen(function* () {
+      return Effect.gen(function* () {
         const result = yield* wrapped.emails
           .send(TestSendRequestFixture())
           .pipe(Effect.flip);
 
         assert(result instanceof ResendError);
         expect(result.message).toContain("Network error");
-      }).pipe(Effect.runPromise);
+      });
     });
 
     it("preserves nested resource structure", () => {
@@ -253,7 +257,7 @@ describe("Resend", () => {
       expect(wrapped[testSymbol]).toBe("symbol_value");
     });
 
-    it("includes full method path in error messages", async () => {
+    it.live("includes full method path in error messages", () => {
       // Mock an error that doesn't return Response<T> format (thrown exception)
       mockResend.emails.send.mockRejectedValue(
         new Error("API rate limit exceeded"),
@@ -261,7 +265,7 @@ describe("Resend", () => {
 
       const wrapped = wrapResendClient(mockResend as unknown as ResendAPI);
 
-      await Effect.gen(function* () {
+      return Effect.gen(function* () {
         const result = yield* wrapped.emails
           .send(TestSendRequestFixture())
           .pipe(Effect.flip);
@@ -269,7 +273,7 @@ describe("Resend", () => {
         assert(result instanceof ResendError);
         // Error message should include the method that was called
         expect(result.message).toContain("API rate limit exceeded");
-      }).pipe(Effect.runPromise);
+      });
     });
   });
 
@@ -278,7 +282,7 @@ describe("Resend", () => {
   // ===========================================================================
 
   describe("multiple resource types", () => {
-    it("wraps emails resource correctly", async () => {
+    it.live("wraps emails resource correctly", () => {
       const emailResponse = TestEmailResponseFixture();
       mockResend.emails.get.mockResolvedValue({
         data: emailResponse,
@@ -287,15 +291,15 @@ describe("Resend", () => {
 
       const wrapped = wrapResendClient(mockResend as unknown as ResendAPI);
 
-      await Effect.gen(function* () {
+      return Effect.gen(function* () {
         const email = yield* wrapped.emails.get("email_123");
 
         expect(email).toEqual(emailResponse);
         expect(mockResend.emails.get).toHaveBeenCalledWith("email_123");
-      }).pipe(Effect.runPromise);
+      });
     });
 
-    it("wraps domains resource correctly", async () => {
+    it.live("wraps domains resource correctly", () => {
       const domainRequest = TestDomainCreateRequestFixture();
       const domainResponse = TestDomainResponseFixture();
       mockResend.domains.create.mockResolvedValue({
@@ -305,15 +309,15 @@ describe("Resend", () => {
 
       const wrapped = wrapResendClient(mockResend as unknown as ResendAPI);
 
-      await Effect.gen(function* () {
+      return Effect.gen(function* () {
         const domain = yield* wrapped.domains.create(domainRequest);
 
         expect(domain).toEqual(domainResponse);
         expect(mockResend.domains.create).toHaveBeenCalledWith(domainRequest);
-      }).pipe(Effect.runPromise);
+      });
     });
 
-    it("wraps apiKeys resource correctly", async () => {
+    it.live("wraps apiKeys resource correctly", () => {
       const apiKeyRequest = TestApiKeyCreateRequestFixture();
       const apiKeyResponse = TestApiKeyResponseFixture();
       mockResend.apiKeys.create.mockResolvedValue({
@@ -323,12 +327,12 @@ describe("Resend", () => {
 
       const wrapped = wrapResendClient(mockResend as unknown as ResendAPI);
 
-      await Effect.gen(function* () {
+      return Effect.gen(function* () {
         const apiKey = yield* wrapped.apiKeys.create(apiKeyRequest);
 
         expect(apiKey).toEqual(apiKeyResponse);
         expect(mockResend.apiKeys.create).toHaveBeenCalledWith(apiKeyRequest);
-      }).pipe(Effect.runPromise);
+      });
     });
   });
 
@@ -337,13 +341,13 @@ describe("Resend", () => {
   // ===========================================================================
 
   describe("error handling edge cases", () => {
-    it("handles errors with no message property", async () => {
+    it.live("handles errors with no message property", () => {
       // Mock an error that's not a standard Error object
       mockResend.emails.send.mockRejectedValue({ code: "UNKNOWN" });
 
       const wrapped = wrapResendClient(mockResend as unknown as ResendAPI);
 
-      await Effect.gen(function* () {
+      return Effect.gen(function* () {
         const result = yield* wrapped.emails
           .send(TestSendRequestFixture())
           .pipe(Effect.flip);
@@ -352,21 +356,21 @@ describe("Resend", () => {
         // Should still create an error with a generic message
         expect(result.message).toContain("Resend API call failed");
         expect(result.message).toContain("resend.emails.send");
-      }).pipe(Effect.runPromise);
+      });
     });
 
-    it("handles non-Response format returns gracefully", async () => {
+    it.live("handles non-Response format returns gracefully", () => {
       // Some methods might not return Response<T> format (like verify)
       mockResend.emails.send.mockResolvedValue({ id: "direct_value" });
 
       const wrapped = wrapResendClient(mockResend as unknown as ResendAPI);
 
-      await Effect.gen(function* () {
+      return Effect.gen(function* () {
         const result = yield* wrapped.emails.send(TestSendRequestFixture());
 
         // Should return the value as-is if it doesn't match Response<T> format
         expect(result).toEqual({ id: "direct_value" });
-      }).pipe(Effect.runPromise);
+      });
     });
   });
 });

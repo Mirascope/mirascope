@@ -1,5 +1,5 @@
+import { describe, it, expect } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { describe, it, expect } from "vitest";
 
 import { Emails } from "@/emails/service";
 import { ResendError } from "@/errors";
@@ -11,7 +11,7 @@ import {
 
 describe("Email", () => {
   describe("send", () => {
-    it("sends email with correct parameters", () => {
+    it.live("sends email with correct parameters", () => {
       let capturedParams: unknown;
       const sendParams = TestEmailSendParamsFixture();
       const response = TestEmailSendResponseFixture();
@@ -34,11 +34,10 @@ describe("Email", () => {
             ),
           ),
         ),
-        Effect.runPromise,
       );
     });
 
-    it("sends email with multiple recipients", () => {
+    it.live("sends email with multiple recipients", () => {
       const sendParams = TestEmailSendParamsFixture({
         to: ["user1@example.com", "user2@example.com"],
       });
@@ -56,11 +55,10 @@ describe("Email", () => {
             Layer.provide(MockResend.layer(() => Effect.succeed(response))),
           ),
         ),
-        Effect.runPromise,
       );
     });
 
-    it("sends email with cc and bcc", () => {
+    it.live("sends email with cc and bcc", () => {
       let capturedParams: unknown;
       const sendParams = TestEmailSendParamsFixture({
         cc: "cc@example.com",
@@ -86,11 +84,10 @@ describe("Email", () => {
             ),
           ),
         ),
-        Effect.runPromise,
       );
     });
 
-    it("sends email with text content", () => {
+    it.live("sends email with text content", () => {
       let capturedParams: unknown;
       const sendParams = TestEmailSendParamsFixture({
         html: undefined,
@@ -116,11 +113,10 @@ describe("Email", () => {
             ),
           ),
         ),
-        Effect.runPromise,
       );
     });
 
-    it("sends email with attachments", () => {
+    it.live("sends email with attachments", () => {
       let capturedParams: unknown;
       const sendParams = TestEmailSendParamsFixture({
         attachments: [
@@ -150,11 +146,10 @@ describe("Email", () => {
             ),
           ),
         ),
-        Effect.runPromise,
       );
     });
 
-    it("sends email with replyTo", () => {
+    it.live("sends email with replyTo", () => {
       let capturedParams: unknown;
       const sendParams = TestEmailSendParamsFixture({
         replyTo: "support@example.com",
@@ -179,11 +174,10 @@ describe("Email", () => {
             ),
           ),
         ),
-        Effect.runPromise,
       );
     });
 
-    it("returns ResendError when send fails", () => {
+    it.live("returns ResendError when send fails", () => {
       const sendParams = TestEmailSendParamsFixture();
 
       return Effect.gen(function* () {
@@ -205,11 +199,10 @@ describe("Email", () => {
             ),
           ),
         ),
-        Effect.runPromise,
       );
     });
 
-    it("returns ResendError for invalid email address", () => {
+    it.live("returns ResendError for invalid email address", () => {
       const sendParams = TestEmailSendParamsFixture({ from: "invalid-email" });
 
       return Effect.gen(function* () {
@@ -233,13 +226,12 @@ describe("Email", () => {
             ),
           ),
         ),
-        Effect.runPromise,
       );
     });
   });
 
   describe("DefaultRetries", () => {
-    it("retries on failure and eventually succeeds", () => {
+    it.live("retries on failure and eventually succeeds", () => {
       let attemptCount = 0;
       const sendParams = TestEmailSendParamsFixture();
       const response = TestEmailSendResponseFixture();
@@ -270,42 +262,43 @@ describe("Email", () => {
             ),
           ),
         ),
-        Effect.runPromise,
       );
     });
 
-    it("catches all errors after retries exhausted and returns void", () => {
-      let attemptCount = 0;
-      const sendParams = TestEmailSendParamsFixture();
+    it.live(
+      "catches all errors after retries exhausted and returns void",
+      () => {
+        let attemptCount = 0;
+        const sendParams = TestEmailSendParamsFixture();
 
-      return Effect.gen(function* () {
-        const email = yield* Emails;
+        return Effect.gen(function* () {
+          const email = yield* Emails;
 
-        // Should not throw even after all retries fail
-        yield* email
-          .send(sendParams)
-          .pipe(Emails.DefaultRetries("Failed to send test email"));
+          // Should not throw even after all retries fail
+          yield* email
+            .send(sendParams)
+            .pipe(Emails.DefaultRetries("Failed to send test email"));
 
-        // Should have tried 5 times (1 initial + 4 retries)
-        expect(attemptCount).toBe(5);
-      }).pipe(
-        Effect.provide(
-          Emails.Default.pipe(
-            Layer.provide(
-              MockResend.layer(() => {
-                attemptCount++;
-                return Effect.fail(
-                  new ResendError({ message: "Persistent error" }),
-                );
-              }),
+          // Should have tried 5 times (1 initial + 4 retries)
+          expect(attemptCount).toBe(5);
+        }).pipe(
+          Effect.provide(
+            Emails.Default.pipe(
+              Layer.provide(
+                MockResend.layer(() => {
+                  attemptCount++;
+                  return Effect.fail(
+                    new ResendError({ message: "Persistent error" }),
+                  );
+                }),
+              ),
             ),
           ),
-        ),
-        Effect.runPromise,
-      );
-    });
+        );
+      },
+    );
 
-    it("logs warning with error message when retries exhausted", () => {
+    it.live("logs warning with error message when retries exhausted", () => {
       const sendParams = TestEmailSendParamsFixture();
       const customErrorMessage = "Custom error message for logging";
 
@@ -326,7 +319,6 @@ describe("Email", () => {
             ),
           ),
         ),
-        Effect.runPromise,
       );
     });
   });

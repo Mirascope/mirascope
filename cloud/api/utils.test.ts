@@ -1,5 +1,5 @@
+import { describe, it, expect } from "@effect/vitest";
 import { Effect } from "effect";
-import { describe, it, expect } from "vitest";
 
 import { handleErrors, handleDefects } from "@/api/utils";
 import { NotFoundError, UnauthorizedError, DatabaseError } from "@/errors";
