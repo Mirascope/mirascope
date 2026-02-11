@@ -59,6 +59,7 @@ function makeContainerService(
           method,
           headers: {
             Host: hostname,
+            "X-Claw-Id": hostname.split(".")[0],
             "Content-Type": "application/json",
           },
         }),

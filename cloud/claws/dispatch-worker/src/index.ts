@@ -62,8 +62,10 @@ const app = new Hono<AppEnv>();
 // Internal routes: /_internal/* — Host-based clawId extraction (service binding traffic)
 // ---------------------------------------------------------------------------
 app.use("/_internal/*", async (c, next) => {
+  // Prefer explicit X-Claw-Id header (CF may clobber Host on custom domains)
+  const explicitClawId = c.req.header("X-Claw-Id");
   const host = c.req.header("Host") || "";
-  const clawId = extractClawId(host);
+  const clawId = explicitClawId || extractClawId(host);
 
   if (!clawId) {
     return c.json(

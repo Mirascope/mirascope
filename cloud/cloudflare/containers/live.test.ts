@@ -82,6 +82,7 @@ describe("LiveCloudflareContainerService", () => {
             method: "POST",
             headers: expect.objectContaining({
               Host: TEST_HOSTNAME,
+              "X-Claw-Id": "my-claw",
             }),
           }),
         );
@@ -130,6 +131,7 @@ describe("LiveCloudflareContainerService", () => {
               method: "POST",
               headers: expect.objectContaining({
                 Host: TEST_HOSTNAME,
+                "X-Claw-Id": "my-claw",
               }),
             }),
           );
@@ -229,6 +231,7 @@ describe("LiveCloudflareContainerService", () => {
             method: "GET",
             headers: expect.objectContaining({
               Host: TEST_HOSTNAME,
+              "X-Claw-Id": "my-claw",
             }),
           }),
         );
