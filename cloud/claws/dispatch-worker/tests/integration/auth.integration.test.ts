@@ -41,6 +41,9 @@ beforeAll(async () => {
     script: harnessScript,
     compatibilityDate: "2025-05-06",
     compatibilityFlags: ["nodejs_compat"],
+    bindings: {
+      SITE_URL: "https://mirascope.com",
+    },
     serviceBindings: {
       MIRASCOPE_CLOUD: mockCloudWorker.fetch,
     },

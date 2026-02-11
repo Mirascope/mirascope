@@ -25,8 +25,9 @@ import {
 function authErrorToResponse(
   error: AuthError,
   origin: string | null,
+  env: DispatchEnv,
 ): Response {
-  const cors = corsHeaders(origin);
+  const cors = corsHeaders(origin, env);
 
   switch (error._tag) {
     case "ClawResolutionError":
@@ -66,7 +67,7 @@ export default {
       }
 
       // CORS preflight handling
-      const preflight = handlePreflight(request);
+      const preflight = handlePreflight(request, env);
       if (preflight) return preflight;
 
       // Parse path
@@ -87,14 +88,14 @@ export default {
       if (Exit.isFailure(exit)) {
         const cause = exit.cause;
         if (cause._tag === "Fail") {
-          return authErrorToResponse(cause.error, origin);
+          return authErrorToResponse(cause.error, origin, env);
         }
         // Unexpected defect
         console.error("[auth-harness] Unexpected defect:", cause);
         return Response.json({ error: "Internal error" }, { status: 500 });
       }
 
-      const cors = corsHeaders(origin);
+      const cors = corsHeaders(origin, env);
 
       // Success: return the auth result + parsed path info
       return Response.json(
@@ -110,7 +111,7 @@ export default {
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       const origin = request.headers.get("Origin");
-      const cors = corsHeaders(origin);
+      const cors = corsHeaders(origin, env);
       return Response.json({ error: message }, { status: 500, headers: cors });
     }
   },
