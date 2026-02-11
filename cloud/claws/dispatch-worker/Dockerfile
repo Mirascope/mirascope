@@ -20,6 +20,7 @@ RUN ARCH="$(dpkg --print-architecture)" \
 RUN curl -fsSL https://bun.sh/install | bash \
     && ln -sf /root/.bun/bin/bun /usr/local/bin/bun \
     && bun --version
+ENV PATH="/root/.bun/bin:$PATH"
 
 # Install uv (Python package manager)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
