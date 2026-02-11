@@ -39,12 +39,35 @@ const GATEWAY_PORT = 18789;
 // ============================================================
 
 function isGatewayRunning(): boolean {
+  // Primary: check if gateway port is actually listening (TCP connect)
+  let portInUse = false;
   try {
-    execSync("pgrep -f 'openclaw gateway'", { stdio: "ignore" });
-    return true;
+    execSync(
+      `node -e "const s=require('net').createConnection(${GATEWAY_PORT},'127.0.0.1');s.on('connect',()=>{s.end();process.exit(0)});s.on('error',()=>process.exit(1));setTimeout(()=>process.exit(1),1000)"`,
+      { stdio: "pipe", timeout: 3000 },
+    );
+    portInUse = true;
+    console.log(
+      `[start-openclaw] Port ${GATEWAY_PORT} is listening — gateway is running`,
+    );
   } catch {
-    return false;
+    console.log(`[start-openclaw] Port ${GATEWAY_PORT} is not listening`);
   }
+
+  // Secondary: log pgrep results for debugging (informational only)
+  try {
+    const result = execSync("pgrep -af 'openclaw gateway'", {
+      stdio: "pipe",
+    })
+      .toString()
+      .trim();
+    console.log("[start-openclaw] pgrep result:", result || "(empty)");
+  } catch {
+    console.log("[start-openclaw] pgrep: no matching processes");
+  }
+
+  // Only trust the port check — pgrep can have false positives
+  return portInUse;
 }
 
 function shouldRestoreFromR2(): boolean {
