@@ -1,5 +1,6 @@
+import { describe, it, expect } from "@effect/vitest";
 import { Effect } from "effect";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { vi, beforeEach } from "vitest";
 
 import {
   fetchModelsDotDevPricingData,

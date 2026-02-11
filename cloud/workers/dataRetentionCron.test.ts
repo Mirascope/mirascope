@@ -1,5 +1,6 @@
+import { describe, it, expect } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { describe, it, expect, vi } from "vitest";
+import { vi } from "vitest";
 
 import type { CronTriggerEnv } from "@/workers/dataRetentionCron";
 

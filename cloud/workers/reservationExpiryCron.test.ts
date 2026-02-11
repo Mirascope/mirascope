@@ -1,5 +1,6 @@
+import { describe, it, expect } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { describe, it, expect, vi } from "vitest";
+import { vi } from "vitest";
 
 import type { CronTriggerEnv } from "@/workers/reservationExpiryCron";
 
@@ -24,7 +25,7 @@ describe("reservationExpiryCron", () => {
   };
 
   describe("expireStaleReservations", () => {
-    it("expires stale reservations and logs count", async () => {
+    it.effect("expires stale reservations and logs count", () => {
       const consoleLogSpy = vi
         .spyOn(console, "log")
         .mockImplementation(() => {});
@@ -48,19 +49,19 @@ describe("reservationExpiryCron", () => {
         })),
       } as never);
 
-      await Effect.runPromise(
-        expireStaleReservations.pipe(Effect.provide(mockDbLayer)),
-      );
+      return Effect.gen(function* () {
+        yield* expireStaleReservations;
 
-      // Should log the number of expired reservations
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        "[reservationExpiryCron] Expired 3 stale reservations",
-      );
+        // Should log the number of expired reservations
+        expect(consoleLogSpy).toHaveBeenCalledWith(
+          "[reservationExpiryCron] Expired 3 stale reservations",
+        );
 
-      consoleLogSpy.mockRestore();
+        consoleLogSpy.mockRestore();
+      }).pipe(Effect.provide(mockDbLayer));
     });
 
-    it("does not log when no reservations are expired", async () => {
+    it.effect("does not log when no reservations are expired", () => {
       const consoleLogSpy = vi
         .spyOn(console, "log")
         .mockImplementation(() => {});
@@ -76,19 +77,19 @@ describe("reservationExpiryCron", () => {
         })),
       } as never);
 
-      await Effect.runPromise(
-        expireStaleReservations.pipe(Effect.provide(mockDbLayer)),
-      );
+      return Effect.gen(function* () {
+        yield* expireStaleReservations;
 
-      // Should not log when no expired rows
-      expect(consoleLogSpy).not.toHaveBeenCalledWith(
-        expect.stringContaining("Expired"),
-      );
+        // Should not log when no expired rows
+        expect(consoleLogSpy).not.toHaveBeenCalledWith(
+          expect.stringContaining("Expired"),
+        );
 
-      consoleLogSpy.mockRestore();
+        consoleLogSpy.mockRestore();
+      }).pipe(Effect.provide(mockDbLayer));
     });
 
-    it("handles database errors gracefully", async () => {
+    it.effect("handles database errors gracefully", () => {
       const mockDbLayer = Layer.succeed(DrizzleORM, {
         update: vi.fn().mockImplementation(() => ({
           set: vi.fn().mockReturnValue({
@@ -103,11 +104,10 @@ describe("reservationExpiryCron", () => {
         })),
       } as never);
 
-      const error = await Effect.runPromise(
-        expireStaleReservations.pipe(Effect.provide(mockDbLayer), Effect.flip),
-      );
-
-      expect(error.message).toContain("Failed to expire stale reservations");
+      return Effect.gen(function* () {
+        const error = yield* expireStaleReservations.pipe(Effect.flip);
+        expect(error.message).toContain("Failed to expire stale reservations");
+      }).pipe(Effect.provide(mockDbLayer));
     });
   });
 

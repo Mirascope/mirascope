@@ -4,8 +4,9 @@
 
 import type { DurableObjectNamespace } from "@cloudflare/workers-types";
 
+import { describe, expect, it } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { describe, expect, it, vi } from "vitest";
+import { vi } from "vitest";
 
 import {
   RealtimeSpans,

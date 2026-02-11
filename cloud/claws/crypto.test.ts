@@ -1,5 +1,6 @@
+import { describe, it, expect } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { describe, it, expect, vi } from "vitest";
+import { vi } from "vitest";
 
 import { encryptSecrets, decryptSecrets } from "@/claws/crypto";
 import { EncryptionError } from "@/errors";
@@ -12,84 +13,90 @@ import { MockSettingsLayer } from "@/tests/settings";
 
 const TestSettings = MockSettingsLayer();
 
-const run = <A>(effect: Effect.Effect<A, EncryptionError, Settings>) =>
-  Effect.runPromise(effect.pipe(Effect.provide(TestSettings)));
-
-const runFail = (effect: Effect.Effect<unknown, EncryptionError, Settings>) =>
-  Effect.runPromise(effect.pipe(Effect.flip, Effect.provide(TestSettings)));
-
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
 
 describe("encryptSecrets / decryptSecrets", () => {
-  it("round-trips secrets through encrypt then decrypt", async () => {
-    const original = {
-      R2_ACCESS_KEY_ID: "ak-123",
-      R2_SECRET_ACCESS_KEY: "sk-456",
-      CUSTOM_VAR: "hello",
-    };
+  it.effect("round-trips secrets through encrypt then decrypt", () =>
+    Effect.gen(function* () {
+      const original = {
+        R2_ACCESS_KEY_ID: "ak-123",
+        R2_SECRET_ACCESS_KEY: "sk-456",
+        CUSTOM_VAR: "hello",
+      };
 
-    const { ciphertext, keyId } = await run(encryptSecrets(original));
+      const { ciphertext, keyId } = yield* encryptSecrets(original);
 
-    expect(typeof ciphertext).toBe("string");
-    expect(ciphertext.length).toBeGreaterThan(0);
-    expect(keyId).toBe("CLAW_SECRETS_ENCRYPTION_KEY_V1");
+      expect(typeof ciphertext).toBe("string");
+      expect(ciphertext.length).toBeGreaterThan(0);
+      expect(keyId).toBe("CLAW_SECRETS_ENCRYPTION_KEY_V1");
 
-    // Ciphertext should NOT contain plaintext
-    expect(ciphertext).not.toContain("ak-123");
-    expect(ciphertext).not.toContain("sk-456");
+      // Ciphertext should NOT contain plaintext
+      expect(ciphertext).not.toContain("ak-123");
+      expect(ciphertext).not.toContain("sk-456");
 
-    const decrypted = await run(decryptSecrets(ciphertext, keyId));
-    expect(decrypted).toEqual(original);
-  });
+      const decrypted = yield* decryptSecrets(ciphertext, keyId);
+      expect(decrypted).toEqual(original);
+    }).pipe(Effect.provide(TestSettings)),
+  );
 
-  it("round-trips empty secrets", async () => {
-    const original = {};
-    const { ciphertext, keyId } = await run(encryptSecrets(original));
-    const decrypted = await run(decryptSecrets(ciphertext, keyId));
-    expect(decrypted).toEqual(original);
-  });
+  it.effect("round-trips empty secrets", () =>
+    Effect.gen(function* () {
+      const original = {};
+      const { ciphertext, keyId } = yield* encryptSecrets(original);
+      const decrypted = yield* decryptSecrets(ciphertext, keyId);
+      expect(decrypted).toEqual(original);
+    }).pipe(Effect.provide(TestSettings)),
+  );
 
-  it("produces different ciphertexts for the same input (random IV)", async () => {
-    const secrets = { KEY: "value" };
-    const a = await run(encryptSecrets(secrets));
-    const b = await run(encryptSecrets(secrets));
-    expect(a.ciphertext).not.toBe(b.ciphertext);
-  });
+  it.effect(
+    "produces different ciphertexts for the same input (random IV)",
+    () =>
+      Effect.gen(function* () {
+        const secrets = { KEY: "value" };
+        const a = yield* encryptSecrets(secrets);
+        const b = yield* encryptSecrets(secrets);
+        expect(a.ciphertext).not.toBe(b.ciphertext);
+      }).pipe(Effect.provide(TestSettings)),
+  );
 
-  it("returns EncryptionError for unknown keyId on decrypt", async () => {
-    const { ciphertext } = await run(encryptSecrets({ KEY: "value" }));
+  it.effect("returns EncryptionError for unknown keyId on decrypt", () =>
+    Effect.gen(function* () {
+      const { ciphertext } = yield* encryptSecrets({ KEY: "value" });
 
-    const error = await runFail(decryptSecrets(ciphertext, "NONEXISTENT_KEY"));
-    expect(error).toBeInstanceOf(EncryptionError);
-    expect(error.message).toContain("Unknown encryption key ID");
-  });
+      const error = yield* decryptSecrets(ciphertext, "NONEXISTENT_KEY").pipe(
+        Effect.flip,
+      );
+      expect(error).toBeInstanceOf(EncryptionError);
+      expect(error.message).toContain("Unknown encryption key ID");
+    }).pipe(Effect.provide(TestSettings)),
+  );
 
-  it("returns EncryptionError for corrupted ciphertext", async () => {
-    const error = await runFail(
-      decryptSecrets(
+  it.effect("returns EncryptionError for corrupted ciphertext", () =>
+    Effect.gen(function* () {
+      const error = yield* decryptSecrets(
         // valid base64 but not valid AES-GCM ciphertext
         btoa("x".repeat(20)),
         "CLAW_SECRETS_ENCRYPTION_KEY_V1",
-      ),
-    );
-    expect(error).toBeInstanceOf(EncryptionError);
-    expect(error.message).toContain("Decryption failed");
-  });
+      ).pipe(Effect.flip);
+      expect(error).toBeInstanceOf(EncryptionError);
+      expect(error.message).toContain("Decryption failed");
+    }).pipe(Effect.provide(TestSettings)),
+  );
 
-  it("returns EncryptionError for ciphertext too short", async () => {
-    const error = await runFail(
-      decryptSecrets(
+  it.effect("returns EncryptionError for ciphertext too short", () =>
+    Effect.gen(function* () {
+      const error = yield* decryptSecrets(
         btoa("short"), // only 5 bytes — less than IV_LENGTH + 1
         "CLAW_SECRETS_ENCRYPTION_KEY_V1",
-      ),
-    );
-    expect(error).toBeInstanceOf(EncryptionError);
-    expect(error.message).toContain("too short");
-  });
+      ).pipe(Effect.flip);
+      expect(error).toBeInstanceOf(EncryptionError);
+      expect(error.message).toContain("too short");
+    }).pipe(Effect.provide(TestSettings)),
+  );
 
-  it("returns EncryptionError for invalid key length", async () => {
+  it.effect("returns EncryptionError for invalid key length", () => {
     const BadKeySettings = Layer.succeed(Settings, {
       encryptionKeys: {
         BAD_KEY: btoa("only-16-bytes!!"), // 15 bytes, not 32
@@ -97,27 +104,26 @@ describe("encryptSecrets / decryptSecrets", () => {
       activeEncryptionKeyId: "BAD_KEY",
     } as never);
 
-    const error = await Effect.runPromise(
-      encryptSecrets({ KEY: "value" }).pipe(
-        Effect.flip,
-        Effect.provide(BadKeySettings),
-      ),
-    );
-    expect(error).toBeInstanceOf(EncryptionError);
-    expect(error.message).toContain("Failed to import encryption key");
+    return Effect.gen(function* () {
+      const error = yield* encryptSecrets({ KEY: "value" }).pipe(Effect.flip);
+      expect(error).toBeInstanceOf(EncryptionError);
+      expect(error.message).toContain("Failed to import encryption key");
+    }).pipe(Effect.provide(BadKeySettings));
   });
 
-  it("returns EncryptionError when crypto.subtle.encrypt fails", async () => {
-    const spy = vi
-      .spyOn(crypto.subtle, "encrypt")
-      .mockRejectedValueOnce(new Error("simulated encrypt failure"));
+  it.effect("returns EncryptionError when crypto.subtle.encrypt fails", () =>
+    Effect.gen(function* () {
+      const spy = vi
+        .spyOn(crypto.subtle, "encrypt")
+        .mockRejectedValueOnce(new Error("simulated encrypt failure"));
 
-    const error = await runFail(encryptSecrets({ KEY: "value" }));
-    expect(error).toBeInstanceOf(EncryptionError);
-    expect(error.message).toContain("Encryption failed");
+      const error = yield* encryptSecrets({ KEY: "value" }).pipe(Effect.flip);
+      expect(error).toBeInstanceOf(EncryptionError);
+      expect(error.message).toContain("Encryption failed");
 
-    spy.mockRestore();
-  });
+      spy.mockRestore();
+    }).pipe(Effect.provide(TestSettings)),
+  );
 
   it("returns EncryptionError when decrypted data is not valid JSON", async () => {
     // Encrypt raw non-JSON bytes using the same key, then decrypt via decryptSecrets
@@ -167,19 +173,16 @@ describe("encryptSecrets / decryptSecrets", () => {
     expect(error.message).toContain("not valid JSON");
   });
 
-  it("returns EncryptionError for unknown keyId on encrypt", async () => {
+  it.effect("returns EncryptionError for unknown keyId on encrypt", () => {
     const MissingActiveKey = Layer.succeed(Settings, {
       encryptionKeys: {},
       activeEncryptionKeyId: "DOES_NOT_EXIST",
     } as never);
 
-    const error = await Effect.runPromise(
-      encryptSecrets({ KEY: "value" }).pipe(
-        Effect.flip,
-        Effect.provide(MissingActiveKey),
-      ),
-    );
-    expect(error).toBeInstanceOf(EncryptionError);
-    expect(error.message).toContain("Unknown encryption key ID");
+    return Effect.gen(function* () {
+      const error = yield* encryptSecrets({ KEY: "value" }).pipe(Effect.flip);
+      expect(error).toBeInstanceOf(EncryptionError);
+      expect(error.message).toContain("Unknown encryption key ID");
+    }).pipe(Effect.provide(MissingActiveKey));
   });
 });

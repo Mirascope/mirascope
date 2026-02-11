@@ -5,8 +5,8 @@
  * responses, and reports errors for unmatched requests.
  */
 
+import { describe, it, expect } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { describe, it, expect } from "vitest";
 
 import type { CloudflareConfig } from "@/cloudflare/config";
 
@@ -26,7 +26,7 @@ const TEST_CONFIG: CloudflareConfig = {
 };
 
 describe("makeHttpRecorder", () => {
-  it("records calls and returns canned responses", async () => {
+  it.effect("records calls and returns canned responses", () => {
     const recorder = makeHttpRecorder();
     recorder.on("GET", "/r2/buckets/my-bucket", {
       name: "my-bucket",
@@ -39,20 +39,18 @@ describe("makeHttpRecorder", () => {
       Layer.provide(Layer.merge(recorder.layer, settingsLayer)),
     );
 
-    const result = await Effect.runPromise(
-      Effect.gen(function* () {
-        const r2 = yield* CloudflareR2Service;
-        return yield* r2.getBucket("my-bucket");
-      }).pipe(Effect.provide(layer)),
-    );
+    return Effect.gen(function* () {
+      const r2 = yield* CloudflareR2Service;
+      const result = yield* r2.getBucket("my-bucket");
 
-    expect(result.name).toBe("my-bucket");
-    expect(recorder.calls).toHaveLength(1);
-    expect(recorder.calls[0].method).toBe("GET");
-    expect(recorder.calls[0].path).toContain("/r2/buckets/my-bucket");
+      expect(result.name).toBe("my-bucket");
+      expect(recorder.calls).toHaveLength(1);
+      expect(recorder.calls[0].method).toBe("GET");
+      expect(recorder.calls[0].path).toContain("/r2/buckets/my-bucket");
+    }).pipe(Effect.provide(layer));
   });
 
-  it("fails with descriptive error for unmatched requests", async () => {
+  it.effect("fails with descriptive error for unmatched requests", () => {
     const recorder = makeHttpRecorder();
 
     const settingsLayer = CloudflareSettings.layer(TEST_CONFIG);
@@ -60,20 +58,18 @@ describe("makeHttpRecorder", () => {
       Layer.provide(Layer.merge(recorder.layer, settingsLayer)),
     );
 
-    const error = await Effect.runPromise(
-      Effect.gen(function* () {
-        const r2 = yield* CloudflareR2Service;
-        return yield* r2.getBucket("missing-bucket");
-      }).pipe(Effect.flip, Effect.provide(layer)),
-    );
+    return Effect.gen(function* () {
+      const r2 = yield* CloudflareR2Service;
+      const error = yield* r2.getBucket("missing-bucket").pipe(Effect.flip);
 
-    expect(error).toBeInstanceOf(CloudflareApiError);
-    expect((error as CloudflareApiError).message).toContain(
-      "No canned response",
-    );
+      expect(error).toBeInstanceOf(CloudflareApiError);
+      expect((error as CloudflareApiError).message).toContain(
+        "No canned response",
+      );
+    }).pipe(Effect.provide(layer));
   });
 
-  it("supports canned error responses via onError", async () => {
+  it.effect("supports canned error responses via onError", () => {
     const recorder = makeHttpRecorder();
     recorder.onError(
       "GET",
@@ -88,18 +84,16 @@ describe("makeHttpRecorder", () => {
       Layer.provide(Layer.merge(recorder.layer, settingsLayer)),
     );
 
-    const error = await Effect.runPromise(
-      Effect.gen(function* () {
-        const r2 = yield* CloudflareR2Service;
-        return yield* r2.getBucket("bad-bucket");
-      }).pipe(Effect.flip, Effect.provide(layer)),
-    );
+    return Effect.gen(function* () {
+      const r2 = yield* CloudflareR2Service;
+      const error = yield* r2.getBucket("bad-bucket").pipe(Effect.flip);
 
-    expect(error).toBeInstanceOf(CloudflareApiError);
-    expect((error as CloudflareApiError).message).toContain("does not exist");
+      expect(error).toBeInstanceOf(CloudflareApiError);
+      expect((error as CloudflareApiError).message).toContain("does not exist");
+    }).pipe(Effect.provide(layer));
   });
 
-  it("records request bodies", async () => {
+  it.effect("records request bodies", () => {
     const recorder = makeHttpRecorder();
     recorder.on("POST", "/r2/buckets", {
       name: "new-bucket",
@@ -111,14 +105,12 @@ describe("makeHttpRecorder", () => {
       Layer.provide(Layer.merge(recorder.layer, settingsLayer)),
     );
 
-    await Effect.runPromise(
-      Effect.gen(function* () {
-        const r2 = yield* CloudflareR2Service;
-        yield* r2.createBucket("new-bucket");
-      }).pipe(Effect.provide(layer)),
-    );
+    return Effect.gen(function* () {
+      const r2 = yield* CloudflareR2Service;
+      yield* r2.createBucket("new-bucket");
 
-    expect(recorder.calls).toHaveLength(1);
-    expect(recorder.calls[0].body).toEqual({ name: "new-bucket" });
+      expect(recorder.calls).toHaveLength(1);
+      expect(recorder.calls[0].body).toEqual({ name: "new-bucket" });
+    }).pipe(Effect.provide(layer));
   });
 });

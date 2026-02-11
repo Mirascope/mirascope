@@ -21,8 +21,9 @@
  * - CF_R2_WRITE_PERM_ID — R2 bucket item write permission group ID
  */
 
+import { describe, it, expect } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { describe, it, expect, afterAll } from "vitest";
+import { afterAll } from "vitest";
 
 import { CloudflareHttp } from "@/cloudflare/client";
 import { CloudflareSettings } from "@/cloudflare/config";
@@ -68,46 +69,36 @@ describe.runIf(process.env.CF_INTEGRATION)("R2 contract tests", () => {
     }
   });
 
-  it("createBucket → getBucket → deleteBucket lifecycle", async () => {
+  it.effect("createBucket → getBucket → deleteBucket lifecycle", () => {
     const bucketName = makeTestBucketName();
     createdBuckets.push(bucketName);
 
-    const result = await Effect.runPromise(
-      Effect.gen(function* () {
-        const r2 = yield* CloudflareR2Service;
+    return Effect.gen(function* () {
+      const r2 = yield* CloudflareR2Service;
 
-        // Create
-        const created = yield* r2.createBucket(bucketName);
-        expect(created.name).toBe(bucketName);
+      // Create
+      const created = yield* r2.createBucket(bucketName);
+      expect(created.name).toBe(bucketName);
 
-        // Get
-        const fetched = yield* r2.getBucket(bucketName);
-        expect(fetched.name).toBe(bucketName);
-        expect(fetched.creationDate).toBeDefined();
+      // Get
+      const fetched = yield* r2.getBucket(bucketName);
+      expect(fetched.name).toBe(bucketName);
+      expect(fetched.creationDate).toBeDefined();
 
-        // Delete
-        yield* r2.deleteBucket(bucketName);
-
-        return { created, fetched };
-      }).pipe(Effect.provide(layer)),
-    );
-
-    expect(result.created.name).toBe(bucketName);
-    expect(result.fetched.name).toBe(bucketName);
+      // Delete
+      yield* r2.deleteBucket(bucketName);
+    }).pipe(Effect.provide(layer));
   });
 
-  it("listBuckets returns created buckets", async () => {
+  it.effect("listBuckets returns created buckets", () => {
     const bucketName = makeTestBucketName();
     createdBuckets.push(bucketName);
 
-    const buckets = await Effect.runPromise(
-      Effect.gen(function* () {
-        const r2 = yield* CloudflareR2Service;
-        yield* r2.createBucket(bucketName);
-        return yield* r2.listBuckets(TEST_BUCKET_PREFIX);
-      }).pipe(Effect.provide(layer)),
-    );
-
-    expect(buckets.some((b) => b.name === bucketName)).toBe(true);
+    return Effect.gen(function* () {
+      const r2 = yield* CloudflareR2Service;
+      yield* r2.createBucket(bucketName);
+      const buckets = yield* r2.listBuckets(TEST_BUCKET_PREFIX);
+      expect(buckets.some((b) => b.name === bucketName)).toBe(true);
+    }).pipe(Effect.provide(layer));
   });
 });
