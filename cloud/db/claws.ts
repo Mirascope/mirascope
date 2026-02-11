@@ -247,7 +247,7 @@ export class Claws extends BaseAuthenticatedEffectService<
     return {
       create: ["ADMIN"],
       read: ["ADMIN", "DEVELOPER", "VIEWER", "ANNOTATOR"],
-      update: ["ADMIN"],
+      update: ["ADMIN", "DEVELOPER"],
       delete: ["ADMIN"],
     };
   }
