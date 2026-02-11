@@ -60,6 +60,28 @@
         "zone_name": "mirascope.com",
         "custom_domain": true,
       },
+      "containers": [
+        {
+          "class_name": "Sandbox",
+          "image": "./Dockerfile",
+          "instance_type": "standard-2",
+          "max_instances": 100,
+        },
+      ],
+      "durable_objects": {
+        "bindings": [
+          {
+            "class_name": "Sandbox",
+            "name": "Sandbox",
+          },
+        ],
+      },
+      "migrations": [
+        {
+          "new_sqlite_classes": ["Sandbox"],
+          "tag": "v1",
+        },
+      ],
     },
     "production": {
       "name": "claw-dispatch-worker-production",
@@ -69,6 +91,28 @@
         "zone_name": "mirascope.com",
         "custom_domain": true,
       },
+      "containers": [
+        {
+          "class_name": "Sandbox",
+          "image": "./Dockerfile",
+          "instance_type": "standard-2",
+          "max_instances": 100,
+        },
+      ],
+      "durable_objects": {
+        "bindings": [
+          {
+            "class_name": "Sandbox",
+            "name": "Sandbox",
+          },
+        ],
+      },
+      "migrations": [
+        {
+          "new_sqlite_classes": ["Sandbox"],
+          "tag": "v1",
+        },
+      ],
     },
   },
 }
