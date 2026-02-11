@@ -13,9 +13,10 @@
 
 import { Hono } from "hono";
 
-import type { AppEnv, ContainerState } from "./types";
+import type { AppEnv, ContainerState, SandboxProcessStatus } from "./types";
 
 import { findGatewayProcess } from "./proxy";
+import { PROCESS_TO_CONTAINER_STATUS } from "./types";
 
 const internal = new Hono<AppEnv>();
 
@@ -114,15 +115,14 @@ internal.get("/state", async (c) => {
 
   let state: ContainerState;
   if (proc) {
-    if (proc.status === "running" || proc.status === "starting") {
-      state = { status: "running", lastChange: Date.now() };
-    } else {
-      state = {
-        status: "stopped",
-        lastChange: Date.now(),
-        exitCode: proc.exitCode ?? undefined,
-      };
-    }
+    const status =
+      PROCESS_TO_CONTAINER_STATUS[proc.status as SandboxProcessStatus] ??
+      "unknown";
+    state = {
+      status,
+      lastChange: Date.now(),
+      exitCode: proc.exitCode ?? undefined,
+    };
   } else {
     state = { status: "stopped", lastChange: Date.now() };
   }
