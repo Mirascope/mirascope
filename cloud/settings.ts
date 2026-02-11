@@ -313,7 +313,6 @@ function validateSettingsFromSource(
       return value;
     };
 
-
     const optional = (name: string): string => {
       return source.get(name)?.trim() ?? "";
     };

@@ -135,9 +135,7 @@ export async function ensureGateway(
   if (cfAccountId) {
     await mountR2Storage(sandbox, config.r2, cfAccountId);
   } else {
-    console.log(
-      "[proxy] CLOUDFLARE_ACCOUNT_ID not set, skipping R2 mount",
-    );
+    console.log("[proxy] CLOUDFLARE_ACCOUNT_ID not set, skipping R2 mount");
   }
 
   // Check for existing process
