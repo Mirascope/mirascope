@@ -4,7 +4,11 @@ import { describe, expect, it } from "vitest";
 
 import { RESERVED_ORG_SLUGS } from "@/db/slug";
 
-import { ADDITIONAL_STATIC_SEGMENTS, isCloudAppRoute } from "./route-utils";
+import {
+  ADDITIONAL_STATIC_SEGMENTS,
+  isApplicationRoute,
+  isCloudAppRoute,
+} from "./route-utils";
 
 /**
  * Derive top-level static route segments from the file-based route directory.
@@ -74,5 +78,25 @@ describe("route-utils static segment coverage", () => {
 
   it("isCloudAppRoute returns false for root", () => {
     expect(isCloudAppRoute("/")).toBe(false);
+  });
+
+  it("isApplicationRoute returns true for org-slug routes", () => {
+    expect(isApplicationRoute("/my-org")).toBe(true);
+    expect(isApplicationRoute("/my-org/claws")).toBe(true);
+  });
+
+  it("isApplicationRoute returns true for app shell routes", () => {
+    expect(isApplicationRoute("/settings")).toBe(true);
+    expect(isApplicationRoute("/settings/billing")).toBe(true);
+    expect(isApplicationRoute("/organizations")).toBe(true);
+    expect(isApplicationRoute("/onboarding")).toBe(true);
+    expect(isApplicationRoute("/invitations")).toBe(true);
+  });
+
+  it("isApplicationRoute returns false for marketing routes", () => {
+    expect(isApplicationRoute("/")).toBe(false);
+    expect(isApplicationRoute("/blog")).toBe(false);
+    expect(isApplicationRoute("/docs")).toBe(false);
+    expect(isApplicationRoute("/pricing")).toBe(false);
   });
 });

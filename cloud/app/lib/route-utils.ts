@@ -43,3 +43,28 @@ export function isCloudAppRoute(pathname: string): boolean {
   if (!firstSegment) return false;
   return !STATIC_SEGMENTS.has(firstSegment);
 }
+
+/**
+ * Segments that use the application shell (no footer, cloud-style layout).
+ * These are reserved slugs that are still "app" routes, not marketing pages.
+ */
+const APPLICATION_SEGMENTS: ReadonlySet<string> = new Set([
+  "settings",
+  "organizations",
+  "onboarding",
+  "invitations",
+]);
+
+/**
+ * Returns true for any route that should use the application layout shell:
+ * org-slug cloud routes, settings, organizations, onboarding, etc.
+ *
+ * Use this for layout decisions (footer visibility, wrapper classes).
+ * Use `isCloudAppRoute` when you specifically need org-slug detection.
+ */
+export function isApplicationRoute(pathname: string): boolean {
+  if (isCloudAppRoute(pathname)) return true;
+  const firstSegment = pathname.split("/")[1];
+  if (!firstSegment) return false;
+  return APPLICATION_SEGMENTS.has(firstSegment);
+}
