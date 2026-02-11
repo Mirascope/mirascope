@@ -220,6 +220,13 @@ export {
   getProviderForModel,
   registerProvider,
   resetProviderRegistry,
+  MirascopeProvider,
+  AnthropicProvider,
+  GoogleProvider,
+  OllamaProvider,
+  OpenAIProvider,
+  OpenRouterProvider,
+  TogetherProvider,
 } from "@/llm/providers";
 
 export {

@@ -5,8 +5,10 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 
 import {
   configure,
+  forceFlush,
   getTracer,
   setTracer,
+  shutdown,
   tracerContext,
   resetConfiguration,
 } from "./configuration";
@@ -162,6 +164,28 @@ describe("configuration", () => {
       });
 
       expect(getTracer()).toBe(tracer1);
+    });
+  });
+
+  describe("forceFlush", () => {
+    it("should no-op when not configured", async () => {
+      await expect(forceFlush()).resolves.toBeUndefined();
+    });
+
+    it("should delegate to provider forceFlush", async () => {
+      configure();
+      await expect(forceFlush()).resolves.toBeUndefined();
+    });
+  });
+
+  describe("shutdown", () => {
+    it("should no-op when not configured", async () => {
+      await expect(shutdown()).resolves.toBeUndefined();
+    });
+
+    it("should delegate to provider shutdown", async () => {
+      configure();
+      await expect(shutdown()).resolves.toBeUndefined();
     });
   });
 
