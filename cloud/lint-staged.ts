@@ -8,6 +8,14 @@ try {
   // Run typecheck first on whole project (fails fast)
   await $`bun run typecheck`.cwd("./cloud");
 
+  // If any staged files are in dispatch-worker, also typecheck it
+  const hasDispatchWorker = files.some((f) =>
+    f.includes("claws/dispatch-worker"),
+  );
+  if (hasDispatchWorker) {
+    await $`bun run typecheck`.cwd("./cloud/claws/dispatch-worker");
+  }
+
   // Run formatter on specific files
   if (files.length > 0) {
     await $`bunx oxfmt --ignore-path .oxfmtignore ${files}`.cwd("./cloud");
