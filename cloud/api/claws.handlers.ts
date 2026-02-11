@@ -225,4 +225,5 @@ export const restartClawHandler = (organizationId: string, clawId: string) =>
     });
 
     yield* deployment.restart(clawId);
+    return;
   });
