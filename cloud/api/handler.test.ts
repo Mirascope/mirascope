@@ -4,6 +4,8 @@ import type { PublicUser } from "@/db/schema";
 
 import { Analytics } from "@/analytics";
 import { handleRequest } from "@/api/handler";
+import { MockDeploymentService } from "@/claws/deployment/mock";
+import { ClawDeploymentService } from "@/claws/deployment/service";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { DrizzleORM } from "@/db/client";
@@ -21,6 +23,7 @@ const mockUser: PublicUser = {
   id: "test-user-id",
   email: "test@example.com",
   name: "Test User",
+  accountType: "user",
   deletedAt: null,
 };
 
@@ -84,6 +87,7 @@ const MockAppServicesLayer = Layer.mergeAll(
   MockRealtimeSpans,
   MockAnalytics,
   MockEmails,
+  MockDeploymentService,
 );
 
 describe("handleRequest", () => {
@@ -105,6 +109,7 @@ describe("handleRequest", () => {
         clickHouseSearch,
         realtimeSpans: yield* RealtimeSpans,
         spansIngestQueue: yield* SpansIngestQueue,
+        clawDeployment: yield* ClawDeploymentService,
       });
 
       expect(response.status).toBe(404);
@@ -130,6 +135,7 @@ describe("handleRequest", () => {
         clickHouseSearch,
         realtimeSpans: yield* RealtimeSpans,
         spansIngestQueue: yield* SpansIngestQueue,
+        clawDeployment: yield* ClawDeploymentService,
       });
 
       expect(response.status).toBe(404);
@@ -154,6 +160,7 @@ describe("handleRequest", () => {
           clickHouseSearch,
           realtimeSpans: yield* RealtimeSpans,
           spansIngestQueue: yield* SpansIngestQueue,
+          clawDeployment: yield* ClawDeploymentService,
         });
 
         // The path becomes "/" after stripping prefix, which doesn't match any route
@@ -185,6 +192,7 @@ describe("handleRequest", () => {
           clickHouseSearch,
           realtimeSpans: yield* RealtimeSpans,
           spansIngestQueue: yield* SpansIngestQueue,
+          clawDeployment: yield* ClawDeploymentService,
         }).pipe(Effect.flip);
 
         expect(error).toBeInstanceOf(HandlerError);
@@ -217,6 +225,7 @@ describe("handleRequest", () => {
         clickHouseSearch,
         realtimeSpans: yield* RealtimeSpans,
         spansIngestQueue: yield* SpansIngestQueue,
+        clawDeployment: yield* ClawDeploymentService,
       });
 
       expect(matched).toBe(true);
@@ -245,6 +254,7 @@ describe("handleRequest", () => {
         clickHouseSearch,
         realtimeSpans: yield* RealtimeSpans,
         spansIngestQueue: yield* SpansIngestQueue,
+        clawDeployment: yield* ClawDeploymentService,
       });
 
       const body = yield* Effect.promise(() => response.text());

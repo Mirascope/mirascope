@@ -198,7 +198,7 @@ export const THEME_SWITCHER_STYLES = {
   // Button trigger styles
   trigger: cn(
     // Base styles
-    "rounded-md p-2 cursor-pointer",
+    "rounded-md p-2 hover:cursor-pointer",
     // Transitions
     "transition-colors duration-300 ease-in-out",
     // Focus state
@@ -347,7 +347,7 @@ export const SEARCH_BAR_STYLES = {
     cn(
       "search-input-container",
       // Base styles
-      "h-9 rounded-full relative flex items-center overflow-visible w-full",
+      "h-9 rounded-full relative flex items-center overflow-visible w-full hover:cursor-pointer",
       // Conditional styles based on page type
       isLandingPage
         ? "border-0 bg-white/10 hover:bg-white/20"

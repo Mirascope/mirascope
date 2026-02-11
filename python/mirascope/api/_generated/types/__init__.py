@@ -9,6 +9,7 @@ from .bad_request_error_body import (
     BadRequestErrorBody_HttpApiDecodeError,
     BadRequestErrorBody_ImmutableResourceError,
 )
+from .big_int import BigInt
 from .click_house_error import ClickHouseError
 from .database_error import DatabaseError
 from .database_error_tag import DatabaseErrorTag
@@ -18,8 +19,8 @@ from .http_api_decode_error_tag import HttpApiDecodeErrorTag
 from .immutable_resource_error import ImmutableResourceError
 from .internal_server_error_body import (
     InternalServerErrorBody,
-    InternalServerErrorBody_ClickHouseError,
     InternalServerErrorBody_DatabaseError,
+    InternalServerErrorBody_StripeError,
 )
 from .issue import Issue
 from .issue_tag import IssueTag
@@ -50,6 +51,7 @@ __all__ = [
     "BadRequestErrorBody",
     "BadRequestErrorBody_HttpApiDecodeError",
     "BadRequestErrorBody_ImmutableResourceError",
+    "BigInt",
     "ClickHouseError",
     "DatabaseError",
     "DatabaseErrorTag",
@@ -58,8 +60,8 @@ __all__ = [
     "HttpApiDecodeErrorTag",
     "ImmutableResourceError",
     "InternalServerErrorBody",
-    "InternalServerErrorBody_ClickHouseError",
     "InternalServerErrorBody_DatabaseError",
+    "InternalServerErrorBody_StripeError",
     "Issue",
     "IssueTag",
     "NotFoundErrorBody",

@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import React from "react";
 
+import { isCloudAppRoute } from "@/app/lib/route-utils";
 import { cn } from "@/app/lib/utils";
 
 import { NAV_LINK_STYLES, DESKTOP_NAV_STYLES } from "./styles";
@@ -18,11 +19,11 @@ const NavLink = ({ href, children, className, onClick }: NavLinkProps) => {
   const currentPath = router.location.pathname;
 
   // Check if this link is active
-  // For /cloud, match /cloud and /cloud/*
+  // For /cloud, match any cloud app route (/{orgSlug}/...)
   // For others, match exact path or paths that start with the href
   const isActive =
     href === "/cloud"
-      ? currentPath === "/cloud" || currentPath.startsWith("/cloud/")
+      ? isCloudAppRoute(currentPath)
       : currentPath === href || currentPath.startsWith(href + "/");
 
   return (

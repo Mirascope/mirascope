@@ -1,21 +1,26 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 
-import { EnvironmentProvider } from "@/app/contexts/environment";
-import { OrganizationProvider } from "@/app/contexts/organization";
-import { ProjectProvider } from "@/app/contexts/project";
+import { useOrganization } from "@/app/contexts/organization";
 
-function CloudLayout() {
-  return (
-    <OrganizationProvider>
-      <ProjectProvider>
-        <EnvironmentProvider>
-          <Outlet />
-        </EnvironmentProvider>
-      </ProjectProvider>
-    </OrganizationProvider>
-  );
+function CloudRedirect() {
+  const { selectedOrganization, isLoading } = useOrganization();
+
+  if (isLoading) return null;
+
+  if (selectedOrganization) {
+    return (
+      <Navigate
+        to="/$orgSlug"
+        params={{ orgSlug: selectedOrganization.slug }}
+        replace
+      />
+    );
+  }
+
+  // No org selected, redirect to login
+  return <Navigate to="/login" replace />;
 }
 
 export const Route = createFileRoute("/cloud")({
-  component: CloudLayout,
+  component: CloudRedirect,
 });

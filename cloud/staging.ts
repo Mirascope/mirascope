@@ -122,7 +122,9 @@ async function handleStagingAssets(
 
   const assetResponse = await ctx.environment.ASSETS.fetch(assetRequest);
 
-  if (assetResponse.ok) {
+  // Return asset response for success (2xx) or redirects/cache validation (3xx)
+  // Fall through to SSR for 4xx/5xx (asset not found or errors = try SPA routing)
+  if (assetResponse.status >= 200 && assetResponse.status < 400) {
     return assetResponse;
   }
 

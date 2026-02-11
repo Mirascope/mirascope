@@ -14,9 +14,12 @@ export * from "@/db/schema/functions";
 export * from "@/db/schema/annotations";
 export * from "@/db/schema/router-requests";
 export * from "@/db/schema/credit-reservations";
+export * from "@/db/schema/claws";
+export * from "@/db/schema/claw-memberships";
+export * from "@/db/schema/claw-membership-audit";
 
 export type { PublicSession } from "@/db/schema/sessions";
-export type { PublicUser } from "@/db/schema/users";
+export type { PublicUser, AccountType } from "@/db/schema/users";
 export type { PublicOrganization } from "@/db/schema/organizations";
 export type {
   PublicOrganizationMembership,
@@ -59,9 +62,18 @@ export type {
   NewCreditReservation,
   ReservationStatus,
 } from "@/db/schema/credit-reservations";
+export type { PublicClaw } from "@/db/schema/claws";
+export type {
+  PublicClawMembership,
+  ClawRole,
+} from "@/db/schema/claw-memberships";
+export type { PublicClawMembershipAudit } from "@/db/schema/claw-membership-audit";
 
 import { annotations } from "@/db/schema/annotations";
 import { apiKeys } from "@/db/schema/api-keys";
+import { clawMembershipAudit } from "@/db/schema/claw-membership-audit";
+import { clawMemberships } from "@/db/schema/claw-memberships";
+import { claws } from "@/db/schema/claws";
 import { creditReservations } from "@/db/schema/credit-reservations";
 import { environments } from "@/db/schema/environments";
 import { functions } from "@/db/schema/functions";
@@ -93,4 +105,7 @@ export type DatabaseTable =
   | typeof functions
   | typeof annotations
   | typeof routerRequests
-  | typeof creditReservations;
+  | typeof creditReservations
+  | typeof claws
+  | typeof clawMemberships
+  | typeof clawMembershipAudit;

@@ -11,7 +11,7 @@ import { describe, it, expect } from "vitest";
 
 import type { AssistantMessage } from "@/llm/messages";
 
-import { Audio, Image } from "@/llm/content";
+import { Audio, Document, Image } from "@/llm/content";
 import { FeatureNotSupportedError } from "@/llm/exceptions";
 import {
   defineFormat,
@@ -212,6 +212,131 @@ describe("buildRequestParams", () => {
           {},
         ),
       ).toThrow(FeatureNotSupportedError);
+    });
+  });
+  describe("document encoding", () => {
+    it("encodes base64 document source", () => {
+      const doc: Document = {
+        type: "document",
+        source: {
+          type: "base64_document_source",
+          data: "JVBERi0xLjQ=",
+          mediaType: "application/pdf",
+        },
+      };
+      const messages = [user(["Read this", doc])];
+
+      const params = buildRequestParams(
+        "anthropic/claude-haiku-4-5",
+        messages,
+        undefined,
+        undefined,
+        {},
+      );
+
+      const content = params.messages[0]?.content;
+      expect(Array.isArray(content)).toBe(true);
+      const parts = content as unknown as Array<Record<string, unknown>>;
+      expect(parts[1]).toEqual({
+        type: "document",
+        source: {
+          type: "base64",
+          data: "JVBERi0xLjQ=",
+          media_type: "application/pdf",
+        },
+      });
+    });
+
+    it("encodes text document source", () => {
+      const doc: Document = {
+        type: "document",
+        source: {
+          type: "text_document_source",
+          data: "Hello, world!",
+          mediaType: "text/plain",
+        },
+      };
+      const messages = [user(["Read this", doc])];
+
+      const params = buildRequestParams(
+        "anthropic/claude-haiku-4-5",
+        messages,
+        undefined,
+        undefined,
+        {},
+      );
+
+      const content = params.messages[0]?.content;
+      expect(Array.isArray(content)).toBe(true);
+      const parts = content as unknown as Array<Record<string, unknown>>;
+      expect(parts[1]).toEqual({
+        type: "document",
+        source: {
+          type: "text",
+          data: "Hello, world!",
+          media_type: "text/plain",
+        },
+      });
+    });
+
+    it("encodes URL document source", () => {
+      const doc = Document.fromUrl("https://example.com/doc.pdf");
+      const messages = [user(["Read this", doc])];
+
+      const params = buildRequestParams(
+        "anthropic/claude-haiku-4-5",
+        messages,
+        undefined,
+        undefined,
+        {},
+      );
+
+      const content = params.messages[0]?.content;
+      expect(Array.isArray(content)).toBe(true);
+      const parts = content as unknown as Array<Record<string, unknown>>;
+      expect(parts[1]).toEqual({
+        type: "document",
+        source: {
+          type: "url",
+          url: "https://example.com/doc.pdf",
+        },
+      });
+    });
+
+    it("adds cache_control to document in multi-turn", () => {
+      const assistantMsg: AssistantMessage = {
+        role: "assistant",
+        content: [{ type: "text", text: "Hello!" }],
+        name: null,
+        providerId: "openai",
+        modelId: "openai/gpt-4o",
+        providerModelName: "gpt-4o",
+        rawMessage: null,
+      };
+
+      const doc: Document = {
+        type: "document",
+        source: {
+          type: "base64_document_source",
+          data: "JVBERi0xLjQ=",
+          mediaType: "application/pdf",
+        },
+      };
+
+      const messages = [user("Hi"), assistantMsg, user([doc])];
+      const { messages: encoded } = encodeMessages(
+        messages,
+        "anthropic/claude-haiku-4-5",
+      );
+
+      const lastMessage = encoded[2] as {
+        role: string;
+        content: Array<{ type: string; cache_control?: object }>;
+      };
+      expect(lastMessage.content[0]?.type).toBe("document");
+      expect(lastMessage.content[0]?.cache_control).toEqual({
+        type: "ephemeral",
+      });
     });
   });
 });

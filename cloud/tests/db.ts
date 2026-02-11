@@ -14,6 +14,7 @@ import { Settings } from "@/settings";
 import { createTestClickHouseSettings } from "@/tests/clickhouse";
 import { CONNECTION_FILE } from "@/tests/global-setup";
 import { MockStripe } from "@/tests/payments";
+import { MockSettingsLayer } from "@/tests/settings";
 import { createCustomIt, withRollback } from "@/tests/shared";
 import {
   MockRealtimeSpansLayer,
@@ -157,6 +158,7 @@ export const TestDatabase: Layer.Layer<
   | ClickHouseSearch
   | SpansIngestQueue
   | RealtimeSpans
+  | Settings
 > = Effect.gen(function* () {
   // Lazy import to avoid circular dependency
   const { MockStripe } = yield* Effect.promise(
@@ -184,6 +186,7 @@ export const TestDatabase: Layer.Layer<
     TestSpansIngestQueue,
     MockRealtimeSpansLayer,
     clickHouseSearchLayer,
+    MockSettingsLayer(),
   );
 }).pipe(Layer.unwrapEffect);
 
@@ -200,7 +203,8 @@ export type TestServices =
   | SqlClient.SqlClient
   | ClickHouseSearch
   | SpansIngestQueue
-  | RealtimeSpans;
+  | RealtimeSpans
+  | Settings;
 
 /**
  * Wraps a test function to automatically provide TestDatabase
@@ -730,6 +734,111 @@ export const TestProjectFixture = Effect.gen(function* () {
     projectDeveloper,
     projectViewer,
     projectAnnotator,
+  };
+});
+
+/**
+ * Effect-native test fixture for claws.
+ *
+ * Creates a test claw within an organization with explicit claw members
+ * using the Effect-native `Database` service.
+ *
+ * Reuses `TestOrganizationFixture` to set up the organization.
+ *
+ * Returns { org, claw, owner, admin, member, nonMember, clawAdmin, clawDeveloper, clawViewer, clawAnnotator } where:
+ * - org: the organization containing the claw
+ * - claw: the created claw
+ * - owner: org owner (implicit claw ADMIN access)
+ * - admin: org admin (implicit claw ADMIN access)
+ * - member: org member without explicit claw membership
+ * - nonMember: not an org member
+ * - clawAdmin: org member with explicit claw ADMIN membership
+ * - clawDeveloper: org member with explicit claw DEVELOPER membership
+ * - clawViewer: org member with explicit claw VIEWER membership
+ * - clawAnnotator: org member with explicit claw ANNOTATOR membership
+ *
+ * Requires Database - call `yield* Database` in your test
+ * if you need to perform additional database operations.
+ */
+export const TestClawFixture = Effect.gen(function* () {
+  const orgFixture = yield* TestOrganizationFixture;
+  const db = yield* Database;
+
+  // Create claw using Claws Effect-native service (creator gets claw ADMIN automatically)
+  const claw = yield* db.organizations.claws.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    data: { slug: "test-claw", displayName: "Test Claw" },
+  });
+
+  // Create claw members (must be org members first)
+  const clawAdmin = yield* db.users.create({
+    data: { email: "claw-admin@example.com", name: "Claw Admin" },
+  });
+  yield* db.organizations.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    data: { memberId: clawAdmin.id, role: "MEMBER" },
+  });
+  yield* db.organizations.claws.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    clawId: claw.id,
+    data: { memberId: clawAdmin.id, role: "ADMIN" },
+  });
+
+  const clawDeveloper = yield* db.users.create({
+    data: { email: "claw-developer@example.com", name: "Claw Developer" },
+  });
+  yield* db.organizations.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    data: { memberId: clawDeveloper.id, role: "MEMBER" },
+  });
+  yield* db.organizations.claws.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    clawId: claw.id,
+    data: { memberId: clawDeveloper.id, role: "DEVELOPER" },
+  });
+
+  const clawViewer = yield* db.users.create({
+    data: { email: "claw-viewer@example.com", name: "Claw Viewer" },
+  });
+  yield* db.organizations.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    data: { memberId: clawViewer.id, role: "MEMBER" },
+  });
+  yield* db.organizations.claws.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    clawId: claw.id,
+    data: { memberId: clawViewer.id, role: "VIEWER" },
+  });
+
+  const clawAnnotator = yield* db.users.create({
+    data: { email: "claw-annotator@example.com", name: "Claw Annotator" },
+  });
+  yield* db.organizations.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    data: { memberId: clawAnnotator.id, role: "MEMBER" },
+  });
+  yield* db.organizations.claws.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    clawId: claw.id,
+    data: { memberId: clawAnnotator.id, role: "ANNOTATOR" },
+  });
+
+  return {
+    ...orgFixture,
+    claw,
+    clawAdmin,
+    clawDeveloper,
+    clawViewer,
+    clawAnnotator,
   };
 });
 

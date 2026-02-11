@@ -6,11 +6,17 @@ import pydantic
 import typing_extensions
 from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ...core.serialization import FieldMetadata
+from .organizations_create_payment_intent_response_status import (
+    OrganizationsCreatePaymentIntentResponseStatus,
+)
 
 
 class OrganizationsCreatePaymentIntentResponse(UniversalBaseModel):
-    client_secret: typing_extensions.Annotated[str, FieldMetadata(alias="clientSecret")]
+    client_secret: typing_extensions.Annotated[
+        typing.Optional[str], FieldMetadata(alias="clientSecret")
+    ] = None
     amount: float
+    status: OrganizationsCreatePaymentIntentResponseStatus
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(

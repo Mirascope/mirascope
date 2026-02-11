@@ -2,6 +2,8 @@ import { HttpApi } from "@effect/platform";
 
 import { AnnotationsApi } from "@/api/annotations.schemas";
 import { ApiKeysApi } from "@/api/api-keys.schemas";
+import { ClawMembershipsApi } from "@/api/claw-memberships.schemas";
+import { ClawsApi } from "@/api/claws.schemas";
 import { DocsApi } from "@/api/docs.schemas";
 import { EnvironmentsApi } from "@/api/environments.schemas";
 import { FunctionsApi } from "@/api/functions.schemas";
@@ -29,6 +31,8 @@ export * from "@/api/environments.schemas";
 export * from "@/api/api-keys.schemas";
 export * from "@/api/functions.schemas";
 export * from "@/api/annotations.schemas";
+export * from "@/api/claw-memberships.schemas";
+export * from "@/api/claws.schemas";
 export * from "@/api/tags.schemas";
 export * from "@/api/token-cost.schemas";
 export * from "@/api/traces-search.schemas";
@@ -46,6 +50,8 @@ export class MirascopeCloudApi extends HttpApi.make("MirascopeCloudApi")
   .add(ApiKeysApi)
   .add(FunctionsApi)
   .add(AnnotationsApi)
+  .add(ClawsApi)
+  .add(ClawMembershipsApi)
   .add(TagsApi)
   .add(TokenCostApi)
   .addError(RateLimitError, { status: RateLimitError.status })

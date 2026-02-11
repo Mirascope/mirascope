@@ -9,6 +9,7 @@ import type {
   FunctionTool,
   ResponseFunctionToolCall,
   ResponseInputContent,
+  ResponseInputFile,
   ResponseInputImage,
   ResponseInputItem,
   ResponseOutputItem,
@@ -17,6 +18,7 @@ import type { Reasoning, ReasoningEffort } from "openai/resources/shared";
 
 import type {
   AssistantContentPart,
+  Document,
   Image,
   Text,
   Thought,
@@ -92,6 +94,32 @@ function encodeImage(image: Image): ResponseInputImage {
     imageUrl = `data:${image.source.mimeType};base64,${image.source.data}`;
   }
   return { type: "input_image", image_url: imageUrl, detail: "auto" };
+}
+
+/**
+ * Encode a Document to the Responses API format.
+ */
+function encodeDocument(doc: Document): ResponseInputFile {
+  const { source } = doc;
+  switch (source.type) {
+    case "base64_document_source":
+      return {
+        type: "input_file",
+        file_data: `data:${source.mediaType};base64,${source.data}`,
+        filename: "document.pdf",
+      };
+    case "text_document_source":
+      return {
+        type: "input_file",
+        file_data: `data:${source.mediaType};base64,${btoa(source.data)}`,
+        filename: "document.txt",
+      };
+    case "url_document_source":
+      return {
+        type: "input_file",
+        file_url: source.url,
+      };
+  }
 }
 
 // ============================================================================
@@ -252,15 +280,11 @@ function encodeUserMessage(
           'OpenAI Responses API does not support audio inputs. Try appending ":completions" to your model ID instead.',
         );
 
-      /* v8 ignore start - content types not yet fully implemented */
       case "document":
-        throw new FeatureNotSupportedError(
-          "document content encoding",
-          "openai",
-          null,
-          "Document content is not yet implemented",
-        );
+        contentItems.push(encodeDocument(part));
+        break;
 
+      /* v8 ignore start - tool encoding will be tested via e2e */
       case "tool_output":
         // Tool outputs in Responses API are handled separately as function_call_output items
         // Skip here - they're processed in encodeMessages

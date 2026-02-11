@@ -11,6 +11,7 @@ describe("Authentication", () => {
     id: "test-user-id",
     email: "test@example.com",
     name: "Test User",
+    accountType: "user" as const,
     deletedAt: null,
   };
 
@@ -22,7 +23,9 @@ describe("Authentication", () => {
     ownerId: mockUser.id,
     ownerEmail: mockUser.email,
     ownerName: mockUser.name,
+    ownerAccountType: "user" as const,
     ownerDeletedAt: mockUser.deletedAt,
+    clawId: null,
   };
 
   describe("ApiKey", () => {

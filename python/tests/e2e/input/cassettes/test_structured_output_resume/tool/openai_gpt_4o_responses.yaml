@@ -1,0 +1,229 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"developer","content":"Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":"Choose
+      a lucky number between 1 and 10","role":"user"}],"model":"gpt-4o","tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in int format for a final response.","parameters":{"properties":{"output":{"title":"Output","type":"integer"}},"required":["output"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '629'
+      Content-Type:
+      - application/json
+      Host:
+      - api.openai.com
+      User-Agent:
+      - OpenAI/Python 2.16.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.12.12
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/51VTW/bMAy991cYPreFnXh23HsxYBi2HrYduhYGI9GpVtlyJTlrUOS/j5K/03bA
+        FgSJTYoU+d6j9HIWBKHg4VUQajRNEW3jbLVlZYI8X+UbFkVpvoGUc4zTNdvE+QfI0jTleYoJRmvI
+        NuG5S6G2v5DZIY2qDXZ2phEs8gKcL86yKM3yLEu8z1iwrXExTFWNRFrXBW2BPe60amtXVwnSYGcW
+        Uop6R7YXeiVDAwfULp7jHqVq6IUcx27jIeWbW6PWykXWrZTeUGp8arFmh6LBGqQ9kDO6jLxP1EOy
+        gqMFIc08UtTG6pZZQU3P7RU8F6q1TWsLqx7xtdMqJQsGcpmuUhyl62nX2ItEXayiVXIRbS6itAfa
+        p6QFPz0GHRIjhyX7C4P5Kk4cg3nEV0mSsvWa5Rivu8Q+iT006NO0tW/Ilze53yPMO0Hv2gpr6/0v
+        d32hd+FVdpwWuXxFV6p//PE5gf3v66dPtx+fdg/fvmTXJdzeSJgiaqh8SUVRCQ2GEctFqXQF1nE7
+        AkxQFqGPOdLvvYeqAU17oFwiTWR1cmpIqcQ4vsE4ufZCtaYYxNzVPJLUaOrfUkr2gMUjHt71acKo
+        dkjOV9BIGFUvlIwl9WRnixzabVWBHnKPwjZQoj1QQS5xKXAhY4N6L6glK4bBKKGVNuznTWmcI2Cx
+        opkhTr057pu3+Gynyjqsx/eZSPy6DvK+4j3qrTLCQxlWyEVbTQPZkfCgqLwp+6nget7/lfVpB/N6
+        Mt7ZI3DoGKZF0/MTfjcY2AdhApeIfgJqUAOzAQcLgajpa4OuCvcXQFAKUk4wiOTy/1Q7Bjm9ViQY
+        bWZwd4oimojSpX1+GMytrmVhpd//a7fg/MTdI0L94K47NIfPcXw+TkGhOxyFRj6Cu9x/NN3PYoBz
+        4ZAFeTOvfzzOT2rpL5Czk81JtFr4i8Wp9mTArWoKqXaEz9aljkZjM5ezJt5h4JgLA1s5XDStgd1M
+        jaJenNZxlJ2/dszugJfpWKNh51NktBiL01sgfcv+VtrxoHgvs1UW5KzgeD0OQ2uWJwMJC5yOXf7j
+        2fEPk+IC0vgHAAA=
+    headers:
+      CF-RAY:
+      - 9cb7264bbf4a838f-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 09 Feb 2026 23:29:34 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '673'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      set-cookie:
+      - __cf_bm=M_VQ9K2gZpg.zYX6w3_j2qenvhujh7Edce5wF8S36z0-1770679774.0344996-1.0.1.1-KByHNdK7CmKjQ.YGbd0K8V.GUcfxjsuPsIXbbWLsh0O12BoRQZcVioEXy_lVITLcIfwFuGOm3xhYkTRv0VVqybtAidRRlpNRWwnp3OsH0mUXfKpWktq2CTk3VoePiVrR;
+        HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Mon, 09 Feb 2026
+        23:59:34 GMT
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799676'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 24ms
+      x-request-id:
+      - req_4a26442f0af04876b28f43aba9880f2b
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"role":"developer","content":"Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":"Choose
+      a lucky number between 1 and 10","role":"user"},{"content":"{\"output\":7}","role":"assistant"},{"content":"Ok,
+      now choose a different lucky number","role":"user"}],"model":"gpt-4o","tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in int format for a final response.","parameters":{"properties":{"output":{"title":"Output","type":"integer"}},"required":["output"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '745'
+      Content-Type:
+      - application/json
+      Cookie:
+      - <filtered>
+      Host:
+      - api.openai.com
+      User-Agent:
+      - OpenAI/Python 2.16.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.12.12
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/51V227bMAx971cYfm4Kx3Zufe66K7ABxfayFgZt0alW2fIkOWgQ5N9Hyfc0GbAF
+        QWKTIkWecygdrjzP58y/9XyFukoCYPEyXEcMgjidhywIlps1LBnLoxCy9XwTbJaLFJdzWEO02MRh
+        5l/bFDL9hZnp0shSY2PPFIJBloD1zVerYLnarFYL59MGTK1tTCaLSiCta4JSyF62StalrSsHobEx
+        cyF4uSXbgV7JUMEelY1nuEMhK3ohx7HZuEt5dmtUStrIshbCGXKFv2sss31SYQnC7MkZ3ATOx8su
+        WcLQABd6HMlLbVSdGU5Nj+0FvCayNlVtEiNf8K3TSCmSDMQ0XSEZCtvTtjKzWM7CIIxnwXoWLFug
+        XUpa8NNh0CDRc5hnf2GQBSvHYIq4DoN4nkVRFANuXGKXxOwrdGnq0jXkyhvclwhzTlDbusDSOP/h
+        sS300b+NjsMimy9pSnWPd8X7jz/uP919CB8WuRIPRfRO3v/4/GWIKKFwJSVJwRXojFhOcqkKMJbb
+        HmCCMvFdzJF+nxxUFSjaA8UUaSKrkVNFSiXG8Qzj5NpxWeukE3NTc09Spah/QymzZ0xecH/Rpwij
+        0iI5XkEjoWU5UTLm1JMZLbJo10UBqsvdC1tDjmZPBdnEOceJjDWqHaeWDO8GI4daGL+dN6lwjIDB
+        gmaGOHXmedu8wVczVNZg3b+PROLWNZC3Fe9QpVJzB6VfION1MQxkQ8KzpPKG7KeCa3n/V9aHHfTb
+        ybiwh2fR0ZniVcuP/12jZ5659mwi+vGoQQWZ8RgY8HhJX+M1Vdg/D7yck3K8TiQ3/6faPsjqtSDB
+        KD2Cu1EU0USUTu3jw2BstS1zI9z+X5sF1yfuFhHqB7fNodl9jv3zcQjy7eHIFbIe3On+velpFAOM
+        cYssiG/j+vvj/KSW9gK5OtmcRKu4u1isak8G3MgqEXJL+KQ2ddAbq7GcFfEOHceMa0hFd9HUGrYj
+        NfJyclrPw/X1W8foDjgMxxoNOxsig8lYnN4Cy3P2c2n7g+JSZiMNiFHBUdwPQ62nJwMJC6yObf7j
+        1fEPoi3ENfgHAAA=
+    headers:
+      CF-RAY:
+      - 9cb726510e65a9ba-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 09 Feb 2026 23:29:36 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '770'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      set-cookie:
+      - __cf_bm=hbtUT3w_ztKQRBcK0bR30H.99YpbRdkj1CEEiH8aKkA-1770679774.8871467-1.0.1.1-H6vF5Psw2V_OuMZ0dZCGHJnNhTImq6dhA7UjBoF9T2ACnm1BS2CGEZJ8fX9eVb7EPxDFy43SgsWhUnlYcB7eu4iG.4XO_sxxMf6cy0ipSMa7Mh265rORD7SvIoNDA2oB;
+        HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Mon, 09 Feb 2026
+        23:59:36 GMT
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799655'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 25ms
+      x-request-id:
+      - req_d553c47cb2964091b144678b364e51c3
+    status:
+      code: 200
+      message: OK
+version: 1

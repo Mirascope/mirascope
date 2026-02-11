@@ -759,7 +759,7 @@ def closure_inside_decorator_fn() -> str:
     assert closure.dependencies == snapshot(
         {
             "mirascope": {
-                "version": "2.2.0",
+                "version": "2.3.0",
                 "extras": ["all"],
             }
         }
@@ -793,7 +793,7 @@ def closure_inside_imported_decorator_fn() -> str:
     assert closure.dependencies == snapshot(
         {
             "mirascope": {
-                "version": "2.2.0",
+                "version": "2.3.0",
                 "extras": ["all"],
             }
         }

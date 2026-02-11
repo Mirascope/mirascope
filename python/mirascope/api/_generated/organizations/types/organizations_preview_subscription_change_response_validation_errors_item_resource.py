@@ -3,5 +3,5 @@
 import typing
 
 OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItemResource = (
-    typing.Union[typing.Literal["seats", "projects"], typing.Any]
+    typing.Union[typing.Literal["seats", "projects", "claws"], typing.Any]
 )

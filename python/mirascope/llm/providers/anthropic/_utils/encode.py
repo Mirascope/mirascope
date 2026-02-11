@@ -10,7 +10,7 @@ from typing_extensions import Required
 
 from anthropic import Omit, types as anthropic_types
 
-from ....content import ContentPart, ImageMimeType
+from ....content import ContentPart, Document, ImageMimeType
 from ....exceptions import FeatureNotSupportedError
 from ....formatting import (
     Format,
@@ -33,7 +33,6 @@ if TYPE_CHECKING:
     from ....models import Params, ThinkingLevel
 
 DEFAULT_MAX_TOKENS = 16000
-# TODO: Change DEFAULT_FORMAT_MODE to strict when strict is no longer a beta feature.
 DEFAULT_FORMAT_MODE = "tool"
 
 # Thinking level to a float multiplier % of max tokens
@@ -55,6 +54,37 @@ def encode_image_mime_type(mime_type: ImageMimeType) -> AnthropicImageMimeType:
     raise FeatureNotSupportedError(
         feature=f"Image with mime_type: {mime_type}", provider_id="anthropic"
     )  # pragma: no cover
+
+
+def _encode_document(doc: Document) -> anthropic_types.DocumentBlockParam:
+    """Convert a Document content part to Anthropic's DocumentBlockParam format."""
+    source = doc.source
+    if source.type == "base64_document_source":
+        return anthropic_types.DocumentBlockParam(
+            type="document",
+            source=anthropic_types.Base64PDFSourceParam(
+                type="base64",
+                data=source.data,
+                media_type="application/pdf",
+            ),
+        )
+    elif source.type == "text_document_source":
+        return anthropic_types.DocumentBlockParam(
+            type="document",
+            source=anthropic_types.PlainTextSourceParam(
+                type="text",
+                data=source.data,
+                media_type="text/plain",
+            ),
+        )
+    else:  # url_document_source
+        return anthropic_types.DocumentBlockParam(
+            type="document",
+            source=anthropic_types.URLPDFSourceParam(
+                type="url",
+                url=source.url,
+            ),
+        )
 
 
 def compute_thinking_budget(
@@ -179,12 +209,12 @@ def encode_content(
 
     blocks: list[anthropic_types.ContentBlockParam] = []
 
-    # Find the last cacheable content part (text, image, tool_result, or tool_call)
+    # Find the last cacheable content part (text, image, document, tool_result, or tool_call)
     last_cacheable_index = -1
     if add_cache_control:
         for i in range(len(content) - 1, -1, -1):
             part = content[i]
-            if part.type in ("text", "image", "tool_output", "tool_call"):
+            if part.type in ("text", "image", "document", "tool_output", "tool_call"):
                 if part.type == "text" and not part.text:  # pragma: no cover
                     continue  # Skip empty text
                 last_cacheable_index = i
@@ -233,6 +263,11 @@ def encode_content(
                 "anthropic",
                 message="Anthropic does not support audio inputs.",
             )
+        elif part.type == "document":
+            doc_block = _encode_document(part)
+            if should_add_cache:
+                doc_block["cache_control"] = {"type": "ephemeral"}
+            blocks.append(doc_block)
         elif part.type == "tool_output":
             blocks.append(
                 anthropic_types.ToolResultBlockParam(
@@ -272,6 +307,19 @@ def encode_content(
     return blocks
 
 
+def raw_message_has_format_tool(raw_message: object) -> bool:
+    """Check if a raw Anthropic message contains a format tool call."""
+    if not isinstance(raw_message, dict):
+        return False
+    content = cast(dict[str, object], raw_message).get("content")
+    return isinstance(content, list) and any(
+        block.get("type") == "tool_use"
+        and isinstance(name := block.get("name"), str)
+        and name.startswith(FORMAT_TOOL_NAME)
+        for block in cast(list[dict[str, object]], content)
+    )
+
+
 def _encode_message(
     message: UserMessage | AssistantMessage,
     model_id: AnthropicModelId,
@@ -293,6 +341,7 @@ def _encode_message(
         and message.raw_message
         and not encode_thoughts
         and not add_cache_control
+        and not raw_message_has_format_tool(message.raw_message)
     ):
         return cast(anthropic_types.MessageParam, message.raw_message)
 

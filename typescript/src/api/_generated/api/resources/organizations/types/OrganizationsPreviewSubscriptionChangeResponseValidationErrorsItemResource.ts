@@ -4,6 +4,7 @@ export const OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItemR
   {
     Seats: "seats",
     Projects: "projects",
+    Claws: "claws",
   } as const;
 export type OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItemResource =
   (typeof OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItemResource)[keyof typeof OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItemResource];

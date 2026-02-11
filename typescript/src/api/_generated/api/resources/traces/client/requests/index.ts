@@ -1,3 +1,4 @@
+export type { TracesCreateOtelRequest } from "./TracesCreateOtelRequest.js";
 export type { TracesCreateRequest } from "./TracesCreateRequest.js";
 export type { TracesGetAnalyticsSummaryRequest } from "./TracesGetAnalyticsSummaryRequest.js";
 export type { TracesGetTraceDetailByEnvRequest } from "./TracesGetTraceDetailByEnvRequest.js";

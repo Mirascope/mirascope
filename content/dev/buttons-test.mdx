@@ -1,0 +1,216 @@
+---
+title: Button Variants Test
+description: A comprehensive showcase of all button variants and sizes
+---
+
+# Button Variants Test
+
+This page showcases all the button variants, sizes, and combinations available in the design system.
+
+## Standard Button Variants
+
+### Default Variant
+
+```tsx
+<Button variant="default">Default Button</Button>
+```
+
+<div className="flex flex-wrap gap-4 my-4">
+  <Button variant="default">Default Button</Button>
+  <Button variant="default" disabled>Default (Disabled)</Button>
+</div>
+
+### Outline Variant
+
+```tsx
+<Button variant="outline">Outline Button</Button>
+```
+
+<div className="flex flex-wrap gap-4 my-4">
+  <Button variant="outline">Outline Button</Button>
+  <Button variant="outline" disabled>Outline (Disabled)</Button>
+</div>
+
+### Ghost Variant
+
+```tsx
+<Button variant="ghost">Ghost Button</Button>
+```
+
+<div className="flex flex-wrap gap-4 my-4">
+  <Button variant="ghost">Ghost Button</Button>
+  <Button variant="ghost" disabled>Ghost (Disabled)</Button>
+</div>
+
+### Link Variant
+
+```tsx
+<Button variant="link">Link Button</Button>
+```
+
+<div className="flex flex-wrap gap-4 my-4">
+  <Button variant="link">Link Button</Button>
+  <Button variant="link" disabled>Link (Disabled)</Button>
+</div>
+
+## Button Sizes
+
+### Default Size
+
+```tsx
+<Button size="default">Default Size</Button>
+```
+
+<div className="flex flex-wrap gap-4 my-4">
+  <Button size="default">Default Size</Button>
+</div>
+
+### Small Size
+
+```tsx
+<Button size="sm">Small Button</Button>
+```
+
+<div className="flex flex-wrap gap-4 my-4">
+  <Button size="sm">Small Button</Button>
+</div>
+
+### Large Size
+
+```tsx
+<Button size="lg">Large Button</Button>
+```
+
+<div className="flex flex-wrap gap-4 my-4">
+  <Button size="lg">Large Button</Button>
+</div>
+
+### Icon Size
+
+```tsx
+<Button size="icon"><Icon name="rocket" className="h-4 w-4" /></Button>
+```
+
+<div className="flex flex-wrap gap-4 my-4">
+  <Button size="icon"><Icon name="rocket" className="h-4 w-4" /></Button>
+</div>
+
+## Variant and Size Combinations
+
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-6">
+  <div className="space-y-2">
+    <h3 className="text-sm font-medium">Default Variant</h3>
+    <div className="flex flex-col gap-2">
+      <Button variant="default" size="lg">Large</Button>
+      <Button variant="default" size="default">Default</Button>
+      <Button variant="default" size="sm">Small</Button>
+      <Button variant="default" size="icon"><Icon name="rocket" className="h-4 w-4" /></Button>
+    </div>
+  </div>
+
+  <div className="space-y-2">
+    <h3 className="text-sm font-medium">Outline Variant</h3>
+    <div className="flex flex-col gap-2">
+      <Button variant="outline" size="lg">Large</Button>
+      <Button variant="outline" size="default">Default</Button>
+      <Button variant="outline" size="sm">Small</Button>
+      <Button variant="outline" size="icon"><Icon name="star" className="h-4 w-4" /></Button>
+    </div>
+  </div>
+
+  <div className="space-y-2">
+    <h3 className="text-sm font-medium">Ghost Variant</h3>
+    <div className="flex flex-col gap-2">
+      <Button variant="ghost" size="lg">Large</Button>
+      <Button variant="ghost" size="default">Default</Button>
+      <Button variant="ghost" size="sm">Small</Button>
+      <Button variant="ghost" size="icon"><Icon name="book-open" className="h-4 w-4" /></Button>
+    </div>
+  </div>
+
+  <div className="space-y-2">
+    <h3 className="text-sm font-medium">Link Variant</h3>
+    <div className="flex flex-col gap-2">
+      <Button variant="link" size="lg">Large</Button>
+      <Button variant="link" size="default">Default</Button>
+      <Button variant="link" size="sm">Small</Button>
+      <Button variant="link" size="icon"><Icon name="lightbulb" className="h-4 w-4" /></Button>
+    </div>
+  </div>
+</div>
+
+## Buttons with Icons
+
+```tsx
+<Button variant="default">
+  <span>Documentation</span>
+  <Icon name="book-open" className="h-4 w-4" />
+</Button>
+```
+
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
+  <div className="space-y-4">
+    <h3 className="text-sm font-medium">Leading Icons</h3>
+    <div className="flex flex-col gap-2">
+      <Button variant="default">
+        <Icon name="rocket" className="h-4 w-4" />
+        <span>Launch</span>
+      </Button>
+      
+      <Button variant="outline">
+        <Icon name="star" className="h-4 w-4" />
+        <span>Favorite</span>
+      </Button>
+      
+      <Button variant="ghost" size="sm">
+        <Icon name="book-open" className="h-4 w-4" />
+        <span>Documentation</span>
+      </Button>
+    </div>
+  </div>
+
+  <div className="space-y-4">
+    <h3 className="text-sm font-medium">Trailing Icons</h3>
+    <div className="flex flex-col gap-2">
+      <Button variant="default">
+        <span>Ideas</span>
+        <Icon name="lightbulb" className="h-4 w-4" />
+      </Button>
+      
+      <Button variant="outline">
+        <span>Community</span>
+        <Icon name="users" className="h-4 w-4" />
+      </Button>
+      
+      <Button variant="ghost" size="sm">
+        <span>Start Now</span>
+        <Icon name="rocket" className="h-4 w-4" />
+      </Button>
+    </div>
+  </div>
+</div>
+
+## Button Link Component
+
+The ButtonLink component creates links styled as buttons.
+
+```tsx
+<ButtonLink href="#" variant="default">Internal Link</ButtonLink>
+<ButtonLink href="https://example.com" variant="outline">External Link</ButtonLink>
+```
+
+<div className="flex flex-wrap gap-4 my-6">
+  <ButtonLink href="#" variant="default">Internal Link</ButtonLink>
+  <ButtonLink href="#" variant="outline">Outline Link</ButtonLink>
+  <ButtonLink href="#" variant="ghost">Ghost Link</ButtonLink>
+  <ButtonLink href="#" variant="link">Link Style</ButtonLink>
+  <ButtonLink href="https://example.com" variant="default" external>External Link</ButtonLink>
+</div>
+
+## Button Link Sizes
+
+<div className="flex flex-wrap gap-4 my-6">
+  <ButtonLink href="#" variant="default" size="lg">Large Link</ButtonLink>
+  <ButtonLink href="#" variant="default" size="default">Default Link</ButtonLink>
+  <ButtonLink href="#" variant="default" size="sm">Small Link</ButtonLink>
+</div>

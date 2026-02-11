@@ -6,6 +6,7 @@ import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 import { Analytics } from "@/analytics";
 import { ApiLive } from "@/api/router";
 import { AuthenticatedUser, Authentication } from "@/auth";
+import { ClawDeploymentService } from "@/claws/deployment/service";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
@@ -27,6 +28,7 @@ export type HandleRequestOptions = {
   clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
   realtimeSpans: Context.Tag.Service<RealtimeSpans>;
   spansIngestQueue: Context.Tag.Service<SpansIngestQueue>;
+  clawDeployment: Context.Tag.Service<ClawDeploymentService>;
 };
 
 type WebHandlerOptions = {
@@ -38,6 +40,7 @@ type WebHandlerOptions = {
   clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
   realtimeSpans: Context.Tag.Service<RealtimeSpans>;
   spansIngestQueue: Context.Tag.Service<SpansIngestQueue>;
+  clawDeployment: Context.Tag.Service<ClawDeploymentService>;
   user: PublicUser;
   apiKeyInfo?: ApiKeyInfo;
   settings: SettingsConfig;
@@ -59,6 +62,7 @@ function createWebHandler(options: WebHandlerOptions) {
     Layer.succeed(ClickHouseSearch, options.clickHouseSearch),
     Layer.succeed(SpansIngestQueue, options.spansIngestQueue),
     Layer.succeed(RealtimeSpans, options.realtimeSpans),
+    Layer.succeed(ClawDeploymentService, options.clawDeployment),
   );
 
   const ApiWithDependencies = Layer.merge(
@@ -104,6 +108,7 @@ export const handleRequest = (
       clickHouseSearch: options.clickHouseSearch,
       realtimeSpans: options.realtimeSpans,
       spansIngestQueue: options.spansIngestQueue,
+      clawDeployment: options.clawDeployment,
     });
 
     const result = yield* Effect.tryPromise({

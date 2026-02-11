@@ -10,12 +10,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
+import { useEnvironment } from "@/app/contexts/environment";
+import { useOrganization } from "@/app/contexts/organization";
+import { useProject } from "@/app/contexts/project";
 
 interface FunctionCardProps {
   fn: FunctionResponse;
 }
 
 export function FunctionCard({ fn }: FunctionCardProps) {
+  const { selectedOrganization } = useOrganization();
+  const { selectedProject } = useProject();
+  const { selectedEnvironment } = useEnvironment();
+  const orgSlug = selectedOrganization?.slug ?? "";
+  const projectSlug = selectedProject?.slug ?? "";
+  const envSlug = selectedEnvironment?.slug ?? "";
+
   const formattedDate = fn.createdAt
     ? new Date(fn.createdAt).toLocaleDateString("en-US", {
         month: "short",
@@ -26,8 +36,8 @@ export function FunctionCard({ fn }: FunctionCardProps) {
 
   return (
     <Link
-      to="/cloud/functions/$functionName"
-      params={{ functionName: fn.name }}
+      to="/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName"
+      params={{ orgSlug, projectSlug, envSlug, functionName: fn.name }}
       className="block"
     >
       <Card className="group cursor-pointer transition-shadow hover:shadow-md">

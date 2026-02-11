@@ -14,7 +14,9 @@ export default defineConfig({
       include: [
         "api",
         "auth",
+        "cloudflare",
         "db",
+        "claws",
         "emails",
         "payments",
         "rate-limiting",
@@ -24,9 +26,13 @@ export default defineConfig({
         "app", // Currently manual testing only. We should cover this at some point
         "**.md",
         "**/index.ts",
+        // dispatch-worker has its own package.json and own tests
+        "cloud/claws/dispatch-worker/**",
         "db/migrations/**",
         "db/clickhouse/**",
         "db/schema/**",
+        "api/api.ts", // Declarative API composition, no logic to test
+        "workers/config.ts", // Type declarations only, no executable code
         "tests/**",
         ".build-cache",
         ...coverageConfigDefaults.exclude,
@@ -40,6 +46,7 @@ export default defineConfig({
     },
     exclude: [
       "**/node_modules/**",
+      "claws/dispatch-worker/**",
       "dist",
       ".git",
       ".cache",

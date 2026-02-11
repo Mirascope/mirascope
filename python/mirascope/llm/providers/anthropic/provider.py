@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
+import inspect
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 from typing_extensions import Unpack
 
 from anthropic import Anthropic, AsyncAnthropic
+from pydantic import BaseModel
 
 from ...context import Context, DepsT
-from ...formatting import FormatSpec, FormattableT, resolve_format
+from ...formatting import Format, FormatSpec, FormattableT
 from ...messages import Message
 from ...responses import (
     AsyncContextResponse,
@@ -28,8 +30,9 @@ from ...tools import (
     BaseToolkit,
     ContextToolkit,
     Toolkit,
+    ToolSchema,
 )
-from ..base import BaseProvider, _utils as _base_utils
+from ..base import BaseProvider
 from . import _utils
 from .beta_provider import AnthropicBetaProvider
 from .model_id import AnthropicModelId, model_name
@@ -44,21 +47,30 @@ def _should_use_beta(
     format: FormatSpec[FormattableT] | None,
     tools: BaseToolkit[AnyToolSchema],
 ) -> bool:
-    """Determine whether to use the beta API based on format mode or strict tools.
+    """Determine whether to use the beta API for strict tools/format.
 
-    If the format resolves to strict mode, or any tools have strict=True,
-    and the model plausibly has strict structured output support, then we
-    will use the beta provider.
+    Models that support strict structured outputs will use the beta provider
+    by default when tools or format would benefit from strict mode. Explicit
+    opt-outs (strict=False on tools, mode="tool"/"json" on format) are respected.
     """
     if model_name(model_id) in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS:
         return False
 
-    # Check if format requires strict mode
-    resolved = resolve_format(format, default_mode=_utils.DEFAULT_FORMAT_MODE)
-    if resolved is not None and resolved.mode == "strict":
-        return True
+    # Format: use beta if format is a bare BaseModel type (no explicit mode) or
+    # explicitly strict. Primitive types (int, list[Book], etc.) and OutputParsers
+    # can't use the beta output_format, so they stay on the standard tool-mode path.
+    if format is not None:
+        if isinstance(format, Format):
+            if format.mode == "strict":
+                return True
+        elif inspect.isclass(format) and issubclass(format, BaseModel):
+            return True
 
-    return _base_utils.has_strict_tools(tools.tools)
+    # Tools: use beta if any tool would use strict (strict=True or strict=None)
+    return any(
+        isinstance(tool, ToolSchema) and tool.strict is not False
+        for tool in tools.tools
+    )
 
 
 class AnthropicProvider(BaseProvider[Anthropic]):

@@ -219,10 +219,12 @@ describe("Route Handlers", () => {
             ownerId: owner.id,
             ownerEmail: owner.email,
             ownerName: owner.name,
+            ownerAccountType: "user" as const,
             ownerDeletedAt: null,
             organizationId: project.organizationId,
             projectId: project.id,
             environmentId: environment.id,
+            clawId: null,
           },
           parsedRequestBody: { model: "gpt-4", messages: [] },
         };
@@ -250,10 +252,12 @@ describe("Route Handlers", () => {
             ownerId: owner.id,
             ownerEmail: owner.email,
             ownerName: owner.name,
+            ownerAccountType: "user" as const,
             ownerDeletedAt: null,
             organizationId: project.organizationId,
             projectId: project.id,
             environmentId: environment.id,
+            clawId: null,
           },
           parsedRequestBody: { model: "gpt-4", messages: [] },
         };
@@ -316,6 +320,7 @@ describe("Route Handlers", () => {
             environmentId: environment.id,
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
+            clawId: null,
           },
           "Test error",
         );
@@ -398,10 +403,12 @@ describe("Route Handlers", () => {
             ownerId: owner.id,
             ownerEmail: owner.email,
             ownerName: owner.name,
+            ownerAccountType: "user" as const,
             ownerDeletedAt: null,
             organizationId: project.organizationId,
             projectId: project.id,
             environmentId: environment.id,
+            clawId: null,
           },
           parsedRequestBody: { model: "gpt-4", messages: [] },
         };
@@ -416,6 +423,7 @@ describe("Route Handlers", () => {
             environmentId: environment.id,
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
+            clawId: null,
           },
           modelPricing: mockPricing,
         };
@@ -501,10 +509,12 @@ describe("Route Handlers", () => {
             ownerId: owner.id,
             ownerEmail: owner.email,
             ownerName: owner.name,
+            ownerAccountType: "user" as const,
             ownerDeletedAt: null,
             organizationId: project.organizationId,
             projectId: project.id,
             environmentId: environment.id,
+            clawId: null,
           },
           parsedRequestBody: { model: "gpt-4", messages: [] },
         };
@@ -519,6 +529,7 @@ describe("Route Handlers", () => {
             environmentId: environment.id,
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
+            clawId: null,
           },
           modelPricing: mockPricing,
         };
@@ -591,10 +602,12 @@ describe("Route Handlers", () => {
             ownerId: owner.id,
             ownerEmail: owner.email,
             ownerName: owner.name,
+            ownerAccountType: "user" as const,
             ownerDeletedAt: null,
             organizationId: project.organizationId,
             projectId: project.id,
             environmentId: environment.id,
+            clawId: null,
           },
           parsedRequestBody: { model: "unknown-model", messages: [] },
         };
@@ -609,6 +622,7 @@ describe("Route Handlers", () => {
             environmentId: environment.id,
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
+            clawId: null,
           },
           modelPricing: mockPricing,
         };
@@ -676,10 +690,12 @@ describe("Route Handlers", () => {
             ownerId: owner.id,
             ownerEmail: owner.email,
             ownerName: owner.name,
+            ownerAccountType: "user" as const,
             ownerDeletedAt: null,
             organizationId: project.organizationId,
             projectId: project.id,
             environmentId: environment.id,
+            clawId: null,
           },
           parsedRequestBody: { model: "gpt-4", messages: [] },
         };
@@ -694,6 +710,7 @@ describe("Route Handlers", () => {
             environmentId: environment.id,
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
+            clawId: null,
           },
           modelPricing: mockPricing,
         };
@@ -769,10 +786,12 @@ describe("Route Handlers", () => {
             ownerId: owner.id,
             ownerEmail: owner.email,
             ownerName: owner.name,
+            ownerAccountType: "user" as const,
             ownerDeletedAt: null,
             organizationId: project.organizationId,
             projectId: project.id,
             environmentId: environment.id,
+            clawId: null,
           },
           parsedRequestBody: { model: "gpt-4", messages: [] },
         };
@@ -787,6 +806,7 @@ describe("Route Handlers", () => {
             environmentId: environment.id,
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
+            clawId: null,
           },
           modelPricing: mockPricing,
         };
@@ -859,10 +879,12 @@ describe("Route Handlers", () => {
             ownerId: owner.id,
             ownerEmail: owner.email,
             ownerName: owner.name,
+            ownerAccountType: "user" as const,
             ownerDeletedAt: null,
             organizationId: project.organizationId,
             projectId: project.id,
             environmentId: environment.id,
+            clawId: null,
           },
           parsedRequestBody: { model: "gpt-4", messages: [] },
         };
@@ -877,6 +899,7 @@ describe("Route Handlers", () => {
             environmentId: environment.id,
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
+            clawId: null,
           },
           modelPricing: mockPricing,
         };
@@ -949,10 +972,12 @@ describe("Route Handlers", () => {
             ownerId: owner.id,
             ownerEmail: owner.email,
             ownerName: owner.name,
+            ownerAccountType: "user" as const,
             ownerDeletedAt: null,
             organizationId: project.organizationId,
             projectId: project.id,
             environmentId: environment.id,
+            clawId: null,
           },
           parsedRequestBody: { model: "gpt-4", messages: [] },
         };
@@ -967,6 +992,7 @@ describe("Route Handlers", () => {
             environmentId: environment.id,
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
+            clawId: null,
           },
           modelPricing: mockPricing,
         };
@@ -1042,10 +1068,12 @@ describe("Route Handlers", () => {
               ownerId: owner.id,
               ownerEmail: owner.email,
               ownerName: owner.name,
+              ownerAccountType: "user" as const,
               ownerDeletedAt: null,
               organizationId: project.organizationId,
               projectId: project.id,
               environmentId: environment.id,
+              clawId: null,
             },
             parsedRequestBody: {
               model: "claude-3-5-sonnet-20241022",
@@ -1063,6 +1091,7 @@ describe("Route Handlers", () => {
               environmentId: environment.id,
               apiKeyId: apiKey.id,
               routerRequestId: routerRequest.id,
+              clawId: null,
             },
             modelPricing: mockPricing,
           };
@@ -1139,10 +1168,12 @@ describe("Route Handlers", () => {
             ownerId: owner.id,
             ownerEmail: owner.email,
             ownerName: owner.name,
+            ownerAccountType: "user" as const,
             ownerDeletedAt: null,
             organizationId: project.organizationId,
             projectId: project.id,
             environmentId: environment.id,
+            clawId: null,
           },
           parsedRequestBody: { model: "gpt-4", messages: [] },
         };
@@ -1157,6 +1188,7 @@ describe("Route Handlers", () => {
             environmentId: environment.id,
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
+            clawId: null,
           },
           modelPricing: mockPricing,
         };
@@ -1204,6 +1236,7 @@ describe("Route Handlers", () => {
             environmentId: "env_123",
             apiKeyId: "key_123",
             routerRequestId: "req_123",
+            clawId: null,
           },
           "Test error",
         ).pipe(
@@ -1251,6 +1284,7 @@ describe("Route Handlers", () => {
             environmentId: "env_123",
             apiKeyId: "key_123",
             routerRequestId: "req_123",
+            clawId: null,
           },
           "Test error",
         ).pipe(
@@ -1284,6 +1318,7 @@ describe("Route Handlers", () => {
         environmentId: "env_123",
         apiKeyId: "key_123",
         routerRequestId: "req_123",
+        clawId: null,
       };
 
       const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {
@@ -1325,6 +1360,7 @@ describe("Route Handlers", () => {
         environmentId: "env_123",
         apiKeyId: "key_123",
         routerRequestId: "req_123",
+        clawId: null,
       };
 
       const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {
@@ -1357,6 +1393,7 @@ describe("Route Handlers", () => {
         environmentId: "env_123",
         apiKeyId: "key_123",
         routerRequestId: "req_123",
+        clawId: null,
       };
 
       const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {

@@ -218,6 +218,196 @@ export class TracesClient {
   }
 
   /**
+   * @param {Mirascope.TracesCreateOtelRequest} request
+   * @param {TracesClient.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link Mirascope.BadRequestError}
+   * @throws {@link Mirascope.UnauthorizedError}
+   * @throws {@link Mirascope.PaymentRequiredError}
+   * @throws {@link Mirascope.ForbiddenError}
+   * @throws {@link Mirascope.NotFoundError}
+   * @throws {@link Mirascope.ConflictError}
+   * @throws {@link Mirascope.TooManyRequestsError}
+   * @throws {@link Mirascope.InternalServerError}
+   * @throws {@link Mirascope.ServiceUnavailableError}
+   *
+   * @example
+   *     await client.traces.createotel({
+   *         resourceSpans: [{
+   *                 scopeSpans: [{
+   *                         spans: [{
+   *                                 traceId: "traceId",
+   *                                 spanId: "spanId",
+   *                                 name: "name",
+   *                                 startTimeUnixNano: "startTimeUnixNano",
+   *                                 endTimeUnixNano: "endTimeUnixNano"
+   *                             }]
+   *                     }]
+   *             }]
+   *     })
+   */
+  public createotel(
+    request: Mirascope.TracesCreateOtelRequest,
+    requestOptions?: TracesClient.RequestOptions,
+  ): core.HttpResponsePromise<Mirascope.TracesCreateOtelResponse> {
+    return core.HttpResponsePromise.fromPromise(
+      this.__createotel(request, requestOptions),
+    );
+  }
+
+  private async __createotel(
+    request: Mirascope.TracesCreateOtelRequest,
+    requestOptions?: TracesClient.RequestOptions,
+  ): Promise<core.WithRawResponse<Mirascope.TracesCreateOtelResponse>> {
+    const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+      this._options?.headers,
+      requestOptions?.headers,
+    );
+    const _response = await core.fetcher({
+      url: core.url.join(
+        (await core.Supplier.get(this._options.baseUrl)) ??
+          (await core.Supplier.get(this._options.environment)) ??
+          environments.MirascopeEnvironment.Production,
+        "v1/traces",
+      ),
+      method: "POST",
+      headers: _headers,
+      contentType: "application/json",
+      queryParameters: requestOptions?.queryParams,
+      requestType: "json",
+      body: serializers.TracesCreateOtelRequest.jsonOrThrow(request, {
+        unrecognizedObjectKeys: "strip",
+        omitUndefined: true,
+      }),
+      timeoutMs:
+        (requestOptions?.timeoutInSeconds ??
+          this._options?.timeoutInSeconds ??
+          180) * 1000,
+      maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+      abortSignal: requestOptions?.abortSignal,
+      fetchFn: this._options?.fetch,
+      logging: this._options.logging,
+    });
+    if (_response.ok) {
+      return {
+        data: serializers.TracesCreateOtelResponse.parseOrThrow(
+          _response.body,
+          {
+            unrecognizedObjectKeys: "passthrough",
+            allowUnrecognizedUnionMembers: true,
+            allowUnrecognizedEnumValues: true,
+            skipValidation: true,
+            breadcrumbsPrefix: ["response"],
+          },
+        ),
+        rawResponse: _response.rawResponse,
+      };
+    }
+
+    if (_response.error.reason === "status-code") {
+      switch (_response.error.statusCode) {
+        case 400:
+          throw new Mirascope.BadRequestError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 401:
+          throw new Mirascope.UnauthorizedError(
+            serializers.UnauthorizedErrorBody.parseOrThrow(
+              _response.error.body,
+              {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+              },
+            ),
+            _response.rawResponse,
+          );
+        case 402:
+          throw new Mirascope.PaymentRequiredError(
+            serializers.PlanLimitExceededError.parseOrThrow(
+              _response.error.body,
+              {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+              },
+            ),
+            _response.rawResponse,
+          );
+        case 403:
+          throw new Mirascope.ForbiddenError(
+            serializers.PermissionDeniedError.parseOrThrow(
+              _response.error.body,
+              {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+              },
+            ),
+            _response.rawResponse,
+          );
+        case 404:
+          throw new Mirascope.NotFoundError(
+            serializers.NotFoundErrorBody.parseOrThrow(_response.error.body, {
+              unrecognizedObjectKeys: "passthrough",
+              allowUnrecognizedUnionMembers: true,
+              allowUnrecognizedEnumValues: true,
+              skipValidation: true,
+              breadcrumbsPrefix: ["response"],
+            }),
+            _response.rawResponse,
+          );
+        case 409:
+          throw new Mirascope.ConflictError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 429:
+          throw new Mirascope.TooManyRequestsError(
+            serializers.RateLimitError.parseOrThrow(_response.error.body, {
+              unrecognizedObjectKeys: "passthrough",
+              allowUnrecognizedUnionMembers: true,
+              allowUnrecognizedEnumValues: true,
+              skipValidation: true,
+              breadcrumbsPrefix: ["response"],
+            }),
+            _response.rawResponse,
+          );
+        case 500:
+          throw new Mirascope.InternalServerError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 503:
+          throw new Mirascope.ServiceUnavailableError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        default:
+          throw new errors.MirascopeError({
+            statusCode: _response.error.statusCode,
+            body: _response.error.body,
+            rawResponse: _response.rawResponse,
+          });
+      }
+    }
+
+    return handleNonStatusCodeError(
+      _response.error,
+      _response.rawResponse,
+      "POST",
+      "/v1/traces",
+    );
+  }
+
+  /**
    * @param {Mirascope.TracesSearchRequest} request
    * @param {TracesClient.RequestOptions} requestOptions - Request-specific configuration.
    *

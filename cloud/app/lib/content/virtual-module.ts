@@ -2,12 +2,14 @@ import {
   blogMetadata,
   docsMetadata,
   policyMetadata,
+  devMetadata,
   // @ts-expect-error - virtual module resolved by vite plugin
 } from "virtual:content-meta";
 
 import type {
   BlogMeta,
   ContentMeta,
+  DevMeta,
   DocMeta,
   PolicyMeta,
 } from "@/app/lib/content/types";
@@ -23,6 +25,10 @@ export function getAllDocsMeta(): DocMeta[] {
 
 export function getAllPolicyMeta(): PolicyMeta[] {
   return policyMetadata as PolicyMeta[];
+}
+
+export function getAllDevMeta(): DevMeta[] {
+  return devMetadata as DevMeta[];
 }
 
 export function getAllContentMeta(): ContentMeta[] {
@@ -66,12 +72,11 @@ function buildModuleMap(
 const BLOG_PATH_REGEX = /^\/?\.{2}\/content\/blog\/(.*)\.mdx$/;
 const DOCS_PATH_REGEX = /^\/?\.{2}\/content\/docs\/(.*)\.mdx$/;
 const POLICY_PATH_REGEX = /^\/?\.{2}\/content\/policy\/(.*)\.mdx$/;
+const DEV_PATH_REGEX = /^\/?\.{2}\/content\/dev\/(.*)\.mdx$/;
 
 const BLOG_MODULES = import.meta.glob<VirtualModuleExport>(
   "@/../content/blog/*.mdx",
-  {
-    eager: false,
-  },
+  { eager: false },
 );
 
 const DOCS_MODULES = import.meta.glob<VirtualModuleExport>(
@@ -84,6 +89,11 @@ const POLICY_MODULES = import.meta.glob<VirtualModuleExport>(
   { eager: false },
 );
 
+const DEV_MODULES = import.meta.glob<VirtualModuleExport>(
+  "@/../content/dev/*.mdx",
+  { eager: false },
+);
+
 // Pre-build module maps once at module initialization
 export const BLOG_MODULE_MAP = buildModuleMap(BLOG_MODULES, BLOG_PATH_REGEX);
 export const DOCS_MODULE_MAP = buildModuleMap(DOCS_MODULES, DOCS_PATH_REGEX);
@@ -91,3 +101,4 @@ export const POLICY_MODULE_MAP = buildModuleMap(
   POLICY_MODULES,
   POLICY_PATH_REGEX,
 );
+export const DEV_MODULE_MAP = buildModuleMap(DEV_MODULES, DEV_PATH_REGEX);

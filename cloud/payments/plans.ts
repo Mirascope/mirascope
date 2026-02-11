@@ -9,9 +9,16 @@
  *
  * ## Pricing Tiers
  *
- * - **Free**: 1 seat, 1 project, 1M spans/month (hard limit enforced), 100 req/min, 30 day retention
- * - **Pro**: 5 seats, 5 projects, unlimited spans (+$5/M over 1M included), 1000 req/min, 90 day retention
- * - **Team**: Unlimited seats/projects, unlimited spans (+$5/M over 1M included), 10000 req/min, 180 day retention
+ * - **Free**: 1 seat, 1 project, 1 claw (basic), $1/week credits, 1M spans/month (hard limit), 100 req/min, 30 day retention
+ * - **Pro**: 5 seats, 5 projects, 1 claw (standard-2), $5/week credits, unlimited spans (+$5/M over 1M), 1000 req/min, 90 day retention
+ * - **Team**: Unlimited seats/projects, 3 claws (standard-3), $25/week credits, unlimited spans (+$5/M over 1M), 10000 req/min, 180 day retention
+ *
+ * ## Credit Resets & Burst Limits
+ *
+ * All credit pools reset **weekly**. Each plan also defines a per-burst credit limit
+ * (burst window = 5 hours). Burst limits are set to 20% of the weekly pool, requiring
+ * users to spread usage across at least ~5 burst windows (~25 hours) to exhaust their
+ * weekly quota.
  *
  * ## Usage
  *
@@ -22,10 +29,13 @@
  * console.log(freeLimits.seats); // 1
  * console.log(freeLimits.projects); // 1
  * console.log(freeLimits.spansPerMonth); // 1_000_000
+ * console.log(freeLimits.claws); // 1
  *
  * const isUpgrade = PLAN_TIER_ORDER.pro > PLAN_TIER_ORDER.free; // true
  * ```
  */
+
+import type { ClawInstanceType } from "@/claws/deployment/types";
 
 /** Available pricing plan tier values (source of truth) */
 export const PLAN_TIERS = ["free", "pro", "team"] as const;
@@ -43,14 +53,23 @@ export const PLAN_TIER_ORDER: Record<PlanTier, number> = {
   team: 2,
 } as const;
 
+export type { ClawInstanceType };
+
 /**
  * Limits for a specific pricing plan.
+ *
+ * All credit pools reset weekly.
  *
  * @property seats - Maximum number of organization members (Infinity = unlimited)
  * @property projects - Maximum number of projects (Infinity = unlimited)
  * @property spansPerMonth - Monthly span quota (Free: hard limit, Pro/Team: Infinity with graduated pricing)
  * @property apiRequestsPerMinute - API rate limit per organization
  * @property dataRetentionDays - Number of days to retain trace data
+ * @property claws - Maximum number of claws
+ * @property clawInstanceType - Instance type for claws on this plan
+ * @property includedCreditsCenticents - Org-level weekly credit pool (centicents, shared across all claws)
+ * @property burstCreditsCenticents - Max credits per 5-hour burst window (centicents)
+ * @property estimatedRequestsPerDay - Display-only estimated requests/day
  */
 export interface PlanLimits {
   seats: number;
@@ -58,6 +77,11 @@ export interface PlanLimits {
   spansPerMonth: number;
   apiRequestsPerMinute: number;
   dataRetentionDays: number;
+  claws: number;
+  clawInstanceType: ClawInstanceType;
+  includedCreditsCenticents: number;
+  burstCreditsCenticents: number;
+  estimatedRequestsPerDay: number;
 }
 
 /**
@@ -73,6 +97,11 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     spansPerMonth: 1_000_000, // Hard limit enforced - no overage allowed
     apiRequestsPerMinute: 100,
     dataRetentionDays: 30,
+    claws: 1,
+    clawInstanceType: "basic",
+    includedCreditsCenticents: 10_000, // $1/week org pool
+    burstCreditsCenticents: 2_000, // $0.20/burst (20% of weekly)
+    estimatedRequestsPerDay: 70, // ~500 req/week with haiku
   },
   pro: {
     seats: 5,
@@ -84,6 +113,11 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     spansPerMonth: Infinity,
     apiRequestsPerMinute: 1000,
     dataRetentionDays: 90,
+    claws: 1,
+    clawInstanceType: "standard-2",
+    includedCreditsCenticents: 500_000, // $5/week org pool
+    burstCreditsCenticents: 100_000, // $1/burst (20% of weekly)
+    estimatedRequestsPerDay: 50, // ~350 req/week with sonnet
   },
   team: {
     seats: Infinity, // Unlimited
@@ -95,6 +129,11 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     spansPerMonth: Infinity,
     apiRequestsPerMinute: 10000,
     dataRetentionDays: 180,
+    claws: 3,
+    clawInstanceType: "standard-3",
+    includedCreditsCenticents: 2_500_000, // $25/week org pool
+    burstCreditsCenticents: 500_000, // $5/burst (20% of weekly)
+    estimatedRequestsPerDay: 300, // ~2,100 req/week with sonnet across 3 claws
   },
 } as const;
 
@@ -103,7 +142,7 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
  * Represents a single resource that exceeds the target plan's limit.
  */
 export interface DowngradeValidationError {
-  resource: "seats" | "projects";
+  resource: "seats" | "projects" | "claws";
   currentUsage: number;
   limit: number;
   message: string;

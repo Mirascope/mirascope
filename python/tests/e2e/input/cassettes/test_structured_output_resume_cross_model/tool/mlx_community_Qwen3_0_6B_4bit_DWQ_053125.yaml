@@ -1,0 +1,77 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Choose a lucky number between 1 and
+      10"}], "role": "user"}], "systemInstruction": {"parts": [{"text": "Always respond
+      to the user''s query using the __mirascope_formatted_output_tool__ tool for
+      structured output."}], "role": "user"}, "tools": [{"functionDeclarations": [{"description":
+      "Use this tool to extract data in int format for a final response.", "name":
+      "__mirascope_formatted_output_tool__", "parameters": {"properties": {"output":
+      {"title": "Output", "type": "INTEGER"}}, "required": ["output"], "type": "OBJECT"}}]}],
+      "toolConfig": {"functionCallingConfig": {"allowedFunctionNames": ["__mirascope_formatted_output_tool__"],
+      "mode": "ANY"}}, "generationConfig": {}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '710'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21TW3OiMBR+91c4PO2O23q/7UwfAO+IpYKi7uw4kUSMhgRJEGmn/32j1lY7y0OA
+        853Ll3PO95bJZhUPUIghEIgrv7N/pCWbfTufJ4xRgaiQwNUkjSGIxJfv5Xm7+ZYu65h6AjOqA0Lu
+        gj9wCgIk7cpyGeAIcI+FaLlmUQCEQHDJYhHGYikYI8ul8ut7MIh8/p+kErkESqz+DXu/+3+/T6mI
+        DYv9jbCxT4GIozMzPeS6uqrkmocDLc6GKe0esdFtmIT57nHgtA3XoxX52pNeWTXqg7kWvObqLTDw
+        2EFz9C2yHGu77now9fatXNUPRy2QdOCgWkL1kkcSOtx3EkvVnE2+ubZzRJ3jRbz3V1U2qrjIniUB
+        TEeH41BLSnuL9vvp9nnRLZO0skjxkNrWAkIt9+q0zcYgeW7WDX1XhJPRJO83pzOuH5ycXUjNTnk6
+        GrfMKkSiEIpxsSpHXSm7yW46Tvr6bOgfrVHH6mCqu2Z/nwQo2BKvnB8AQOeEw0bPsGcHtO259Fiz
+        c/lusxUaaY9Oj4vkOSi/hkZYWPnV0b49nWmBq82M/qQ3r2MdLOAeb4YCG1BLB4XIq0/J4sUbltiL
+        Ns7ngyTPWl6v5FqqumE11aG7yZonDePFXJcpbbrq05OS+d/0/n5NTokYOU8qYBCRq/vnaJU1pphv
+        xghwRk9utvNsfe6SgilER2kufPM3EefAP+c1T3mzPqIokuKA2etOZz251D/4z8dLzRO5My0lPkWa
+        SAApJvC5oEoYsSAUDtshqrP4LKZm6VL2Rnt3eKn4gQsmALmDio0Pyrd5eUtWxeRWlDd6lQ0CBIv0
+        dCmnPXNuFCUL3NG6djFz0+yrPO4p1k4SO3f7MoApiji+dNpHgezlQ+mx+rAmgG/O9ZQI8ZBRjvrw
+        5PNAYgOs8E57qFUDsbN8zynbqpJ5z/wDZ+WLSZQEAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 09 Feb 2026 22:13:14 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=896
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
