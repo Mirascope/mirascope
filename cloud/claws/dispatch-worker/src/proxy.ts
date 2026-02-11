@@ -22,6 +22,14 @@ export async function findGatewayProcess(
 ): Promise<Process | null> {
   try {
     const processes = await sandbox.listProcesses();
+    console.log(
+      "[proxy] findGatewayProcess: all processes:",
+      processes.map((p) => ({
+        id: p.id,
+        status: p.status,
+        command: p.command,
+      })),
+    );
     for (const proc of processes) {
       const isGateway =
         proc.command.includes("start-openclaw.ts") ||
@@ -222,7 +230,12 @@ export async function ensureGateway(
       );
 
       // The gateway is already running from a previous start — find it
+      console.log("[proxy] Searching for existing gateway process...");
       const existingProc = await findGatewayProcess(sandbox);
+      console.log(
+        "[proxy] findGatewayProcess result:",
+        existingProc?.id ?? "not found",
+      );
       if (existingProc) {
         console.log(
           "[proxy] Found existing gateway process:",
@@ -247,6 +260,7 @@ export async function ensureGateway(
 
       // Last resort: try a direct HTTP check — the gateway might be running
       // under a command string that findGatewayProcess doesn't recognize
+      console.log("[proxy] Trying direct health check fallback...");
       try {
         const healthCheck = await sandbox.containerFetch(
           new Request("http://localhost/healthz"),
@@ -262,7 +276,12 @@ export async function ensureGateway(
             ") — gateway is running",
           );
           // Re-find the actual gateway process now that we know it's listening
+          console.log("[proxy] Health check passed, re-scanning processes...");
           const runningProc = await findGatewayProcess(sandbox);
+          console.log(
+            "[proxy] Re-scan result:",
+            runningProc?.id ?? "not found",
+          );
           if (runningProc) return runningProc;
           return process; // Fallback: process ref won't be used for proxying
         }
