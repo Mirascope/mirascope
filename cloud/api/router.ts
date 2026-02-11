@@ -32,6 +32,7 @@ import {
   getClawUsageHandler,
   getSecretsHandler,
   updateSecretsHandler,
+  restartClawHandler,
 } from "@/api/claws.handlers";
 import { getOpenApiSpecHandler } from "@/api/docs.handlers";
 import {
@@ -527,6 +528,9 @@ const ClawsHandlersLive = HttpApiBuilder.group(
       )
       .handle("updateSecrets", ({ path, payload }) =>
         updateSecretsHandler(path.organizationId, path.clawId, payload),
+      )
+      .handle("restart", ({ path }) =>
+        restartClawHandler(path.organizationId, path.clawId),
       ),
 );
 
