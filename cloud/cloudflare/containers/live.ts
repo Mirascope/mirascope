@@ -147,18 +147,11 @@ function makeContainerService(
 
     warmUp: (hostname: string) =>
       Effect.gen(function* () {
-        const response = yield* Effect.tryPromise({
-          try: () =>
-            fetch(`https://${hostname}/`, {
-              method: "GET",
-              signal: AbortSignal.timeout(30_000),
-            }),
-          catch: (error) =>
-            new CloudflareApiError({
-              message: `Warm-up request failed for ${hostname}`,
-              cause: error,
-            }),
-        });
+        const response = yield* dispatchFetch(
+          hostname,
+          "/_internal/warm-up",
+          "POST",
+        );
         if (!response.ok) {
           return yield* Effect.fail(
             new CloudflareApiError({
