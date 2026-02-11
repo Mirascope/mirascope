@@ -10,14 +10,9 @@ export function useIsMobile(): boolean {
   // SM breakpoint in Tailwind is 640px
   const SM_BREAKPOINT = 640;
 
-  // Initialize with a value based on window width if available
-  // Otherwise default to false (assuming desktop) for SSR
-  const [isMobile, setIsMobile] = useState<boolean>(() => {
-    if (typeof window !== "undefined") {
-      return window.innerWidth < SM_BREAKPOINT;
-    }
-    return false;
-  });
+  // Always initialize to false to match SSR and avoid hydration mismatch.
+  // The useEffect below will set the correct value after hydration.
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   useEffect(() => {
     // Skip if not in browser environment
