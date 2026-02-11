@@ -8,15 +8,15 @@
  * ## Running
  *
  * ```bash
- * CF_INTEGRATION=1 CF_ACCOUNT_ID=xxx CF_API_TOKEN=xxx bun run vitest run cloudflare/r2/contract.test.ts
+ * CF_INTEGRATION=1 CLOUDFLARE_ACCOUNT_ID=xxx CLOUDFLARE_API_TOKEN=xxx bun run vitest run cloudflare/r2/contract.test.ts
  * ```
  *
  * ## Requirements
  *
  * The following env vars must be set:
  * - CF_INTEGRATION — Set to any truthy value to enable
- * - CF_ACCOUNT_ID — Cloudflare account ID
- * - CF_API_TOKEN — API token with R2 admin permissions
+ * - CLOUDFLARE_ACCOUNT_ID — Cloudflare account ID
+ * - CLOUDFLARE_API_TOKEN — API token with R2 admin permissions
  * - CF_R2_READ_PERM_ID — R2 bucket item read permission group ID
  * - CF_R2_WRITE_PERM_ID — R2 bucket item write permission group ID
  */
@@ -42,10 +42,10 @@ describe.runIf(process.env.CF_INTEGRATION)("R2 contract tests", () => {
   const layer = LiveCloudflareR2Service.pipe(
     Layer.provide(
       Layer.merge(
-        CloudflareHttp.Live(process.env.CF_API_TOKEN ?? ""),
+        CloudflareHttp.Live(process.env.CLOUDFLARE_API_TOKEN ?? ""),
         CloudflareSettings.layer({
-          accountId: process.env.CF_ACCOUNT_ID ?? "",
-          apiToken: process.env.CF_API_TOKEN ?? "",
+          accountId: process.env.CLOUDFLARE_ACCOUNT_ID ?? "",
+          apiToken: process.env.CLOUDFLARE_API_TOKEN ?? "",
           r2BucketItemReadPermissionGroupId:
             process.env.CF_R2_READ_PERM_ID ?? "",
           r2BucketItemWritePermissionGroupId:

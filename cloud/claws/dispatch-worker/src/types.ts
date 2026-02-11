@@ -20,7 +20,6 @@ export interface DispatchEnv {
 
   /** Cloudflare account ID for R2 endpoint URL */
   CLOUDFLARE_ACCOUNT_ID?: string;
-  CF_ACCOUNT_ID?: string; // backwards compatibility
 }
 
 /**
