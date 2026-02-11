@@ -408,6 +408,18 @@ describe.sequential("Claws API", (it) => {
   );
 
   it.effect(
+    "POST /organizations/:organizationId/claws/:clawId/restart - restart claw",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const result = yield* client.claws.restart({
+          path: { organizationId: org.id, clawId: claw.id },
+        });
+        expect(result).toBeUndefined();
+      }),
+  );
+
+  it.effect(
     "DELETE /organizations/:organizationId/claws/:clawId - delete claw",
     () =>
       Effect.gen(function* () {
