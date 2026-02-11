@@ -195,6 +195,9 @@ export type SettingsConfig = {
   // Encryption
   readonly encryptionKeys: EncryptionKeysConfig;
   readonly activeEncryptionKeyId: string;
+
+  // OpenClaw gateway (optional — for dev/local WS proxy)
+  readonly openclawGatewayWsUrl?: string;
 };
 
 // =============================================================================
@@ -277,6 +280,9 @@ export type CloudflareEnvironment = {
   CF_DISPATCH_WORKER_BASE_URL?: string;
   // Encryption keys for claw secrets (versioned)
   CLAW_SECRETS_ENCRYPTION_KEY_V1?: string;
+  // OpenClaw gateway (dev/local only)
+  OPENCLAW_GATEWAY_WS_URL?: string;
+  OPENCLAW_GATEWAY_TOKEN?: string;
 };
 
 /**
@@ -419,6 +425,8 @@ function validateSettingsFromSource(
         ),
       },
       activeEncryptionKeyId: "CLAW_SECRETS_ENCRYPTION_KEY_V1",
+
+      openclawGatewayWsUrl: optional("OPENCLAW_GATEWAY_WS_URL") || undefined,
     };
 
     // Fail if any variables are missing

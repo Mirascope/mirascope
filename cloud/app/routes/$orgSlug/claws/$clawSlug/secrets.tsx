@@ -448,6 +448,7 @@ function AddVariableDialog({
               <Label htmlFor="var-value">Value</Label>
               <Input
                 id="var-value"
+                autoComplete="off"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder="Enter value"
@@ -526,6 +527,7 @@ function EditVariableDialog({
               <Label htmlFor="edit-value">Value</Label>
               <Input
                 id="edit-value"
+                autoComplete="off"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder="Enter new value"
