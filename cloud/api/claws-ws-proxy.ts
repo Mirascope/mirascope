@@ -151,13 +151,17 @@ export async function handleClawsWebSocket(
     }
 
     // 6. Determine upstream gateway URL
-    const gatewayBaseUrl =
+    // Route through the dispatch worker which handles container lifecycle.
+    // The dispatch worker accepts Bearer token auth (gateway token) and
+    // proxies the WebSocket to the correct container.
+    const dispatchBaseUrl =
       settings.openclawGatewayWsUrl ??
       settings.cloudflare.dispatchWorkerBaseUrl.replace(/^http/, "ws");
+    const upstreamUrl = `${dispatchBaseUrl.replace(/\/$/, "")}/${orgSlug}/${clawSlug}`;
 
     // 7. Connect to upstream gateway, perform handshake, and relay
     return yield* Effect.tryPromise({
-      try: () => connectAndRelay(gatewayBaseUrl, gatewayToken),
+      try: () => connectAndRelay(upstreamUrl, gatewayToken),
       catch: (cause) =>
         new DatabaseError({
           message: `Failed to connect to gateway: ${cause instanceof Error ? cause.message : String(cause)}`,
@@ -217,12 +221,13 @@ async function connectAndRelay(
   // Create WebSocket pair for browser ↔ proxy
   const [clientWs, serverWs] = Object.values(new WebSocketPair());
 
-  // Connect to upstream gateway via fetch + Upgrade
-  // The gateway accepts WebSocket upgrades at the root path
-  const upstreamUrl = gatewayBaseUrl.replace(/\/$/, "");
-  const upstreamResponse = await fetch(upstreamUrl, {
+  // Connect to upstream via fetch + Upgrade
+  // Routes through the dispatch worker which proxies to the container gateway.
+  // Bearer token auth lets the dispatch worker identify and route to the claw.
+  const upstreamResponse = await fetch(gatewayBaseUrl, {
     headers: {
       Upgrade: "websocket",
+      Authorization: `Bearer ${gatewayToken}`,
     },
   });
 
