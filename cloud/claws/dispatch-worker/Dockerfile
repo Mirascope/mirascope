@@ -18,13 +18,13 @@ RUN ARCH="$(dpkg --print-architecture)" \
 
 # Install bun
 RUN curl -fsSL https://bun.sh/install | bash \
-    && ln -s /root/.bun/bin/bun /usr/local/bin/bun \
+    && ln -sf /root/.bun/bin/bun /usr/local/bin/bun \
     && bun --version
 
 # Install uv (Python package manager)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
-    && ln -s /root/.local/bin/uv /usr/local/bin/uv \
-    && ln -s /root/.local/bin/uvx /usr/local/bin/uvx \
+    && ln -sf /root/.local/bin/uv /usr/local/bin/uv \
+    && ln -sf /root/.local/bin/uvx /usr/local/bin/uvx \
     && uv --version
 
 # Install Python 3.12 and mirascope with all extras
