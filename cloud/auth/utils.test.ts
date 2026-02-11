@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 
 import {
+  getCookieDomain,
   getSessionIdFromCookie,
   getOAuthStateFromCookie,
   setSessionCookie,
@@ -73,6 +74,36 @@ describe("getOAuthStateFromCookie", () => {
   });
 });
 
+describe("getCookieDomain", () => {
+  it("should return domain with dot prefix for staging subdomain", () => {
+    const settings = createMockSettings({
+      siteUrl: "https://staging.mirascope.com",
+    });
+    expect(getCookieDomain(settings)).toBe(".staging.mirascope.com");
+  });
+
+  it("should return domain with dot prefix for production domain", () => {
+    const settings = createMockSettings({
+      siteUrl: "https://mirascope.com",
+    });
+    expect(getCookieDomain(settings)).toBe(".mirascope.com");
+  });
+
+  it("should return null for localhost", () => {
+    const settings = createMockSettings({
+      siteUrl: "http://localhost:3000",
+    });
+    expect(getCookieDomain(settings)).toBeNull();
+  });
+
+  it("should return null for IP addresses", () => {
+    const settings = createMockSettings({
+      siteUrl: "http://192.168.1.1:3000",
+    });
+    expect(getCookieDomain(settings)).toBeNull();
+  });
+});
+
 describe("setSessionCookie", () => {
   it("should create a session cookie string", () => {
     const settings = createMockSettings();
@@ -113,6 +144,24 @@ describe("setSessionCookie", () => {
 
     const cookie = setSessionCookie("test-session-id", settings);
     expect(cookie).not.toContain("Secure");
+  });
+
+  it("should include Domain when siteUrl is a real domain", () => {
+    const settings = createMockSettings({
+      siteUrl: "https://staging.mirascope.com",
+    });
+
+    const cookie = setSessionCookie("test-session-id", settings);
+    expect(cookie).toContain("Domain=.staging.mirascope.com");
+  });
+
+  it("should not include Domain for localhost", () => {
+    const settings = createMockSettings({
+      siteUrl: "http://localhost:3000",
+    });
+
+    const cookie = setSessionCookie("test-session-id", settings);
+    expect(cookie).not.toContain("Domain=");
   });
 });
 
@@ -156,6 +205,24 @@ describe("clearSessionCookie", () => {
 
     const cookie = clearSessionCookie(settings);
     expect(cookie).not.toContain("Secure");
+  });
+
+  it("should include Domain when siteUrl is a real domain", () => {
+    const settings = createMockSettings({
+      siteUrl: "https://staging.mirascope.com",
+    });
+
+    const cookie = clearSessionCookie(settings);
+    expect(cookie).toContain("Domain=.staging.mirascope.com");
+  });
+
+  it("should not include Domain for localhost", () => {
+    const settings = createMockSettings({
+      siteUrl: "http://localhost:3000",
+    });
+
+    const cookie = clearSessionCookie(settings);
+    expect(cookie).not.toContain("Domain=");
   });
 });
 
