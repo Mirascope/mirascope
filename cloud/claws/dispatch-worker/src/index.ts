@@ -20,7 +20,12 @@ import { getSandbox, Sandbox } from "@cloudflare/sandbox";
 import { Effect } from "effect";
 import { Hono } from "hono";
 
-import type { AppEnv, DispatchEnv, OpenClawConfig } from "./types";
+import type {
+  AppEnv,
+  DispatchEnv,
+  OpenClawConfig,
+  SandboxProcessStatus,
+} from "./types";
 
 import loadingPageHtml from "./assets/loading.html";
 import {
@@ -45,6 +50,7 @@ import {
   proxyHttp,
   proxyWebSocket,
 } from "./proxy";
+import { PROCESS_TO_HEALTH_STATUS } from "./types";
 import { extractClawId } from "./utils";
 
 export { Sandbox };
@@ -136,21 +142,9 @@ app.get("/:orgSlug/:clawSlug/_health", async (c) => {
 
     if (process !== null) {
       const status =
-        process.status === "running"
-          ? "running"
-          : process.status === "starting"
-            ? "starting"
-            : process.status === "failed" ||
-                process.status === "error" ||
-                process.status === "killed"
-              ? "error"
-              : "unknown";
-
-      return c.json({
-        clawId,
-        status,
-        rawStatus: process.status,
-      });
+        PROCESS_TO_HEALTH_STATUS[process.status as SandboxProcessStatus] ??
+        "stopped";
+      return c.json({ clawId, status, rawStatus: process.status });
     }
   } catch (err) {
     console.log("[health] Could not check sandbox state:", err);
