@@ -22,7 +22,7 @@ import { AnalyticsProvider } from "@/app/contexts/analytics";
 import { AuthProvider } from "@/app/contexts/auth";
 import { OrganizationProvider } from "@/app/contexts/organization";
 import { usePageView } from "@/app/hooks/use-page-view";
-import { isCloudAppRoute } from "@/app/lib/route-utils";
+import { isApplicationRoute } from "@/app/lib/route-utils";
 import globalsCss from "@/app/styles/globals.css?url";
 
 export const Route = createRootRoute({
@@ -70,7 +70,7 @@ function AppContent() {
 
   const router = useRouterState();
   const currentPath = router.location.pathname;
-  const isCloudRoute = isCloudAppRoute(currentPath);
+  const isAppRoute = isApplicationRoute(currentPath);
   const isDocsRoute =
     currentPath === "/docs" || currentPath.startsWith("/docs/");
   const isLandingPage = useIsLandingPage();
@@ -80,7 +80,7 @@ function AppContent() {
       <Header />
       <div
         className={
-          isCloudRoute
+          isAppRoute
             ? "w-full grow pt-[60px]"
             : isLandingPage
               ? "flex w-full grow flex-col pt-(--header-height)"
@@ -93,7 +93,7 @@ function AppContent() {
           <Outlet />
         </main>
       </div>
-      {!isCloudRoute && <Footer />}
+      {!isAppRoute && <Footer />}
       <Toaster />
       <TanStackRouterDevtools />
       <DevToolsButton className="fixed bottom-10 left-2 z-50" />
