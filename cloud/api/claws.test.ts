@@ -1117,6 +1117,47 @@ describe("Claw handler errors", () => {
         expect(error).toBeInstanceOf(PermissionDeniedError);
       }),
   );
+
+  it.effect(
+    "restartClawHandler returns ClawDeploymentError when restart fails",
+    () =>
+      Effect.gen(function* () {
+        const RestartDatabaseLayer = Layer.succeed(Database, {
+          users: {} as never,
+          organizations: {
+            claws: {
+              authorize: () => Effect.succeed("ADMIN" as never),
+            },
+          } as never,
+        } as never);
+
+        const error = yield* restartClawHandler(
+          "mock-org-id",
+          "mock-claw-id",
+        ).pipe(
+          Effect.flip,
+          Effect.provide(
+            Layer.mergeAll(
+              Layer.succeed(AuthenticatedUser, mockUser),
+              RestartDatabaseLayer,
+              MockClawDeployment.layer({
+                restart: () =>
+                  Effect.fail(
+                    new ClawDeploymentError({
+                      message: "Failed to restart claw",
+                    }),
+                  ),
+              }),
+            ),
+          ),
+        );
+
+        expect(error).toBeInstanceOf(ClawDeploymentError);
+        expect((error as ClawDeploymentError).message).toBe(
+          "Failed to restart claw",
+        );
+      }),
+  );
 });
 
 describe("Internal handler integration", () => {
