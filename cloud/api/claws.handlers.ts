@@ -11,7 +11,7 @@ import { ClawDeploymentService } from "@/claws/deployment/service";
 import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
 import { claws } from "@/db/schema";
-import { DatabaseError } from "@/errors";
+import { DatabaseError, PermissionDeniedError } from "@/errors";
 import { Settings } from "@/settings";
 
 export * from "@/api/claws.schemas";
@@ -208,4 +208,29 @@ export const updateSecretsHandler = (
       clawId,
       secrets: payload,
     });
+  });
+
+export const restartClawHandler = (organizationId: string, clawId: string) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    const deployment = yield* ClawDeploymentService;
+
+    // Require ADMIN-level claw access for restart operations.
+    const role = yield* db.organizations.claws.getRole({
+      organizationId,
+      clawId,
+      userId: user.id,
+    });
+
+    if (role !== "ADMIN" && role !== "DEVELOPER") {
+      return yield* Effect.fail(
+        new PermissionDeniedError({
+          message: "You do not have permission to restart this claw",
+          resource: "claw",
+        }),
+      );
+    }
+
+    yield* deployment.restart(clawId);
   });
