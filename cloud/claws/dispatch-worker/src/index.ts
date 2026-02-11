@@ -35,6 +35,7 @@ import {
   type BootstrapFetchError,
   fetchBootstrapConfig,
   reportClawStatus,
+  resolveClawId,
 } from "./bootstrap";
 import { getCachedConfig, setCachedConfig } from "./cache";
 import { internal } from "./internal";
@@ -110,6 +111,41 @@ function authErrorToResponse(
       );
   }
 }
+
+// ---------------------------------------------------------------------------
+// Health check endpoint — bypasses auth, does not start container
+// ---------------------------------------------------------------------------
+app.get("/:orgSlug/:clawSlug/_health", async (c) => {
+  const { orgSlug, clawSlug } = c.req.param();
+
+  // Resolve claw slugs → clawId (does NOT start a container)
+  const resolveResult = await Effect.runPromiseExit(
+    resolveClawId(orgSlug, clawSlug, c.env),
+  );
+
+  if (resolveResult._tag === "Failure") {
+    return c.json({ status: "not_found" }, 404);
+  }
+
+  const { clawId } = resolveResult.value;
+
+  // Check gateway process state without triggering startup
+  try {
+    const sandbox = getSandbox(c.env.Sandbox, clawId, { keepAlive: true });
+    const process = await findGatewayProcess(sandbox);
+
+    if (process !== null) {
+      return c.json({
+        clawId,
+        status: process.status === "running" ? "running" : "starting",
+      });
+    }
+  } catch (err) {
+    console.log("[health] Could not check sandbox state:", err);
+  }
+
+  return c.json({ status: "stopped", clawId });
+});
 
 // ---------------------------------------------------------------------------
 // External routes: /{orgSlug}/{clawSlug}/* — path-based routing with auth
