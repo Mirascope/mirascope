@@ -303,6 +303,9 @@ async function connectAndRelay(
 
   await handshakePromise;
 
+  // Signal browser that proxy is ready for messages
+  serverWs.send(JSON.stringify({ type: "proxy.ready" }));
+
   // Set up bidirectional relay (browser ↔ gateway)
   // Relay: browser → gateway
   serverWs.addEventListener("message", (event) => {
