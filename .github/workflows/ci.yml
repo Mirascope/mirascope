@@ -247,6 +247,14 @@ jobs:
       - name: Run `vitest` with code coverage
         run: bun run test:coverage
 
+      - name: Upload test timing data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloud-test-results
+          path: cloud/test-results.json
+          retention-days: 30
+
   dispatch-worker-lint:
     name: Dispatch Worker Lint & Type Check
     needs: changes
