@@ -7,8 +7,8 @@
 
 import type { Plugin, OnLoadArgs, OnLoadResult, PluginBuild } from "esbuild";
 
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import ts from "typescript";
 
 import { createToolSchemaTransformer } from "@/transform/transformer";
@@ -118,10 +118,9 @@ export function mirascope(options: MirascopeEsbuildPluginOptions = {}): Plugin {
           // Check if this file contains functions that need transformation
           // If not, we can skip the expensive transformation
           const needsTransform =
-            sourceText.includes("defineTool") ||
-            sourceText.includes("defineContextTool") ||
-            sourceText.includes("defineFormat") ||
-            sourceText.includes("version");
+            /\b(?:defineTool|defineContextTool|defineFormat|version(?:Call)?)\s*[<(]/.test(
+              sourceText,
+            );
 
           if (!needsTransform) {
             return {

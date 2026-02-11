@@ -8,7 +8,7 @@
  */
 
 import { context as otelContext, trace as otelTrace } from "@opentelemetry/api";
-import { createHash } from "crypto";
+import { createHash } from "node:crypto";
 
 import type { VersionOptions } from "@/ops/_internal/types";
 

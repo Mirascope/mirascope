@@ -25,8 +25,8 @@
 
 /* eslint-disable @typescript-eslint/unbound-method */
 import { plugin } from "bun";
-import { readFileSync } from "fs";
-import { resolve, dirname } from "path";
+import { readFileSync } from "node:fs";
+import { resolve, dirname } from "node:path";
 import ts from "typescript";
 
 import { createToolSchemaTransformer } from "./transform/transformer";
@@ -57,7 +57,7 @@ export interface MirascopeBunPluginOptions {
  * - version, versionCall: Closure metadata injection for versioning
  */
 function needsTransform(contents: string): boolean {
-  return /\bdefineTool\b|\bdefineContextTool\b|\bdefineFormat\b|\bversion\b/.test(
+  return /\b(?:defineTool|defineContextTool|defineFormat|version(?:Call)?)\s*[<(]/.test(
     contents,
   );
 }
