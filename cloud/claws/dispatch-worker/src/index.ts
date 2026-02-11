@@ -112,6 +112,13 @@ function authErrorToResponse(
 }
 
 // ---------------------------------------------------------------------------
+// Health check endpoint — bypasses auth, does not start container
+// ---------------------------------------------------------------------------
+app.get("/:orgSlug/:clawSlug/_health", async (c) => {
+  return c.json({ status: "ok" });
+});
+
+// ---------------------------------------------------------------------------
 // External routes: /{orgSlug}/{clawSlug}/* — path-based routing with auth
 // ---------------------------------------------------------------------------
 app.all("*", async (c) => {
