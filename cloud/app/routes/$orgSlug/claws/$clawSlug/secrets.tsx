@@ -1,8 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Loader2, MoreHorizontal, Pencil, Plus, Trash } from "lucide-react";
+import {
+  Loader2,
+  MoreHorizontal,
+  Pencil,
+  Plus,
+  RefreshCw,
+  Trash,
+} from "lucide-react";
 import { useState } from "react";
 
-import { useClawSecrets, useUpdateClawSecrets } from "@/app/api/claws";
+import {
+  useClawSecrets,
+  useRestartClaw,
+  useUpdateClawSecrets,
+} from "@/app/api/claws";
 import { ClawHeader } from "@/app/components/claw-header";
 import { CloudLayout } from "@/app/components/cloud-layout";
 import { Protected } from "@/app/components/protected";
@@ -63,11 +74,13 @@ function ClawsSecretsPage() {
     clawId,
   );
   const updateSecrets = useUpdateClawSecrets();
+  const restartClaw = useRestartClaw();
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editKey, setEditKey] = useState<string | null>(null);
   const [deleteKey, setDeleteKey] = useState<string | null>(null);
+  const [restartDialogOpen, setRestartDialogOpen] = useState(false);
   const [rawJson, setRawJson] = useState("");
   const [rawError, setRawError] = useState<string | null>(null);
 
@@ -100,6 +113,16 @@ function ClawsSecretsPage() {
       mutate(next);
     }
     setDeleteKey(null);
+  };
+
+  const handleRestart = () => {
+    if (!organizationId || !clawId) return;
+    restartClaw.mutate(
+      { organizationId, clawId },
+      {
+        onSuccess: () => setRestartDialogOpen(false),
+      },
+    );
   };
 
   const handleSaveRaw = () => {
@@ -183,10 +206,24 @@ function ClawsSecretsPage() {
                 <TabsTrigger value="table">Table</TabsTrigger>
                 <TabsTrigger value="raw">Raw</TabsTrigger>
               </TabsList>
-              <Button onClick={() => setAddDialogOpen(true)}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add variable
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setRestartDialogOpen(true)}
+                  disabled={restartClaw.isPending}
+                >
+                  {restartClaw.isPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                  )}
+                  Restart claw
+                </Button>
+                <Button onClick={() => setAddDialogOpen(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add variable
+                </Button>
+              </div>
             </div>
 
             <TabsContent value="table">
@@ -313,6 +350,30 @@ function ClawsSecretsPage() {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={restartDialogOpen} onOpenChange={setRestartDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Restart claw gateway?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will restart the gateway process for this claw. Use this
+              after updating secrets so the running process picks up fresh
+              configuration.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={restartClaw.isPending}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleRestart}
+              disabled={restartClaw.isPending}
+            >
+              {restartClaw.isPending ? "Restarting…" : "Restart"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

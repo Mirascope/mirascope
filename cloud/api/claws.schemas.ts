@@ -228,4 +228,21 @@ export class ClawsApi extends HttpApiGroup.make("claws")
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
       .addError(DatabaseError, { status: DatabaseError.status })
       .addError(EncryptionError, { status: EncryptionError.status }),
+  )
+  .add(
+    HttpApiEndpoint.post(
+      "restart",
+      "/organizations/:organizationId/claws/:clawId/restart",
+    )
+      .setPath(
+        Schema.Struct({
+          organizationId: Schema.String,
+          clawId: Schema.String,
+        }),
+      )
+      .addSuccess(Schema.Void)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(ClawDeploymentError, { status: ClawDeploymentError.status }),
   ) {}

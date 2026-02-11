@@ -834,38 +834,34 @@ describe("Claws", () => {
       }),
     );
 
-    it.effect(
-      "returns `PermissionDeniedError` when DEVELOPER tries to update",
-      () =>
-        Effect.gen(function* () {
-          const { org, owner, member } = yield* TestOrganizationFixture;
-          const db = yield* Database;
+    it.effect("allows DEVELOPER to update", () =>
+      Effect.gen(function* () {
+        const { org, owner, member } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
-          const claw = yield* db.organizations.claws.create({
-            userId: owner.id,
-            organizationId: org.id,
-            data: { slug: "test-claw", displayName: "Test Claw" },
-          });
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "test-claw", displayName: "Test Claw" },
+        });
 
-          // Add member as DEVELOPER
-          yield* db.organizations.claws.memberships.create({
-            userId: owner.id,
-            organizationId: org.id,
-            clawId: claw.id,
-            data: { memberId: member.id, role: "DEVELOPER" },
-          });
+        // Add member as DEVELOPER
+        yield* db.organizations.claws.memberships.create({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+          data: { memberId: member.id, role: "DEVELOPER" },
+        });
 
-          const result = yield* db.organizations.claws
-            .update({
-              userId: member.id,
-              organizationId: org.id,
-              clawId: claw.id,
-              data: { displayName: "Unauthorized Update" },
-            })
-            .pipe(Effect.flip);
+        const updated = yield* db.organizations.claws.update({
+          userId: member.id,
+          organizationId: org.id,
+          clawId: claw.id,
+          data: { displayName: "Developer Update" },
+        });
 
-          expect(result).toBeInstanceOf(PermissionDeniedError);
-        }),
+        expect(updated.displayName).toBe("Developer Update");
+      }),
     );
 
     it.effect(
@@ -2270,41 +2266,43 @@ describe("Claws", () => {
       }),
     );
 
-    it.effect(
-      "returns `PermissionDeniedError` when DEVELOPER tries to update secrets",
-      () =>
-        Effect.gen(function* () {
-          const { org, owner, member } = yield* TestOrganizationFixture;
-          const db = yield* Database;
+    it.effect("allows DEVELOPER to update secrets", () =>
+      Effect.gen(function* () {
+        const { org, owner, member } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
-          const claw = yield* db.organizations.claws.create({
-            userId: owner.id,
-            organizationId: org.id,
-            data: {
-              slug: "perm-secrets-claw",
-              displayName: "Perm Secrets Claw",
-            },
-          });
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: {
+            slug: "perm-secrets-claw",
+            displayName: "Perm Secrets Claw",
+          },
+        });
 
-          // Add member as DEVELOPER
-          yield* db.organizations.claws.memberships.create({
-            userId: owner.id,
-            organizationId: org.id,
-            clawId: claw.id,
-            data: { memberId: member.id, role: "DEVELOPER" },
-          });
+        // Add member as DEVELOPER
+        yield* db.organizations.claws.memberships.create({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+          data: { memberId: member.id, role: "DEVELOPER" },
+        });
 
-          const result = yield* db.organizations.claws
-            .updateSecrets({
-              userId: member.id,
-              organizationId: org.id,
-              clawId: claw.id,
-              secrets: { UNAUTHORIZED: "value" },
-            })
-            .pipe(Effect.flip);
+        yield* db.organizations.claws.updateSecrets({
+          userId: member.id,
+          organizationId: org.id,
+          clawId: claw.id,
+          secrets: { DEVELOPER_UPDATED: "value" },
+        });
 
-          expect(result).toBeInstanceOf(PermissionDeniedError);
-        }),
+        const fetched = yield* db.organizations.claws.getSecrets({
+          userId: member.id,
+          organizationId: org.id,
+          clawId: claw.id,
+        });
+
+        expect(fetched).toEqual({ DEVELOPER_UPDATED: "value" });
+      }),
     );
 
     it.effect(

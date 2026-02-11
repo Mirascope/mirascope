@@ -206,3 +206,21 @@ export const useUpdateClawSecrets = () => {
     },
   });
 };
+
+export const useRestartClaw = () => {
+  return useMutation({
+    ...eq.mutationOptions({
+      mutationKey: ["claws", "restart"],
+      mutationFn: (data: { organizationId: string; clawId: string }) =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.claws.restart({
+            path: {
+              organizationId: data.organizationId,
+              clawId: data.clawId,
+            },
+          });
+        }),
+    }),
+  });
+};
