@@ -1210,6 +1210,52 @@ describe("validateSessionHandler", () => {
     }),
   );
 
+  it.rollback("returns UnauthorizedError for deleted user", () =>
+    Effect.gen(function* () {
+      const db = yield* Database;
+      const { user } = yield* createTestFixture;
+
+      const session = yield* db.sessions.create({
+        userId: user.id,
+        data: { userId: user.id, expiresAt: new Date(Date.now() + 60_000) },
+      });
+
+      // Soft-delete the user
+      yield* db.users.delete({ userId: user.id });
+
+      const error = yield* validateSessionHandler({
+        sessionId: session.id,
+        organizationSlug: "any-org",
+        clawSlug: "any-claw",
+      }).pipe(Effect.flip);
+      expect(error).toBeInstanceOf(UnauthorizedError);
+      expect(error.message).toBe("Invalid session");
+    }),
+  );
+
+  it.rollback("returns UnauthorizedError for expired session", () =>
+    Effect.gen(function* () {
+      const db = yield* Database;
+      const { user } = yield* createTestFixture;
+
+      const session = yield* db.sessions.create({
+        userId: user.id,
+        data: {
+          userId: user.id,
+          expiresAt: new Date(Date.now() - 60_000), // already expired
+        },
+      });
+
+      const error = yield* validateSessionHandler({
+        sessionId: session.id,
+        organizationSlug: "any-org",
+        clawSlug: "any-claw",
+      }).pipe(Effect.flip);
+      expect(error).toBeInstanceOf(UnauthorizedError);
+      expect(error.message).toBe("Invalid session");
+    }),
+  );
+
   it.rollback("returns role for org owner with implicit access", () =>
     Effect.gen(function* () {
       const db = yield* Database;
