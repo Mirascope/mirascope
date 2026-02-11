@@ -14,6 +14,7 @@ import {
 import {
   createClawHandler,
   deleteClawHandler,
+  restartClawHandler,
   CreateClawRequestSchema,
 } from "@/api/claws.handlers";
 import { AuthenticatedUser } from "@/auth";
@@ -22,7 +23,12 @@ import { ClawDeploymentError } from "@/claws/deployment/errors";
 import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
 import { claws } from "@/db/schema";
-import { DatabaseError, NotFoundError, UnauthorizedError } from "@/errors";
+import {
+  DatabaseError,
+  NotFoundError,
+  PermissionDeniedError,
+  UnauthorizedError,
+} from "@/errors";
 import { describe, it, expect, TestApiContext } from "@/tests/api";
 import { MockClawDeployment } from "@/tests/clawDeployment";
 import { MockSettingsLayer } from "@/tests/settings";
@@ -408,18 +414,6 @@ describe.sequential("Claws API", (it) => {
   );
 
   it.effect(
-    "POST /organizations/:organizationId/claws/:clawId/restart - restart claw",
-    () =>
-      Effect.gen(function* () {
-        const { client, org } = yield* TestApiContext;
-        const result = yield* client.claws.restart({
-          path: { organizationId: org.id, clawId: claw.id },
-        });
-        expect(result).toBeUndefined();
-      }),
-  );
-
-  it.effect(
     "DELETE /organizations/:organizationId/claws/:clawId - delete claw",
     () =>
       Effect.gen(function* () {
@@ -682,6 +676,7 @@ describe("Claw handler errors", () => {
         update: () => Effect.succeed(mockClaw),
         delete: () => Effect.void,
         memberships: {} as never,
+        authorize: () => Effect.succeed("ADMIN" as never),
         getRole: () => Effect.die("not implemented"),
         getPoolUsage: () => Effect.die("not implemented"),
         getClawUsage: () => Effect.die("not implemented"),
@@ -1030,6 +1025,96 @@ describe("Claw handler errors", () => {
         expect((error as ClawDeploymentError).message).toBe(
           "Failed to delete R2 bucket",
         );
+      }),
+  );
+
+  it.effect("restartClawHandler authorizes update and calls deployment", () =>
+    Effect.gen(function* () {
+      let authorizeArgs: Record<string, unknown> | null = null;
+      let restartCalledWith: string | null = null;
+
+      const RestartDatabaseLayer = Layer.succeed(Database, {
+        users: {} as never,
+        organizations: {
+          claws: {
+            authorize: (args: unknown) =>
+              Effect.sync(() => {
+                authorizeArgs = args as Record<string, unknown>;
+                return "ADMIN" as never;
+              }),
+          },
+        } as never,
+      } as never);
+
+      yield* restartClawHandler("mock-org-id", "mock-claw-id").pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            Layer.succeed(AuthenticatedUser, mockUser),
+            RestartDatabaseLayer,
+            MockClawDeployment.layer({
+              restart: (clawId) =>
+                Effect.sync(() => {
+                  restartCalledWith = clawId;
+                  return {
+                    status: "active" as const,
+                    startedAt: new Date(),
+                    bucketName: "claw-mock-claw-id",
+                    r2Credentials: {
+                      tokenId: "tok",
+                      accessKeyId: "ak",
+                      secretAccessKey: "sk",
+                    },
+                  };
+                }),
+            }),
+          ),
+        ),
+      );
+
+      expect(authorizeArgs).toEqual({
+        userId: mockUser.id,
+        organizationId: "mock-org-id",
+        clawId: "mock-claw-id",
+        action: "update",
+      });
+      expect(restartCalledWith).toBe("mock-claw-id");
+    }),
+  );
+
+  it.effect(
+    "restartClawHandler returns PermissionDeniedError when authorize fails",
+    () =>
+      Effect.gen(function* () {
+        const RestartDatabaseLayer = Layer.succeed(Database, {
+          users: {} as never,
+          organizations: {
+            claws: {
+              authorize: () =>
+                Effect.fail(
+                  new PermissionDeniedError({
+                    message: "nope",
+                    resource: "claw",
+                  }),
+                ),
+            },
+          } as never,
+        } as never);
+
+        const error = yield* restartClawHandler(
+          "mock-org-id",
+          "mock-claw-id",
+        ).pipe(
+          Effect.flip,
+          Effect.provide(
+            Layer.mergeAll(
+              Layer.succeed(AuthenticatedUser, mockUser),
+              RestartDatabaseLayer,
+              MockClawDeployment.layer(),
+            ),
+          ),
+        );
+
+        expect(error).toBeInstanceOf(PermissionDeniedError);
       }),
   );
 });
