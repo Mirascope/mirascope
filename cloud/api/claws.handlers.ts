@@ -209,3 +209,21 @@ export const updateSecretsHandler = (
       secrets: payload,
     });
   });
+
+export const restartClawHandler = (organizationId: string, clawId: string) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    const deployment = yield* ClawDeploymentService;
+
+    // Restart is a write operation; use claw permission table (`update`).
+    yield* db.organizations.claws.authorize({
+      userId: user.id,
+      organizationId,
+      clawId,
+      action: "update",
+    });
+
+    yield* deployment.restart(clawId);
+    return;
+  });
