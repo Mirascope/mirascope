@@ -272,7 +272,7 @@ describe("LiveCloudflareContainerService", () => {
   });
 
   describe("warmUp", () => {
-    it.effect("sends GET request to hostname", () => {
+    it.effect("sends POST to dispatch worker /_internal/warm-up", () => {
       const handler: RequestHandler = () => Effect.succeed({});
       const layer = createTestLayer(handler);
 
@@ -281,15 +281,18 @@ describe("LiveCloudflareContainerService", () => {
         yield* containers.warmUp(TEST_HOSTNAME);
 
         expect(fetchSpy).toHaveBeenCalledWith(
-          `https://${TEST_HOSTNAME}/`,
+          "https://dispatch.test.workers.dev/_internal/warm-up",
           expect.objectContaining({
-            method: "GET",
+            method: "POST",
+            headers: expect.objectContaining({
+              Host: TEST_HOSTNAME,
+            }),
           }),
         );
       }).pipe(Effect.provide(layer));
     });
 
-    it.effect("fails when HTTP response is not ok", () => {
+    it.effect("fails when dispatch worker returns error", () => {
       fetchSpy.mockResolvedValue(
         new Response("Bad Gateway", {
           status: 502,
@@ -325,7 +328,9 @@ describe("LiveCloudflareContainerService", () => {
           return yield* containers.warmUp(TEST_HOSTNAME);
         }).pipe(Effect.flip);
         expect(error).toBeInstanceOf(CloudflareApiError);
-        expect((error as CloudflareApiError).message).toContain("Warm-up");
+        expect((error as CloudflareApiError).message).toContain(
+          "Dispatch worker request failed",
+        );
       }).pipe(Effect.provide(layer));
     });
   });

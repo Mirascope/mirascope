@@ -1,11 +1,16 @@
 import type { Sandbox, Process } from "@cloudflare/sandbox";
 
+import { Effect } from "effect";
 import { Hono } from "hono";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import type { AppEnv } from "./types";
 
-import { createMockSandbox, createMockProcess } from "./test-helpers";
+import {
+  createMockSandbox,
+  createMockProcess,
+  createMockConfig,
+} from "./test-helpers";
 
 // We test the internal routes by importing the sub-router and mounting it on
 // a test Hono app that pre-populates the sandbox and clawId context vars
@@ -15,17 +20,33 @@ let mockSandbox = createMockSandbox();
 
 // Mock the proxy module so findGatewayProcess uses our mock sandbox
 vi.mock("./proxy", () => ({
+  ensureGateway: vi.fn(),
   findGatewayProcess: vi.fn(),
 }));
 
+vi.mock("./bootstrap", () => ({
+  fetchBootstrapConfig: vi.fn(),
+}));
+
+vi.mock("./cache", () => ({
+  getCachedConfig: vi.fn(),
+  setCachedConfig: vi.fn(),
+}));
+
+import { fetchBootstrapConfig } from "./bootstrap";
+import { getCachedConfig, setCachedConfig } from "./cache";
 import { internal } from "./internal";
-import { findGatewayProcess } from "./proxy";
+import { ensureGateway, findGatewayProcess } from "./proxy";
 
 const mockFindGateway = vi.mocked(findGatewayProcess);
+const mockEnsureGateway = vi.mocked(ensureGateway);
+const mockFetchBootstrapConfig = vi.mocked(fetchBootstrapConfig);
+const mockGetCachedConfig = vi.mocked(getCachedConfig);
+const mockSetCachedConfig = vi.mocked(setCachedConfig);
 
 function createTestApp() {
   const app = new Hono<AppEnv>();
-  // Simulate the main middleware that sets sandbox + clawId
+  // Simulate the main middleware that sets sandbox + clawId + env
   app.use("*", async (c, next) => {
     c.set("sandbox", mockSandbox as unknown as Sandbox);
     c.set("clawId", "test-claw-id");
@@ -38,6 +59,10 @@ function createTestApp() {
 beforeEach(() => {
   mockSandbox = createMockSandbox();
   mockFindGateway.mockReset();
+  mockEnsureGateway.mockReset();
+  mockFetchBootstrapConfig.mockReset();
+  mockGetCachedConfig.mockReset();
+  mockSetCachedConfig.mockReset();
 });
 
 describe("POST /_internal/recreate", () => {
@@ -211,5 +236,56 @@ describe("GET /_internal/state", () => {
 
     expect(body.status).toBe("stopped");
     expect(body.exitCode).toBeUndefined();
+  });
+});
+
+describe("POST /_internal/warm-up", () => {
+  it("uses cached config and calls ensureGateway", async () => {
+    const config = createMockConfig();
+    mockGetCachedConfig.mockReturnValue(config);
+    mockEnsureGateway.mockResolvedValue(undefined);
+
+    const app = createTestApp();
+    const res = await app.request("/_internal/warm-up", { method: "POST" });
+    const body = (await res.json()) as Record<string, unknown>;
+
+    expect(res.status).toBe(200);
+    expect(body).toEqual({ ok: true });
+    expect(mockGetCachedConfig).toHaveBeenCalledWith("test-claw-id");
+    expect(mockEnsureGateway).toHaveBeenCalledOnce();
+    expect(mockFetchBootstrapConfig).not.toHaveBeenCalled();
+  });
+
+  it("fetches config when not cached", async () => {
+    const config = createMockConfig();
+    mockGetCachedConfig.mockReturnValue(null);
+    mockFetchBootstrapConfig.mockReturnValue(
+      Effect.succeed(config) as unknown as ReturnType<
+        typeof fetchBootstrapConfig
+      >,
+    );
+    mockEnsureGateway.mockResolvedValue(undefined);
+
+    const app = createTestApp();
+    const res = await app.request("/_internal/warm-up", { method: "POST" });
+    const body = (await res.json()) as Record<string, unknown>;
+
+    expect(res.status).toBe(200);
+    expect(body).toEqual({ ok: true });
+    expect(mockSetCachedConfig).toHaveBeenCalledWith("test-claw-id", config);
+  });
+
+  it("returns 500 if ensureGateway fails", async () => {
+    const config = createMockConfig();
+    mockGetCachedConfig.mockReturnValue(config);
+    mockEnsureGateway.mockRejectedValue(new Error("gateway start failed"));
+
+    const app = createTestApp();
+    const res = await app.request("/_internal/warm-up", { method: "POST" });
+    const body = (await res.json()) as Record<string, unknown>;
+
+    expect(res.status).toBe(500);
+    expect(body.ok).toBe(false);
+    expect(body.error).toBe("gateway start failed");
   });
 });
