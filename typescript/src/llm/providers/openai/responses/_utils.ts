@@ -665,7 +665,7 @@ function decodeUsage(usage: NonNullable<OpenAIResponse["usage"]>): Usage {
  * The serialized items can be sent directly back as input items when
  * resuming a conversation.
  */
-function serializeOutputItem(
+export function serializeOutputItem(
   item: ResponseOutputItem,
 ): Record<string, unknown> {
   // Copy all non-undefined properties from the item

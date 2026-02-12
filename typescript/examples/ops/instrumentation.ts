@@ -13,7 +13,7 @@ ops.configure({
 
 // Instrument the Mirascope LLM module
 // This wraps all Model methods to create spans with GenAI attributes
-ops.instrumentLlm();
+ops.instrumentLLM();
 
 // Now all LLM calls are automatically traced
 const recommendBook = llm.defineCall<{ genre: string }>({
@@ -45,8 +45,8 @@ console.log("Usage:", response.usage);
 // await ops.instrumentGoogleGenai();
 
 // Check instrumentation status
-console.log("LLM instrumented:", ops.isLlmInstrumented());
+console.log("LLM instrumented:", ops.isLLMInstrumented());
 
 // Uninstrument when done (optional - usually left instrumented)
-// ops.uninstrumentLlm();
+// ops.uninstrumentLLM();
 await ops.forceFlush();
