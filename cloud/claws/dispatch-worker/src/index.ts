@@ -290,7 +290,8 @@ app.all("*", async (c) => {
     return proxyWebSocket(sandbox, rewrittenRequest);
   }
   const basePath = `/${parsed.orgSlug}/${parsed.clawSlug}`;
-  return proxyHttp(sandbox, rewrittenRequest, basePath);
+  const gatewayToken = configExit.value.containerEnv.OPENCLAW_GATEWAY_TOKEN;
+  return proxyHttp(sandbox, rewrittenRequest, basePath, gatewayToken);
 });
 
 /**

@@ -305,6 +305,7 @@ export async function proxyHttp(
   sandbox: Sandbox,
   request: Request,
   basePath?: string,
+  gatewayToken?: string,
 ): Promise<Response> {
   const url = new URL(request.url);
   console.log("[proxy] HTTP:", url.pathname + url.search);
@@ -321,21 +322,35 @@ export async function proxyHttp(
     // The Control UI reads gatewayUrl from localStorage, defaulting to
     // wss://{location.host} (no path). We inject a boot script that ensures
     // the stored URL includes the base path so WebSocket connects correctly.
+    const tokLiteral = gatewayToken
+      ? JSON.stringify(gatewayToken)
+      : "undefined";
     const wsBootScript = [
       "<script>",
       "(function(){",
       `  var bp="${basePath}";`,
+      `  var tok=${tokLiteral};`,
       '  var key="openclaw.control.settings.v1";',
       "  try{",
       "    var proto=location.protocol==='https:'?'wss':'ws';",
       "    var want=proto+'://'+location.host+bp;",
       "    var raw=localStorage.getItem(key);",
       "    if(!raw){",
-      "      localStorage.setItem(key,JSON.stringify({gatewayUrl:want}));",
+      "      var obj={gatewayUrl:want};",
+      "      if(tok)obj.token=tok;",
+      "      localStorage.setItem(key,JSON.stringify(obj));",
       "    }else{",
       "      var s=JSON.parse(raw);",
+      "      var changed=false;",
       "      if(!s.gatewayUrl||s.gatewayUrl===proto+'://'+location.host){",
       "        s.gatewayUrl=want;",
+      "        changed=true;",
+      "      }",
+      "      if(tok&&s.token!==tok){",
+      "        s.token=tok;",
+      "        changed=true;",
+      "      }",
+      "      if(changed){",
       "        localStorage.setItem(key,JSON.stringify(s));",
       "      }",
       "    }",
