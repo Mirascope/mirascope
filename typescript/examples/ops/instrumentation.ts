@@ -49,3 +49,4 @@ console.log("LLM instrumented:", ops.isLlmInstrumented());
 
 // Uninstrument when done (optional - usually left instrumented)
 // ops.uninstrumentLlm();
+await ops.forceFlush();
