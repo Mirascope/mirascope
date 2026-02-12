@@ -52,6 +52,37 @@
 
   // Environment-specific overrides for staging and production deployments.
   "env": {
+    "dev": {
+      "name": "claw-dispatch-worker-dev",
+      "services": [{ "binding": "MIRASCOPE_CLOUD", "service": "dev" }],
+      "route": {
+        "pattern": "openclaw.dev.mirascope.com",
+        "zone_name": "mirascope.com",
+        "custom_domain": true,
+      },
+      "containers": [
+        {
+          "class_name": "Sandbox",
+          "image": "./Dockerfile",
+          "instance_type": "standard-2",
+          "max_instances": 3,
+        },
+      ],
+      "durable_objects": {
+        "bindings": [
+          {
+            "class_name": "Sandbox",
+            "name": "Sandbox",
+          },
+        ],
+      },
+      "migrations": [
+        {
+          "new_sqlite_classes": ["Sandbox"],
+          "tag": "v1",
+        },
+      ],
+    },
     "staging": {
       "name": "claw-dispatch-worker-staging",
       "services": [{ "binding": "MIRASCOPE_CLOUD", "service": "staging" }],
