@@ -49,7 +49,7 @@ function validateSiteUrl(siteUrl: string): void {
 
   if (
     !siteUrl.startsWith("https://") &&
-    !siteUrl.startsWith("http://localhost")
+    !/^http:\/\/localhost(:\d+)?(\/|$)/.test(siteUrl)
   ) {
     errors.push(
       `SITE_URL must start with "https://" (or "http://localhost" for dev), got: "${siteUrl}"`,

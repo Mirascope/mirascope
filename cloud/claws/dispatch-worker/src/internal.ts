@@ -134,6 +134,47 @@ internal.get("/state", async (c) => {
 });
 
 /**
+ * GET /_internal/logs
+ *
+ * Return recent stdout/stderr from the gateway process.
+ * Uses the @cloudflare/sandbox Process.getLogs() API.
+ */
+internal.get("/logs", async (c) => {
+  const sandbox = c.get("sandbox");
+
+  const proc = await findGatewayProcess(sandbox);
+  if (!proc) {
+    return c.json({ logs: [], error: "No gateway process running" }, 200);
+  }
+
+  try {
+    const { stdout, stderr } = await proc.getLogs();
+    // Split into lines, filter empties, combine with stream labels
+    const stdoutLines = stdout
+      ? stdout
+          .split("\n")
+          .filter(Boolean)
+          .map((line) => `[stdout] ${line}`)
+      : [];
+    const stderrLines = stderr
+      ? stderr
+          .split("\n")
+          .filter(Boolean)
+          .map((line) => `[stderr] ${line}`)
+      : [];
+
+    return c.json({
+      logs: [...stdoutLines, ...stderrLines],
+      processStatus: proc.status,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[internal] Failed to get process logs:", message);
+    return c.json({ logs: [], error: message }, 500);
+  }
+});
+
+/**
  * POST /_internal/warm-up
  *
  * Trigger container startup and wait for the gateway to be ready.
