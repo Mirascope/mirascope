@@ -1,5 +1,7 @@
 import type { Cause } from "effect";
 
+import { ArrayFormatter } from "effect/ParseResult";
+
 /**
  * Type for the EffectQueryFailure wrapper from effect-query library.
  *
@@ -81,7 +83,30 @@ export function getFailure<T>(error: unknown): T | undefined {
  */
 export function getErrorMessage(error: unknown, fallback: string): string {
   if (isEffectQueryFailure(error) && error.failure) {
-    const failure = error.failure as { message?: string };
+    const failure = error.failure as {
+      message?: string;
+      issue?: unknown;
+      _tag?: string;
+    };
+
+    // Schema parse errors: use ArrayFormatter for clean messages
+    if (failure._tag === "ParseError" && failure.issue) {
+      try {
+        const issues = ArrayFormatter.formatIssueSync(failure.issue as any);
+        if (issues.length > 0) {
+          return issues
+            .map((i) => {
+              const path = i.path.join(".");
+              return path ? `${path}: ${i.message}` : i.message;
+            })
+            .join("; ");
+        }
+      } catch {
+        // Fall through to other extraction methods
+      }
+    }
+
+    // Regular errors with message property
     if (typeof failure.message === "string") {
       return failure.message;
     }

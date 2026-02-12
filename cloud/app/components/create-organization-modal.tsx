@@ -29,6 +29,8 @@ export function CreateOrganizationModal({
   onCreated?: (org: Organization) => void;
 }) {
   const [name, setName] = useState("");
+  const slug = generateSlug(name.trim());
+  const slugTooShort = slug.length > 0 && slug.length < 3;
   const [error, setError] = useState<string | null>(null);
   const createOrganization = useCreateOrganization();
   const { setSelectedOrganization } = useOrganization();
@@ -43,10 +45,15 @@ export function CreateOrganizationModal({
       return;
     }
 
+    if (slug.length < 3) {
+      setError("Name must generate a slug of at least 3 characters");
+      return;
+    }
+
     try {
       const newOrg = await createOrganization.mutateAsync({
         name: name.trim(),
-        slug: generateSlug(name.trim()),
+        slug,
       });
       analytics.trackEvent("organization_created", {
         organization_id: newOrg.id,
@@ -88,6 +95,16 @@ export function CreateOrganizationModal({
                 placeholder="My Organization"
                 autoFocus
               />
+              {name.trim() && slug && (
+                <p className="text-xs text-muted-foreground">
+                  Slug: <span className="font-mono">{slug}</span>
+                </p>
+              )}
+              {slugTooShort && (
+                <p className="text-sm text-destructive">
+                  Slug must be at least 3 characters
+                </p>
+              )}
               {error && <p className="text-sm text-destructive">{error}</p>}
             </div>
           </div>
@@ -99,7 +116,10 @@ export function CreateOrganizationModal({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={createOrganization.isPending}>
+            <Button
+              type="submit"
+              disabled={createOrganization.isPending || slugTooShort}
+            >
               {createOrganization.isPending ? "Creating..." : "Create"}
             </Button>
           </DialogFooter>
