@@ -172,7 +172,7 @@ function ProjectSettingsPage() {
             <CardTitle>Project Details</CardTitle>
             {project.type === "claw_home" && (
               <Badge variant="secondary" size="sm" pill>
-                Claw
+                claw-home
               </Badge>
             )}
           </div>
