@@ -102,8 +102,9 @@ type Book = {
   year: number;
 };
 
-const recommendBook = llm.defineCall<{ genre: string }, Book>({
+const recommendBook = llm.defineCall<{ genre: string }>()({
   model: "anthropic/claude-haiku-4-5",
+  format: llm.defineFormat<Book>({ mode: "tool" }),
   template: ({ genre }) => `Recommend a ${genre} book.`,
 });
 
@@ -258,6 +259,7 @@ llm.registerProvider("openai", {
 });
 
 const response = await llm.model("grok/grok-4-latest").call("Hello!");
+console.log(response.text())
 ```
 
 ## Transform Plugin
@@ -396,6 +398,8 @@ Wrap functions or calls with `trace()` to create spans:
 ```typescript
 import { llm, ops } from "mirascope";
 
+ops.configure();
+
 const recommendBook = llm.defineCall<{ genre: string }>({
   model: "anthropic/claude-haiku-4-5",
   template: ({ genre }) => `Recommend a ${genre} book.`,
@@ -413,6 +417,7 @@ const response = await tracedRecommendBook({ genre: "fantasy" });
 // Access span metadata
 const result = await tracedRecommendBook.wrapped({ genre: "sci-fi" });
 console.log(result.traceId, result.spanId);
+await ops.forceFlush();
 ```
 
 ### Versioning
@@ -422,6 +427,8 @@ Track function versions based on closure analysis. Changes to your function code
 ```typescript
 import { ops } from "mirascope";
 
+ops.configure();
+
 const computeEmbedding = ops.version(
   async (text: string) => {
     // Your embedding logic
@@ -430,7 +437,7 @@ const computeEmbedding = ops.version(
   {
     name: "embedding-v1",
     tags: ["embedding", "production"],
-  }
+  },
 );
 
 // Access version info (hash, signatureHash, name, version, tags, metadata)
@@ -438,6 +445,9 @@ console.log(computeEmbedding.versionInfo);
 
 // Get wrapped result with span info and annotation support
 const result = await computeEmbedding.wrapped("hello");
+await ops.forceFlush();
+// Allow time for spans to arrive at the backend
+await new Promise((resolve) => setTimeout(resolve, 5000));
 await result.annotate({ label: "pass" }); // or "fail"
 ```
 
@@ -450,6 +460,8 @@ Group related traces under a session ID:
 
 ```typescript
 import { ops } from "mirascope";
+
+ops.configure();
 
 await ops.session({ id: "user-123-conversation-1" }, async () => {
   const response = await tracedChat({ message: "Hello!" });
@@ -464,8 +476,9 @@ await ops.session(
   },
   async () => {
     // Attributes are propagated to spans
-  }
+  },
 );
+await ops.forceFlush()
 ```
 
 ### Spans
@@ -474,6 +487,8 @@ Create custom spans for non-LLM operations:
 
 ```typescript
 import { ops } from "mirascope";
+
+ops.configure();
 
 await ops.span("data-processing", async (span) => {
   span.info("Starting processing");
@@ -486,6 +501,7 @@ await ops.span("data-processing", async (span) => {
 
   span.info("Complete", { records: 100 });
 });
+await ops.forceFlush()
 ```
 
 ### LLM Instrumentation
@@ -495,6 +511,7 @@ Automatically instrument all LLM calls with OpenTelemetry GenAI semantic convent
 ```typescript
 import { ops } from "mirascope";
 
+ops.configure();
 ops.instrumentLLM();
 
 // Now all Model calls automatically create spans with:
@@ -505,6 +522,7 @@ const response = await recommendBook({ genre: "mystery" });
 
 // Check status
 console.log(ops.isLLMInstrumented()); // true
+await ops.forceFlush();
 ops.uninstrumentLLM();
 ```
 
@@ -515,6 +533,8 @@ Propagate trace context across service boundaries:
 ```typescript
 import { ops } from "mirascope";
 
+ops.configure();
+
 // Inject context into outgoing HTTP headers
 const headers: Record<string, string> = {};
 ops.injectContext(headers);
@@ -522,8 +542,9 @@ await fetch(url, { headers });
 
 // Extract context on receiving side
 await ops.propagatedContext(incomingHeaders, async () => {
+  // Any spans created here will be children of the incoming trace
   await ops.span("downstream-work", async (span) => {
-    // Linked to upstream trace
+    span.info("Processing in downstream service");
   });
 });
 
@@ -534,6 +555,7 @@ if (sessionId) {
     // Continue session from upstream
   });
 }
+await ops.forceFlush()
 ```
 
 ## Supported Providers
