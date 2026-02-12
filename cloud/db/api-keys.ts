@@ -50,7 +50,7 @@
  */
 
 import * as crypto from "crypto";
-import { and, eq, inArray, isNull, or } from "drizzle-orm";
+import { and, eq, inArray, isNull, or, sql } from "drizzle-orm";
 import { Effect } from "effect";
 
 import {
@@ -136,6 +136,7 @@ const publicFields = {
   name: apiKeys.name,
   keyPrefix: apiKeys.keyPrefix,
   environmentId: apiKeys.environmentId,
+  organizationId: apiKeys.organizationId,
   ownerId: apiKeys.ownerId,
   createdAt: apiKeys.createdAt,
   lastUsedAt: apiKeys.lastUsedAt,
@@ -317,6 +318,111 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
         );
 
       // Return with the plaintext key (only returned at creation)
+      return {
+        ...apiKey,
+        key: plaintextKey,
+      } as ApiKeyCreateResponse;
+    });
+  }
+
+  /**
+   * Creates a new org-scoped API key.
+   *
+   * Requires OWNER or ADMIN role on the organization.
+   * Org-scoped keys can access any resource within the organization.
+   *
+   * @param args.userId - The user creating the API key
+   * @param args.organizationId - The organization to scope the key to
+   * @param args.data - API key data
+   * @returns The created API key with plaintext key
+   * @throws PermissionDeniedError - If user lacks org OWNER/ADMIN role
+   * @throws AlreadyExistsError - If an org key with this name already exists
+   * @throws NotFoundError - If the org doesn't exist or user is not a member
+   * @throws DatabaseError - If the database operation fails
+   */
+  createOrgScoped({
+    userId,
+    organizationId,
+    data,
+  }: {
+    userId: string;
+    organizationId: string;
+    data: Pick<NewApiKey, "name">;
+  }): Effect.Effect<
+    ApiKeyCreateResponse,
+    AlreadyExistsError | NotFoundError | PermissionDeniedError | DatabaseError,
+    DrizzleORM
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+
+      // Verify user is org OWNER or ADMIN
+      const [orgMembership] = yield* client
+        .select({ role: organizationMemberships.role })
+        .from(organizationMemberships)
+        .where(
+          and(
+            eq(organizationMemberships.organizationId, organizationId),
+            eq(organizationMemberships.memberId, userId),
+          ),
+        )
+        .limit(1)
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to check organization membership",
+                cause: e,
+              }),
+          ),
+        );
+
+      if (!orgMembership) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: "Organization not found or you are not a member",
+            resource: "Organization",
+          }),
+        );
+      }
+
+      if (orgMembership.role !== "OWNER" && orgMembership.role !== "ADMIN") {
+        return yield* Effect.fail(
+          new PermissionDeniedError({
+            message:
+              "Organization OWNER or ADMIN role required to create org-scoped API keys",
+          }),
+        );
+      }
+
+      const plaintextKey = generateApiKey();
+      const keyHash = hashApiKey(plaintextKey);
+      const keyPrefix = getKeyPrefix(plaintextKey);
+
+      const [apiKey] = yield* client
+        .insert(apiKeys)
+        .values({
+          name: data.name,
+          keyHash,
+          keyPrefix,
+          organizationId,
+          ownerId: userId,
+        })
+        .returning(publicFields)
+        .pipe(
+          Effect.mapError((e): AlreadyExistsError | DatabaseError =>
+            isUniqueConstraintError(e.cause)
+              ? new AlreadyExistsError({
+                  message: `An org-scoped API key with name "${data.name}" already exists`,
+                  resource: this.getResourceName(),
+                })
+              : new DatabaseError({
+                  message: "Failed to create org-scoped API key",
+                  cause: e,
+                }),
+          ),
+        );
+
       return {
         ...apiKey,
         key: plaintextKey,
@@ -711,15 +817,20 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
       const client = yield* DrizzleORM;
       const keyHash = hashApiKey(key);
 
-      // Look up the API key by hash and join to get the full hierarchy and owner info
-      // Only include API keys whose owner has not been deleted
-      // LEFT JOIN to claws to get clawId for claw-user-owned keys
+      // Look up the API key by hash and resolve the full hierarchy + owner info.
+      // Supports both environment-scoped keys (join through env→project→org)
+      // and org-scoped keys (direct organizationId on the key).
+      // LEFT JOIN to claws to get clawId for claw-user-owned keys.
       const [apiKeyInfo] = yield* client
         .select({
           apiKeyId: apiKeys.id,
           environmentId: apiKeys.environmentId,
           projectId: environments.projectId,
-          organizationId: projects.organizationId,
+          // Org-scoped keys have organizationId directly; env-scoped resolve through project
+          organizationId:
+            sql<string>`COALESCE(${apiKeys.organizationId}, ${projects.organizationId})`.as(
+              "organizationId",
+            ),
           clawId: claws.id,
           ownerId: users.id,
           ownerEmail: users.email,
@@ -728,8 +839,9 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
           ownerDeletedAt: users.deletedAt,
         })
         .from(apiKeys)
-        .innerJoin(environments, eq(apiKeys.environmentId, environments.id))
-        .innerJoin(projects, eq(environments.projectId, projects.id))
+        // LEFT JOIN for env-scoped keys (null for org-scoped)
+        .leftJoin(environments, eq(apiKeys.environmentId, environments.id))
+        .leftJoin(projects, eq(environments.projectId, projects.id))
         .innerJoin(users, eq(apiKeys.ownerId, users.id))
         .leftJoin(claws, eq(claws.botUserId, users.id))
         .where(
@@ -774,7 +886,8 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
           ),
         );
 
-      return apiKeyInfo;
+      // Narrow to the discriminated union based on environmentId presence
+      return apiKeyInfo as ApiKeyInfo;
     });
   }
 
@@ -840,12 +953,14 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
         orgMembership.role === "OWNER" || orgMembership.role === "ADMIN";
 
       // Build the query for API keys with context
+      // Note: this only returns env-scoped keys (inner joins on environments/projects)
       const baseQuery = client
         .select({
           id: apiKeys.id,
           name: apiKeys.name,
           keyPrefix: apiKeys.keyPrefix,
           environmentId: apiKeys.environmentId,
+          organizationId: apiKeys.organizationId,
           ownerId: apiKeys.ownerId,
           createdAt: apiKeys.createdAt,
           lastUsedAt: apiKeys.lastUsedAt,

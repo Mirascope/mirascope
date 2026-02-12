@@ -8,7 +8,7 @@ import type {
   AnalyticsSummaryResponse,
 } from "@/api/traces-search.schemas";
 import type {
-  ApiKeyInfo,
+  EnvironmentApiKeyInfo,
   PublicEnvironment,
   PublicProject,
   PublicUser,
@@ -48,7 +48,7 @@ describe.sequential("Search API", (it) => {
   let environment: PublicEnvironment;
   let apiKeyClient: Awaited<ReturnType<typeof createApiClient>>["client"];
   let disposeApiKeyClient: (() => Promise<void>) | null = null;
-  let apiKeyInfo: ApiKeyInfo | null = null;
+  let apiKeyInfo: EnvironmentApiKeyInfo | null = null;
   let ownerFromContext: PublicUser | null = null;
 
   it.effect(
@@ -83,7 +83,7 @@ describe.sequential("Search API", (it) => {
   it.effect("Create API key client for search tests", () =>
     Effect.gen(function* () {
       const { org, owner } = yield* TestApiContext;
-      const apiKeyContext: ApiKeyInfo = {
+      const apiKeyContext: EnvironmentApiKeyInfo = {
         apiKeyId: "test-search-api-key-id",
         organizationId: org.id,
         projectId: project.id,
@@ -2328,7 +2328,7 @@ describe("Realtime span merge", () => {
   const createMockSpan = buildSearchSpan;
   const createMockTraceSpan = buildTraceDetailSpan;
 
-  const mockApiKeyInfo: ApiKeyInfo = {
+  const mockApiKeyInfo: EnvironmentApiKeyInfo = {
     apiKeyId: "test-api-key",
     organizationId: "org-1",
     projectId: "proj-1",

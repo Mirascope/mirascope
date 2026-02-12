@@ -4,6 +4,7 @@ import type {
   PublicUser,
   ApiKeyInfo,
   EnvironmentApiKeyInfo,
+  OrgApiKeyInfo,
 } from "@/db/schema";
 
 import { UnauthorizedError } from "@/errors";
@@ -24,6 +25,11 @@ export type ApiKeyAuthResult = RequireField<AuthResult, "apiKeyInfo">;
 /** AuthResult with required environment-scoped apiKeyInfo. */
 export type EnvironmentApiKeyAuthResult = Omit<AuthResult, "apiKeyInfo"> & {
   apiKeyInfo: EnvironmentApiKeyInfo;
+};
+
+/** AuthResult with required org-scoped apiKeyInfo. */
+export type OrgApiKeyAuthResult = Omit<AuthResult, "apiKeyInfo"> & {
+  apiKeyInfo: OrgApiKeyInfo;
 };
 
 /**
@@ -66,8 +72,7 @@ export class Authentication extends Context.Tag("Authentication")<
 
   /**
    * Require environment-scoped API key authentication.
-   * Today all keys are env-scoped, so this is equivalent to ApiKey.
-   * When org-scoped keys are added, this will narrow to only env keys.
+   * Fails if no API key or if the key is org-scoped (no environmentId).
    */
   static readonly EnvironmentApiKey: Effect.Effect<
     EnvironmentApiKeyAuthResult,
@@ -75,8 +80,38 @@ export class Authentication extends Context.Tag("Authentication")<
     Authentication
   > = Effect.gen(function* () {
     const auth = yield* Authentication.ApiKey;
-    // Today ApiKeyInfo = EnvironmentApiKeyInfo, so this always succeeds.
-    // When new scopes are added, this will need a runtime check.
+    if (
+      auth.apiKeyInfo.environmentId === null ||
+      auth.apiKeyInfo.projectId === null
+    ) {
+      return yield* Effect.fail(
+        new UnauthorizedError({
+          message:
+            "This endpoint requires an environment-scoped API key. Org-scoped keys cannot be used here.",
+        }),
+      );
+    }
     return auth as EnvironmentApiKeyAuthResult;
+  });
+
+  /**
+   * Require org-scoped API key authentication.
+   * Fails if no API key or if the key is environment-scoped.
+   */
+  static readonly OrgApiKey: Effect.Effect<
+    OrgApiKeyAuthResult,
+    UnauthorizedError,
+    Authentication
+  > = Effect.gen(function* () {
+    const auth = yield* Authentication.ApiKey;
+    if (auth.apiKeyInfo.environmentId !== null) {
+      return yield* Effect.fail(
+        new UnauthorizedError({
+          message:
+            "This endpoint requires an org-scoped API key. Environment-scoped keys cannot be used here.",
+        }),
+      );
+    }
+    return auth as OrgApiKeyAuthResult;
   });
 }

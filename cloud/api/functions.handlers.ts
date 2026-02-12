@@ -49,7 +49,7 @@ export const listFunctionsHandler = (
 export const createFunctionHandler = (payload: CreateFunctionRequest) =>
   Effect.gen(function* () {
     const db = yield* Database;
-    const { user, apiKeyInfo } = yield* Authentication.ApiKey;
+    const { user, apiKeyInfo } = yield* Authentication.EnvironmentApiKey;
 
     const tags = payload.tags ? [...payload.tags] : null;
     const metadata = payload.metadata ? { ...payload.metadata } : null;

@@ -9023,6 +9023,7 @@
                       "name",
                       "keyPrefix",
                       "environmentId",
+                      "organizationId",
                       "ownerId",
                       "createdAt",
                       "lastUsedAt",
@@ -9041,7 +9042,24 @@
                         "type": "string"
                       },
                       "environmentId": {
-                        "type": "string"
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "organizationId": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
                       },
                       "ownerId": {
                         "type": "string"
@@ -9182,6 +9200,7 @@
                       "name",
                       "keyPrefix",
                       "environmentId",
+                      "organizationId",
                       "ownerId",
                       "createdAt",
                       "lastUsedAt"
@@ -9197,7 +9216,24 @@
                         "type": "string"
                       },
                       "environmentId": {
-                        "type": "string"
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "organizationId": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
                       },
                       "ownerId": {
                         "type": "string"
@@ -9335,6 +9371,7 @@
                     "name",
                     "keyPrefix",
                     "environmentId",
+                    "organizationId",
                     "ownerId",
                     "createdAt",
                     "lastUsedAt",
@@ -9351,7 +9388,24 @@
                       "type": "string"
                     },
                     "environmentId": {
-                      "type": "string"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "organizationId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "ownerId": {
                       "type": "string"
@@ -9534,6 +9588,7 @@
                     "name",
                     "keyPrefix",
                     "environmentId",
+                    "organizationId",
                     "ownerId",
                     "createdAt",
                     "lastUsedAt"
@@ -9549,7 +9604,24 @@
                       "type": "string"
                     },
                     "environmentId": {
-                      "type": "string"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "organizationId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "ownerId": {
                       "type": "string"

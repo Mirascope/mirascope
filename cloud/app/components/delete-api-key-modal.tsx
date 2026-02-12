@@ -52,7 +52,7 @@ export function DeleteApiKeyModal({
       await deleteApiKey.mutateAsync({
         organizationId,
         projectId: apiKey.projectId,
-        environmentId: apiKey.environmentId,
+        environmentId: apiKey.environmentId!,
         apiKeyId: apiKey.id,
       });
       analytics.trackEvent("api_key_deleted", {
