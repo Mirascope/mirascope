@@ -80,6 +80,109 @@
         },
       ],
     },
+    "dev": {
+      "name": "dev",
+      "assets": {
+        "directory": "./dist/client",
+        "binding": "ASSETS",
+        "run_worker_first": true,
+      },
+      "ratelimits": [
+        {
+          "name": "RATE_LIMITER_FREE",
+          "namespace_id": "1001",
+          "simple": { "limit": 100, "period": 60 },
+        },
+        {
+          "name": "RATE_LIMITER_PRO",
+          "namespace_id": "1002",
+          "simple": { "limit": 1000, "period": 60 },
+        },
+        {
+          "name": "RATE_LIMITER_TEAM",
+          "namespace_id": "1003",
+          "simple": { "limit": 10000, "period": 60 },
+        },
+      ],
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "REALTIME_SPANS_DURABLE_OBJECT",
+            "class_name": "RealtimeSpansDurableObject",
+          },
+        ],
+      },
+      "route": {
+        "pattern": "dev.mirascope.com",
+        "zone_name": "mirascope.com",
+        "custom_domain": true,
+      },
+      "vars": {
+        "ENVIRONMENT": "dev",
+        "SITE_URL": "https://dev.mirascope.com",
+        "CF_DISPATCH_WORKER_BASE_URL": "https://openclaw.dev.mirascope.com",
+        // HACK: Dev reuses staging OAuth apps — callbacks redirect to staging.
+        // See https://github.com/Mirascope/mirascope/issues/2696
+        "GITHUB_CLIENT_ID": "Ov23lim6U7I6fihGO7Ys",
+        "GITHUB_CALLBACK_URL": "https://staging.mirascope.com/auth/github/proxy-callback",
+        "GOOGLE_CLIENT_ID": "816621808414-aspfju0v2ovlc5rrqp7o71p7hmj804jk.apps.googleusercontent.com",
+        "GOOGLE_CALLBACK_URL": "https://staging.mirascope.com/auth/google/proxy-callback",
+        "VITE_STRIPE_PUBLISHABLE_KEY": "pk_test_51Sq9urJhkjd7EGF3KhYnhAOsfXpyMFMPHWcHfcuG7HrBAR7QihYhoXM43X3VOU4mUU4qIgPiGOQUpO7jx6xnzGUK001TQT7ab9",
+        "STRIPE_PUBLISHABLE_KEY": "pk_test_51Sq9urJhkjd7EGF3KhYnhAOsfXpyMFMPHWcHfcuG7HrBAR7QihYhoXM43X3VOU4mUU4qIgPiGOQUpO7jx6xnzGUK001TQT7ab9",
+        "STRIPE_ROUTER_PRICE_ID": "price_1Ss1nZJhkjd7EGF3TRpfefa8",
+        "STRIPE_ROUTER_METER_ID": "mtr_test_61TzXtcaP1Yow55Hb41Jhkjd7EGF31Zw",
+        "STRIPE_CLOUD_FREE_PRICE_ID": "price_1SqA2kJhkjd7EGF3fJep8VxO",
+        "STRIPE_CLOUD_PRO_PRICE_ID": "price_1SqA2kJhkjd7EGF3vL0FeUnk",
+        "STRIPE_CLOUD_TEAM_PRICE_ID": "price_1SqA2kJhkjd7EGF3KSNH0NkS",
+        "STRIPE_CLOUD_SPANS_PRICE_ID": "price_1SqA2kJhkjd7EGF351m9hW0g",
+        "STRIPE_CLOUD_SPANS_METER_ID": "mtr_test_61TzXt79cDEEMKBH541Jhkjd7EGF35K4",
+        "CLICKHOUSE_URL": "https://wl9a9npuwg.us-west-2.aws.clickhouse.cloud:8443",
+        "CLICKHOUSE_USER": "default",
+        "CLICKHOUSE_DATABASE": "staging",
+        "CLICKHOUSE_TLS_ENABLED": "true",
+        "CLICKHOUSE_TLS_SKIP_VERIFY": "false",
+        "CLICKHOUSE_TLS_HOSTNAME_VERIFY": "true",
+        "CLICKHOUSE_TLS_MIN_VERSION": "1.2",
+        "VITE_POSTHOG_HOST": "https://us.i.posthog.com",
+        "VITE_POSTHOG_API_KEY": "phc_tnTm56utLwHvtXvjyIwj0rF1AKc6wgfLlczRRZ2dthy",
+        "VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID": "G-DJHT1QG9GK",
+      },
+      "hyperdrive": [
+        {
+          "binding": "HYPERDRIVE",
+          "id": "ebf5361da856472dbdf2efedf8260bc8",
+          "localConnectionString": "postgres://postgres:postgres@localhost:1234/stopgap",
+        },
+      ],
+      "triggers": {
+        "crons": ["*/1 * * * *", "*/5 * * * *"],
+      },
+      "queues": {
+        "producers": [
+          {
+            "queue": "router-metering-dev",
+            "binding": "ROUTER_METERING_QUEUE",
+          },
+          { "queue": "spans-ingest-dev", "binding": "SPANS_INGEST_QUEUE" },
+        ],
+        "consumers": [
+          {
+            "queue": "router-metering-dev",
+            "max_batch_size": 10,
+            "max_batch_timeout": 5,
+            "max_retries": 5,
+            "dead_letter_queue": "router-metering-dlq-dev",
+          },
+          {
+            "queue": "spans-ingest-dev",
+            "max_batch_size": 50,
+            "max_batch_timeout": 5,
+            "max_retries": 5,
+            "dead_letter_queue": "spans-ingest-dlq-dev",
+          },
+        ],
+      },
+    },
     "staging": {
       "name": "staging",
       "assets": {
