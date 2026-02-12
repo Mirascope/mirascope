@@ -665,7 +665,7 @@ describe("Projects", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // projects.getRole -> projectMemberships.findById authorization
+            // projects.getRole -> projectMemberships.getRole -> org membership
             .select([
               {
                 role: "OWNER",
@@ -684,15 +684,6 @@ describe("Projects", () => {
             ])
             // verifyProjectExists
             .select([{ id: "project-id" }])
-            // projectMemberships.findById actual query
-            .select([
-              {
-                role: "ADMIN",
-                projectId: "project-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
             // projects.findById query fails
             .select(new Error("Database connection failed"))
             .build(),
@@ -721,7 +712,7 @@ describe("Projects", () => {
         }).pipe(
           Effect.provide(
             new MockDrizzleORM()
-              // projects.getRole -> projectMemberships.findById authorization
+              // projects.getRole -> projectMemberships.getRole -> org membership
               .select([
                 {
                   role: "OWNER",
@@ -740,15 +731,6 @@ describe("Projects", () => {
               ])
               // verifyProjectExists
               .select([{ id: "project-id" }])
-              // projectMemberships.findById actual query
-              .select([
-                {
-                  role: "ADMIN",
-                  projectId: "project-id",
-                  memberId: "owner-id",
-                  createdAt: new Date(),
-                },
-              ])
               // projects.findById returns empty array (defensive case)
               .select([])
               .build(),
@@ -895,7 +877,7 @@ describe("Projects", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // projects.getRole -> projectMemberships.findById authorization
+            // projects.getRole -> projectMemberships.getRole -> org membership
             .select([
               {
                 role: "OWNER",
@@ -914,15 +896,6 @@ describe("Projects", () => {
             ])
             // verifyProjectExists
             .select([{ id: "project-id" }])
-            // projectMemberships.findById actual query
-            .select([
-              {
-                role: "ADMIN",
-                projectId: "project-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
             // update fails
             .update(new Error("Database connection failed"))
             .build(),
@@ -952,7 +925,7 @@ describe("Projects", () => {
         }).pipe(
           Effect.provide(
             new MockDrizzleORM()
-              // projects.getRole -> projectMemberships.findById authorization
+              // projects.getRole -> projectMemberships.getRole -> org membership
               .select([
                 {
                   role: "OWNER",
@@ -971,15 +944,6 @@ describe("Projects", () => {
               ])
               // verifyProjectExists
               .select([{ id: "project-id" }])
-              // projectMemberships.findById actual query
-              .select([
-                {
-                  role: "ADMIN",
-                  projectId: "project-id",
-                  memberId: "owner-id",
-                  createdAt: new Date(),
-                },
-              ])
               // update returns empty array (defensive case)
               .update([])
               .build(),
@@ -1093,7 +1057,7 @@ describe("Projects", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // projects.getRole -> projectMemberships.findById authorization
+            // projects.getRole -> projectMemberships.getRole -> org membership
             .select([
               {
                 role: "OWNER",
@@ -1112,15 +1076,6 @@ describe("Projects", () => {
             ])
             // verifyProjectExists
             .select([{ id: "project-id" }])
-            // projectMemberships.findById actual query
-            .select([
-              {
-                role: "ADMIN",
-                projectId: "project-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
             // fetch project type
             .select([{ id: "project-id", type: "standard" }])
             // delete fails
@@ -1151,7 +1106,7 @@ describe("Projects", () => {
         }).pipe(
           Effect.provide(
             new MockDrizzleORM()
-              // projects.getRole -> projectMemberships.findById authorization
+              // projects.getRole -> projectMemberships.getRole -> org membership
               .select([
                 {
                   role: "OWNER",
@@ -1170,15 +1125,6 @@ describe("Projects", () => {
               ])
               // verifyProjectExists
               .select([{ id: "project-id" }])
-              // projectMemberships.findById actual query
-              .select([
-                {
-                  role: "ADMIN",
-                  projectId: "project-id",
-                  memberId: "owner-id",
-                  createdAt: new Date(),
-                },
-              ])
               // fetch project type
               .select([{ id: "project-id", type: "standard" }])
               // delete returns empty array (defensive case)
@@ -1207,7 +1153,7 @@ describe("Projects", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // projects.getRole -> org membership check
+            // projects.getRole -> projectMemberships.getRole -> org membership
             .select([
               {
                 role: "OWNER",
@@ -1226,15 +1172,6 @@ describe("Projects", () => {
             ])
             // verifyProjectExists
             .select([{ id: "home-project-id" }])
-            // projectMemberships.findById
-            .select([
-              {
-                role: "ADMIN",
-                projectId: "home-project-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
             // fetch project type - claw_home
             .select([{ id: "home-project-id", type: "claw_home" }])
             // check if claw still references this project - found one
@@ -1259,7 +1196,7 @@ describe("Projects", () => {
         }).pipe(
           Effect.provide(
             new MockDrizzleORM()
-              // projects.getRole -> org membership check
+              // projects.getRole -> projectMemberships.getRole -> org membership
               .select([
                 {
                   role: "OWNER",
@@ -1278,15 +1215,6 @@ describe("Projects", () => {
               ])
               // verifyProjectExists
               .select([{ id: "orphan-project-id" }])
-              // projectMemberships.findById
-              .select([
-                {
-                  role: "ADMIN",
-                  projectId: "orphan-project-id",
-                  memberId: "owner-id",
-                  createdAt: new Date(),
-                },
-              ])
               // fetch project type - claw_home
               .select([{ id: "orphan-project-id", type: "claw_home" }])
               // check if claw references this project - none found

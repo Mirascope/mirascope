@@ -239,14 +239,16 @@ export class Projects extends BaseAuthenticatedEffectService<
     NotFoundError | PermissionDeniedError | DatabaseError,
     DrizzleORM
   > {
-    return Effect.gen(this, function* () {
-      const { role } = yield* this.memberships.findById({
-        userId,
-        organizationId,
-        projectId,
-        memberId: userId,
-      });
-      return role;
+    // Delegate to ProjectMemberships.getRole which handles:
+    // - Org OWNER/ADMIN → implicit project ADMIN
+    // - Explicit project membership → returns that role
+    // - No access → NotFoundError
+    // Note: we use getRole (not findById) because org OWNER/ADMIN
+    // may not have an explicit project membership row.
+    return this.memberships.getRole({
+      userId,
+      organizationId,
+      projectId,
     });
   }
 
