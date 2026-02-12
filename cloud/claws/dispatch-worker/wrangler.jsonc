@@ -83,6 +83,37 @@
         },
       ],
     },
+    "verse-staging": {
+      "name": "claw-dispatch-worker-verse-staging",
+      "services": [{ "binding": "MIRASCOPE_CLOUD", "service": "staging" }],
+      "route": {
+        "pattern": "openclaw-verse.staging.mirascope.com",
+        "zone_name": "mirascope.com",
+        "custom_domain": true,
+      },
+      "containers": [
+        {
+          "class_name": "Sandbox",
+          "image": "./Dockerfile",
+          "instance_type": "standard-2",
+          "max_instances": 2,
+        },
+      ],
+      "durable_objects": {
+        "bindings": [
+          {
+            "class_name": "Sandbox",
+            "name": "Sandbox",
+          },
+        ],
+      },
+      "migrations": [
+        {
+          "new_sqlite_classes": ["Sandbox"],
+          "tag": "v1",
+        },
+      ],
+    },
     "production": {
       "name": "claw-dispatch-worker-production",
       "services": [{ "binding": "MIRASCOPE_CLOUD", "service": "production" }],
