@@ -279,6 +279,17 @@ app.all("*", async (c) => {
     return c.json({ error: "Gateway failed to start", details: message }, 503);
   }
 
+  // Report active status (clears any previous error state)
+  c.executionCtx.waitUntil(
+    Effect.runPromise(
+      reportClawStatus(
+        clawId,
+        { status: "active", startedAt: new Date().toISOString() },
+        c.env,
+      ).pipe(Effect.catchAll(() => Effect.void)),
+    ),
+  );
+
   if (isWebSocket) {
     return proxyWebSocket(sandbox, rewrittenRequest);
   }
