@@ -109,7 +109,8 @@ function handleConnection(
     // Only close upstream if it's already open
     if (upstreamWs.readyState === WebSocket.OPEN) {
       // Code 1006 is reserved and can't be sent in a close frame; normalize it
-      const safeCode = code === 1006 ? 1001 : code;
+      const safeCode =
+        code < 1000 || [1004, 1005, 1006, 1015].includes(code) ? 1001 : code;
       upstreamWs.close(safeCode, reason.toString());
     } else if (upstreamWs.readyState === WebSocket.CONNECTING) {
       // Terminate the pending connection (don't wait for it)
@@ -238,7 +239,15 @@ function handleConnection(
     console.log(`[ws-proxy] Upstream disconnected: ${code} ${reason}`);
     if (!browserClosed && browserWs.readyState === WebSocket.OPEN) {
       const r = reason.toString();
-      browserWs.close(code, r.length > 123 ? r.slice(0, 120) + "..." : r);
+      const safeUpCode =
+        code < 1000 || [1004, 1005, 1006, 1015].includes(code) ? 1001 : code;
+      const truncatedR =
+        new TextEncoder().encode(r).length > 123
+          ? new TextDecoder().decode(
+              new TextEncoder().encode(r).slice(0, 120),
+            ) + "..."
+          : r;
+      browserWs.close(safeUpCode, truncatedR);
     }
   });
 }

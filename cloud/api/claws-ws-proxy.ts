@@ -323,14 +323,26 @@ async function connectAndRelay(
 
   // Close propagation
   serverWs.addEventListener("close", (event) => {
-    upstreamWs.close(event.code, event.reason);
+    const safeCode =
+      event.code < 1000 || [1004, 1005, 1006, 1015].includes(event.code)
+        ? 1001
+        : event.code;
+    upstreamWs.close(safeCode, event.reason);
   });
   upstreamWs.addEventListener("close", (event) => {
     let reason = event.reason;
-    if (reason.length > 123) {
-      reason = reason.slice(0, 120) + "...";
+    if (new TextEncoder().encode(reason).length > 123) {
+      // Truncate by bytes, not characters
+      const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+      const bytes = encoder.encode(reason);
+      reason = decoder.decode(bytes.slice(0, 120)) + "...";
     }
-    serverWs.close(event.code, reason);
+    const safeCode =
+      event.code < 1000 || [1004, 1005, 1006, 1015].includes(event.code)
+        ? 1001
+        : event.code;
+    serverWs.close(safeCode, reason);
   });
 
   // Error propagation
