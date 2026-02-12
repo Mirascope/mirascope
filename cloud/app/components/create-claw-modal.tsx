@@ -60,7 +60,8 @@ export function CreateClawModal({
   const [weeklySpendingLimit, setWeeklySpendingLimit] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const slug = generateSlug(name);
+  const slug = generateSlug(name.trim());
+  const slugTooShort = slug.length > 0 && slug.length < 3;
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -68,6 +69,11 @@ export function CreateClawModal({
 
     if (!name.trim()) {
       setError("Name is required");
+      return;
+    }
+
+    if (slug.length < 3) {
+      setError("Name must generate a slug of at least 3 characters");
       return;
     }
 
@@ -155,6 +161,11 @@ export function CreateClawModal({
                   Slug: <span className="font-mono">{slug}</span>
                 </p>
               )}
+              {slugTooShort && (
+                <p className="text-sm text-destructive">
+                  Slug must be at least 3 characters
+                </p>
+              )}
             </div>
 
             {/* Description */}
@@ -227,7 +238,10 @@ export function CreateClawModal({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={createClaw.isPending || atLimit}>
+            <Button
+              type="submit"
+              disabled={createClaw.isPending || atLimit || slugTooShort}
+            >
               {createClaw.isPending ? "Creating..." : "Create Claw"}
             </Button>
           </DialogFooter>

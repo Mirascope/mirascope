@@ -27,6 +27,8 @@ export function CreateEnvironmentModal({
   onOpenChange: (open: boolean) => void;
 }) {
   const [name, setName] = useState("");
+  const slug = generateSlug(name.trim());
+  const slugTooShort = slug.length > 0 && slug.length < 3;
   const [error, setError] = useState<string | null>(null);
   const createEnvironment = useCreateEnvironment();
   const { selectedOrganization } = useOrganization();
@@ -40,6 +42,11 @@ export function CreateEnvironmentModal({
 
     if (!name.trim()) {
       setError("Environment name is required");
+      return;
+    }
+
+    if (slug.length < 3) {
+      setError("Name must generate a slug of at least 3 characters");
       return;
     }
 
@@ -59,7 +66,7 @@ export function CreateEnvironmentModal({
         projectId: selectedProject.id,
         data: {
           name: name.trim(),
-          slug: generateSlug(name.trim()),
+          slug,
         },
       });
       analytics.trackEvent("environment_created", {
@@ -104,6 +111,16 @@ export function CreateEnvironmentModal({
                 placeholder="production"
                 autoFocus
               />
+              {name.trim() && slug && (
+                <p className="text-xs text-muted-foreground">
+                  Slug: <span className="font-mono">{slug}</span>
+                </p>
+              )}
+              {slugTooShort && (
+                <p className="text-sm text-destructive">
+                  Slug must be at least 3 characters
+                </p>
+              )}
               {error && <p className="text-sm text-destructive">{error}</p>}
             </div>
           </div>
@@ -115,7 +132,10 @@ export function CreateEnvironmentModal({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={createEnvironment.isPending}>
+            <Button
+              type="submit"
+              disabled={createEnvironment.isPending || slugTooShort}
+            >
               {createEnvironment.isPending ? "Creating..." : "Create"}
             </Button>
           </DialogFooter>
