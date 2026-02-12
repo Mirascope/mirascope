@@ -116,7 +116,8 @@
       async function checkStatus() {
         pollCount++;
         try {
-          const response = await fetch("/_internal/state");
+          const basePath = window.__OPENCLAW_LOADING_BASE_PATH__ || "";
+          const response = await fetch(basePath + "/_health");
           const data = await response.json();
           consecutiveErrors = 0;
 

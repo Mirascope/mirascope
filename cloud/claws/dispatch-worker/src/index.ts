@@ -237,7 +237,12 @@ app.all("*", async (c) => {
         ),
       ),
     );
-    return c.html(loadingPageHtml as unknown as string);
+    const basePath = `/${parsed.orgSlug}/${parsed.clawSlug}`;
+    const html = (loadingPageHtml as unknown as string).replace(
+      "</head>",
+      `<script>window.__OPENCLAW_LOADING_BASE_PATH__="${basePath}";</script></head>`,
+    );
+    return c.html(html);
   }
 
   const configExit = await Effect.runPromiseExit(
