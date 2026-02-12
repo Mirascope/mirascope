@@ -6691,7 +6691,8 @@
                       "name",
                       "slug",
                       "organizationId",
-                      "createdByUserId"
+                      "createdByUserId",
+                      "type"
                     ],
                     "properties": {
                       "id": {
@@ -6707,6 +6708,9 @@
                         "type": "string"
                       },
                       "createdByUserId": {
+                        "type": "string"
+                      },
+                      "type": {
                         "type": "string"
                       }
                     },
@@ -6806,7 +6810,8 @@
                     "name",
                     "slug",
                     "organizationId",
-                    "createdByUserId"
+                    "createdByUserId",
+                    "type"
                   ],
                   "properties": {
                     "id": {
@@ -6822,6 +6827,9 @@
                       "type": "string"
                     },
                     "createdByUserId": {
+                      "type": "string"
+                    },
+                    "type": {
                       "type": "string"
                     }
                   },
@@ -6989,7 +6997,8 @@
                     "name",
                     "slug",
                     "organizationId",
-                    "createdByUserId"
+                    "createdByUserId",
+                    "type"
                   ],
                   "properties": {
                     "id": {
@@ -7005,6 +7014,9 @@
                       "type": "string"
                     },
                     "createdByUserId": {
+                      "type": "string"
+                    },
+                    "type": {
                       "type": "string"
                     }
                   },
@@ -7111,7 +7123,8 @@
                     "name",
                     "slug",
                     "organizationId",
-                    "createdByUserId"
+                    "createdByUserId",
+                    "type"
                   ],
                   "properties": {
                     "id": {
@@ -7127,6 +7140,9 @@
                       "type": "string"
                     },
                     "createdByUserId": {
+                      "type": "string"
+                    },
+                    "type": {
                       "type": "string"
                     }
                   },
