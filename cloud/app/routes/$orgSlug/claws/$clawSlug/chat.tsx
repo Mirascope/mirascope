@@ -2,6 +2,7 @@ import type { DynamicToolUIPart, SourceUrlUIPart, UIMessage } from "ai";
 
 import { createFileRoute } from "@tanstack/react-router";
 import { isToolUIPart } from "ai";
+import { ExternalLink } from "lucide-react";
 
 import {
   Conversation,
@@ -39,6 +40,7 @@ import {
   ToolOutput,
 } from "@/app/components/ai-elements/tool";
 import { ClawHeader } from "@/app/components/claw-header";
+import { Button } from "@/app/components/ui/button";
 import { useClaw } from "@/app/contexts/claw";
 import { useGatewayChat } from "@/app/hooks/use-gateway-chat";
 
@@ -144,7 +146,19 @@ function ClawsChatPage() {
   return (
     <div className="flex h-full flex-col overflow-hidden">
       <div className="shrink-0 p-6 pb-0">
-        <ClawHeader />
+        <div className="flex items-center justify-between">
+          <ClawHeader />
+          <Button asChild size="sm" variant="outline">
+            <a
+              href={`https://${typeof window !== "undefined" && window.location.hostname.startsWith("staging.") ? "openclaw.staging.mirascope.com" : "openclaw.mirascope.com"}/${orgSlug}/${clawSlug}/overview`}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <ExternalLink className="mr-1.5 size-4" />
+              OpenClaw Gateway
+            </a>
+          </Button>
+        </div>
       </div>
       <div className="relative min-h-0 flex-1">
         {connectionError && (
