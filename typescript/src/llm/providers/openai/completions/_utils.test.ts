@@ -73,6 +73,7 @@ describe("buildRequestParams thinking config", () => {
       "openai/gpt-4o:completions",
       messages,
       undefined,
+      undefined,
       {
         thinking: { level: "medium", encodeThoughtsAsText: true },
       },
@@ -103,6 +104,7 @@ describe("buildRequestParams thinking config", () => {
       "openai/gpt-4o:completions",
       messages,
       undefined,
+      undefined,
       {
         thinking: { level: "medium" },
       },
@@ -126,45 +128,75 @@ describe("buildRequestParams", () => {
 
   it("includes maxTokens when provided", () => {
     const messages = [user("Hello")];
-    const params = buildRequestParams("openai/gpt-4o", messages, undefined, {
-      maxTokens: 100,
-    });
+    const params = buildRequestParams(
+      "openai/gpt-4o",
+      messages,
+      undefined,
+      undefined,
+      {
+        maxTokens: 100,
+      },
+    );
 
     expect(params.max_completion_tokens).toBe(100);
   });
 
   it("includes temperature when provided", () => {
     const messages = [user("Hello")];
-    const params = buildRequestParams("openai/gpt-4o", messages, undefined, {
-      temperature: 0.7,
-    });
+    const params = buildRequestParams(
+      "openai/gpt-4o",
+      messages,
+      undefined,
+      undefined,
+      {
+        temperature: 0.7,
+      },
+    );
 
     expect(params.temperature).toBe(0.7);
   });
 
   it("includes topP when provided", () => {
     const messages = [user("Hello")];
-    const params = buildRequestParams("openai/gpt-4o", messages, undefined, {
-      topP: 0.9,
-    });
+    const params = buildRequestParams(
+      "openai/gpt-4o",
+      messages,
+      undefined,
+      undefined,
+      {
+        topP: 0.9,
+      },
+    );
 
     expect(params.top_p).toBe(0.9);
   });
 
   it("includes seed when provided", () => {
     const messages = [user("Hello")];
-    const params = buildRequestParams("openai/gpt-4o", messages, undefined, {
-      seed: 42,
-    });
+    const params = buildRequestParams(
+      "openai/gpt-4o",
+      messages,
+      undefined,
+      undefined,
+      {
+        seed: 42,
+      },
+    );
 
     expect(params.seed).toBe(42);
   });
 
   it("includes stopSequences when provided", () => {
     const messages = [user("Hello")];
-    const params = buildRequestParams("openai/gpt-4o", messages, undefined, {
-      stopSequences: ["END", "STOP"],
-    });
+    const params = buildRequestParams(
+      "openai/gpt-4o",
+      messages,
+      undefined,
+      undefined,
+      {
+        stopSequences: ["END", "STOP"],
+      },
+    );
 
     expect(params.stop).toEqual(["END", "STOP"]);
   });
@@ -180,6 +212,7 @@ describe("buildRequestParams with reasoning models", () => {
     const params = buildRequestParams(
       "openai/o1",
       messages,
+      undefined,
       undefined,
       { temperature: 0.7 },
       reasoningModelFeatureInfo,
@@ -201,6 +234,7 @@ describe("buildRequestParams with reasoning models", () => {
       "openai/o1",
       messages,
       undefined,
+      undefined,
       { topP: 0.9 },
       reasoningModelFeatureInfo,
     );
@@ -218,6 +252,7 @@ describe("buildRequestParams with reasoning models", () => {
     const params = buildRequestParams(
       "openai/o1",
       messages,
+      undefined,
       undefined,
       { stopSequences: ["END"] },
       reasoningModelFeatureInfo,
@@ -536,6 +571,7 @@ describe("audio encoding", () => {
       buildRequestParams(
         "openai/gpt-4o-mini:completions",
         messages,
+        undefined,
         undefined,
         {},
         featureInfo,

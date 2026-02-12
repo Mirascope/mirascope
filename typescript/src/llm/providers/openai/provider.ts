@@ -5,6 +5,7 @@
 import OpenAI from "openai";
 
 import type { Context } from "@/llm/context";
+import type { Format } from "@/llm/formatting";
 import type { Message } from "@/llm/messages";
 import type { Params } from "@/llm/models";
 import type { ApiMode, OpenAIModelId } from "@/llm/providers/openai/model-id";
@@ -156,6 +157,7 @@ export class OpenAIProvider extends BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: Tools;
+    format?: Format | null;
     params?: Params;
   }): Promise<Response> {
     const modelId = args.modelId as OpenAIModelId;
@@ -167,6 +169,7 @@ export class OpenAIProvider extends BaseProvider {
         modelId: args.modelId,
         messages: args.messages,
         tools: args.tools,
+        format: args.format,
         params: args.params,
       });
     }
@@ -176,6 +179,7 @@ export class OpenAIProvider extends BaseProvider {
       modelId: args.modelId,
       messages: args.messages,
       tools: args.tools,
+      format: args.format,
       params: args.params,
     });
   }
@@ -194,6 +198,7 @@ export class OpenAIProvider extends BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: Tools;
+    format?: Format | null;
     params?: Params;
   }): Promise<StreamResponse> {
     const modelId = args.modelId as OpenAIModelId;
@@ -204,6 +209,7 @@ export class OpenAIProvider extends BaseProvider {
         modelId: args.modelId,
         messages: args.messages,
         tools: args.tools,
+        format: args.format,
         params: args.params,
       });
     }
@@ -212,6 +218,7 @@ export class OpenAIProvider extends BaseProvider {
       modelId: args.modelId,
       messages: args.messages,
       tools: args.tools,
+      format: args.format,
       params: args.params,
     });
   }
@@ -236,6 +243,7 @@ export class OpenAIProvider extends BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: ContextTools<DepsT>;
+    format?: Format | null;
     params?: Params;
   }): Promise<ContextResponse<DepsT>> {
     const modelId = args.modelId as OpenAIModelId;
@@ -248,6 +256,7 @@ export class OpenAIProvider extends BaseProvider {
         modelId: args.modelId,
         messages: args.messages,
         tools: args.tools,
+        format: args.format,
         params: args.params,
       });
     }
@@ -258,6 +267,7 @@ export class OpenAIProvider extends BaseProvider {
       modelId: args.modelId,
       messages: args.messages,
       tools: args.tools,
+      format: args.format,
       params: args.params,
     });
   }
@@ -282,6 +292,7 @@ export class OpenAIProvider extends BaseProvider {
     modelId: string;
     messages: readonly Message[];
     tools?: ContextTools<DepsT>;
+    format?: Format | null;
     params?: Params;
   }): Promise<ContextStreamResponse<DepsT>> {
     const modelId = args.modelId as OpenAIModelId;
@@ -293,6 +304,7 @@ export class OpenAIProvider extends BaseProvider {
         modelId: args.modelId,
         messages: args.messages,
         tools: args.tools,
+        format: args.format,
         params: args.params,
       });
     }
@@ -302,6 +314,7 @@ export class OpenAIProvider extends BaseProvider {
       modelId: args.modelId,
       messages: args.messages,
       tools: args.tools,
+      format: args.format,
       params: args.params,
     });
   }

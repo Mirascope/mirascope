@@ -66,6 +66,7 @@ describe("buildRequestParams thinking config", () => {
       "openai/o4-mini:responses",
       messages,
       undefined,
+      undefined,
       {
         thinking: { level: "medium" },
       },
@@ -80,6 +81,7 @@ describe("buildRequestParams thinking config", () => {
     const params = buildRequestParams(
       "openai/o4-mini:responses",
       messages,
+      undefined,
       undefined,
       {
         thinking: { level: "high", includeThoughts: true },
@@ -98,6 +100,7 @@ describe("image encoding", () => {
     const params = buildRequestParams(
       "openai/gpt-4o:responses",
       messages,
+      undefined,
       undefined,
       {},
     );
@@ -139,7 +142,13 @@ describe("audio encoding", () => {
     const messages = [user(["Listen to this", wavAudio])];
 
     expect(() =>
-      buildRequestParams("openai/gpt-4o:responses", messages, undefined, {}),
+      buildRequestParams(
+        "openai/gpt-4o:responses",
+        messages,
+        undefined,
+        undefined,
+        {},
+      ),
     ).toThrow(FeatureNotSupportedError);
   });
 });
@@ -159,6 +168,7 @@ describe("document encoding", () => {
     const params = buildRequestParams(
       "openai/gpt-4o:responses",
       messages,
+      undefined,
       undefined,
       {},
     );
@@ -191,6 +201,7 @@ describe("document encoding", () => {
       "openai/gpt-4o:responses",
       messages,
       undefined,
+      undefined,
       {},
     );
 
@@ -214,6 +225,7 @@ describe("document encoding", () => {
     const params = buildRequestParams(
       "openai/gpt-4o:responses",
       messages,
+      undefined,
       undefined,
       {},
     );

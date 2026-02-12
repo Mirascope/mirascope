@@ -264,16 +264,29 @@ export abstract class RootResponse<F = unknown> {
 
     // Partial parsing for streaming
     if (options?.partial) {
-      return parsePartial<DeepPartial<F>>(
+      const partialResult = parsePartial<DeepPartial<F>>(
         textContent,
         this.format.validator ?? undefined,
+        this.format.toolSchemaUnwrapKey ?? undefined,
       );
+      return partialResult;
     }
 
     // Full parsing
     try {
       const jsonText = extractSerializedJson(textContent);
-      const parsed = JSON.parse(jsonText) as F;
+      let parsed = JSON.parse(jsonText) as unknown;
+
+      // Unwrap if schema was wrapped (non-object types like arrays)
+      if (
+        this.format.toolSchemaUnwrapKey &&
+        typeof parsed === "object" &&
+        parsed !== null
+      ) {
+        parsed = (parsed as Record<string, unknown>)[
+          this.format.toolSchemaUnwrapKey
+        ];
+      }
 
       // Validate with Zod if validator provided
       if (this.format.validator) {
@@ -284,7 +297,7 @@ export abstract class RootResponse<F = unknown> {
         return result.data as F;
       }
 
-      return parsed;
+      return parsed as F;
     } catch (e) {
       /* v8 ignore next -- defensive: JSON.parse always throws Error */
       const error = e instanceof Error ? e : new Error(String(e));

@@ -24,6 +24,7 @@ import type {
   Thought,
   ToolCall,
 } from "@/llm/content";
+import type { Format } from "@/llm/formatting";
 import type { AssistantMessage, Message } from "@/llm/messages";
 import type { Params } from "@/llm/models";
 import type { ThinkingLevel } from "@/llm/models/thinking-config";
@@ -375,12 +376,14 @@ function encodeAssistantMessage(
  * @param modelId - The model ID to use
  * @param messages - The messages to send
  * @param tools - Optional tools to make available to the model
+ * @param format - Optional format for structured output
  * @param params - Optional parameters (temperature, maxTokens, etc.)
  */
 export function buildRequestParams(
   modelId: OpenAIModelId,
   messages: readonly Message[],
   tools?: Tools,
+  format?: Format | null,
   params: Params = {},
 ): ResponseCreateParamsNonStreaming {
   return ParamHandler.with(params, "openai", modelId, (p) => {
@@ -394,11 +397,13 @@ export function buildRequestParams(
       input: inputItems,
     };
 
+    // Collect all tools (explicit tools + format tool)
+    const allTools: ResponseCreateParamsNonStreaming["tools"] = [];
+
     /* v8 ignore start - tool encoding will be tested via e2e */
     if (tools && tools.length > 0) {
       // Separate regular tools from provider tools
       const regularTools: ToolSchema[] = [];
-      const allTools: ResponseCreateParamsNonStreaming["tools"] = [];
 
       for (const tool of tools) {
         // Check for provider tools first (WebSearchTool extends ProviderTool)
@@ -425,10 +430,38 @@ export function buildRequestParams(
       if (regularTools.length > 0) {
         allTools.push(...encodeTools(regularTools));
       }
+    }
 
-      if (allTools.length > 0) {
-        requestParams.tools = allTools;
+    // Handle format-based tool and instructions
+    if (format) {
+      if (format.mode === "tool") {
+        const formatToolSchema = format.createToolSchema();
+        allTools.push(encodeToolSchema(formatToolSchema));
+
+        // Set tool_choice to force the format tool
+        if (tools && tools.length > 0) {
+          // When we have other tools, use 'required' to require a tool call
+          requestParams.tool_choice = "required";
+        } else {
+          // When only format tool, force that specific tool
+          requestParams.tool_choice = {
+            type: "function",
+            name: formatToolSchema.name,
+          };
+        }
       }
+
+      // Add formatting instructions as a developer (system) message
+      if (format.formattingInstructions) {
+        inputItems.unshift({
+          role: "developer",
+          content: format.formattingInstructions,
+        });
+      }
+    }
+
+    if (allTools.length > 0) {
+      requestParams.tools = allTools;
     }
     /* v8 ignore stop */
 

@@ -85,6 +85,7 @@ export class OpenAIResponsesProvider extends BaseProvider {
       modelIdTyped,
       args.messages,
       args.tools,
+      args.format,
       args.params,
     );
 
@@ -136,6 +137,7 @@ export class OpenAIResponsesProvider extends BaseProvider {
       modelIdTyped,
       args.messages,
       args.tools,
+      args.format,
       args.params,
     );
 
@@ -189,6 +191,7 @@ export class OpenAIResponsesProvider extends BaseProvider {
       modelIdTyped,
       args.messages,
       args.tools,
+      args.format,
       args.params,
     );
 
@@ -246,6 +249,7 @@ export class OpenAIResponsesProvider extends BaseProvider {
       modelIdTyped,
       args.messages,
       args.tools,
+      args.format,
       args.params,
     );
 
