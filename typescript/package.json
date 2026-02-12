@@ -65,10 +65,16 @@
     "release:alpha": "bun run verify && npm publish --tag alpha"
   },
   "dependencies": {
+    "@effect/cli": "^0.73.2",
+    "@effect/platform": "^0.94.4",
+    "@effect/platform-node": "^0.104.1",
+    "@effect/schema": "^0.75.5",
+    "effect": "^3.14.8",
     "partial-json": "^0.1.7"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
+    "@effect/vitest": "^0.27.0",
     "@google/genai": "^1.0.0",
     "@modelcontextprotocol/sdk": "^1.12.0",
     "@opentelemetry/api": "^1.9.0",

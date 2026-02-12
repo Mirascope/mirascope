@@ -34,6 +34,8 @@ export default defineConfig({
         // MCP transports use dynamic imports and are tested via e2e with stdio
         // SSE and HTTP transports follow same pattern but are flaky (like Python)
         "src/llm/mcp/transports.ts",
+        // CLI has its own vitest config (vitest.cli.config.ts) with separate tests
+        "src/cli/**",
         // type files with nothing to cover
         "src/llm/mcp/types.ts",
         "src/llm/models/params.ts",
