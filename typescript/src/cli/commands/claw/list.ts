@@ -19,8 +19,9 @@ export const listCommand = Command.make("list", {}, () =>
 
     yield* Effect.log(`Found ${claws.length} claw(s):\n`);
     for (const claw of claws) {
+      const name = claw.displayName ?? claw.slug;
       yield* Effect.log(
-        `  ${claw.organizationSlug}/${claw.slug}  [${claw.status}]  ${claw.instanceType}`,
+        `  ${claw.slug}  [${claw.status}]  ${claw.instanceType}  ${name}`,
       );
     }
   }),

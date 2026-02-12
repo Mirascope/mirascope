@@ -1,5 +1,9 @@
 /**
  * @fileoverview Schema definitions for Claw API responses.
+ *
+ * These match the cloud's ClawSchema from api/claws.schemas.ts.
+ * We use Schema.Struct with only the fields the CLI cares about,
+ * using { onExcessProperty: "ignore" } to tolerate extra fields.
  */
 
 import { Schema } from "effect";
@@ -12,33 +16,31 @@ export const ClawStatus = Schema.Literal(
   "error",
 );
 
+/**
+ * Core claw schema — subset of fields the CLI needs.
+ * The cloud response includes more fields (secrets, bucket, etc.)
+ * which we ignore.
+ */
 export const Claw = Schema.Struct({
   id: Schema.String,
-  organizationId: Schema.String,
-  organizationSlug: Schema.String,
   slug: Schema.String,
+  displayName: Schema.NullOr(Schema.String),
+  organizationId: Schema.String,
   status: ClawStatus,
   instanceType: Schema.String,
-  createdAt: Schema.String,
+  createdAt: Schema.NullOr(Schema.Unknown),
 });
 
 export type Claw = typeof Claw.Type;
 
+/**
+ * Extended claw detail — same as Claw for now.
+ * Will add container status fields when the status endpoint differs.
+ */
 export const ClawDetail = Schema.Struct({
   ...Claw.fields,
-  containerStatus: Schema.NullOr(Schema.String),
-  uptime: Schema.NullOr(Schema.Number),
-  lastSync: Schema.NullOr(Schema.String),
-  errorMessage: Schema.NullOr(Schema.String),
+  lastError: Schema.NullOr(Schema.String),
+  lastDeployedAt: Schema.NullOr(Schema.Unknown),
 });
 
 export type ClawDetail = typeof ClawDetail.Type;
-
-export const CreateClawParams = Schema.Struct({
-  name: Schema.String,
-  instanceType: Schema.optionalWith(Schema.String, {
-    default: () => "standard",
-  }),
-});
-
-export type CreateClawParams = typeof CreateClawParams.Type;

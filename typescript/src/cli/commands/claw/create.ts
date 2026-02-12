@@ -1,5 +1,5 @@
 /**
- * @fileoverview `mirascope claw create <org> <name>` — provision a new claw.
+ * @fileoverview `mirascope claw create <name>` — provision a new claw.
  */
 
 import { Args, Command, Options } from "@effect/cli";
@@ -7,30 +7,25 @@ import { Effect } from "effect";
 
 import { ClawApi } from "../../sdk/claw/service.js";
 
-const org = Args.text({ name: "org" }).pipe(
-  Args.withDescription("Organization slug"),
-);
-
 const name = Args.text({ name: "name" }).pipe(
-  Args.withDescription("Claw name"),
+  Args.withDescription("Claw slug (URL-safe name)"),
 );
 
 const instanceType = Options.text("instance-type").pipe(
-  Options.withDescription("Instance type (default: standard)"),
-  Options.withDefault("standard"),
+  Options.withDescription("Instance type (default: standard-1)"),
+  Options.withDefault("standard-1"),
 );
 
 export const createCommand = Command.make(
   "create",
-  { org, name, instanceType },
-  ({ org, name, instanceType }) =>
+  { name, instanceType },
+  ({ name, instanceType }) =>
     Effect.gen(function* () {
       const api = yield* ClawApi;
-      yield* Effect.log(`Creating claw ${org}/${name}...`);
-      const claw = yield* api.create(org, name, instanceType);
-      yield* Effect.log(
-        `✓ Claw created: ${claw.organizationSlug}/${claw.slug} (${claw.id})`,
-      );
+      yield* Effect.log(`Creating claw ${name}...`);
+      // org is resolved from API key automatically
+      const claw = yield* api.create("", name, instanceType);
+      yield* Effect.log(`✓ Claw created: ${claw.slug} (${claw.id})`);
       yield* Effect.log(`  Status: ${claw.status}`);
     }),
 );

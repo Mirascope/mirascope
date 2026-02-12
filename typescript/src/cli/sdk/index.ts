@@ -11,7 +11,7 @@ export { MirascopeHttp } from "./http/client.js";
 export { ClawApi } from "./claw/service.js";
 
 // Schemas
-export type { Claw, ClawDetail, CreateClawParams } from "./claw/schemas.js";
+export type { Claw, ClawDetail } from "./claw/schemas.js";
 export {
   Claw as ClawSchema,
   ClawDetail as ClawDetailSchema,

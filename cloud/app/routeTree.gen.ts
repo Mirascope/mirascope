@@ -43,7 +43,6 @@ import { Route as SettingsOrganizationsIndexRouteImport } from './routes/setting
 import { Route as OrgSlugProjectsIndexRouteImport } from './routes/$orgSlug/projects/index'
 import { Route as OrgSlugClawsIndexRouteImport } from './routes/$orgSlug/claws/index'
 import { Route as SettingsOrganizationsOrgSlugRouteImport } from './routes/settings/organizations/$orgSlug'
-import { Route as DocsV1SplatRouteImport } from './routes/docs.v1.$'
 import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
 import { Route as AuthGithubProxyCallbackRouteImport } from './routes/auth/github.proxy-callback'
@@ -62,6 +61,7 @@ import { Route as SettingsOrganizationsOrgSlugTeamRouteImport } from './routes/s
 import { Route as SettingsOrganizationsOrgSlugBillingRouteImport } from './routes/settings/organizations/$orgSlug/billing'
 import { Route as SettingsOrganizationsOrgSlugApiKeysRouteImport } from './routes/settings/organizations/$orgSlug/api-keys'
 import { Route as RouterV2ProviderSplatRouteImport } from './routes/router.v2.$provider.$'
+import { Route as ApiV1AuthMeRouteImport } from './routes/api.v1.auth.me'
 import { Route as OrgSlugProjectsProjectSlugEnvSlugRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug'
 import { Route as OrgSlugClawsClawSlugSecretsRouteImport } from './routes/$orgSlug/claws/$clawSlug/secrets'
 import { Route as OrgSlugClawsClawSlugChatRouteImport } from './routes/$orgSlug/claws/$clawSlug/chat'
@@ -248,11 +248,6 @@ const SettingsOrganizationsOrgSlugRoute =
     path: '/organizations/$orgSlug',
     getParentRoute: () => SettingsRoute,
   } as any)
-const DocsV1SplatRoute = DocsV1SplatRouteImport.update({
-  id: '/v1/$',
-  path: '/v1/$',
-  getParentRoute: () => DocsRoute,
-} as any)
 const AuthGoogleProxyCallbackRoute = AuthGoogleProxyCallbackRouteImport.update({
   id: '/proxy-callback',
   path: '/proxy-callback',
@@ -348,6 +343,11 @@ const SettingsOrganizationsOrgSlugApiKeysRoute =
 const RouterV2ProviderSplatRoute = RouterV2ProviderSplatRouteImport.update({
   id: '/router/v2/$provider/$',
   path: '/router/v2/$provider/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1AuthMeRoute = ApiV1AuthMeRouteImport.update({
+  id: '/api/v1/auth/me',
+  path: '/api/v1/auth/me',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrgSlugProjectsProjectSlugEnvSlugRoute =
@@ -471,14 +471,14 @@ export interface FileRoutesByFullPath {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
-  '/docs/v1/$': typeof DocsV1SplatRoute
   '/settings/organizations/$orgSlug': typeof SettingsOrganizationsOrgSlugRouteWithChildren
-  '/$orgSlug/claws': typeof OrgSlugClawsIndexRoute
-  '/$orgSlug/projects': typeof OrgSlugProjectsIndexRoute
-  '/settings/organizations': typeof SettingsOrganizationsIndexRoute
+  '/$orgSlug/claws/': typeof OrgSlugClawsIndexRoute
+  '/$orgSlug/projects/': typeof OrgSlugProjectsIndexRoute
+  '/settings/organizations/': typeof SettingsOrganizationsIndexRoute
   '/$orgSlug/claws/$clawSlug/chat': typeof OrgSlugClawsClawSlugChatRoute
   '/$orgSlug/claws/$clawSlug/secrets': typeof OrgSlugClawsClawSlugSecretsRoute
   '/$orgSlug/projects/$projectSlug/$envSlug': typeof OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren
+  '/api/v1/auth/me': typeof ApiV1AuthMeRoute
   '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
   '/settings/organizations/$orgSlug/api-keys': typeof SettingsOrganizationsOrgSlugApiKeysRoute
   '/settings/organizations/$orgSlug/billing': typeof SettingsOrganizationsOrgSlugBillingRoute
@@ -491,10 +491,10 @@ export interface FileRoutesByFullPath {
   '/settings/organizations/$orgSlug/claws/$clawSlug': typeof SettingsOrganizationsOrgSlugClawsClawSlugRoute
   '/settings/organizations/$orgSlug/projects/$projectSlug': typeof SettingsOrganizationsOrgSlugProjectsProjectSlugRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/': typeof OrgSlugProjectsProjectSlugEnvSlugIndexRoute
-  '/settings/organizations/$orgSlug/claws': typeof SettingsOrganizationsOrgSlugClawsIndexRoute
-  '/settings/organizations/$orgSlug/projects': typeof SettingsOrganizationsOrgSlugProjectsIndexRoute
+  '/settings/organizations/$orgSlug/claws/': typeof SettingsOrganizationsOrgSlugClawsIndexRoute
+  '/settings/organizations/$orgSlug/projects/': typeof SettingsOrganizationsOrgSlugProjectsIndexRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/functions': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute
+  '/$orgSlug/projects/$projectSlug/$envSlug/functions/': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute
   '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId': typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute
 }
 export interface FileRoutesByTo {
@@ -533,12 +533,12 @@ export interface FileRoutesByTo {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
-  '/docs/v1/$': typeof DocsV1SplatRoute
   '/$orgSlug/claws': typeof OrgSlugClawsIndexRoute
   '/$orgSlug/projects': typeof OrgSlugProjectsIndexRoute
   '/settings/organizations': typeof SettingsOrganizationsIndexRoute
   '/$orgSlug/claws/$clawSlug/chat': typeof OrgSlugClawsClawSlugChatRoute
   '/$orgSlug/claws/$clawSlug/secrets': typeof OrgSlugClawsClawSlugSecretsRoute
+  '/api/v1/auth/me': typeof ApiV1AuthMeRoute
   '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
   '/settings/organizations/$orgSlug/api-keys': typeof SettingsOrganizationsOrgSlugApiKeysRoute
   '/settings/organizations/$orgSlug/billing': typeof SettingsOrganizationsOrgSlugBillingRoute
@@ -600,7 +600,6 @@ export interface FileRoutesById {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
-  '/docs/v1/$': typeof DocsV1SplatRoute
   '/settings/organizations/$orgSlug': typeof SettingsOrganizationsOrgSlugRouteWithChildren
   '/$orgSlug/claws/': typeof OrgSlugClawsIndexRoute
   '/$orgSlug/projects/': typeof OrgSlugProjectsIndexRoute
@@ -608,6 +607,7 @@ export interface FileRoutesById {
   '/$orgSlug/claws/$clawSlug/chat': typeof OrgSlugClawsClawSlugChatRoute
   '/$orgSlug/claws/$clawSlug/secrets': typeof OrgSlugClawsClawSlugSecretsRoute
   '/$orgSlug/projects/$projectSlug/$envSlug': typeof OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren
+  '/api/v1/auth/me': typeof ApiV1AuthMeRoute
   '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
   '/settings/organizations/$orgSlug/api-keys': typeof SettingsOrganizationsOrgSlugApiKeysRoute
   '/settings/organizations/$orgSlug/billing': typeof SettingsOrganizationsOrgSlugBillingRoute
@@ -670,14 +670,14 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
-    | '/docs/v1/$'
     | '/settings/organizations/$orgSlug'
-    | '/$orgSlug/claws'
-    | '/$orgSlug/projects'
-    | '/settings/organizations'
+    | '/$orgSlug/claws/'
+    | '/$orgSlug/projects/'
+    | '/settings/organizations/'
     | '/$orgSlug/claws/$clawSlug/chat'
     | '/$orgSlug/claws/$clawSlug/secrets'
     | '/$orgSlug/projects/$projectSlug/$envSlug'
+    | '/api/v1/auth/me'
     | '/router/v2/$provider/$'
     | '/settings/organizations/$orgSlug/api-keys'
     | '/settings/organizations/$orgSlug/billing'
@@ -690,10 +690,10 @@ export interface FileRouteTypes {
     | '/settings/organizations/$orgSlug/claws/$clawSlug'
     | '/settings/organizations/$orgSlug/projects/$projectSlug'
     | '/$orgSlug/projects/$projectSlug/$envSlug/'
-    | '/settings/organizations/$orgSlug/claws'
-    | '/settings/organizations/$orgSlug/projects'
+    | '/settings/organizations/$orgSlug/claws/'
+    | '/settings/organizations/$orgSlug/projects/'
     | '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/functions'
+    | '/$orgSlug/projects/$projectSlug/$envSlug/functions/'
     | '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -732,12 +732,12 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
-    | '/docs/v1/$'
     | '/$orgSlug/claws'
     | '/$orgSlug/projects'
     | '/settings/organizations'
     | '/$orgSlug/claws/$clawSlug/chat'
     | '/$orgSlug/claws/$clawSlug/secrets'
+    | '/api/v1/auth/me'
     | '/router/v2/$provider/$'
     | '/settings/organizations/$orgSlug/api-keys'
     | '/settings/organizations/$orgSlug/billing'
@@ -798,7 +798,6 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
-    | '/docs/v1/$'
     | '/settings/organizations/$orgSlug'
     | '/$orgSlug/claws/'
     | '/$orgSlug/projects/'
@@ -806,6 +805,7 @@ export interface FileRouteTypes {
     | '/$orgSlug/claws/$clawSlug/chat'
     | '/$orgSlug/claws/$clawSlug/secrets'
     | '/$orgSlug/projects/$projectSlug/$envSlug'
+    | '/api/v1/auth/me'
     | '/router/v2/$provider/$'
     | '/settings/organizations/$orgSlug/api-keys'
     | '/settings/organizations/$orgSlug/billing'
@@ -849,6 +849,7 @@ export interface RootRouteChildren {
   ApiV2DocsRoute: typeof ApiV2DocsRoute
   ApiV2HealthRoute: typeof ApiV2HealthRoute
   ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
+  ApiV1AuthMeRoute: typeof ApiV1AuthMeRoute
   RouterV2ProviderSplatRoute: typeof RouterV2ProviderSplatRoute
 }
 
@@ -1067,21 +1068,21 @@ declare module '@tanstack/react-router' {
     '/settings/organizations/': {
       id: '/settings/organizations/'
       path: '/organizations'
-      fullPath: '/settings/organizations'
+      fullPath: '/settings/organizations/'
       preLoaderRoute: typeof SettingsOrganizationsIndexRouteImport
       parentRoute: typeof SettingsRoute
     }
     '/$orgSlug/projects/': {
       id: '/$orgSlug/projects/'
       path: '/projects'
-      fullPath: '/$orgSlug/projects'
+      fullPath: '/$orgSlug/projects/'
       preLoaderRoute: typeof OrgSlugProjectsIndexRouteImport
       parentRoute: typeof OrgSlugRoute
     }
     '/$orgSlug/claws/': {
       id: '/$orgSlug/claws/'
       path: '/claws'
-      fullPath: '/$orgSlug/claws'
+      fullPath: '/$orgSlug/claws/'
       preLoaderRoute: typeof OrgSlugClawsIndexRouteImport
       parentRoute: typeof OrgSlugRoute
     }
@@ -1091,13 +1092,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings/organizations/$orgSlug'
       preLoaderRoute: typeof SettingsOrganizationsOrgSlugRouteImport
       parentRoute: typeof SettingsRoute
-    }
-    '/docs/v1/$': {
-      id: '/docs/v1/$'
-      path: '/v1/$'
-      fullPath: '/docs/v1/$'
-      preLoaderRoute: typeof DocsV1SplatRouteImport
-      parentRoute: typeof DocsRoute
     }
     '/auth/google/proxy-callback': {
       id: '/auth/google/proxy-callback'
@@ -1225,6 +1219,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RouterV2ProviderSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/auth/me': {
+      id: '/api/v1/auth/me'
+      path: '/api/v1/auth/me'
+      fullPath: '/api/v1/auth/me'
+      preLoaderRoute: typeof ApiV1AuthMeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$orgSlug/projects/$projectSlug/$envSlug': {
       id: '/$orgSlug/projects/$projectSlug/$envSlug'
       path: '/$envSlug'
@@ -1249,14 +1250,14 @@ declare module '@tanstack/react-router' {
     '/settings/organizations/$orgSlug/projects/': {
       id: '/settings/organizations/$orgSlug/projects/'
       path: '/projects'
-      fullPath: '/settings/organizations/$orgSlug/projects'
+      fullPath: '/settings/organizations/$orgSlug/projects/'
       preLoaderRoute: typeof SettingsOrganizationsOrgSlugProjectsIndexRouteImport
       parentRoute: typeof SettingsOrganizationsOrgSlugRoute
     }
     '/settings/organizations/$orgSlug/claws/': {
       id: '/settings/organizations/$orgSlug/claws/'
       path: '/claws'
-      fullPath: '/settings/organizations/$orgSlug/claws'
+      fullPath: '/settings/organizations/$orgSlug/claws/'
       preLoaderRoute: typeof SettingsOrganizationsOrgSlugClawsIndexRouteImport
       parentRoute: typeof SettingsOrganizationsOrgSlugRoute
     }
@@ -1298,7 +1299,7 @@ declare module '@tanstack/react-router' {
     '/$orgSlug/projects/$projectSlug/$envSlug/functions/': {
       id: '/$orgSlug/projects/$projectSlug/$envSlug/functions/'
       path: '/functions'
-      fullPath: '/$orgSlug/projects/$projectSlug/$envSlug/functions'
+      fullPath: '/$orgSlug/projects/$projectSlug/$envSlug/functions/'
       preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRouteImport
       parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute
     }
@@ -1434,12 +1435,10 @@ const DevRouteWithChildren = DevRoute._addFileChildren(DevRouteChildren)
 
 interface DocsRouteChildren {
   DocsSplatRoute: typeof DocsSplatRoute
-  DocsV1SplatRoute: typeof DocsV1SplatRoute
 }
 
 const DocsRouteChildren: DocsRouteChildren = {
   DocsSplatRoute: DocsSplatRoute,
-  DocsV1SplatRoute: DocsV1SplatRoute,
 }
 
 const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
@@ -1551,17 +1550,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV2DocsRoute: ApiV2DocsRoute,
   ApiV2HealthRoute: ApiV2HealthRoute,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
+  ApiV1AuthMeRoute: ApiV1AuthMeRoute,
   RouterV2ProviderSplatRoute: RouterV2ProviderSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

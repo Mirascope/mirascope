@@ -44,7 +44,7 @@ export class MirascopeHttp extends Context.Tag("MirascopeHttp")<
         body?: unknown,
       ): Effect.Effect<A, ApiError | AuthError, R> =>
         Effect.gen(function* () {
-          const url = `${baseUrl}/api/v1${path}`;
+          const url = `${baseUrl}/api${path}`;
           const headers: Record<string, string> = {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",

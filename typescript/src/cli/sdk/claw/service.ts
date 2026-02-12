@@ -1,5 +1,9 @@
 /**
  * @fileoverview ClawApi — Effect service for managing hosted OpenClaw instances.
+ *
+ * The Live implementation:
+ * 1. Calls /api/v1/auth/me to discover the org ID from the API key
+ * 2. Calls /api/v2/organizations/:orgId/claws/* for CRUD operations
  */
 
 import { Context, Effect, Layer, Schema } from "effect";
@@ -11,6 +15,24 @@ import * as Schemas from "./schemas.js";
 // Re-export for consumers
 export type Claw = Schemas.Claw;
 export type ClawDetail = Schemas.ClawDetail;
+
+// ---------------------------------------------------------------------------
+// Auth/me response schema
+// ---------------------------------------------------------------------------
+
+const AuthMeResponse = Schema.Struct({
+  user: Schema.Struct({
+    id: Schema.String,
+    email: Schema.String,
+    name: Schema.NullOr(Schema.String),
+  }),
+  apiKey: Schema.Struct({
+    id: Schema.String,
+    organizationId: Schema.String,
+    environmentId: Schema.NullOr(Schema.String),
+    projectId: Schema.NullOr(Schema.String),
+  }),
+});
 
 // ---------------------------------------------------------------------------
 // Helper: map 404 to NotFoundError
@@ -64,34 +86,66 @@ export class ClawApi extends Context.Tag("ClawApi")<
     Effect.gen(function* () {
       const http = yield* MirascopeHttp;
 
+      // Discover org ID from API key on first use (cached)
+      let cachedOrgId: string | null = null;
+      const getOrgId = () =>
+        Effect.gen(function* () {
+          if (cachedOrgId) return cachedOrgId;
+          const me = yield* http.get("/v1/auth/me", AuthMeResponse);
+          cachedOrgId = me.apiKey.organizationId;
+          return cachedOrgId;
+        });
+
+      const orgPath = (suffix: string) =>
+        Effect.map(
+          getOrgId(),
+          (orgId) => `/v2/organizations/${orgId}/claws${suffix}`,
+        );
+
       return ClawApi.of({
-        list: () => http.get("/claws", Schema.Array(Schemas.Claw)),
+        list: () =>
+          Effect.gen(function* () {
+            const path = yield* orgPath("");
+            return yield* http.get(path, Schema.Array(Schemas.Claw));
+          }),
 
         create: (org, name, instanceType) =>
-          http.post(
-            "/claws",
-            {
-              organizationSlug: org,
-              name,
-              instanceType: instanceType ?? "standard",
-            },
-            Schemas.Claw,
-          ),
+          Effect.gen(function* () {
+            const path = yield* orgPath("");
+            return yield* http.post(
+              path,
+              {
+                slug: name,
+                name,
+                instanceType: instanceType ?? "standard-1",
+              },
+              Schemas.Claw,
+            );
+          }),
 
         get: (id) =>
-          http
-            .get(`/claws/${id}`, Schemas.Claw)
-            .pipe(Effect.catchTag("ApiError", mapNotFound(id))),
+          Effect.gen(function* () {
+            const path = yield* orgPath(`/${id}`);
+            return yield* http
+              .get(path, Schemas.Claw)
+              .pipe(Effect.catchTag("ApiError", mapNotFound(id)));
+          }),
 
         status: (id) =>
-          http
-            .get(`/claws/${id}/status`, Schemas.ClawDetail)
-            .pipe(Effect.catchTag("ApiError", mapNotFound(id))),
+          Effect.gen(function* () {
+            const path = yield* orgPath(`/${id}`);
+            return yield* http
+              .get(path, Schemas.ClawDetail)
+              .pipe(Effect.catchTag("ApiError", mapNotFound(id)));
+          }),
 
         delete: (id) =>
-          http
-            .del(`/claws/${id}`)
-            .pipe(Effect.catchTag("ApiError", mapNotFound(id))),
+          Effect.gen(function* () {
+            const path = yield* orgPath(`/${id}`);
+            return yield* http
+              .del(path)
+              .pipe(Effect.catchTag("ApiError", mapNotFound(id)));
+          }),
       });
     }),
   );
@@ -105,11 +159,11 @@ export class ClawApi extends Context.Tag("ClawApi")<
           Effect.succeed({
             id: "mock-id",
             organizationId: "mock-org-id",
-            organizationSlug: org,
             slug: name,
+            displayName: name,
             status: "provisioning" as const,
             instanceType: instanceType ?? "standard",
-            createdAt: new Date().toISOString(),
+            createdAt: "2026-02-12T00:00:00Z",
           }),
         get: (id) => {
           const found = claws.find((c) => c.id === id);
@@ -128,10 +182,8 @@ export class ClawApi extends Context.Tag("ClawApi")<
           return found
             ? Effect.succeed({
                 ...found,
-                containerStatus: "running",
-                uptime: 3600,
-                lastSync: null,
-                errorMessage: null,
+                lastError: null,
+                lastDeployedAt: null,
               })
             : Effect.fail(
                 new NotFoundError({

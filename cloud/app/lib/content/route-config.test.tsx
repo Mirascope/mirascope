@@ -482,7 +482,7 @@ describe("createContentRouteConfig - docs", () => {
   });
 
   it("should return undefined for non-existent doc (fails allow list check)", async () => {
-    const route = createContentRouteConfig("/docs/v1/$", {
+    const route = createContentRouteConfig("/docs/$", {
       getMeta: getAllDocsMeta,
       moduleMap: DOCS_MODULE_MAP,
       prefix: "docs",
@@ -511,7 +511,7 @@ describe("createContentRouteConfig - docs", () => {
       }),
     );
 
-    const route = createContentRouteConfig("/docs/v1/$", {
+    const route = createContentRouteConfig("/docs/$", {
       getMeta: getAllDocsMeta,
       moduleMap: DOCS_MODULE_MAP,
       prefix: "docs",
@@ -543,7 +543,7 @@ describe("createContentRouteConfig - docs", () => {
       }),
     );
 
-    const route = createContentRouteConfig("/docs/v1/$", {
+    const route = createContentRouteConfig("/docs/$", {
       getMeta: getAllDocsMeta,
       moduleMap: DOCS_MODULE_MAP,
       prefix: "docs",
@@ -678,7 +678,7 @@ describe("createContentRouteConfig - docs", () => {
 
   it("should not load non-versioned docs when version is specified", async () => {
     // Try to access non-versioned doc with v1 version specified
-    const route = createContentRouteConfig("/docs/v1/$", {
+    const route = createContentRouteConfig("/docs/$", {
       getMeta: getAllDocsMeta,
       moduleMap: DOCS_MODULE_MAP,
       prefix: "docs",
@@ -695,7 +695,7 @@ describe("createContentRouteConfig - docs", () => {
 
   describe("appsec path traversal attacks", () => {
     it("should reject path traversal with ../", async () => {
-      const route = createContentRouteConfig("/docs/v1/$", {
+      const route = createContentRouteConfig("/docs/$", {
         getMeta: getAllDocsMeta,
         moduleMap: DOCS_MODULE_MAP,
         prefix: "docs",
@@ -710,7 +710,7 @@ describe("createContentRouteConfig - docs", () => {
     });
 
     it("should reject path traversal with ..\\", async () => {
-      const route = createContentRouteConfig("/docs/v1/$", {
+      const route = createContentRouteConfig("/docs/$", {
         getMeta: getAllDocsMeta,
         moduleMap: DOCS_MODULE_MAP,
         prefix: "docs",
@@ -727,7 +727,7 @@ describe("createContentRouteConfig - docs", () => {
     });
 
     it("should reject path traversal with encoded ../", async () => {
-      const route = createContentRouteConfig("/docs/v1/$", {
+      const route = createContentRouteConfig("/docs/$", {
         getMeta: getAllDocsMeta,
         moduleMap: DOCS_MODULE_MAP,
         prefix: "docs",
@@ -744,7 +744,7 @@ describe("createContentRouteConfig - docs", () => {
     });
 
     it("should reject path traversal with double-encoded ../", async () => {
-      const route = createContentRouteConfig("/docs/v1/$", {
+      const route = createContentRouteConfig("/docs/$", {
         getMeta: getAllDocsMeta,
         moduleMap: DOCS_MODULE_MAP,
         prefix: "docs",
@@ -761,7 +761,7 @@ describe("createContentRouteConfig - docs", () => {
     });
 
     it("should reject path traversal with mixed slashes", async () => {
-      const route = createContentRouteConfig("/docs/v1/$", {
+      const route = createContentRouteConfig("/docs/$", {
         getMeta: getAllDocsMeta,
         moduleMap: DOCS_MODULE_MAP,
         prefix: "docs",
@@ -776,7 +776,7 @@ describe("createContentRouteConfig - docs", () => {
     });
 
     it("should reject absolute paths", async () => {
-      const route = createContentRouteConfig("/docs/v1/$", {
+      const route = createContentRouteConfig("/docs/$", {
         getMeta: getAllDocsMeta,
         moduleMap: DOCS_MODULE_MAP,
         prefix: "docs",
@@ -791,7 +791,7 @@ describe("createContentRouteConfig - docs", () => {
     });
 
     it("should reject paths with forward slashes in _splat", async () => {
-      const route = createContentRouteConfig("/docs/v1/$", {
+      const route = createContentRouteConfig("/docs/$", {
         getMeta: getAllDocsMeta,
         moduleMap: DOCS_MODULE_MAP,
         prefix: "docs",
@@ -806,7 +806,7 @@ describe("createContentRouteConfig - docs", () => {
     });
 
     it("should reject paths with backslashes in _splat", async () => {
-      const route = createContentRouteConfig("/docs/v1/$", {
+      const route = createContentRouteConfig("/docs/$", {
         getMeta: getAllDocsMeta,
         moduleMap: DOCS_MODULE_MAP,
         prefix: "docs",
@@ -823,7 +823,7 @@ describe("createContentRouteConfig - docs", () => {
 
   describe("appsec invalid characters", () => {
     it("should reject _splat with null bytes", async () => {
-      const route = createContentRouteConfig("/docs/v1/$", {
+      const route = createContentRouteConfig("/docs/$", {
         getMeta: getAllDocsMeta,
         moduleMap: DOCS_MODULE_MAP,
         prefix: "docs",
@@ -838,7 +838,7 @@ describe("createContentRouteConfig - docs", () => {
     });
 
     it("should reject _splat with special shell characters", async () => {
-      const route = createContentRouteConfig("/docs/v1/$", {
+      const route = createContentRouteConfig("/docs/$", {
         getMeta: getAllDocsMeta,
         moduleMap: DOCS_MODULE_MAP,
         prefix: "docs",
@@ -862,7 +862,7 @@ describe("createContentRouteConfig - docs", () => {
     });
 
     it("should reject _splat with unicode characters that could be dangerous", async () => {
-      const route = createContentRouteConfig("/docs/v1/$", {
+      const route = createContentRouteConfig("/docs/$", {
         getMeta: getAllDocsMeta,
         moduleMap: DOCS_MODULE_MAP,
         prefix: "docs",
@@ -879,7 +879,7 @@ describe("createContentRouteConfig - docs", () => {
 
   describe("appsec allow list validation", () => {
     it("should reject _splat not in the allow list", async () => {
-      const route = createContentRouteConfig("/docs/v1/$", {
+      const route = createContentRouteConfig("/docs/$", {
         getMeta: getAllDocsMeta,
         moduleMap: DOCS_MODULE_MAP,
         prefix: "docs",
@@ -917,7 +917,7 @@ describe("createContentRouteConfig - docs", () => {
 
   describe("edge cases", () => {
     it("should handle very long _splat", async () => {
-      const route = createContentRouteConfig("/docs/v1/$", {
+      const route = createContentRouteConfig("/docs/$", {
         getMeta: getAllDocsMeta,
         moduleMap: DOCS_MODULE_MAP,
         prefix: "docs",
@@ -933,7 +933,7 @@ describe("createContentRouteConfig - docs", () => {
     });
 
     it("should handle _splat with only special characters", async () => {
-      const route = createContentRouteConfig("/docs/v1/$", {
+      const route = createContentRouteConfig("/docs/$", {
         getMeta: getAllDocsMeta,
         moduleMap: DOCS_MODULE_MAP,
         prefix: "docs",
