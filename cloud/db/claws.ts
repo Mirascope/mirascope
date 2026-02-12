@@ -467,6 +467,7 @@ export class Claws extends BaseAuthenticatedEffectService<
                 slug: `${data.slug}-home`,
                 organizationId,
                 createdByUserId: userId,
+                type: "claw_home",
               })
               .returning({ id: projects.id })
               .pipe(
@@ -811,7 +812,11 @@ export class Claws extends BaseAuthenticatedEffectService<
         .where(
           and(eq(claws.id, clawId), eq(claws.organizationId, organizationId)),
         )
-        .returning({ id: claws.id, botUserId: claws.botUserId })
+        .returning({
+          id: claws.id,
+          botUserId: claws.botUserId,
+          homeProjectId: claws.homeProjectId,
+        })
         .pipe(
           Effect.mapError(
             (e) =>
@@ -847,6 +852,27 @@ export class Claws extends BaseAuthenticatedEffectService<
               (e) =>
                 new DatabaseError({
                   message: "Failed to delete bot user",
+                  cause: e,
+                }),
+            ),
+          );
+      }
+
+      // Delete claw_home project if one was associated
+      if (deleted.homeProjectId) {
+        yield* client
+          .delete(projects)
+          .where(
+            and(
+              eq(projects.id, deleted.homeProjectId),
+              eq(projects.type, "claw_home"),
+            ),
+          )
+          .pipe(
+            Effect.mapError(
+              (e) =>
+                new DatabaseError({
+                  message: "Failed to delete claw home project",
                   cause: e,
                 }),
             ),

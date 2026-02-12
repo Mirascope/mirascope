@@ -17,6 +17,7 @@ export const ProjectSchema = Schema.Struct({
   slug: Schema.String,
   organizationId: Schema.String,
   createdByUserId: Schema.String,
+  type: Schema.String,
 });
 
 const ProjectNameSchema = Schema.String.pipe(
