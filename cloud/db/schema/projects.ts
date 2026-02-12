@@ -18,6 +18,7 @@ export const projects = pgTable(
     createdByUserId: uuid("created_by_user_id")
       .references(() => users.id)
       .notNull(),
+    type: text("type").notNull().default("standard"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },
@@ -46,5 +47,5 @@ export type NewProject = typeof projects.$inferInsert;
 // Public types for API responses
 export type PublicProject = Pick<
   Project,
-  "id" | "name" | "slug" | "organizationId" | "createdByUserId"
+  "id" | "name" | "slug" | "organizationId" | "createdByUserId" | "type"
 >;

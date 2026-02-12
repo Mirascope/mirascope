@@ -82,6 +82,7 @@ const publicFields = {
   slug: projects.slug,
   organizationId: projects.organizationId,
   createdByUserId: projects.createdByUserId,
+  type: projects.type,
 };
 
 /**
@@ -159,11 +160,16 @@ export class Projects extends BaseAuthenticatedEffectService<
       const limits =
         yield* payments.customers.subscriptions.getPlanLimits(planTier);
 
-      // Count active projects
+      // Count active projects (exclude claw_home projects)
       const [projectCount] = yield* client
         .select({ count: sql<number>`count(*)::int` })
         .from(projects)
-        .where(eq(projects.organizationId, organizationId))
+        .where(
+          and(
+            eq(projects.organizationId, organizationId),
+            eq(projects.type, "standard"),
+          ),
+        )
         .pipe(
           Effect.mapError(
             (e) =>
