@@ -27,3 +27,4 @@ const tracedRecommendBook = ops.trace(recommendBook, {
 // Execute the traced call
 const response = await tracedRecommendBook({ genre: "fantasy" });
 console.log("Response:", response.text());
+await ops.forceFlush();

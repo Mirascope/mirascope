@@ -61,3 +61,4 @@ const versionedRecommend = ops.version(recommendBook, {
 const response = await versionedRecommend({ genre: "science fiction" });
 console.log("Recommendation:", response.text());
 console.log("Versioned call info:", versionedRecommend.versionInfo);
+await ops.forceFlush();
