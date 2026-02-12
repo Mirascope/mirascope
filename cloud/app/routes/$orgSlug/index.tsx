@@ -168,7 +168,7 @@ function CloudIndexPage() {
                         </CardTitle>
                         {project.type === "claw_home" && (
                           <Badge variant="secondary" size="sm" pill>
-                            Claw
+                            claw-home
                           </Badge>
                         )}
                       </div>
