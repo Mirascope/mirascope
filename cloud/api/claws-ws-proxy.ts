@@ -156,7 +156,7 @@ export async function handleClawsWebSocket(
     // proxies the WebSocket to the correct container.
     const dispatchBaseUrl =
       settings.openclawGatewayWsUrl ??
-      settings.cloudflare.dispatchWorkerBaseUrl.replace(/^http/, "ws");
+      settings.cloudflare.dispatchWorkerBaseUrl;
     const upstreamUrl = `${dispatchBaseUrl.replace(/\/$/, "")}/${orgSlug}/${clawSlug}`;
 
     // 7. Connect to upstream gateway, perform handshake, and relay
@@ -235,6 +235,12 @@ async function connectAndRelay(
   const upstreamWs = (upstreamResponse as unknown as { webSocket?: WebSocket })
     .webSocket;
   if (!upstreamWs) {
+    console.error(
+      "[ws-proxy] Upstream response status:",
+      upstreamResponse.status,
+      "headers:",
+      Object.fromEntries(upstreamResponse.headers.entries()),
+    );
     throw new Error("Upstream did not return a WebSocket");
   }
 
