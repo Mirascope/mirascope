@@ -50,6 +50,7 @@ import {
   proxyHttp,
   proxyWebSocket,
 } from "./proxy";
+import { validateEnv } from "./settings";
 import { PROCESS_TO_HEALTH_STATUS } from "./types";
 import { extractClawId } from "./utils";
 
@@ -57,6 +58,12 @@ export { Sandbox };
 
 // Main app
 const app = new Hono<AppEnv>();
+
+// Validate env bindings on every request (fail fast with clear errors)
+app.use("*", async (c, next) => {
+  validateEnv(c.env);
+  await next();
+});
 
 // ---------------------------------------------------------------------------
 // Internal routes: /_internal/* — Host-based clawId extraction (service binding traffic)
