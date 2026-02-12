@@ -67,8 +67,30 @@ def _should_skip(
     return None
 
 
-@pytest.mark.parametrize("mime_type", MIME_TYPES, ids=_mime_id)
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+def _generate_supported_combinations(
+    model_ids: list[llm.ModelId], 
+    mime_types: tuple[ImageMimeType, ...], 
+    unsupported: dict[str, set[ImageMimeType]]
+) -> list[tuple[llm.ModelId, ImageMimeType]]:
+    """Generate only supported model_id/mime_type combinations."""
+    combinations = []
+    for model_id in model_ids:
+        for mime_type in mime_types:
+            if not _should_skip(model_id, mime_type, unsupported):
+                combinations.append((model_id, mime_type))
+    return combinations
+
+
+_SUPPORTED_CONTENT_COMBINATIONS = _generate_supported_combinations(
+    E2E_MODEL_IDS, MIME_TYPES, UNSUPPORTED_CONTENT
+)
+
+
+@pytest.mark.parametrize(
+    "model_id,mime_type", 
+    _SUPPORTED_CONTENT_COMBINATIONS,
+    ids=lambda combo: f"{combo[0].replace('/', '_').replace(':', '_').replace('-', '_')}__{_mime_id(combo[1])}"
+)
 @pytest.mark.vcr
 def test_call_with_image_content(
     model_id: llm.ModelId,
@@ -77,9 +99,6 @@ def test_call_with_image_content(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test a call using an image loaded from file for each supported MIME type."""
-    reason = _should_skip(model_id, mime_type, UNSUPPORTED_CONTENT)
-    if reason:
-        pytest.skip(reason)
 
     image_path = IMAGE_PATHS[mime_type]
     if not Path(image_path).exists():
@@ -97,8 +116,16 @@ def test_call_with_image_content(
         snap.set_response(response)
 
 
-@pytest.mark.parametrize("mime_type", MIME_TYPES, ids=_mime_id)
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+_SUPPORTED_URL_COMBINATIONS = _generate_supported_combinations(
+    E2E_MODEL_IDS, MIME_TYPES, UNSUPPORTED_URL
+)
+
+
+@pytest.mark.parametrize(
+    "model_id,mime_type", 
+    _SUPPORTED_URL_COMBINATIONS,
+    ids=lambda combo: f"{combo[0].replace('/', '_').replace(':', '_').replace('-', '_')}__{_mime_id(combo[1])}"
+)
 @pytest.mark.vcr
 def test_call_with_image_url(
     model_id: llm.ModelId,
@@ -107,9 +134,6 @@ def test_call_with_image_url(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test a call using an image referenced by URL for each supported MIME type."""
-    reason = _should_skip(model_id, mime_type, UNSUPPORTED_URL)
-    if reason:
-        pytest.skip(reason)
 
     image_url = IMAGE_URLS[mime_type]
 
