@@ -36,7 +36,9 @@ import { MockClawDeployment } from "@/tests/clawDeployment";
 import { createMockSettings, MockSettingsLayer } from "@/tests/settings";
 
 const MockExecutionContextLayer = Layer.succeed(ExecutionContext, {
-  waitUntil: () => {},
+  waitUntil: (p: Promise<unknown>) => {
+    p.catch(() => {});
+  },
   passThroughOnException: () => {},
   props: undefined,
 } as globalThis.ExecutionContext);
@@ -721,42 +723,45 @@ describe("Claw handler errors", () => {
         let updateCallCount = 0;
         yield* provisionClawBackground(mockClaw, {
           clawDeployment: MockClawDeployment.service(),
-          drizzle: {
-            update: () => {
-              // First call: the credentials persist (fails)
-              // Second call: the error status update (capture it)
-              updateCallCount++;
-              const currentCall = updateCallCount;
-              const failFirst = Effect.fail(new Error("db fail"));
-              const success = Effect.succeed([mockClaw]);
-              const effect = currentCall === 1 ? failFirst : success;
-              const chain = (): unknown =>
-                new Proxy(effect, {
-                  get: (target, prop) => {
-                    if (prop === "pipe")
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      return (...fns: Array<(e: any) => any>) =>
-                        fns.reduce((acc, fn) => fn(acc), effect);
-                    if (prop === "set")
-                      return (data: Record<string, unknown>) => {
-                        if (currentCall > 1) {
-                          capturedStatus = data.status as string;
-                        }
-                        return chain();
-                      };
-                    if (
-                      typeof prop === "string" &&
-                      ["where", "returning"].includes(prop)
-                    )
-                      return () => chain();
-                    return Reflect.get(target, prop);
-                  },
-                });
-              return chain();
-            },
-          } as never,
           settings: createMockSettings(),
-        });
+        }).pipe(
+          Effect.provide(
+            Layer.succeed(DrizzleORM, {
+              update: () => {
+                // First call: the credentials persist (fails)
+                // Second call: the error status update (capture it)
+                updateCallCount++;
+                const currentCall = updateCallCount;
+                const failFirst = Effect.fail(new Error("db fail"));
+                const success = Effect.succeed([mockClaw]);
+                const effect = currentCall === 1 ? failFirst : success;
+                const chain = (): unknown =>
+                  new Proxy(effect, {
+                    get: (target, prop) => {
+                      if (prop === "pipe")
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        return (...fns: Array<(e: any) => any>) =>
+                          fns.reduce((acc, fn) => fn(acc), effect);
+                      if (prop === "set")
+                        return (data: Record<string, unknown>) => {
+                          if (currentCall > 1) {
+                            capturedStatus = data.status as string;
+                          }
+                          return chain();
+                        };
+                      if (
+                        typeof prop === "string" &&
+                        ["where", "returning"].includes(prop)
+                      )
+                        return () => chain();
+                      return Reflect.get(target, prop);
+                    },
+                  });
+                return chain();
+              },
+            } as never),
+          ),
+        );
 
         expect(capturedStatus).toBe("error");
       }),
@@ -777,34 +782,37 @@ describe("Claw handler errors", () => {
                 }),
               ),
           }),
-          drizzle: {
-            update: () => {
-              const success = Effect.succeed([mockClaw]);
-              const chain = (): unknown =>
-                new Proxy(success, {
-                  get: (target, prop) => {
-                    if (prop === "pipe")
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      return (...fns: Array<(e: any) => any>) =>
-                        fns.reduce((acc, fn) => fn(acc), success);
-                    if (prop === "set")
-                      return (data: Record<string, unknown>) => {
-                        capturedStatus = data.status as string;
-                        return chain();
-                      };
-                    if (
-                      typeof prop === "string" &&
-                      ["where", "returning"].includes(prop)
-                    )
-                      return () => chain();
-                    return Reflect.get(target, prop);
-                  },
-                });
-              return chain();
-            },
-          } as never,
           settings: createMockSettings(),
-        });
+        }).pipe(
+          Effect.provide(
+            Layer.succeed(DrizzleORM, {
+              update: () => {
+                const success = Effect.succeed([mockClaw]);
+                const chain = (): unknown =>
+                  new Proxy(success, {
+                    get: (target, prop) => {
+                      if (prop === "pipe")
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        return (...fns: Array<(e: any) => any>) =>
+                          fns.reduce((acc, fn) => fn(acc), success);
+                      if (prop === "set")
+                        return (data: Record<string, unknown>) => {
+                          capturedStatus = data.status as string;
+                          return chain();
+                        };
+                      if (
+                        typeof prop === "string" &&
+                        ["where", "returning"].includes(prop)
+                      )
+                        return () => chain();
+                      return Reflect.get(target, prop);
+                    },
+                  });
+                return chain();
+              },
+            } as never),
+          ),
+        );
 
         expect(capturedStatus).toBe("error");
       }),
@@ -825,34 +833,37 @@ describe("Claw handler errors", () => {
                 }),
               ),
           }),
-          drizzle: {
-            update: () => {
-              const success = Effect.succeed([mockClaw]);
-              const chain = (): unknown =>
-                new Proxy(success, {
-                  get: (target, prop) => {
-                    if (prop === "pipe")
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      return (...fns: Array<(e: any) => any>) =>
-                        fns.reduce((acc, fn) => fn(acc), success);
-                    if (prop === "set")
-                      return (data: Record<string, unknown>) => {
-                        capturedStatuses.push(data.status as string);
-                        return chain();
-                      };
-                    if (
-                      typeof prop === "string" &&
-                      ["where", "returning"].includes(prop)
-                    )
-                      return () => chain();
-                    return Reflect.get(target, prop);
-                  },
-                });
-              return chain();
-            },
-          } as never,
           settings: createMockSettings(),
-        });
+        }).pipe(
+          Effect.provide(
+            Layer.succeed(DrizzleORM, {
+              update: () => {
+                const success = Effect.succeed([mockClaw]);
+                const chain = (): unknown =>
+                  new Proxy(success, {
+                    get: (target, prop) => {
+                      if (prop === "pipe")
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        return (...fns: Array<(e: any) => any>) =>
+                          fns.reduce((acc, fn) => fn(acc), success);
+                      if (prop === "set")
+                        return (data: Record<string, unknown>) => {
+                          capturedStatuses.push(data.status as string);
+                          return chain();
+                        };
+                      if (
+                        typeof prop === "string" &&
+                        ["where", "returning"].includes(prop)
+                      )
+                        return () => chain();
+                      return Reflect.get(target, prop);
+                    },
+                  });
+                return chain();
+              },
+            } as never),
+          ),
+        );
 
         // First update sets "provisioning", second sets "error" after warmUp failure
         expect(capturedStatuses).toContain("error");
@@ -883,30 +894,33 @@ describe("Claw handler errors", () => {
                 };
               }),
           }),
-          drizzle: {
-            update: () => {
-              const success = Effect.succeed([mockClaw]);
-              const chain = (): unknown =>
-                new Proxy(success, {
-                  get: (target, prop) => {
-                    if (prop === "pipe")
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      return (...fns: Array<(e: any) => any>) =>
-                        fns.reduce((acc, fn) => fn(acc), success);
-                    if (prop === "set") return () => chain();
-                    if (
-                      typeof prop === "string" &&
-                      ["where", "returning"].includes(prop)
-                    )
-                      return () => chain();
-                    return Reflect.get(target, prop);
-                  },
-                });
-              return chain();
-            },
-          } as never,
           settings: createMockSettings(),
-        });
+        }).pipe(
+          Effect.provide(
+            Layer.succeed(DrizzleORM, {
+              update: () => {
+                const success = Effect.succeed([mockClaw]);
+                const chain = (): unknown =>
+                  new Proxy(success, {
+                    get: (target, prop) => {
+                      if (prop === "pipe")
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        return (...fns: Array<(e: any) => any>) =>
+                          fns.reduce((acc, fn) => fn(acc), success);
+                      if (prop === "set") return () => chain();
+                      if (
+                        typeof prop === "string" &&
+                        ["where", "returning"].includes(prop)
+                      )
+                        return () => chain();
+                      return Reflect.get(target, prop);
+                    },
+                  });
+                return chain();
+              },
+            } as never),
+          ),
+        );
 
         expect(capturedConfig).not.toBeNull();
         expect(capturedConfig!.clawId).toBe(mockClaw.id);
@@ -922,34 +936,37 @@ describe("Claw handler errors", () => {
 
         yield* provisionClawBackground(mockClaw, {
           clawDeployment: MockClawDeployment.service(),
-          drizzle: {
-            update: () => {
-              const success = Effect.succeed([mockClaw]);
-              const chain = (): unknown =>
-                new Proxy(success, {
-                  get: (target, prop) => {
-                    if (prop === "pipe")
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      return (...fns: Array<(e: any) => any>) =>
-                        fns.reduce((acc, fn) => fn(acc), success);
-                    if (prop === "set")
-                      return (data: Record<string, unknown>) => {
-                        capturedSet = data;
-                        return chain();
-                      };
-                    if (
-                      typeof prop === "string" &&
-                      ["where", "returning"].includes(prop)
-                    )
-                      return () => chain();
-                    return Reflect.get(target, prop);
-                  },
-                });
-              return chain();
-            },
-          } as never,
           settings: createMockSettings(),
-        });
+        }).pipe(
+          Effect.provide(
+            Layer.succeed(DrizzleORM, {
+              update: () => {
+                const success = Effect.succeed([mockClaw]);
+                const chain = (): unknown =>
+                  new Proxy(success, {
+                    get: (target, prop) => {
+                      if (prop === "pipe")
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        return (...fns: Array<(e: any) => any>) =>
+                          fns.reduce((acc, fn) => fn(acc), success);
+                      if (prop === "set")
+                        return (data: Record<string, unknown>) => {
+                          capturedSet = data;
+                          return chain();
+                        };
+                      if (
+                        typeof prop === "string" &&
+                        ["where", "returning"].includes(prop)
+                      )
+                        return () => chain();
+                      return Reflect.get(target, prop);
+                    },
+                  });
+                return chain();
+              },
+            } as never),
+          ),
+        );
 
         expect(capturedSet).not.toBeNull();
         expect(capturedSet!.status).toBe("provisioning");
@@ -977,34 +994,37 @@ describe("Claw handler errors", () => {
           clawDeployment: MockClawDeployment.service({
             provision: () => Effect.succeed({ status: "active" as const }),
           }),
-          drizzle: {
-            update: () => {
-              const success = Effect.succeed([mockClaw]);
-              const chain = (): unknown =>
-                new Proxy(success, {
-                  get: (target, prop) => {
-                    if (prop === "pipe")
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      return (...fns: Array<(e: any) => any>) =>
-                        fns.reduce((acc, fn) => fn(acc), success);
-                    if (prop === "set")
-                      return (data: Record<string, unknown>) => {
-                        capturedSet = data;
-                        return chain();
-                      };
-                    if (
-                      typeof prop === "string" &&
-                      ["where", "returning"].includes(prop)
-                    )
-                      return () => chain();
-                    return Reflect.get(target, prop);
-                  },
-                });
-              return chain();
-            },
-          } as never,
           settings: createMockSettings(),
-        });
+        }).pipe(
+          Effect.provide(
+            Layer.succeed(DrizzleORM, {
+              update: () => {
+                const success = Effect.succeed([mockClaw]);
+                const chain = (): unknown =>
+                  new Proxy(success, {
+                    get: (target, prop) => {
+                      if (prop === "pipe")
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        return (...fns: Array<(e: any) => any>) =>
+                          fns.reduce((acc, fn) => fn(acc), success);
+                      if (prop === "set")
+                        return (data: Record<string, unknown>) => {
+                          capturedSet = data;
+                          return chain();
+                        };
+                      if (
+                        typeof prop === "string" &&
+                        ["where", "returning"].includes(prop)
+                      )
+                        return () => chain();
+                      return Reflect.get(target, prop);
+                    },
+                  });
+                return chain();
+              },
+            } as never),
+          ),
+        );
 
         expect(capturedSet).not.toBeNull();
         expect(capturedSet!.bucketName).toBeNull();

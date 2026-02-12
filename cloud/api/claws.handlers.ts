@@ -1,6 +1,6 @@
 import * as crypto from "crypto";
 import { eq } from "drizzle-orm";
-import { Context, Effect, Layer } from "effect";
+import { Effect, Layer } from "effect";
 
 import type { CreateClawRequest, UpdateClawRequest } from "@/api/claws.schemas";
 import type { ClawInstanceType } from "@/claws/deployment/types";
@@ -45,11 +45,11 @@ export const provisionClawBackground = (
   },
   deps: {
     clawDeployment: ClawDeploymentServiceInterface;
-    drizzle: Context.Tag.Service<DrizzleORM>;
     settings: SettingsConfig;
   },
 ) =>
   Effect.gen(function* () {
+    const drizzle = yield* DrizzleORM;
     // Provision R2 bucket and scoped credentials
     const status = yield* deps.clawDeployment.provision({
       clawId: claw.id,
@@ -71,7 +71,7 @@ export const provisionClawBackground = (
       R2_SECRET_ACCESS_KEY: status.r2Credentials?.secretAccessKey ?? "",
     });
 
-    yield* deps.drizzle
+    yield* drizzle
       .update(claws)
       .set({
         bucketName: status.bucketName ?? null,
@@ -95,28 +95,29 @@ export const provisionClawBackground = (
     yield* deps.clawDeployment.warmUp(claw.id);
   }).pipe(
     Effect.catchAll((error) =>
-      deps.drizzle
-        .update(claws)
-        .set({
-          status: "error",
-          updatedAt: new Date(),
-        })
-        .where(eq(claws.id, claw.id))
-        .pipe(
-          Effect.tapError(() =>
-            Effect.logError(
-              `Failed to mark claw ${claw.id} as error after provisioning failure`,
+      Effect.flatMap(DrizzleORM, (drizzle) =>
+        drizzle
+          .update(claws)
+          .set({
+            status: "error",
+            updatedAt: new Date(),
+          })
+          .where(eq(claws.id, claw.id))
+          .pipe(
+            Effect.tapError(() =>
+              Effect.logError(
+                `Failed to mark claw ${claw.id} as error after provisioning failure`,
+              ),
+            ),
+            Effect.catchAll(() => Effect.void),
+            Effect.tap(() =>
+              Effect.logError(
+                `Claw ${claw.id} provisioning failed: ${String(error)}`,
+              ),
             ),
           ),
-          Effect.catchAll(() => Effect.void),
-          Effect.tap(() =>
-            Effect.logError(
-              `Claw ${claw.id} provisioning failed: ${String(error)}`,
-            ),
-          ),
-        ),
+      ),
     ),
-    Effect.provide(Layer.succeed(Settings, deps.settings)),
   );
 
 export const createClawHandler = (
@@ -128,7 +129,6 @@ export const createClawHandler = (
     const user = yield* AuthenticatedUser;
     const analytics = yield* Analytics;
     const clawDeployment = yield* ClawDeploymentService;
-    const drizzle = yield* DrizzleORM;
     const settings = yield* Settings;
     const ctx = yield* ExecutionContext;
 
@@ -156,15 +156,28 @@ export const createClawHandler = (
       distinctId: user.id,
     });
 
-    // Run provisioning in the background so the response returns immediately
+    // Run provisioning in the background so the response returns immediately.
+    // We provide a fresh Database.Live layer because Hyperdrive connections
+    // are tied to the request lifecycle and die after the response is sent.
     ctx.waitUntil(
       Effect.runPromise(
         provisionClawBackground(claw, {
           clawDeployment,
-          drizzle,
           settings,
-        }),
-      ),
+        }).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              Layer.succeed(Settings, settings),
+              Database.Live({
+                database: { connectionString: settings.databaseUrl },
+                payments: settings.stripe,
+              }),
+            ),
+          ),
+        ),
+      ).catch((err) => {
+        console.error("[provisioning] Background task failed:", err);
+      }),
     );
 
     return claw;
