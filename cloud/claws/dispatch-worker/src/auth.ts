@@ -243,6 +243,20 @@ export const authenticate = (
       return { clawId };
     }
 
+    // WebSocket upgrade: require session cookie (defense-in-depth), gateway handles token auth
+    if (request.headers.get("Upgrade")?.toLowerCase() === "websocket") {
+      const sessionId = extractSessionCookie(request);
+      if (sessionId) {
+        // Validate session has access to this claw
+        yield* validateSession(sessionId, parsed.orgSlug, parsed.clawSlug, env);
+        return { clawId };
+      }
+      // No session cookie — reject
+      return yield* new UnauthenticatedError({
+        message: "WebSocket upgrade requires session authentication",
+      });
+    }
+
     // Bearer token: pass through (gateway validates)
     const authHeader = request.headers.get("Authorization");
     if (authHeader?.startsWith("Bearer ")) {
