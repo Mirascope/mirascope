@@ -1,7 +1,7 @@
 import { describe, it, expect } from "@effect/vitest";
 import { Effect, Layer } from "effect";
 
-import type { PublicUser, ApiKeyInfo } from "@/db/schema";
+import type { PublicUser, EnvironmentApiKeyInfo } from "@/db/schema";
 
 import { Authentication, type AuthResult } from "@/auth/context";
 import { UnauthorizedError } from "@/errors";
@@ -15,7 +15,7 @@ describe("Authentication", () => {
     deletedAt: null,
   };
 
-  const mockApiKeyInfo: ApiKeyInfo = {
+  const mockEnvironmentApiKeyInfo: EnvironmentApiKeyInfo = {
     apiKeyId: "test-api-key-id",
     organizationId: "test-org-id",
     projectId: "test-project-id",
@@ -32,14 +32,14 @@ describe("Authentication", () => {
     it.effect("should return auth result when apiKeyInfo is present", () => {
       const authWithApiKey: AuthResult = {
         user: mockUser,
-        apiKeyInfo: mockApiKeyInfo,
+        apiKeyInfo: mockEnvironmentApiKeyInfo,
       };
 
       const layer = Layer.succeed(Authentication, authWithApiKey);
       return Effect.gen(function* () {
         const result = yield* Authentication.ApiKey;
         expect(result.user).toEqual(mockUser);
-        expect(result.apiKeyInfo).toEqual(mockApiKeyInfo);
+        expect(result.apiKeyInfo).toEqual(mockEnvironmentApiKeyInfo);
       }).pipe(Effect.provide(layer));
     });
 

@@ -82,16 +82,34 @@ type OwnerFields<T> = {
   [K in keyof T as `owner${Capitalize<string & K>}`]: T[K];
 };
 
-// Type for complete API key information including owner details
-// Uses mapped type to automatically derive owner fields from PublicUser
-// clawId is sourced from a LEFT JOIN to claws (null for human-owned keys)
-export type ApiKeyInfo = {
+// ---------------------------------------------------------------------------
+// API Key Info — type hierarchy for scoped API keys
+// ---------------------------------------------------------------------------
+
+/** Fields shared by all API key scopes. */
+export type BaseApiKeyInfo = {
   apiKeyId: string;
-  environmentId: string;
-  projectId: string;
   organizationId: string;
+  /** Non-null when the key is owned by a claw (LEFT JOIN). */
   clawId: string | null;
 } & OwnerFields<PublicUser>;
+
+/**
+ * Environment-scoped API key — tied to a specific project + environment.
+ * This is the only scope that currently exists; the base type enables
+ * future key scopes (e.g. org-scoped) without restructuring.
+ */
+export type EnvironmentApiKeyInfo = BaseApiKeyInfo & {
+  environmentId: string;
+  projectId: string;
+};
+
+/**
+ * All API keys currently returned by getApiKeyInfo.
+ * Today this is always EnvironmentApiKeyInfo; when new scopes are added,
+ * this becomes a union (e.g. EnvironmentApiKeyInfo | OrgApiKeyInfo).
+ */
+export type ApiKeyInfo = EnvironmentApiKeyInfo;
 
 // Type for API key with project and environment context (for listing all keys)
 export type ApiKeyWithContext = PublicApiKey & {

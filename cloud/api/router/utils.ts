@@ -8,7 +8,7 @@
 import { Effect } from "effect";
 
 import type { TokenUsage, ModelPricing } from "@/api/router/pricing";
-import type { PublicUser, ApiKeyInfo } from "@/db/schema";
+import type { PublicUser, EnvironmentApiKeyInfo } from "@/db/schema";
 
 import { estimateCost } from "@/api/router/cost-estimator";
 import {
@@ -53,7 +53,7 @@ export interface RouterRequestIdentifiers {
  */
 export interface ValidatedRouterRequest {
   user: PublicUser;
-  apiKeyInfo: ApiKeyInfo;
+  apiKeyInfo: EnvironmentApiKeyInfo;
   provider: ProviderName;
   modelId: string;
   parsedRequestBody: unknown;
