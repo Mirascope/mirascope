@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Loader2, Trash2 } from "lucide-react";
+import { ExternalLink, Loader2, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import {
@@ -202,11 +202,23 @@ function ClawSettingsPage() {
     <div className="max-w-3xl space-y-6">
       {header}
 
-      {/* Plan usage summary */}
-      <p className="text-sm text-muted-foreground">
-        Plan: {planTier.charAt(0).toUpperCase() + planTier.slice(1)} (
-        {claws.length}/{limits.claws} claws used)
-      </p>
+      {/* Plan usage summary + Dashboard link */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          Plan: {planTier.charAt(0).toUpperCase() + planTier.slice(1)} (
+          {claws.length}/{limits.claws} claws used)
+        </p>
+        <Button asChild variant="outline" size="sm">
+          <a
+            href={`https://openclaw.${typeof window !== "undefined" && window.location.hostname.startsWith("staging.") ? "staging.mirascope.com" : "mirascope.com"}/${orgSlug}/${clawSlug}/overview`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Open Dashboard
+            <ExternalLink className="ml-2 h-4 w-4" />
+          </a>
+        </Button>
+      </div>
 
       {/* Claw details */}
       <Card>
