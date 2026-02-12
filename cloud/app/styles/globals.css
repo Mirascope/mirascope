@@ -155,9 +155,6 @@
   --foreground: oklch(0.985 0 0);
   --color-foreground: oklch(0.985 0 0);
 
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-
   --color-nav-text: oklch(1 0 0);
   --color-nav-text-hover: oklch(1 0 0);
   --color-nav-text-shadow:
