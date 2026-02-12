@@ -34,33 +34,4 @@ export function validateEnv(env: DispatchEnv): void {
       `Dispatch worker env validation failed — missing required bindings:\n  - ${missing.join("\n  - ")}`,
     );
   }
-
-  // Validate SITE_URL format
-  validateSiteUrl(env.SITE_URL);
-}
-
-/**
- * Validate that SITE_URL has the correct format:
- * - Must start with `https://` (or `http://localhost` for local dev)
- * - Must NOT have a trailing slash
- */
-function validateSiteUrl(siteUrl: string): void {
-  const errors: string[] = [];
-
-  const isLocalhost = /^http:\/\/localhost(:\d+)?(\/|$)/.test(siteUrl);
-  if (!siteUrl.startsWith("https://") && !isLocalhost) {
-    errors.push(
-      `SITE_URL must start with "https://" (or "http://localhost" for dev), got: "${siteUrl}"`,
-    );
-  }
-
-  if (siteUrl.endsWith("/")) {
-    errors.push(`SITE_URL must not have a trailing slash, got: "${siteUrl}"`);
-  }
-
-  if (errors.length > 0) {
-    throw new Error(
-      `Dispatch worker SITE_URL validation failed:\n  - ${errors.join("\n  - ")}`,
-    );
-  }
 }
