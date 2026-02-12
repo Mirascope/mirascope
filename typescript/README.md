@@ -264,7 +264,8 @@ const response = await llm.model("grok/grok-4-latest").call("Hello!");
 
 The transform plugin extracts type information from TypeScript interfaces at compile time, enabling the native TypeScript patterns (without Zod) for tools and structured output. This is **optional** - you can use Zod schemas without any build configuration.
 
-**Note:** The transform plugin requires a build tool (Vite, esbuild) or a runtime loader (Node.js `--import`, Bun preload). Environments that run TypeScript directly without custom loader support (e.g., Deno) cannot use the transform plugin — use Zod schemas instead.
+> [!NOTE]
+> The transform plugin requires a build tool (Vite, esbuild) or a runtime loader (Node.js `--import`, Bun preload). Environments that run TypeScript directly without custom loader support (e.g., Deno) cannot use the transform plugin — use Zod schemas instead.
 
 ### Node.js (Runtime)
 
@@ -277,7 +278,8 @@ node --import mirascope/loader your-script.ts
 NODE_OPTIONS='--import mirascope/loader' node your-script.ts
 ```
 
-**Note:** Runtime transformation is slower than build-time approaches. For production, use esbuild or Vite plugins instead.
+> [!NOTE]
+> Runtime transformation is slower than build-time approaches. For production, use esbuild or Vite plugins instead.
 
 ### Vite
 
@@ -322,7 +324,8 @@ preload = ["./preload.ts"]
 
 Now `bun run your-script.ts` will automatically apply the transform.
 
-**Note:** The preload script is already configured in this package - just run `bun run your-script.ts`.
+> [!NOTE]
+> The preload script is already configured in this package - just run `bun run your-script.ts`.
 
 Alternatively, for production builds, use esbuild:
 
@@ -345,7 +348,8 @@ Deno's built-in TypeScript support and Node.js compatibility work out of the box
 deno run --allow-net --allow-env your-script.ts
 ```
 
-**Note:** Deno doesn't support custom TypeScript transformers, so the transform plugin is not available. Use Zod schemas for tools and structured output (`defineTool` with `validator`, `defineFormat` with `validator`, or pass a Zod schema directly as `format`). `defineCall`, `model.call()`, and all Zod-based patterns work directly.
+> [!NOTE]
+> Deno doesn't support custom TypeScript transformers, so the transform plugin is not available. Use Zod schemas for tools and structured output (`defineTool` with `validator`, `defineFormat` with `validator`, or pass a Zod schema directly as `format`). `defineCall`, `model.call()`, and all Zod-based patterns work directly.
 
 ## Error Handling
 
