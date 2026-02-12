@@ -72,6 +72,11 @@ export const useCreateClaw = () => {
         }),
     }),
     onSuccess: (claw) => {
+      // Optimistically insert into cache to prevent "not found" flash on navigation
+      queryClient.setQueryData(
+        ["claws", claw.organizationId],
+        (old: unknown[] | undefined) => (old ? [...old, claw] : [claw]),
+      );
       void queryClient.invalidateQueries({
         queryKey: ["claws", claw.organizationId],
       });

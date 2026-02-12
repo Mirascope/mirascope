@@ -52,6 +52,11 @@ export const useCreateProject = () => {
         }),
     }),
     onSuccess: (project) => {
+      // Optimistically insert into cache to prevent "not found" flash on navigation
+      queryClient.setQueryData(
+        ["projects", project.organizationId],
+        (old: unknown[] | undefined) => (old ? [...old, project] : [project]),
+      );
       void queryClient.invalidateQueries({
         queryKey: ["projects", project.organizationId],
       });

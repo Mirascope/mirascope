@@ -44,11 +44,11 @@ function AcceptInvitationPage() {
       await acceptInvitation.mutateAsync(token);
       setState("success");
 
-      // Redirect to cloud dashboard after short delay
-      // The /cloud route will redirect to the appropriate org dashboard
+      // Organizations cache is already fresh (useAcceptInvitation awaits invalidation)
+      // Brief delay for user to see success message before redirect
       setTimeout(() => {
         void navigate({ to: "/cloud" });
-      }, 2000);
+      }, 1000);
     } catch (error) {
       setState("error");
       if (error instanceof Error) {

@@ -111,8 +111,19 @@ export const useCompleteOnboarding = () => {
       }
       return result.data;
     },
-    onSuccess: () => {
-      // Invalidate organizations and claws to refresh the sidebar
+    onSuccess: (data) => {
+      // Optimistically insert into cache to prevent "not found" flash on navigation
+      queryClient.setQueryData(
+        ["organizations"],
+        (old: unknown[] | undefined) =>
+          old ? [...old, data.organization] : [data.organization],
+      );
+      queryClient.setQueryData(
+        ["claws", data.organization.id],
+        (old: unknown[] | undefined) =>
+          old ? [...old, data.claw] : [data.claw],
+      );
+      // Invalidate to ensure eventual consistency with the server
       void queryClient.invalidateQueries({ queryKey: ["organizations"] });
       void queryClient.invalidateQueries({ queryKey: ["claws"] });
     },

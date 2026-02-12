@@ -50,7 +50,13 @@ export const useCreateOrganization = () => {
           return yield* client.organizations.create({ payload: data });
         }),
     }),
-    onSuccess: () => {
+    onSuccess: (organization) => {
+      // Optimistically insert into cache to prevent "not found" flash on navigation
+      queryClient.setQueryData(
+        ["organizations"],
+        (old: unknown[] | undefined) =>
+          old ? [...old, organization] : [organization],
+      );
       void queryClient.invalidateQueries({ queryKey: ["organizations"] });
     },
   });
