@@ -19,17 +19,6 @@ export const useClaws = (organizationId: string | null) => {
         }),
     }),
     enabled: !!organizationId,
-    refetchInterval: (query) => {
-      const claws = query.state.data;
-      if (
-        claws?.some(
-          (c) => c.status === "pending" || c.status === "provisioning",
-        )
-      ) {
-        return 2000;
-      }
-      return false;
-    },
   });
 };
 

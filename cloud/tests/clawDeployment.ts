@@ -47,34 +47,26 @@ export const MockClawDeployment = {
   layer: (
     overrides?: Partial<ClawDeploymentServiceInterface>,
   ): Layer.Layer<ClawDeploymentService> =>
-    Layer.succeed(ClawDeploymentService, MockClawDeployment.service(overrides)),
-
-  /**
-   * Creates a mock `ClawDeploymentService` value (not wrapped in a Layer).
-   * Useful for passing directly to functions that accept the service as a parameter.
-   */
-  service: (
-    overrides?: Partial<ClawDeploymentServiceInterface>,
-  ): ClawDeploymentServiceInterface => ({
-    provision: (config) =>
-      Effect.succeed({
-        status: "active" as const,
-        startedAt: new Date(),
-        bucketName: `claw-${config.clawId}`,
-        r2Credentials: {
-          tokenId: `mock-token-${config.clawId}`,
-          accessKeyId: `mock-access-${config.clawId}`,
-          secretAccessKey: `mock-secret-${config.clawId}`,
-        },
-      }),
-    deprovision: () => Effect.void,
-    getStatus: () =>
-      Effect.fail(new ClawDeploymentError({ message: "not implemented" })),
-    restart: () =>
-      Effect.fail(new ClawDeploymentError({ message: "not implemented" })),
-    update: () =>
-      Effect.fail(new ClawDeploymentError({ message: "not implemented" })),
-    warmUp: () => Effect.void,
-    ...overrides,
-  }),
+    Layer.succeed(ClawDeploymentService, {
+      provision: (config) =>
+        Effect.succeed({
+          status: "active" as const,
+          startedAt: new Date(),
+          bucketName: `claw-${config.clawId}`,
+          r2Credentials: {
+            tokenId: `mock-token-${config.clawId}`,
+            accessKeyId: `mock-access-${config.clawId}`,
+            secretAccessKey: `mock-secret-${config.clawId}`,
+          },
+        }),
+      deprovision: () => Effect.void,
+      getStatus: () =>
+        Effect.fail(new ClawDeploymentError({ message: "not implemented" })),
+      restart: () =>
+        Effect.fail(new ClawDeploymentError({ message: "not implemented" })),
+      update: () =>
+        Effect.fail(new ClawDeploymentError({ message: "not implemented" })),
+      warmUp: () => Effect.void,
+      ...overrides,
+    }),
 };

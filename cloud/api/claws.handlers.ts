@@ -1,23 +1,18 @@
 import * as crypto from "crypto";
 import { eq } from "drizzle-orm";
-import { Context, Effect, Layer } from "effect";
+import { Effect } from "effect";
 
 import type { CreateClawRequest, UpdateClawRequest } from "@/api/claws.schemas";
-import type { ClawInstanceType } from "@/claws/deployment/types";
 
 import { Analytics } from "@/analytics";
 import { AuthenticatedUser } from "@/auth";
 import { encryptSecrets } from "@/claws/crypto";
-import {
-  ClawDeploymentService,
-  type ClawDeploymentServiceInterface,
-} from "@/claws/deployment/service";
+import { ClawDeploymentService } from "@/claws/deployment/service";
 import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
 import { claws } from "@/db/schema";
 import { DatabaseError } from "@/errors";
-import { ExecutionContext } from "@/server-entry";
-import { Settings, type SettingsConfig } from "@/settings";
+import { Settings } from "@/settings";
 
 export * from "@/api/claws.schemas";
 
@@ -31,27 +26,33 @@ export const listClawsHandler = (organizationId: string) =>
     });
   });
 
-/**
- * Provisions a claw in the background: creates R2 bucket, encrypts secrets,
- * updates DB, and warms up the container. On failure, marks claw as "error".
- *
- * Exported for testing. Not part of the public API.
- */
-export const provisionClawBackground = (
-  claw: {
-    id: string;
-    instanceType: ClawInstanceType;
-    plaintextApiKey: string;
-  },
-  deps: {
-    clawDeployment: ClawDeploymentServiceInterface;
-    drizzle: Context.Tag.Service<DrizzleORM>;
-    settings: SettingsConfig;
-  },
+export const createClawHandler = (
+  organizationId: string,
+  payload: CreateClawRequest,
 ) =>
   Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    const analytics = yield* Analytics;
+    const clawDeployment = yield* ClawDeploymentService;
+    const drizzle = yield* DrizzleORM;
+    const settings = yield* Settings;
+
+    const claw = yield* db.organizations.claws.create({
+      userId: user.id,
+      organizationId,
+      data: {
+        slug: payload.slug,
+        displayName: payload.name,
+        description: payload.description,
+        weeklySpendingGuardrailCenticents:
+          payload.weeklySpendingGuardrailCenticents,
+        homeProjectId: payload.homeProjectId,
+      },
+    });
+
     // Provision R2 bucket and scoped credentials
-    const status = yield* deps.clawDeployment.provision({
+    const status = yield* clawDeployment.provision({
       clawId: claw.id,
       instanceType: claw.instanceType,
     });
@@ -60,7 +61,7 @@ export const provisionClawBackground = (
     const gatewayToken = crypto.randomUUID();
 
     // Build Mirascope Router base URL for Anthropic-compatible proxy
-    const routerBaseUrl = `${deps.settings.siteUrl}/router/v2/anthropic`;
+    const routerBaseUrl = `${settings.siteUrl}/router/v2/anthropic`;
 
     // Encrypt all container secrets before persisting
     const encrypted = yield* encryptSecrets({
@@ -71,7 +72,7 @@ export const provisionClawBackground = (
       R2_SECRET_ACCESS_KEY: status.r2Credentials?.secretAccessKey ?? "",
     });
 
-    yield* deps.drizzle
+    yield* drizzle
       .update(claws)
       .set({
         bucketName: status.bucketName ?? null,
@@ -92,60 +93,8 @@ export const provisionClawBackground = (
       );
 
     // Trigger cold start on dispatch worker (reads creds from DB via bootstrap API)
-    yield* deps.clawDeployment.warmUp(claw.id);
-  }).pipe(
-    Effect.catchAll((error) =>
-      deps.drizzle
-        .update(claws)
-        .set({
-          status: "error",
-          updatedAt: new Date(),
-        })
-        .where(eq(claws.id, claw.id))
-        .pipe(
-          Effect.tapError(() =>
-            Effect.logError(
-              `Failed to mark claw ${claw.id} as error after provisioning failure`,
-            ),
-          ),
-          Effect.catchAll(() => Effect.void),
-          Effect.tap(() =>
-            Effect.logError(
-              `Claw ${claw.id} provisioning failed: ${String(error)}`,
-            ),
-          ),
-        ),
-    ),
-    Effect.provide(Layer.succeed(Settings, deps.settings)),
-  );
+    yield* clawDeployment.warmUp(claw.id);
 
-export const createClawHandler = (
-  organizationId: string,
-  payload: CreateClawRequest,
-) =>
-  Effect.gen(function* () {
-    const db = yield* Database;
-    const user = yield* AuthenticatedUser;
-    const analytics = yield* Analytics;
-    const clawDeployment = yield* ClawDeploymentService;
-    const drizzle = yield* DrizzleORM;
-    const settings = yield* Settings;
-    const ctx = yield* ExecutionContext;
-
-    const claw = yield* db.organizations.claws.create({
-      userId: user.id,
-      organizationId,
-      data: {
-        slug: payload.slug,
-        displayName: payload.name,
-        description: payload.description,
-        weeklySpendingGuardrailCenticents:
-          payload.weeklySpendingGuardrailCenticents,
-        homeProjectId: payload.homeProjectId,
-      },
-    });
-
-    // Track creation analytics in the fast path
     yield* analytics.trackEvent({
       name: "claw_created",
       properties: {
@@ -156,18 +105,12 @@ export const createClawHandler = (
       distinctId: user.id,
     });
 
-    // Run provisioning in the background so the response returns immediately
-    ctx.waitUntil(
-      Effect.runPromise(
-        provisionClawBackground(claw, {
-          clawDeployment,
-          drizzle,
-          settings,
-        }),
-      ),
-    );
-
-    return claw;
+    return {
+      ...claw,
+      status: "provisioning" as const,
+      bucketName: status.bucketName ?? null,
+      secretsEncrypted: encrypted.ciphertext,
+    };
   });
 
 export const getClawHandler = (organizationId: string, clawId: string) =>

@@ -13,7 +13,6 @@ import { Database } from "@/db/database";
 import { Emails } from "@/emails";
 import { HandlerError } from "@/errors";
 import { Payments } from "@/payments";
-import { executionContextLayer } from "@/server-entry";
 import { Settings, type SettingsConfig } from "@/settings";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
 import { SpansIngestQueue } from "@/workers/spanIngestQueue";
@@ -64,7 +63,6 @@ function createWebHandler(options: WebHandlerOptions) {
     Layer.succeed(SpansIngestQueue, options.spansIngestQueue),
     Layer.succeed(RealtimeSpans, options.realtimeSpans),
     Layer.succeed(ClawDeploymentService, options.clawDeployment),
-    executionContextLayer,
   );
 
   const ApiWithDependencies = Layer.merge(

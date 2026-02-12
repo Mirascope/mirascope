@@ -34,7 +34,6 @@ import { Database } from "@/db/database";
 import { claws, users } from "@/db/schema";
 import { Emails } from "@/emails";
 import { Payments } from "@/payments";
-import { executionContextLayer } from "@/server-entry";
 import { Settings, type SettingsConfig } from "@/settings";
 import { TEST_DATABASE_URL } from "@/tests/db";
 import { getTestClickHouseConfig } from "@/tests/global-setup";
@@ -251,7 +250,6 @@ function createTestWebHandler(
     MockAnalytics,
     MockEmails,
     MockDeploymentService,
-    executionContextLayer,
   );
 
   const ApiWithDependencies = Layer.merge(
@@ -592,7 +590,6 @@ function createSimpleTestWebHandler() {
     MockAnalytics,
     MockEmails,
     MockDeploymentService,
-    executionContextLayer,
   );
 
   const ApiWithDependencies = Layer.mergeAll(
