@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
+  ExternalLink,
   Loader2,
   MoreHorizontal,
   Pencil,
@@ -59,6 +60,15 @@ import {
 import { Textarea } from "@/app/components/ui/textarea";
 import { useClaw } from "@/app/contexts/claw";
 import { useOrganization } from "@/app/contexts/organization";
+
+function getSettingsUrl(orgSlug: string, clawSlug: string): string {
+  const host =
+    typeof window !== "undefined" &&
+    window.location.hostname.includes("staging")
+      ? "staging.mirascope.com"
+      : "mirascope.com";
+  return `https://${host}/settings/organizations/${orgSlug}/claws/${clawSlug}`;
+}
 
 function ClawsSecretsPage() {
   const { selectedOrganization } = useOrganization();
@@ -181,6 +191,21 @@ function ClawsSecretsPage() {
     <>
       <div className="p-6">
         <ClawHeader />
+        <div className="mb-4">
+          <Button asChild variant="outline" size="sm">
+            <a
+              href={getSettingsUrl(
+                selectedOrganization?.slug ?? "",
+                selectedClaw?.slug ?? "",
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Settings
+              <ExternalLink className="ml-2 h-4 w-4" />
+            </a>
+          </Button>
+        </div>
         <Tabs
           defaultValue="table"
           onValueChange={(value) => {
