@@ -1,8 +1,11 @@
+import { eq } from "drizzle-orm";
 import { Effect, Layer } from "effect";
 
 import type { PublicProject } from "@/db/schema";
 
+import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
+import { projects } from "@/db/schema";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -380,6 +383,27 @@ describe("Projects", () => {
             ),
           ),
         ),
+    );
+
+    it.effect("created project has type standard by default", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+        const client = yield* DrizzleORM;
+
+        const project = yield* db.organizations.projects.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { name: "Test Standard Project", slug: "test-standard" },
+        });
+
+        // Verify the project has standard type
+        const [dbProject] = yield* client
+          .select()
+          .from(projects)
+          .where(eq(projects.id, project.id));
+        expect(dbProject.type).toBe("standard");
+      }),
     );
   });
 
