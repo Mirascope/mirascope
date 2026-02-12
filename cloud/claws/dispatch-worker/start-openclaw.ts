@@ -168,6 +168,7 @@ interface OpenClawConfig {
     mode?: string;
     trustedProxies?: string[];
     auth?: { token?: string };
+    controlUi?: { allowedOrigins?: string[] };
   };
   models?: {
     providers?: Record<string, unknown>;
@@ -207,6 +208,26 @@ const gatewayToken = process.env.OPENCLAW_GATEWAY_TOKEN;
 if (gatewayToken) {
   config.gateway.auth ??= {};
   config.gateway.auth.token = gatewayToken;
+}
+
+// Control UI allowed origins (for WebSocket connections from browser)
+const allowedOrigins: string[] = [];
+const envOrigins = process.env.OPENCLAW_ALLOWED_ORIGINS;
+if (envOrigins) {
+  allowedOrigins.push(
+    ...envOrigins
+      .split(",")
+      .map((o) => o.trim())
+      .filter(Boolean),
+  );
+}
+const siteUrl = process.env.OPENCLAW_SITE_URL;
+if (siteUrl && !allowedOrigins.includes(siteUrl)) {
+  allowedOrigins.push(siteUrl);
+}
+if (allowedOrigins.length > 0) {
+  config.gateway.controlUi = { allowedOrigins };
+  console.log("Control UI allowed origins:", allowedOrigins);
 }
 
 // Anthropic provider configuration via Mirascope router
