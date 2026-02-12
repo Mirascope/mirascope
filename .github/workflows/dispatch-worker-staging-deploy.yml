@@ -1,0 +1,35 @@
+name: Deploy Dispatch Worker to Staging
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cloud/claws/dispatch-worker/**'
+      - '.github/workflows/dispatch-worker-staging-deploy.yml'
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cloud/claws/dispatch-worker
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Deploy to Cloudflare Workers (Staging)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: cloud/claws/dispatch-worker
+          command: deploy --env staging --config wrangler.jsonc
+
+      - name: Deployment complete
+        run: echo "✅ Successfully deployed dispatch worker to staging at https://openclaw.staging.mirascope.com"
