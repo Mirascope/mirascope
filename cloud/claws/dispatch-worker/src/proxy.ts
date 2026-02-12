@@ -317,10 +317,38 @@ export async function proxyHttp(
   // Inject base path into OpenClaw Control UI HTML
   if (basePath && response.headers.get("content-type")?.includes("text/html")) {
     const html = await response.text();
-    const rewritten = html.replace(
-      'window.__OPENCLAW_CONTROL_UI_BASE_PATH__=""',
-      `window.__OPENCLAW_CONTROL_UI_BASE_PATH__="${basePath}"`,
-    );
+    // Inject base path and patch the default gateway WS URL.
+    // The Control UI reads gatewayUrl from localStorage, defaulting to
+    // wss://{location.host} (no path). We inject a boot script that ensures
+    // the stored URL includes the base path so WebSocket connects correctly.
+    const wsBootScript = [
+      "<script>",
+      "(function(){",
+      `  var bp="${basePath}";`,
+      '  var key="openclaw.control.settings.v1";',
+      "  try{",
+      "    var proto=location.protocol==='https:'?'wss':'ws';",
+      "    var want=proto+'://'+location.host+bp;",
+      "    var raw=localStorage.getItem(key);",
+      "    if(!raw){",
+      "      localStorage.setItem(key,JSON.stringify({gatewayUrl:want}));",
+      "    }else{",
+      "      var s=JSON.parse(raw);",
+      "      if(!s.gatewayUrl||s.gatewayUrl===proto+'://'+location.host){",
+      "        s.gatewayUrl=want;",
+      "        localStorage.setItem(key,JSON.stringify(s));",
+      "      }",
+      "    }",
+      "  }catch(e){}",
+      "})();",
+      "</script>",
+    ].join("");
+    const rewritten = html
+      .replace(
+        'window.__OPENCLAW_CONTROL_UI_BASE_PATH__=""',
+        `window.__OPENCLAW_CONTROL_UI_BASE_PATH__="${basePath}"`,
+      )
+      .replace("</head>", wsBootScript + "</head>");
     return new Response(rewritten, {
       status: response.status,
       statusText: response.statusText,

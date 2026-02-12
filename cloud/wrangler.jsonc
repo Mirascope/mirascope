@@ -120,6 +120,7 @@
       "vars": {
         "ENVIRONMENT": "staging",
         "SITE_URL": "https://staging.mirascope.com",
+        "CF_DISPATCH_WORKER_BASE_URL": "https://openclaw.staging.mirascope.com",
         "GITHUB_CLIENT_ID": "Ov23lim6U7I6fihGO7Ys",
         "GITHUB_CALLBACK_URL": "https://staging.mirascope.com/auth/github/proxy-callback",
         "GOOGLE_CLIENT_ID": "816621808414-aspfju0v2ovlc5rrqp7o71p7hmj804jk.apps.googleusercontent.com",
@@ -215,6 +216,7 @@
       "vars": {
         "ENVIRONMENT": "production",
         "SITE_URL": "https://mirascope.com",
+        "CF_DISPATCH_WORKER_BASE_URL": "https://openclaw.mirascope.com",
         "GITHUB_CLIENT_ID": "Ov23liUXN3zH9UbkKZqr",
         "GITHUB_CALLBACK_URL": "https://mirascope.com/auth/github/callback",
         "GOOGLE_CLIENT_ID": "816621808414-p2o84k2727gfqgemdktfn43hupgiah22.apps.googleusercontent.com",
