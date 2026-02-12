@@ -304,6 +304,7 @@ export async function ensureGateway(
 export async function proxyHttp(
   sandbox: Sandbox,
   request: Request,
+  basePath?: string,
 ): Promise<Response> {
   const url = new URL(request.url);
   console.log("[proxy] HTTP:", url.pathname + url.search);
@@ -312,6 +313,20 @@ export async function proxyHttp(
 
   const headers = new Headers(response.headers);
   headers.set("X-Claw-Worker", "dispatch");
+
+  // Inject base path into OpenClaw Control UI HTML
+  if (basePath && response.headers.get("content-type")?.includes("text/html")) {
+    const html = await response.text();
+    const rewritten = html.replace(
+      'window.__OPENCLAW_CONTROL_UI_BASE_PATH__=""',
+      `window.__OPENCLAW_CONTROL_UI_BASE_PATH__="${basePath}"`,
+    );
+    return new Response(rewritten, {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    });
+  }
 
   return new Response(response.body, {
     status: response.status,

@@ -277,7 +277,8 @@ app.all("*", async (c) => {
   if (isWebSocket) {
     return proxyWebSocket(sandbox, rewrittenRequest);
   }
-  return proxyHttp(sandbox, rewrittenRequest);
+  const basePath = `/${parsed.orgSlug}/${parsed.clawSlug}`;
+  return proxyHttp(sandbox, rewrittenRequest, basePath);
 });
 
 /**
