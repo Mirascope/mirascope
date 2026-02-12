@@ -5,7 +5,7 @@ import type { PublicClaw } from "@/db/schema";
 
 import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
-import { claws, users } from "@/db/schema";
+import { claws, projects, users } from "@/db/schema";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -486,6 +486,28 @@ describe("Claws", () => {
               .build(),
           ),
         ),
+    );
+
+    it.effect("auto-created home project has type claw_home", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+        const client = yield* DrizzleORM;
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "test-claw-type", displayName: "Test Claw Type" },
+        });
+
+        // Verify the home project was created with type "claw_home"
+        expect(claw.homeProjectId).toBeDefined();
+        const [project] = yield* client
+          .select()
+          .from(projects)
+          .where(eq(projects.id, claw.homeProjectId!));
+        expect(project.type).toBe("claw_home");
+      }),
     );
   });
 
@@ -1264,6 +1286,43 @@ describe("Claws", () => {
             .build(),
         ),
       ),
+    );
+
+    it.effect("deletes claw_home project when claw is deleted", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+        const client = yield* DrizzleORM;
+
+        const claw = yield* db.organizations.claws.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: "test-delete-project", displayName: "Test Delete" },
+        });
+
+        expect(claw.homeProjectId).toBeDefined();
+
+        // Verify project exists before delete
+        const [projectBefore] = yield* client
+          .select()
+          .from(projects)
+          .where(eq(projects.id, claw.homeProjectId!));
+        expect(projectBefore).toBeDefined();
+
+        // Delete the claw
+        yield* db.organizations.claws.delete({
+          userId: owner.id,
+          organizationId: org.id,
+          clawId: claw.id,
+        });
+
+        // Verify the claw_home project was also deleted
+        const projectsAfter = yield* client
+          .select()
+          .from(projects)
+          .where(eq(projects.id, claw.homeProjectId!));
+        expect(projectsAfter).toHaveLength(0);
+      }),
     );
   });
 
