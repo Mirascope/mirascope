@@ -16,7 +16,7 @@ import { Hono } from "hono";
 
 import type { AppEnv, ContainerState, SandboxProcessStatus } from "./types";
 
-import { fetchBootstrapConfig } from "./bootstrap";
+import { fetchBootstrapConfig, reportClawStatus } from "./bootstrap";
 import { getCachedConfig, setCachedConfig } from "./cache";
 import { ensureGateway, findGatewayProcess } from "./proxy";
 import { PROCESS_TO_CONTAINER_STATUS } from "./types";
@@ -165,10 +165,34 @@ internal.post("/warm-up", async (c) => {
   try {
     await ensureGateway(sandbox, config, c.env);
     console.log("[internal] Warm-up complete for claw:", clawId);
+
+    // Report active status to cloud backend
+    try {
+      await Effect.runPromise(
+        reportClawStatus(
+          clawId,
+          { status: "active", startedAt: new Date().toISOString() },
+          c.env,
+        ),
+      );
+    } catch (statusErr) {
+      console.error("[internal] Failed to report active status:", statusErr);
+    }
+
     return c.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[internal] Warm-up failed:", message);
+
+    // Report error status
+    await Effect.runPromise(
+      reportClawStatus(
+        clawId,
+        { status: "error", errorMessage: message },
+        c.env,
+      ),
+    );
+
     return c.json({ ok: false, error: message }, 500);
   }
 });

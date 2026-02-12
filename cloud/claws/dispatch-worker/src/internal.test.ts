@@ -26,6 +26,7 @@ vi.mock("./proxy", () => ({
 
 vi.mock("./bootstrap", () => ({
   fetchBootstrapConfig: vi.fn(),
+  reportClawStatus: vi.fn(),
 }));
 
 vi.mock("./cache", () => ({
@@ -33,7 +34,7 @@ vi.mock("./cache", () => ({
   setCachedConfig: vi.fn(),
 }));
 
-import { fetchBootstrapConfig } from "./bootstrap";
+import { fetchBootstrapConfig, reportClawStatus } from "./bootstrap";
 import { getCachedConfig, setCachedConfig } from "./cache";
 import { internal } from "./internal";
 import { ensureGateway, findGatewayProcess } from "./proxy";
@@ -41,6 +42,7 @@ import { ensureGateway, findGatewayProcess } from "./proxy";
 const mockFindGateway = vi.mocked(findGatewayProcess);
 const mockEnsureGateway = vi.mocked(ensureGateway);
 const mockFetchBootstrapConfig = vi.mocked(fetchBootstrapConfig);
+const mockReportClawStatus = vi.mocked(reportClawStatus);
 const mockGetCachedConfig = vi.mocked(getCachedConfig);
 const mockSetCachedConfig = vi.mocked(setCachedConfig);
 
@@ -61,6 +63,10 @@ beforeEach(() => {
   mockFindGateway.mockReset();
   mockEnsureGateway.mockReset();
   mockFetchBootstrapConfig.mockReset();
+  mockReportClawStatus.mockReset();
+  mockReportClawStatus.mockReturnValue(
+    Effect.void as unknown as ReturnType<typeof reportClawStatus>,
+  );
   mockGetCachedConfig.mockReset();
   mockSetCachedConfig.mockReset();
 });
@@ -287,5 +293,41 @@ describe("POST /_internal/warm-up", () => {
     expect(res.status).toBe(500);
     expect(body.ok).toBe(false);
     expect(body.error).toBe("gateway start failed");
+  });
+
+  it("reports active status after successful warm-up", async () => {
+    const config = createMockConfig();
+    mockGetCachedConfig.mockReturnValue(config);
+    mockEnsureGateway.mockResolvedValue(undefined);
+
+    const app = createTestApp();
+    await app.request("/_internal/warm-up", { method: "POST" });
+
+    expect(mockReportClawStatus).toHaveBeenCalledWith(
+      "test-claw-id",
+      expect.objectContaining({
+        status: "active",
+        startedAt: expect.any(String),
+      }),
+      undefined,
+    );
+  });
+
+  it("reports error status when warm-up fails", async () => {
+    const config = createMockConfig();
+    mockGetCachedConfig.mockReturnValue(config);
+    mockEnsureGateway.mockRejectedValue(new Error("gateway start failed"));
+
+    const app = createTestApp();
+    await app.request("/_internal/warm-up", { method: "POST" });
+
+    expect(mockReportClawStatus).toHaveBeenCalledWith(
+      "test-claw-id",
+      expect.objectContaining({
+        status: "error",
+        errorMessage: "gateway start failed",
+      }),
+      undefined,
+    );
   });
 });
