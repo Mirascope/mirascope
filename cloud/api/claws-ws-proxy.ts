@@ -170,6 +170,7 @@ export async function handleClawsWebSocket(
     });
   }).pipe(
     Effect.catchAll((error) => {
+      console.error("[ws-proxy] Error:", error);
       const status =
         typeof error === "object" &&
         error !== null &&
