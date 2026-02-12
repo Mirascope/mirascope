@@ -167,8 +167,13 @@ function CloudIndexPage() {
                           {project.name}
                         </CardTitle>
                         {project.type === "claw_home" && (
-                          <Badge variant="secondary" size="sm" pill>
-                            claw-home
+                          <Badge
+                            variant="outline"
+                            size="sm"
+                            pill
+                            className="border-primary/40 text-primary"
+                          >
+                            <ClawIcon className="size-3.5" />
                           </Badge>
                         )}
                       </div>

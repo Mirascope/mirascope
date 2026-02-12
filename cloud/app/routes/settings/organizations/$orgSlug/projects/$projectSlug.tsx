@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { CreateProjectModal } from "@/app/components/create-project-modal";
 import { DeleteProjectModal } from "@/app/components/delete-project-modal";
 import { EnvironmentsSection } from "@/app/components/environments-section";
+import { ClawIcon } from "@/app/components/icons/claw-icon";
 import { ProjectMembersSection } from "@/app/components/project-members-section";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
@@ -171,8 +172,13 @@ function ProjectSettingsPage() {
           <div className="flex items-center gap-2">
             <CardTitle>Project Details</CardTitle>
             {project.type === "claw_home" && (
-              <Badge variant="secondary" size="sm" pill>
-                claw-home
+              <Badge
+                variant="outline"
+                size="sm"
+                pill
+                className="border-primary/40 text-primary"
+              >
+                <ClawIcon className="size-3.5" />
               </Badge>
             )}
           </div>
