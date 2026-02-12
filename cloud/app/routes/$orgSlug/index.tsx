@@ -14,6 +14,7 @@ import {
 import { CreateClawModal } from "@/app/components/create-claw-modal";
 import { CreateProjectModal } from "@/app/components/create-project-modal";
 import { ClawIcon } from "@/app/components/icons/claw-icon";
+import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -161,9 +162,16 @@ function CloudIndexPage() {
                     onClick={() => handleProjectClick(project)}
                   >
                     <CardHeader className="p-4">
-                      <CardTitle className="text-base">
-                        {project.name}
-                      </CardTitle>
+                      <div className="flex items-center gap-2">
+                        <CardTitle className="text-base">
+                          {project.name}
+                        </CardTitle>
+                        {project.type === "claw_home" && (
+                          <Badge variant="secondary" size="sm" pill>
+                            Claw
+                          </Badge>
+                        )}
+                      </div>
                       <CardDescription className="text-sm">
                         {project.slug}
                       </CardDescription>

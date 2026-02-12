@@ -6,6 +6,7 @@ import { CreateProjectModal } from "@/app/components/create-project-modal";
 import { DeleteProjectModal } from "@/app/components/delete-project-modal";
 import { EnvironmentsSection } from "@/app/components/environments-section";
 import { ProjectMembersSection } from "@/app/components/project-members-section";
+import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -167,7 +168,14 @@ function ProjectSettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Project Details</CardTitle>
+          <div className="flex items-center gap-2">
+            <CardTitle>Project Details</CardTitle>
+            {project.type === "claw_home" && (
+              <Badge variant="secondary" size="sm" pill>
+                Claw
+              </Badge>
+            )}
+          </div>
           <CardDescription>
             Basic information about your project
           </CardDescription>
