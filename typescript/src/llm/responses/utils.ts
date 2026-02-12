@@ -14,11 +14,11 @@ import type { ZodLike } from "@/llm/tools";
  *
  * Handles common patterns like:
  * - "Sure thing! Here's the JSON:\n{..."
- * - "```json\n{..."
+ * - "```json\n[..."
  * - Plain text followed by JSON
  *
  * @param text - The text that may contain a JSON preamble.
- * @returns The text starting from the first '{', or null if no '{' found.
+ * @returns The text starting from the first '{' or '[', or null if neither found.
  */
 function stripJsonPreamble(text: string): string | null {
   // Handle markdown code blocks
@@ -33,10 +33,19 @@ function stripJsonPreamble(text: string): string | null {
     }
   }
 
-  // Find the start of the JSON object
-  const jsonStart = text.indexOf("{");
-  if (jsonStart === -1) {
+  // Find the start of the JSON object or array
+  const objectStart = text.indexOf("{");
+  const arrayStart = text.indexOf("[");
+
+  let jsonStart: number;
+  if (objectStart === -1 && arrayStart === -1) {
     return null;
+  } else if (objectStart === -1) {
+    jsonStart = arrayStart;
+  } else if (arrayStart === -1) {
+    jsonStart = objectStart;
+  } else {
+    jsonStart = Math.min(objectStart, arrayStart);
   }
 
   return text.slice(jsonStart);
@@ -63,11 +72,16 @@ function stripJsonPreamble(text: string): string | null {
 export function extractSerializedJson(text: string): string {
   const stripped = stripJsonPreamble(text);
   if (!stripped) {
-    throw new SyntaxError("No JSON object found in response: missing '{'");
+    throw new SyntaxError("No JSON found in response: missing '{' or '['");
   }
 
-  // Find matching closing brace
-  let braceCount = 0;
+  // Determine if we're parsing an object or array
+  const isArray = stripped[0] === "[";
+  const openChar = isArray ? "[" : "{";
+  const closeChar = isArray ? "]" : "}";
+
+  // Find matching closing delimiter
+  let depth = 0;
   let inString = false;
   let escaped = false;
 
@@ -90,18 +104,18 @@ export function extractSerializedJson(text: string): string {
     }
 
     if (!inString) {
-      if (char === "{") {
-        braceCount++;
-      } else if (char === "}") {
-        braceCount--;
-        if (braceCount === 0) {
+      if (char === openChar) {
+        depth++;
+      } else if (char === closeChar) {
+        depth--;
+        if (depth === 0) {
           return stripped.slice(0, i + 1);
         }
       }
     }
   }
 
-  throw new SyntaxError("No JSON object found in response: missing '}'");
+  throw new SyntaxError(`No JSON found in response: missing '${closeChar}'`);
 }
 
 /**
@@ -129,6 +143,7 @@ export function extractSerializedJson(text: string): string {
 export function parsePartial<T>(
   jsonText: string,
   validator?: ZodLike,
+  unwrapKey?: string,
 ): T | null {
   const stripped = stripJsonPreamble(jsonText);
   if (!stripped) {
@@ -138,7 +153,15 @@ export function parsePartial<T>(
   try {
     // Use partial-json library for robust partial parsing
     // The library returns `any`, so we cast to `unknown` for type safety
-    const parsed: unknown = parsePartialJson(stripped);
+    let parsed: unknown = parsePartialJson(stripped);
+
+    // Unwrap if schema was wrapped (non-object types like arrays)
+    if (unwrapKey && typeof parsed === "object" && parsed !== null) {
+      parsed = (parsed as Record<string, unknown>)[unwrapKey];
+      if (parsed === undefined) {
+        return null;
+      }
+    }
 
     // If no validator, return parsed directly
     if (!validator) {

@@ -15,6 +15,7 @@ import {
   defineFormat,
   resolveFormat,
   isFormat,
+  extractSchemaFromZod,
 } from "./format";
 import { defineOutputParser } from "./output-parser";
 
@@ -395,6 +396,74 @@ describe("Zod schema with descriptions", () => {
     expect(props.numbers?.type).toBe("array");
     expect(props.numbers?.items).toBeDefined();
     expect(props.numbers?.items?.type).toBe("number");
+  });
+});
+
+describe("non-object schema wrapping", () => {
+  it("wraps z.array() in object with output key", () => {
+    const ArraySchema = z.array(z.string());
+    const { schema, unwrapKey } = extractSchemaFromZod(ArraySchema);
+
+    expect(unwrapKey).toBe("output");
+    expect(schema.type).toBe("object");
+    expect(schema.properties).toHaveProperty("output");
+    expect(schema.required).toEqual(["output"]);
+
+    const outputProp = (schema.properties as Record<string, { type?: string }>)
+      .output;
+    expect(outputProp?.type).toBe("array");
+  });
+
+  it("does NOT wrap z.object() — unwrapKey is null", () => {
+    const { schema, unwrapKey } = extractSchemaFromZod(BookSchema);
+
+    expect(unwrapKey).toBeNull();
+    expect(schema.type).toBe("object");
+    expect(schema.properties).toHaveProperty("title");
+    expect(schema.properties).toHaveProperty("author");
+  });
+
+  it("resolveFormat sets toolSchemaUnwrapKey for array schemas", () => {
+    const ArraySchema = z.array(z.string());
+    const format = resolveFormat(ArraySchema, "tool");
+
+    expect(format).not.toBeNull();
+    expect(format!.toolSchemaUnwrapKey).toBe("output");
+  });
+
+  it("resolveFormat sets toolSchemaUnwrapKey to null for object schemas", () => {
+    const format = resolveFormat(BookSchema, "tool");
+
+    expect(format).not.toBeNull();
+    expect(format!.toolSchemaUnwrapKey).toBeNull();
+  });
+
+  it("createToolSchema wraps non-object schema in tool parameters", () => {
+    const ArraySchema = z.array(z.string());
+    const format = resolveFormat(ArraySchema, "tool");
+
+    const toolSchema = format!.createToolSchema();
+    expect(toolSchema.parameters.properties).toHaveProperty("output");
+    expect(toolSchema.parameters.required).toEqual(["output"]);
+  });
+
+  it("wraps Zod 3 mock non-object schema", () => {
+    // Mock a Zod 3-style array schema (no toJSONSchema)
+    const mockArraySchema = {
+      _def: {
+        typeName: "ZodArray",
+        type: {
+          _def: { typeName: "ZodString" },
+        },
+      },
+      safeParse: () => ({ success: true, data: [] }),
+    };
+
+    const { schema, unwrapKey } = extractSchemaFromZod(mockArraySchema);
+
+    expect(unwrapKey).toBe("output");
+    expect(schema.type).toBe("object");
+    expect(schema.properties).toHaveProperty("output");
   });
 });
 
