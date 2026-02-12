@@ -1190,26 +1190,13 @@ describe("Projects", () => {
 
     it.effect("blocks deletion of claw_home project with active claw", () =>
       Effect.gen(function* () {
-        const { org, owner } = yield* TestOrganizationFixture;
         const db = yield* Database;
 
-        // Create a claw first (which auto-creates a claw_home project)
-        const claw = yield* db.organizations.claws.create({
-          userId: owner.id,
-          organizationId: org.id,
-          data: {
-            name: "Test Claw",
-            slug: "test-claw",
-            model: "anthropic/claude-sonnet-4-20250514",
-          },
-        });
-
-        // Try to delete the claw_home project directly
         const result = yield* db.organizations.projects
           .delete({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: claw.homeProjectId!,
+            userId: "owner-id",
+            organizationId: "org-id",
+            projectId: "home-project-id",
           })
           .pipe(Effect.flip);
 
@@ -1217,49 +1204,98 @@ describe("Projects", () => {
         expect(result.message).toBe(
           "Cannot delete a claw home project directly. Delete the claw instead.",
         );
-      }),
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // projects.getRole -> org membership check
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "owner-id",
+                createdAt: new Date(),
+              },
+            ])
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "owner-id",
+                createdAt: new Date(),
+              },
+            ])
+            // verifyProjectExists
+            .select([{ id: "home-project-id" }])
+            // projectMemberships.findById
+            .select([
+              {
+                role: "ADMIN",
+                projectId: "home-project-id",
+                memberId: "owner-id",
+                createdAt: new Date(),
+              },
+            ])
+            // fetch project type - claw_home
+            .select([{ id: "home-project-id", type: "claw_home" }])
+            // check if claw still references this project - found one
+            .select([{ id: "claw-id" }])
+            .build(),
+        ),
+      ),
     );
 
     it.effect(
-      "allows deletion of orphaned claw_home project after claw deleted",
+      "allows deletion of orphaned claw_home project (no active claw)",
       () =>
         Effect.gen(function* () {
-          const { org, owner } = yield* TestOrganizationFixture;
           const db = yield* Database;
 
-          // Create a claw (auto-creates claw_home project)
-          const claw = yield* db.organizations.claws.create({
-            userId: owner.id,
-            organizationId: org.id,
-            data: {
-              name: "Test Claw",
-              slug: "test-claw",
-              model: "anthropic/claude-sonnet-4-20250514",
-            },
+          // Should succeed (no error thrown)
+          yield* db.organizations.projects.delete({
+            userId: "owner-id",
+            organizationId: "org-id",
+            projectId: "orphan-project-id",
           });
-
-          const homeProjectId = claw.homeProjectId!;
-
-          // Delete the claw (should cascade-delete home project, but
-          // let's simulate an orphan by re-creating the project type)
-          yield* db.organizations.claws.delete({
-            userId: owner.id,
-            organizationId: org.id,
-            clawId: claw.id,
-          });
-
-          // The cascade should have already deleted the project,
-          // so verify it's gone
-          const result = yield* db.organizations.projects
-            .delete({
-              userId: owner.id,
-              organizationId: org.id,
-              projectId: homeProjectId,
-            })
-            .pipe(Effect.flip);
-
-          expect(result).toBeInstanceOf(NotFoundError);
-        }),
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              // projects.getRole -> org membership check
+              .select([
+                {
+                  role: "OWNER",
+                  organizationId: "org-id",
+                  memberId: "owner-id",
+                  createdAt: new Date(),
+                },
+              ])
+              .select([
+                {
+                  role: "OWNER",
+                  organizationId: "org-id",
+                  memberId: "owner-id",
+                  createdAt: new Date(),
+                },
+              ])
+              // verifyProjectExists
+              .select([{ id: "orphan-project-id" }])
+              // projectMemberships.findById
+              .select([
+                {
+                  role: "ADMIN",
+                  projectId: "orphan-project-id",
+                  memberId: "owner-id",
+                  createdAt: new Date(),
+                },
+              ])
+              // fetch project type - claw_home
+              .select([{ id: "orphan-project-id", type: "claw_home" }])
+              // check if claw references this project - none found
+              .select([])
+              // actual delete
+              .delete([{ id: "orphan-project-id" }])
+              .build(),
+          ),
+        ),
     );
   });
 
