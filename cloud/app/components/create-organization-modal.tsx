@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from "react";
 
+import type { Organization } from "@/api/organizations.schemas";
+
 import { useCreateOrganization } from "@/app/api/organizations";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -20,9 +22,11 @@ import { generateSlug } from "@/db/slug";
 export function CreateOrganizationModal({
   open,
   onOpenChange,
+  onCreated,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onCreated?: (org: Organization) => void;
 }) {
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +52,7 @@ export function CreateOrganizationModal({
         organization_id: newOrg.id,
       });
       setSelectedOrganization(newOrg);
+      onCreated?.(newOrg);
       setName("");
       onOpenChange(false);
     } catch (err: unknown) {

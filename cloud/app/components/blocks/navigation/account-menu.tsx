@@ -156,6 +156,12 @@ export function AccountMenu({ className }: AccountMenuProps) {
       <CreateOrganizationModal
         open={showCreateOrg}
         onOpenChange={setShowCreateOrg}
+        onCreated={(org) => {
+          void navigate({
+            to: "/settings/organizations/$orgSlug",
+            params: { orgSlug: org.slug },
+          });
+        }}
       />
     </>
   );
