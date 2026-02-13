@@ -296,7 +296,7 @@ async function startGatewayOrError(
     return null;
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
-    log.error("gateway", "failed to start:", error);
+    log.error("gateway", "failed to start:", message);
     const hint = startupErrorHint(message);
     const errorMessage = hint ? `${message} — ${hint}` : message;
     await Effect.runPromise(
