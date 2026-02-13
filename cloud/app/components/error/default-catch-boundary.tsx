@@ -8,12 +8,27 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 
+import { useOrganization } from "@/app/contexts/organization";
+
+function useHomeLink(): string {
+  try {
+    const { selectedOrganization } = useOrganization();
+    if (selectedOrganization) {
+      return `/${selectedOrganization.slug}`;
+    }
+  } catch {
+    // Outside OrganizationProvider or context unavailable
+  }
+  return "/";
+}
+
 export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
   const router = useRouter();
   const isRoot = useMatch({
     strict: false,
     select: (state) => state.id === rootRouteId,
   });
+  const homeLink = useHomeLink();
 
   console.error("DefaultCatchBoundary Error:", error);
 
@@ -31,14 +46,14 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
         </button>
         {isRoot ? (
           <Link
-            to="/"
+            to={homeLink}
             className={`px-2 py-1 bg-gray-600 dark:bg-gray-700 rounded-sm text-white uppercase font-extrabold`}
           >
             Home
           </Link>
         ) : (
           <Link
-            to="/"
+            to={homeLink}
             className={`px-2 py-1 bg-gray-600 dark:bg-gray-700 rounded-sm text-white uppercase font-extrabold`}
             onClick={(e) => {
               e.preventDefault();

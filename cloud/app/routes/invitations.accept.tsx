@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/app/components/ui/card";
 import { useAuth } from "@/app/contexts/auth";
+import { useOrganization } from "@/app/contexts/organization";
 
 export const Route = createFileRoute("/invitations/accept")({
   component: AcceptInvitationPage,
@@ -27,6 +28,7 @@ function AcceptInvitationPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const acceptInvitation = useAcceptInvitation();
+  const { organizations } = useOrganization();
   const [state, setState] = useState<AcceptState>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -41,13 +43,22 @@ function AcceptInvitationPage() {
     setErrorMessage(null);
 
     try {
-      await acceptInvitation.mutateAsync(token);
+      const membership = await acceptInvitation.mutateAsync(token);
       setState("success");
 
       // Organizations cache is already fresh (useAcceptInvitation awaits invalidation)
+      // Find the joined org's slug for a direct redirect
+      const joinedOrg = organizations.find(
+        (org) => org.id === membership.organizationId,
+      );
+
       // Brief delay for user to see success message before redirect
       setTimeout(() => {
-        void navigate({ to: "/cloud" });
+        if (joinedOrg) {
+          void navigate({ to: "/$orgSlug", params: { orgSlug: joinedOrg.slug } });
+        } else {
+          void navigate({ to: "/cloud" });
+        }
       }, 1000);
     } catch (error) {
       setState("error");
@@ -71,7 +82,7 @@ function AcceptInvitationPage() {
         setErrorMessage("Failed to accept invitation");
       }
     }
-  }, [token, acceptInvitation, navigate]);
+  }, [token, acceptInvitation, navigate, organizations]);
 
   // Auto-accept if user is logged in
   useEffect(() => {
