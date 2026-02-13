@@ -14,6 +14,7 @@
  * - `DELETE  /accounts/{account_id}/tokens/{token_id}` — Delete API token
  */
 
+import crypto from "crypto";
 import { Effect, Layer } from "effect";
 
 import type { CloudflareHttpClient } from "@/cloudflare/client";
@@ -124,10 +125,18 @@ function makeR2Service(http: CloudflareHttpClient, config: CloudflareConfig) {
           },
         });
 
+        // Per Cloudflare R2 docs, the Secret Access Key must be the SHA-256
+        // hash of the token value, not the raw value itself.
+        // See: https://developers.cloudflare.com/r2/api/tokens/
+        const secretAccessKey = crypto
+          .createHash("sha256")
+          .update(raw.value)
+          .digest("hex");
+
         const credentials: R2ScopedCredentials = {
           tokenId: raw.id,
           accessKeyId: raw.id,
-          secretAccessKey: raw.value,
+          secretAccessKey,
         };
 
         return credentials;
