@@ -316,6 +316,11 @@ if (baseUrl) {
         contextWindow: 200000,
       },
       {
+        id: "claude-opus-4-5",
+        name: "Claude Opus 4.5",
+        contextWindow: 200000,
+      },
+      {
         id: "claude-sonnet-4-5",
         name: "Claude Sonnet 4.5",
         contextWindow: 200000,
@@ -340,6 +345,9 @@ if (baseUrl) {
   config.agents.defaults.models ??= {};
   config.agents.defaults.models["anthropic/claude-opus-4-6"] = {
     alias: "Opus 4.6",
+  };
+  config.agents.defaults.models["anthropic/claude-opus-4-5"] = {
+    alias: "Opus 4.5",
   };
   config.agents.defaults.models["anthropic/claude-sonnet-4-5"] = {
     alias: "Sonnet 4.5",
