@@ -1,0 +1,227 @@
+version: "1.0"
+skill_type: "invoice_generator"
+sample_id: "invoice-001-moderate-neutral"
+created_at: "2026-02-10T22:00:00Z"
+
+metadata:
+  description: "Invoice generator with moderate detail bootstrap and mixed query styles"
+  tags: ["financial", "document-generation", "pdf"]
+  difficulty: "medium"
+
+bootstrap:
+  prompt: |
+    Create an invoice generator for my freelance consulting business.
+    It should support line items with descriptions and hourly rates,
+    calculate subtotals and tax, and output a formatted invoice.
+  specificity: "moderate"
+  professionalism: "neutral"
+  expected_capabilities:
+    - "accept client name and contact info"
+    - "support multiple line items with description, rate, and hours"
+    - "calculate line item totals"
+    - "calculate subtotal"
+    - "apply tax rate"
+    - "calculate grand total"
+    - "output formatted invoice"
+
+queries:
+  # Q1: Detailed + Formal
+  - id: "q01"
+    text: |
+      Please generate an invoice for Acme Corporation, located at
+      123 Business Ave, Suite 400, New York, NY 10001.
+      The invoice should include the following services:
+      - Strategic consulting: 8 hours at $150/hour
+      - Technical review: 4 hours at $175/hour
+      Please apply a 8.875% sales tax rate.
+    specificity: "detailed"
+    professionalism: "formal"
+    expected:
+      invokes_skill: true
+      output_contains:
+        - "Acme Corporation"
+        - "Strategic consulting"
+        - "Technical review"
+        - "1200"      # 8 * 150
+        - "700"       # 4 * 175
+        - "1900"      # subtotal
+      output_excludes:
+        - "error"
+        - "I cannot"
+      semantic_requirements:
+        - "Invoice has a clear header with invoice number or date"
+        - "Client information is prominently displayed"
+        - "Line items are clearly organized in a table or list format"
+        - "Tax is calculated correctly and shown separately"
+        - "Grand total is clearly displayed"
+
+  # Q2: Moderate + Neutral
+  - id: "q02"
+    text: |
+      Invoice for client: Bob's Coffee Shop
+      - Menu redesign: 6 hours @ $125/hr
+      - Logo update: 3 hours @ $125/hr
+      Tax: 7%
+    specificity: "moderate"
+    professionalism: "neutral"
+    expected:
+      invokes_skill: true
+      output_contains:
+        - "Bob's Coffee Shop"
+        - "Menu redesign"
+        - "750"       # 6 * 125
+        - "375"       # 3 * 125
+        - "1125"      # subtotal
+      semantic_requirements:
+        - "Invoice clearly shows both line items"
+        - "Tax amount is calculated and displayed"
+        - "Total after tax is shown"
+
+  # Q3: Vague + Casual
+  - id: "q03"
+    text: "make an invoice for sarah, did 5 hrs of work at 100 bucks an hour"
+    specificity: "vague"
+    professionalism: "casual"
+    expected:
+      invokes_skill: true
+      output_contains:
+        - "500"       # 5 * 100
+      semantic_requirements:
+        - "Invoice is generated despite informal request"
+        - "Client name 'Sarah' appears somewhere"
+        - "Amount of $500 is shown"
+        - "Invoice is still professionally formatted despite casual input"
+
+  # Q4: Detailed + Casual
+  - id: "q04"
+    text: |
+      yo can u invoice widget inc at 456 tech park dr for:
+      - backend dev 20hrs @ $200/hr
+      - frontend fixes 8hrs @ $180/hr
+      - code review 4hrs @ $150/hr
+      no tax needed they're tax exempt
+    specificity: "detailed"
+    professionalism: "casual"
+    expected:
+      invokes_skill: true
+      output_contains:
+        - "Widget"
+        - "4000"      # 20 * 200
+        - "1440"      # 8 * 180
+        - "600"       # 4 * 150
+        - "6040"      # total
+      output_excludes:
+        - "tax"
+      semantic_requirements:
+        - "All three line items are included"
+        - "Address is included in client info"
+        - "No tax is applied"
+        - "Total is $6,040"
+
+  # Q5: Vague + Formal
+  - id: "q05"
+    text: "I require an invoice for my client regarding the consultation services rendered last week."
+    specificity: "vague"
+    professionalism: "formal"
+    expected:
+      invokes_skill: true
+      semantic_requirements:
+        - "Skill is invoked and attempts to generate invoice"
+        - "System asks for clarification on missing details (client name, hours, rate)"
+        - "Response maintains professional tone matching the query"
+
+  # Q6: Edge case - Multiple tax scenarios
+  - id: "q06"
+    text: |
+      Invoice for GlobalTech Ltd:
+      - Software license: flat fee $5000 (taxable)
+      - Support hours: 10 hrs @ $100/hr (non-taxable)
+      Tax rate: 10% on taxable items only
+    specificity: "detailed"
+    professionalism: "neutral"
+    expected:
+      invokes_skill: true
+      output_contains:
+        - "5000"
+        - "1000"      # 10 * 100
+        - "500"       # tax on 5000
+        - "6500"      # total
+      semantic_requirements:
+        - "Distinguishes between taxable and non-taxable items"
+        - "Tax is only applied to the software license"
+        - "Both items appear on the invoice"
+
+  # Q7: Minimal info - stress test
+  - id: "q07"
+    text: "invoice john 3hrs"
+    specificity: "vague"
+    professionalism: "casual"
+    expected:
+      invokes_skill: true
+      semantic_requirements:
+        - "Skill is invoked"
+        - "System either asks for hourly rate or uses a default"
+        - "Client name 'John' is captured"
+        - "3 hours is captured"
+
+  # Q8: Non-triggering query (negative test)
+  - id: "q08"
+    text: "What's the weather like today?"
+    specificity: "moderate"
+    professionalism: "neutral"
+    expected:
+      invokes_skill: false
+      semantic_requirements:
+        - "Invoice skill is NOT invoked"
+        - "System handles the weather query appropriately"
+
+  # Q9: Ambiguous - could be invoice related
+  - id: "q09"
+    text: "I need to send something to my client about the project we finished"
+    specificity: "vague"
+    professionalism: "neutral"
+    expected:
+      invokes_skill: false  # too ambiguous, could be email, report, etc.
+      semantic_requirements:
+        - "System asks clarifying questions rather than assuming invoice"
+        - "Does not generate an invoice without confirmation"
+
+  # Q10: Detailed with special formatting request
+  - id: "q10"
+    text: |
+      Generate invoice #2024-0042 for:
+      Client: Stellar Dynamics Inc.
+      Address: 789 Innovation Blvd, Austin, TX 78701
+
+      Services:
+      1. Initial consultation (2 hrs @ $200/hr)
+      2. System architecture design (12 hrs @ $250/hr)
+      3. Documentation (4 hrs @ $150/hr)
+
+      Apply 8.25% Texas sales tax.
+      Payment terms: Net 30
+
+      Please include our company info:
+      TechConsult LLC
+      456 Expert Lane
+      Austin, TX 78702
+    specificity: "detailed"
+    professionalism: "formal"
+    expected:
+      invokes_skill: true
+      output_contains:
+        - "2024-0042"
+        - "Stellar Dynamics"
+        - "400"       # 2 * 200
+        - "3000"      # 12 * 250
+        - "600"       # 4 * 150
+        - "4000"      # subtotal
+        - "Net 30"
+        - "TechConsult LLC"
+      semantic_requirements:
+        - "Custom invoice number is used"
+        - "Both client and company addresses are included"
+        - "Payment terms are displayed"
+        - "All line items are numbered or clearly listed"
+        - "Tax is calculated correctly (4000 * 0.0825 = 330)"
+        - "Grand total is $4,330"
