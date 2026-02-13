@@ -210,7 +210,17 @@ function ClawSettingsPage() {
         </p>
         <Button asChild variant="outline" size="sm">
           <a
-            href={`https://openclaw.${typeof window !== "undefined" && window.location.hostname.startsWith("staging.") ? "staging.mirascope.com" : "mirascope.com"}/${orgSlug}/${clawSlug}/overview`}
+            href={(() => {
+              if (typeof window === "undefined")
+                return `https://openclaw.mirascope.com/${orgSlug}/${clawSlug}/overview`;
+              const hostname = window.location.hostname;
+              const match = hostname.match(/^([\w-]+)\.(mirascope\.com)$/);
+              const base =
+                match && match[1] !== "www"
+                  ? `openclaw.${match[1]}.${match[2]}`
+                  : "openclaw.mirascope.com";
+              return `https://${base}/${orgSlug}/${clawSlug}/overview`;
+            })()}
             target="_blank"
             rel="noopener noreferrer"
           >
