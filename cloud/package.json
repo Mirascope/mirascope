@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "CLOUDFLARE_ENV=local vite dev",
+    "dev": "bun run scripts/dev/setup.ts && CLOUDFLARE_ENV=local vite dev",
+    "dev:fast": "CLOUDFLARE_ENV=local vite dev",
+    "dev:setup": "bun run scripts/dev/setup.ts",
     "build": "NODE_OPTIONS='--max-old-space-size=8192' vite build",
     "build:staging": "CLOUDFLARE_ENV=staging bun run build",
     "build:production": "CLOUDFLARE_ENV=production bun run build",
