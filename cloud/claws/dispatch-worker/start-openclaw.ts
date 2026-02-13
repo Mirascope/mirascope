@@ -363,48 +363,43 @@ log("=== OpenClaw startup script begin ===");
 // 0. Configure rclone for R2 (if credentials available)
 // ============================================================
 
-// Helper to get required env var or throw
-function requireEnv(key: string): string {
+// Helper to validate required environment variables
+// Returns the value if present, or adds the key to the missing array
+function requireEnv(key: string, missing: string[]): string {
   const value = process.env[key];
   if (!value) {
-    throw new Error(`Required environment variable ${key} is not set`);
+    missing.push(key);
+    return ""; // Return empty string as placeholder
   }
   return value;
 }
 
 // ============================================================
-// 0. Configure rclone for R2 (if credentials available)
+// 0. Validate all required environment variables
 // ============================================================
 
-log("Step 0: Configuring rclone for R2");
+log("Step 0: Validating environment variables");
 
-// R2 credentials are required environment variables passed by the dispatch worker
-const r2AccessKeyId = requireEnv("R2_ACCESS_KEY_ID");
-const r2SecretAccessKey = requireEnv("R2_SECRET_ACCESS_KEY");
-const cfAccountId = requireEnv("CLOUDFLARE_ACCOUNT_ID");
+// Collect all missing required environment variables
+const missingVars: string[] = [];
 
-ensureRcloneConfig(r2AccessKeyId, r2SecretAccessKey, cfAccountId);
-
-log("Step 0 complete: rclone configured");
-
-// ============================================================
-// 1. Construct and validate environment variables
-// ============================================================
-
-log("Step 1: Validating environment variables");
+// R2 credentials (needed for rclone config)
+const r2AccessKeyId = requireEnv("R2_ACCESS_KEY_ID", missingVars);
+const r2SecretAccessKey = requireEnv("R2_SECRET_ACCESS_KEY", missingVars);
+const cfAccountId = requireEnv("CLOUDFLARE_ACCOUNT_ID", missingVars);
 
 // Extract and validate required environment variables
 const env: OpenClawEnv = {
   // Claw-specific configuration (required)
-  R2_BUCKET_NAME: requireEnv("R2_BUCKET_NAME"),
-  OPENCLAW_GATEWAY_TOKEN: requireEnv("OPENCLAW_GATEWAY_TOKEN"),
-  OPENCLAW_SITE_URL: requireEnv("OPENCLAW_SITE_URL"),
-  OPENCLAW_ALLOWED_ORIGINS: requireEnv("OPENCLAW_ALLOWED_ORIGINS"),
-  CLOUDFLARE_ACCOUNT_ID: requireEnv("CLOUDFLARE_ACCOUNT_ID"),
+  R2_BUCKET_NAME: requireEnv("R2_BUCKET_NAME", missingVars),
+  OPENCLAW_GATEWAY_TOKEN: requireEnv("OPENCLAW_GATEWAY_TOKEN", missingVars),
+  OPENCLAW_SITE_URL: requireEnv("OPENCLAW_SITE_URL", missingVars),
+  OPENCLAW_ALLOWED_ORIGINS: requireEnv("OPENCLAW_ALLOWED_ORIGINS", missingVars),
+  CLOUDFLARE_ACCOUNT_ID: cfAccountId, // Already validated above
   // Anthropic configuration (required)
-  ANTHROPIC_BASE_URL: requireEnv("ANTHROPIC_BASE_URL"),
-  ANTHROPIC_API_KEY: requireEnv("ANTHROPIC_API_KEY"),
-  PRIMARY_MODEL_ID: requireEnv("PRIMARY_MODEL_ID"),
+  ANTHROPIC_BASE_URL: requireEnv("ANTHROPIC_BASE_URL", missingVars),
+  ANTHROPIC_API_KEY: requireEnv("ANTHROPIC_API_KEY", missingVars),
+  PRIMARY_MODEL_ID: requireEnv("PRIMARY_MODEL_ID", missingVars),
   // Channel tokens (optional)
   DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN,
   TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
@@ -412,8 +407,31 @@ const env: OpenClawEnv = {
   SLACK_APP_TOKEN: process.env.SLACK_APP_TOKEN,
 };
 
-// Log environment (claw-specific values in full, secrets redacted)
-log("Environment validated:", {
+// If any required variables are missing, throw a single error with all of them
+if (missingVars.length > 0) {
+  const errorMessage = [
+    `Missing ${missingVars.length} required environment variable${missingVars.length > 1 ? "s" : ""}:`,
+    ...missingVars.map((v) => `  - ${v}`),
+    "",
+    "These variables must be set by the dispatch worker before starting the gateway.",
+  ].join("\n");
+  throw new Error(errorMessage);
+}
+
+log("Step 0 complete: All required environment variables validated");
+
+// ============================================================
+// 1. Configure rclone for R2
+// ============================================================
+
+log("Step 1: Configuring rclone for R2");
+
+ensureRcloneConfig(r2AccessKeyId, r2SecretAccessKey, cfAccountId);
+
+log("Step 1 complete: rclone configured");
+
+// Log validated environment (claw-specific values in full, secrets redacted)
+log("Environment configuration:", {
   // Claw-specific — safe to log in full
   R2_BUCKET_NAME: env.R2_BUCKET_NAME,
   OPENCLAW_GATEWAY_TOKEN: env.OPENCLAW_GATEWAY_TOKEN,
@@ -426,8 +444,6 @@ log("Environment validated:", {
   NODE_VERSION: process.version ?? "(unknown)",
   BUN_VERSION: process.versions?.bun ?? "(unknown)",
 });
-
-log("Step 1 complete: environment validated");
 
 const bucket = env.R2_BUCKET_NAME;
 
