@@ -1,10 +1,9 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
 import type { Claw } from "@/api/claws.schemas";
 
-import { useDeleteClaw } from "@/app/api/claws";
+import { useClaws, useDeleteClaw } from "@/app/api/claws";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -34,10 +33,9 @@ export function DeleteClawModal({
 }) {
   const [confirmName, setConfirmName] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const queryClient = useQueryClient();
   const deleteClaw = useDeleteClaw();
   const { selectedOrganization } = useOrganization();
-  const { setSelectedClaw } = useClaw();
+  const { claws, setSelectedClaw } = useClaw();
   const analytics = useAnalytics();
 
   const clawDisplayName = claw.displayName || claw.slug;
@@ -66,17 +64,11 @@ export function DeleteClawModal({
         organization_id: selectedOrganization.id,
       });
 
-      await queryClient.invalidateQueries({
-        queryKey: ["claws", selectedOrganization.id],
-      });
-      const freshClaws =
-        queryClient.getQueryData<readonly Claw[]>([
-          "claws",
-          selectedOrganization.id,
-        ]) ?? [];
-
-      if (freshClaws.length > 0) {
-        setSelectedClaw(freshClaws[0]);
+      // Cache is already optimistically updated by useDeleteClaw hook.
+      // Select the next available claw or clear selection.
+      const remainingClaws = claws.filter((c) => c.id !== claw.id);
+      if (remainingClaws.length > 0) {
+        setSelectedClaw(remainingClaws[0]);
       } else {
         setSelectedClaw(null);
       }

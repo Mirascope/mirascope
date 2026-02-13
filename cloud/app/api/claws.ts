@@ -86,6 +86,7 @@ export const useCreateClaw = () => {
 
 export const useUpdateClaw = () => {
   const queryClient = useQueryClient();
+  type Claw = import("@/api/claws.schemas").Claw;
 
   return useMutation({
     ...eq.mutationOptions({
@@ -106,9 +107,39 @@ export const useUpdateClaw = () => {
           });
         }),
     }),
-    onSuccess: (claw) => {
+    // Optimistic update: apply changes to cache immediately
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({
+        queryKey: ["claws", variables.organizationId],
+      });
+
+      const previousClaws = queryClient.getQueryData<readonly Claw[]>([
+        "claws",
+        variables.organizationId,
+      ]);
+
+      // Optimistically merge updates into the cached claw
+      queryClient.setQueryData<readonly Claw[]>(
+        ["claws", variables.organizationId],
+        (old) =>
+          old?.map((c) =>
+            c.id === variables.clawId ? { ...c, ...variables.updates } : c,
+          ) ?? [],
+      );
+
+      return { previousClaws };
+    },
+    onError: (_err, variables, context) => {
+      if (context?.previousClaws) {
+        queryClient.setQueryData(
+          ["claws", variables.organizationId],
+          context.previousClaws,
+        );
+      }
+    },
+    onSettled: (_data, _err, variables) => {
       void queryClient.invalidateQueries({
-        queryKey: ["claws", claw.organizationId],
+        queryKey: ["claws", variables.organizationId],
       });
     },
   });
@@ -116,6 +147,7 @@ export const useUpdateClaw = () => {
 
 export const useDeleteClaw = () => {
   const queryClient = useQueryClient();
+  type Claw = import("@/api/claws.schemas").Claw;
 
   return useMutation({
     ...eq.mutationOptions({
@@ -131,7 +163,43 @@ export const useDeleteClaw = () => {
           });
         }),
     }),
-    onSuccess: (_, variables) => {
+    // Optimistic update: remove claw from cache immediately
+    onMutate: async (variables) => {
+      // Cancel in-flight queries so they don't overwrite our optimistic update
+      await queryClient.cancelQueries({
+        queryKey: ["claws", variables.organizationId],
+      });
+
+      // Snapshot previous cache for rollback
+      const previousClaws = queryClient.getQueryData<readonly Claw[]>([
+        "claws",
+        variables.organizationId,
+      ]);
+
+      // Optimistically remove the claw from the list
+      queryClient.setQueryData<readonly Claw[]>(
+        ["claws", variables.organizationId],
+        (old) => old?.filter((c) => c.id !== variables.clawId) ?? [],
+      );
+
+      // Also remove the individual claw query
+      queryClient.removeQueries({
+        queryKey: ["claws", variables.organizationId, variables.clawId],
+      });
+
+      return { previousClaws };
+    },
+    // Rollback on error
+    onError: (_err, variables, context) => {
+      if (context?.previousClaws) {
+        queryClient.setQueryData(
+          ["claws", variables.organizationId],
+          context.previousClaws,
+        );
+      }
+    },
+    // Refetch to sync with server regardless of success/error
+    onSettled: (_data, _err, variables) => {
       void queryClient.invalidateQueries({
         queryKey: ["claws", variables.organizationId],
       });
