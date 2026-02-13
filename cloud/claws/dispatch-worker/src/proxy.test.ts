@@ -26,6 +26,9 @@ describe("buildEnvVars", () => {
       ANTHROPIC_BASE_URL: "https://router.example.com",
       OPENCLAW_GATEWAY_TOKEN: "gw-tok",
       MIRASCOPE_API_KEY: "mk-test",
+      R2_ACCESS_KEY_ID: "test-access-key",
+      R2_SECRET_ACCESS_KEY: "test-secret-key",
+      R2_BUCKET_NAME: "claw-claw-123",
     });
   });
 
@@ -44,13 +47,17 @@ describe("buildEnvVars", () => {
     const result = buildEnvVars(config);
     expect(result).not.toHaveProperty("TELEGRAM_BOT_TOKEN");
     expect(result).not.toHaveProperty("DISCORD_BOT_TOKEN");
-    expect(Object.keys(result)).toHaveLength(4);
+    expect(Object.keys(result)).toHaveLength(7);
   });
 
-  it("returns empty object for empty containerEnv", () => {
+  it("includes R2 credentials even with empty containerEnv", () => {
     const config = createMockConfig({ containerEnv: {} });
     const result = buildEnvVars(config);
-    expect(result).toEqual({});
+    expect(result).toEqual({
+      R2_ACCESS_KEY_ID: "test-access-key",
+      R2_SECRET_ACCESS_KEY: "test-secret-key",
+      R2_BUCKET_NAME: "claw-claw-123",
+    });
   });
 });
 
