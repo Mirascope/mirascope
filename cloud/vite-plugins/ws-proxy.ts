@@ -14,10 +14,83 @@
  * - OPENCLAW_GATEWAY_WS_URL  — e.g. ws://100.78.10.21:18789
  * - OPENCLAW_GATEWAY_TOKEN   — the token for the connect handshake
  */
+import crypto from "crypto";
 import { type IncomingMessage } from "http";
 import { type Duplex } from "stream";
 import { type Plugin } from "vite";
 import { WebSocketServer, WebSocket } from "ws";
+
+// --- Device identity for gateway auth (Ed25519) ---
+
+const ED25519_SPKI_PREFIX = Buffer.from("302a300506032b6570032100", "hex");
+
+function base64UrlEncode(buf: Buffer): string {
+  return buf
+    .toString("base64")
+    .replaceAll("+", "-")
+    .replaceAll("/", "_")
+    .replace(/=+$/g, "");
+}
+
+interface DeviceIdentity {
+  deviceId: string;
+  publicKeyPem: string;
+  privateKeyPem: string;
+  publicKeyBase64Url: string;
+}
+
+/** Generate an ephemeral Ed25519 device identity (new each Vite start). */
+function generateDeviceIdentity(): DeviceIdentity {
+  const { publicKey, privateKey } = crypto.generateKeyPairSync("ed25519");
+  const publicKeyPem = publicKey
+    .export({ type: "spki", format: "pem" })
+    .toString();
+  const privateKeyPem = privateKey
+    .export({ type: "pkcs8", format: "pem" })
+    .toString();
+  const spki = publicKey.export({ type: "spki", format: "der" });
+  const rawKey = spki.subarray(ED25519_SPKI_PREFIX.length);
+  const deviceId = crypto.createHash("sha256").update(rawKey).digest("hex");
+  const publicKeyBase64Url = base64UrlEncode(rawKey);
+  return { deviceId, publicKeyPem, privateKeyPem, publicKeyBase64Url };
+}
+
+function signPayload(privateKeyPem: string, payload: string): string {
+  const key = crypto.createPrivateKey(privateKeyPem);
+  return base64UrlEncode(
+    crypto.sign(null, Buffer.from(payload, "utf8"), key) as unknown as Buffer,
+  );
+}
+
+function buildDeviceAuthPayload(params: {
+  deviceId: string;
+  clientId: string;
+  clientMode: string;
+  role: string;
+  scopes: string[];
+  signedAtMs: number;
+  token: string;
+  nonce: string;
+}): string {
+  return [
+    "v2",
+    params.deviceId,
+    params.clientId,
+    params.clientMode,
+    params.role,
+    params.scopes.join(","),
+    String(params.signedAtMs),
+    params.token,
+    params.nonce,
+  ].join("|");
+}
+
+// Ephemeral identity — regenerated each Vite start (not persisted)
+let cachedIdentity: DeviceIdentity | null = null;
+function getDeviceIdentity(): DeviceIdentity {
+  if (!cachedIdentity) cachedIdentity = generateDeviceIdentity();
+  return cachedIdentity;
+}
 
 export function viteWsProxy(): Plugin {
   return {
@@ -164,7 +237,29 @@ function handleConnection(
         const msg = JSON.parse(raw);
 
         if (msg.type === "event" && msg.event === "connect.challenge") {
+          const nonce: string = msg.payload?.nonce ?? "";
           console.log("[ws-proxy] Received connect.challenge, sending auth");
+
+          const device = getDeviceIdentity();
+          const role = "operator";
+          const scopes = [
+            "operator.admin",
+            "operator.approvals",
+            "operator.pairing",
+          ];
+          const signedAtMs = Date.now();
+          const payload = buildDeviceAuthPayload({
+            deviceId: device.deviceId,
+            clientId: "webchat",
+            clientMode: "webchat",
+            role,
+            scopes,
+            signedAtMs,
+            token: gatewayToken,
+            nonce,
+          });
+          const signature = signPayload(device.privateKeyPem, payload);
+
           upstreamWs.send(
             JSON.stringify({
               type: "req",
@@ -175,17 +270,20 @@ function handleConnection(
                 maxProtocol: 3,
                 auth: { token: gatewayToken },
                 client: {
-                  id: "openclaw-control-ui",
+                  id: "webchat",
                   version: "dev",
                   platform: "server",
                   mode: "webchat",
                 },
-                role: "operator",
-                scopes: [
-                  "operator.admin",
-                  "operator.approvals",
-                  "operator.pairing",
-                ],
+                device: {
+                  id: device.deviceId,
+                  publicKey: device.publicKeyBase64Url,
+                  signature,
+                  signedAt: signedAtMs,
+                  nonce,
+                },
+                role,
+                scopes,
                 caps: [],
               },
             }),
