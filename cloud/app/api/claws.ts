@@ -283,6 +283,8 @@ export const useUpdateClawSecrets = () => {
 };
 
 export const useRestartClaw = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     ...eq.mutationOptions({
       mutationKey: ["claws", "restart"],
@@ -297,5 +299,11 @@ export const useRestartClaw = () => {
           });
         }),
     }),
+    onSuccess: (_, variables) => {
+      // Refetch claws to pick up status changes (e.g. provisioning)
+      void queryClient.invalidateQueries({
+        queryKey: ["claws", variables.organizationId],
+      });
+    },
   });
 };

@@ -41,6 +41,17 @@ function ProjectSettingsPage() {
 
   const project = projects.find((p) => p.slug === projectSlug);
 
+  // If project was deleted (optimistic removal), redirect to projects list
+  useEffect(() => {
+    if (!isLoading && !project) {
+      setShowDeleteModal(false);
+      void navigate({
+        to: "/settings/organizations/$orgSlug/projects",
+        params: { orgSlug },
+      });
+    }
+  }, [project, isLoading, navigate, orgSlug]);
+
   // Sync URL project to context
   useEffect(() => {
     if (project && selectedProject?.id !== project.id) {
@@ -140,27 +151,10 @@ function ProjectSettingsPage() {
     );
   }
 
+  // Don't render settings for a project that no longer exists
+  // (redirect effect above will navigate away)
   if (!project) {
-    return (
-      <div className="max-w-2xl">
-        {header}
-        <div className="flex justify-center pt-12">
-          <div className="text-muted-foreground">
-            Project not found: {projectSlug}
-          </div>
-        </div>
-        <CreateProjectModal
-          open={showCreateModal}
-          onOpenChange={setShowCreateModal}
-          onCreated={(p) => {
-            void navigate({
-              to: "/settings/organizations/$orgSlug/projects/$projectSlug",
-              params: { orgSlug, projectSlug: p.slug },
-            });
-          }}
-        />
-      </div>
-    );
+    return null;
   }
 
   return (
