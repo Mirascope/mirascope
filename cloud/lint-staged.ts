@@ -26,6 +26,18 @@ try {
     await $`bunx oxlint --fix ${files}`.cwd("./cloud");
   }
 
+  // Run dispatch-worker oxlint on its own files
+  if (hasDispatchWorker) {
+    const dispatchWorkerFiles = files.filter((f) =>
+      f.includes("claws/dispatch-worker"),
+    );
+    if (dispatchWorkerFiles.length > 0) {
+      await $`bunx oxlint --fix ${dispatchWorkerFiles}`.cwd(
+        "./cloud/claws/dispatch-worker",
+      );
+    }
+  }
+
   process.exit(0);
 } catch {
   process.exit(1);
