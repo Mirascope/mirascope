@@ -79,7 +79,7 @@ export const createClawHandler = (
       ANTHROPIC_API_KEY: claw.plaintextApiKey,
       ANTHROPIC_BASE_URL: routerBaseUrl,
       OPENCLAW_GATEWAY_TOKEN: gatewayToken,
-      OPENCLAW_PRIMARY_MODEL_ID: payload.model ?? DEFAULT_CLAW_MODEL,
+      PRIMARY_MODEL_ID: payload.model ?? DEFAULT_CLAW_MODEL,
       OPENCLAW_SITE_URL: settings.siteUrl,
       R2_ACCESS_KEY_ID: status.r2Credentials.accessKeyId,
       R2_SECRET_ACCESS_KEY: status.r2Credentials.secretAccessKey,

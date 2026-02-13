@@ -27,16 +27,17 @@ import { join } from "path";
 
 export interface OpenClawEnv {
   // Claw-specific configuration (required)
+  CLOUDFLARE_ACCOUNT_ID: string;
   R2_BUCKET_NAME: string;
+
   OPENCLAW_GATEWAY_TOKEN: string;
   OPENCLAW_SITE_URL: string;
   OPENCLAW_ALLOWED_ORIGINS: string;
-  CLOUDFLARE_ACCOUNT_ID: string;
+  PRIMARY_MODEL_ID: string;
 
   // Anthropic configuration (required)
   ANTHROPIC_BASE_URL: string;
   ANTHROPIC_API_KEY: string;
-  PRIMARY_MODEL_ID: string;
 
   // Channel tokens (optional)
   DISCORD_BOT_TOKEN?: string;
