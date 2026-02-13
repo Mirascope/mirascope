@@ -34,29 +34,10 @@ export interface OpenClawConfigOptions {
 }
 
 /**
- * Creates an OpenClaw configuration object from environment variables.
- *
- * @param env - Environment variables (typically from process.env)
- * @param options - Configuration options (workspace dir, port, existing config)
- * @returns A complete OpenClawConfig object
+ * Initializes the nested structure of the config object, ensuring all required
+ * sub-objects exist with nullish coalescing assignment.
  */
-export function createOpenClawConfig(
-  env: OpenClawEnv,
-  options: OpenClawConfigOptions,
-): OpenClawConfig {
-  const { workspaceDir, gatewayPort, existingConfig } = options;
-
-  // Validate PRIMARY_MODEL_ID format
-  if (!env.PRIMARY_MODEL_ID.includes("/")) {
-    throw new Error(
-      `PRIMARY_MODEL_ID must include a provider prefix (e.g., "anthropic/claude-opus-4-6"), got: ${env.PRIMARY_MODEL_ID}`,
-    );
-  }
-
-  // Start with existing config or empty object
-  const config: OpenClawConfig = existingConfig ?? {};
-
-  // Ensure nested structure
+export function initializeConfigStructure(config: OpenClawConfig): void {
   config.agents ??= {};
   config.agents.defaults ??= {};
   config.agents.defaults.model ??= {};
@@ -68,20 +49,22 @@ export function createOpenClawConfig(
   config.channels ??= {};
   config.env ??= {};
   config.env.vars ??= {};
+}
 
-  // Workspace
-  config.agents.defaults.workspace = workspaceDir;
+/**
+ * Configures the gateway settings: port, mode, trusted proxies, auth token,
+ * and control UI allowed origins.
+ */
+export function configureGateway(
+  config: OpenClawConfig,
+  env: OpenClawEnv,
+  options: OpenClawConfigOptions,
+): void {
+  config.gateway!.port = options.gatewayPort;
+  config.gateway!.mode = "local";
+  config.gateway!.trustedProxies = ["10.1.0.0"];
+  config.gateway!.auth!.token = env.OPENCLAW_GATEWAY_TOKEN;
 
-  // Gateway basics
-  config.gateway.port = gatewayPort;
-  config.gateway.mode = "local";
-  config.gateway.trustedProxies = ["10.1.0.0"];
-  config.gateway.auth.token = env.OPENCLAW_GATEWAY_TOKEN;
-
-  // Set gateway token in env vars so OpenClaw can access it
-  config.env.vars.OPENCLAW_GATEWAY_TOKEN = env.OPENCLAW_GATEWAY_TOKEN;
-
-  // Control UI allowed origins
   const allowedOrigins = env.OPENCLAW_ALLOWED_ORIGINS.split(",")
     .map((o) => o.trim())
     .filter(Boolean);
@@ -90,12 +73,20 @@ export function createOpenClawConfig(
     allowedOrigins.push(env.OPENCLAW_SITE_URL);
   }
 
-  config.gateway.controlUi = { allowedOrigins };
+  config.gateway!.controlUi = { allowedOrigins };
+}
 
-  // Anthropic provider configuration
+/**
+ * Configures the Anthropic provider with base URL, API key, and model cards
+ * for all supported Claude models.
+ */
+export function configureAnthropicProvider(
+  config: OpenClawConfig,
+  env: OpenClawEnv,
+): void {
   const baseUrl = env.ANTHROPIC_BASE_URL.replace(/\/+$/, "");
 
-  config.models.providers.anthropic = {
+  config.models!.providers!.anthropic = {
     baseUrl,
     api: "anthropic-messages",
     apiKey: env.ANTHROPIC_API_KEY,
@@ -158,46 +149,115 @@ export function createOpenClawConfig(
       },
     ],
   };
+}
 
-  config.agents.defaults.models["anthropic/claude-opus-4-6"] = {
+/**
+ * Configures model aliases and the primary model selection.
+ * Validates that PRIMARY_MODEL_ID includes a provider prefix (e.g. "anthropic/claude-opus-4-6").
+ */
+export function configureModelDefaults(
+  config: OpenClawConfig,
+  env: OpenClawEnv,
+): void {
+  if (!env.PRIMARY_MODEL_ID.includes("/")) {
+    throw new Error(
+      `PRIMARY_MODEL_ID must include a provider prefix (e.g., "anthropic/claude-opus-4-6"), got: ${env.PRIMARY_MODEL_ID}`,
+    );
+  }
+
+  config.agents!.defaults!.models!["anthropic/claude-opus-4-6"] = {
     alias: "Opus 4.6",
   };
-  config.agents.defaults.models["anthropic/claude-opus-4-5"] = {
+  config.agents!.defaults!.models!["anthropic/claude-opus-4-5"] = {
     alias: "Opus 4.5",
   };
-  config.agents.defaults.models["anthropic/claude-sonnet-4-5"] = {
+  config.agents!.defaults!.models!["anthropic/claude-sonnet-4-5"] = {
     alias: "Sonnet 4.5",
   };
-  config.agents.defaults.models["anthropic/claude-haiku-4-5"] = {
+  config.agents!.defaults!.models!["anthropic/claude-haiku-4-5"] = {
     alias: "Haiku 4.5",
   };
-  config.agents.defaults.model.primary = env.PRIMARY_MODEL_ID;
+  config.agents!.defaults!.model!.primary = env.PRIMARY_MODEL_ID;
+}
 
-  // Channel configurations (optional)
+/**
+ * Configures optional channel integrations (Telegram, Discord, Slack).
+ * Only configures channels whose tokens are present in the environment.
+ */
+export function configureChannels(
+  config: OpenClawConfig,
+  env: OpenClawEnv,
+): void {
   if (env.TELEGRAM_BOT_TOKEN) {
-    config.channels.telegram = {
-      ...((config.channels.telegram as object) ?? {}),
+    config.channels!.telegram = {
+      ...((config.channels!.telegram as object) ?? {}),
       botToken: env.TELEGRAM_BOT_TOKEN,
       enabled: true,
     };
   }
 
   if (env.DISCORD_BOT_TOKEN) {
-    config.channels.discord = {
-      ...((config.channels.discord as object) ?? {}),
+    config.channels!.discord = {
+      ...((config.channels!.discord as object) ?? {}),
       token: env.DISCORD_BOT_TOKEN,
       enabled: true,
     };
   }
 
   if (env.SLACK_BOT_TOKEN && env.SLACK_APP_TOKEN) {
-    config.channels.slack = {
-      ...((config.channels.slack as object) ?? {}),
+    config.channels!.slack = {
+      ...((config.channels!.slack as object) ?? {}),
       botToken: env.SLACK_BOT_TOKEN,
       appToken: env.SLACK_APP_TOKEN,
       enabled: true,
     };
   }
+}
+
+/**
+ * Configures the default workspace directory for agents.
+ */
+export function configureWorkspace(
+  config: OpenClawConfig,
+  options: OpenClawConfigOptions,
+): void {
+  config.agents!.defaults!.workspace = options.workspaceDir;
+}
+
+/**
+ * Configures environment variables that OpenClaw needs at runtime,
+ * such as the gateway token.
+ */
+export function configureEnvVars(
+  config: OpenClawConfig,
+  env: OpenClawEnv,
+): void {
+  config.env!.vars!.OPENCLAW_GATEWAY_TOKEN = env.OPENCLAW_GATEWAY_TOKEN;
+}
+
+/**
+ * Creates an OpenClaw configuration object from environment variables.
+ *
+ * Orchestrates the configuration by delegating to focused sub-functions,
+ * each responsible for a logical grouping of settings.
+ *
+ * @param env - Environment variables (typically from process.env)
+ * @param options - Configuration options (workspace dir, port, existing config)
+ * @returns A complete OpenClawConfig object
+ */
+export function createOpenClawConfig(
+  env: OpenClawEnv,
+  options: OpenClawConfigOptions,
+): OpenClawConfig {
+  const config: OpenClawConfig = options.existingConfig ?? {};
+
+  initializeConfigStructure(config);
+  configureWorkspace(config, options);
+  configureGateway(config, env, options);
+  configureEnvVars(config, env);
+  configureAnthropicProvider(config, env);
+  configureModelDefaults(config, env);
+  configureChannels(config, env);
 
   return config;
 }
