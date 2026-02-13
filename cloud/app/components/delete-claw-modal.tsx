@@ -3,7 +3,7 @@ import { useState, type FormEvent } from "react";
 
 import type { Claw } from "@/api/claws.schemas";
 
-import { useClaws, useDeleteClaw } from "@/app/api/claws";
+import { useDeleteClaw } from "@/app/api/claws";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
