@@ -5,10 +5,219 @@ description: Connect your claw to Discord, Telegram, Signal, and more
 
 # Channels
 
-Claws connect to messaging platforms via channel plugins.
+Claws connect to messaging platforms through **channels**. Each channel is a bridge between your claw and a platform like Discord, Telegram, or WhatsApp.
 
-{/* TODO: Discord setup, Telegram setup, Signal setup, WhatsApp, Slack, custom channels */}
+You can run **multiple channels simultaneously** — configure as many as you need and OpenClaw routes each conversation to the right one. A single claw can be on Discord, Telegram, and WhatsApp at the same time.
+
+Channel configuration lives in `openclaw.json` under `channels.<name>`:
+
+```json5
+// ~/.openclaw/openclaw.json
+{
+  channels: {
+    discord: {
+      enabled: true,
+      token: "YOUR_DISCORD_BOT_TOKEN",
+    },
+    telegram: {
+      enabled: true,
+      token: "YOUR_TELEGRAM_BOT_TOKEN",
+    },
+  },
+}
+```
+
+---
+
+## Discord — Recommended First Channel
+
+Discord is the easiest channel to set up and the best for development. It supports servers, channels, threads, DMs, reactions, embeds, and more.
+
+### Step 1: Create a Discord Application
+
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
+2. Click **New Application** and give it a name
+3. Navigate to the **Bot** tab
+
+### Step 2: Configure the Bot
+
+1. Under **Privileged Gateway Intents**, enable:
+   - **Message Content Intent** — required to read messages
+   - **Server Members Intent** — required for member info
+2. Click **Reset Token** to generate a bot token
+3. Copy the token — you'll need it in a moment
 
 <Info>
-This page is under construction. Check back soon for channel setup guides.
+Never share your bot token or commit it to version control. Treat it like a password.
 </Info>
+
+### Step 3: Add the Token to Your Config
+
+```json5
+// ~/.openclaw/openclaw.json
+{
+  channels: {
+    discord: {
+      enabled: true,
+      token: "YOUR_DISCORD_BOT_TOKEN",
+    },
+  },
+}
+```
+
+### Step 4: Invite the Bot to Your Server
+
+1. In the Developer Portal, go to **OAuth2 → URL Generator**
+2. Select the **bot** scope
+3. Under Bot Permissions, select:
+   - Send Messages
+   - Read Message History
+   - Add Reactions
+   - Attach Files
+   - Use Slash Commands (optional)
+4. Copy the generated URL and open it in your browser
+5. Select your server and authorize
+
+### Step 5: Start the Gateway
+
+```bash
+openclaw gateway start
+```
+
+Your claw should come online in your Discord server within a few seconds. Send it a message to test!
+
+<Info>
+In servers (guilds), each channel gets its own isolated conversation session. DMs go to the claw's main session.
+</Info>
+
+---
+
+## Telegram
+
+Telegram is the simplest channel to set up — just a bot token from BotFather.
+
+### Step 1: Create a Bot
+
+1. Open Telegram and message [@BotFather](https://t.me/BotFather)
+2. Send `/newbot` and follow the prompts
+3. Copy the bot token BotFather gives you
+
+### Step 2: Add the Token to Your Config
+
+```json5
+// ~/.openclaw/openclaw.json
+{
+  channels: {
+    telegram: {
+      enabled: true,
+      token: "YOUR_TELEGRAM_BOT_TOKEN",
+    },
+  },
+}
+```
+
+### Step 3: Start the Gateway
+
+```bash
+openclaw gateway start
+```
+
+Message your bot on Telegram to test. It supports both private chats and group conversations.
+
+---
+
+## All Supported Channels
+
+OpenClaw includes built-in support for these platforms:
+
+| Channel | Setup | Notes |
+|---|---|---|
+| **Discord** | Bot token | Recommended for developers. Full server/channel/DM support. |
+| **Telegram** | Bot token via BotFather | Simple setup. Supports groups. Uses grammY. |
+| **WhatsApp** | QR code pairing | Most popular for personal use. Uses Baileys library. |
+| **Signal** | signal-cli setup | Privacy-focused. Requires signal-cli installation. |
+| **Slack** | Bolt SDK app | Workspace apps with full Slack API access. |
+| **iMessage** | BlueBubbles (macOS) | macOS only. BlueBubbles recommended for new setups. |
+| **Google Chat** | HTTP webhook app | Google Workspace integration. |
+
+Each channel is configured under `channels.<name>` in `openclaw.json`. Enable any channel by setting `enabled: true` and providing the required credentials.
+
+---
+
+## Security
+
+### DM Pairing
+
+When someone sends your claw a direct message for the first time, OpenClaw doesn't automatically trust them. Unknown senders receive a **pairing code** — a short code they must provide to you (the claw owner) to verify their identity.
+
+This prevents strangers from interacting with your claw without your approval.
+
+### Allowlists
+
+You can configure an allowlist to pre-approve specific users, skipping the pairing flow:
+
+```json5
+// ~/.openclaw/openclaw.json
+{
+  channels: {
+    discord: {
+      enabled: true,
+      token: "YOUR_TOKEN",
+    },
+  },
+  // Allowlist specific user IDs
+  allowlist: ["USER_ID_1", "USER_ID_2"],
+}
+```
+
+<Info>
+Guild and group channels don't require pairing — they get isolated sessions automatically. DM pairing only applies to direct messages.
+</Info>
+
+---
+
+## Plugin Channels
+
+Beyond the built-in channels, additional platforms are available as **plugins** that can be installed separately:
+
+- Mattermost
+- Microsoft Teams
+- LINE
+- Matrix
+- Nostr
+- Twitch
+- Feishu / Lark
+- Nextcloud Talk
+- Zalo
+
+Plugin channels follow the same configuration pattern — add them under `channels.<name>` in your `openclaw.json` after installing the plugin.
+
+---
+
+## Running Multiple Channels
+
+One of OpenClaw's strengths is running multiple channels at once. Simply configure each channel in your `openclaw.json` and start the gateway:
+
+```json5
+{
+  channels: {
+    discord: {
+      enabled: true,
+      token: "DISCORD_TOKEN",
+    },
+    telegram: {
+      enabled: true,
+      token: "TELEGRAM_TOKEN",
+    },
+    whatsapp: {
+      enabled: true,
+    },
+  },
+}
+```
+
+```bash
+openclaw gateway start
+```
+
+All enabled channels connect simultaneously. Each platform's conversations are routed independently — your claw maintains separate context for each chat.
