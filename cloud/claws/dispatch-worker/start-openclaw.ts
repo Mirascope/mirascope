@@ -25,10 +25,31 @@ import {
 } from "fs";
 import { join } from "path";
 
-import {
-  createOpenClawConfig,
-  type OpenClawEnv,
-} from "./src/create-openclaw-config.js";
+export interface OpenClawEnv {
+  // Claw-specific configuration (required)
+  R2_BUCKET_NAME: string;
+  OPENCLAW_GATEWAY_TOKEN: string;
+  OPENCLAW_SITE_URL: string;
+  OPENCLAW_ALLOWED_ORIGINS: string;
+  CF_ACCOUNT_ID: string;
+
+  // Anthropic configuration (required)
+  ANTHROPIC_BASE_URL: string;
+  ANTHROPIC_API_KEY: string;
+  PRIMARY_MODEL_ID: string;
+
+  // Channel tokens (optional)
+  DISCORD_BOT_TOKEN?: string;
+  TELEGRAM_BOT_TOKEN?: string;
+  SLACK_BOT_TOKEN?: string;
+  SLACK_APP_TOKEN?: string;
+}
+
+export interface OpenClawConfigOptions {
+  workspaceDir: string;
+  gatewayPort: number;
+  existingConfig?: OpenClawConfig;
+}
 
 // ============================================================
 // Constants
@@ -161,6 +182,175 @@ function rcloneConfigured(): boolean {
     }
   }
   return exists;
+}
+
+/**
+ * Creates an OpenClaw configuration object from environment variables.
+ *
+ * @param env - Environment variables (typically from process.env)
+ * @param options - Configuration options (workspace dir, port, existing config)
+ * @returns A complete OpenClawConfig object
+ */
+export function createOpenClawConfig(
+  env: OpenClawEnv,
+  options: OpenClawConfigOptions,
+): OpenClawConfig {
+  const { workspaceDir, gatewayPort, existingConfig } = options;
+
+  // Validate PRIMARY_MODEL_ID format
+  if (!env.PRIMARY_MODEL_ID.includes("/")) {
+    throw new Error(
+      `PRIMARY_MODEL_ID must include a provider prefix (e.g., "anthropic/claude-opus-4-6"), got: ${env.PRIMARY_MODEL_ID}`,
+    );
+  }
+
+  // Start with existing config or empty object
+  const config: OpenClawConfig = existingConfig ?? {};
+
+  // Ensure nested structure
+  config.agents ??= {};
+  config.agents.defaults ??= {};
+  config.agents.defaults.model ??= {};
+  config.agents.defaults.models ??= {};
+  config.gateway ??= {};
+  config.gateway.auth ??= {};
+  config.models ??= {};
+  config.models.providers ??= {};
+  config.channels ??= {};
+  config.env ??= {};
+  config.env.vars ??= {};
+
+  // Workspace
+  config.agents.defaults.workspace = workspaceDir;
+
+  // Gateway basics
+  config.gateway.port = gatewayPort;
+  config.gateway.mode = "local";
+  config.gateway.trustedProxies = ["10.1.0.0"];
+  config.gateway.auth.token = env.OPENCLAW_GATEWAY_TOKEN;
+
+  // Set gateway token in env vars so OpenClaw can access it
+  config.env.vars.OPENCLAW_GATEWAY_TOKEN = env.OPENCLAW_GATEWAY_TOKEN;
+
+  // Control UI allowed origins
+  const allowedOrigins = env.OPENCLAW_ALLOWED_ORIGINS.split(",")
+    .map((o) => o.trim())
+    .filter(Boolean);
+
+  if (!allowedOrigins.includes(env.OPENCLAW_SITE_URL)) {
+    allowedOrigins.push(env.OPENCLAW_SITE_URL);
+  }
+
+  config.gateway.controlUi = { allowedOrigins };
+
+  // Anthropic provider configuration
+  const baseUrl = env.ANTHROPIC_BASE_URL.replace(/\/+$/, "");
+
+  config.models.providers.anthropic = {
+    baseUrl,
+    api: "anthropic-messages",
+    apiKey: env.ANTHROPIC_API_KEY,
+    models: [
+      {
+        id: "claude-opus-4-6",
+        name: "Claude Opus 4.6",
+        reasoning: true,
+        input: ["text", "image"],
+        cost: {
+          input: 15.0,
+          output: 75.0,
+          cacheRead: 1.5,
+          cacheWrite: 18.75,
+        },
+        contextWindow: 200000,
+        maxTokens: 16384,
+      },
+      {
+        id: "claude-opus-4-5",
+        name: "Claude Opus 4.5",
+        reasoning: true,
+        input: ["text", "image"],
+        cost: {
+          input: 15.0,
+          output: 75.0,
+          cacheRead: 1.5,
+          cacheWrite: 18.75,
+        },
+        contextWindow: 200000,
+        maxTokens: 16384,
+      },
+      {
+        id: "claude-sonnet-4-5",
+        name: "Claude Sonnet 4.5",
+        reasoning: true,
+        input: ["text", "image"],
+        cost: {
+          input: 3.0,
+          output: 15.0,
+          cacheRead: 0.3,
+          cacheWrite: 3.75,
+        },
+        contextWindow: 200000,
+        maxTokens: 16384,
+      },
+      {
+        id: "claude-haiku-4-5",
+        name: "Claude Haiku 4.5",
+        reasoning: false,
+        input: ["text", "image"],
+        cost: {
+          input: 0.8,
+          output: 4.0,
+          cacheRead: 0.08,
+          cacheWrite: 1.0,
+        },
+        contextWindow: 200000,
+        maxTokens: 8192,
+      },
+    ],
+  };
+
+  config.agents.defaults.models["anthropic/claude-opus-4-6"] = {
+    alias: "Opus 4.6",
+  };
+  config.agents.defaults.models["anthropic/claude-opus-4-5"] = {
+    alias: "Opus 4.5",
+  };
+  config.agents.defaults.models["anthropic/claude-sonnet-4-5"] = {
+    alias: "Sonnet 4.5",
+  };
+  config.agents.defaults.models["anthropic/claude-haiku-4-5"] = {
+    alias: "Haiku 4.5",
+  };
+  config.agents.defaults.model.primary = env.PRIMARY_MODEL_ID;
+
+  // Channel configurations (optional)
+  if (env.TELEGRAM_BOT_TOKEN) {
+    config.channels.telegram = {
+      ...((config.channels.telegram as object) ?? {}),
+      botToken: env.TELEGRAM_BOT_TOKEN,
+      enabled: true,
+    };
+  }
+
+  if (env.DISCORD_BOT_TOKEN) {
+    config.channels.discord = {
+      ...((config.channels.discord as object) ?? {}),
+      token: env.DISCORD_BOT_TOKEN,
+      enabled: true,
+    };
+  }
+
+  if (env.SLACK_BOT_TOKEN && env.SLACK_APP_TOKEN) {
+    config.channels.slack = {
+      ...((config.channels.slack as object) ?? {}),
+      botToken: env.SLACK_BOT_TOKEN,
+      appToken: env.SLACK_APP_TOKEN,
+      enabled: true,
+    };
+  }
+
+  return config;
 }
 
 // ============================================================
