@@ -5,7 +5,7 @@ description: Extend your claw's capabilities with modular skills
 
 # Skills
 
-Skills are modular capabilities that extend what your claw can do. Each skill teaches the agent how to use a specific tool or perform a specific task — from checking the weather to managing GitHub pull requests.
+Skills are modular capabilities that extend what your Claw can do. Each skill teaches them how to use a specific tool or perform a specific task — from checking the weather to managing GitHub pull requests.
 
 Skills are loaded automatically. If a skill's requirements are met, its instructions are injected into the agent's context. If not, it's silently excluded. No code to write, no plugins to configure — just drop a `SKILL.md` in the right place.
 
@@ -18,7 +18,11 @@ A skill is a directory containing a `SKILL.md` file. The file has two parts:
 1. **YAML frontmatter** — metadata like name, description, and requirements
 2. **Instructions** — markdown that gets injected into the agent's system prompt
 
-When your claw starts, OpenClaw scans for skills, checks their requirements, and loads the ones that qualify. The agent then follows the instructions as part of its context.
+When your Claw starts, OpenClaw scans for skills, checks their requirements, and loads the ones that qualify. The agent then follows the instructions as part of their context.
+
+<Info>
+All skill commands and scripts run on **your Claw's machine in the cloud** (or your self-hosted server). Skills have access to the same environment your Claw runs in.
+</Info>
 
 ---
 
@@ -94,21 +98,19 @@ These work automatically when their requirements are met — no setup needed.
 
 ## Installing Skills from ClawHub
 
-[ClawHub](https://clawhub.com) is the public registry for community skills. Browse available skills on the website, then ask your Claw to install one:
-
-> Install the weather skill from ClawHub
-
-Your Claw runs the install command on its machine and the skill is immediately available. Under the hood, it runs:
+[ClawHub](https://clawhub.com) is the public registry for community skills. Browse available skills on the website, then install one on your Claw's machine:
 
 ```bash
 clawhub install <skill-slug>
 ```
 
-To update all installed skills, ask your Claw to run:
+To update all installed skills:
 
 ```bash
 clawhub update --all
 ```
+
+These commands run on your Claw's machine in the cloud. You can ask your Claw to run them for you, or execute them directly if you have shell access.
 
 ---
 
