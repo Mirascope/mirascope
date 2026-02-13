@@ -7,7 +7,9 @@ import {
 import { cn } from "@/app/lib/utils";
 
 export default function Footer() {
-  const isLandingPage = useIsLandingPage() || useIsLoginPage();
+  const isLanding = useIsLandingPage();
+  const isLogin = useIsLoginPage();
+  const isLandingPage = isLanding || isLogin;
 
   return (
     <footer
