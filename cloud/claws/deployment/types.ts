@@ -76,7 +76,7 @@ export interface ProvisionClawConfig {
  *
  * @endpoint GET /api/internal/claws/:clawId/bootstrap
  */
-export interface OpenClawConfig extends ProvisionClawConfig {
+export interface OpenClawDeployConfig extends ProvisionClawConfig {
   /** URL-safe slug for the claw (used in hostname) */
   clawSlug: string;
 

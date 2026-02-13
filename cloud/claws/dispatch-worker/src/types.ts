@@ -42,10 +42,10 @@ export type AppEnv = {
 /**
  * Bootstrap config returned by the Mirascope internal API.
  *
- * Mirrors the OpenClawConfig interface from cloud/claws/deployment/types.ts.
+ * Mirrors the OpenClawDeployConfig interface from cloud/claws/deployment/types.ts.
  * Duplicated here because the dispatch worker is a separate package.
  */
-export interface OpenClawConfig {
+export interface OpenClawDeployConfig {
   clawId: string;
   clawSlug: string;
   organizationId: string;

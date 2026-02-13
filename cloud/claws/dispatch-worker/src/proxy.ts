@@ -10,7 +10,7 @@
 
 import type { Sandbox, Process } from "@cloudflare/sandbox";
 
-import type { DispatchEnv, OpenClawConfig } from "./types";
+import type { DispatchEnv, OpenClawDeployConfig } from "./types";
 
 import { GATEWAY_PORT, STARTUP_TIMEOUT_MS } from "./config";
 
@@ -59,7 +59,7 @@ export async function findGatewayProcess(
  */
 export async function ensureRcloneConfig(
   sandbox: Sandbox,
-  r2Config: OpenClawConfig["r2"],
+  r2Config: OpenClawDeployConfig["r2"],
   accountId: string,
 ): Promise<boolean> {
   if (!r2Config.accessKeyId || !r2Config.secretAccessKey || !accountId) {
@@ -100,7 +100,9 @@ export async function ensureRcloneConfig(
 /**
  * Build environment variables for the container process from the bootstrap config.
  */
-export function buildEnvVars(config: OpenClawConfig): Record<string, string> {
+export function buildEnvVars(
+  config: OpenClawDeployConfig,
+): Record<string, string> {
   const envVars: Record<string, string> = {};
 
   // Pass all container env vars from the bootstrap config
@@ -129,7 +131,7 @@ export function buildEnvVars(config: OpenClawConfig): Record<string, string> {
  */
 export async function ensureGateway(
   sandbox: Sandbox,
-  config: OpenClawConfig,
+  config: OpenClawDeployConfig,
   env: DispatchEnv,
 ): Promise<Process> {
   // Configure rclone for R2 persistence

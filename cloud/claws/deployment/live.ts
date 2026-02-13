@@ -45,7 +45,7 @@ import { Effect, Layer } from "effect";
 
 import type { ClawDeploymentStatus } from "@/claws/deployment/service";
 import type {
-  OpenClawConfig,
+  OpenClawDeployConfig,
   ProvisionClawConfig,
 } from "@/claws/deployment/types";
 
@@ -194,7 +194,7 @@ export const LiveDeploymentService = Layer.effect(
           } satisfies ClawDeploymentStatus;
         }),
 
-      update: (clawId: string, config: Partial<OpenClawConfig>) =>
+      update: (clawId: string, config: Partial<OpenClawDeployConfig>) =>
         Effect.gen(function* () {
           const host = clawHostname(clawId);
 

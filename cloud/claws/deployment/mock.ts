@@ -18,7 +18,7 @@ import { Effect, Layer } from "effect";
 
 import type { ClawDeploymentStatus } from "@/claws/deployment/service";
 import type {
-  OpenClawConfig,
+  OpenClawDeployConfig,
   ProvisionClawConfig,
 } from "@/claws/deployment/types";
 
@@ -100,7 +100,7 @@ export const MockDeploymentService = Layer.succeed(ClawDeploymentService, {
       return status;
     }),
 
-  update: (clawId: string, _config: Partial<OpenClawConfig>) =>
+  update: (clawId: string, _config: Partial<OpenClawDeployConfig>) =>
     Effect.gen(function* () {
       yield* Effect.sleep("50 millis");
 

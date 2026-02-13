@@ -13,6 +13,8 @@
  * bootstrap config fetched via service binding.
  */
 
+import type { OpenClawConfig } from "openclaw/plugin-sdk";
+
 import { execSync } from "child_process";
 import {
   existsSync,
@@ -22,6 +24,11 @@ import {
   unlinkSync,
 } from "fs";
 import { join } from "path";
+
+import {
+  createOpenClawConfig,
+  type OpenClawEnv,
+} from "./src/create-openclaw-config.js";
 
 // ============================================================
 // Constants
@@ -33,7 +40,6 @@ const WORKSPACE_DIR = join(CONFIG_DIR, "workspace");
 const GATEWAY_PORT = 18789;
 const LOG_FILE = "/tmp/gateway.log";
 
-const bucket = process.env.R2_BUCKET_NAME;
 const RCLONE_FLAGS = "--transfers=16 --fast-list --s3-no-check-bucket";
 const RCLONE_EXCLUDE =
   "--exclude='*.lock' --exclude='*.log' --exclude='*.tmp' --exclude='.git/**'";
@@ -126,29 +132,58 @@ function rcloneConfigured(): boolean {
 
 log("=== OpenClaw startup script begin ===");
 
-// Log claw-specific values in full, redact shared secrets
-log("Environment snapshot:", {
+// ============================================================
+// 0. Construct and validate environment variables
+// ============================================================
+
+log("Step 0: Validating environment variables");
+
+// Helper to get required env var or throw
+function requireEnv(key: string): string {
+  const value = process.env[key];
+  if (!value) {
+    throw new Error(`Required environment variable ${key} is not set`);
+  }
+  return value;
+}
+
+// Extract and validate required environment variables
+const env: OpenClawEnv = {
+  // Claw-specific configuration (required)
+  R2_BUCKET_NAME: requireEnv("R2_BUCKET_NAME"),
+  OPENCLAW_GATEWAY_TOKEN: requireEnv("OPENCLAW_GATEWAY_TOKEN"),
+  OPENCLAW_SITE_URL: requireEnv("OPENCLAW_SITE_URL"),
+  OPENCLAW_ALLOWED_ORIGINS: requireEnv("OPENCLAW_ALLOWED_ORIGINS"),
+  CF_ACCOUNT_ID: requireEnv("CF_ACCOUNT_ID"),
+  // Anthropic configuration (required)
+  ANTHROPIC_BASE_URL: requireEnv("ANTHROPIC_BASE_URL"),
+  ANTHROPIC_API_KEY: requireEnv("ANTHROPIC_API_KEY"),
+  PRIMARY_MODEL_ID: requireEnv("PRIMARY_MODEL_ID"),
+  // Channel tokens (optional)
+  DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN,
+  TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
+  SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN,
+  SLACK_APP_TOKEN: process.env.SLACK_APP_TOKEN,
+};
+
+// Log environment (claw-specific values in full, secrets redacted)
+log("Environment validated:", {
   // Claw-specific — safe to log in full
-  R2_BUCKET_NAME: process.env.R2_BUCKET_NAME ?? "(not set)",
-  OPENCLAW_GATEWAY_TOKEN: process.env.OPENCLAW_GATEWAY_TOKEN ?? "(not set)",
-  OPENCLAW_SITE_URL: process.env.OPENCLAW_SITE_URL ?? "(not set)",
-  OPENCLAW_ALLOWED_ORIGINS: process.env.OPENCLAW_ALLOWED_ORIGINS ?? "(not set)",
-  CF_ACCOUNT_ID: process.env.CF_ACCOUNT_ID ?? "(not set)",
-  ANTHROPIC_BASE_URL: process.env.ANTHROPIC_BASE_URL ?? "(not set)",
-  // Shared secrets — presence only
-  ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY ? "(set)" : "(not set)",
-  R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID ? "(set)" : "(not set)",
-  R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY
-    ? "(set)"
-    : "(not set)",
-  DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN ? "(set)" : "(not set)",
-  TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN ? "(set)" : "(not set)",
-  SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN ? "(set)" : "(not set)",
-  SLACK_APP_TOKEN: process.env.SLACK_APP_TOKEN ? "(set)" : "(not set)",
+  R2_BUCKET_NAME: env.R2_BUCKET_NAME,
+  OPENCLAW_GATEWAY_TOKEN: env.OPENCLAW_GATEWAY_TOKEN,
+  OPENCLAW_SITE_URL: env.OPENCLAW_SITE_URL,
+  OPENCLAW_ALLOWED_ORIGINS: env.OPENCLAW_ALLOWED_ORIGINS,
+  CF_ACCOUNT_ID: env.CF_ACCOUNT_ID,
+  ANTHROPIC_BASE_URL: env.ANTHROPIC_BASE_URL,
+  PRIMARY_MODEL_ID: env.PRIMARY_MODEL_ID,
   // Runtime
   NODE_VERSION: process.version ?? "(unknown)",
   BUN_VERSION: process.versions?.bun ?? "(unknown)",
 });
+
+log("Step 0 complete: environment validated");
+
+const bucket = env.R2_BUCKET_NAME;
 
 // ============================================================
 // 1. Bail if already running
@@ -177,7 +212,7 @@ log("Step 2 complete");
 // ============================================================
 
 log("Step 3: R2 restore");
-if (bucket && rcloneConfigured()) {
+if (rcloneConfigured()) {
   try {
     const cmd = `rclone sync r2:${bucket}/openclaw/ ${CONFIG_DIR}/ ${RCLONE_FLAGS}`;
     log("Running rclone restore:", { cmd });
@@ -192,8 +227,6 @@ if (bucket && rcloneConfigured()) {
   } catch (err) {
     logError("R2 restore failed (non-fatal, continuing)", err);
   }
-} else if (!bucket) {
-  log("Step 3 skipped: R2_BUCKET_NAME not set");
 } else {
   log("Step 3 skipped: rclone not configured");
 }
@@ -204,40 +237,19 @@ if (bucket && rcloneConfigured()) {
 
 log("Step 4: Building openclaw.json");
 
-interface OpenClawConfig {
-  agents?: {
-    defaults?: {
-      workspace?: string;
-      model?: { primary?: string };
-      models?: Record<string, { alias: string }>;
-    };
-  };
-  gateway?: {
-    port?: number;
-    mode?: string;
-    trustedProxies?: string[];
-    auth?: { token?: string };
-    controlUi?: { allowedOrigins?: string[] };
-  };
-  models?: {
-    providers?: Record<string, unknown>;
-  };
-  channels?: Record<string, unknown>;
-}
-
-let config: OpenClawConfig = {};
-
+// Load existing config if present
+let existingConfig: OpenClawConfig | undefined;
 if (existsSync(CONFIG_FILE)) {
   log("Found existing config file, loading");
   try {
     const raw = readFileSync(CONFIG_FILE, "utf8");
-    config = JSON.parse(raw);
+    existingConfig = JSON.parse(raw);
     log("Loaded existing config successfully:", {
       configLength: raw.length,
-      hasAgents: !!config.agents,
-      hasGateway: !!config.gateway,
-      hasModels: !!config.models,
-      hasChannels: !!config.channels,
+      hasAgents: !!existingConfig?.agents,
+      hasGateway: !!existingConfig?.gateway,
+      hasModels: !!existingConfig?.models,
+      hasChannels: !!existingConfig?.channels,
     });
   } catch (err) {
     logError("Failed to parse existing config, starting fresh", err);
@@ -246,152 +258,12 @@ if (existsSync(CONFIG_FILE)) {
   log("No existing config found, creating new");
 }
 
-// Ensure nested structure
-config.agents ??= {};
-config.agents.defaults ??= {};
-config.agents.defaults.model ??= {};
-config.gateway ??= {};
-
-// Workspace
-config.agents.defaults.workspace = WORKSPACE_DIR;
-log("Workspace set to:", { workspace: WORKSPACE_DIR });
-
-// Gateway
-config.gateway.port = GATEWAY_PORT;
-config.gateway.mode = "local";
-config.gateway.trustedProxies = ["10.1.0.0"];
-log("Gateway basics configured:", {
-  port: GATEWAY_PORT,
-  mode: "local",
-  trustedProxies: ["10.1.0.0"],
+// Create config using the helper (env is already validated in Step 0)
+const config = createOpenClawConfig(env, {
+  workspaceDir: WORKSPACE_DIR,
+  gatewayPort: GATEWAY_PORT,
+  existingConfig,
 });
-
-// Gateway token (always required for claws)
-const gatewayToken = process.env.OPENCLAW_GATEWAY_TOKEN;
-if (gatewayToken) {
-  config.gateway.auth ??= {};
-  config.gateway.auth.token = gatewayToken;
-  log("Gateway token configured");
-} else {
-  log("WARNING: No OPENCLAW_GATEWAY_TOKEN set");
-}
-
-// Control UI allowed origins (for WebSocket connections from browser)
-const allowedOrigins: string[] = [];
-const envOrigins = process.env.OPENCLAW_ALLOWED_ORIGINS;
-if (envOrigins) {
-  allowedOrigins.push(
-    ...envOrigins
-      .split(",")
-      .map((o) => o.trim())
-      .filter(Boolean),
-  );
-}
-const siteUrl = process.env.OPENCLAW_SITE_URL;
-if (siteUrl && !allowedOrigins.includes(siteUrl)) {
-  allowedOrigins.push(siteUrl);
-}
-if (allowedOrigins.length > 0) {
-  config.gateway.controlUi = { allowedOrigins };
-  log("Control UI allowed origins:", { allowedOrigins });
-} else {
-  log("No allowed origins configured for Control UI");
-}
-
-// Anthropic provider configuration via Mirascope router
-const baseUrl = (process.env.ANTHROPIC_BASE_URL ?? "").replace(/\/+$/, "");
-if (baseUrl) {
-  log("Configuring Anthropic provider:", { baseUrl });
-  config.models ??= {};
-  config.models.providers ??= {};
-
-  const providerConfig: Record<string, unknown> = {
-    baseUrl,
-    api: "anthropic-messages",
-    models: [
-      {
-        id: "claude-opus-4-5-20251101",
-        name: "Claude Opus 4.5",
-        contextWindow: 200000,
-      },
-      {
-        id: "claude-sonnet-4-5-20250929",
-        name: "Claude Sonnet 4.5",
-        contextWindow: 200000,
-      },
-      {
-        id: "claude-haiku-4-5-20251001",
-        name: "Claude Haiku 4.5",
-        contextWindow: 200000,
-      },
-    ],
-  };
-
-  if (process.env.ANTHROPIC_API_KEY) {
-    providerConfig.apiKey = process.env.ANTHROPIC_API_KEY;
-    log("Anthropic API key set");
-  } else {
-    log("WARNING: No ANTHROPIC_API_KEY set");
-  }
-
-  config.models.providers.anthropic = providerConfig;
-
-  config.agents.defaults.models ??= {};
-  config.agents.defaults.models["anthropic/claude-opus-4-5-20251101"] = {
-    alias: "Opus 4.5",
-  };
-  config.agents.defaults.models["anthropic/claude-sonnet-4-5-20250929"] = {
-    alias: "Sonnet 4.5",
-  };
-  config.agents.defaults.models["anthropic/claude-haiku-4-5-20251001"] = {
-    alias: "Haiku 4.5",
-  };
-  config.agents.defaults.model.primary = "anthropic/claude-opus-4-5-20251101";
-  log("Anthropic provider configured with 3 models");
-} else if (process.env.ANTHROPIC_API_KEY) {
-  config.agents.defaults.model.primary = "anthropic/claude-opus-4-5";
-  log("Using default Anthropic provider (no base URL)");
-} else {
-  log("WARNING: No Anthropic configuration at all");
-}
-
-// Channel configurations
-config.channels ??= {};
-log("Checking channel configurations...");
-
-if (process.env.TELEGRAM_BOT_TOKEN) {
-  config.channels.telegram = {
-    ...((config.channels.telegram as object) ?? {}),
-    botToken: process.env.TELEGRAM_BOT_TOKEN,
-    enabled: true,
-  };
-  log("Telegram channel configured");
-} else {
-  log("Telegram: no token set");
-}
-
-if (process.env.DISCORD_BOT_TOKEN) {
-  config.channels.discord = {
-    ...((config.channels.discord as object) ?? {}),
-    token: process.env.DISCORD_BOT_TOKEN,
-    enabled: true,
-  };
-  log("Discord channel configured");
-} else {
-  log("Discord: no token set");
-}
-
-if (process.env.SLACK_BOT_TOKEN && process.env.SLACK_APP_TOKEN) {
-  config.channels.slack = {
-    ...((config.channels.slack as object) ?? {}),
-    botToken: process.env.SLACK_BOT_TOKEN,
-    appToken: process.env.SLACK_APP_TOKEN,
-    enabled: true,
-  };
-  log("Slack channel configured");
-} else {
-  log("Slack: missing bot token and/or app token");
-}
 
 // Write config
 const configJson = JSON.stringify(config, null, 2);
@@ -399,39 +271,13 @@ writeFileSync(CONFIG_FILE, configJson);
 log("Step 4 complete: config written to " + CONFIG_FILE, {
   configLength: configJson.length,
 });
-// Log full config for staging debugging
-// Log config structure (redact provider apiKey values)
-try {
-  const redacted = JSON.parse(configJson);
-  if (redacted.models?.providers) {
-    for (const p of Object.values(redacted.models.providers) as Record<
-      string,
-      unknown
-    >[]) {
-      if (p.apiKey) p.apiKey = "(redacted)";
-    }
-  }
-  if (redacted.channels) {
-    for (const ch of Object.values(redacted.channels) as Record<
-      string,
-      unknown
-    >[]) {
-      if (ch.token) ch.token = "(redacted)";
-      if (ch.botToken) ch.botToken = "(redacted)";
-      if (ch.appToken) ch.appToken = "(redacted)";
-    }
-  }
-  log("Full config (secrets redacted):", { config: JSON.stringify(redacted) });
-} catch {
-  log("Config written but failed to log redacted version");
-}
 
 // ============================================================
 // 5. Persist config to R2 via rclone (non-fatal on failure)
 // ============================================================
 
 log("Step 5: R2 persist");
-if (bucket && rcloneConfigured()) {
+if (rcloneConfigured()) {
   try {
     const cmd = `rclone sync ${CONFIG_DIR}/ r2:${bucket}/openclaw/ ${RCLONE_FLAGS} ${RCLONE_EXCLUDE}`;
     log("Running rclone persist:", { cmd });
@@ -446,8 +292,6 @@ if (bucket && rcloneConfigured()) {
   } catch (err) {
     logError("R2 persist failed (non-fatal, continuing to start gateway)", err);
   }
-} else if (!bucket) {
-  log("Step 5 skipped: R2_BUCKET_NAME not set");
 } else {
   log("Step 5 skipped: rclone not configured");
 }
@@ -472,16 +316,7 @@ const args = [
   "lan",
 ];
 
-if (gatewayToken) {
-  args.push("--token", gatewayToken);
-  log("Gateway args: token auth enabled");
-} else {
-  log("Gateway args: no token auth");
-}
-
-// Log the full command (redact token)
-const safeArgs = args.map((a) => (a === gatewayToken ? "***REDACTED***" : a));
-log("Spawning gateway:", { command: `openclaw ${safeArgs.join(" ")}` });
+log("Spawning gateway:", { command: `openclaw ${args.join(" ")}` });
 
 // Check that openclaw binary exists
 try {
@@ -512,8 +347,8 @@ const logWriter = logFile.writer();
 const startupHeader = [
   `\n${"=".repeat(60)}`,
   `Gateway startup: ${new Date().toISOString()}`,
-  `Token present: ${!!gatewayToken}`,
-  `Args: openclaw ${safeArgs.join(" ")}`,
+  `Token present: ${!!config.gateway?.auth?.token}`,
+  `Args: openclaw ${args.join(" ")}`,
   `${"=".repeat(60)}\n`,
 ].join("\n");
 logWriter.write(startupHeader);
@@ -563,7 +398,7 @@ logWriter.flush();
 logWriter.end();
 
 // Sync log to R2 (best effort)
-if (bucket && rcloneConfigured()) {
+if (rcloneConfigured()) {
   try {
     log("Syncing gateway log to R2...");
     execSync(`rclone copy ${LOG_FILE} r2:${bucket}/ ${RCLONE_FLAGS}`, {
