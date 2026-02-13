@@ -40,7 +40,7 @@ export function HomePage() {
             <h1
               className="font-handwriting font-medium tracking-tight text-white text-shade"
               style={{
-                fontSize: "clamp(2.75rem, 8vw, 4.5rem)",
+                fontSize: "clamp(2.75rem, 8vw, 4rem)",
                 lineHeight: "1.15",
               }}
             >
@@ -88,7 +88,7 @@ export function HomePage() {
             className="w-full max-w-md min-h-fit"
             style={
               heroHeight
-                ? { height: Math.round((heroHeight * 3) / 4) }
+                ? { height: Math.round((heroHeight * 5) / 6) }
                 : undefined
             }
           >
