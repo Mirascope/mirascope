@@ -62,10 +62,9 @@ There's no required format for `SOUL.md` — it's entirely free-form. Write it h
 
 `AGENTS.md` tells your claw *how to operate*. Think of it as the employee handbook — session protocols, safety rules, and behavioral guidelines.
 
-### Key Sections
+Common sections include session startup protocols, safety rules, group chat behavior, sub-agent discipline, and heartbeat schedules.
 
-**Session startup** — What to read and in what order when waking up:
-
+<Info title="Example: Session Startup" collapsible={true} defaultOpen={false}>
 ```markdown
 ## Every Session
 
@@ -74,9 +73,9 @@ There's no required format for `SOUL.md` — it's entirely free-form. Write it h
 3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
 4. Read `MEMORY.md` for long-term context
 ```
+</Info>
 
-**Safety rules** — Guardrails for autonomous behavior:
-
+<Info title="Example: Safety Rules" collapsible={true} defaultOpen={false}>
 ```markdown
 ## Safety
 
@@ -86,9 +85,9 @@ There's no required format for `SOUL.md` — it's entirely free-form. Write it h
 - `trash` > `rm` (recoverable beats gone forever)
 - When in doubt, ask.
 ```
+</Info>
 
-**Group chat behavior** — When to speak and when to stay silent:
-
+<Info title="Example: Group Chat Behavior" collapsible={true} defaultOpen={false}>
 ```markdown
 ## Group Chats
 
@@ -101,9 +100,9 @@ Stay silent when:
 - Someone already answered the question
 - Your response would just be "yeah" or "nice"
 ```
+</Info>
 
-**Sub-agent discipline** — Rules for spawning background workers:
-
+<Info title="Example: Sub-Agents" collapsible={true} defaultOpen={false}>
 ```markdown
 ## Sub-Agents
 
@@ -111,9 +110,9 @@ Stay silent when:
 - Main session stays responsive for conversation
 - Sub-agents report back when done
 ```
+</Info>
 
-**Heartbeat behavior** — What to do during periodic check-ins:
-
+<Info title="Example: Heartbeats" collapsible={true} defaultOpen={false}>
 ```markdown
 ## Heartbeats
 
@@ -122,6 +121,7 @@ Check (rotate through 2-4x daily):
 - Calendar — upcoming events in next 24h?
 - Stay quiet during late night (23:00-08:00) unless urgent
 ```
+</Info>
 
 <Info>
 `AGENTS.md` is injected as context at the start of every session. Keep it focused — overly long instructions burn tokens and dilute the important parts.
