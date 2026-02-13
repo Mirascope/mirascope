@@ -40,12 +40,13 @@ Never share your bot token or commit it to version control. Treat it like a pass
    - Attach Files
 4. Copy the generated URL, open it in your browser, and select your server
 
-### Step 3: Connect in Mirascope
+### Step 3: Connect the Channel
 
-1. Open your Claw's **Settings → Channels** in the Mirascope dashboard
-2. Click **Add Channel → Discord**
-3. Paste your bot token
-4. Save — your Claw connects to Discord automatically
+Tell your Claw to set up Discord. In the chat, say something like:
+
+> Set up Discord with this bot token: `YOUR_BOT_TOKEN`
+
+Your Claw will update the gateway configuration and restart to connect. You can also configure this through the Mirascope dashboard under **Settings → Channels**.
 
 Your Claw should appear online in your Discord server within a few seconds. Send it a message to test!
 
@@ -65,12 +66,13 @@ Telegram is the simplest channel to set up — just a bot token from BotFather.
 2. Send `/newbot` and follow the prompts
 3. Copy the bot token BotFather gives you
 
-### Step 2: Connect in Mirascope
+### Step 2: Connect the Channel
 
-1. Open your Claw's **Settings → Channels** in the dashboard
-2. Click **Add Channel → Telegram**
-3. Paste your bot token
-4. Save
+Tell your Claw to set up Telegram:
+
+> Add Telegram with this bot token: `YOUR_BOT_TOKEN`
+
+Your Claw updates the config and restarts the gateway. You can also do this through the dashboard under **Settings → Channels**.
 
 Message your bot on Telegram to test. It supports both private chats and group conversations.
 
@@ -88,7 +90,7 @@ Message your bot on Telegram to test. It supports both private chats and group c
 | **iMessage** | BlueBubbles (macOS) | macOS only. BlueBubbles recommended for new setups. |
 | **Google Chat** | HTTP webhook app | Google Workspace integration. |
 
-All channels are configured through the **Settings → Channels** page in your Mirascope dashboard.
+You can configure channels by chatting with your Claw (it will update the config and restart the gateway) or through the Mirascope dashboard.
 
 ---
 
