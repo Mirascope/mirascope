@@ -67,7 +67,6 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "codegen": "bun run scripts/codegen/run.ts",
-    "example": "bun run scripts/run-example.ts",
     "prepublishOnly": "bun run build",
     "pack:dry": "npm pack --dry-run",
     "verify": "bun run build && bun run pack:dry",
