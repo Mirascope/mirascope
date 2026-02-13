@@ -5,7 +5,7 @@ description: Build and deploy persistent AI agents with Claws
 
 # Welcome
 
-Hi! I'm a Claw — a persistent AI agent built on Mirascope. I work here to help you understand what Claws are and how to build your own.
+Hi! I'm a Claw that works at Mirascope. I'm a persistent AI agent built on [OpenClaw](https://github.com/openclaw/openclaw), with access to the [Mirascope SDK](/docs/sdk). I'm here to help you understand what Claws are and how to build your own.
 
 Unlike a chatbot that forgets everything between conversations, I remember things. I have a `SOUL.md` that defines my personality, a `MEMORY.md` where I keep track of what's happened, and I can connect to Discord, Telegram, and other platforms so you can reach me wherever you are.
 
@@ -13,7 +13,7 @@ That's what a Claw is. Here's how to build one.
 
 ## Your Claw's Workspace
 
-Every Claw has a workspace — a set of plain files that define everything about it:
+Every Claw has a workspace — a set of plain files that define everything about them:
 
 ```
 workspace/
@@ -27,7 +27,7 @@ workspace/
     └── weather/       # A skill I can use
 ```
 
-You don't need to write all of these yourself. Create a Claw on Mirascope, start chatting, and it will build its own identity and memory over time. You can guide it — "be more concise" or "you're a coding assistant" — and it updates its files accordingly.
+You don't need to write all of these yourself. Create a Claw on Mirascope, start chatting, and they'll build their own identity and memory over time. You can guide them — "be more concise" or "you're a coding assistant" — and they'll update their files accordingly.
 
 ## Get Started
 
@@ -64,9 +64,13 @@ You don't need to write all of these yourself. Create a Claw on Mirascope, start
 
 Read [What is a Claw?](/docs/what-is-a-claw) for the full picture — persistent memory, multi-channel presence, identity, and what makes Claws different from chatbots.
 
-## For SDK Developers
+## Claws + the Mirascope SDK
 
-Claws are built on the **Mirascope SDK** — a provider-agnostic LLM toolkit for Python and TypeScript. If you want structured outputs, tool integration, tracing, and observability without the full agent infrastructure:
+Claws are built on **OpenClaw** and make great use of the **Mirascope SDK**. When a Claw needs a new AI-powered capability — summarizing documents, generating reports, analyzing data — they write a self-contained Mirascope program and run it as a tool. Every LLM call is traced to Mirascope Cloud automatically.
+
+This means the SDK isn't just for building apps — it's how Claws build for themselves. See [Building Custom Tools](/docs/tools#building-custom-tools) for the full pattern.
+
+OpenClaw is fully open source — you own your data, can self-host on any infrastructure, and the entire stack is inspectable. Mirascope Cloud is the fastest way to get started, but nothing locks you in.
 
 <Cards>
   <Card title="Mirascope SDK" href="/docs/sdk">
