@@ -2,9 +2,9 @@ import { Effect } from "effect";
 
 import type { CreateApiKeyRequest } from "@/api/api-keys.schemas";
 import type {
-  EnvironmentPublicApiKey,
-  EnvironmentApiKeyCreateResponse,
-  EnvironmentApiKeyWithContext,
+  PublicApiKey,
+  ApiKeyCreateResponse,
+  ApiKeyWithContext,
 } from "@/db/schema";
 
 import { Analytics } from "@/analytics";
@@ -14,21 +14,19 @@ import { Database } from "@/db/database";
 export * from "@/api/api-keys.schemas";
 
 // Helper to convert Date to ISO string for API response
-export const toApiKey = (apiKey: EnvironmentPublicApiKey) => ({
+export const toApiKey = (apiKey: PublicApiKey) => ({
   ...apiKey,
   createdAt: apiKey.createdAt?.toISOString() ?? null,
   lastUsedAt: apiKey.lastUsedAt?.toISOString() ?? null,
 });
 
-export const toApiKeyCreateResponse = (
-  apiKey: EnvironmentApiKeyCreateResponse,
-) => ({
+export const toApiKeyCreateResponse = (apiKey: ApiKeyCreateResponse) => ({
   ...apiKey,
   createdAt: apiKey.createdAt?.toISOString() ?? null,
   lastUsedAt: apiKey.lastUsedAt?.toISOString() ?? null,
 });
 
-export const toApiKeyWithContext = (apiKey: EnvironmentApiKeyWithContext) => ({
+export const toApiKeyWithContext = (apiKey: ApiKeyWithContext) => ({
   ...apiKey,
   createdAt: apiKey.createdAt?.toISOString() ?? null,
   lastUsedAt: apiKey.lastUsedAt?.toISOString() ?? null,

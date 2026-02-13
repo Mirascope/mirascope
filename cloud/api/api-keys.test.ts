@@ -1,9 +1,9 @@
 import { Effect, Schema } from "effect";
 
 import type {
-  EnvironmentPublicApiKey,
-  EnvironmentApiKeyCreateResponse,
-  EnvironmentApiKeyWithContext,
+  PublicApiKey,
+  ApiKeyCreateResponse,
+  ApiKeyWithContext,
   PublicProject,
   PublicEnvironment,
 } from "@/db/schema";
@@ -19,7 +19,7 @@ import { describe, it, expect, TestApiContext } from "@/tests/api";
 describe("toApiKey helper", () => {
   it("should convert dates to ISO strings", () => {
     const date = new Date("2025-01-01T00:00:00.000Z");
-    const apiKey: EnvironmentPublicApiKey = {
+    const apiKey: PublicApiKey = {
       id: "test-id",
       name: "test-key",
       keyPrefix: "mk_abc...",
@@ -38,7 +38,7 @@ describe("toApiKey helper", () => {
   });
 
   it("should handle null dates", () => {
-    const apiKey: EnvironmentPublicApiKey = {
+    const apiKey: PublicApiKey = {
       id: "test-id",
       name: "test-key",
       keyPrefix: "mk_abc...",
@@ -59,7 +59,7 @@ describe("toApiKey helper", () => {
 describe("toApiKeyCreateResponse helper", () => {
   it("should convert dates to ISO strings", () => {
     const date = new Date("2025-01-01T00:00:00.000Z");
-    const apiKey: EnvironmentApiKeyCreateResponse = {
+    const apiKey: ApiKeyCreateResponse = {
       id: "test-id",
       name: "test-key",
       keyPrefix: "mk_abc...",
@@ -80,7 +80,7 @@ describe("toApiKeyCreateResponse helper", () => {
   });
 
   it("should handle null dates", () => {
-    const apiKey: EnvironmentApiKeyCreateResponse = {
+    const apiKey: ApiKeyCreateResponse = {
       id: "test-id",
       name: "test-key",
       keyPrefix: "mk_abc...",
@@ -103,7 +103,7 @@ describe("toApiKeyCreateResponse helper", () => {
 describe("toApiKeyWithContext helper", () => {
   it("should convert dates to ISO strings", () => {
     const date = new Date("2025-01-01T00:00:00.000Z");
-    const apiKey: EnvironmentApiKeyWithContext = {
+    const apiKey: ApiKeyWithContext = {
       id: "test-id",
       name: "test-key",
       keyPrefix: "mk_abc...",
@@ -129,7 +129,7 @@ describe("toApiKeyWithContext helper", () => {
   });
 
   it("should handle null dates", () => {
-    const apiKey: EnvironmentApiKeyWithContext = {
+    const apiKey: ApiKeyWithContext = {
       id: "test-id",
       name: "test-key",
       keyPrefix: "mk_abc...",
