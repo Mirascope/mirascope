@@ -209,6 +209,64 @@ In multi-agent setups, different agents can have different tool access:
 }
 ```
 
+## Building Custom Tools
+
+Claws can create their own tools — including **AI-powered tools** built with Mirascope. This is one of the most powerful patterns: a claw that can extend its own capabilities by writing new programs.
+
+### The Pattern
+
+A claw generates a self-contained Python program using [Mirascope](https://mirascope.com/docs/sdk) and runs it via the `exec` tool. Each program follows a standard structure:
+
+```python
+# /// script
+# dependencies = ["mirascope[all]", "pydantic"]
+# ///
+from mirascope import llm, ops
+from pydantic import BaseModel
+
+ops.configure()
+ops.instrument_llm()
+
+
+class Summary(BaseModel):
+    title: str
+    key_points: list[str]
+    sentiment: str
+
+
+@ops.trace(tags=["summarize"])
+@llm.call("anthropic/claude-sonnet-4-5", format=Summary)
+def summarize(text: str) -> str:
+    return f"Summarize this text: {text}"
+```
+
+Key ingredients:
+
+- **PEP 723 inline dependencies** — No separate `requirements.txt` needed. `uv run` resolves deps automatically.
+- **`@llm.call`** — Mirascope's decorator for LLM interactions. Handles model routing, structured output, retries, and more.
+- **`ops.configure()` + `ops.instrument_llm()`** — Automatic tracing to Mirascope Cloud. Every LLM call is logged with cost, latency, and input/output.
+- **Typed I/O** — Pydantic models for structured input and output, so the claw gets reliable, parseable results.
+
+### How Claws Use Custom Tools
+
+Once a claw writes a program, it invokes it like any other command:
+
+```bash
+uv run summarize.py --input '{"text": "..."}'
+```
+
+The claw can:
+
+1. **Generate new tools on demand** — Need a capability? Write a program for it.
+2. **Package tools as skills** — Wrap frequently-used tools into a [skill](/docs/skills) so they persist across sessions.
+3. **Trace everything** — All LLM calls inside custom tools appear in Mirascope Cloud, giving you full observability over what your claw builds and runs.
+
+### Why Mirascope?
+
+Building tools with Mirascope gives claws access to the full SDK — structured outputs, streaming, tool use within tools, multi-provider model routing, and automatic observability. A claw can build a tool that itself uses AI, creating layered intelligence where your claw orchestrates specialized sub-tasks.
+
+For the full SDK documentation, see the [Mirascope SDK](/docs/sdk) section.
+
 ## TOOLS.md
 
 Each claw has a `TOOLS.md` file in its workspace for storing local notes about tool usage — API keys, device names, project-specific commands, and other configuration that helps the claw use its tools effectively. This file is maintained by the claw itself and loaded at the start of each session.
