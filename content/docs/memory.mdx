@@ -13,7 +13,7 @@ This is the single most important concept: **files are continuity.**
 
 ## Memory file layout
 
-OpenClaw uses a layered file structure for memory, each serving a different purpose:
+Your Claw uses a layered file structure for memory, each serving a different purpose:
 
 ### Daily logs — `memory/YYYY-MM-DD.md`
 
@@ -74,11 +74,11 @@ Daily files are raw notes. `MEMORY.md` is curated wisdom.
 
 ## Pre-compaction memory flush
 
-When a session nears the end of its context window, OpenClaw triggers a **memory flush** — a silent turn that reminds the claw to save any durable memories before context is compacted.
+When a session nears the end of its context window, the system triggers a **memory flush** — a silent turn that reminds the claw to save any durable memories before context is compacted.
 
 This ensures that important information from the current session is written to disk before older messages are summarized away. Nothing is lost to compaction if the claw has been diligent about writing things down.
 
-Configure this behavior in your OpenClaw config:
+This is configured automatically on Mirascope Cloud. For self-hosted deployments:
 
 ```yaml
 agents:
@@ -89,7 +89,7 @@ agents:
 
 ## Memory search
 
-OpenClaw builds a **vector index** over `MEMORY.md` and `memory/*.md` files, enabling semantic search across all stored memory.
+Your Claw builds a **vector index** over `MEMORY.md` and `memory/*.md` files, enabling semantic search across all stored memory.
 
 This means the claw can find related notes even when the wording differs from the query. Searching for "deployment config" might surface a note that mentioned "production setup" — the semantic meaning is matched, not just keywords.
 
@@ -106,7 +106,7 @@ This is especially useful for claws with extensive memory histories — rather t
 
 Every session operates within a finite **context window** — the maximum amount of text the model can process at once. As conversations grow longer, this window fills up.
 
-When the context window approaches its limit, OpenClaw **auto-compacts** the session:
+When the context window approaches its limit, the system **auto-compacts** the session:
 
 1. **Memory flush** fires first — the claw saves important context to disk
 2. Older messages are **summarized** into a condensed form
