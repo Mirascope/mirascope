@@ -30,23 +30,38 @@ export const createOrganizationHandler = (payload: CreateOrganizationRequest) =>
     const analytics = yield* Analytics;
     const payments = yield* Payments;
 
-    // Check if user already owns a free-plan organization
+    // Prevent users from owning more than one free-plan organization.
+    // Users with at least one paid org can always create new orgs.
     const userOrgs = yield* db.organizations.findAll({ userId: user.id });
     const ownedOrgs = userOrgs.filter((org) => org.role === "OWNER");
 
-    for (const org of ownedOrgs) {
-      const subscription = yield* payments.customers.subscriptions
-        .get(org.stripeCustomerId)
-        .pipe(
-          Effect.catchAll(() =>
-            Effect.succeed({ currentPlan: "free" as const }),
-          ),
-        );
-      if (subscription.currentPlan === "free") {
+    if (ownedOrgs.length > 0) {
+      let hasFreePlanOrg = false;
+      let hasPaidPlanOrg = false;
+
+      for (const org of ownedOrgs) {
+        const subscription = yield* payments.customers.subscriptions
+          .get(org.stripeCustomerId)
+          .pipe(
+            Effect.catchAll(() =>
+              Effect.succeed({ currentPlan: "free" as const }),
+            ),
+          );
+        if (subscription.currentPlan === "free") {
+          hasFreePlanOrg = true;
+        } else {
+          hasPaidPlanOrg = true;
+        }
+      }
+
+      // Only block if user has a free org and NO paid orgs.
+      // Users with any paid org have demonstrated willingness to pay
+      // and can always create additional organizations.
+      if (hasFreePlanOrg && !hasPaidPlanOrg) {
         return yield* Effect.fail(
           new PlanLimitExceededError({
             message:
-              "You can only own one free organization. Please upgrade your existing organization to create a new one.",
+              "You already own a free organization. Please upgrade your existing organization to a paid plan before creating additional organizations.",
             resource: "organizations",
             limitType: "free_organizations",
             currentUsage: 1,
