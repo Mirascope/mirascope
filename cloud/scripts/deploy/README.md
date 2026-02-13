@@ -52,7 +52,7 @@ Both workers use Cloudflare's `--env dev` flag:
 
 ### Secrets
 
-Cloud Worker secrets are uploaded once and persist across deploys. The dispatch worker secrets (CF_ACCOUNT_ID, CLOUDFLARE_ACCOUNT_ID, SITE_URL) are set idempotently on every run.
+Cloud Worker secrets are uploaded once and persist across deploys. The dispatch worker secrets (CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_ACCOUNT_ID, SITE_URL) are set idempotently on every run.
 
 For Cloud Worker secrets, use:
 ```bash
