@@ -9,20 +9,25 @@
 
 import type { Sandbox, Process } from "@cloudflare/sandbox";
 
+import type { Logger } from "./logger";
 import type { DispatchEnv, OpenClawDeployConfig } from "./types";
 
 import { GATEWAY_PORT, STARTUP_TIMEOUT_MS } from "./config";
+import { createLogger, redactUrl, summarizeEnvKeys } from "./logger";
 
 /**
  * Find an existing OpenClaw gateway process in the sandbox.
  */
 export async function findGatewayProcess(
   sandbox: Sandbox,
+  log?: Logger,
 ): Promise<Process | null> {
+  const l = log ?? createLogger();
   try {
     const processes = await sandbox.listProcesses();
-    console.log(
-      "[proxy] findGatewayProcess: all processes:",
+    l.debug(
+      "gateway",
+      `listProcesses: ${processes.length} processes`,
       processes.map((p) => ({
         id: p.id,
         status: p.status,
@@ -44,7 +49,7 @@ export async function findGatewayProcess(
       }
     }
   } catch (e) {
-    console.log("[proxy] Could not list processes:", e);
+    l.error("gateway", "could not list processes:", e);
   }
   return null;
 }
@@ -93,15 +98,16 @@ export async function ensureGateway(
   sandbox: Sandbox,
   config: OpenClawDeployConfig,
   env: DispatchEnv,
+  log?: Logger,
 ): Promise<Process> {
+  const l = log ?? createLogger();
+
   // Check for existing process
-  const existing = await findGatewayProcess(sandbox);
+  const existing = await findGatewayProcess(sandbox, l);
   if (existing) {
-    console.log(
-      "[proxy] Found existing gateway process:",
-      existing.id,
-      "status:",
-      existing.status,
+    l.info(
+      "gateway",
+      `found existing process: ${existing.id} (${existing.status})`,
     );
     try {
       await existing.waitForPort(GATEWAY_PORT, {
@@ -110,37 +116,33 @@ export async function ensureGateway(
       });
       return existing;
     } catch {
-      console.log(
-        "[proxy] Existing process not reachable, killing and restarting",
+      l.info(
+        "gateway",
+        "existing process not reachable, killing and restarting",
       );
       try {
         await existing.kill();
       } catch (killErr) {
-        console.log("[proxy] Failed to kill process:", killErr);
+        l.error("gateway", "failed to kill process:", killErr);
       }
     }
   }
 
   // Start new gateway
-  console.log("[proxy] Starting new gateway for claw:", config.clawId);
+  l.info("gateway", `starting new gateway for claw: ${config.clawId}`);
   const envVars = buildEnvVars(config, env);
   const command = "bun /opt/openclaw/start-openclaw.ts";
 
-  console.log("[proxy] Env var keys:", Object.keys(envVars));
+  l.info("gateway", `env: ${summarizeEnvKeys(envVars)}`);
 
   let process: Process;
   try {
     process = await sandbox.startProcess(command, {
       env: Object.keys(envVars).length > 0 ? envVars : undefined,
     });
-    console.log(
-      "[proxy] Process started:",
-      process.id,
-      "status:",
-      process.status,
-    );
+    l.info("gateway", `process started: ${process.id} (${process.status})`);
   } catch (err) {
-    console.error("[proxy] Failed to start process:", err);
+    l.error("gateway", "failed to start process:", err);
     throw err;
   }
 
@@ -150,91 +152,70 @@ export async function ensureGateway(
       mode: "tcp",
       timeout: STARTUP_TIMEOUT_MS,
     });
-    console.log("[proxy] Gateway is ready on port", GATEWAY_PORT);
+    l.info("gateway", `ready on port ${GATEWAY_PORT}`);
 
     const logs = await process.getLogs();
-    if (logs.stdout) console.log("[proxy] stdout:", logs.stdout);
-    if (logs.stderr) console.log("[proxy] stderr:", logs.stderr);
+    if (logs.stdout) l.debug("gateway", "stdout:", logs.stdout);
+    if (logs.stderr) l.debug("gateway", "stderr:", logs.stderr);
   } catch (e) {
-    console.error("[proxy] waitForPort failed:", e);
+    l.error("gateway", "waitForPort failed:", e);
 
     // Check if start-openclaw detected an existing gateway
     let isAlreadyRunning = false;
     try {
       const logs = await process.getLogs();
-      console.error("[proxy] Startup stderr:", logs.stderr);
-      console.error("[proxy] Startup stdout:", logs.stdout);
+      l.debug("gateway", "startup stderr:", logs.stderr);
+      l.debug("gateway", "startup stdout:", logs.stdout);
       isAlreadyRunning =
         logs.stdout?.includes("OPENCLAW_ALREADY_RUNNING") ||
         logs.stderr?.includes("OPENCLAW_ALREADY_RUNNING") ||
         false;
     } catch (logErr) {
-      console.error("[proxy] Failed to get logs:", logErr);
+      l.error("gateway", "failed to get logs:", logErr);
     }
 
     if (isAlreadyRunning) {
-      console.log(
-        "[proxy] start-openclaw reported existing gateway; checking running processes",
+      l.info(
+        "gateway",
+        "start-openclaw reported existing gateway; searching...",
       );
 
-      // The gateway is already running from a previous start — find it
-      console.log("[proxy] Searching for existing gateway process...");
-      const existingProc = await findGatewayProcess(sandbox);
-      console.log(
-        "[proxy] findGatewayProcess result:",
-        existingProc?.id ?? "not found",
-      );
+      const existingProc = await findGatewayProcess(sandbox, l);
       if (existingProc) {
-        console.log(
-          "[proxy] Found existing gateway process:",
-          existingProc.id,
-          "status:",
-          existingProc.status,
+        l.info(
+          "gateway",
+          `found existing: ${existingProc.id} (${existingProc.status})`,
         );
         try {
           await existingProc.waitForPort(GATEWAY_PORT, {
             mode: "tcp",
             timeout: STARTUP_TIMEOUT_MS,
           });
-          console.log(
-            "[proxy] Existing gateway is ready on port",
-            GATEWAY_PORT,
-          );
+          l.info("gateway", `existing gateway ready on port ${GATEWAY_PORT}`);
           return existingProc;
         } catch {
-          console.error("[proxy] Existing gateway not reachable on port");
+          l.error("gateway", "existing gateway not reachable on port");
         }
       }
 
-      // Last resort: try a direct HTTP check — the gateway might be running
-      // under a command string that findGatewayProcess doesn't recognize
-      console.log("[proxy] Trying direct health check fallback...");
+      // Last resort: direct HTTP health check
+      l.debug("gateway", "trying direct health check fallback...");
       try {
         const healthCheck = await sandbox.containerFetch(
           new Request("http://localhost/healthz"),
           GATEWAY_PORT,
         );
         if (healthCheck.ok || healthCheck.status === 404) {
-          // Any non-connection-error response means something is listening
-          console.log(
-            "[proxy] Port",
-            GATEWAY_PORT,
-            "is responding (status:",
-            healthCheck.status,
-            ") — gateway is running",
+          l.info(
+            "gateway",
+            `port ${GATEWAY_PORT} responding (status: ${healthCheck.status})`,
           );
-          // Re-find the actual gateway process now that we know it's listening
-          console.log("[proxy] Health check passed, re-scanning processes...");
-          const runningProc = await findGatewayProcess(sandbox);
-          console.log(
-            "[proxy] Re-scan result:",
-            runningProc?.id ?? "not found",
-          );
+          const runningProc = await findGatewayProcess(sandbox, l);
           if (runningProc) return runningProc;
           return process; // Fallback: process ref won't be used for proxying
         }
       } catch {
-        console.error("[proxy] Direct port check also failed");
+        l.error("gateway", "direct port check also failed");
       }
     }
 
@@ -254,11 +235,14 @@ export async function proxyHttp(
   request: Request,
   basePath?: string,
   gatewayToken?: string,
+  log?: Logger,
 ): Promise<Response> {
+  const l = log ?? createLogger();
   const url = new URL(request.url);
-  console.log("[proxy] HTTP:", url.pathname + url.search);
+  l.info("http", url.pathname + url.search);
 
   const response = await sandbox.containerFetch(request, GATEWAY_PORT);
+  l.debug("http", `response: ${response.status} ${response.statusText}`);
 
   const headers = new Headers(response.headers);
   headers.set("X-Claw-Worker", "dispatch");
@@ -341,33 +325,31 @@ export async function proxyWebSocket(
   sandbox: Sandbox,
   request: Request,
   basePath?: string,
-  debug = false,
+  log?: Logger,
 ): Promise<Response> {
+  const l = log ?? createLogger();
   const url = new URL(request.url);
   const hasToken = url.searchParams.has("token");
-  console.log(
-    `[ws] connect path=${url.pathname} hasToken=${hasToken} basePath=${basePath ?? "none"}`,
-  );
+  l.info("ws", `connect path=${url.pathname} hasToken=${hasToken}`);
+  l.debug("ws", `full URL: ${redactUrl(url)}`);
 
   const containerResponse = await sandbox.wsConnect(request, GATEWAY_PORT);
   const containerWs = containerResponse.webSocket;
 
   if (!containerWs) {
-    console.error(
-      "[ws] no WebSocket in container response, status:",
-      containerResponse.status,
+    l.error(
+      "ws",
+      `no WebSocket in container response, status: ${containerResponse.status}`,
     );
-    if (debug) {
-      const body = await containerResponse
-        .clone()
-        .text()
-        .catch(() => "");
-      console.error("[ws:debug] container response body:", body);
-    }
+    const body = await containerResponse
+      .clone()
+      .text()
+      .catch(() => "");
+    l.debug("ws", "container response body:", body);
     return containerResponse;
   }
 
-  if (debug) console.log("[ws:debug] container WebSocket accepted");
+  l.debug("ws", "container WebSocket accepted");
 
   // Create a WebSocket pair for the client
   const [clientWs, serverWs] = Object.values(new WebSocketPair());
@@ -377,13 +359,7 @@ export async function proxyWebSocket(
 
   // Relay: client -> container
   serverWs.addEventListener("message", (event) => {
-    if (debug) {
-      const preview =
-        typeof event.data === "string"
-          ? event.data.slice(0, 200)
-          : `[binary ${(event.data as ArrayBuffer).byteLength}b]`;
-      console.log("[ws:debug] client→container:", preview);
-    }
+    l.debug("ws", `client→container: ${wsPreview(event.data)}`);
     if (containerWs.readyState === WebSocket.OPEN) {
       containerWs.send(event.data);
     }
@@ -393,17 +369,8 @@ export async function proxyWebSocket(
   containerWs.addEventListener("message", (event) => {
     if (serverWs.readyState === WebSocket.OPEN) {
       let data = event.data;
-      if (debug) {
-        const preview =
-          typeof data === "string"
-            ? data.slice(0, 200)
-            : `[binary ${(data as ArrayBuffer).byteLength}b]`;
-        console.log("[ws:debug] container→client:", preview);
-      }
+      l.debug("ws", `container→client: ${wsPreview(data)}`);
       // Rewrite URLs in JSON error messages to include base path.
-      // Currently targets OpenClaw gateway's { error: { message: "..." } }
-      // shape only. Other URL-bearing fields (e.g. redirect, url) are not
-      // rewritten — extend the parsing below if those become relevant.
       if (basePath && typeof data === "string") {
         try {
           const parsed = JSON.parse(data);
@@ -411,10 +378,7 @@ export async function proxyWebSocket(
             parsed.error?.message &&
             typeof parsed.error.message === "string"
           ) {
-            if (debug)
-              console.log(
-                "[ws:debug] rewriting error message URLs for base path",
-              );
+            l.debug("ws", "rewriting error message URLs for base path");
             parsed.error.message = parsed.error.message.replace(
               /wss?:\/\/([^/\s"]+)\//g,
               (match: string, host: string) =>
@@ -430,16 +394,15 @@ export async function proxyWebSocket(
     }
   });
 
-  // Close events
+  // Close events — always logged (critical diagnostic signals)
   serverWs.addEventListener("close", (event) => {
-    console.log(
-      `[ws] client closed: code=${event.code} reason="${event.reason}"`,
-    );
+    l.info("ws", `client closed: code=${event.code} reason="${event.reason}"`);
     containerWs.close(event.code, event.reason);
   });
   containerWs.addEventListener("close", (event) => {
-    console.log(
-      `[ws] container closed: code=${event.code} reason="${event.reason}"`,
+    l.info(
+      "ws",
+      `container closed: code=${event.code} reason="${event.reason}"`,
     );
     let reason = event.reason;
     if (reason.length > 123) {
@@ -448,15 +411,26 @@ export async function proxyWebSocket(
     serverWs.close(event.code, reason);
   });
 
-  // Error events
+  // Error events — always logged
   serverWs.addEventListener("error", (event) => {
-    console.error("[ws] client error:", event);
+    l.error("ws", "client error:", event);
     containerWs.close(1011, "Client error");
   });
   containerWs.addEventListener("error", (event) => {
-    console.error("[ws] container error:", event);
+    l.error("ws", "container error:", event);
     serverWs.close(1011, "Container error");
   });
 
   return new Response(null, { status: 101, webSocket: clientWs });
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Preview a WebSocket message for debug logging. */
+function wsPreview(data: unknown): string {
+  if (typeof data === "string") return data.slice(0, 200);
+  if (data instanceof ArrayBuffer) return `[binary ${data.byteLength}b]`;
+  return `[unknown ${typeof data}]`;
 }

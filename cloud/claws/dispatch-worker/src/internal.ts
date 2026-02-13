@@ -25,96 +25,83 @@ const internal = new Hono<AppEnv>();
 
 /**
  * POST /_internal/recreate
- *
- * Kill the gateway process and destroy the container.
- * Cloudflare will create a fresh one on the next request.
  */
 internal.post("/recreate", async (c) => {
   const sandbox = c.get("sandbox");
-  const clawId = c.get("clawId");
-  console.log("[internal] Recreating container for claw:", clawId);
+  const log = c.get("log");
+  log.info("internal", "recreating container");
 
-  // Kill gateway process first (best-effort, don't fail if missing)
   try {
-    const proc = await findGatewayProcess(sandbox);
+    const proc = await findGatewayProcess(sandbox, log);
     if (proc) {
       await proc.kill();
     }
   } catch (err) {
-    console.log("[internal] Error killing process during recreate:", err);
+    log.error("internal", "error killing process during recreate:", err);
   }
 
-  // Destroy the container — this is the critical operation
   try {
     await sandbox.destroy();
     return c.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("[internal] Failed to destroy container:", message);
+    log.error("internal", "failed to destroy container:", message);
     return c.json({ ok: false, error: message }, 500);
   }
 });
 
 /**
  * POST /_internal/restart-gateway
- *
- * Kill the gateway process. It will be re-started by the next
- * proxied request via ensureGateway().
  */
 internal.post("/restart-gateway", async (c) => {
   const sandbox = c.get("sandbox");
-  const clawId = c.get("clawId");
-  console.log("[internal] Restarting gateway for claw:", clawId);
+  const log = c.get("log");
+  log.info("internal", "restarting gateway");
 
-  const proc = await findGatewayProcess(sandbox);
+  const proc = await findGatewayProcess(sandbox, log);
   if (!proc) {
-    console.log("[internal] No gateway process found to restart");
+    log.info("internal", "no gateway process found to restart");
     return c.json({ ok: true });
   }
 
   try {
     await proc.kill();
-    console.log(
-      "[internal] Gateway process killed, will restart on next request",
-    );
+    log.info("internal", "gateway killed, will restart on next request");
     return c.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("[internal] Failed to kill gateway:", message);
+    log.error("internal", "failed to kill gateway:", message);
     return c.json({ ok: false, error: message }, 500);
   }
 });
 
 /**
  * POST /_internal/destroy
- *
- * Destroy the container and clear DO storage.
  */
 internal.post("/destroy", async (c) => {
   const sandbox = c.get("sandbox");
-  const clawId = c.get("clawId");
-  console.log("[internal] Destroying container for claw:", clawId);
+  const log = c.get("log");
+  log.info("internal", "destroying container");
 
   try {
     await sandbox.destroy();
-    console.log("[internal] Container destroyed");
+    log.info("internal", "container destroyed");
     return c.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("[internal] Failed to destroy container:", message);
+    log.error("internal", "failed to destroy container:", message);
     return c.json({ ok: false, error: message }, 500);
   }
 });
 
 /**
  * GET /_internal/state
- *
- * Return the current container state.
  */
 internal.get("/state", async (c) => {
   const sandbox = c.get("sandbox");
+  const log = c.get("log");
 
-  const proc = await findGatewayProcess(sandbox);
+  const proc = await findGatewayProcess(sandbox, log);
 
   let state: ContainerState;
   if (proc) {
@@ -135,21 +122,18 @@ internal.get("/state", async (c) => {
 
 /**
  * GET /_internal/logs
- *
- * Return recent stdout/stderr from the gateway process.
- * Uses the @cloudflare/sandbox Process.getLogs() API.
  */
 internal.get("/logs", async (c) => {
   const sandbox = c.get("sandbox");
+  const log = c.get("log");
 
-  const proc = await findGatewayProcess(sandbox);
+  const proc = await findGatewayProcess(sandbox, log);
   if (!proc) {
     return c.json({ logs: [], error: "No gateway process running" }, 200);
   }
 
   try {
     const { stdout, stderr } = await proc.getLogs();
-    // Split into lines, filter empties, combine with stream labels
     const stdoutLines = stdout
       ? stdout
           .split("\n")
@@ -169,31 +153,27 @@ internal.get("/logs", async (c) => {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("[internal] Failed to get process logs:", message);
+    log.error("internal", "failed to get process logs:", message);
     return c.json({ logs: [], error: message }, 500);
   }
 });
 
 /**
  * POST /_internal/warm-up
- *
- * Trigger container startup and wait for the gateway to be ready.
- * Called by the Cloud backend during claw provisioning to cold-start
- * the container and verify the gateway is serving.
  */
 internal.post("/warm-up", async (c) => {
   const sandbox = c.get("sandbox");
   const clawId = c.get("clawId");
-  console.log("[internal] Warming up container for claw:", clawId);
+  const log = c.get("log");
+  log.info("internal", "warming up container");
 
-  // Get or fetch bootstrap config
   let config = getCachedConfig(clawId);
   if (!config) {
     const configResult = await Effect.runPromiseExit(
       fetchBootstrapConfig(clawId, c.env),
     );
     if (configResult._tag === "Failure") {
-      console.error("[internal] Failed to fetch config for warm-up");
+      log.error("internal", "failed to fetch config for warm-up");
       return c.json(
         { ok: false, error: "Failed to fetch bootstrap config" },
         502,
@@ -204,10 +184,9 @@ internal.post("/warm-up", async (c) => {
   }
 
   try {
-    await ensureGateway(sandbox, config, c.env);
-    console.log("[internal] Warm-up complete for claw:", clawId);
+    await ensureGateway(sandbox, config, c.env, log);
+    log.info("internal", "warm-up complete");
 
-    // Report active status to cloud backend
     try {
       await Effect.runPromise(
         reportClawStatus(
@@ -217,15 +196,14 @@ internal.post("/warm-up", async (c) => {
         ),
       );
     } catch (statusErr) {
-      console.error("[internal] Failed to report active status:", statusErr);
+      log.error("internal", "failed to report active status:", statusErr);
     }
 
     return c.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("[internal] Warm-up failed:", message);
+    log.error("internal", "warm-up failed:", message);
 
-    // Report error status
     await Effect.runPromise(
       reportClawStatus(
         clawId,

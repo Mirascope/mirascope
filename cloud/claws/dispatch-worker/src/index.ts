@@ -26,6 +26,7 @@ import { handlePreflight, parsePath } from "./auth";
 import { resolveClawId } from "./bootstrap";
 import { handleProxy, runAuth } from "./handler";
 import { internal } from "./internal";
+import { createLogger } from "./logger";
 import { findGatewayProcess } from "./proxy";
 import { validateEnv } from "./settings";
 import { PROCESS_TO_HEALTH_STATUS } from "./types";
@@ -58,11 +59,13 @@ app.use("/_internal/*", async (c, next) => {
     );
   }
 
-  console.log(`[REQ] ${c.req.method} ${c.req.path} clawId=${clawId}`);
+  const log = createLogger({ clawId, debug: !!c.env.DEBUG });
+  log.info("req", `${c.req.method} ${c.req.path} (internal)`);
 
   const sandbox = getSandbox(c.env.Sandbox, clawId, { keepAlive: true });
   c.set("sandbox", sandbox);
   c.set("clawId", clawId);
+  c.set("log", log);
 
   await next();
 });

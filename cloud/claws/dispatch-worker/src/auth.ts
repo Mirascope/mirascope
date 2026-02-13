@@ -228,7 +228,7 @@ export function handlePreflight(
   // OPTIONS without Origin = non-CORS request (e.g., curl, health checks, monitoring)
   // Return 204 without CORS headers (standard for non-CORS OPTIONS)
   if (!origin) {
-    console.log("[cors] OPTIONS without Origin header — returning 204");
+    // Non-CORS OPTIONS request (curl, health checks, monitoring)
     return new Response(null, { status: 204 });
   }
 
@@ -241,11 +241,9 @@ export function handlePreflight(
   if (Object.keys(headers).length === 0) {
     // Origin not allowed — return 403 WITHOUT CORS headers.
     // This ensures the browser blocks the response (correct security behavior).
-    console.log("[cors] Origin not allowed:", origin);
     return new Response(null, { status: 403 });
   }
 
-  console.log("[cors] Preflight approved for origin:", origin);
   return new Response(null, { status: 204, headers });
 }
 
