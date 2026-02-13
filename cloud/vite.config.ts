@@ -8,6 +8,7 @@ import { defineConfig } from "vite";
 
 import ContentProcessor from "./app/lib/content/content-processor";
 import { viteContent } from "./vite-plugins/content";
+import { viteDevAuth } from "./vite-plugins/dev-auth";
 import { viteImages } from "./vite-plugins/images";
 import { viteMarkdownExport } from "./vite-plugins/markdown-export";
 import { viteMDX } from "./vite-plugins/mdx";
@@ -99,6 +100,7 @@ export default defineConfig(() => {
       viteSocialCards({ processor }), // Generate social card images from sitemap (must be after tanstackStart)
       viteMarkdownExport({ processor }), // Generate markdown files for content negotiation (must be after tanstackStart)
       pagefindDev(),
+      viteDevAuth(),
       viteWsProxy(),
       viteReact(),
       tailwindcss(),

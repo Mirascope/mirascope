@@ -44,6 +44,24 @@ import { Button } from "@/app/components/ui/button";
 import { useClaw } from "@/app/contexts/claw";
 import { useGatewayChat } from "@/app/hooks/use-gateway-chat";
 
+function getGatewayUrl(orgSlug: string, clawSlug: string): string {
+  if (typeof window === "undefined") return "#";
+  const hostname = window.location.hostname;
+  if (hostname === "localhost" || hostname === "127.0.0.1") {
+    // In local dev, link directly to the local OpenClaw Control UI.
+    // Derive HTTP URL from the WS proxy URL (ws://host:port → http://host:port).
+    const wsUrl = import.meta.env.VITE_OPENCLAW_GATEWAY_WS_URL;
+    if (wsUrl) {
+      return wsUrl.replace(/^wss:/, "https:").replace(/^ws:/, "http:");
+    }
+    return "http://localhost:18789/";
+  }
+  const base = hostname.startsWith("staging.")
+    ? "openclaw.staging.mirascope.com"
+    : "openclaw.mirascope.com";
+  return `https://${base}/${orgSlug}/${clawSlug}/overview`;
+}
+
 function MessageParts({
   message,
   isLastMessage,
@@ -150,7 +168,7 @@ function ClawsChatPage() {
           <ClawHeader />
           <Button asChild size="sm" variant="outline">
             <a
-              href={`https://${typeof window !== "undefined" && window.location.hostname.startsWith("staging.") ? "openclaw.staging.mirascope.com" : "openclaw.mirascope.com"}/${orgSlug}/${clawSlug}/overview`}
+              href={getGatewayUrl(orgSlug, clawSlug)}
               rel="noopener noreferrer"
               target="_blank"
             >

@@ -158,7 +158,25 @@ export const getSubscriptionHandler = (organizationId: string) =>
     return yield* payments.customers.subscriptions.get(
       organization.stripeCustomerId,
     );
-  });
+  }).pipe(
+    // In local dev, return a default free plan if Stripe is not configured
+    Effect.catchAll((error) => {
+      if (process.env.ENVIRONMENT === "development") {
+        console.warn(
+          "[dev] Stripe subscription lookup failed, returning free plan default:",
+          error instanceof Error ? error.message : String(error),
+        );
+        return Effect.succeed({
+          subscriptionId: "sub_dev_free",
+          currentPlan: "free" as const,
+          status: "active",
+          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          hasPaymentMethod: false,
+        });
+      }
+      return Effect.fail(error);
+    }),
+  );
 
 export const previewSubscriptionChangeHandler = (
   organizationId: string,
