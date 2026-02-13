@@ -64,14 +64,20 @@ export const createClawHandler = (
     const routerBaseUrl = `${settings.siteUrl}/router/v2/anthropic`;
 
     // Encrypt all container secrets before persisting
-    const encrypted = yield* encryptSecrets({
+    const containerSecrets: Record<string, string> = {
       ANTHROPIC_API_KEY: claw.plaintextApiKey,
       ANTHROPIC_BASE_URL: routerBaseUrl,
       OPENCLAW_GATEWAY_TOKEN: gatewayToken,
       OPENCLAW_SITE_URL: settings.siteUrl,
       R2_ACCESS_KEY_ID: status.r2Credentials?.accessKeyId ?? "",
       R2_SECRET_ACCESS_KEY: status.r2Credentials?.secretAccessKey ?? "",
-    });
+    };
+
+    if (payload.model) {
+      containerSecrets.OPENCLAW_PRIMARY_MODEL = payload.model;
+    }
+
+    const encrypted = yield* encryptSecrets(containerSecrets);
 
     yield* drizzle
       .update(claws)
