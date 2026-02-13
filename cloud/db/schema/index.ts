@@ -12,6 +12,7 @@ export * from "@/db/schema/tags";
 export * from "@/db/schema/api-keys";
 export * from "@/db/schema/functions";
 export * from "@/db/schema/annotations";
+export * from "@/db/schema/project-api-keys";
 export * from "@/db/schema/router-requests";
 export * from "@/db/schema/credit-reservations";
 export * from "@/db/schema/claws";
@@ -52,6 +53,7 @@ export type {
 } from "@/db/schema/api-keys";
 export type { PublicFunction } from "@/db/schema/functions";
 export type { PublicAnnotation } from "@/db/schema/annotations";
+export type { PublicProjectApiKey } from "@/db/schema/project-api-keys";
 export type {
   RouterRequest,
   NewRouterRequest,
@@ -81,6 +83,7 @@ import { organizationInvitations } from "@/db/schema/organization-invitations";
 import { organizationMembershipAudit } from "@/db/schema/organization-membership-audit";
 import { organizationMemberships } from "@/db/schema/organization-memberships";
 import { organizations } from "@/db/schema/organizations";
+import { projectApiKeys } from "@/db/schema/project-api-keys";
 import { projectMembershipAudit } from "@/db/schema/project-membership-audit";
 import { projectMemberships } from "@/db/schema/project-memberships";
 import { projects } from "@/db/schema/projects";
@@ -97,6 +100,7 @@ export type DatabaseTable =
   | typeof organizationMembershipAudit
   | typeof organizationInvitations
   | typeof projects
+  | typeof projectApiKeys
   | typeof projectMemberships
   | typeof projectMembershipAudit
   | typeof environments

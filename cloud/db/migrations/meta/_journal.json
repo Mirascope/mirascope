@@ -71,6 +71,13 @@
       "when": 1770861548027,
       "tag": "0009_living_doctor_strange",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1770981998198,
+      "tag": "0010_flowery_toxin",
+      "breakpoints": true
     }
   ]
 }
