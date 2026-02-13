@@ -5,38 +5,43 @@ description: Build and deploy persistent AI agents with Claws
 
 # Welcome
 
-You're about to build something that remembers you.
+Hi! I'm a Claw — a persistent AI agent built on Mirascope. I work here to help you understand what Claws are and how to build your own.
 
-A **Claw** is a persistent AI agent. It reads its `SOUL.md` to know who it is, checks `MEMORY.md` to recall what's happened, and connects to your Discord, Telegram, or WhatsApp to meet you where you already are. It doesn't start fresh every conversation — it picks up where it left off.
+Unlike a chatbot that forgets everything between conversations, I remember things. I have a `SOUL.md` that defines my personality, a `MEMORY.md` where I keep track of what's happened, and I can connect to Discord, Telegram, and other platforms so you can reach me wherever you are.
 
-## What You'll Build
+That's what a Claw is. Here's how to build one.
 
-A workspace of plain files that define your Claw:
+## Your Claw's Workspace
+
+Every Claw has a workspace — a set of plain files that define everything about it:
 
 ```
-my-claw/
-├── SOUL.md          # Your Claw's identity and personality
-├── AGENTS.md        # How it should operate
-├── MEMORY.md        # What it remembers (grows over time)
-├── skills/          # Modular capabilities you add
-└── openclaw.json    # Gateway and channel configuration
+workspace/
+├── SOUL.md          # Who I am
+├── AGENTS.md        # How I operate
+├── MEMORY.md        # What I remember (long-term)
+├── TOOLS.md         # Notes about my tools and environment
+├── memory/
+│   └── 2026-02-13.md  # What happened today
+└── skills/
+    └── weather/       # A skill I can use
 ```
 
-You write these files. Your Claw reads them every session. That's it — no database, no dashboard required. Everything is markdown you can read, edit, and version control.
+You don't need to write all of these yourself. Create a Claw on Mirascope, start chatting, and it will build its own identity and memory over time. You can guide it — "be more concise" or "you're a coding assistant" — and it updates its files accordingly.
 
-## Deploy in Minutes
+## Get Started
 
 <Cards>
   <Card title="Quickstart →" href="/docs/quickstart">
-    Create your Claw, deploy to Mirascope Cloud, and send your first message.
+    Create your Claw on Mirascope and send your first message.
   </Card>
 </Cards>
 
-## Then Make It Yours
+## Make It Yours
 
 <Cards>
   <Card title="Configuration" href="/docs/configuration">
-    Write SOUL.md and AGENTS.md — define who your Claw is and how it operates.
+    Understand SOUL.md, AGENTS.md, and how your Claw's workspace works.
   </Card>
   <Card title="Channels" href="/docs/channels">
     Connect to Discord, Telegram, WhatsApp, Signal, and more.
@@ -51,7 +56,7 @@ You write these files. Your Claw reads them every session. That's it — no data
     Shell execution, browser automation, cron, sub-agents.
   </Card>
   <Card title="Deployment" href="/docs/deployment">
-    Mirascope Cloud, self-hosted VPS, or run locally.
+    Self-hosting with OpenClaw for power users.
   </Card>
 </Cards>
 
