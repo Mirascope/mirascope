@@ -16,6 +16,8 @@ import Header from "@/app/components/blocks/navigation/header";
 import {
   ThemeProvider,
   useIsLandingPage,
+  useIsLoginPage,
+  useIsWatercolorPage,
 } from "@/app/components/blocks/theme-provider";
 import { Toaster } from "@/app/components/ui/sonner";
 import { AnalyticsProvider } from "@/app/contexts/analytics";
@@ -73,7 +75,10 @@ function AppContent() {
   const isAppRoute = isApplicationRoute(currentPath);
   const isDocsRoute =
     currentPath === "/docs" || currentPath.startsWith("/docs/");
+  const isWatercolorPage = useIsWatercolorPage();
   const isLandingPage = useIsLandingPage();
+  const isLoginPage = useIsLoginPage();
+  const isFullBleedPage = isLandingPage || isLoginPage;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -82,11 +87,13 @@ function AppContent() {
         className={
           isAppRoute
             ? "w-full grow pt-[60px]"
-            : isLandingPage
+            : isFullBleedPage
               ? "flex w-full grow flex-col pt-(--header-height)"
-              : isDocsRoute
-                ? "mx-auto w-full max-w-7xl grow pt-(--header-height-with-selector)"
-                : "mx-auto w-full max-w-7xl grow pt-(--header-height)"
+              : isWatercolorPage
+                ? "w-full grow pt-(--header-height)"
+                : isDocsRoute
+                  ? "mx-auto w-full max-w-7xl grow pt-(--header-height-with-selector)"
+                  : "mx-auto w-full max-w-7xl grow pt-(--header-height)"
         }
       >
         <main className="flex grow flex-col">

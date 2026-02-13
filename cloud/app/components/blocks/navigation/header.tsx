@@ -11,11 +11,7 @@ import DocsSubNavbar from "@/app/components/blocks/navigation/docs-sub-navbar";
 import MobileNavigation from "@/app/components/blocks/navigation/mobile-navigation";
 import ResponsiveSearchWrapper from "@/app/components/blocks/navigation/responsive-search-wrapper";
 import ThemeSwitcher from "@/app/components/blocks/navigation/theme-switcher";
-import {
-  useIsLandingPage,
-  useIsLoginPage,
-  useIsRouterWaitlistPage,
-} from "@/app/components/blocks/theme-provider";
+import { useIsWatercolorPage } from "@/app/components/blocks/theme-provider";
 import { CloudNavIcons } from "@/app/components/cloud-nav-icons";
 import { NavbarCredits } from "@/app/components/navbar-credits";
 import { isCloudAppRoute } from "@/app/lib/route-utils";
@@ -36,14 +32,7 @@ export default function Header() {
   const isDocsRoute =
     currentPath === "/docs" || currentPath.startsWith("/docs/");
 
-  // Use the isLandingPage hook instead of router
-  const isLandingPage = useIsLandingPage();
-
-  // Use the isLoginPage hook
-  const isLoginPage = useIsLoginPage();
-
-  // Use the isRouterWaitlistPage hook instead of router
-  const isRouterWaitlistPage = useIsRouterWaitlistPage();
+  const isWatercolorPage = useIsWatercolorPage();
 
   // State to track scroll position
   const [scrolled, setScrolled] = useState(false);
@@ -67,7 +56,7 @@ export default function Header() {
   return (
     <header
       className={HEADER_STYLES.container(
-        isLandingPage || isLoginPage || isRouterWaitlistPage,
+        isWatercolorPage,
         scrolled,
         isCloudRoute,
       )}
@@ -78,7 +67,7 @@ export default function Header() {
             size="small"
             withText={true}
             textClassName={cn(HEADER_STYLES.logoText(isSearchOpen))}
-            lightText={isLandingPage || isLoginPage}
+            lightText={isWatercolorPage}
           />
         </Link>
         <DesktopNavigation isSearchOpen={isSearchOpen} />

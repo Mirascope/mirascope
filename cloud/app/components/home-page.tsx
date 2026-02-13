@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 
-import homeStyles from "@/app/components/home-page.module.css";
 import { ClawIcon } from "@/app/components/icons/claw-icon";
 import { ClawDemo } from "@/app/components/landing/claw-demo";
 import { TypingAnimation } from "@/app/components/landing/typing-animation";
 import { ValueProps } from "@/app/components/landing/value-props";
 import { ButtonLink } from "@/app/components/ui/button-link";
+import { WatercolorBackground } from "@/app/components/watercolor-background";
 import { useSunsetTime } from "@/app/hooks/sunset-time";
-import { cn } from "@/app/lib/utils";
 
 export function HomePage() {
   useSunsetTime();
@@ -27,7 +26,7 @@ export function HomePage() {
 
   return (
     <>
-      <div className={cn(homeStyles.watercolorBg, "watercolor-bg")} />
+      <WatercolorBackground />
       <div className="flex grow flex-col items-center justify-center">
         {/* Hero + Demo row */}
         <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-6 px-4 lg:flex-row lg:gap-12 lg:px-8">

@@ -3,7 +3,7 @@ import DOMPurify from "dompurify";
 import { Search as SearchIcon } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 
-import { useIsLandingPage } from "@/app/components/blocks/theme-provider";
+import { useIsWatercolorPage } from "@/app/components/blocks/theme-provider";
 import { useIsMobile } from "@/app/hooks/is-mobile";
 import {
   getSearchService,
@@ -153,12 +153,12 @@ function SearchInput({
   isOpen,
   isMobile = false,
 }: SearchInputProps) {
-  const isLandingPage = useIsLandingPage();
+  const isWatercolorPage = useIsWatercolorPage();
   return (
     <div
-      className={SEARCH_BAR_STYLES.inputContainer(isLandingPage, isMobile)}
+      className={SEARCH_BAR_STYLES.inputContainer(isWatercolorPage, isMobile)}
       data-testid="search-input"
-      style={SEARCH_BAR_STYLES.getInputContainerStyles(isLandingPage)}
+      style={SEARCH_BAR_STYLES.getInputContainerStyles(isWatercolorPage)}
       onClick={onFocus}
     >
       <SearchIcon size={16} className={SEARCH_BAR_STYLES.icon(isOpen)} />
@@ -167,13 +167,13 @@ function SearchInput({
         readOnly={!isOpen}
         type="text"
         placeholder="Search..."
-        className={SEARCH_BAR_STYLES.input(isOpen, isLandingPage, isMobile)}
+        className={SEARCH_BAR_STYLES.input(isOpen, isWatercolorPage, isMobile)}
         value={query}
         onChange={(e) => onChange(e.target.value)}
         onFocus={onFocus}
         autoFocus={isMobile && isOpen} // Auto-focus in mobile mode
       />
-      <kbd className={SEARCH_BAR_STYLES.kbd(isLandingPage, isOpen)}>
+      <kbd className={SEARCH_BAR_STYLES.kbd(isWatercolorPage, isOpen)}>
         <span className="text-xs">⌘</span>K
       </kbd>
     </div>
@@ -210,15 +210,15 @@ function SearchResultsContainer({
   setSelectedIndex,
   isMobile = false,
 }: SearchResultsContainerProps) {
-  const isLandingPage = useIsLandingPage();
+  const isWatercolorPage = useIsWatercolorPage();
   return (
     <div
       className={SEARCH_BAR_STYLES.resultsContainer(
-        isLandingPage,
+        isWatercolorPage,
         isMobile,
         isOpen,
       )}
-      style={SEARCH_BAR_STYLES.getResultsContainerStyles(isLandingPage)}
+      style={SEARCH_BAR_STYLES.getResultsContainerStyles(isWatercolorPage)}
       ref={resultsRef}
     >
       {renderSearchContent()}

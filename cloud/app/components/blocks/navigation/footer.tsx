@@ -1,21 +1,16 @@
 import { Link } from "@tanstack/react-router";
 
-import {
-  useIsLandingPage,
-  useIsLoginPage,
-} from "@/app/components/blocks/theme-provider";
+import { useIsWatercolorPage } from "@/app/components/blocks/theme-provider";
 import { cn } from "@/app/lib/utils";
 
 export default function Footer() {
-  const isLanding = useIsLandingPage();
-  const isLogin = useIsLoginPage();
-  const isLandingPage = isLanding || isLogin;
+  const isWatercolorPage = useIsWatercolorPage();
 
   return (
     <footer
       className={cn(
         "relative z-50 mt-auto w-full px-4 pt-4 pb-3 sm:px-6 md:px-12",
-        isLandingPage ? "bg-transparent text-white" : "bg-background",
+        isWatercolorPage ? "bg-transparent text-white" : "bg-background",
       )}
     >
       <div className="mx-auto flex max-w-5xl flex-col-reverse items-center justify-between md:flex-row md:items-center">
@@ -31,7 +26,7 @@ export default function Footer() {
             to="/privacy"
             className={cn(
               "text-sm sm:text-base",
-              isLandingPage ? "text-white hover:text-white/80" : "nav-text",
+              isWatercolorPage ? "text-white hover:text-white/80" : "nav-text",
             )}
           >
             <span className="text-sm sm:text-base font-handwriting">
@@ -43,7 +38,7 @@ export default function Footer() {
             params={{ _splat: "use" }}
             className={cn(
               "text-sm sm:text-base",
-              isLandingPage ? "text-white hover:text-white/80" : "nav-text",
+              isWatercolorPage ? "text-white hover:text-white/80" : "nav-text",
             )}
           >
             <span className="text-sm sm:text-base font-handwriting">

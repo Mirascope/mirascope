@@ -28,6 +28,10 @@ interface ThemeAPI {
   isLoginPage: boolean;
   // Whether the current page is the router waitlist page
   isRouterWaitlistPage: boolean;
+  // Whether the current page is the pricing page
+  isPricingPage: boolean;
+  // Whether the current page has a watercolor background
+  isWatercolorPage: boolean;
 }
 
 // Create the context with default values
@@ -40,6 +44,8 @@ const ThemeContext = createContext<ThemeAPI>({
   isLandingPage: false,
   isLoginPage: false,
   isRouterWaitlistPage: false,
+  isPricingPage: false,
+  isWatercolorPage: false,
 });
 
 // Hook for components to use the theme
@@ -65,6 +71,16 @@ export function useIsLoginPage() {
 // Hook specifically for router waitlist page status
 export function useIsRouterWaitlistPage() {
   return useContext(ThemeContext).isRouterWaitlistPage;
+}
+
+// Hook specifically for pricing page status
+export function useIsPricingPage() {
+  return useContext(ThemeContext).isPricingPage;
+}
+
+// Hook for whether the current page has a watercolor background
+export function useIsWatercolorPage() {
+  return useContext(ThemeContext).isWatercolorPage;
 }
 
 // Get stored theme preference from localStorage
@@ -112,11 +128,21 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   // Track if client-side code has run
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Get router to determine if we're on the landing page or router waitlist page
+  // Get router to determine page type
   const router = useRouterState();
   const isLandingPage = router.location.pathname === "/";
   const isLoginPage = router.location.pathname === "/login";
   const isRouterWaitlistPage = router.location.pathname === "/router-waitlist";
+  const isPricingPage = router.location.pathname === "/pricing";
+  const isBlogPage =
+    router.location.pathname === "/blog" ||
+    router.location.pathname.startsWith("/blog/");
+  const isWatercolorPage =
+    isLandingPage ||
+    isLoginPage ||
+    isRouterWaitlistPage ||
+    isPricingPage ||
+    isBlogPage;
 
   // Initialize theme and view mode on mount
   useEffect(() => {
@@ -178,8 +204,14 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     }
   };
 
-  // Add the home-page class to the HTML element
+  // Add watercolor-page / home-page classes to the HTML element
   if (isHydrated && typeof document !== "undefined") {
+    if (isWatercolorPage) {
+      document.documentElement.classList.add("watercolor-page");
+    } else {
+      document.documentElement.classList.remove("watercolor-page");
+    }
+
     if (isLandingPage || isLoginPage || isRouterWaitlistPage) {
       document.documentElement.classList.add("home-page");
     } else {
@@ -200,6 +232,8 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
         isLandingPage,
         isLoginPage,
         isRouterWaitlistPage,
+        isPricingPage,
+        isWatercolorPage,
       }}
     >
       {children}
@@ -216,6 +250,8 @@ interface StorybookThemeProviderProps {
   isLandingPage?: boolean;
   isLoginPage?: boolean;
   isRouterWaitlistPage?: boolean;
+  isPricingPage?: boolean;
+  isWatercolorPage?: boolean;
 }
 
 /**
@@ -234,6 +270,8 @@ export function StorybookThemeProvider({
   isLandingPage = false,
   isLoginPage = false,
   isRouterWaitlistPage = false,
+  isPricingPage = false,
+  isWatercolorPage = false,
 }: StorybookThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(initialTheme);
   const [current, setCurrent] = useState<"light" | "dark">(initialCurrent);
@@ -264,6 +302,8 @@ export function StorybookThemeProvider({
         isLandingPage,
         isLoginPage,
         isRouterWaitlistPage,
+        isPricingPage,
+        isWatercolorPage,
       }}
     >
       {children}

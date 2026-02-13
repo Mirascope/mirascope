@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { BarChart3, Bot, Shield, Zap } from "lucide-react";
 
-import homeStyles from "@/app/components/home-page.module.css";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -11,9 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
+import { WatercolorBackground } from "@/app/components/watercolor-background";
 import { useAuth } from "@/app/contexts/auth";
 import { useSunsetTime } from "@/app/hooks/sunset-time";
-import { cn } from "@/app/lib/utils";
 
 interface GithubButtonProps {
   iconSize?: number;
@@ -130,7 +129,7 @@ export function LoginPage() {
 
   return (
     <>
-      <div className={cn(homeStyles.watercolorBg, "watercolor-bg")} />
+      <WatercolorBackground />
       <div className="flex min-h-[calc(100vh-var(--header-height))] items-center justify-center p-6 sm:p-8">
         <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
           <Card className="flex flex-col h-fit w-fit p-2 bg-card text-black dark:text-white border-black/10 dark:border-white/10">

@@ -3,10 +3,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { LogOut, Settings } from "lucide-react";
 import { useState } from "react";
 
-import {
-  useIsLandingPage,
-  useIsLoginPage,
-} from "@/app/components/blocks/theme-provider";
+import { useIsWatercolorPage } from "@/app/components/blocks/theme-provider";
 import { CreateOrganizationModal } from "@/app/components/create-organization-modal";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -38,9 +35,7 @@ export function AccountMenu({ className }: AccountMenuProps) {
   } = useOrganization();
   const navigate = useNavigate();
   const [showCreateOrg, setShowCreateOrg] = useState(false);
-  const isLandingPage = useIsLandingPage();
-  const isLoginPage = useIsLoginPage();
-  const isLandingStyle = isLandingPage || isLoginPage;
+  const isWatercolorPage = useIsWatercolorPage();
 
   const handleSignOut = async () => {
     await logout();
@@ -60,10 +55,10 @@ export function AccountMenu({ className }: AccountMenuProps) {
     return (
       <Link to="/login" className={cn("cursor-pointer", className)}>
         <Button
-          variant={isLandingStyle ? "outline" : "default"}
+          variant={isWatercolorPage ? "outline" : "default"}
           size="sm"
           className={cn(
-            isLandingStyle &&
+            isWatercolorPage &&
               "border-white/50 bg-white/10 text-white hover:bg-white/20 hover:border-white/70 hover:text-white",
           )}
         >
@@ -90,7 +85,7 @@ export function AccountMenu({ className }: AccountMenuProps) {
           <button
             className={cn(
               "border-input flex h-9 w-[200px] items-center justify-between rounded-md border bg-transparent px-3 py-2 text-sm shadow-sm",
-              isLandingStyle &&
+              isWatercolorPage &&
                 "border-white/50 bg-white/10 text-white hover:bg-white/20 hover:border-white/70 hover:text-white",
               className,
             )}

@@ -5,6 +5,8 @@ import ViewModeSwitcher from "@/app/components/blocks/navigation/view-mode-switc
 import { useViewMode } from "@/app/components/blocks/theme-provider";
 import { Badge } from "@/app/components/ui/badge";
 import { ButtonLink } from "@/app/components/ui/button-link";
+import { WatercolorBackground } from "@/app/components/watercolor-background";
+import { useSunsetTime } from "@/app/hooks/sunset-time";
 import { highlightCode, fallbackHighlighter } from "@/app/lib/code-highlight";
 import { cn } from "@/app/lib/utils";
 import { PLAN_LIMITS, type PlanTier } from "@/payments/plans";
@@ -114,7 +116,7 @@ function MachinePricingContent() {
     return (
       <div className="mx-auto max-w-4xl px-4 py-4">
         <div
-          className="machine-mode-code highlight-container w-full overflow-auto rounded-md border text-sm [&>pre]:overflow-x-auto [&>pre]:py-3 [&>pre]:pr-5 [&>pre]:pl-4"
+          className="machine-mode-code highlight-container w-full overflow-auto rounded-md border bg-white text-sm dark:bg-black [&>pre]:overflow-x-auto [&>pre]:py-3 [&>pre]:pr-5 [&>pre]:pl-4"
           dangerouslySetInnerHTML={{ __html: fallback.themeHtml }}
         />
         <ViewModeSwitcher />
@@ -125,7 +127,7 @@ function MachinePricingContent() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-4">
       <div
-        className="machine-mode-code highlight-container w-full overflow-auto rounded-md border text-sm [&>pre]:overflow-x-auto [&>pre]:py-3 [&>pre]:pr-5 [&>pre]:pl-4"
+        className="machine-mode-code highlight-container w-full overflow-auto rounded-md border bg-white text-sm dark:bg-black [&>pre]:overflow-x-auto [&>pre]:py-3 [&>pre]:pr-5 [&>pre]:pl-4"
         dangerouslySetInnerHTML={{ __html: highlightedHtml }}
       />
       <ViewModeSwitcher />
@@ -464,56 +466,65 @@ interface PricingProps {
 
 export function PricingPage({ actions, currentPlan, usage }: PricingProps) {
   const viewMode = useViewMode();
+  useSunsetTime();
 
-  // In MACHINE mode, render markdown content for AI agents
+  // In MACHINE mode, render markdown content with watercolor background
   if (viewMode === "machine") {
-    return <MachinePricingContent />;
+    return (
+      <>
+        <WatercolorBackground />
+        <MachinePricingContent />
+      </>
+    );
   }
 
   // In HUMAN mode, render the full interactive pricing page
   return (
-    <div className="px-4 py-4">
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-4 text-center">
-          <h1 className="text-foreground mb-4 text-center text-4xl font-bold">
-            Pricing
-          </h1>
-          <p className="text-foreground mx-auto mb-2 max-w-2xl text-xl">
-            Get started with the Free plan today.
-          </p>
-          <p className="text-muted-foreground mx-auto max-w-2xl text-sm italic">
-            No credit card required.
-          </p>
+    <>
+      <WatercolorBackground />
+      <div className="px-4 py-4">
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-4 text-center">
+            <h1 className="mb-4 text-center text-4xl font-bold text-white text-shade">
+              Pricing
+            </h1>
+            <p className="mx-auto mb-2 max-w-2xl text-xl text-white text-shade">
+              Get started with the Free plan today.
+            </p>
+            <p className="mx-auto max-w-2xl text-sm italic text-white/80 text-shade">
+              No credit card required.
+            </p>
+          </div>
+
+          <CloudPricing
+            hostedActions={actions.hosted}
+            currentPlan={currentPlan}
+            usage={usage}
+          />
+
+          {/* Plan comparison table */}
+          <PlanComparisonTable details={cloudHostedDetails} />
+
+          <div className="mt-10 rounded-xl border border-white/20 bg-white/80 p-8 text-center shadow-sm backdrop-blur-sm dark:border-border/40 dark:bg-background/80">
+            <h2 className="text-foreground mb-4 text-2xl font-semibold">
+              Have questions about our pricing?
+            </h2>
+            <p className="text-muted-foreground">
+              Join our{" "}
+              <ButtonLink
+                href="https://mirascope.com/discord-invite?"
+                variant="link"
+                className="h-auto p-0"
+              >
+                community
+              </ButtonLink>{" "}
+              and ask the team directly!
+            </p>
+          </div>
         </div>
-
-        <CloudPricing
-          hostedActions={actions.hosted}
-          currentPlan={currentPlan}
-          usage={usage}
-        />
-
-        {/* Plan comparison table */}
-        <PlanComparisonTable details={cloudHostedDetails} />
-
-        <div className="mt-16 text-center">
-          <h2 className="text-foreground mb-4 text-2xl font-semibold">
-            Have questions about our pricing?
-          </h2>
-          <p className="text-muted-foreground">
-            Join our{" "}
-            <ButtonLink
-              href="https://mirascope.com/discord-invite?"
-              variant="link"
-              className="h-auto p-0"
-            >
-              community
-            </ButtonLink>{" "}
-            and ask the team directly!
-          </p>
-        </div>
+        <ViewModeSwitcher />
       </div>
-      <ViewModeSwitcher />
-    </div>
+    </>
   );
 }
 

@@ -170,10 +170,7 @@
     0 2px 10px rgba(255, 255, 255, 0.3), 0 4px 20px rgba(255, 255, 255, 0.2);
 }
 
-.home-page {
-  --foreground: oklch(0.985 0 0);
-  --color-foreground: oklch(0.985 0 0);
-
+.watercolor-page {
   --color-nav-text: oklch(1 0 0);
   --color-nav-text-hover: oklch(1 0 0);
   --color-nav-text-shadow:
@@ -181,8 +178,13 @@
   --color-nav-text-shadow-hover:
     0 2px 10px rgba(255, 255, 255, 0.3), 0 4px 20px rgba(255, 255, 255, 0.2);
 
-  /* Discord logo for landing page */
+  /* Discord logo for watercolor pages */
   --discord-logo: url("/assets/branding/Discord-Logo-White.svg");
+}
+
+.home-page {
+  --foreground: oklch(0.985 0 0);
+  --color-foreground: oklch(0.985 0 0);
 }
 
 /* For text over landing page backdrop - using nav text variables */
@@ -202,6 +204,25 @@
 .nav-text:hover {
   color: var(--color-nav-text-hover);
   text-shadow: var(--color-nav-text-shadow-hover);
+}
+
+/* Icons in the nav bar (search, theme switcher, hamburger) */
+.nav-icon {
+  color: var(--color-nav-text);
+  transition: color 0.2s ease;
+}
+
+/* Active nav link - purple on normal pages, white+underline on watercolor */
+.nav-link-active {
+  color: var(--primary) !important;
+}
+
+.watercolor-page .nav-link-active {
+  color: var(--color-nav-text) !important;
+  text-shadow:
+    0 0 8px rgba(255, 255, 255, 0.8),
+    0 0 20px rgba(255, 255, 255, 0.4);
+  font-weight: 700;
 }
 
 @theme inline {

@@ -1,11 +1,7 @@
 import { Search as SearchIcon, X } from "lucide-react";
 import { useState } from "react";
 
-import {
-  useIsLandingPage,
-  useIsLoginPage,
-  useIsRouterWaitlistPage,
-} from "@/app/components/blocks/theme-provider";
+import { useIsWatercolorPage } from "@/app/components/blocks/theme-provider";
 import { useIsMobile } from "@/app/hooks/is-mobile";
 
 import { SearchBar } from "./search-bar";
@@ -28,9 +24,7 @@ interface SearchWrapperProps {
 function MobileSearchWrapper({ onOpenChange }: SearchWrapperProps) {
   // Manage internal state for mobile search
   const [isOpen, setIsOpen] = useState(false);
-  const isLandingPage = useIsLandingPage();
-  const isLoginPage = useIsLoginPage();
-  const isRouterWaitlistPage = useIsRouterWaitlistPage();
+  const isWatercolorPage = useIsWatercolorPage();
 
   // Open mobile search handler
   const handleOpenSearch = () => {
@@ -56,11 +50,9 @@ function MobileSearchWrapper({ onOpenChange }: SearchWrapperProps) {
     return (
       <button
         className={`hover:cursor-pointer ${SEARCH_BAR_STYLES.mobileSearchButton(
-          isLandingPage || isLoginPage || isRouterWaitlistPage,
+          isWatercolorPage,
         )}`}
-        style={SEARCH_BAR_STYLES.getInputContainerStyles(
-          isLandingPage || isLoginPage || isRouterWaitlistPage,
-        )}
+        style={SEARCH_BAR_STYLES.getInputContainerStyles(isWatercolorPage)}
         onClick={handleOpenSearch}
         aria-label="Open search"
       >
@@ -91,9 +83,7 @@ function MobileSearchWrapper({ onOpenChange }: SearchWrapperProps) {
 
             {/* Close button positioned on the right side */}
             <button
-              className={SEARCH_BAR_STYLES.closeButton(
-                isLandingPage || isLoginPage || isRouterWaitlistPage,
-              )}
+              className={SEARCH_BAR_STYLES.closeButton(isWatercolorPage)}
               onClick={handleCloseSearch}
               aria-label="Close search"
             >

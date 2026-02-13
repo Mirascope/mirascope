@@ -37,7 +37,7 @@ export const ANIMATION_TIMING = {
 export const HEADER_STYLES = {
   // Container styles for the header with conditional appearance based on landing page and scroll
   container: (
-    isLandingPage: boolean,
+    isWatercolorPage: boolean,
     scrolled: boolean,
     isCloudRoute: boolean = false,
   ) =>
@@ -51,10 +51,12 @@ export const HEADER_STYLES = {
       // Text styling for landing page
       "font-handwriting",
       // Background color (only on non-landing pages)
-      isLandingPage ? "" : "bg-background",
-      // Bottom border and shadow when scrolled (only on non-landing pages, not for cloud routes)
-      !isCloudRoute && scrolled && !isLandingPage
-        ? "border-border border-b shadow-sm"
+      isWatercolorPage ? "" : "bg-background",
+      // Bottom border and shadow when scrolled
+      !isCloudRoute && scrolled
+        ? isWatercolorPage
+          ? "border-white/20 border-b shadow-md backdrop-blur-xs"
+          : "border-border border-b shadow-sm"
         : "",
     ),
 
@@ -109,10 +111,7 @@ export const NAV_LINK_STYLES = {
   ),
 
   // Active state for desktop navigation links
-  active: cn(
-    // Highlight the active link - use !important to override nav-text utility
-    "!text-primary font-semibold",
-  ),
+  active: "font-semibold nav-link-active",
 
   // Styles for mobile navigation links
   mobile: cn(
@@ -210,13 +209,13 @@ export const THEME_SWITCHER_STYLES = {
   ),
 
   // Dropdown content - z-index higher than header (z-[100])
-  content: (isLandingPage: boolean) =>
+  content: (isWatercolorPage: boolean) =>
     cn(
       // Base styling comes from the UI component
       // z-index to appear above header, mt-2 for spacing from trigger
       "z-[110] mt-2",
       // Apply textured background on landing page
-      isLandingPage && "textured-bg-absolute",
+      isWatercolorPage && "textured-bg-absolute",
     ),
 
   // Radio items (inherited from dropdown menu component)
@@ -273,12 +272,12 @@ export const DESKTOP_NAV_STYLES = {
   ),
 
   // Mobile nav content styles
-  mobileNavContent: (isLandingPage: boolean) =>
+  mobileNavContent: (isWatercolorPage: boolean) =>
     cn(
       // Base styles
       "bg-background p-2 [text-shadow:none]",
       // Conditional textured background
-      isLandingPage ? "textured-bg-absolute" : "",
+      isWatercolorPage ? "textured-bg-absolute" : "",
     ),
 
   // Product grid styles
@@ -306,11 +305,11 @@ export const SEARCH_BAR_STYLES = {
     ),
 
   // Mobile search button
-  mobileSearchButton: (isLandingPage: boolean) =>
+  mobileSearchButton: (isWatercolorPage: boolean) =>
     cn(
       "relative flex items-center justify-center w-9 h-9 rounded-full",
       "transition-colors duration-300",
-      isLandingPage
+      isWatercolorPage
         ? "border-0 bg-white/10 hover:bg-white/20"
         : "bg-background/20 hover:bg-primary/10 hover:border-primary/80 border",
     ),
@@ -334,30 +333,30 @@ export const SEARCH_BAR_STYLES = {
   mobileSearchContainer: cn("w-full px-3 py-2 flex items-center"),
 
   // Close button for mobile overlay
-  closeButton: (isLandingPage: boolean) =>
+  closeButton: (isWatercolorPage: boolean) =>
     cn(
       "absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full",
       "transition-colors duration-300",
       "cursor-pointer",
-      isLandingPage ? "text-white" : "text-foreground",
+      isWatercolorPage ? "text-white" : "text-foreground",
     ),
 
   // Input container styles - matches parent width
-  inputContainer: (isLandingPage: boolean, isMobile: boolean) =>
+  inputContainer: (isWatercolorPage: boolean, isMobile: boolean) =>
     cn(
       "search-input-container",
       // Base styles
       "h-9 rounded-full relative flex items-center overflow-visible w-full hover:cursor-pointer",
       // Conditional styles based on page type
-      isLandingPage
+      isWatercolorPage
         ? "border-0 bg-white/10 hover:bg-white/20"
         : "border-border bg-background/20 hover:bg-primary/10 hover:border-primary/80 border",
-      isMobile && !isLandingPage ? "bg-background hover:bg-background" : "",
+      isMobile && !isWatercolorPage ? "bg-background hover:bg-background" : "",
     ),
 
   // Inline styles for input container based on landing page
-  getInputContainerStyles: (isLandingPage: boolean) =>
-    isLandingPage
+  getInputContainerStyles: (isWatercolorPage: boolean) =>
+    isWatercolorPage
       ? {
           boxShadow:
             "0 1px 5px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1)",
@@ -376,7 +375,11 @@ export const SEARCH_BAR_STYLES = {
     ),
 
   // Input field styles
-  input: (isOpen: boolean, isLandingPage: boolean, isMobile: boolean = false) =>
+  input: (
+    isOpen: boolean,
+    isWatercolorPage: boolean,
+    isMobile: boolean = false,
+  ) =>
     cn(
       // Base styles
       "cursor-pointer overflow-visible bg-transparent py-0 outline-none",
@@ -385,7 +388,7 @@ export const SEARCH_BAR_STYLES = {
       // Transitions from central config - match container timing
       `transition-all duration-[${ANIMATION_TIMING.searchExpand.duration}ms] ease-in-out delay-[${ANIMATION_TIMING.searchExpand.delay}ms]`,
       // Text color based on page type
-      isLandingPage
+      isWatercolorPage
         ? "text-white placeholder:text-white/90"
         : "text-foreground placeholder:text-foreground",
       // Visibility and spacing based on open state - add extra right padding in mobile mode for close button
@@ -397,7 +400,7 @@ export const SEARCH_BAR_STYLES = {
     ),
 
   // Keyboard shortcut badge
-  kbd: (isLandingPage: boolean, isOpen: boolean = false) =>
+  kbd: (isWatercolorPage: boolean, isOpen: boolean = false) =>
     cn(
       "font-small absolute top-1/2 right-3 h-5 -translate-y-1/2 items-center gap-1 rounded border px-1.5 font-mono text-[10px]",
       // Make it always hidden on mobile
@@ -409,14 +412,14 @@ export const SEARCH_BAR_STYLES = {
         ? "opacity-80 translate-x-0 scale-100"
         : "opacity-0 translate-x-4 scale-90 pointer-events-none",
       // Background color based on page type
-      isLandingPage
+      isWatercolorPage
         ? "bg-white/10 text-white"
         : "border-border bg-muted text-foreground",
     ),
 
   // Results container - matches parent container width
   resultsContainer: (
-    isLandingPage: boolean,
+    isWatercolorPage: boolean,
     isMobile: boolean = false,
     isVisible: boolean = false,
   ) =>
@@ -437,13 +440,13 @@ export const SEARCH_BAR_STYLES = {
         ? "absolute top-full mt-4 left-0 right-0 z-[90] max-h-[calc(100vh-var(--header-height-base)*1.2)]" // Mobile: now part of the overlay
         : "absolute top-full z-50 mt-2 right-0 lg:right-auto lg:left-0", // Desktop: dropdown below
       // Conditional textured background
-      isLandingPage ? "textured-bg-absolute" : "",
+      isWatercolorPage ? "textured-bg-absolute" : "",
     ),
 
   // Inline styles for results container based on page type
   // No longer controlling opacity here since it's handled by classes
-  getResultsContainerStyles: (isLandingPage: boolean) => {
-    if (isLandingPage) {
+  getResultsContainerStyles: (isWatercolorPage: boolean) => {
+    if (isWatercolorPage) {
       return {
         boxShadow:
           "0 1px 5px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1)",

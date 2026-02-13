@@ -12,7 +12,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/app/components/ui/pagination";
+import { WatercolorBackground } from "@/app/components/watercolor-background";
 import { useIsMobile } from "@/app/hooks/is-mobile";
+import { useSunsetTime } from "@/app/hooks/sunset-time";
 import { type BlogMeta } from "@/app/lib/content/types";
 
 export interface BlogPaginationProps {
@@ -197,26 +199,31 @@ interface BlogLayoutProps {
 }
 
 function BlogLayout({ children }: BlogLayoutProps) {
+  useSunsetTime();
+
   return (
-    <div className="font-handwriting flex justify-center">
-      <div className="mx-auto flex w-full max-w-[1800px] px-4 pt-6">
-        <div className="min-w-0 flex-1">
-          <div className="mx-auto max-w-5xl">
-            <div className="mb-8 text-center">
-              <h1 className="font-handwriting mb-4 text-center text-4xl font-bold">
-                Blog
-              </h1>
-              <p className="text-foreground font-handwriting mx-auto max-w-2xl text-xl">
-                The latest news, updates, and insights about
-                <br />
-                Mirascope and LLM application development.
-              </p>
+    <>
+      <WatercolorBackground />
+      <div className="font-handwriting flex justify-center">
+        <div className="mx-auto flex w-full max-w-[1800px] px-4 pt-6">
+          <div className="min-w-0 flex-1">
+            <div className="mx-auto max-w-5xl">
+              <div className="mb-8 text-center">
+                <h1 className="font-handwriting mb-4 text-center text-4xl font-bold text-white text-shade">
+                  Blog
+                </h1>
+                <p className="font-handwriting mx-auto max-w-2xl text-xl text-white text-shade">
+                  The latest news, updates, and insights about
+                  <br />
+                  Mirascope and LLM application development.
+                </p>
+              </div>
+              {children}
             </div>
-            {children}
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -259,7 +266,7 @@ export function BlogPage({ posts }: BlogPageProps) {
   return (
     <>
       <BlogLayout>
-        <div className="mb-10 min-h-[700px]">
+        <div className="mb-6">
           {posts.length === 0 ? (
             <div className="py-12 text-center">
               <h2 className="text-foreground text-xl font-medium">
@@ -270,7 +277,7 @@ export function BlogPage({ posts }: BlogPageProps) {
               </p>
             </div>
           ) : (
-            <div className="grid min-h-[650px] grid-cols-1 gap-8 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {currentPosts.map((post) => (
                 <Link
                   key={post.slug}
@@ -278,20 +285,20 @@ export function BlogPage({ posts }: BlogPageProps) {
                   params={{ slug: post.slug }}
                   className="group block h-full cursor-pointer"
                 >
-                  <div className="bg-background border-border flex h-[320px] flex-col overflow-hidden rounded-lg border shadow-sm transition-all duration-200 hover:shadow-lg">
-                    <div className="flex h-full flex-col p-6">
+                  <div className="flex h-[260px] flex-col overflow-hidden rounded-xl border border-white/20 bg-white/80 shadow-sm backdrop-blur-sm transition-all duration-200 hover:shadow-lg dark:border-border/40 dark:bg-background/80">
+                    <div className="flex h-full flex-col p-5">
                       <div>
-                        <h3 className="group-hover:text-primary mb-2 text-xl font-semibold transition-colors">
+                        <h3 className="group-hover:text-primary mb-2 text-lg font-semibold transition-colors">
                           {post.title}
                         </h3>
-                        <p className="text-muted-foreground mb-4 text-sm select-none">
+                        <p className="text-muted-foreground mb-3 text-sm select-none">
                           {post.date} · {post.readTime} · By {post.author}
                         </p>
-                        <p className="text-foreground mb-4 line-clamp-3 font-sans select-none">
+                        <p className="text-foreground mb-3 line-clamp-3 font-sans text-sm select-none">
                           {post.description}
                         </p>
                       </div>
-                      <span className="text-foreground group-hover:text-primary mt-auto font-medium transition-colors">
+                      <span className="text-foreground group-hover:text-primary mt-auto text-sm font-medium transition-colors">
                         Read more
                       </span>
                     </div>
@@ -303,17 +310,14 @@ export function BlogPage({ posts }: BlogPageProps) {
               {Array.from({
                 length: Math.max(0, POSTS_PER_PAGE - currentPosts.length),
               }).map((_, index) => (
-                <div
-                  key={`spacer-${index}`}
-                  className="invisible h-[320px] md:h-[320px]"
-                />
+                <div key={`spacer-${index}`} className="invisible h-[260px]" />
               ))}
             </div>
           )}
         </div>
 
         {posts.length > 0 && (
-          <div className="w-full border-t pt-4 pb-8">
+          <div className="w-full rounded-xl border border-white/20 bg-white/80 px-4 pt-4 pb-4 shadow-sm backdrop-blur-sm dark:border-border/40 dark:bg-background/80">
             <BlogPagination
               currentPage={currentPage}
               totalPages={totalPages}
