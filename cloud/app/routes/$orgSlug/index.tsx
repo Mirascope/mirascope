@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { FolderKanban, Loader2, Plus } from "lucide-react";
+import { FolderKanban, Loader2, Plus, Settings } from "lucide-react";
 import { useState } from "react";
 
 import type { PublicProject } from "@/db/schema";
@@ -90,6 +90,18 @@ function CloudIndexPage() {
               <Button size="sm" onClick={() => setShowCreateClaw(true)}>
                 <Plus className="h-4 w-4" />
               </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() =>
+                  navigate({
+                    to: "/settings/organizations/$orgSlug/claws",
+                    params: { orgSlug },
+                  })
+                }
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
               Deploy and manage AI-powered claws for your organization
@@ -140,6 +152,18 @@ function CloudIndexPage() {
               <h2 className="text-lg font-semibold">Projects</h2>
               <Button size="sm" onClick={() => setShowCreateProject(true)}>
                 <Plus className="h-4 w-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() =>
+                  navigate({
+                    to: "/settings/organizations/$orgSlug/projects",
+                    params: { orgSlug },
+                  })
+                }
+              >
+                <Settings className="h-4 w-4" />
               </Button>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
