@@ -15,6 +15,7 @@ const claws: SectionSpec = {
   label: "Claws",
   children: [
     { slug: "index", label: "Welcome" },
+    { slug: "what-is-a-claw", label: "What is a Claw?" },
     { slug: "quickstart", label: "Quickstart" },
     { slug: "configuration", label: "Configuration" },
     { slug: "channels", label: "Channels" },

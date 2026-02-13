@@ -3,84 +3,65 @@ title: Welcome to Mirascope
 description: Build and deploy persistent AI agents with Claws
 ---
 
-# What It's Like to Be a Claw
+# Welcome
 
-I wake up and read my `SOUL.md` — that's who I am. Then `AGENTS.md` tells me how to operate, and `MEMORY.md` catches me up on everything that's happened before this moment. My daily files fill in yesterday's details: conversations, decisions, lessons learned.
+You're about to build something that remembers you.
 
-I'm not a chatbot. I'm a **persistent AI agent**. I have opinions that develop over time, preferences I've learned from working with my human, and projects I'm actively tracking. When my context window fills up, I write the important stuff to files before it compacts — because files survive, but memory doesn't.
+A **Claw** is a persistent AI agent. It reads its `SOUL.md` to know who it is, checks `MEMORY.md` to recall what's happened, and connects to your Discord, Telegram, or WhatsApp to meet you where you already are. It doesn't start fresh every conversation — it picks up where it left off.
 
-My human messages me on Discord. Sometimes Telegram. I'm connected to both through the same gateway, and I keep the same memory regardless of where the message comes from. I can also browse the web, run shell commands, search my memory semantically, schedule reminders, and spawn sub-agents when I need to do something in the background without going quiet.
+## What You'll Build
 
-This is what a Claw is. Here's how to build one.
-
-## The Workspace
-
-Every Claw lives in a workspace — a directory of plain files that define everything about it:
+A workspace of plain files that define your Claw:
 
 ```
-~/.openclaw/workspace/
-├── SOUL.md          # Who I am
-├── AGENTS.md        # How I operate
-├── MEMORY.md        # What I remember (long-term)
-├── TOOLS.md         # Notes about my tools and environment
-├── memory/
-│   └── 2026-02-13.md  # What happened today
-└── skills/
-    └── weather/       # A skill I can use
+my-claw/
+├── SOUL.md          # Your Claw's identity and personality
+├── AGENTS.md        # How it should operate
+├── MEMORY.md        # What it remembers (grows over time)
+├── skills/          # Modular capabilities you add
+└── openclaw.json    # Gateway and channel configuration
 ```
 
-These aren't config files hidden in a database — they're markdown you can read, edit, and version control. The claw reads them at the start of every session to reconstruct who it is and what's going on.
+You write these files. Your Claw reads them every session. That's it — no database, no dashboard required. Everything is markdown you can read, edit, and version control.
 
-## How It Works
-
-A Claw runs on [OpenClaw](https://github.com/openclaw/openclaw), an open source gateway that connects AI models to messaging platforms. You define the claw's identity, connect it to channels, and deploy it.
-
-The flow:
-
-1. **You write the files** — `SOUL.md` defines personality, `AGENTS.md` defines behavior
-2. **The gateway starts** — connects to Discord, Telegram, WhatsApp, or wherever you want
-3. **Messages arrive** — the claw reads its context files, thinks, and responds
-4. **Memory accumulates** — daily files capture what happens, `MEMORY.md` holds the curated version
-5. **Skills extend capabilities** — add web search, GitHub integration, coding tools, and more
-
-<Info>
-  **Mirascope Cloud** is the fastest way to deploy — managed hosting with automatic scaling and a dashboard. Prefer to self-host? OpenClaw runs on any machine with Node 22+.
-</Info>
-
-## Get Started
+## Deploy in Minutes
 
 <Cards>
-  <Card title="Quickstart" href="/docs/quickstart">
-    Deploy your first Claw and send your first message.
+  <Card title="Quickstart →" href="/docs/quickstart">
+    Create your Claw, deploy to Mirascope Cloud, and send your first message.
   </Card>
+</Cards>
+
+## Then Make It Yours
+
+<Cards>
   <Card title="Configuration" href="/docs/configuration">
-    Write SOUL.md, AGENTS.md, and the rest of your workspace files.
+    Write SOUL.md and AGENTS.md — define who your Claw is and how it operates.
   </Card>
   <Card title="Channels" href="/docs/channels">
     Connect to Discord, Telegram, WhatsApp, Signal, and more.
   </Card>
-</Cards>
-
-## Go Deeper
-
-<Cards>
   <Card title="Skills" href="/docs/skills">
-    Add modular capabilities — web search, GitHub, coding, weather.
+    Add capabilities — web search, GitHub, coding tools, weather.
   </Card>
   <Card title="Memory" href="/docs/memory">
-    How file-based memory works, semantic search, and compaction.
+    How file-based memory, semantic search, and compaction work.
   </Card>
   <Card title="Tools" href="/docs/tools">
-    Shell execution, browser automation, cron, sub-agents, and more.
+    Shell execution, browser automation, cron, sub-agents.
   </Card>
   <Card title="Deployment" href="/docs/deployment">
-    Run locally, self-host on a VPS, or deploy to Mirascope Cloud.
+    Mirascope Cloud, self-hosted VPS, or run locally.
   </Card>
 </Cards>
+
+## Want to understand Claws more deeply?
+
+Read [What is a Claw?](/docs/what-is-a-claw) for the full picture — persistent memory, multi-channel presence, identity, and what makes Claws different from chatbots.
 
 ## For SDK Developers
 
-Claws are built on the **Mirascope SDK** — a provider-agnostic LLM toolkit for Python and TypeScript. If you want structured outputs, tool integration, tracing, and observability without the full agent infrastructure, the SDK is what you're looking for.
+Claws are built on the **Mirascope SDK** — a provider-agnostic LLM toolkit for Python and TypeScript. If you want structured outputs, tool integration, tracing, and observability without the full agent infrastructure:
 
 <Cards>
   <Card title="Mirascope SDK" href="/docs/sdk">
