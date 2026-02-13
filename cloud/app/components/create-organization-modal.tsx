@@ -130,7 +130,7 @@ function PaymentStep({
   };
 
   return (
-    <form onSubmit={(e) => void handleSubmit(e)}>
+    <form onSubmit={(e) => void handleSubmit(e)} className="contents">
       <DialogHeader>
         <DialogTitle>Set Up Payment</DialogTitle>
         <DialogDescription>
@@ -246,7 +246,10 @@ export function CreateOrganizationModal({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         {step === "details" && (
-          <form onSubmit={(e) => void handleDetailsSubmit(e)}>
+          <form
+            onSubmit={(e) => void handleDetailsSubmit(e)}
+            className="contents"
+          >
             <DialogHeader>
               <DialogTitle>Create Organization</DialogTitle>
               <DialogDescription>
