@@ -55,6 +55,7 @@ const OrganizationSlugSchema = createSlugSchema("Organization").pipe(
 export const CreateOrganizationRequestSchema = Schema.Struct({
   name: OrganizationNameSchema,
   slug: OrganizationSlugSchema,
+  planTier: Schema.optional(Schema.Literal(...PLAN_TIERS)),
 });
 
 export const UpdateOrganizationRequestSchema = Schema.Struct({
