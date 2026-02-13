@@ -1,6 +1,5 @@
 import type {
   FullDocsSpec,
-  SectionSpec,
   VersionSpec,
 } from "../../cloud/app/lib/content/spec";
 import api from "./api/_meta";
