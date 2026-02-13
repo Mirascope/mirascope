@@ -115,6 +115,14 @@ export function validateRouterRequest(
       });
     }
 
+    // Router requires environment-scoped keys
+    if (apiKeyInfo.environmentId === null) {
+      return yield* new UnauthorizedError({
+        message:
+          "Environment-scoped API key required for router access. Org-scoped keys cannot route requests.",
+      });
+    }
+
     // Parse request body
     const requestBodyText = yield* Effect.tryPromise({
       try: () => request.clone().text(),

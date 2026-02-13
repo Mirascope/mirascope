@@ -31,18 +31,25 @@ export const ApiKeyCreateResponseSchema = Schema.Struct({
   key: Schema.String,
 });
 
-// Schema for API key with project and environment context
+// Schema for API key with display context.
+// Environment-scoped keys have environmentId/projectId/projectName/environmentName set.
+// Org-scoped keys have organizationId/organizationName set and environmentId null.
 export const ApiKeyWithContextSchema = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   keyPrefix: Schema.String,
-  environmentId: Schema.String,
+  environmentId: Schema.NullOr(Schema.String),
   ownerId: Schema.String,
   createdAt: Schema.NullOr(Schema.String),
   lastUsedAt: Schema.NullOr(Schema.String),
-  projectId: Schema.String,
-  projectName: Schema.String,
-  environmentName: Schema.String,
+  // Environment-scoped fields (null for org-scoped keys)
+  projectId: Schema.optional(Schema.String),
+  projectName: Schema.optional(Schema.String),
+  environmentName: Schema.optional(Schema.String),
+  // Org-scoped fields (null for environment-scoped keys)
+  organizationId: Schema.optional(Schema.String),
+  organizationName: Schema.optional(Schema.String),
+  // Owner context
   ownerName: Schema.NullOr(Schema.String),
   ownerAccountType: Schema.Literal("user", "claw"),
 });

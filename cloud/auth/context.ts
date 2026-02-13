@@ -4,6 +4,7 @@ import type {
   PublicUser,
   ApiKeyAuth,
   EnvironmentApiKeyAuth,
+  OrgApiKeyAuth,
 } from "@/db/schema";
 
 import { UnauthorizedError } from "@/errors";
@@ -24,6 +25,11 @@ export type ApiKeyAuthResult = RequireField<AuthResult, "apiKeyInfo">;
 /** AuthResult with required environment-scoped apiKeyInfo. */
 export type EnvironmentApiKeyAuthResult = Omit<AuthResult, "apiKeyInfo"> & {
   apiKeyInfo: EnvironmentApiKeyAuth;
+};
+
+/** AuthResult with required org-scoped apiKeyInfo. */
+export type OrgApiKeyAuthResult = Omit<AuthResult, "apiKeyInfo"> & {
+  apiKeyInfo: OrgApiKeyAuth;
 };
 
 /**
@@ -66,8 +72,7 @@ export class Authentication extends Context.Tag("Authentication")<
 
   /**
    * Require environment-scoped API key authentication.
-   * Today all keys are env-scoped, so this is equivalent to ApiKey.
-   * When org-scoped keys are added, this will narrow to only env keys.
+   * Narrows the union to EnvironmentApiKeyAuth via environmentId check.
    */
   static readonly EnvironmentApiKey: Effect.Effect<
     EnvironmentApiKeyAuthResult,
@@ -75,6 +80,35 @@ export class Authentication extends Context.Tag("Authentication")<
     Authentication
   > = Effect.gen(function* () {
     const auth = yield* Authentication.ApiKey;
+    if (auth.apiKeyInfo.environmentId === null) {
+      return yield* Effect.fail(
+        new UnauthorizedError({
+          message:
+            "Environment-scoped API key required. This org-scoped key cannot access environment resources.",
+        }),
+      );
+    }
     return auth as EnvironmentApiKeyAuthResult;
+  });
+
+  /**
+   * Require org-scoped API key authentication.
+   * Narrows the union to OrgApiKeyAuth via environmentId check.
+   */
+  static readonly OrgApiKey: Effect.Effect<
+    OrgApiKeyAuthResult,
+    UnauthorizedError,
+    Authentication
+  > = Effect.gen(function* () {
+    const auth = yield* Authentication.ApiKey;
+    if (auth.apiKeyInfo.environmentId !== null) {
+      return yield* Effect.fail(
+        new UnauthorizedError({
+          message:
+            "Org-scoped API key required. This environment-scoped key cannot access org-level resources.",
+        }),
+      );
+    }
+    return auth as OrgApiKeyAuthResult;
   });
 }

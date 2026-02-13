@@ -157,29 +157,33 @@ export const validateApiKey = (
     // If path parameters are provided, validate that the API key matches them
     if (pathParams) {
       // Validate environmentId if provided
-      if (
-        pathParams.environmentId &&
-        pathParams.environmentId !== apiKeyInfo.environmentId
-      ) {
-        return yield* Effect.fail(
-          new UnauthorizedError({
-            message:
-              "The environment ID in the request path does not match the environment associated with this API key",
-          }),
-        );
+      if (pathParams.environmentId) {
+        if (
+          apiKeyInfo.environmentId === null ||
+          pathParams.environmentId !== apiKeyInfo.environmentId
+        ) {
+          return yield* Effect.fail(
+            new UnauthorizedError({
+              message:
+                "The environment ID in the request path does not match the environment associated with this API key",
+            }),
+          );
+        }
       }
 
       // Validate projectId if provided
-      if (
-        pathParams.projectId &&
-        pathParams.projectId !== apiKeyInfo.projectId
-      ) {
-        return yield* Effect.fail(
-          new UnauthorizedError({
-            message:
-              "The project ID in the request path does not match the project associated with this API key",
-          }),
-        );
+      if (pathParams.projectId) {
+        if (
+          apiKeyInfo.environmentId === null ||
+          pathParams.projectId !== apiKeyInfo.projectId
+        ) {
+          return yield* Effect.fail(
+            new UnauthorizedError({
+              message:
+                "The project ID in the request path does not match the project associated with this API key",
+            }),
+          );
+        }
       }
 
       // Validate organizationId if provided

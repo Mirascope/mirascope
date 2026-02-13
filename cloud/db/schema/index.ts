@@ -51,6 +51,7 @@ export type {
   OrgPublicApiKey,
   PublicApiKey,
   EnvironmentApiKeyCreateResponse,
+  OrgApiKeyCreateResponse,
   ApiKeyCreateResponse,
   ApiKeyOwner,
   BaseApiKeyAuth,

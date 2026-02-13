@@ -1269,6 +1269,9 @@ describe("ApiKeys", () => {
 
         expect(result.apiKeyId).toBe(created.id);
         expect(result.environmentId).toBe(environment.id);
+        // Narrow to env-scoped key
+        expect(result.environmentId).not.toBeNull();
+        if (result.environmentId === null) throw new Error("unreachable");
         expect(result.projectId).toBe(project.id);
         expect(result.organizationId).toBe(org.id);
         expect(result.ownerId).toBe(owner.id);
@@ -1505,10 +1508,14 @@ describe("ApiKeys", () => {
 
           expect(apiKeys).toHaveLength(2);
           expect(apiKeys.map((k) => k.name).sort()).toEqual(["key-1", "key-2"]);
-          // Should include project and environment context
-          expect(apiKeys[0].projectName).toBeDefined();
-          expect(apiKeys[0].environmentName).toBeDefined();
-          expect(apiKeys[0].projectId).toBeDefined();
+          // Should include project and environment context (env-scoped keys)
+          const envKey = apiKeys[0];
+          expect(envKey.environmentId).not.toBeNull();
+          if (envKey.environmentId !== null) {
+            expect(envKey.projectName).toBeDefined();
+            expect(envKey.environmentName).toBeDefined();
+            expect(envKey.projectId).toBeDefined();
+          }
         }),
     );
 

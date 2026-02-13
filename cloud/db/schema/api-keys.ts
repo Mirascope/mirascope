@@ -1,7 +1,15 @@
-import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, uuid, unique } from "drizzle-orm/pg-core";
+import { relations, sql } from "drizzle-orm";
+import {
+  check,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  unique,
+} from "drizzle-orm/pg-core";
 
 import { environments } from "./environments";
+import { organizations } from "./organizations";
 import { users } from "./users";
 
 export const apiKeys = pgTable(
@@ -13,9 +21,14 @@ export const apiKeys = pgTable(
     keyHash: text("key_hash").notNull(),
     // Store a prefix for display purposes (e.g., "mk_abc...")
     keyPrefix: text("key_prefix").notNull(),
-    environmentId: uuid("environment_id")
-      .references(() => environments.id, { onDelete: "cascade" })
-      .notNull(),
+    // Environment-scoped keys set this; org-scoped keys leave it NULL
+    environmentId: uuid("environment_id").references(() => environments.id, {
+      onDelete: "cascade",
+    }),
+    // Org-scoped keys set this; environment-scoped keys leave it NULL
+    organizationId: uuid("organization_id").references(() => organizations.id, {
+      onDelete: "cascade",
+    }),
     // Track who created this API key (for authentication & audit)
     ownerId: uuid("ownerId")
       .references(() => users.id)
@@ -28,6 +41,12 @@ export const apiKeys = pgTable(
   },
   (table) => ({
     environmentNameUnique: unique().on(table.environmentId, table.name),
+    organizationNameUnique: unique().on(table.organizationId, table.name),
+    // Exactly one of environment_id or organization_id must be set
+    scopeCheck: check(
+      "api_keys_scope_check",
+      sql`(${table.environmentId} IS NOT NULL AND ${table.organizationId} IS NULL) OR (${table.environmentId} IS NULL AND ${table.organizationId} IS NOT NULL)`,
+    ),
   }),
 );
 
@@ -35,6 +54,10 @@ export const apiKeysRelations = relations(apiKeys, ({ one }) => ({
   environment: one(environments, {
     fields: [apiKeys.environmentId],
     references: [environments.id],
+  }),
+  organization: one(organizations, {
+    fields: [apiKeys.organizationId],
+    references: [organizations.id],
   }),
   ownedBy: one(users, {
     fields: [apiKeys.ownerId],
@@ -72,27 +95,29 @@ export type EnvironmentPublicApiKey = BasePublicApiKey & {
   environmentId: string;
 };
 
-/**
- * Public API key — today all keys are environment-scoped.
- * When org-scoped keys are added, this becomes a union.
- */
 /** Org-scoped public API key (no environment). */
 export type OrgPublicApiKey = BasePublicApiKey & {
   organizationId: string;
+  environmentId: null;
 };
 
-export type PublicApiKey = EnvironmentPublicApiKey;
+/** Discriminated union of public API key types — dispatch on `environmentId`. */
+export type PublicApiKey = EnvironmentPublicApiKey | OrgPublicApiKey;
 
 /** Create response — includes the plaintext key (shown once). */
 export type EnvironmentApiKeyCreateResponse = EnvironmentPublicApiKey & {
   key: string;
 };
 
-/**
- * API key create response — today only environment-scoped.
- * Alias for forward compatibility.
- */
-export type ApiKeyCreateResponse = EnvironmentApiKeyCreateResponse;
+/** Org-scoped create response — includes the plaintext key (shown once). */
+export type OrgApiKeyCreateResponse = OrgPublicApiKey & {
+  key: string;
+};
+
+/** Discriminated union of create response types. */
+export type ApiKeyCreateResponse =
+  | EnvironmentApiKeyCreateResponse
+  | OrgApiKeyCreateResponse;
 
 // ---------------------------------------------------------------------------
 // Authenticated API key info (returned by getApiKeyInfo)
@@ -122,13 +147,12 @@ export type EnvironmentApiKeyAuth = BaseApiKeyAuth & {
 };
 
 /** Org-scoped authenticated key info (no environment/project). */
-export type OrgApiKeyAuth = BaseApiKeyAuth;
+export type OrgApiKeyAuth = BaseApiKeyAuth & {
+  environmentId: null;
+};
 
-/**
- * Authenticated API key info — today only environment-scoped.
- * When org-scoped keys land: ApiKeyAuth = EnvironmentApiKeyAuth | OrgApiKeyAuth
- */
-export type ApiKeyAuth = EnvironmentApiKeyAuth;
+/** Discriminated union of authenticated key info — dispatch on `environmentId`. */
+export type ApiKeyAuth = EnvironmentApiKeyAuth | OrgApiKeyAuth;
 
 // Backward compat aliases — consumers can migrate at their own pace
 /** @deprecated Use EnvironmentApiKeyAuth */
@@ -160,8 +184,7 @@ export type OrgApiKeyWithContext = OrgPublicApiKey &
     organizationName: string;
   };
 
-/**
- * API key with display context — today only environment-scoped.
- * When org-scoped keys land: ApiKeyWithContext = EnvironmentApiKeyWithContext | OrgApiKeyWithContext
- */
-export type ApiKeyWithContext = EnvironmentApiKeyWithContext;
+/** Discriminated union of API key with display context. */
+export type ApiKeyWithContext =
+  | EnvironmentApiKeyWithContext
+  | OrgApiKeyWithContext;

@@ -9026,9 +9026,6 @@
                       "ownerId",
                       "createdAt",
                       "lastUsedAt",
-                      "projectId",
-                      "projectName",
-                      "environmentName",
                       "ownerName",
                       "ownerAccountType"
                     ],
@@ -9043,7 +9040,14 @@
                         "type": "string"
                       },
                       "environmentId": {
-                        "type": "string"
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
                       },
                       "ownerId": {
                         "type": "string"
@@ -9075,6 +9079,12 @@
                         "type": "string"
                       },
                       "environmentName": {
+                        "type": "string"
+                      },
+                      "organizationId": {
+                        "type": "string"
+                      },
+                      "organizationName": {
                         "type": "string"
                       },
                       "ownerName": {
