@@ -68,11 +68,14 @@ export async function ensureRcloneConfig(
   }
 
   // Check if already configured (idempotent)
-  const check = await sandbox.exec(
-    `test -f ${CONFIGURED_FLAG} && echo yes || echo no`,
-  );
-  if (check.stdout?.trim() === "yes") {
-    return true;
+  try {
+    const exists = await sandbox.readFile(CONFIGURED_FLAG);
+    if (exists) {
+      console.log("[proxy] Rclone already configured (flag exists)");
+      return true;
+    }
+  } catch {
+    // Flag file doesn't exist, proceed with configuration
   }
 
   const rcloneConfig = [
@@ -86,9 +89,9 @@ export async function ensureRcloneConfig(
     "no_check_bucket = true",
   ].join("\n");
 
-  await sandbox.exec(`mkdir -p $(dirname ${RCLONE_CONF_PATH})`);
+  // Create rclone config directory and files
   await sandbox.writeFile(RCLONE_CONF_PATH, rcloneConfig);
-  await sandbox.exec(`touch ${CONFIGURED_FLAG}`);
+  await sandbox.writeFile(CONFIGURED_FLAG, "");
 
   console.log("[proxy] Rclone configured for R2 bucket:", r2Config.bucketName);
   return true;
