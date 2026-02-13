@@ -1,6 +1,6 @@
 import type { Cause } from "effect";
 
-import { ArrayFormatter } from "effect/ParseResult";
+import { ArrayFormatter, type ParseIssue } from "effect/ParseResult";
 
 /**
  * Type for the EffectQueryFailure wrapper from effect-query library.
@@ -92,7 +92,9 @@ export function getErrorMessage(error: unknown, fallback: string): string {
     // Schema parse errors: use ArrayFormatter for clean messages
     if (failure._tag === "ParseError" && failure.issue) {
       try {
-        const issues = ArrayFormatter.formatIssueSync(failure.issue as any);
+        const issues = ArrayFormatter.formatIssueSync(
+          failure.issue as ParseIssue,
+        );
         if (issues.length > 0) {
           return issues
             .map((i) => {

@@ -69,7 +69,9 @@ describe("fetchBootstrapConfig (integration)", () => {
     expect(config.clawId).toBe("claw-123");
     expect(config.clawSlug).toBe("test-claw");
     expect(config.organizationId).toBe("org-456");
-    expect((config.r2 as unknown).bucketName).toBe("claw-claw-123");
+    expect((config.r2 as unknown as { bucketName: string }).bucketName).toBe(
+      "claw-claw-123",
+    );
   });
 
   it("returns error for nonexistent claw", async () => {
