@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ExternalLink, Loader2, Trash2 } from "lucide-react";
+import { ChevronDown, ExternalLink, Loader2, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import {
@@ -19,6 +19,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/app/components/ui/collapsible";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import {
@@ -420,6 +425,63 @@ function ClawSettingsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Debug Info */}
+      <Collapsible>
+        <Card className="border-muted">
+          <CollapsibleTrigger asChild>
+            <CardHeader className="cursor-pointer select-none">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-muted-foreground text-sm">
+                    Debug Info
+                  </CardTitle>
+                  <CardDescription>
+                    Internal identifiers and deployment details
+                  </CardDescription>
+                </div>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]_&]:rotate-180" />
+              </div>
+            </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent className="space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Claw ID</span>
+                <code className="font-mono text-xs">{claw.id}</code>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">R2 Bucket</span>
+                <code className="font-mono text-xs">claw-{claw.id}</code>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Status</span>
+                <span>{claw.status}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Instance Type</span>
+                <span>{claw.instanceType ?? "—"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Last Deployed</span>
+                <span>
+                  {claw.lastDeployedAt
+                    ? new Date(claw.lastDeployedAt).toLocaleString()
+                    : "—"}
+                </span>
+              </div>
+              {claw.lastError && (
+                <div className="space-y-1">
+                  <span className="text-muted-foreground">Last Error</span>
+                  <pre className="font-mono text-xs text-destructive bg-destructive/10 rounded p-2 whitespace-pre-wrap">
+                    {claw.lastError}
+                  </pre>
+                </div>
+              )}
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
       <CreateClawModal
         open={showCreateModal}
