@@ -87,6 +87,14 @@ function wrap<A>(
           cause: error,
         }),
     ),
+    Effect.catchAllDefect((defect) =>
+      Effect.fail(
+        new ClawDeploymentError({
+          message: `${context}: unexpected error`,
+          cause: defect,
+        }),
+      ),
+    ),
   );
 }
 
