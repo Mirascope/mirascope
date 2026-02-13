@@ -31,6 +31,7 @@ interface UpgradePlanDialogProps {
   targetPlan: PlanTier;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onUpgradeSuccess?: () => void;
 }
 
 type Step = "preview" | "payment" | "success";
@@ -40,6 +41,7 @@ export function UpgradePlanDialog({
   targetPlan,
   open,
   onOpenChange,
+  onUpgradeSuccess,
 }: UpgradePlanDialogProps) {
   const [step, setStep] = useState<Step>("preview");
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -128,6 +130,7 @@ export function UpgradePlanDialog({
       organization_id: organizationId,
       target_plan: targetPlan,
     });
+    onUpgradeSuccess?.();
     setStep("success");
 
     // Refetch subscription data

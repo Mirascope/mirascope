@@ -1,10 +1,11 @@
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { LogOut, Settings } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import type { PlanTier } from "@/payments/plans";
 
+import { useDeleteOrganization } from "@/app/api/organizations";
 import { useIsWatercolorPage } from "@/app/components/blocks/theme-provider";
 import { CreateOrganizationModal } from "@/app/components/create-organization-modal";
 import { Button } from "@/app/components/ui/button";
@@ -43,6 +44,8 @@ export function AccountMenu({ className }: AccountMenuProps) {
     orgSlug: string;
     plan: PlanTier;
   } | null>(null);
+  const upgradeSucceededRef = useRef(false);
+  const deleteOrganization = useDeleteOrganization();
   const isWatercolorPage = useIsWatercolorPage();
 
   const handleSignOut = async () => {
@@ -181,14 +184,30 @@ export function AccountMenu({ className }: AccountMenuProps) {
           organizationId={upgradeNewOrg.orgId}
           targetPlan={upgradeNewOrg.plan}
           open={true}
+          onUpgradeSuccess={() => {
+            upgradeSucceededRef.current = true;
+          }}
           onOpenChange={(open) => {
             if (!open) {
-              const slug = upgradeNewOrg.orgSlug;
+              const { orgId, orgSlug } = upgradeNewOrg;
               setUpgradeNewOrg(null);
-              void navigate({
-                to: "/settings/organizations/$orgSlug",
-                params: { orgSlug: slug },
-              });
+
+              if (upgradeSucceededRef.current) {
+                // Payment succeeded — navigate to the new org
+                upgradeSucceededRef.current = false;
+                void navigate({
+                  to: "/settings/organizations/$orgSlug",
+                  params: { orgSlug },
+                });
+              } else {
+                // User dismissed without paying — delete the orphaned org
+                void deleteOrganization.mutateAsync(orgId).catch(() => {
+                  // Cleanup failed — orphan cron will catch it
+                  console.warn(
+                    `Failed to clean up org ${orgId} after cancelled payment`,
+                  );
+                });
+              }
             }
           }}
         />
