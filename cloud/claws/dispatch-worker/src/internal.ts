@@ -204,7 +204,7 @@ internal.post("/warm-up", async (c) => {
   }
 
   try {
-    await ensureGateway(sandbox, config, c.env);
+    await ensureGateway(sandbox, config);
     console.log("[internal] Warm-up complete for claw:", clawId);
 
     // Report active status to cloud backend

@@ -70,6 +70,43 @@ function logError(msg: string, err: unknown): void {
 // Helpers
 // ============================================================
 
+/**
+ * Configure rclone for R2 access.
+ * Idempotent — skips if already configured.
+ */
+function ensureRcloneConfig(
+  r2AccessKeyId: string,
+  r2SecretAccessKey: string,
+  cfAccountId: string,
+): void {
+  const RCLONE_CONF_PATH = "/root/.config/rclone/rclone.conf";
+  const CONFIGURED_FLAG = "/tmp/.rclone-configured";
+
+  // Check if already configured (idempotent)
+  if (existsSync(CONFIGURED_FLAG)) {
+    log("Rclone already configured (flag exists)");
+    return;
+  }
+
+  const rcloneConfig = [
+    "[r2]",
+    "type = s3",
+    "provider = Cloudflare",
+    `access_key_id = ${r2AccessKeyId}`,
+    `secret_access_key = ${r2SecretAccessKey}`,
+    `endpoint = https://${cfAccountId}.r2.cloudflarestorage.com`,
+    "acl = private",
+    "no_check_bucket = true",
+  ].join("\n");
+
+  // Write rclone config files
+  mkdirSync("/root/.config/rclone", { recursive: true });
+  writeFileSync(RCLONE_CONF_PATH, rcloneConfig);
+  writeFileSync(CONFIGURED_FLAG, "");
+
+  log("Rclone configured for R2");
+}
+
 function isGatewayRunning(): boolean {
   log("Checking if gateway is already running...");
 
@@ -133,10 +170,8 @@ function rcloneConfigured(): boolean {
 log("=== OpenClaw startup script begin ===");
 
 // ============================================================
-// 0. Construct and validate environment variables
+// 0. Configure rclone for R2 (if credentials available)
 // ============================================================
-
-log("Step 0: Validating environment variables");
 
 // Helper to get required env var or throw
 function requireEnv(key: string): string {
@@ -146,6 +181,27 @@ function requireEnv(key: string): string {
   }
   return value;
 }
+
+// ============================================================
+// 0. Configure rclone for R2 (if credentials available)
+// ============================================================
+
+log("Step 0: Configuring rclone for R2");
+
+// R2 credentials are required environment variables passed by the dispatch worker
+const r2AccessKeyId = requireEnv("R2_ACCESS_KEY_ID");
+const r2SecretAccessKey = requireEnv("R2_SECRET_ACCESS_KEY");
+const cfAccountId = requireEnv("CF_ACCOUNT_ID");
+
+ensureRcloneConfig(r2AccessKeyId, r2SecretAccessKey, cfAccountId);
+
+log("Step 0 complete: rclone configured");
+
+// ============================================================
+// 1. Construct and validate environment variables
+// ============================================================
+
+log("Step 1: Validating environment variables");
 
 // Extract and validate required environment variables
 const env: OpenClawEnv = {
@@ -181,37 +237,37 @@ log("Environment validated:", {
   BUN_VERSION: process.versions?.bun ?? "(unknown)",
 });
 
-log("Step 0 complete: environment validated");
+log("Step 1 complete: environment validated");
 
 const bucket = env.R2_BUCKET_NAME;
 
 // ============================================================
-// 1. Bail if already running
+// 2. Bail if already running
 // ============================================================
 
-log("Step 1: Checking if gateway is already running");
+log("Step 2: Checking if gateway is already running");
 if (isGatewayRunning()) {
   log("Gateway already running, exiting with code 0");
   process.exit(0);
 }
-log("Step 1 complete: gateway is NOT running, proceeding with startup");
+log("Step 2 complete: gateway is NOT running, proceeding with startup");
 
 // ============================================================
-// 2. Create directories
+// 3. Create directories
 // ============================================================
 
-log("Step 2: Creating directories");
+log("Step 3: Creating directories");
 mkdirSync(CONFIG_DIR, { recursive: true });
 log(`Created/verified: ${CONFIG_DIR}`);
 mkdirSync(WORKSPACE_DIR, { recursive: true });
 log(`Created/verified: ${WORKSPACE_DIR}`);
-log("Step 2 complete");
+log("Step 3 complete");
 
 // ============================================================
-// 3. Restore from R2 via rclone (non-fatal on failure)
+// 4. Restore from R2 via rclone (non-fatal on failure)
 // ============================================================
 
-log("Step 3: R2 restore");
+log("Step 4: R2 restore");
 if (rcloneConfigured()) {
   try {
     const cmd = `rclone sync r2:${bucket}/openclaw/ ${CONFIG_DIR}/ ${RCLONE_FLAGS}`;
@@ -223,19 +279,19 @@ if (rcloneConfigured()) {
       .toString()
       .trim();
     if (output) log("rclone restore output:", { output });
-    log("Step 3 complete: config restored from R2");
+    log("Step 4 complete: config restored from R2");
   } catch (err) {
     logError("R2 restore failed (non-fatal, continuing)", err);
   }
 } else {
-  log("Step 3 skipped: rclone not configured");
+  log("Step 4 skipped: rclone not configured");
 }
 
 // ============================================================
-// 4. Build openclaw.json from environment variables
+// 5. Build openclaw.json from environment variables
 // ============================================================
 
-log("Step 4: Building openclaw.json");
+log("Step 5: Building openclaw.json");
 
 // Load existing config if present
 let existingConfig: OpenClawConfig | undefined;
@@ -268,15 +324,15 @@ const config = createOpenClawConfig(env, {
 // Write config
 const configJson = JSON.stringify(config, null, 2);
 writeFileSync(CONFIG_FILE, configJson);
-log("Step 4 complete: config written to " + CONFIG_FILE, {
+log("Step 5 complete: config written to " + CONFIG_FILE, {
   configLength: configJson.length,
 });
 
 // ============================================================
-// 5. Persist config to R2 via rclone (non-fatal on failure)
+// 6. Persist config to R2 via rclone (non-fatal on failure)
 // ============================================================
 
-log("Step 5: R2 persist");
+log("Step 6: R2 persist");
 if (rcloneConfigured()) {
   try {
     const cmd = `rclone sync ${CONFIG_DIR}/ r2:${bucket}/openclaw/ ${RCLONE_FLAGS} ${RCLONE_EXCLUDE}`;
@@ -288,19 +344,19 @@ if (rcloneConfigured()) {
       .toString()
       .trim();
     if (output) log("rclone persist output:", { output });
-    log("Step 5 complete: config persisted to R2");
+    log("Step 6 complete: config persisted to R2");
   } catch (err) {
     logError("R2 persist failed (non-fatal, continuing to start gateway)", err);
   }
 } else {
-  log("Step 5 skipped: rclone not configured");
+  log("Step 6 skipped: rclone not configured");
 }
 
 // ============================================================
-// 6. Start gateway
+// 7. Start gateway
 // ============================================================
 
-log("Step 6: Starting OpenClaw Gateway");
+log("Step 7: Starting OpenClaw Gateway");
 
 // Clean up stale lock files
 tryUnlink("/tmp/openclaw-gateway.lock");

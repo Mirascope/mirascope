@@ -3,19 +3,15 @@
  *
  * Handles:
  * - Finding existing gateway processes
- * - Configuring rclone for R2 persistence
  * - Starting the gateway via start-openclaw.ts
  * - Proxying HTTP and WebSocket requests to the gateway
  */
 
 import type { Sandbox, Process } from "@cloudflare/sandbox";
 
-import type { DispatchEnv, OpenClawDeployConfig } from "./types";
+import type { OpenClawDeployConfig } from "./types";
 
 import { GATEWAY_PORT, STARTUP_TIMEOUT_MS } from "./config";
-
-const RCLONE_CONF_PATH = "/root/.config/rclone/rclone.conf";
-const CONFIGURED_FLAG = "/tmp/.rclone-configured";
 
 /**
  * Find an existing OpenClaw gateway process in the sandbox.
@@ -54,50 +50,6 @@ export async function findGatewayProcess(
 }
 
 /**
- * Configure rclone for R2 access in the sandbox.
- * Idempotent — skips if already configured.
- */
-export async function ensureRcloneConfig(
-  sandbox: Sandbox,
-  r2Config: OpenClawDeployConfig["r2"],
-  accountId: string,
-): Promise<boolean> {
-  if (!r2Config.accessKeyId || !r2Config.secretAccessKey || !accountId) {
-    console.log("[proxy] R2 credentials not configured, skipping rclone setup");
-    return false;
-  }
-
-  // Check if already configured (idempotent)
-  try {
-    const exists = await sandbox.readFile(CONFIGURED_FLAG);
-    if (exists) {
-      console.log("[proxy] Rclone already configured (flag exists)");
-      return true;
-    }
-  } catch {
-    // Flag file doesn't exist, proceed with configuration
-  }
-
-  const rcloneConfig = [
-    "[r2]",
-    "type = s3",
-    "provider = Cloudflare",
-    `access_key_id = ${r2Config.accessKeyId}`,
-    `secret_access_key = ${r2Config.secretAccessKey}`,
-    `endpoint = https://${accountId}.r2.cloudflarestorage.com`,
-    "acl = private",
-    "no_check_bucket = true",
-  ].join("\n");
-
-  // Write rclone config files (directory pre-created in Dockerfile)
-  await sandbox.writeFile(RCLONE_CONF_PATH, rcloneConfig);
-  await sandbox.writeFile(CONFIGURED_FLAG, "");
-
-  console.log("[proxy] Rclone configured for R2 bucket:", r2Config.bucketName);
-  return true;
-}
-
-/**
  * Build environment variables for the container process from the bootstrap config.
  */
 export function buildEnvVars(
@@ -124,24 +76,14 @@ export function buildEnvVars(
 /**
  * Ensure the OpenClaw gateway is running for the given claw.
  *
- * 1. Mounts R2 storage using per-claw scoped credentials
- * 2. Checks for an existing gateway process
- * 3. Starts a new one if needed
- * 4. Waits for the gateway port to be ready
+ * 1. Checks for an existing gateway process
+ * 2. Starts a new one if needed (rclone config handled by start-openclaw.ts)
+ * 3. Waits for the gateway port to be ready
  */
 export async function ensureGateway(
   sandbox: Sandbox,
   config: OpenClawDeployConfig,
-  env: DispatchEnv,
 ): Promise<Process> {
-  // Configure rclone for R2 persistence
-  const cfAccountId = env.CLOUDFLARE_ACCOUNT_ID;
-  if (cfAccountId) {
-    await ensureRcloneConfig(sandbox, config.r2, cfAccountId);
-  } else {
-    console.log("[proxy] CF_ACCOUNT_ID not set, skipping rclone setup");
-  }
-
   // Check for existing process
   const existing = await findGatewayProcess(sandbox);
   if (existing) {

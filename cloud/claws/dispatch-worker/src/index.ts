@@ -224,7 +224,7 @@ app.all("*", async (c) => {
       Effect.runPromise(
         Effect.gen(function* () {
           const config = yield* getOrFetchConfig(clawId, c.env);
-          yield* Effect.promise(() => ensureGateway(sandbox, config, c.env));
+          yield* Effect.promise(() => ensureGateway(sandbox, config));
           yield* reportClawStatus(
             clawId,
             { status: "active", startedAt: new Date().toISOString() },
@@ -272,7 +272,7 @@ app.all("*", async (c) => {
   }
 
   try {
-    await ensureGateway(sandbox, configExit.value, c.env);
+    await ensureGateway(sandbox, configExit.value);
   } catch (error) {
     console.error("[proxy] Failed to start gateway:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
