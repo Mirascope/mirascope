@@ -39,7 +39,6 @@ import {
   ToolInput,
   ToolOutput,
 } from "@/app/components/ai-elements/tool";
-import { ClawHeader } from "@/app/components/claw-header";
 import { Button } from "@/app/components/ui/button";
 import { useClaw } from "@/app/contexts/claw";
 import { useGatewayChat } from "@/app/hooks/use-gateway-chat";
@@ -163,20 +162,17 @@ function ClawsChatPage() {
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <div className="shrink-0 p-6 pb-0">
-        <div className="flex items-center justify-between">
-          <ClawHeader />
-          <Button asChild size="sm" variant="outline">
-            <a
-              href={getGatewayUrl(orgSlug, clawSlug)}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <ExternalLink className="mr-1.5 size-4" />
-              OpenClaw Gateway
-            </a>
-          </Button>
-        </div>
+      <div className="flex shrink-0 items-center justify-end px-6">
+        <Button asChild size="sm" variant="outline">
+          <a
+            href={getGatewayUrl(orgSlug, clawSlug)}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <ExternalLink className="mr-1.5 size-4" />
+            OpenClaw Gateway
+          </a>
+        </Button>
       </div>
       <div className="relative min-h-0 flex-1">
         {connectionError && (
