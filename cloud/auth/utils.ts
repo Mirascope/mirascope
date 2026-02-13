@@ -142,17 +142,15 @@ export const validateApiKey = (
     const db = yield* Database;
 
     // Get the API key info (verifies key and ensures owner exists)
-    const apiKeyInfo = yield* db.organizations.projects.environments.apiKeys
-      .getApiKeyInfo(apiKey)
-      .pipe(
-        Effect.catchAll(() =>
-          Effect.fail(
-            new UnauthorizedError({
-              message: "Invalid API key",
-            }),
-          ),
+    const apiKeyInfo = yield* db.authenticateApiKey(apiKey).pipe(
+      Effect.catchAll(() =>
+        Effect.fail(
+          new UnauthorizedError({
+            message: "Invalid API key",
+          }),
         ),
-      );
+      ),
+    );
 
     // If path parameters are provided, validate that the API key matches them
     if (pathParams) {

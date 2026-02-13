@@ -42,7 +42,7 @@ import { Context, Layer, Effect } from "effect";
 import type { StripeConfig } from "@/settings";
 
 import { Annotations } from "@/db/annotations";
-import { ApiKeys } from "@/db/api-keys";
+import { EnvironmentApiKeys, authenticateApiKey } from "@/db/api-keys";
 import { ClawMemberships } from "@/db/claw-memberships";
 import { Claws } from "@/db/claws";
 import { Traces } from "@/db/clickhouse/traces";
@@ -75,7 +75,7 @@ export interface TracesService extends Ready<Traces> {
  *
  * Access pattern: `db.organizations.projects.environments.apiKeys.routerRequests.create(...)`
  */
-export interface ApiKeysService extends Ready<ApiKeys> {
+export interface EnvironmentApiKeysService extends Ready<EnvironmentApiKeys> {
   readonly routerRequests: Ready<RouterRequests>;
 }
 
@@ -90,7 +90,7 @@ export interface ApiKeysService extends Ready<ApiKeys> {
  * - Functions: `db.organizations.projects.environments.functions.create(...)`
  */
 export interface EnvironmentsService extends Ready<Environments> {
-  readonly apiKeys: ApiKeysService;
+  readonly apiKeys: EnvironmentApiKeysService;
   readonly traces: TracesService;
   readonly functions: Ready<Functions>;
 }
@@ -163,6 +163,13 @@ export class Database extends Context.Tag("Database")<
     readonly users: Ready<Users>;
     readonly sessions: Ready<Sessions>;
     readonly organizations: OrganizationsService;
+    /** Authenticate an API key — works for both env-scoped and org-scoped keys. */
+    readonly authenticateApiKey: (
+      key: string,
+    ) => Effect.Effect<
+      import("@/db/schema").ApiKeyAuth,
+      import("@/errors").NotFoundError | import("@/errors").DatabaseError
+    >;
   }
 >() {
   /**
@@ -206,7 +213,7 @@ export class Database extends Context.Tag("Database")<
       );
       const tags = new Tags(projectMemberships);
       const environments = new Environments(projectMemberships);
-      const apiKeys = new ApiKeys(projectMemberships);
+      const apiKeys = new EnvironmentApiKeys(projectMemberships);
       const traces = new Traces(projectMemberships);
       const functions = new Functions(projectMemberships);
       const annotations = new Annotations(projectMemberships, tags);
@@ -215,6 +222,10 @@ export class Database extends Context.Tag("Database")<
       return {
         users: provideDependencies(users),
         sessions: provideDependencies(new Sessions()),
+        authenticateApiKey: (key: string) =>
+          authenticateApiKey(key).pipe(
+            Effect.provide(Layer.succeed(DrizzleORM, client)),
+          ),
         organizations: {
           ...provideDependencies(organizations),
           memberships: provideDependencies(organizationMemberships),
