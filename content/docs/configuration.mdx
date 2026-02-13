@@ -7,7 +7,7 @@ description: Configure your claw's identity, behavior, memory, and capabilities
 
 Every Claw has a **workspace** — a set of plain markdown files that define who it is, how it behaves, and what it remembers.
 
-The primary way to configure your Claw is by **chatting with it**. Tell it to update its personality, change settings, or add a channel — it will modify the relevant files and restart the gateway so changes persist. You can also edit files directly through the Mirascope dashboard or, for self-hosted deployments, in your workspace directory (default: `~/.openclaw/workspace/`).
+The primary way to configure your Claw is by **chatting with it**. Tell it to update its personality, change settings, or add a channel — it will modify the relevant files and restart the gateway so changes persist. You can also edit files directly through the Mirascope dashboard.
 
 ```
 workspace/
@@ -243,41 +243,19 @@ A checklist your claw runs through during periodic heartbeat polls:
 
 ---
 
-## Gateway Configuration
+## Gateway Settings
 
-On Mirascope Cloud, gateway settings like model selection and channel configuration are managed through the dashboard. For self-hosted deployments, the gateway reads its configuration from `~/.openclaw/openclaw.json`.
+On Mirascope Cloud, gateway settings like model selection, channel configuration, and heartbeat intervals are managed through the dashboard.
 
-```json
-{
-  "agent": {
-    "model": "anthropic/claude-sonnet-4-20250514",
-    "timeout": 300,
-    "workspace": "~/.openclaw/workspace"
-  },
-  "channels": {
-    "discord": {
-      "botToken": "your-discord-bot-token"
-    },
-    "telegram": {
-      "token": "your-telegram-bot-token"
-    }
-  },
-  "heartbeat": {
-    "intervalMs": 1800000
-  }
-}
-```
-
-### Key Settings
+Key settings include:
 
 | Setting | Description |
 |---|---|
-| `agent.model` | The LLM to use (e.g., `anthropic/claude-sonnet-4-20250514`) |
-| `agent.timeout` | Max seconds per agent turn |
-| `agent.workspace` | Path to the workspace directory |
-| `channels` | Channel-specific tokens and configuration |
-| `heartbeat.intervalMs` | How often the claw checks in (milliseconds) |
+| **Model** | The LLM to use (e.g., Claude Sonnet, GPT-4o) |
+| **Timeout** | Max seconds per agent turn |
+| **Channels** | Which platforms are connected and their credentials |
+| **Heartbeat interval** | How often the Claw checks in for periodic tasks |
 
 <Info>
-For self-hosted deployments, run `openclaw onboard` to generate this file interactively. The gateway picks up changes on restart (`openclaw gateway restart`).
+  Self-hosting? Gateway configuration uses `openclaw.json`. See the [OpenClaw documentation](https://docs.openclaw.ai) for the full config reference.
 </Info>
