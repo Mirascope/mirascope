@@ -8,7 +8,7 @@
 import { Effect } from "effect";
 
 import type { TokenUsage, ModelPricing } from "@/api/router/pricing";
-import type { PublicUser, ApiKeyInfo } from "@/db/schema";
+import type { PublicUser, EnvironmentApiKeyAuth } from "@/db/schema";
 
 import { estimateCost } from "@/api/router/cost-estimator";
 import {
@@ -45,6 +45,7 @@ export interface RouterRequestIdentifiers {
   environmentId: string;
   apiKeyId: string;
   routerRequestId: string;
+  /** Populated when the request is made via a claw's bot-user API key. */
   clawId: string | null;
 }
 
@@ -53,7 +54,7 @@ export interface RouterRequestIdentifiers {
  */
 export interface ValidatedRouterRequest {
   user: PublicUser;
-  apiKeyInfo: ApiKeyInfo;
+  apiKeyInfo: EnvironmentApiKeyAuth;
   provider: ProviderName;
   modelId: string;
   parsedRequestBody: unknown;

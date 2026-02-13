@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 
 import type { AuthResult } from "@/auth/context";
-import type { ApiKeyInfo } from "@/db/schema";
+import type { ApiKeyAuth } from "@/db/schema";
 import type { SettingsConfig } from "@/settings";
 
 import { getApiKeyFromRequest } from "@/auth/api-key";
@@ -137,7 +137,7 @@ export type PathParameters = {
 export const validateApiKey = (
   apiKey: string,
   pathParams?: PathParameters,
-): Effect.Effect<ApiKeyInfo, UnauthorizedError, Database> =>
+): Effect.Effect<ApiKeyAuth, UnauthorizedError, Database> =>
   Effect.gen(function* () {
     const db = yield* Database;
 

@@ -21,7 +21,11 @@ import type { ModelPricing } from "@/api/router/pricing";
 import type { ProviderName } from "@/api/router/providers";
 import type { StreamMeteringContext } from "@/api/router/streaming";
 import type { AuthResult } from "@/auth/context";
-import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
+import type {
+  PublicUser,
+  PublicOrganization,
+  EnvironmentApiKeyAuth,
+} from "@/db/schema";
 
 import { Analytics } from "@/analytics";
 import { MirascopeCloudApi, ApiLive } from "@/api/router";
@@ -209,7 +213,7 @@ type ApiClient = Effect.Effect.Success<typeof makeClient>;
 function createTestWebHandler(
   databaseUrl: string,
   user: PublicUser,
-  apiKeyInfo: ApiKeyInfo,
+  apiKeyInfo: EnvironmentApiKeyAuth,
   queueSend: (message: SpansIngestMessage) => Effect.Effect<void, Error>,
   realtimeLayer: Layer.Layer<RealtimeSpans> = DefaultRealtimeLayer,
 ) {
@@ -291,7 +295,7 @@ function createHandlerHttpClient(
 export async function createApiClient(
   databaseUrl: string,
   user: PublicUser,
-  apiKeyInfo: ApiKeyInfo,
+  apiKeyInfo: EnvironmentApiKeyAuth,
   queueSend: (message: SpansIngestMessage) => Effect.Effect<void, Error>,
   realtimeLayer: Layer.Layer<RealtimeSpans> = DefaultRealtimeLayer,
 ): Promise<{ client: ApiClient; dispose: () => Promise<void> }> {
@@ -417,7 +421,7 @@ function createSequentialDescribe(
             },
           });
 
-          const apiKeyInfo: ApiKeyInfo = {
+          const apiKeyInfo: EnvironmentApiKeyAuth = {
             apiKeyId: "00000000-0000-0000-0000-000000000001",
             organizationId: org.id,
             projectId: "00000000-0000-0000-0000-000000000002",

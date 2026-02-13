@@ -70,7 +70,7 @@ import {
   type NewApiKey,
   type PublicApiKey,
   type ApiKeyCreateResponse,
-  type ApiKeyInfo,
+  type ApiKeyAuth,
   type ApiKeyWithContext,
   type ProjectRole,
 } from "@/db/schema";
@@ -706,14 +706,14 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
    */
   getApiKeyInfo(
     key: string,
-  ): Effect.Effect<ApiKeyInfo, NotFoundError | DatabaseError, DrizzleORM> {
+  ): Effect.Effect<ApiKeyAuth, NotFoundError | DatabaseError, DrizzleORM> {
     return Effect.gen(this, function* () {
       const client = yield* DrizzleORM;
       const keyHash = hashApiKey(key);
 
-      // Look up the API key by hash and join to get the full hierarchy and owner info
-      // Only include API keys whose owner has not been deleted
-      // LEFT JOIN to claws to get clawId for claw-user-owned keys
+      // Look up the API key by hash and resolve the full hierarchy + owner info.
+      // Only include API keys whose owner has not been deleted.
+      // LEFT JOIN to claws to detect claw-owned keys.
       const [apiKeyInfo] = yield* client
         .select({
           apiKeyId: apiKeys.id,
@@ -853,10 +853,13 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
           projectId: projects.id,
           projectName: projects.name,
           environmentName: environments.name,
+          ownerName: users.name,
+          ownerAccountType: users.accountType,
         })
         .from(apiKeys)
         .innerJoin(environments, eq(apiKeys.environmentId, environments.id))
-        .innerJoin(projects, eq(environments.projectId, projects.id));
+        .innerJoin(projects, eq(environments.projectId, projects.id))
+        .innerJoin(users, eq(apiKeys.ownerId, users.id));
 
       let results: ApiKeyWithContext[];
 

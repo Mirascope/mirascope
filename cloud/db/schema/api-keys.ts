@@ -2,7 +2,7 @@ import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp, uuid, unique } from "drizzle-orm/pg-core";
 
 import { environments } from "./environments";
-import { users, type PublicUser } from "./users";
+import { users } from "./users";
 
 export const apiKeys = pgTable(
   "api_keys",
@@ -42,60 +42,126 @@ export const apiKeysRelations = relations(apiKeys, ({ one }) => ({
   }),
 }));
 
-// Internal types
+// ---------------------------------------------------------------------------
+// Table-level types (raw row shapes)
+// ---------------------------------------------------------------------------
+
+/** Full row from api_keys table. */
 export type ApiKey = typeof apiKeys.$inferSelect;
+
+/** Insert shape for api_keys table. */
 export type NewApiKey = typeof apiKeys.$inferInsert;
 
-// Public types for API responses (excludes keyHash)
-export type PublicApiKey = Pick<
-  ApiKey,
-  | "id"
-  | "name"
-  | "keyPrefix"
-  | "environmentId"
-  | "ownerId"
-  | "createdAt"
-  | "lastUsedAt"
-  | "deletedAt"
->;
+// ---------------------------------------------------------------------------
+// Public API key types (excludes keyHash, safe for API responses)
+// ---------------------------------------------------------------------------
 
-// Type for the create response (includes the plaintext key)
-export type ApiKeyCreateResponse = PublicApiKey & {
+/** Base fields present on every API key response. */
+export type BasePublicApiKey = {
+  id: string;
+  name: string;
+  keyPrefix: string;
+  ownerId: string;
+  createdAt: Date | null;
+  lastUsedAt: Date | null;
+  deletedAt: Date | null;
+};
+
+/** Environment-scoped public API key. */
+export type EnvironmentPublicApiKey = BasePublicApiKey & {
+  environmentId: string;
+};
+
+/**
+ * Public API key — today all keys are environment-scoped.
+ * When org-scoped keys are added, this becomes a union.
+ */
+/** Org-scoped public API key (no environment). */
+export type OrgPublicApiKey = BasePublicApiKey & {
+  organizationId: string;
+};
+
+export type PublicApiKey = EnvironmentPublicApiKey;
+
+/** Create response — includes the plaintext key (shown once). */
+export type EnvironmentApiKeyCreateResponse = EnvironmentPublicApiKey & {
   key: string;
 };
 
-// Type for verified API key with full resource hierarchy
-export type VerifiedApiKey = {
-  apiKeyId: string;
-  environmentId: string;
-  projectId: string;
-  organizationId: string;
+/**
+ * API key create response — today only environment-scoped.
+ * Alias for forward compatibility.
+ */
+export type ApiKeyCreateResponse = EnvironmentApiKeyCreateResponse;
+
+// ---------------------------------------------------------------------------
+// Authenticated API key info (returned by getApiKeyInfo)
+// ---------------------------------------------------------------------------
+
+/** Owner info resolved from the users table. */
+export type ApiKeyOwner = {
+  ownerId: string;
+  ownerEmail: string;
+  ownerName: string | null;
+  ownerAccountType: "user" | "claw";
+  ownerDeletedAt: Date | null;
 };
 
-// Helper type to capitalize the first letter of a string
-type Capitalize<S extends string> = S extends `${infer First}${infer Rest}`
-  ? `${Uppercase<First>}${Rest}`
-  : S;
-
-// Helper type to prefix PublicUser fields with "owner" and capitalize
-type OwnerFields<T> = {
-  [K in keyof T as `owner${Capitalize<string & K>}`]: T[K];
-};
-
-// Type for complete API key information including owner details
-// Uses mapped type to automatically derive owner fields from PublicUser
-// clawId is sourced from a LEFT JOIN to claws (null for human-owned keys)
-export type ApiKeyInfo = {
+/** Base authenticated key info — identity + resolved owner. */
+export type BaseApiKeyAuth = {
   apiKeyId: string;
-  environmentId: string;
-  projectId: string;
   organizationId: string;
+  /** Non-null when the key's owner is a claw bot user. */
   clawId: string | null;
-} & OwnerFields<PublicUser>;
+} & ApiKeyOwner;
 
-// Type for API key with project and environment context (for listing all keys)
-export type ApiKeyWithContext = PublicApiKey & {
+/** Environment-scoped authenticated key info. */
+export type EnvironmentApiKeyAuth = BaseApiKeyAuth & {
+  environmentId: string;
   projectId: string;
-  projectName: string;
-  environmentName: string;
 };
+
+/** Org-scoped authenticated key info (no environment/project). */
+export type OrgApiKeyAuth = BaseApiKeyAuth;
+
+/**
+ * Authenticated API key info — today only environment-scoped.
+ * When org-scoped keys land: ApiKeyAuth = EnvironmentApiKeyAuth | OrgApiKeyAuth
+ */
+export type ApiKeyAuth = EnvironmentApiKeyAuth;
+
+// Backward compat aliases — consumers can migrate at their own pace
+/** @deprecated Use EnvironmentApiKeyAuth */
+export type EnvironmentApiKeyInfo = EnvironmentApiKeyAuth;
+/** @deprecated Use ApiKeyAuth */
+export type ApiKeyInfo = ApiKeyAuth;
+
+// ---------------------------------------------------------------------------
+// Display types — for UI listing with resolved context
+// ---------------------------------------------------------------------------
+
+/** Context fields shared by all API key display types. */
+export type BaseApiKeyContext = {
+  ownerName: string | null;
+  ownerAccountType: "user" | "claw";
+};
+
+/** Environment-scoped key with full display context. */
+export type EnvironmentApiKeyWithContext = EnvironmentPublicApiKey &
+  BaseApiKeyContext & {
+    projectId: string;
+    projectName: string;
+    environmentName: string;
+  };
+
+/** Org-scoped key with display context. */
+export type OrgApiKeyWithContext = OrgPublicApiKey &
+  BaseApiKeyContext & {
+    organizationName: string;
+  };
+
+/**
+ * API key with display context — today only environment-scoped.
+ * When org-scoped keys land: ApiKeyWithContext = EnvironmentApiKeyWithContext | OrgApiKeyWithContext
+ */
+export type ApiKeyWithContext = EnvironmentApiKeyWithContext;

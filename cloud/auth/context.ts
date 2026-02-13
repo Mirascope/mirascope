@@ -1,13 +1,17 @@
 import { Context, Effect } from "effect";
 
-import type { PublicUser, ApiKeyInfo } from "@/db/schema";
+import type {
+  PublicUser,
+  ApiKeyAuth,
+  EnvironmentApiKeyAuth,
+} from "@/db/schema";
 
 import { UnauthorizedError } from "@/errors";
 
 /** Auth result including optional API key info. */
 export type AuthResult = {
   user: PublicUser;
-  apiKeyInfo?: ApiKeyInfo;
+  apiKeyInfo?: ApiKeyAuth;
 };
 
 /** Make specific fields of T required. */
@@ -16,6 +20,11 @@ export type RequireField<T, K extends keyof T> = Omit<T, K> &
 
 /** AuthResult with required apiKeyInfo. */
 export type ApiKeyAuthResult = RequireField<AuthResult, "apiKeyInfo">;
+
+/** AuthResult with required environment-scoped apiKeyInfo. */
+export type EnvironmentApiKeyAuthResult = Omit<AuthResult, "apiKeyInfo"> & {
+  apiKeyInfo: EnvironmentApiKeyAuth;
+};
 
 /**
  * Context that provides the authenticated user for the current request.
@@ -53,5 +62,19 @@ export class Authentication extends Context.Tag("Authentication")<
       );
     }
     return auth as ApiKeyAuthResult;
+  });
+
+  /**
+   * Require environment-scoped API key authentication.
+   * Today all keys are env-scoped, so this is equivalent to ApiKey.
+   * When org-scoped keys are added, this will narrow to only env keys.
+   */
+  static readonly EnvironmentApiKey: Effect.Effect<
+    EnvironmentApiKeyAuthResult,
+    UnauthorizedError,
+    Authentication
+  > = Effect.gen(function* () {
+    const auth = yield* Authentication.ApiKey;
+    return auth as EnvironmentApiKeyAuthResult;
   });
 }

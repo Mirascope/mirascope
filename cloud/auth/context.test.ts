@@ -1,7 +1,7 @@
 import { describe, it, expect } from "@effect/vitest";
 import { Effect, Layer } from "effect";
 
-import type { PublicUser, ApiKeyInfo } from "@/db/schema";
+import type { PublicUser, EnvironmentApiKeyAuth } from "@/db/schema";
 
 import { Authentication, type AuthResult } from "@/auth/context";
 import { UnauthorizedError } from "@/errors";
@@ -15,7 +15,7 @@ describe("Authentication", () => {
     deletedAt: null,
   };
 
-  const mockApiKeyInfo: ApiKeyInfo = {
+  const mockApiKeyInfo: EnvironmentApiKeyAuth = {
     apiKeyId: "test-api-key-id",
     organizationId: "test-org-id",
     projectId: "test-project-id",

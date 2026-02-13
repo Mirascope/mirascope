@@ -43,6 +43,8 @@ export const ApiKeyWithContextSchema = Schema.Struct({
   projectId: Schema.String,
   projectName: Schema.String,
   environmentName: Schema.String,
+  ownerName: Schema.NullOr(Schema.String),
+  ownerAccountType: Schema.Literal("user", "claw"),
 });
 
 // API key name must be 1-100 characters
