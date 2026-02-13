@@ -10,7 +10,7 @@
 """Iteration eval: LOO cross-validation with feedback-based program improvement.
 
 Usage:
-    ./run_iteration.py --sample SAMPLE.yaml --bootstrap RESULTS.json --output DIR [--model MODEL]
+    ./run_iteration.py --sample SAMPLE.yaml --bootstrap RESULTS.json --output DIR
 
 Requires all bootstrap queries to be annotated.
 """
@@ -289,7 +289,6 @@ def main() -> None:
     parser.add_argument("--sample", required=True, help="Path to YAML eval sample")
     parser.add_argument("--bootstrap", required=True, help="Path to bootstrap results JSON (must be fully annotated)")
     parser.add_argument("--output", required=True, help="Output directory for results")
-    parser.add_argument("--model", default=DEFAULT_MODEL, help=f"LLM model (default: {DEFAULT_MODEL})")
     args = parser.parse_args()
 
     # Initialize tracing (requires MIRASCOPE_API_KEY)

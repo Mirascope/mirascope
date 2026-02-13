@@ -17,7 +17,7 @@ A single Python file that:
 Every program MUST follow this structure:
 
 ```python
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run
 # /// script
 # requires-python = ">=3.10"
 # dependencies = ["mirascope[all]", "pydantic"]
@@ -42,10 +42,7 @@ class ProgramOutput(BaseModel):
     # Define fields with descriptions
     field_name: str = Field(description="What this field represents")
 
-# --- Mirascope Setup ---
-
-ops.configure()
-ops.instrument_llm()
+# --- Mirascope LLM Call ---
 
 @ops.trace(tags=["<skill-type>"])
 @llm.call("anthropic/claude-sonnet-4-5", format=ProgramOutput)
@@ -70,6 +67,10 @@ if __name__ == "__main__":
 
     if not args.input:
         parser.error("--input is required (unless using --schema)")
+
+    # Initialize Mirascope tracing (requires MIRASCOPE_API_KEY env var)
+    ops.configure()
+    ops.instrument_llm()
 
     data = ProgramInput.model_validate_json(args.input)
     response = generate_<skill_type>(data)  # Match function name above
@@ -164,7 +165,7 @@ def run(...): ...
 
 ### `ops.configure()` + `ops.instrument_llm()`
 
-Call these at module level to initialize Mirascope Cloud tracing. `configure()` reads `MIRASCOPE_API_KEY` from the environment. `instrument_llm()` auto-instruments LLM provider clients.
+Call these inside `if __name__ == "__main__":` to initialize Mirascope Cloud tracing (not at module level, or `--help` will fail). `configure()` reads `MIRASCOPE_API_KEY` from the environment. `instrument_llm()` auto-instruments LLM provider clients.
 
 ### `.wrapped()` — Access Trace Metadata
 

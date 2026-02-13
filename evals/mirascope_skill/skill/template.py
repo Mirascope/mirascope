@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["mirascope[anthropic,ops]", "pydantic"]
+# dependencies = ["mirascope[all]", "pydantic"]
 # ///
 """Template Mirascope program — replace with your own logic."""
 import argparse
@@ -27,16 +27,13 @@ class ProgramOutput(BaseModel):
     result: str = Field(description="The generated result")
 
 
-# --- Mirascope Setup ---
-
-ops.configure()
-ops.instrument_llm()
+# --- Mirascope LLM Call ---
 
 
 @ops.trace(tags=["template"])
-@ops.version
 @llm.call("anthropic/claude-sonnet-4-5", format=ProgramOutput)
-def run(input_data: ProgramInput) -> str:
+def generate_result(input_data: ProgramInput) -> str:
+    """Descriptive function name for better trace names."""
     return f"Process this request: {input_data.prompt}"
 
 
@@ -69,6 +66,10 @@ if __name__ == "__main__":
     if not args.input:
         parser.error("--input is required (unless using --schema)")
 
+    # Initialize tracing (requires MIRASCOPE_API_KEY)
+    ops.configure()
+    ops.instrument_llm()
+
     data = ProgramInput.model_validate_json(args.input)
-    response = run(data)
+    response = generate_result(data)
     print(response.parse().model_dump_json(indent=2))

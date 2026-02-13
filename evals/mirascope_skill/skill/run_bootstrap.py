@@ -10,7 +10,7 @@
 """Bootstrap eval: generate a program from a sample, run queries, save results.
 
 Usage:
-    ./run_bootstrap.py --sample SAMPLE.yaml --output DIR [--model MODEL]
+    ./run_bootstrap.py --sample SAMPLE.yaml --output DIR
 """
 
 from __future__ import annotations
@@ -231,7 +231,6 @@ def main() -> None:
     )
     parser.add_argument("--sample", required=True, help="Path to YAML eval sample")
     parser.add_argument("--output", required=True, help="Output directory for results")
-    parser.add_argument("--model", default=DEFAULT_MODEL, help=f"LLM model (default: {DEFAULT_MODEL})")
     args = parser.parse_args()
 
     # Initialize tracing (requires MIRASCOPE_API_KEY)
