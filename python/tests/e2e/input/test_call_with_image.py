@@ -67,18 +67,24 @@ def _should_skip(
     return None
 
 
+def _combo_id(model_id: llm.ModelId, mime_type: ImageMimeType) -> str:
+    return f"{model_id}-{_mime_id(mime_type)}"
+
+
 def _generate_supported_combinations(
-    model_ids: list[llm.ModelId], 
-    mime_types: tuple[ImageMimeType, ...], 
-    unsupported: dict[str, set[ImageMimeType]]
-) -> list[tuple[llm.ModelId, ImageMimeType]]:
-    """Generate only supported model_id/mime_type combinations."""
-    combinations = []
+    model_ids: list[llm.ModelId],
+    mime_types: tuple[ImageMimeType, ...],
+    unsupported: dict[str, set[ImageMimeType]],
+) -> list[pytest.param]:
+    """Generate only supported model_id/mime_type combinations as pytest params."""
+    params = []
     for model_id in model_ids:
         for mime_type in mime_types:
             if not _should_skip(model_id, mime_type, unsupported):
-                combinations.append((model_id, mime_type))
-    return combinations
+                params.append(
+                    pytest.param(model_id, mime_type, id=_combo_id(model_id, mime_type))
+                )
+    return params
 
 
 _SUPPORTED_CONTENT_COMBINATIONS = _generate_supported_combinations(
@@ -87,9 +93,8 @@ _SUPPORTED_CONTENT_COMBINATIONS = _generate_supported_combinations(
 
 
 @pytest.mark.parametrize(
-    "model_id,mime_type", 
+    ("model_id", "mime_type"),
     _SUPPORTED_CONTENT_COMBINATIONS,
-    ids=lambda combo: f"{combo[0].replace('/', '_').replace(':', '_').replace('-', '_')}__{_mime_id(combo[1])}"
 )
 @pytest.mark.vcr
 def test_call_with_image_content(
@@ -122,9 +127,8 @@ _SUPPORTED_URL_COMBINATIONS = _generate_supported_combinations(
 
 
 @pytest.mark.parametrize(
-    "model_id,mime_type", 
+    ("model_id", "mime_type"),
     _SUPPORTED_URL_COMBINATIONS,
-    ids=lambda combo: f"{combo[0].replace('/', '_').replace(':', '_').replace('-', '_')}__{_mime_id(combo[1])}"
 )
 @pytest.mark.vcr
 def test_call_with_image_url(
