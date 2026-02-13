@@ -76,14 +76,14 @@ export const useCreateClaw = () => {
         }),
     }),
     onSuccess: (claw) => {
-      // Optimistically insert into cache to prevent "not found" flash on navigation
+      // Insert the server-returned claw into cache to prevent "not found" flash
+      // on navigation. We intentionally skip invalidateQueries here — the server
+      // response is authoritative, and an immediate refetch can return stale data
+      // from Hyperdrive's query cache that doesn't yet include the new claw.
       queryClient.setQueryData(
         ["claws", claw.organizationId],
         (old: unknown[] | undefined) => (old ? [...old, claw] : [claw]),
       );
-      void queryClient.invalidateQueries({
-        queryKey: ["claws", claw.organizationId],
-      });
     },
   });
 };
@@ -140,10 +140,15 @@ export const useUpdateClaw = () => {
         );
       }
     },
-    onSettled: (_data, _err, variables) => {
-      void queryClient.invalidateQueries({
-        queryKey: ["claws", variables.organizationId],
-      });
+    // Only refetch on error to re-sync cache with server.
+    // On success, the optimistic merge is sufficient — an immediate refetch can
+    // return stale data from Hyperdrive's query cache that reverts the update.
+    onSettled: (_data, err, variables) => {
+      if (err) {
+        void queryClient.invalidateQueries({
+          queryKey: ["claws", variables.organizationId],
+        });
+      }
     },
   });
 };
@@ -200,11 +205,16 @@ export const useDeleteClaw = () => {
         );
       }
     },
-    // Refetch to sync with server regardless of success/error
-    onSettled: (_data, _err, variables) => {
-      void queryClient.invalidateQueries({
-        queryKey: ["claws", variables.organizationId],
-      });
+    // Only refetch on error to re-sync cache with server.
+    // On success, we trust the optimistic update — refetching immediately can
+    // return stale data from Hyperdrive's query cache (the SELECT hits a cached
+    // result that still includes the just-deleted claw).
+    onSettled: (_data, err, variables) => {
+      if (err) {
+        void queryClient.invalidateQueries({
+          queryKey: ["claws", variables.organizationId],
+        });
+      }
     },
   });
 };
