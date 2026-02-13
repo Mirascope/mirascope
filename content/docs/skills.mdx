@@ -66,7 +66,7 @@ The frontmatter fields:
 Skills are loaded from three locations, with later sources overriding earlier ones:
 
 1. **Bundled skills** — shipped with OpenClaw, always available
-2. **Managed skills** — installed to `~/.openclaw/skills/`
+2. **Managed skills** — installed to the shared skills directory
 3. **Workspace skills** — local to your workspace at `<workspace>/skills/`
 
 If two skills share the same `name`, the higher-precedence source wins. This means you can override a bundled skill by placing your own version in your workspace.
@@ -94,13 +94,17 @@ These work automatically when their requirements are met — no setup needed.
 
 ## Installing Skills from ClawHub
 
-[ClawHub](https://clawhub.com) is the public registry for community skills. Browse available skills on the website, then install with a single command:
+[ClawHub](https://clawhub.com) is the public registry for community skills. Browse available skills on the website, then ask your Claw to install one:
+
+> Install the weather skill from ClawHub
+
+Your Claw runs the install command on its machine and the skill is immediately available. Under the hood, it runs:
 
 ```bash
 clawhub install <skill-slug>
 ```
 
-This downloads the skill into your workspace's `skills/` directory. To update all installed skills:
+To update all installed skills, ask your Claw to run:
 
 ```bash
 clawhub update --all
