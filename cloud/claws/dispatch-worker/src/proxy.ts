@@ -315,6 +315,14 @@ export async function proxyHttp(
   const headers = new Headers(response.headers);
   headers.set("X-Claw-Worker", "dispatch");
 
+  // Rewrite Location headers on redirects to include base path
+  if (basePath && response.status >= 300 && response.status < 400) {
+    const location = headers.get("Location");
+    if (location?.startsWith("/")) {
+      headers.set("Location", basePath + location);
+    }
+  }
+
   // Inject base path into OpenClaw Control UI HTML
   if (basePath && response.headers.get("content-type")?.includes("text/html")) {
     const html = await response.text();
@@ -384,6 +392,7 @@ export async function proxyHttp(
 export async function proxyWebSocket(
   sandbox: Sandbox,
   request: Request,
+  basePath?: string,
 ): Promise<Response> {
   console.log("[proxy] WebSocket connection");
 
@@ -408,10 +417,33 @@ export async function proxyWebSocket(
     }
   });
 
-  // Relay: container -> client
+  // Relay: container -> client (with URL rewriting for base path)
   containerWs.addEventListener("message", (event) => {
     if (serverWs.readyState === WebSocket.OPEN) {
-      serverWs.send(event.data);
+      let data = event.data;
+      // Rewrite URLs in JSON error messages to include base path.
+      // Currently targets OpenClaw gateway's { error: { message: "..." } }
+      // shape only. Other URL-bearing fields (e.g. redirect, url) are not
+      // rewritten — extend the parsing below if those become relevant.
+      if (basePath && typeof data === "string") {
+        try {
+          const parsed = JSON.parse(data);
+          if (
+            parsed.error?.message &&
+            typeof parsed.error.message === "string"
+          ) {
+            parsed.error.message = parsed.error.message.replace(
+              /wss?:\/\/([^/\s"]+)\//g,
+              (match: string, host: string) =>
+                `${match.startsWith("wss") ? "wss" : "ws"}://${host}${basePath}/`,
+            );
+            data = JSON.stringify(parsed);
+          }
+        } catch {
+          // Not JSON, pass through
+        }
+      }
+      serverWs.send(data);
     }
   });
 
