@@ -112,6 +112,12 @@ export const useCompleteOnboarding = () => {
       return result.data;
     },
     onSuccess: (data) => {
+      // Cancel in-flight queries so they don't overwrite our optimistic insert
+      void queryClient.cancelQueries({ queryKey: ["organizations"] });
+      void queryClient.cancelQueries({
+        queryKey: ["claws", data.organization.id],
+      });
+
       // Optimistically insert into cache to prevent "not found" flash on navigation
       queryClient.setQueryData(
         ["organizations"],
