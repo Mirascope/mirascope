@@ -35,6 +35,24 @@ Want to chat with your Claw from Discord? Set it up from your dashboard:
 
 For the full walkthrough, see the [Channels guide](/docs/channels).
 
+## See It in Action
+
+Here's what a real conversation looks like once your Claw has some context:
+
+> **You:** Can you check if there are any new issues assigned to me on GitHub?
+>
+> **Atlas:** Let me check... You have 3 open issues. The most urgent is #142 "Fix login timeout" — it was assigned yesterday and has a `high-priority` label. Want me to look at the code?
+>
+> **You:** Yeah, go ahead and take a look
+>
+> **Atlas:** I've read through the auth handler. The timeout is set to 5 seconds in `config.ts` line 23, but the OAuth callback takes ~8 seconds on slow connections. I can submit a PR bumping it to 15 seconds — want me to do that?
+>
+> **You:** Do it
+>
+> **Atlas:** Done — PR #287 is up. I also added a retry with exponential backoff so it's more resilient. I'll remember that this repo uses the `fix/` branch prefix for your future PRs.
+
+Your Claw uses tools (GitHub, file system, exec), recalls context from memory, takes multi-step action, and learns preferences — all in natural conversation.
+
 ## That's It
 
 You have a running Claw with its own identity. As you keep chatting, it will build memory, develop preferences, and get better at helping you.
