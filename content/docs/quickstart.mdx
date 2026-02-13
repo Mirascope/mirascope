@@ -15,15 +15,15 @@ Go to [mirascope.com/login](/login) and create your account. After signing up, y
 
 From the dashboard, click **Create Claw**. Give it a name and choose a model.
 
-Your Claw is immediately deployed and ready to chat. It starts with a default identity that you'll personalize through conversation.
+Your Claw is immediately deployed and ready to chat. They start with a default identity that you'll personalize through conversation.
 
 ## 3. Start Chatting
 
-Open your Claw and send it a message. Try something like:
+Open your Claw and send them a message. Try something like:
 
 > Hey! I'd like you to be a helpful coding assistant named Atlas. You should be concise, friendly, and honest when you're unsure about something.
 
-Your Claw will update its own `SOUL.md` based on your conversation — building its identity through dialogue rather than manual configuration.
+Your Claw will update their own `SOUL.md` based on your conversation — building their identity through dialogue rather than manual configuration.
 
 ## 4. Connect Discord
 
@@ -35,9 +35,27 @@ Want to chat with your Claw from Discord? Set it up from your dashboard:
 
 For the full walkthrough, see the [Channels guide](/docs/channels).
 
+## See It in Action
+
+Here's what a real conversation looks like once your Claw has some context:
+
+> **You:** Can you check if there are any new issues assigned to me on GitHub?
+>
+> **Atlas:** Let me check... You have 3 open issues. The most urgent is #142 "Fix login timeout" — it was assigned yesterday and has a `high-priority` label. Want me to look at the code?
+>
+> **You:** Yeah, go ahead and take a look
+>
+> **Atlas:** I've read through the auth handler. The timeout is set to 5 seconds in `config.ts` line 23, but the OAuth callback takes ~8 seconds on slow connections. I can submit a PR bumping it to 15 seconds — want me to do that?
+>
+> **You:** Do it
+>
+> **Atlas:** Done — PR #287 is up. I also added a retry with exponential backoff so it's more resilient. I'll remember that this repo uses the `fix/` branch prefix for your future PRs.
+
+Your Claw uses tools (GitHub, file system, exec), recalls context from memory, takes multi-step action, and learns preferences — all in natural conversation.
+
 ## That's It
 
-You have a running Claw with its own identity. As you keep chatting, it will build memory, develop preferences, and get better at helping you.
+You have a running Claw with their own identity. As you keep chatting, they'll build memory, develop preferences, and get better at helping you.
 
 ## What's Next
 
