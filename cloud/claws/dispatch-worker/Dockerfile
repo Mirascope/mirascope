@@ -41,9 +41,10 @@ RUN bun install -g openclaw \
 # Install mirascope TypeScript
 RUN bun install -g mirascope
 
-# Create openclaw directories
+# Create openclaw and rclone config directories
 RUN mkdir -p /root/.openclaw \
-    && mkdir -p /root/.openclaw/workspace
+    && mkdir -p /root/.openclaw/workspace \
+    && mkdir -p /root/.config/rclone
 
 # Copy startup script
 COPY start-openclaw.ts /usr/local/bin/start-openclaw.ts
