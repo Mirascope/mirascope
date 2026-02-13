@@ -35,6 +35,8 @@ Never share your bot token or commit it to version control. Treat it like a pass
 2. Select the **bot** scope
 3. Under Bot Permissions, select:
    - Send Messages
+   - Send Messages in Threads
+   - Create Public Threads
    - Read Message History
    - Add Reactions
    - Attach Files
@@ -42,13 +44,9 @@ Never share your bot token or commit it to version control. Treat it like a pass
 
 ### Step 3: Connect the Channel
 
-Tell your Claw to set up Discord. In the chat, say something like:
+In the Mirascope dashboard, go to your Claw's **Settings → Channels**, click **Add Channel → Discord**, and paste your bot token.
 
-> Set up Discord with this bot token: `YOUR_BOT_TOKEN`
-
-Your Claw will update the gateway configuration and restart to connect. You can also configure this through the Mirascope dashboard under **Settings → Channels**.
-
-Your Claw should appear online in your Discord server within a few seconds. Send it a message to test!
+Your Claw should appear online in your Discord server within a few seconds. Send them a message to test!
 
 <Info>
 In servers, each channel gets its own isolated conversation session. DMs go to the Claw's main session.
@@ -68,11 +66,7 @@ Telegram is the simplest channel to set up — just a bot token from BotFather.
 
 ### Step 2: Connect the Channel
 
-Tell your Claw to set up Telegram:
-
-> Add Telegram with this bot token: `YOUR_BOT_TOKEN`
-
-Your Claw updates the config and restarts the gateway. You can also do this through the dashboard under **Settings → Channels**.
+In the Mirascope dashboard, go to your Claw's **Settings → Channels**, click **Add Channel → Telegram**, and paste your bot token.
 
 Message your bot on Telegram to test. It supports both private chats and group conversations.
 
@@ -90,7 +84,7 @@ Message your bot on Telegram to test. It supports both private chats and group c
 | **iMessage** | BlueBubbles (macOS) | macOS only. BlueBubbles recommended for new setups. |
 | **Google Chat** | HTTP webhook app | Google Workspace integration. |
 
-You can configure channels by chatting with your Claw (it will update the config and restart the gateway) or through the Mirascope dashboard.
+You can configure channels through the Mirascope dashboard under **Settings → Channels**.
 
 ---
 
@@ -112,30 +106,16 @@ Guild and group channels don't require pairing — they get isolated sessions au
 
 ---
 
-## Plugin Channels
+## Additional Channels
 
-Beyond the built-in channels, additional platforms are available as **plugins**:
-
-| Plugin | Install Command |
-|---|---|
-| Mattermost | `openclaw plugins install @openclaw/mattermost` |
-| Microsoft Teams | `openclaw plugins install @openclaw/msteams` |
-| LINE | `openclaw plugins install @openclaw/line` |
-| Matrix | `openclaw plugins install @openclaw/matrix` |
-| Nostr | `openclaw plugins install @openclaw/nostr` |
-| Twitch | `openclaw plugins install @openclaw/twitch` |
-| Feishu / Lark | `openclaw plugins install @openclaw/feishu` |
-| Nextcloud Talk | `openclaw plugins install @openclaw/nextcloud-talk` |
-| Zalo | `openclaw plugins install @openclaw/zalo` |
-
-After installing a plugin, configure it through the Mirascope dashboard or in `openclaw.json` for self-hosted deployments.
+Beyond the built-in channels, additional platforms are available including Mattermost, Microsoft Teams, LINE, Matrix, Nostr, Twitch, Feishu/Lark, Nextcloud Talk, and Zalo. See the [OpenClaw documentation](https://docs.openclaw.ai) for details on additional channel setup.
 
 ---
 
 ## Running Multiple Channels
 
-Connect as many channels as you want from your Claw's settings page. All channels connect simultaneously — your Claw maintains separate conversation context for each chat while sharing the same identity and memory.
+Connect as many channels as you want. All channels run simultaneously — your Claw maintains separate conversation context for each chat while sharing the same identity and memory.
 
 <Info>
-  Self-hosting? See the [Deployment guide](/docs/deployment) for configuring channels via `openclaw.json`.
+  Self-hosting? Claws are powered by [OpenClaw](https://github.com/openclaw/openclaw), an open source gateway. See the [Deployment guide](/docs/deployment) and [OpenClaw docs](https://docs.openclaw.ai) for self-hosted channel configuration.
 </Info>
