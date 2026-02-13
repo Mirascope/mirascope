@@ -1,195 +1,47 @@
 ---
 title: Deployment
-description: Deploy and run claws in different environments — local development, self-hosted servers, and Mirascope Cloud
+description: Deploy Claws on Mirascope Cloud or self-host with OpenClaw
 ---
 
 # Deployment
 
-Claws can run anywhere — from your laptop during development to a dedicated server in production. This guide covers each deployment option and the operational details you need to keep things running smoothly.
+## Mirascope Cloud
 
-## Local development
+The easiest way to run a Claw. Sign up at [mirascope.com/login](/login), create a Claw, and start chatting — no infrastructure to manage.
 
-The fastest way to get started. Run OpenClaw directly on your machine for development, testing, or personal use.
+Mirascope Cloud handles:
 
-### Start the gateway
+- **Hosting** — your Claw runs on managed infrastructure, always available
+- **Model access** — use Anthropic, OpenAI, Google, and other providers through your Mirascope account
+- **Channels** — connect Discord, Telegram, and other platforms from the dashboard
+- **Memory** — workspace files stored on cloud storage, persistent across sessions
+- **Monitoring** — logs, usage tracking, and session management in the dashboard
 
-```bash
-# Start as a background daemon
-openclaw gateway start
+To get started, follow the [Quickstart](/docs/quickstart).
 
-# Or run in the foreground (useful for debugging)
-openclaw gateway
-```
+## Self-Hosting with OpenClaw
 
-The gateway listens on port **18789** by default. Once running, open the control UI at [http://127.0.0.1:18789/](http://127.0.0.1:18789/) to manage your claw.
+Claws are powered by [OpenClaw](https://github.com/openclaw/openclaw), an open source gateway you can run on your own infrastructure. Self-hosting gives you full control over your data, model provider keys, and runtime environment.
 
-### Manage the daemon
+Self-hosting is a good fit if you:
 
-```bash
-# Check status
-openclaw gateway status
+- Want your data to stay entirely on your own machines
+- Need to use custom model endpoints or local models
+- Want to run on specific hardware (Raspberry Pi, dedicated GPU server, etc.)
+- Need features or configuration not yet available in Mirascope Cloud
 
-# View logs
-openclaw logs
-
-# Restart
-openclaw gateway restart
-
-# Stop
-openclaw gateway stop
-```
-
-Local mode is ideal for iterating on your claw's configuration, testing tool integrations, and personal-use agents that only need to run when your machine is on.
-
-## Self-hosted server
-
-Run OpenClaw on your own infrastructure for always-on availability. This works on any Linux or macOS server with **Node.js 22+** — VPS providers (DigitalOcean, Hetzner, etc.), dedicated servers, or even a Raspberry Pi.
-
-### Install and set up
+### Getting Started
 
 ```bash
 # Install OpenClaw
 npm install -g openclaw
 
-# Run the onboarding wizard (sets up systemd service on Linux)
-openclaw onboard --install-daemon
+# Run the onboarding wizard
+openclaw onboard
 ```
 
-The `--install-daemon` flag configures a systemd service (or launchd on macOS) so the gateway starts automatically on boot and restarts on failure.
-
-### Reverse proxy
-
-For production deployments, put the gateway behind a reverse proxy like **nginx** or **Caddy** to handle SSL termination and access control.
-
-Example with Caddy:
-
-```
-claw.example.com {
-    reverse_proxy localhost:18789
-}
-```
-
-<Warning>
-The gateway control UI has no built-in authentication. Always use a reverse proxy with authentication or restrict access via firewall rules when exposing the gateway to the internet.
-</Warning>
-
-### Firewall
-
-If you don't need remote access to the control UI, keep port 18789 blocked and manage the gateway over SSH:
-
-```bash
-ssh your-server "openclaw gateway status"
-```
-
-## Mirascope Cloud
+For the full self-hosting guide — installation, configuration, reverse proxy setup, systemd services, environment variables, multi-agent setups, and more — see the [OpenClaw documentation](https://docs.openclaw.ai).
 
 <Info>
-Mirascope Cloud is coming soon. Deploy and manage claws with zero infrastructure overhead.
+  Whether you use Mirascope Cloud or self-host, your Claw's workspace files (SOUL.md, MEMORY.md, skills, etc.) use the same format. You can start on Cloud and move to self-hosting (or vice versa) at any time.
 </Info>
-
-Mirascope Cloud will provide managed hosting for your claws with automatic scaling, monitoring, and updates.
-
-```bash
-# Deploy your claw (coming soon)
-mirascope claw deploy
-```
-
-Features planned:
-- **One-command deploy** from your local workspace
-- **Automatic updates** — no manual patching
-- **Built-in monitoring** — logs, metrics, and alerts
-- **Dashboard** at [mirascope.com/cloud](https://mirascope.com/cloud) for managing all your claws
-
-## Operational concerns
-
-Regardless of where you deploy, there are a few things to keep in mind.
-
-### Workspace persistence
-
-Your claw's workspace (`~/.openclaw/workspace`) contains memory files, configuration, and any data your claw creates. **This directory must survive restarts.** On a server, ensure backups cover this path. With Docker, mount it as a volume.
-
-### Configuration
-
-The gateway reads its configuration from `~/.openclaw/openclaw.json`. This file controls model settings, channel connections, tool policies, and more. Edit it directly or use the control UI.
-
-### Updates
-
-```bash
-# Update OpenClaw to the latest version
-openclaw update
-```
-
-After updating, restart the gateway to pick up changes:
-
-```bash
-openclaw gateway restart
-```
-
-### Logs and monitoring
-
-```bash
-# View recent logs
-openclaw logs
-
-# Follow logs in real time
-openclaw logs --follow
-```
-
-On self-hosted servers, you can also use standard system tools:
-
-```bash
-# systemd journal (Linux)
-journalctl -u openclaw -f
-```
-
-## Environment variables
-
-Claws need API keys for model providers and credentials for communication channels. Set these as environment variables or configure them in `openclaw.json`.
-
-### Model providers
-
-| Variable | Description |
-|---|---|
-| `ANTHROPIC_API_KEY` | Anthropic (Claude) API key |
-| `OPENAI_API_KEY` | OpenAI API key |
-| `GOOGLE_API_KEY` | Google (Gemini) API key |
-
-### Channels
-
-| Variable | Description |
-|---|---|
-| `DISCORD_BOT_TOKEN` | Discord bot token |
-| `TELEGRAM_BOT_TOKEN` | Telegram bot token |
-
-### OpenClaw
-
-| Variable | Description |
-|---|---|
-| `OPENCLAW_PROFILE` | Named profile to use (for running multiple instances) |
-
-<Tip>
-On servers, set environment variables in your systemd service file or use a `.env` file in the OpenClaw workspace directory.
-</Tip>
-
-## Multi-agent setup
-
-You can run multiple agents from a single OpenClaw instance. Configure them in the `agents.list` array in `openclaw.json`:
-
-```json
-{
-  "agents": {
-    "list": [
-      {
-        "name": "assistant",
-        "model": "anthropic/claude-sonnet-4-20250514"
-      },
-      {
-        "name": "researcher",
-        "model": "anthropic/claude-opus-4-0-20250514"
-      }
-    ]
-  }
-}
-```
-
-Each agent gets its own workspace subdirectory, conversation history, and can be connected to different channels. This lets you run specialized agents — one for customer support, another for internal tasks — from a single deployment.
