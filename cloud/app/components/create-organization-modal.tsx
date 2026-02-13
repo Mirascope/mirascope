@@ -16,6 +16,7 @@ import {
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -137,10 +138,10 @@ function PaymentStep({
           {PLAN_OPTIONS.find((p) => p.value === planTier)?.label} plan.
         </DialogDescription>
       </DialogHeader>
-      <div className="px-6 py-4 space-y-4">
+      <DialogBody className="space-y-4">
         <PaymentElement />
         {error && <p className="text-sm text-destructive">{error}</p>}
-      </div>
+      </DialogBody>
       <DialogFooter>
         <Button
           type="button"
@@ -252,7 +253,7 @@ export function CreateOrganizationModal({
                 Create a new organization to manage your projects and team.
               </DialogDescription>
             </DialogHeader>
-            <div className="px-6 py-4">
+            <DialogBody>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="org-name">Organization Name</Label>
@@ -307,7 +308,7 @@ export function CreateOrganizationModal({
                 </div>
                 {error && <p className="text-sm text-destructive">{error}</p>}
               </div>
-            </div>
+            </DialogBody>
             <DialogFooter>
               <Button
                 type="button"
