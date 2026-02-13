@@ -126,22 +126,26 @@ function rcloneConfigured(): boolean {
 
 log("=== OpenClaw startup script begin ===");
 
-// ⚠️ STAGING ONLY — logs full env values including secrets for debugging.
-// TODO(ENG-650): Redact secrets before production launch.
-log("Environment snapshot (STAGING — full values):", {
+// Log claw-specific values in full, redact shared secrets
+log("Environment snapshot:", {
+  // Claw-specific — safe to log in full
   R2_BUCKET_NAME: process.env.R2_BUCKET_NAME ?? "(not set)",
   OPENCLAW_GATEWAY_TOKEN: process.env.OPENCLAW_GATEWAY_TOKEN ?? "(not set)",
-  ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY ?? "(not set)",
-  ANTHROPIC_BASE_URL: process.env.ANTHROPIC_BASE_URL ?? "(not set)",
   OPENCLAW_SITE_URL: process.env.OPENCLAW_SITE_URL ?? "(not set)",
   OPENCLAW_ALLOWED_ORIGINS: process.env.OPENCLAW_ALLOWED_ORIGINS ?? "(not set)",
-  R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID ?? "(not set)",
-  R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY ?? "(not set)",
   CF_ACCOUNT_ID: process.env.CF_ACCOUNT_ID ?? "(not set)",
-  DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN ?? "(not set)",
-  TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN ?? "(not set)",
-  SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN ?? "(not set)",
-  SLACK_APP_TOKEN: process.env.SLACK_APP_TOKEN ?? "(not set)",
+  ANTHROPIC_BASE_URL: process.env.ANTHROPIC_BASE_URL ?? "(not set)",
+  // Shared secrets — presence only
+  ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY ? "(set)" : "(not set)",
+  R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID ? "(set)" : "(not set)",
+  R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY
+    ? "(set)"
+    : "(not set)",
+  DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN ? "(set)" : "(not set)",
+  TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN ? "(set)" : "(not set)",
+  SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN ? "(set)" : "(not set)",
+  SLACK_APP_TOKEN: process.env.SLACK_APP_TOKEN ? "(set)" : "(not set)",
+  // Runtime
   NODE_VERSION: process.version ?? "(unknown)",
   BUN_VERSION: process.versions?.bun ?? "(unknown)",
 });
@@ -396,7 +400,31 @@ log("Step 4 complete: config written to " + CONFIG_FILE, {
   configLength: configJson.length,
 });
 // Log full config for staging debugging
-log("Full config (STAGING):", { config: configJson });
+// Log config structure (redact provider apiKey values)
+try {
+  const redacted = JSON.parse(configJson);
+  if (redacted.models?.providers) {
+    for (const p of Object.values(redacted.models.providers) as Record<
+      string,
+      unknown
+    >[]) {
+      if (p.apiKey) p.apiKey = "(redacted)";
+    }
+  }
+  if (redacted.channels) {
+    for (const ch of Object.values(redacted.channels) as Record<
+      string,
+      unknown
+    >[]) {
+      if (ch.token) ch.token = "(redacted)";
+      if (ch.botToken) ch.botToken = "(redacted)";
+      if (ch.appToken) ch.appToken = "(redacted)";
+    }
+  }
+  log("Full config (secrets redacted):", { config: JSON.stringify(redacted) });
+} catch {
+  log("Config written but failed to log redacted version");
+}
 
 // ============================================================
 // 5. Persist config to R2 via rclone (non-fatal on failure)
