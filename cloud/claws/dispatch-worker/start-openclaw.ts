@@ -346,7 +346,16 @@ if (baseUrl) {
   config.agents.defaults.models["anthropic/claude-haiku-4-5-20251001"] = {
     alias: "Haiku 4.5",
   };
-  config.agents.defaults.model.primary = "anthropic/claude-opus-4-5-20251101";
+  // Map short model names to full provider/model IDs
+  const modelMap: Record<string, string> = {
+    "claude-haiku-4-5": "anthropic/claude-haiku-4-5-20251001",
+    "claude-sonnet-4-5": "anthropic/claude-sonnet-4-5-20250929",
+    "claude-opus-4-6": "anthropic/claude-opus-4-5-20251101",
+  };
+  const primaryModel = process.env.OPENCLAW_PRIMARY_MODEL;
+  config.agents.defaults.model.primary =
+    (primaryModel && modelMap[primaryModel]) ||
+    "anthropic/claude-opus-4-5-20251101";
   log("Anthropic provider configured with 3 models");
 } else if (process.env.ANTHROPIC_API_KEY) {
   config.agents.defaults.model.primary = "anthropic/claude-opus-4-5";
