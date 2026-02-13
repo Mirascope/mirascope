@@ -50,7 +50,7 @@ export function HomePage() {
 
             {/* Subtitle */}
             <p
-              className="mt-4 font-handwriting text-white/90 text-shade lg:mt-5"
+              className="mt-4 font-handwriting font-semibold text-white lg:mt-5 [text-shadow:0_2px_8px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.15)]"
               style={{ fontSize: "clamp(1.25rem, 4vw, 1.75rem)" }}
             >
               <span className="inline-block whitespace-nowrap">

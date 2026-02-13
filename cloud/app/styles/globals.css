@@ -6,7 +6,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Williams Handwriting font import */
+/* Williams Handwriting - used for the Mirascope logo */
 @font-face {
   font-family: "Williams Handwriting";
   src: url("/fonts/Williams-Handwriting-Regular-v1.ttf") format("truetype");
@@ -14,15 +14,6 @@
   font-style: normal;
   font-display: swap;
   descent-override: normal;
-}
-
-@font-face {
-  font-family: "Williams Handwriting Descent";
-  src: url("/fonts/Williams-Handwriting-Regular-v1.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-  descent-override: 10%;
 }
 
 :root {
@@ -291,8 +282,8 @@
   --font-mono:
     "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
-  --font-handwriting: "Williams Handwriting", sans-serif;
-  --font-handwriting-descent: "Williams Handwriting Descent", sans-serif;
+  --font-handwriting: "Nunito", sans-serif;
+  --font-handwriting-descent: "Nunito", sans-serif;
 }
 
 @layer base {

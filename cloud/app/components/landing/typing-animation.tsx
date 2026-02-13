@@ -116,12 +116,18 @@ export function TypingAnimation({ className }: { className?: string }) {
       {/* Fixed-width container to prevent layout shift. Sized to fit "wake up" (longest at 7 chars) */}
       <span
         className="text-left text-mirple [text-shadow:0_1px_4px_rgba(0,0,0,0.15),0_2px_8px_rgba(0,0,0,0.1)]"
-        style={{ minWidth: "7ch", display: "inline" }}
+        style={{
+          minWidth: "7ch",
+          display: "inline",
+          fontFamily: "Caveat, cursive",
+          fontSize: "1.35em",
+        }}
       >
         {displayText}
         <span
-          className="font-handwriting text-mirple"
+          className="text-mirple"
           style={{
+            fontFamily: "Caveat, cursive",
             opacity: cursorVisible ? 0.7 : 0,
             transition: "opacity 0.1s",
           }}
