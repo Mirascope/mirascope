@@ -89,8 +89,7 @@ export async function ensureRcloneConfig(
     "no_check_bucket = true",
   ].join("\n");
 
-  // Create rclone config directory and files
-  await sandbox.mkdir("/root/.config/rclone", { recursive: true });
+  // Write rclone config files (directory pre-created in Dockerfile)
   await sandbox.writeFile(RCLONE_CONF_PATH, rcloneConfig);
   await sandbox.writeFile(CONFIGURED_FLAG, "");
 
