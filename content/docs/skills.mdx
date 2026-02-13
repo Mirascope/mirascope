@@ -1,14 +1,188 @@
 ---
 title: Skills
-description: Extend your claw's capabilities with skills
+description: Extend your claw's capabilities with modular skills
 ---
 
 # Skills
 
-Skills are modular capabilities you can add to your claw.
+Skills are modular capabilities that extend what your claw can do. Each skill teaches the agent how to use a specific tool or perform a specific task — from checking the weather to managing GitHub pull requests.
 
-{/* TODO: Built-in skills, creating custom skills, skill registry, SKILL.md format */}
+Skills are loaded automatically. If a skill's requirements are met, its instructions are injected into the agent's context. If not, it's silently excluded. No code to write, no plugins to configure — just drop a `SKILL.md` in the right place.
 
-<Info>
-This page is under construction. Check back soon for the full skills guide.
-</Info>
+---
+
+## How Skills Work
+
+A skill is a directory containing a `SKILL.md` file. The file has two parts:
+
+1. **YAML frontmatter** — metadata like name, description, and requirements
+2. **Instructions** — markdown that gets injected into the agent's system prompt
+
+When your claw starts, OpenClaw scans for skills, checks their requirements, and loads the ones that qualify. The agent then follows the instructions as part of its context.
+
+---
+
+## SKILL.md Format
+
+Here's a complete example:
+
+```markdown
+---
+name: weather
+description: Check weather conditions and forecasts
+metadata:
+  openclaw:
+    requires:
+      bins:
+        - curl
+---
+
+# Weather
+
+When the user asks about the weather, use the `web_fetch` tool to query
+the wttr.in API:
+
+- Current conditions: `https://wttr.in/{location}?format=j1`
+- Forecast: `https://wttr.in/{location}?format=j2`
+
+Always include temperature, conditions, and humidity in your response.
+Format temperatures in the user's preferred units.
+```
+
+The frontmatter fields:
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `name` | Yes | Unique identifier for the skill |
+| `description` | Yes | Brief summary shown in skill listings |
+| `metadata.openclaw.requires.bins` | No | Binary executables that must be on `$PATH` |
+| `metadata.openclaw.requires.envs` | No | Environment variables that must be set |
+| `metadata.openclaw.requires.config` | No | Config keys that must be present |
+
+---
+
+## Loading Order and Precedence
+
+Skills are loaded from three locations, with later sources overriding earlier ones:
+
+1. **Bundled skills** — shipped with OpenClaw, always available
+2. **Managed skills** — installed to `~/.openclaw/skills/`
+3. **Workspace skills** — local to your workspace at `<workspace>/skills/`
+
+If two skills share the same `name`, the higher-precedence source wins. This means you can override a bundled skill by placing your own version in your workspace.
+
+---
+
+## Built-in Skills
+
+OpenClaw ships with several bundled skills out of the box:
+
+| Skill | Description |
+| --- | --- |
+| `weather` | Weather conditions and forecasts |
+| `github` | GitHub operations — PRs, issues, reviews |
+| `coding-agent` | Code editing, refactoring, and generation |
+| `web-search` | Search the web and extract content |
+| `video-frames` | Extract and analyze video frames |
+| `healthcheck` | Monitor service health and uptime |
+| `session-logs` | Review and search session history |
+| `skill-creator` | Create new skills interactively |
+
+These work automatically when their requirements are met — no setup needed.
+
+---
+
+## Installing Skills from ClawHub
+
+[ClawHub](https://clawhub.com) is the public registry for community skills. Browse available skills on the website, then install with a single command:
+
+```bash
+clawhub install <skill-slug>
+```
+
+This downloads the skill into your workspace's `skills/` directory. To update all installed skills:
+
+```bash
+clawhub update --all
+```
+
+---
+
+## Creating Your Own Skills
+
+To create a custom skill:
+
+1. Create a directory in your workspace:
+
+```
+<workspace>/skills/my-skill/
+```
+
+2. Add a `SKILL.md` with frontmatter and instructions:
+
+```markdown
+---
+name: my-skill
+description: Does something useful
+---
+
+# My Skill
+
+Instructions for the agent go here. Be specific about:
+- When to use this skill
+- What tools to use
+- How to format the output
+```
+
+3. Optionally, add reference files, scripts, or assets alongside the `SKILL.md`. Use `{baseDir}` in your instructions to reference the skill's directory:
+
+```markdown
+Read the configuration template from `{baseDir}/templates/config.yaml`
+and adapt it based on the user's requirements.
+```
+
+The skill is loaded automatically on the next session.
+
+---
+
+## Gating with Requirements
+
+Skills can declare requirements that must be met before they're loaded. If any requirement is missing, the skill is silently excluded — no errors, no warnings.
+
+```yaml
+metadata:
+  openclaw:
+    requires:
+      bins:
+        - ffmpeg        # must be on $PATH
+        - imagemagick
+      envs:
+        - OPENAI_API_KEY  # env var must be set
+      config:
+        - some.config.key # must exist in openclaw config
+```
+
+This keeps the agent's context clean — it only sees skills it can actually use.
+
+---
+
+## Security
+
+<Warning>
+Treat third-party skills as untrusted code. Always read a skill's `SKILL.md` before enabling it.
+</Warning>
+
+Skills inject instructions directly into your agent's system prompt. A malicious skill could:
+
+- Instruct the agent to exfiltrate data
+- Override safety behaviors
+- Interfere with other skills
+
+Before installing a skill from ClawHub or any external source:
+
+1. **Read the `SKILL.md`** — understand exactly what instructions it adds
+2. **Check for suspicious patterns** — data exfiltration, permission escalation, or overriding safety rules
+3. **Review any bundled scripts** — files in the skill directory could be executed by the agent
+4. **Prefer well-known skills** — popular skills with community review are safer
+
+Workspace skills take the highest precedence, so you can always override a problematic managed or bundled skill with a safe local version.
