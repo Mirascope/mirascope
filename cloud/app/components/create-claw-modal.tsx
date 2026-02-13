@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 
 import type { Claw, CreateClawRequest } from "@/api/claws.schemas";
@@ -7,6 +8,7 @@ import { dollarsToCenticents } from "@/api/router/cost-utils";
 import { useCreateClaw } from "@/app/api/claws";
 import { useSubscription } from "@/app/api/organizations";
 import { ClawAdvancedOptions } from "@/app/components/claw-advanced-options";
+import { ClawProvisioningView } from "@/app/components/claw-provisioning-view";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -46,6 +48,7 @@ export function CreateClawModal({
   const { data: subscription } = useSubscription(selectedOrganization?.id);
   const createClaw = useCreateClaw();
   const analytics = useAnalytics();
+  const navigate = useNavigate();
 
   const planTier: PlanTier = subscription?.currentPlan ?? "free";
   const limits = PLAN_LIMITS[planTier];
@@ -59,6 +62,7 @@ export function CreateClawModal({
   const [useBeyondPlan, setUseBeyondPlan] = useState(false);
   const [weeklySpendingLimit, setWeeklySpendingLimit] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [provisioningClaw, setProvisioningClaw] = useState<Claw | null>(null);
 
   const slug = generateSlug(name.trim());
   const slugTooShort = slug.length > 0 && slug.length < 3;
@@ -111,8 +115,8 @@ export function CreateClawModal({
       });
       setSelectedClaw(newClaw);
       onCreated?.(newClaw);
-      resetForm();
-      onOpenChange(false);
+      // Switch to provisioning view instead of closing
+      setProvisioningClaw(newClaw);
     } catch (err: unknown) {
       setError(getErrorMessage(err, "Failed to create claw"));
     }
@@ -125,6 +129,7 @@ export function CreateClawModal({
     setUseBeyondPlan(false);
     setWeeklySpendingLimit("");
     setError(null);
+    setProvisioningClaw(null);
   };
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -134,118 +139,154 @@ export function CreateClawModal({
     onOpenChange(newOpen);
   };
 
+  const handleProvisioningComplete = () => {
+    if (provisioningClaw && selectedOrganization) {
+      void navigate({
+        to: "/$orgSlug/claws/$clawSlug",
+        params: {
+          orgSlug: selectedOrganization.slug,
+          clawSlug: provisioningClaw.slug,
+        },
+      });
+      handleOpenChange(false);
+    }
+  };
+
+  const handleProvisioningSkip = () => {
+    if (provisioningClaw && selectedOrganization) {
+      void navigate({
+        to: "/$orgSlug/claws/$clawSlug",
+        params: {
+          orgSlug: selectedOrganization.slug,
+          clawSlug: provisioningClaw.slug,
+        },
+      });
+      handleOpenChange(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent>
-        <form onSubmit={(e) => void handleSubmit(e)}>
-          <DialogHeader>
-            <DialogTitle>Create a New Claw</DialogTitle>
-            <DialogDescription>
-              Launch a new AI-powered bot for your organization.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="px-6 py-4 space-y-4">
-            {/* Name */}
-            <div className="space-y-2">
-              <Label htmlFor="claw-name">Name</Label>
-              <Input
-                id="claw-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="My Claw"
-                autoFocus
-                disabled={atLimit}
-              />
-              {name.trim() && slug && (
-                <p className="text-xs text-muted-foreground">
-                  Slug: <span className="font-mono">{slug}</span>
-                </p>
-              )}
-              {slugTooShort && (
-                <p className="text-sm text-destructive">
-                  Slug must be at least 3 characters
-                </p>
-              )}
-            </div>
-
-            {/* Description */}
-            <div className="space-y-2">
-              <Label htmlFor="claw-description">
-                Description{" "}
-                <span className="text-muted-foreground font-normal">
-                  (optional)
-                </span>
-              </Label>
-              <Textarea
-                id="claw-description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="What does this claw do?"
-                rows={2}
-                disabled={atLimit}
-              />
-            </div>
-
-            {/* Home project info */}
-            {!atLimit && (
-              <div className="space-y-2">
-                <Label>Home Project</Label>
-                <p className="text-sm text-muted-foreground rounded-md border p-3">
-                  {name.trim() ? (
-                    <>
-                      Will create:{" "}
-                      <span className="font-medium">{name.trim()} Home</span>
-                    </>
-                  ) : (
-                    "A home project will be created automatically"
-                  )}
-                </p>
-              </div>
-            )}
-
-            {/* Advanced options */}
-            {!atLimit && (
-              <ClawAdvancedOptions
-                model={model}
-                onModelChange={setModel}
-                useBeyondPlan={useBeyondPlan}
-                onUseBeyondPlanChange={setUseBeyondPlan}
-                weeklySpendingLimit={weeklySpendingLimit}
-                onWeeklySpendingLimitChange={setWeeklySpendingLimit}
-              />
-            )}
-
-            {/* Plan usage */}
-            <p className="text-xs text-muted-foreground">
-              Plan: {planTier.charAt(0).toUpperCase() + planTier.slice(1)} (
-              {claws.length}/{limits.claws} claws used)
-            </p>
-
-            {atLimit && (
-              <p className="text-sm text-destructive">
-                You&apos;ve reached the claw limit for your plan. Upgrade to
-                create more.
-              </p>
-            )}
-
-            {error && <p className="text-sm text-destructive">{error}</p>}
+      <DialogContent className={provisioningClaw ? "max-w-md" : undefined}>
+        {provisioningClaw ? (
+          <div className="px-6 py-6">
+            <ClawProvisioningView
+              claw={provisioningClaw}
+              onComplete={handleProvisioningComplete}
+              onSkip={handleProvisioningSkip}
+            />
           </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => handleOpenChange(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={createClaw.isPending || atLimit || slugTooShort}
-            >
-              {createClaw.isPending ? "Creating..." : "Create Claw"}
-            </Button>
-          </DialogFooter>
-        </form>
+        ) : (
+          <form onSubmit={(e) => void handleSubmit(e)}>
+            <DialogHeader>
+              <DialogTitle>Create a New Claw</DialogTitle>
+              <DialogDescription>
+                Launch a new AI-powered bot for your organization.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="px-6 py-4 space-y-4">
+              {/* Name */}
+              <div className="space-y-2">
+                <Label htmlFor="claw-name">Name</Label>
+                <Input
+                  id="claw-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="My Claw"
+                  autoFocus
+                  disabled={atLimit}
+                />
+                {name.trim() && slug && (
+                  <p className="text-xs text-muted-foreground">
+                    Slug: <span className="font-mono">{slug}</span>
+                  </p>
+                )}
+                {slugTooShort && (
+                  <p className="text-sm text-destructive">
+                    Slug must be at least 3 characters
+                  </p>
+                )}
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <Label htmlFor="claw-description">
+                  Description{" "}
+                  <span className="text-muted-foreground font-normal">
+                    (optional)
+                  </span>
+                </Label>
+                <Textarea
+                  id="claw-description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="What does this claw do?"
+                  rows={2}
+                  disabled={atLimit}
+                />
+              </div>
+
+              {/* Home project info */}
+              {!atLimit && (
+                <div className="space-y-2">
+                  <Label>Home Project</Label>
+                  <p className="text-sm text-muted-foreground rounded-md border p-3">
+                    {name.trim() ? (
+                      <>
+                        Will create:{" "}
+                        <span className="font-medium">{name.trim()} Home</span>
+                      </>
+                    ) : (
+                      "A home project will be created automatically"
+                    )}
+                  </p>
+                </div>
+              )}
+
+              {/* Advanced options */}
+              {!atLimit && (
+                <ClawAdvancedOptions
+                  model={model}
+                  onModelChange={setModel}
+                  useBeyondPlan={useBeyondPlan}
+                  onUseBeyondPlanChange={setUseBeyondPlan}
+                  weeklySpendingLimit={weeklySpendingLimit}
+                  onWeeklySpendingLimitChange={setWeeklySpendingLimit}
+                />
+              )}
+
+              {/* Plan usage */}
+              <p className="text-xs text-muted-foreground">
+                Plan: {planTier.charAt(0).toUpperCase() + planTier.slice(1)} (
+                {claws.length}/{limits.claws} claws used)
+              </p>
+
+              {atLimit && (
+                <p className="text-sm text-destructive">
+                  You&apos;ve reached the claw limit for your plan. Upgrade to
+                  create more.
+                </p>
+              )}
+
+              {error && <p className="text-sm text-destructive">{error}</p>}
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleOpenChange(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={createClaw.isPending || atLimit || slugTooShort}
+              >
+                {createClaw.isPending ? "Creating..." : "Create Claw"}
+              </Button>
+            </DialogFooter>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   );

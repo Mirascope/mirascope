@@ -34,6 +34,7 @@
 import { Context, Effect, Layer } from "effect";
 
 import type { CloudflareConfig } from "@/cloudflare/config";
+import type { PlanTier } from "@/payments/plans";
 
 import { SettingsValidationError } from "@/errors";
 
@@ -166,6 +167,9 @@ export type SettingsConfig = {
   readonly databaseUrl: string;
   readonly siteUrl: string;
 
+  // Development — false when disabled, or the plan tier to simulate ("free"|"pro"|"team")
+  readonly mockDeployment: false | PlanTier;
+
   // Auth
   readonly github: GitHubConfig;
   readonly google: GoogleConfig;
@@ -231,6 +235,7 @@ export type HyperdriveBinding = {
  * Extends as needed for additional bindings.
  */
 export type CloudflareEnvironment = {
+  MOCK_DEPLOYMENT?: string;
   ENVIRONMENT?: string;
   HYPERDRIVE?: HyperdriveBinding;
   SITE_URL?: string;
@@ -308,6 +313,14 @@ function validateSettingsFromSource(
 ): Effect.Effect<SettingsConfig, SettingsValidationError> {
   return Effect.gen(function* () {
     const missing: string[] = [];
+    const mockDeploymentRaw = source.get("MOCK_DEPLOYMENT")?.trim();
+    const VALID_MOCK_TIERS = ["free", "pro", "team"] as const;
+    const mockDeployment: false | PlanTier =
+      mockDeploymentRaw === "true"
+        ? "free"
+        : VALID_MOCK_TIERS.includes(mockDeploymentRaw as PlanTier)
+          ? (mockDeploymentRaw as PlanTier)
+          : false;
 
     // Helper: validate required env var, collect missing ones
     const required = (name: string): string => {
@@ -337,6 +350,7 @@ function validateSettingsFromSource(
       env: required("ENVIRONMENT"),
       databaseUrl: required("DATABASE_URL"),
       siteUrl: required("SITE_URL"),
+      mockDeployment,
 
       github: {
         clientId: required("GITHUB_CLIENT_ID"),
@@ -407,22 +421,31 @@ function validateSettingsFromSource(
       },
 
       cloudflare: {
-        accountId: required("CLOUDFLARE_ACCOUNT_ID"),
-        apiToken: required("CLOUDFLARE_API_TOKEN"),
-        r2BucketItemReadPermissionGroupId: required(
-          "CF_R2_READ_PERMISSION_GROUP_ID",
-        ),
-        r2BucketItemWritePermissionGroupId: required(
-          "CF_R2_WRITE_PERMISSION_GROUP_ID",
-        ),
-        durableObjectNamespaceId: required("CF_DO_NAMESPACE_ID"),
-        dispatchWorkerBaseUrl: required("CF_DISPATCH_WORKER_BASE_URL"),
+        accountId: mockDeployment
+          ? optional("CLOUDFLARE_ACCOUNT_ID")
+          : required("CLOUDFLARE_ACCOUNT_ID"),
+        apiToken: mockDeployment
+          ? optional("CLOUDFLARE_API_TOKEN")
+          : required("CLOUDFLARE_API_TOKEN"),
+        r2BucketItemReadPermissionGroupId: mockDeployment
+          ? optional("CF_R2_READ_PERMISSION_GROUP_ID")
+          : required("CF_R2_READ_PERMISSION_GROUP_ID"),
+        r2BucketItemWritePermissionGroupId: mockDeployment
+          ? optional("CF_R2_WRITE_PERMISSION_GROUP_ID")
+          : required("CF_R2_WRITE_PERMISSION_GROUP_ID"),
+        durableObjectNamespaceId: mockDeployment
+          ? optional("CF_DO_NAMESPACE_ID")
+          : required("CF_DO_NAMESPACE_ID"),
+        dispatchWorkerBaseUrl: mockDeployment
+          ? optional("CF_DISPATCH_WORKER_BASE_URL")
+          : required("CF_DISPATCH_WORKER_BASE_URL"),
       },
 
       encryptionKeys: {
-        CLAW_SECRETS_ENCRYPTION_KEY_V1: required(
-          "CLAW_SECRETS_ENCRYPTION_KEY_V1",
-        ),
+        CLAW_SECRETS_ENCRYPTION_KEY_V1: mockDeployment
+          ? optional("CLAW_SECRETS_ENCRYPTION_KEY_V1") ||
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+          : required("CLAW_SECRETS_ENCRYPTION_KEY_V1"),
       },
       activeEncryptionKeyId: "CLAW_SECRETS_ENCRYPTION_KEY_V1",
 

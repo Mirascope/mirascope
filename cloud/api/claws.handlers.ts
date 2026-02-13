@@ -108,6 +108,24 @@ export const createClawHandler = (
     // Trigger cold start on dispatch worker (reads creds from DB via bootstrap API)
     yield* clawDeployment.warmUp(claw.id);
 
+    // In mock deployment mode, set status to active immediately
+    // (no real dispatch worker to report back)
+    if (settings.mockDeployment) {
+      yield* drizzle
+        .update(claws)
+        .set({ status: "active", updatedAt: new Date() })
+        .where(eq(claws.id, claw.id))
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to update mock deployment status",
+                cause: e,
+              }),
+          ),
+        );
+    }
+
     yield* analytics.trackEvent({
       name: "claw_created",
       properties: {
@@ -118,9 +136,13 @@ export const createClawHandler = (
       distinctId: user.id,
     });
 
+    const finalStatus = settings.mockDeployment
+      ? ("active" as const)
+      : ("provisioning" as const);
+
     return {
       ...claw,
-      status: "provisioning" as const,
+      status: finalStatus,
       bucketName: status.bucketName ?? null,
       secretsEncrypted: encrypted.ciphertext,
     };

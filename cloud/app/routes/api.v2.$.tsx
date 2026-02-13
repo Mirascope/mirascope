@@ -6,6 +6,7 @@ import { handleRequest } from "@/api/handler";
 import { handleErrors, handleDefects } from "@/api/utils";
 import { authenticate, type PathParameters } from "@/auth";
 import { LiveDeploymentService } from "@/claws/deployment/live";
+import { MockDeploymentService } from "@/claws/deployment/mock";
 import { ClawDeploymentService } from "@/claws/deployment/service";
 import { CloudflareHttp } from "@/cloudflare/client";
 import { CloudflareSettings } from "@/cloudflare/config";
@@ -148,25 +149,36 @@ export const Route = createFileRoute("/api/v2/$")({
               Effect.gen(function* () {
                 const settings = yield* Settings;
 
-                const deploymentLayer = LiveDeploymentService.pipe(
-                  Layer.provide(
-                    Layer.merge(
-                      LiveCloudflareR2Service,
-                      LiveCloudflareContainerService,
-                    ),
-                  ),
-                  Layer.provide(
-                    CloudflareHttp.Live(settings.cloudflare.apiToken),
-                  ),
-                  Layer.provide(CloudflareSettings.layer(settings.cloudflare)),
-                );
+                const deploymentLayer = settings.mockDeployment
+                  ? MockDeploymentService
+                  : LiveDeploymentService.pipe(
+                      Layer.provide(
+                        Layer.merge(
+                          LiveCloudflareR2Service,
+                          LiveCloudflareContainerService,
+                        ),
+                      ),
+                      Layer.provide(
+                        CloudflareHttp.Live(settings.cloudflare.apiToken),
+                      ),
+                      Layer.provide(
+                        CloudflareSettings.layer(settings.cloudflare),
+                      ),
+                    );
+
+                const databaseLayer = settings.mockDeployment
+                  ? Database.Dev({
+                      database: { connectionString: settings.databaseUrl },
+                      plan: settings.mockDeployment,
+                    })
+                  : Database.Live({
+                      database: { connectionString: settings.databaseUrl },
+                      payments: settings.stripe,
+                    });
 
                 return Layer.mergeAll(
                   Layer.succeed(Settings, settings),
-                  Database.Live({
-                    database: { connectionString: settings.databaseUrl },
-                    payments: settings.stripe,
-                  }),
+                  databaseLayer,
                   Analytics.Live({
                     postHog: settings.posthog,
                     googleAnalytics: settings.googleAnalytics,

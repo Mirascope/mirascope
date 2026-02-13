@@ -168,7 +168,11 @@ VITE_POSTHOG_API_KEY=phc_dev_placeholder
 VITE_POSTHOG_HOST=https://us.i.posthog.com
 VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID=G-DEV000000
 
-# Cloudflare (not needed for local dev, but required by settings validation)
+# Mock deployment — uses MockDeploymentService instead of real Cloudflare
+# Set to a plan tier (free, pro, team) to simulate that plan, or "false" to disable
+MOCK_DEPLOYMENT=free
+
+# Cloudflare (only needed when MOCK_DEPLOYMENT=false)
 CLOUDFLARE_ACCOUNT_ID=dev-cf-account
 CLOUDFLARE_API_TOKEN=dev-cf-token
 CF_R2_READ_PERMISSION_GROUP_ID=dev-r2-read

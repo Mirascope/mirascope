@@ -39,6 +39,7 @@
 
 import { Context, Layer, Effect } from "effect";
 
+import type { PlanTier } from "@/payments/plans";
 import type { StripeConfig } from "@/settings";
 
 import { Annotations } from "@/db/annotations";
@@ -293,10 +294,12 @@ export class Database extends Context.Tag("Database")<
    * All payment-related operations will fail at call time with descriptive errors,
    * but the layer construction succeeds and non-payment handlers work normally.
    */
-  static Dev = (config: { database: DrizzleORMConfig }) => {
+  static Dev = (config: { database: DrizzleORMConfig; plan?: PlanTier }) => {
     const drizzleLayer = DrizzleORM.layer(config.database);
 
-    const paymentsLayer = Payments.Dev;
+    const paymentsLayer = config.plan
+      ? Payments.MockWithPlan(config.plan)
+      : Payments.Dev;
 
     const databaseLayer = Database.Default.pipe(
       Layer.provideMerge(Layer.mergeAll(drizzleLayer, paymentsLayer)),

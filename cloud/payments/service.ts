@@ -53,6 +53,7 @@ import { Stripe } from "@/payments/client";
 import { Customers } from "@/payments/customers";
 import { PaymentIntents } from "@/payments/payment-intents";
 import { PaymentMethods } from "@/payments/payment-methods";
+import { PLAN_LIMITS, type PlanTier } from "@/payments/plans";
 import { Router } from "@/payments/products/router";
 import { Spans } from "@/payments/products/spans";
 import { Subscriptions } from "@/payments/subscriptions";
@@ -160,21 +161,49 @@ export class Payments extends Context.Tag("Payments")<
   };
 
   /**
-   * Development layer that creates a no-op Payments service.
+   * Creates a dev Payments layer that simulates the given plan tier.
    *
-   * Construction succeeds without a Stripe connection. Any method call
-   * returns `Effect.die` so handlers must catch errors gracefully
-   * (see dev fallbacks in organizations.handlers.ts).
+   * Use via `MOCK_DEPLOYMENT=free|pro|team` env var.
    */
-  static Dev = Layer.succeed(Payments, {
-    customers: devProxy("Payments.customers"),
-    products: {
-      router: devProxy("Payments.products.router"),
-      spans: devProxy("Payments.products.spans"),
+  static MockWithPlan = (plan: PlanTier) =>
+    Layer.succeed(Payments, {
+      customers: devProxyWith("Payments.customers", {
+        subscriptions: devProxyWith("Payments.customers.subscriptions", {
+          getPlan: () => Effect.succeed(plan),
+          getPlanLimits: (tier: PlanTier) => Effect.succeed(PLAN_LIMITS[tier]),
+        }),
+      }),
+      products: {
+        router: devProxy("Payments.products.router"),
+        spans: devProxy("Payments.products.spans"),
+      },
+      paymentIntents: devProxy("Payments.paymentIntents"),
+      paymentMethods: devProxy("Payments.paymentMethods"),
+    } as Context.Tag.Service<Payments>);
+
+  /** Default dev layer (free plan). Use MockWithPlan for other tiers. */
+  static Dev = Payments.MockWithPlan("free");
+}
+
+/** Returns a proxy where any property access returns the override if present, otherwise Effect.die. */
+function devProxyWith(
+  label: string,
+  overrides: Record<string, unknown>,
+): unknown {
+  return new Proxy(
+    {},
+    {
+      get: (_target, prop) => {
+        if (typeof prop === "string" && prop in overrides) {
+          return overrides[prop];
+        }
+        return (..._args: unknown[]) =>
+          Effect.die(
+            new Error(`${label}.${String(prop)} not available in dev mode`),
+          );
+      },
     },
-    paymentIntents: devProxy("Payments.paymentIntents"),
-    paymentMethods: devProxy("Payments.paymentMethods"),
-  } as Context.Tag.Service<Payments>);
+  );
 }
 
 /** Returns a proxy where any method call returns Effect.die with a descriptive message. */

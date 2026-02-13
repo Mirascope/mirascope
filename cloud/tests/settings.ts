@@ -35,6 +35,7 @@ export function createMockSettings(
     env: "test",
     databaseUrl: "postgres://test:test@localhost:5432/test",
     siteUrl: "http://localhost:3000",
+    mockDeployment: false,
 
     github: {
       clientId: "test-github-client-id",

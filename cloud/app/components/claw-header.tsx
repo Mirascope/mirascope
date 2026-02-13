@@ -1,3 +1,5 @@
+import { Loader2 } from "lucide-react";
+
 import type { Claw } from "@/api/claws.schemas";
 import type { PlanTier } from "@/payments/plans";
 
@@ -31,6 +33,16 @@ function ClawHeaderContent({ claw }: { claw: Claw }) {
         <h1 className="text-2xl font-semibold">
           {claw.displayName ?? claw.slug}
         </h1>
+        {claw.status !== "active" && (
+          <Badge
+            pill
+            variant="outline"
+            className="shrink-0 font-normal bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800"
+          >
+            <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />
+            Provisioning...
+          </Badge>
+        )}
         <Badge
           pill
           variant="outline"
