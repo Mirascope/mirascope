@@ -63,15 +63,11 @@ export const createClawHandler = (
     // Build Mirascope Router base URL for Anthropic-compatible proxy
     const routerBaseUrl = `${settings.siteUrl}/router/v2/anthropic`;
 
-    // Derive the primary model from the request (defaults to haiku for free tier)
-    const primaryModel = payload.model ?? "claude-haiku-4-5";
-
     // Encrypt all container secrets before persisting
     const encrypted = yield* encryptSecrets({
       ANTHROPIC_API_KEY: claw.plaintextApiKey,
       ANTHROPIC_BASE_URL: routerBaseUrl,
       OPENCLAW_GATEWAY_TOKEN: gatewayToken,
-      OPENCLAW_PRIMARY_MODEL: `anthropic/${primaryModel}`,
       OPENCLAW_SITE_URL: settings.siteUrl,
       R2_ACCESS_KEY_ID: status.r2Credentials?.accessKeyId ?? "",
       R2_SECRET_ACCESS_KEY: status.r2Credentials?.secretAccessKey ?? "",
