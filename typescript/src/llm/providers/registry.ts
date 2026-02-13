@@ -48,13 +48,20 @@ interface ProviderDefault {
 const DEFAULT_AUTO_REGISTER_SCOPES: Record<string, ProviderDefault[]> = {
   "anthropic/": [
     { providerId: "anthropic", apiKeyEnvVar: "ANTHROPIC_API_KEY" },
+    { providerId: "mirascope", apiKeyEnvVar: "MIRASCOPE_API_KEY" },
   ],
-  "google/": [{ providerId: "google", apiKeyEnvVar: "GOOGLE_API_KEY" }],
+  "google/": [
+    { providerId: "google", apiKeyEnvVar: "GOOGLE_API_KEY" },
+    { providerId: "mirascope", apiKeyEnvVar: "MIRASCOPE_API_KEY" },
+  ],
   "mirascope/": [
     { providerId: "mirascope", apiKeyEnvVar: "MIRASCOPE_API_KEY" },
   ],
   "ollama/": [{ providerId: "ollama", apiKeyEnvVar: null }],
-  "openai/": [{ providerId: "openai", apiKeyEnvVar: "OPENAI_API_KEY" }],
+  "openai/": [
+    { providerId: "openai", apiKeyEnvVar: "OPENAI_API_KEY" },
+    { providerId: "mirascope", apiKeyEnvVar: "MIRASCOPE_API_KEY" },
+  ],
   "openrouter/": [
     { providerId: "openrouter", apiKeyEnvVar: "OPENROUTER_API_KEY" },
   ],
@@ -205,13 +212,15 @@ export function registerProvider(
  * Get the provider for a model ID based on the registry.
  *
  * Uses longest prefix matching to find the most specific provider for the model.
- * If no explicit registration is found, checks for auto-registration defaults
- * and automatically registers the provider on first use.
+ * If no explicit registration is found, falls back to auto-registration defaults,
+ * also resolved via longest prefix matching. Each default scope maps to a fallback
+ * chain of providers — the first provider in the chain with a valid API key is
+ * selected and registered for that scope.
  *
  * @param modelId - The full model ID (e.g., "anthropic/claude-sonnet-4-20250514").
  * @returns The provider instance registered for this model.
  * @throws NoRegisteredProviderError if no provider scope matches the model ID.
- * @throws MissingAPIKeyError if no provider has its API key set.
+ * @throws MissingAPIKeyError if a scope matches but no provider in its fallback chain has an API key set.
  *
  * @example
  * ```typescript
@@ -258,11 +267,14 @@ export function getProviderForModel(modelId: string): BaseProvider {
 
     // No provider in chain has API key - raise helpful error
     const primary = fallbackChain[0]!;
+    const hasMirascopeFallback = fallbackChain.some(
+      (d) => d.providerId === "mirascope",
+    );
     throw new MissingAPIKeyError(
       primary.providerId,
       /* v8 ignore next - apiKeyEnvVar always defined for current providers */
       primary.apiKeyEnvVar ?? "",
-      false,
+      hasMirascopeFallback,
     );
   }
 
