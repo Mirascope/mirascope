@@ -6,6 +6,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import type { AppEnv } from "./types";
 
+import { createLogger } from "./logger";
 import {
   createMockSandbox,
   createMockProcess,
@@ -52,6 +53,7 @@ function createTestApp() {
   app.use("*", async (c, next) => {
     c.set("sandbox", mockSandbox as unknown as Sandbox);
     c.set("clawId", "test-claw-id");
+    c.set("log", createLogger({ clawId: "test-claw-id" }));
     await next();
   });
   app.route("/_internal", internal);

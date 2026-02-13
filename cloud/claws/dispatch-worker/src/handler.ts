@@ -29,6 +29,7 @@ import {
   reportClawStatus,
 } from "./bootstrap";
 import { getCachedConfig, setCachedConfig } from "./cache";
+import { createLogger, type Logger } from "./logger";
 import {
   findGatewayProcess,
   ensureGateway,
@@ -106,6 +107,7 @@ export async function runAuth(
 export const getOrFetchConfig = (
   clawId: string,
   env: DispatchEnv,
+  log: Logger,
 ): Effect.Effect<
   OpenClawDeployConfig,
   BootstrapFetchError | BootstrapDecodeError
@@ -113,11 +115,11 @@ export const getOrFetchConfig = (
   Effect.gen(function* () {
     const cached = getCachedConfig(clawId);
     if (cached) {
-      console.log("[config] Using cached config for", clawId);
+      log.debug("config", "using cached config");
       return cached;
     }
 
-    console.log("[config] Fetching bootstrap config for", clawId);
+    log.info("config", "fetching bootstrap config");
     const config = yield* fetchBootstrapConfig(clawId, env);
     setCachedConfig(clawId, config);
     return config;
@@ -136,13 +138,13 @@ export async function handleProxy(
   const { clawId } = auth;
   const env = c.env;
 
-  console.log(
-    `[REQ] ${c.req.method} ${c.req.path} clawId=${clawId} (path-based)`,
-  );
+  const log = createLogger({ clawId, debug: !!env.DEBUG });
+  log.info("req", `${c.req.method} ${c.req.path} (path-based)`);
 
   const sandbox = getSandbox(env.Sandbox, clawId, { keepAlive: true });
   c.set("sandbox", sandbox);
   c.set("clawId", clawId);
+  c.set("log", log);
 
   const basePath = `/${parsed.orgSlug}/${parsed.clawSlug}`;
 
@@ -157,18 +159,24 @@ export async function handleProxy(
 
   // If gateway isn't ready and this is a browser navigation, serve the
   // loading page and kick off startup in the background.
-  const existing = await findGatewayProcess(sandbox);
+  const existing = await findGatewayProcess(sandbox, log);
   const isReady = existing !== null && existing.status === "running";
 
   if (!isReady && !isWebSocket && acceptsHtml) {
-    return serveLoadingPage(c, clawId, sandbox, parsed, env);
+    return serveLoadingPage(c, clawId, sandbox, parsed, env, log);
   }
 
   // Synchronous path: fetch config, start gateway, proxy.
-  const config = await fetchConfigOrError(clawId, env);
+  const config = await fetchConfigOrError(clawId, env, log);
   if (config instanceof Response) return config;
 
-  const gatewayError = await startGatewayOrError(clawId, sandbox, config, env);
+  const gatewayError = await startGatewayOrError(
+    clawId,
+    sandbox,
+    config,
+    env,
+    log,
+  );
   if (gatewayError) return gatewayError;
 
   // Report active status
@@ -183,12 +191,11 @@ export async function handleProxy(
   );
 
   const gatewayToken = config.containerEnv.OPENCLAW_GATEWAY_TOKEN;
-  const debugWs = !!env.DEBUG_WS;
 
   if (isWebSocket) {
-    return proxyWs(sandbox, rewrittenRequest, basePath, gatewayToken, debugWs);
+    return proxyWs(sandbox, rewrittenRequest, basePath, gatewayToken, log);
   }
-  return proxyHttp(sandbox, rewrittenRequest, basePath, gatewayToken);
+  return proxyHttp(sandbox, rewrittenRequest, basePath, gatewayToken, log);
 }
 
 // ---------------------------------------------------------------------------
@@ -204,14 +211,15 @@ function serveLoadingPage(
   sandbox: Sandbox,
   parsed: ParsedPath,
   env: DispatchEnv,
+  log: Logger,
 ): Response {
-  console.log("[proxy] Gateway not ready, serving loading page");
+  log.info("gateway", "not ready, serving loading page");
 
   c.executionCtx.waitUntil(
     Effect.runPromise(
       Effect.gen(function* () {
-        const config = yield* getOrFetchConfig(clawId, env);
-        yield* Effect.promise(() => ensureGateway(sandbox, config, env));
+        const config = yield* getOrFetchConfig(clawId, env, log);
+        yield* Effect.promise(() => ensureGateway(sandbox, config, env, log));
         yield* reportClawStatus(
           clawId,
           { status: "active", startedAt: new Date().toISOString() },
@@ -220,7 +228,7 @@ function serveLoadingPage(
       }).pipe(
         Effect.catchAll((err) =>
           Effect.gen(function* () {
-            console.error("[proxy] Background gateway start failed:", err);
+            log.error("gateway", "background start failed:", err);
             const hint = startupErrorHint(err.message);
             const errorMessage = hint
               ? `${err.message} — ${hint}`
@@ -250,14 +258,17 @@ function serveLoadingPage(
 async function fetchConfigOrError(
   clawId: string,
   env: DispatchEnv,
+  log: Logger,
 ): Promise<OpenClawDeployConfig | Response> {
-  const configExit = await Effect.runPromiseExit(getOrFetchConfig(clawId, env));
+  const configExit = await Effect.runPromiseExit(
+    getOrFetchConfig(clawId, env, log),
+  );
 
   if (configExit._tag === "Failure") {
     const cause = configExit.cause;
     const message =
       cause._tag === "Fail" ? cause.error.message : "Unknown error";
-    console.error("[proxy] Failed to get config:", message);
+    log.error("config", "failed to get config:", message);
     await Effect.runPromise(
       reportClawStatus(clawId, { status: "error", errorMessage: message }, env),
     );
@@ -278,13 +289,14 @@ async function startGatewayOrError(
   sandbox: Sandbox,
   config: OpenClawDeployConfig,
   env: DispatchEnv,
+  log: Logger,
 ): Promise<Response | null> {
   try {
-    await ensureGateway(sandbox, config, env);
+    await ensureGateway(sandbox, config, env, log);
     return null;
   } catch (error) {
-    console.error("[proxy] Failed to start gateway:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
+    log.error("gateway", "failed to start:", message);
     const hint = startupErrorHint(message);
     const errorMessage = hint ? `${message} — ${hint}` : message;
     await Effect.runPromise(
@@ -305,7 +317,7 @@ function proxyWs(
   request: Request,
   basePath: string,
   gatewayToken: string | undefined,
-  debug: boolean,
+  log: Logger,
 ): Promise<Response> {
   if (gatewayToken) {
     const wsUrl = new URL(request.url);
@@ -313,8 +325,8 @@ function proxyWs(
     if (!wsUrl.searchParams.has("token")) {
       wsUrl.searchParams.set("token", gatewayToken);
       const authenticatedRequest = new Request(wsUrl.toString(), request);
-      return proxyWebSocket(sandbox, authenticatedRequest, basePath, debug);
+      return proxyWebSocket(sandbox, authenticatedRequest, basePath, log);
     }
   }
-  return proxyWebSocket(sandbox, request, basePath, debug);
+  return proxyWebSocket(sandbox, request, basePath, log);
 }

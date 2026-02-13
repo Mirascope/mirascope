@@ -24,18 +24,21 @@ export interface DispatchEnv {
   /** Site URL for CORS origin checking (e.g. "https://mirascope.com") */
   SITE_URL: string;
 
-  /** Enable verbose WebSocket proxy logging (set to any truthy value) */
-  DEBUG_WS?: string;
+  /** Enable verbose debug logging across all stages (set to any truthy value) */
+  DEBUG?: string;
 }
 
 /**
  * Hono app environment type.
  */
+import type { Logger } from "./logger";
+
 export type AppEnv = {
   Bindings: DispatchEnv;
   Variables: {
     sandbox: Sandbox;
     clawId: string;
+    log: Logger;
   };
 };
 
