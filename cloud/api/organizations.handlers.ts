@@ -39,13 +39,9 @@ export const createOrganizationHandler = (payload: CreateOrganizationRequest) =>
       const ownedOrgs = userOrgs.filter((org) => org.role === "OWNER");
 
       for (const org of ownedOrgs) {
-        const subscription = yield* payments.customers.subscriptions
-          .get(org.stripeCustomerId)
-          .pipe(
-            Effect.catchAll(() =>
-              Effect.succeed({ currentPlan: "free" as const }),
-            ),
-          );
+        const subscription = yield* payments.customers.subscriptions.get(
+          org.stripeCustomerId,
+        );
         if (subscription.currentPlan === "free") {
           return yield* Effect.fail(
             new PlanLimitExceededError({
