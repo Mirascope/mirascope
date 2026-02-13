@@ -217,27 +217,48 @@ Claws can create their own tools — including **AI-powered tools** built with M
 
 A claw generates a self-contained Python program using [Mirascope](https://mirascope.com/docs/sdk) and runs it via the `exec` tool. Each program follows a standard structure:
 
+Here's a real example — an invoice generator that uses an LLM to handle calculation and formatting:
+
 ```python
 # /// script
+# requires-python = ">=3.10"
 # dependencies = ["mirascope[all]", "pydantic"]
 # ///
+"""Generates formatted invoices with line items and tax calculation."""
+from pydantic import BaseModel, Field
 from mirascope import llm, ops
-from pydantic import BaseModel
 
 ops.configure()
 ops.instrument_llm()
 
 
-class Summary(BaseModel):
-    title: str
-    key_points: list[str]
-    sentiment: str
+class LineItem(BaseModel):
+    description: str
+    hours: float
+    hourly_rate: float
 
 
-@ops.trace(tags=["summarize"])
-@llm.call("anthropic/claude-sonnet-4-5", format=Summary)
-def summarize(text: str) -> str:
-    return f"Summarize this text: {text}"
+class ProgramInput(BaseModel):
+    invoice_number: str
+    client_name: str
+    line_items: list[LineItem]
+    tax_rate: float | None = None
+
+
+class ProgramOutput(BaseModel):
+    subtotal: float
+    tax_amount: float | None
+    total: float
+    formatted_invoice: str
+
+
+@ops.trace(tags=["invoice-generator"])
+@llm.call("anthropic/claude-sonnet-4-5", format=ProgramOutput)
+def generate_invoice(input_data: ProgramInput) -> str:
+    return f"""Generate invoice for {input_data.client_name}
+Items: {input_data.line_items}
+Tax rate: {input_data.tax_rate}
+Calculate subtotals, tax, total. Return formatted invoice."""
 ```
 
 Key ingredients:
@@ -252,7 +273,8 @@ Key ingredients:
 Once a claw writes a program, it invokes it like any other command:
 
 ```bash
-uv run summarize.py --input '{"text": "..."}'
+uv run invoice.py --schema                    # see input/output structure
+uv run invoice.py --input '{"invoice_number": "INV-001", "client_name": "Acme", "line_items": [{"description": "Consulting", "hours": 10, "hourly_rate": 150}], "tax_rate": 0.08}'
 ```
 
 The claw can:
