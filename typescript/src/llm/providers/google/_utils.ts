@@ -198,6 +198,7 @@ function processContentParts(
       case "tool_call":
         parts.push({
           functionCall: {
+            id: part.id !== UNKNOWN_TOOL_ID ? part.id : undefined,
             name: part.name,
             args: JSON.parse(part.args) as Record<string, unknown>,
           },
@@ -205,13 +206,17 @@ function processContentParts(
         break;
 
       case "tool_output": {
-        // Google expects the result to be an object
-        const response =
-          typeof part.result === "string"
-            ? { result: part.result }
-            : (part.result as Record<string, unknown>);
+        // Google expects response to be a plain object.
+        // Match Python SDK: response={"output": str(part.result)}
+        const response = {
+          output:
+            typeof part.result === "string"
+              ? part.result
+              : JSON.stringify(part.result),
+        };
         parts.push({
           functionResponse: {
+            id: part.id !== UNKNOWN_TOOL_ID ? part.id : undefined,
             name: part.name,
             response,
           },
