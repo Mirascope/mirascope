@@ -11,6 +11,7 @@ import { HealthApi } from "@/api/health.schemas";
 import { OrganizationInvitationsApi } from "@/api/organization-invitations.schemas";
 import { OrganizationMembershipsApi } from "@/api/organization-memberships.schemas";
 import { OrganizationsApi } from "@/api/organizations.schemas";
+import { ProjectApiKeysApi } from "@/api/project-api-keys.schemas";
 import { ProjectMembershipsApi } from "@/api/project-memberships.schemas";
 import { ProjectsApi } from "@/api/projects.schemas";
 import { TagsApi } from "@/api/tags.schemas";
@@ -29,6 +30,7 @@ export * from "@/api/projects.schemas";
 export * from "@/api/project-memberships.schemas";
 export * from "@/api/environments.schemas";
 export * from "@/api/api-keys.schemas";
+export * from "@/api/project-api-keys.schemas";
 export * from "@/api/functions.schemas";
 export * from "@/api/annotations.schemas";
 export * from "@/api/claw-memberships.schemas";
@@ -48,6 +50,7 @@ export class MirascopeCloudApi extends HttpApi.make("MirascopeCloudApi")
   .add(ProjectMembershipsApi)
   .add(EnvironmentsApi)
   .add(ApiKeysApi)
+  .add(ProjectApiKeysApi)
   .add(FunctionsApi)
   .add(AnnotationsApi)
   .add(ClawsApi)
