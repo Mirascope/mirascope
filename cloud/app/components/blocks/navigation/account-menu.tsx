@@ -3,6 +3,8 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { LogOut, Settings } from "lucide-react";
 import { useState } from "react";
 
+import type { PlanTier } from "@/payments/plans";
+
 import { useIsWatercolorPage } from "@/app/components/blocks/theme-provider";
 import { CreateOrganizationModal } from "@/app/components/create-organization-modal";
 import { Button } from "@/app/components/ui/button";
@@ -14,6 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
+import { UpgradePlanDialog } from "@/app/components/upgrade-plan-dialog";
 import { useAuth } from "@/app/contexts/auth";
 import { useOrganization } from "@/app/contexts/organization";
 import { cn } from "@/app/lib/utils";
@@ -35,6 +38,11 @@ export function AccountMenu({ className }: AccountMenuProps) {
   } = useOrganization();
   const navigate = useNavigate();
   const [showCreateOrg, setShowCreateOrg] = useState(false);
+  const [upgradeNewOrg, setUpgradeNewOrg] = useState<{
+    orgId: string;
+    orgSlug: string;
+    plan: PlanTier;
+  } | null>(null);
   const isWatercolorPage = useIsWatercolorPage();
 
   const handleSignOut = async () => {
@@ -153,10 +161,11 @@ export function AccountMenu({ className }: AccountMenuProps) {
         onOpenChange={setShowCreateOrg}
         onCreated={(org, planTier) => {
           if (planTier !== "free") {
-            // Redirect to billing to set up payment for paid plan
-            void navigate({
-              to: "/settings/organizations/$orgSlug/billing",
-              params: { orgSlug: org.slug },
+            // Show upgrade dialog to collect payment for the paid plan
+            setUpgradeNewOrg({
+              orgId: org.id,
+              orgSlug: org.slug,
+              plan: planTier,
             });
           } else {
             void navigate({
@@ -166,6 +175,24 @@ export function AccountMenu({ className }: AccountMenuProps) {
           }
         }}
       />
+
+      {upgradeNewOrg && (
+        <UpgradePlanDialog
+          organizationId={upgradeNewOrg.orgId}
+          targetPlan={upgradeNewOrg.plan}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) {
+              const slug = upgradeNewOrg.orgSlug;
+              setUpgradeNewOrg(null);
+              void navigate({
+                to: "/settings/organizations/$orgSlug",
+                params: { orgSlug: slug },
+              });
+            }
+          }}
+        />
+      )}
     </>
   );
 }
