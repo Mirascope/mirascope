@@ -9028,7 +9028,9 @@
                       "lastUsedAt",
                       "projectId",
                       "projectName",
-                      "environmentName"
+                      "environmentName",
+                      "ownerName",
+                      "ownerAccountType"
                     ],
                     "properties": {
                       "id": {
@@ -9074,6 +9076,23 @@
                       },
                       "environmentName": {
                         "type": "string"
+                      },
+                      "ownerName": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "ownerAccountType": {
+                        "type": "string",
+                        "enum": [
+                          "user",
+                          "claw"
+                        ]
                       }
                     },
                     "additionalProperties": false
