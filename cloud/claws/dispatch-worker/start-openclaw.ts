@@ -4,9 +4,10 @@
  * Run via: bun /usr/local/bin/start-openclaw.ts
  *
  * 1. Checks if gateway is already running
- * 2. Restores config from R2 backup if available and newer
+ * 2. Restores config from R2 via rclone (if available)
  * 3. Builds openclaw.json from environment variables
- * 4. Starts the gateway
+ * 4. Persists config to R2 via rclone
+ * 5. Starts the gateway
  *
  * Environment variables are passed by the dispatch worker from the
  * bootstrap config fetched via service binding.
@@ -18,9 +19,7 @@ import {
   readFileSync,
   writeFileSync,
   mkdirSync,
-  cpSync,
   unlinkSync,
-  statSync,
 } from "fs";
 import { join } from "path";
 
@@ -30,9 +29,14 @@ import { join } from "path";
 
 const CONFIG_DIR = "/root/.openclaw";
 const CONFIG_FILE = join(CONFIG_DIR, "openclaw.json");
-const BACKUP_DIR = "/data/claw";
 const WORKSPACE_DIR = join(CONFIG_DIR, "workspace");
 const GATEWAY_PORT = 18789;
+const LOG_FILE = "/tmp/gateway.log";
+
+const bucket = process.env.R2_BUCKET_NAME;
+const RCLONE_FLAGS = "--transfers=16 --fast-list --s3-no-check-bucket";
+const RCLONE_EXCLUDE =
+  "--exclude='*.lock' --exclude='*.log' --exclude='*.tmp' --exclude='.git/**'";
 
 // ============================================================
 // Helpers
@@ -70,38 +74,6 @@ function isGatewayRunning(): boolean {
   return portInUse;
 }
 
-function shouldRestoreFromR2(): boolean {
-  const r2SyncFile = join(BACKUP_DIR, ".last-sync");
-  const localSyncFile = join(CONFIG_DIR, ".last-sync");
-
-  if (!existsSync(r2SyncFile)) {
-    console.log("No R2 sync timestamp found, skipping restore");
-    return false;
-  }
-
-  if (!existsSync(localSyncFile)) {
-    console.log("No local sync timestamp, will restore from R2");
-    return true;
-  }
-
-  const r2Time = readFileSync(r2SyncFile, "utf8").trim();
-  const localTime = readFileSync(localSyncFile, "utf8").trim();
-
-  console.log("R2 last sync:", r2Time);
-  console.log("Local last sync:", localTime);
-
-  const r2Epoch = new Date(r2Time).getTime() || 0;
-  const localEpoch = new Date(localTime).getTime() || 0;
-
-  if (r2Epoch > localEpoch) {
-    console.log("R2 backup is newer, will restore");
-    return true;
-  }
-
-  console.log("Local data is newer or same, skipping restore");
-  return false;
-}
-
 function tryUnlink(path: string): void {
   try {
     unlinkSync(path);
@@ -127,28 +99,24 @@ mkdirSync(CONFIG_DIR, { recursive: true });
 mkdirSync(WORKSPACE_DIR, { recursive: true });
 
 console.log("Config directory:", CONFIG_DIR);
-console.log("Backup directory:", BACKUP_DIR);
 
 // ============================================================
-// 3. Restore from R2 backup
+// 3. Restore from R2 via rclone (non-fatal on failure)
 // ============================================================
 
-const backupConfigPath = join(BACKUP_DIR, "openclaw", "openclaw.json");
-
-if (existsSync(backupConfigPath)) {
-  if (shouldRestoreFromR2()) {
-    console.log("Restoring from R2 backup at", join(BACKUP_DIR, "openclaw"));
-    cpSync(join(BACKUP_DIR, "openclaw"), CONFIG_DIR, { recursive: true });
-    const syncFile = join(BACKUP_DIR, ".last-sync");
-    if (existsSync(syncFile)) {
-      cpSync(syncFile, join(CONFIG_DIR, ".last-sync"));
-    }
-    console.log("Restored config from R2 backup");
+if (bucket) {
+  try {
+    console.log("Restoring config from R2...");
+    execSync(
+      `rclone sync r2:${bucket}/openclaw/ ${CONFIG_DIR}/ ${RCLONE_FLAGS}`,
+      { stdio: "pipe", timeout: 30000 },
+    );
+    console.log("Config restored from R2");
+  } catch {
+    console.log("No R2 backup found or restore failed, starting fresh");
   }
-} else if (existsSync(BACKUP_DIR) && statSync(BACKUP_DIR).isDirectory()) {
-  console.log("R2 mounted at", BACKUP_DIR, "but no backup data found yet");
 } else {
-  console.log("R2 not mounted, starting fresh");
+  console.log("R2_BUCKET_NAME not set, starting fresh");
 }
 
 // ============================================================
@@ -313,7 +281,20 @@ writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
 console.log("Configuration written to", CONFIG_FILE);
 
 // ============================================================
-// 5. Start gateway
+// 5. Persist config to R2 via rclone (FATAL on failure)
+// ============================================================
+
+if (bucket) {
+  console.log("Persisting config to R2...");
+  execSync(
+    `rclone sync ${CONFIG_DIR}/ r2:${bucket}/openclaw/ ${RCLONE_FLAGS} ${RCLONE_EXCLUDE}`,
+    { stdio: "pipe", timeout: 30000 },
+  );
+  console.log("Config persisted to R2");
+}
+
+// ============================================================
+// 6. Start gateway
 // ============================================================
 
 console.log("Starting OpenClaw Gateway on port", GATEWAY_PORT);
@@ -339,13 +320,70 @@ if (gatewayToken) {
   console.log("Starting gateway (no token)...");
 }
 
-// Replace the current process with the gateway
-// Using Bun.spawn with stdio: "inherit" and unref: false to act like exec
+// Open local log file for persistent logging
+const logFile = Bun.file(LOG_FILE);
+const logWriter = logFile.writer();
+
+// Write startup header (redact token from args)
+const safeArgs = args.map((a) => (a === gatewayToken ? "***REDACTED***" : a));
+const startupHeader = [
+  `\n${"=".repeat(60)}`,
+  `Gateway startup: ${new Date().toISOString()}`,
+  `Token present: ${!!gatewayToken}`,
+  `Args: openclaw ${safeArgs.join(" ")}`,
+  `${"=".repeat(60)}\n`,
+].join("\n");
+logWriter.write(startupHeader);
+logWriter.flush();
+
+// Start gateway with piped output so we can tee to log file
 const proc = Bun.spawn(["openclaw", ...args], {
-  stdio: ["inherit", "inherit", "inherit"],
+  stdio: ["inherit", "pipe", "pipe"],
   env: process.env,
 });
 
-// Wait for the gateway process to exit and propagate its exit code
-const exitCode = await proc.exited;
+// Tee streams to both console and log file
+async function tee(
+  stream: ReadableStream<Uint8Array>,
+  target: NodeJS.WriteStream,
+): Promise<void> {
+  const reader = stream.getReader();
+  const decoder = new TextDecoder();
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const text = decoder.decode(value, { stream: true });
+      target.write(text);
+      logWriter.write(text);
+      logWriter.flush();
+    }
+  } catch {
+    // Stream closed
+  }
+}
+
+// Run both tees concurrently, wait for process exit
+const [exitCode] = await Promise.all([
+  proc.exited,
+  tee(proc.stdout as ReadableStream<Uint8Array>, process.stdout),
+  tee(proc.stderr as ReadableStream<Uint8Array>, process.stderr),
+]);
+
+logWriter.write(`\nGateway exited with code ${exitCode}\n`);
+logWriter.flush();
+logWriter.end();
+
+// Sync log to R2 (best effort)
+if (bucket) {
+  try {
+    execSync(`rclone copy ${LOG_FILE} r2:${bucket}/ ${RCLONE_FLAGS}`, {
+      stdio: "pipe",
+      timeout: 10000,
+    });
+  } catch {
+    /* best effort */
+  }
+}
+
 process.exit(exitCode);

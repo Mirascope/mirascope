@@ -3,8 +3,8 @@
  *
  * Handles:
  * - Finding existing gateway processes
- * - Mounting R2 storage per-claw
- * - Starting the gateway via start-openclaw.sh
+ * - Configuring rclone for R2 persistence
+ * - Starting the gateway via start-openclaw.ts
  * - Proxying HTTP and WebSocket requests to the gateway
  */
 
@@ -12,7 +12,10 @@ import type { Sandbox, Process } from "@cloudflare/sandbox";
 
 import type { DispatchEnv, OpenClawConfig } from "./types";
 
-import { GATEWAY_PORT, STARTUP_TIMEOUT_MS, R2_MOUNT_PATH } from "./config";
+import { GATEWAY_PORT, STARTUP_TIMEOUT_MS } from "./config";
+
+const RCLONE_CONF_PATH = "/root/.config/rclone/rclone.conf";
+const CONFIGURED_FLAG = "/tmp/.rclone-configured";
 
 /**
  * Find an existing OpenClaw gateway process in the sandbox.
@@ -51,62 +54,44 @@ export async function findGatewayProcess(
 }
 
 /**
- * Check if R2 is already mounted in the sandbox.
+ * Configure rclone for R2 access in the sandbox.
+ * Idempotent — skips if already configured.
  */
-async function isR2Mounted(sandbox: Sandbox): Promise<boolean> {
-  try {
-    const proc = await sandbox.startProcess(
-      `mount | grep "s3fs on ${R2_MOUNT_PATH}"`,
-    );
-    let attempts = 0;
-    while (proc.status === "running" && attempts < 10) {
-      await new Promise((r) => setTimeout(r, 200));
-      attempts++;
-    }
-    const logs = await proc.getLogs();
-    return !!(logs.stdout && logs.stdout.includes("s3fs"));
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Mount R2 bucket for a claw using its scoped credentials.
- */
-async function mountR2Storage(
+export async function ensureRcloneConfig(
   sandbox: Sandbox,
   r2Config: OpenClawConfig["r2"],
   accountId: string,
 ): Promise<boolean> {
-  if (await isR2Mounted(sandbox)) {
-    console.log("[proxy] R2 already mounted at", R2_MOUNT_PATH);
+  if (!r2Config.accessKeyId || !r2Config.secretAccessKey || !accountId) {
+    console.log("[proxy] R2 credentials not configured, skipping rclone setup");
+    return false;
+  }
+
+  // Check if already configured (idempotent)
+  const check = await sandbox.exec(
+    `test -f ${CONFIGURED_FLAG} && echo yes || echo no`,
+  );
+  if (check.stdout?.trim() === "yes") {
     return true;
   }
 
-  try {
-    console.log(
-      "[proxy] Mounting R2 bucket",
-      r2Config.bucketName,
-      "at",
-      R2_MOUNT_PATH,
-    );
-    await sandbox.mountBucket(r2Config.bucketName, R2_MOUNT_PATH, {
-      endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
-      credentials: {
-        accessKeyId: r2Config.accessKeyId,
-        secretAccessKey: r2Config.secretAccessKey,
-      },
-    });
-    console.log("[proxy] R2 mounted successfully");
-    return true;
-  } catch (err) {
-    console.error("[proxy] R2 mount error:", err);
-    if (await isR2Mounted(sandbox)) {
-      console.log("[proxy] R2 is mounted despite error");
-      return true;
-    }
-    return false;
-  }
+  const rcloneConfig = [
+    "[r2]",
+    "type = s3",
+    "provider = Cloudflare",
+    `access_key_id = ${r2Config.accessKeyId}`,
+    `secret_access_key = ${r2Config.secretAccessKey}`,
+    `endpoint = https://${accountId}.r2.cloudflarestorage.com`,
+    "acl = private",
+    "no_check_bucket = true",
+  ].join("\n");
+
+  await sandbox.exec(`mkdir -p $(dirname ${RCLONE_CONF_PATH})`);
+  await sandbox.writeFile(RCLONE_CONF_PATH, rcloneConfig);
+  await sandbox.exec(`touch ${CONFIGURED_FLAG}`);
+
+  console.log("[proxy] Rclone configured for R2 bucket:", r2Config.bucketName);
+  return true;
 }
 
 /**
@@ -121,6 +106,12 @@ export function buildEnvVars(config: OpenClawConfig): Record<string, string> {
       envVars[key] = value;
     }
   }
+
+  // R2 persistence credentials (used by rclone in start-openclaw.ts)
+  if (config.r2.accessKeyId) envVars.R2_ACCESS_KEY_ID = config.r2.accessKeyId;
+  if (config.r2.secretAccessKey)
+    envVars.R2_SECRET_ACCESS_KEY = config.r2.secretAccessKey;
+  if (config.r2.bucketName) envVars.R2_BUCKET_NAME = config.r2.bucketName;
 
   return envVars;
 }
@@ -138,12 +129,12 @@ export async function ensureGateway(
   config: OpenClawConfig,
   env: DispatchEnv,
 ): Promise<Process> {
-  // Mount R2 with per-claw scoped credentials
+  // Configure rclone for R2 persistence
   const cfAccountId = env.CLOUDFLARE_ACCOUNT_ID;
   if (cfAccountId) {
-    await mountR2Storage(sandbox, config.r2, cfAccountId);
+    await ensureRcloneConfig(sandbox, config.r2, cfAccountId);
   } else {
-    console.log("[proxy] CLOUDFLARE_ACCOUNT_ID not set, skipping R2 mount");
+    console.log("[proxy] CF_ACCOUNT_ID not set, skipping rclone setup");
   }
 
   // Check for existing process
