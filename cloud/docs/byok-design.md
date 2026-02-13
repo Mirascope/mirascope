@@ -18,16 +18,16 @@ These match the current router providers defined in `cloud/api/router/providers.
 
 New `project_api_keys` table:
 
-| Column         | Type      | Description                                          |
-| -------------- | --------- | ---------------------------------------------------- |
-| `id`           | `uuid`    | Primary key                                          |
-| `projectId`    | `uuid`    | FK → `projects.id`                                   |
-| `provider`     | `text`    | Enum: `anthropic` \| `openai` \| `google`            |
-| `encryptedKey` | `text`    | AES-256-GCM encrypted API key                        |
-| `nonce`        | `text`    | Nonce/IV for AES-GCM decryption                      |
-| `keyPrefix`    | `text`    | Last 4 characters of the key (for display)           |
-| `createdAt`    | `timestamp` | Row creation time                                  |
-| `updatedAt`    | `timestamp` | Last update time                                   |
+| Column         | Type        | Description                                |
+| -------------- | ----------- | ------------------------------------------ |
+| `id`           | `uuid`      | Primary key                                |
+| `projectId`    | `uuid`      | FK → `projects.id`                         |
+| `provider`     | `text`      | Enum: `anthropic` \| `openai` \| `google`  |
+| `encryptedKey` | `text`      | AES-256-GCM encrypted API key              |
+| `nonce`        | `text`      | Nonce/IV for AES-GCM decryption            |
+| `keySuffix`    | `text`      | Last 4 characters of the key (for display) |
+| `createdAt`    | `timestamp` | Row creation time                          |
+| `updatedAt`    | `timestamp` | Last update time                           |
 
 **Constraints:**
 
@@ -42,10 +42,10 @@ New `ProjectApiKeys` service following the existing `BaseAuthenticatedEffectServ
 
 **Methods:**
 
-- `set(projectId, provider, key)` — Encrypt the key using AES-256-GCM, extract last 4 chars, and upsert into `project_api_keys`. Returns `{ provider, lastFour, updatedAt }`.
+- `set(projectId, provider, key)` — Encrypt the key using AES-256-GCM, extract last 4 chars as `keySuffix`, and upsert into `project_api_keys`. Returns `{ provider, keySuffix, updatedAt }`.
 - `get(projectId, provider)` — Decrypt and return the plaintext key. Used only internally by the router at proxy time. Never exposed via API.
 - `delete(projectId, provider)` — Remove the stored key for the given provider.
-- `list(projectId)` — Return metadata for all stored keys: `{ provider, lastFour, updatedAt }[]`. Never returns key values.
+- `list(projectId)` — Return metadata for all stored keys: `{ provider, keySuffix, updatedAt }[]`. Never returns key values.
 
 **Permissions:**
 
@@ -89,7 +89,7 @@ Set or update a BYOK key for a provider.
 - **Body:** `{ key: string }`
 - **Validation:** `provider` must be one of `anthropic | openai | google`
 - **Auth:** Project ADMIN + Pro/Team plan
-- **Response:** `{ provider, lastFour, updatedAt }`
+- **Response:** `{ provider, keySuffix, updatedAt }`
 
 #### `DELETE /api/projects/:projectId/api-keys/:provider`
 
@@ -103,7 +103,7 @@ Remove a stored BYOK key.
 List all providers with BYOK keys configured.
 
 - **Auth:** Project ADMIN + Pro/Team plan
-- **Response:** `{ provider, lastFour, updatedAt }[]`
+- **Response:** `{ provider, keySuffix, updatedAt }[]`
 - **Note:** Never returns the full key value
 
 ### 5. UI
@@ -114,7 +114,7 @@ New "API Keys" section in the project settings page.
 
 - Per-provider row showing:
   - Provider name + icon (Anthropic, OpenAI, Google)
-  - Status: "Not configured" or masked display showing `••••{lastFour}`
+  - Status: "Not configured" or masked display showing `••••{keySuffix}`
   - Last updated timestamp (if configured)
   - Actions: "Set Key" button (opens modal with password input) / "Clear" button (with confirmation)
 
@@ -163,12 +163,14 @@ CREATE TABLE "project_api_keys" (
   "provider" text NOT NULL,
   "encrypted_key" text NOT NULL,
   "nonce" text NOT NULL,
-  "key_prefix" text NOT NULL,
+  "key_suffix" text NOT NULL,
   "created_at" timestamp DEFAULT now() NOT NULL,
   "updated_at" timestamp DEFAULT now() NOT NULL,
   CONSTRAINT "project_api_keys_project_id_provider_unique" UNIQUE("project_id", "provider")
 );
 ```
+
+**Note:** Migration is auto-generated via `bun run db:generate` from the `cloud/` directory after schema changes.
 
 ## Open Questions
 
