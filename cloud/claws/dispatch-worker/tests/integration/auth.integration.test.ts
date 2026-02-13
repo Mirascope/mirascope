@@ -72,7 +72,7 @@ describe("webhook pass-through", () => {
     );
     expect(res.ok).toBe(true);
 
-    const body = (await res.json()) as any;
+    const body = (await res.json()) as unknown;
     expect(body.action).toBe("pass-through");
     expect(body.clawId).toBe("resolved-my-claw");
     expect(body.remainder).toBe("/webhook/telegram");
@@ -89,7 +89,7 @@ describe("webhook pass-through", () => {
     );
     expect(res.ok).toBe(true);
 
-    const body = (await res.json()) as any;
+    const body = (await res.json()) as unknown;
     expect(body.action).toBe("pass-through");
     expect(body.remainder).toBe("/webhook/slack");
   });
@@ -109,7 +109,7 @@ describe("Bearer token pass-through", () => {
     );
     expect(res.ok).toBe(true);
 
-    const body = (await res.json()) as any;
+    const body = (await res.json()) as unknown;
     expect(body.action).toBe("pass-through");
     expect(body.clawId).toBe("resolved-my-claw");
     expect(body.remainder).toBe("/api/chat");
@@ -125,7 +125,7 @@ describe("Bearer token pass-through", () => {
     );
     expect(res.ok).toBe(true);
 
-    const body = (await res.json()) as any;
+    const body = (await res.json()) as unknown;
     expect(body.action).toBe("pass-through");
   });
 });
@@ -144,7 +144,7 @@ describe("session cookie validation", () => {
     );
     expect(res.ok).toBe(true);
 
-    const body = (await res.json()) as any;
+    const body = (await res.json()) as unknown;
     expect(body.action).toBe("pass-through");
     expect(body.clawId).toBe("resolved-my-claw");
   });
@@ -158,7 +158,7 @@ describe("session cookie validation", () => {
     );
     expect(res.status).toBe(401);
 
-    const body = (await res.json()) as any;
+    const body = (await res.json()) as unknown;
     expect(body.error).toBe("Invalid session");
   });
 
@@ -183,7 +183,7 @@ describe("unauthenticated requests", () => {
     const res = await mf.dispatchFetch("http://test/test-org/my-claw/api/chat");
     expect(res.status).toBe(401);
 
-    const body = (await res.json()) as any;
+    const body = (await res.json()) as unknown;
     expect(body.error).toBe("Authentication required");
   });
 
@@ -207,7 +207,7 @@ describe("unknown org/claw resolution", () => {
     );
     expect(res.status).toBe(404);
 
-    const body = (await res.json()) as any;
+    const body = (await res.json()) as unknown;
     expect(body.error).toBe("Claw not found");
   });
 });
@@ -263,7 +263,7 @@ describe("CORS preflight", () => {
     );
     // Should go through normal auth flow, not preflight
     expect(res.ok).toBe(true);
-    const body = (await res.json()) as any;
+    const body = (await res.json()) as unknown;
     expect(body.action).toBe("pass-through");
     // Should include CORS headers on the response
     expect(res.headers.get("Access-Control-Allow-Origin")).toBe(
@@ -302,7 +302,7 @@ describe("path parsing", () => {
     );
     expect(res.ok).toBe(true);
 
-    const body = (await res.json()) as any;
+    const body = (await res.json()) as unknown;
     expect(body.orgSlug).toBe("acme");
     expect(body.clawSlug).toBe("support-bot");
     expect(body.remainder).toBe("/api/mcp/session");
@@ -314,7 +314,7 @@ describe("path parsing", () => {
     });
     expect(res.ok).toBe(true);
 
-    const body = (await res.json()) as any;
+    const body = (await res.json()) as unknown;
     expect(body.remainder).toBe("/");
   });
 });
