@@ -15,15 +15,20 @@ import { MirascopeHttp } from "../../../src/cli/sdk/http/client.js";
 
 type MockRoute = {
   method: string;
-  path: string;
+  path: string | RegExp;
   response: unknown;
   status?: number;
 };
 
+const matchPath = (routePath: string | RegExp, reqPath: string): boolean =>
+  routePath instanceof RegExp ? routePath.test(reqPath) : routePath === reqPath;
+
 const mockHttp = (routes: MockRoute[]): Layer.Layer<MirascopeHttp> =>
   Layer.succeed(MirascopeHttp, {
     get: (path, schema) => {
-      const route = routes.find((r) => r.method === "GET" && r.path === path);
+      const route = routes.find(
+        (r) => r.method === "GET" && matchPath(r.path, path),
+      );
       if (!route) {
         return Effect.fail(
           new ApiError({ message: `No mock for GET ${path}`, status: 404 }),
@@ -45,7 +50,9 @@ const mockHttp = (routes: MockRoute[]): Layer.Layer<MirascopeHttp> =>
       ) as Effect.Effect<never, ApiError>;
     },
     post: (path, _body, schema) => {
-      const route = routes.find((r) => r.method === "POST" && r.path === path);
+      const route = routes.find(
+        (r) => r.method === "POST" && matchPath(r.path, path),
+      );
       if (!route) {
         return Effect.fail(
           new ApiError({ message: `No mock for POST ${path}`, status: 404 }),
@@ -68,7 +75,7 @@ const mockHttp = (routes: MockRoute[]): Layer.Layer<MirascopeHttp> =>
     },
     del: (path) => {
       const route = routes.find(
-        (r) => r.method === "DELETE" && r.path === path,
+        (r) => r.method === "DELETE" && matchPath(r.path, path),
       );
       if (!route) {
         return Effect.fail(
@@ -92,23 +99,37 @@ const mockHttp = (routes: MockRoute[]): Layer.Layer<MirascopeHttp> =>
 // Test data
 // ---------------------------------------------------------------------------
 
+const authMeResponse = {
+  user: { id: "user-1", email: "test@example.com", name: "Test" },
+  apiKey: {
+    id: "key-1",
+    organizationId: "org-456",
+    environmentId: null,
+    projectId: null,
+  },
+};
+
 const sampleClaw = {
   id: "claw-123",
   organizationId: "org-456",
-  organizationSlug: "mirascope",
   slug: "scouty",
+  displayName: "Scouty",
   status: "active" as const,
-  instanceType: "standard",
+  instanceType: "standard-1",
   createdAt: "2026-02-12T00:00:00Z",
 };
 
 const sampleClawDetail = {
   ...sampleClaw,
-  containerStatus: "running",
-  uptime: 7200,
-  lastSync: "2026-02-12T01:00:00Z",
-  errorMessage: null,
+  lastError: null,
+  lastDeployedAt: null,
 };
+
+/** Standard routes that include auth/me + claw endpoints */
+const standardRoutes = (extra: MockRoute[] = []): MockRoute[] => [
+  { method: "GET", path: "/v1/auth/me", response: authMeResponse },
+  ...extra,
+];
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -125,9 +146,15 @@ describe("ClawApi.Live", () => {
       Effect.provide(
         ClawApi.Live.pipe(
           Layer.provide(
-            mockHttp([
-              { method: "GET", path: "/claws", response: [sampleClaw] },
-            ]),
+            mockHttp(
+              standardRoutes([
+                {
+                  method: "GET",
+                  path: /\/v2\/organizations\/org-456\/claws$/,
+                  response: [sampleClaw],
+                },
+              ]),
+            ),
           ),
         ),
       ),
@@ -143,7 +170,15 @@ describe("ClawApi.Live", () => {
       Effect.provide(
         ClawApi.Live.pipe(
           Layer.provide(
-            mockHttp([{ method: "GET", path: "/claws", response: [] }]),
+            mockHttp(
+              standardRoutes([
+                {
+                  method: "GET",
+                  path: /\/v2\/organizations\/org-456\/claws$/,
+                  response: [],
+                },
+              ]),
+            ),
           ),
         ),
       ),
@@ -153,16 +188,22 @@ describe("ClawApi.Live", () => {
   it.effect("create returns new claw", () =>
     Effect.gen(function* () {
       const api = yield* ClawApi;
-      const claw = yield* api.create("mirascope", "new-claw");
+      const claw = yield* api.create("", "new-claw");
       expect(claw.slug).toBe("scouty");
       expect(claw.status).toBe("active");
     }).pipe(
       Effect.provide(
         ClawApi.Live.pipe(
           Layer.provide(
-            mockHttp([
-              { method: "POST", path: "/claws", response: sampleClaw },
-            ]),
+            mockHttp(
+              standardRoutes([
+                {
+                  method: "POST",
+                  path: /\/v2\/organizations\/org-456\/claws$/,
+                  response: sampleClaw,
+                },
+              ]),
+            ),
           ),
         ),
       ),
@@ -178,13 +219,15 @@ describe("ClawApi.Live", () => {
       Effect.provide(
         ClawApi.Live.pipe(
           Layer.provide(
-            mockHttp([
-              {
-                method: "GET",
-                path: "/claws/claw-123",
-                response: sampleClaw,
-              },
-            ]),
+            mockHttp(
+              standardRoutes([
+                {
+                  method: "GET",
+                  path: /\/v2\/organizations\/org-456\/claws\/claw-123$/,
+                  response: sampleClaw,
+                },
+              ]),
+            ),
           ),
         ),
       ),
@@ -200,14 +243,16 @@ describe("ClawApi.Live", () => {
       Effect.provide(
         ClawApi.Live.pipe(
           Layer.provide(
-            mockHttp([
-              {
-                method: "GET",
-                path: "/claws/nonexistent",
-                response: { message: "Not found" },
-                status: 404,
-              },
-            ]),
+            mockHttp(
+              standardRoutes([
+                {
+                  method: "GET",
+                  path: /\/v2\/organizations\/org-456\/claws\/nonexistent$/,
+                  response: { message: "Not found" },
+                  status: 404,
+                },
+              ]),
+            ),
           ),
         ),
       ),
@@ -218,19 +263,21 @@ describe("ClawApi.Live", () => {
     Effect.gen(function* () {
       const api = yield* ClawApi;
       const detail = yield* api.status("claw-123");
-      expect(detail.containerStatus).toBe("running");
-      expect(detail.uptime).toBe(7200);
+      expect(detail.slug).toBe("scouty");
+      expect(detail.lastError).toBeNull();
     }).pipe(
       Effect.provide(
         ClawApi.Live.pipe(
           Layer.provide(
-            mockHttp([
-              {
-                method: "GET",
-                path: "/claws/claw-123/status",
-                response: sampleClawDetail,
-              },
-            ]),
+            mockHttp(
+              standardRoutes([
+                {
+                  method: "GET",
+                  path: /\/v2\/organizations\/org-456\/claws\/claw-123$/,
+                  response: sampleClawDetail,
+                },
+              ]),
+            ),
           ),
         ),
       ),
@@ -245,13 +292,15 @@ describe("ClawApi.Live", () => {
       Effect.provide(
         ClawApi.Live.pipe(
           Layer.provide(
-            mockHttp([
-              {
-                method: "DELETE",
-                path: "/claws/claw-123",
-                response: null,
-              },
-            ]),
+            mockHttp(
+              standardRoutes([
+                {
+                  method: "DELETE",
+                  path: /\/v2\/organizations\/org-456\/claws\/claw-123$/,
+                  response: null,
+                },
+              ]),
+            ),
           ),
         ),
       ),
@@ -267,14 +316,16 @@ describe("ClawApi.Live", () => {
       Effect.provide(
         ClawApi.Live.pipe(
           Layer.provide(
-            mockHttp([
-              {
-                method: "DELETE",
-                path: "/claws/nonexistent",
-                response: { message: "Not found" },
-                status: 404,
-              },
-            ]),
+            mockHttp(
+              standardRoutes([
+                {
+                  method: "DELETE",
+                  path: /\/v2\/organizations\/org-456\/claws\/nonexistent$/,
+                  response: { message: "Not found" },
+                  status: 404,
+                },
+              ]),
+            ),
           ),
         ),
       ),
