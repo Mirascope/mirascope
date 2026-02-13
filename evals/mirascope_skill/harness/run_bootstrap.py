@@ -20,6 +20,10 @@ from .program import get_schema, run_program, validate_program
 SKILL_MD = Path(__file__).resolve().parent.parent / "skill" / "SKILL.md"
 DEFAULT_MODEL = "anthropic/claude-sonnet-4-5"
 
+# Initialize Mirascope tracing
+ops.configure()
+ops.instrument_llm()
+
 
 # ---------------------------------------------------------------------------
 # LLM helpers
@@ -49,7 +53,7 @@ Return the full Python source code. The program must:
 1. Use PEP 723 inline script metadata with dependencies
 2. Define ProgramInput and ProgramOutput Pydantic models with Field descriptions
 3. Support --help, --schema, and --input CLI flags
-4. Use @ops.trace, @ops.version, and @llm.call decorators
+4. Use @ops.trace and @llm.call decorators
 5. Include ops.configure() and ops.instrument_llm() at module level"""
 
 

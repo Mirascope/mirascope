@@ -3,16 +3,20 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 from pathlib import Path
 
 
 def _run_uv(program_path: str | Path, *args: str, timeout: int = 120) -> subprocess.CompletedProcess[str]:
+    # Pass through API keys to subprocesses
+    env = os.environ.copy()
     return subprocess.run(
         ["uv", "run", str(program_path), *args],
         capture_output=True,
         text=True,
         timeout=timeout,
+        env=env,
     )
 
 

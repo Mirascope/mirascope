@@ -20,7 +20,7 @@ Every program MUST follow this structure:
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["mirascope[anthropic,ops]", "pydantic"]
+# dependencies = ["mirascope[all]", "pydantic"]
 # ///
 """One-line description of what this program does."""
 import argparse
@@ -48,9 +48,9 @@ ops.configure()
 ops.instrument_llm()
 
 @ops.trace(tags=["<skill-type>"])
-@ops.version
 @llm.call("anthropic/claude-sonnet-4-5", format=ProgramOutput)
-def run(input_data: ProgramInput) -> str:
+def generate_<skill_type>(input_data: ProgramInput) -> str:
+    """Name this function descriptively (e.g., generate_invoice, analyze_code) for better trace names."""
     return f"<prompt template using {input_data}>"
 
 # --- CLI ---
@@ -72,7 +72,7 @@ if __name__ == "__main__":
         parser.error("--input is required (unless using --schema)")
 
     data = ProgramInput.model_validate_json(args.input)
-    response = run(data)
+    response = generate_<skill_type>(data)  # Match function name above
     print(response.parse().model_dump_json(indent=2))
 ```
 
@@ -149,12 +149,15 @@ Wraps the function call in an OpenTelemetry span. Use `tags` to categorize:
 def run(...): ...
 ```
 
-### `@ops.version` — Versioning
+### `@ops.version` — Versioning (DEPRECATED FOR NOW)
+
+> **Note:** As of Python 3.14, combining `@ops.version` with `@ops.trace` causes compatibility issues. Omit `@ops.version` until this is fixed upstream.
 
 Automatically computes a content hash of the function's source code. This lets Mirascope Cloud track which version of your prompt produced each result:
 
 ```python
-@ops.version
+# Currently broken with @ops.trace on Python 3.14
+# @ops.version
 @llm.call(...)
 def run(...): ...
 ```
@@ -204,10 +207,63 @@ with ops.session(id="eval-invoice-001-fold-0"):
 3. **Use structured data in prompts** — JSON-dump complex inputs rather than string interpolation
 4. **Handle optional fields** — Check for None values and adjust the prompt accordingly
 
+## Robustness Patterns
+
+### Handle Invalid/Empty Input Gracefully
+
+Programs may receive empty or insufficient input (e.g., when the orchestration layer determines the query doesn't match the program's purpose). Return a valid rejection response instead of crashing:
+
+```python
+if __name__ == "__main__":
+    # ... argparse setup ...
+
+    if not args.input:
+        parser.error("--input is required (unless using --schema)")
+
+    # Validate input before Pydantic parsing
+    try:
+        raw = json.loads(args.input)
+        if not raw or not isinstance(raw, dict) or len(raw) < 2:
+            print(json.dumps({"rejected": True, "reason": "Insufficient input for this program"}))
+            sys.exit(0)  # Rejection is valid output, not an error
+    except json.JSONDecodeError:
+        print(json.dumps({"rejected": True, "reason": "Invalid JSON input"}))
+        sys.exit(0)
+
+    data = ProgramInput.model_validate_json(args.input)
+    # ... rest of program ...
+```
+
+### Handle LLM Returning Empty Strings for Optional Fields
+
+LLMs sometimes return `""` instead of `null` for optional fields, which breaks Pydantic parsing. Add validators to coerce empty strings to `None`:
+
+```python
+from pydantic import BaseModel, Field, field_validator
+
+class ProgramOutput(BaseModel):
+    required_field: str = Field(description="Always present")
+    optional_field: float | None = Field(description="May be null")
+    another_optional: str | None = Field(description="May be null")
+
+    @field_validator('optional_field', 'another_optional', mode='before')
+    @classmethod
+    def empty_string_to_none(cls, v):
+        """LLMs sometimes return '' instead of null for optional fields."""
+        if v == '' or v == 'null' or v == 'None':
+            return None
+        return v
+```
+
+Apply this validator to ALL optional fields in your output model.
+
 ## Common Mistakes to Avoid
 
 1. **Missing `ops.configure()`** — Tracing won't work without it
-2. **Wrong decorator order** — Must be `@ops.trace` → `@ops.version` → `@llm.call` (outermost to innermost)
+2. **Wrong decorator order** — Must be `@ops.trace` → `@llm.call` (outermost to innermost)
 3. **Forgetting `--schema` support** — The CLI must support all three modes
 4. **Using `dict` instead of Pydantic models** — Always use typed models for I/O
 5. **Not handling missing optional inputs** — Use `Field(default=None)` and check in the prompt
+6. **Using `mirascope[anthropic,ops]` instead of `mirascope[all]`** — The ops extra has transitive deps that need all provider packages
+7. **Crashing on empty input** — Return `{"rejected": true}` with exit 0, not a stack trace
+8. **No validators for optional output fields** — LLMs return `""` not `null`; add `field_validator`

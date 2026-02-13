@@ -27,6 +27,10 @@ from .program import get_schema, run_program, validate_program
 
 DEFAULT_MODEL = "anthropic/claude-sonnet-4-5"
 
+# Initialize Mirascope tracing
+ops.configure()
+ops.instrument_llm()
+
 
 # ---------------------------------------------------------------------------
 # LLM helpers
