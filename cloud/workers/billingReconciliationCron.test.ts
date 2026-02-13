@@ -886,6 +886,8 @@ describe("billingReconciliationCron", () => {
         paymentMethods: {
           getDefault: () => Effect.succeed(null),
           createSetupIntent: {} as never,
+          createSetupIntentWithoutCustomer: {} as never,
+          attachAndSetDefault: {} as never,
           remove: {} as never,
         },
       });
@@ -981,6 +983,8 @@ describe("billingReconciliationCron", () => {
               expYear: 2030,
             }),
           createSetupIntent: {} as never,
+          createSetupIntentWithoutCustomer: {} as never,
+          attachAndSetDefault: {} as never,
           remove: {} as never,
         },
       });
@@ -1062,6 +1066,8 @@ describe("billingReconciliationCron", () => {
               expYear: 2030,
             }),
           createSetupIntent: {} as never,
+          createSetupIntentWithoutCustomer: {} as never,
+          attachAndSetDefault: {} as never,
           remove: {} as never,
         },
       });
@@ -1297,6 +1303,8 @@ describe("billingReconciliationCron", () => {
               expYear: 2030,
             }),
           createSetupIntent: {} as never,
+          createSetupIntentWithoutCustomer: {} as never,
+          attachAndSetDefault: {} as never,
           remove: {} as never,
         },
       });
@@ -1386,6 +1394,8 @@ describe("billingReconciliationCron", () => {
               expYear: 2030,
             }),
           createSetupIntent: {} as never,
+          createSetupIntentWithoutCustomer: {} as never,
+          attachAndSetDefault: {} as never,
           remove: {} as never,
         },
       });

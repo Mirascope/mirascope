@@ -1,11 +1,8 @@
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { LogOut, Settings } from "lucide-react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
-import type { PlanTier } from "@/payments/plans";
-
-import { useDeleteOrganization } from "@/app/api/organizations";
 import { useIsWatercolorPage } from "@/app/components/blocks/theme-provider";
 import { CreateOrganizationModal } from "@/app/components/create-organization-modal";
 import { Button } from "@/app/components/ui/button";
@@ -17,7 +14,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
-import { UpgradePlanDialog } from "@/app/components/upgrade-plan-dialog";
 import { useAuth } from "@/app/contexts/auth";
 import { useOrganization } from "@/app/contexts/organization";
 import { cn } from "@/app/lib/utils";
@@ -39,13 +35,6 @@ export function AccountMenu({ className }: AccountMenuProps) {
   } = useOrganization();
   const navigate = useNavigate();
   const [showCreateOrg, setShowCreateOrg] = useState(false);
-  const [upgradeNewOrg, setUpgradeNewOrg] = useState<{
-    orgId: string;
-    orgSlug: string;
-    plan: PlanTier;
-  } | null>(null);
-  const upgradeSucceededRef = useRef(false);
-  const deleteOrganization = useDeleteOrganization();
   const isWatercolorPage = useIsWatercolorPage();
 
   const handleSignOut = async () => {
@@ -162,56 +151,13 @@ export function AccountMenu({ className }: AccountMenuProps) {
       <CreateOrganizationModal
         open={showCreateOrg}
         onOpenChange={setShowCreateOrg}
-        onCreated={(org, planTier) => {
-          if (planTier !== "free") {
-            // Show upgrade dialog to collect payment for the paid plan
-            setUpgradeNewOrg({
-              orgId: org.id,
-              orgSlug: org.slug,
-              plan: planTier,
-            });
-          } else {
-            void navigate({
-              to: "/settings/organizations/$orgSlug",
-              params: { orgSlug: org.slug },
-            });
-          }
+        onCreated={(org) => {
+          void navigate({
+            to: "/settings/organizations/$orgSlug",
+            params: { orgSlug: org.slug },
+          });
         }}
       />
-
-      {upgradeNewOrg && (
-        <UpgradePlanDialog
-          organizationId={upgradeNewOrg.orgId}
-          targetPlan={upgradeNewOrg.plan}
-          open={true}
-          onUpgradeSuccess={() => {
-            upgradeSucceededRef.current = true;
-          }}
-          onOpenChange={(open) => {
-            if (!open) {
-              const { orgId, orgSlug } = upgradeNewOrg;
-              setUpgradeNewOrg(null);
-
-              if (upgradeSucceededRef.current) {
-                // Payment succeeded — navigate to the new org
-                upgradeSucceededRef.current = false;
-                void navigate({
-                  to: "/settings/organizations/$orgSlug",
-                  params: { orgSlug },
-                });
-              } else {
-                // User dismissed without paying — delete the orphaned org
-                void deleteOrganization.mutateAsync(orgId).catch(() => {
-                  // Cleanup failed — orphan cron will catch it
-                  console.warn(
-                    `Failed to clean up org ${orgId} after cancelled payment`,
-                  );
-                });
-              }
-            }
-          }}
-        />
-      )}
     </>
   );
 }

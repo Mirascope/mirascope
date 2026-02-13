@@ -56,6 +56,7 @@ export const CreateOrganizationRequestSchema = Schema.Struct({
   name: OrganizationNameSchema,
   slug: OrganizationSlugSchema,
   planTier: Schema.optional(Schema.Literal(...PLAN_TIERS)),
+  paymentMethodId: Schema.optional(Schema.String),
 });
 
 export const UpdateOrganizationRequestSchema = Schema.Struct({
@@ -220,6 +221,11 @@ export class OrganizationsApi extends HttpApiGroup.make("organizations")
       .addError(PlanLimitExceededError, {
         status: PlanLimitExceededError.status,
       }),
+  )
+  .add(
+    HttpApiEndpoint.post("createOrgSetupIntent", "/organizations/setup-intent")
+      .addSuccess(SetupIntentResponseSchema)
+      .addError(StripeError, { status: StripeError.status }),
   )
   .add(
     HttpApiEndpoint.get("get", "/organizations/:id")

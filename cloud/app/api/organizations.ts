@@ -232,6 +232,19 @@ export const usePaymentMethod = (organizationId: string | undefined) => {
   });
 };
 
+export const useCreateOrgSetupIntent = () => {
+  return useMutation({
+    ...eq.mutationOptions({
+      mutationKey: ["organizations", "createOrgSetupIntent"],
+      mutationFn: () =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.organizations.createOrgSetupIntent();
+        }),
+    }),
+  });
+};
+
 export const useCreateSetupIntent = () => {
   return useMutation({
     ...eq.mutationOptions({

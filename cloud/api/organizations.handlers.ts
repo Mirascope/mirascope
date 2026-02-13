@@ -67,29 +67,37 @@ export const createOrganizationHandler = (payload: CreateOrganizationRequest) =>
       userId: user.id,
     });
 
-    // If a paid plan was requested, upgrade the subscription immediately.
-    // On failure, roll back: delete the org and Stripe customer.
-    if (requestedPlan !== "free") {
-      yield* payments.customers.subscriptions
-        .update({
+    // If a paid plan was requested with a verified payment method,
+    // attach the payment method and upgrade the subscription.
+    if (requestedPlan !== "free" && payload.paymentMethodId) {
+      yield* Effect.gen(function* () {
+        // Attach the verified payment method to the new Stripe customer
+        yield* payments.paymentMethods.attachAndSetDefault(
+          organization.stripeCustomerId,
+          payload.paymentMethodId!,
+        );
+
+        // Upgrade subscription to the paid plan (charges via invoice)
+        yield* payments.customers.subscriptions.update({
           stripeCustomerId: organization.stripeCustomerId,
           targetPlan: requestedPlan,
           organizationId: organization.id,
-        })
-        .pipe(
-          Effect.catchAll((upgradeError) =>
-            Effect.gen(function* () {
-              // Compensating transaction: clean up the org we just created
-              yield* db.organizations
-                .delete({
-                  userId: user.id,
-                  organizationId: organization.id,
-                })
-                .pipe(Effect.catchAll(() => Effect.void));
-              return yield* Effect.fail(upgradeError);
-            }),
-          ),
-        );
+        });
+      }).pipe(
+        Effect.catchAll((upgradeError) =>
+          Effect.gen(function* () {
+            // Payment method was pre-verified, so failure here is rare.
+            // Clean up the org — user can retry.
+            yield* db.organizations
+              .delete({
+                userId: user.id,
+                organizationId: organization.id,
+              })
+              .pipe(Effect.catchAll(() => Effect.void));
+            return yield* Effect.fail(upgradeError);
+          }),
+        ),
+      );
     }
 
     yield* analytics.trackEvent({
@@ -105,6 +113,11 @@ export const createOrganizationHandler = (payload: CreateOrganizationRequest) =>
 
     return organization;
   });
+
+export const createOrgSetupIntentHandler = Effect.gen(function* () {
+  const payments = yield* Payments;
+  return yield* payments.paymentMethods.createSetupIntentWithoutCustomer();
+});
 
 export const getOrganizationHandler = (organizationId: string) =>
   Effect.gen(function* () {
