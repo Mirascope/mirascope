@@ -3,8 +3,8 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["@cloudflare/workers-types"],
+    "lib": ["ES2022"],
+    "types": ["bun-types"],
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
@@ -12,6 +12,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts"],
-  "exclude": ["node_modules", "src/**/*.test.ts", "src/test-helpers.ts", "src/startup/**"]
+  "include": ["src/startup/**/*.ts", "start-openclaw.ts"],
+  "exclude": ["src/startup/**/*.test.ts"]
 }
