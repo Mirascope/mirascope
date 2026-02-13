@@ -112,30 +112,16 @@ Guild and group channels don't require pairing — they get isolated sessions au
 
 ---
 
-## Plugin Channels
+## Additional Channels
 
-Beyond the built-in channels, additional platforms are available as **plugins**:
-
-| Plugin | Install Command |
-|---|---|
-| Mattermost | `openclaw plugins install @openclaw/mattermost` |
-| Microsoft Teams | `openclaw plugins install @openclaw/msteams` |
-| LINE | `openclaw plugins install @openclaw/line` |
-| Matrix | `openclaw plugins install @openclaw/matrix` |
-| Nostr | `openclaw plugins install @openclaw/nostr` |
-| Twitch | `openclaw plugins install @openclaw/twitch` |
-| Feishu / Lark | `openclaw plugins install @openclaw/feishu` |
-| Nextcloud Talk | `openclaw plugins install @openclaw/nextcloud-talk` |
-| Zalo | `openclaw plugins install @openclaw/zalo` |
-
-After installing a plugin, configure it through the Mirascope dashboard or in `openclaw.json` for self-hosted deployments.
+Beyond the built-in channels, additional platforms are available including Mattermost, Microsoft Teams, LINE, Matrix, Nostr, Twitch, Feishu/Lark, Nextcloud Talk, and Zalo. Ask your Claw to install them, or see the [OpenClaw documentation](https://docs.openclaw.ai) for details.
 
 ---
 
 ## Running Multiple Channels
 
-Connect as many channels as you want from your Claw's settings page. All channels connect simultaneously — your Claw maintains separate conversation context for each chat while sharing the same identity and memory.
+Connect as many channels as you want. All channels run simultaneously — your Claw maintains separate conversation context for each chat while sharing the same identity and memory.
 
 <Info>
-  Self-hosting? See the [Deployment guide](/docs/deployment) for configuring channels via `openclaw.json`.
+  Self-hosting? Claws are powered by [OpenClaw](https://github.com/openclaw/openclaw), an open source gateway. See the [Deployment guide](/docs/deployment) and [OpenClaw docs](https://docs.openclaw.ai) for self-hosted channel configuration.
 </Info>
