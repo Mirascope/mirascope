@@ -45,6 +45,7 @@ Claws                              ← NEW, front and center
   │   ├── soul.md
   │   ├── Skills
   │   └── Memory
+  ├── Channels (Discord, Telegram, Signal, etc.)
   ├── Deployment
   ├── Managing Claws
   ├── OpenClaw CLI
@@ -123,6 +124,69 @@ The root `index.mdx` should be restructured:
 4. **Search:** How does the restructure affect search indexing? Should we update `sitemap.xml` generation and add `canonical` tags during the migration?
 
 5. **SDK version selector:** Currently v1/v2 is handled via the nav. With the restructure, should the version selector be scoped to the SDK section only?
+
+## Concrete `_meta.ts` Structure
+
+The new Claws section would be defined as:
+
+```ts
+const claws: SectionSpec = {
+  slug: "claws",
+  label: "Claws",
+  children: [
+    { slug: "index", label: "Overview" },
+    { slug: "quickstart", label: "Quickstart" },
+    { slug: "configuration", label: "Configuration" },
+    { slug: "channels", label: "Channels" },
+    { slug: "skills", label: "Skills" },
+    { slug: "memory", label: "Memory & Context" },
+    { slug: "tools", label: "Tools" },
+    { slug: "deployment", label: "Deployment" },
+  ],
+};
+```
+
+The top-level spec becomes:
+
+```ts
+const docs: VersionSpec = {
+  sections: [welcome, claws, sdk, v1],
+};
+```
+
+Where `sdk` wraps the existing `learn`, `guides`, and `api` sections.
+
+## Redirect Table
+
+To avoid breaking existing URLs:
+
+| Old URL | New URL |
+|---------|---------|
+| `/docs/quickstart` | `/docs/sdk/python/quickstart` |
+| `/docs/learn/llm/*` | `/docs/sdk/python/llm/*` |
+| `/docs/learn/ops/*` | `/docs/sdk/python/ops/*` |
+| `/docs/guides/*` | `/docs/sdk/guides/*` |
+| `/docs/api/*` | `/docs/sdk/api/*` |
+| `/docs/why` | `/docs/sdk/why` |
+
+All old URLs should 301 redirect to their new locations.
+
+## Timeline Estimates
+
+- **Phase 1** (nav restructure + skeleton): 1-2 days
+- **Phase 2** (welcome page rewrite): half day
+- **Phase 3** (Claws content): 3-5 days
+- **Phase 4** (TS SDK slot): Sebastian's timeline
+- Phases 3 and 4 can run in parallel
+
+## Migration Risks
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Broken external links | SEO ranking loss, user confusion | 301 redirects for all moved URLs |
+| Search index disruption | Temporary ranking drop | Sitemap update + canonical tags |
+| Collision with Sebastian's TS work | Merge conflicts, duplicated effort | Coordinate on `_meta.ts` structure before Phase 4 |
+| Incomplete Claws content at launch | Empty placeholder pages look unprofessional | Phase 1 skeleton uses "Coming Soon" markers; don't link from nav until content exists |
 
 ## Technical Notes
 
