@@ -164,7 +164,8 @@ export function CreateOrganizationModal({
                 </div>
                 {selectedPlan !== "free" && (
                   <p className="text-xs text-muted-foreground">
-                    You&apos;ll be redirected to set up billing after creation.
+                    You&apos;ll be asked to set up payment after creating the
+                    organization.
                   </p>
                 )}
               </div>
