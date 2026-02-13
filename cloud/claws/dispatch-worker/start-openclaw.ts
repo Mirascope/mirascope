@@ -112,7 +112,7 @@ function rcloneConfigured(): boolean {
   if (exists) {
     try {
       const content = readFileSync(confPath, "utf8");
-      log("rclone config content:", { content });
+      log("rclone config size:", { bytes: content.length });
     } catch (err) {
       logError("Failed to read rclone config", err);
     }
