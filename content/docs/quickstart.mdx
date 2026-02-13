@@ -5,46 +5,23 @@ description: Deploy your first Claw and send your first message
 
 # Quickstart
 
-Deploy a Claw to Mirascope Cloud and chat with it in under 5 minutes.
+Create a Claw on Mirascope Cloud and send your first message in under 5 minutes.
 
-## 1. Create a Mirascope Account
+## 1. Sign Up
 
-Sign up at [mirascope.com/cloud](/cloud/login) to get your API key. Your key is generated during onboarding, or you can create one later in [Settings](/cloud/settings/api-keys).
+Go to [mirascope.com/login](/login) and create your account. After signing up, you'll be redirected to your organization dashboard.
 
-## 2. Install the CLI
+## 2. Create Your Claw
 
-```bash
-npm install -g mirascope
-```
+From the dashboard, click **Create Claw**. Give it a name and choose a model. Your Claw is created with default workspace files:
 
-## 3. Authenticate
+- **SOUL.md** — Your Claw's identity and personality
+- **AGENTS.md** — Behavioral instructions
+- **MEMORY.md** — Long-term memory (starts empty)
 
-```bash
-mirascope auth login
-```
+## 3. Define Its Identity
 
-This opens your browser to authorize the CLI with your Mirascope account.
-
-## 4. Create Your Claw
-
-```bash
-mirascope claw create my-first-claw
-```
-
-This scaffolds a new Claw workspace with default configuration files:
-
-```
-my-first-claw/
-├── SOUL.md          # Your Claw's identity and personality
-├── AGENTS.md        # Behavioral instructions
-├── MEMORY.md        # Long-term memory (starts empty)
-├── TOOLS.md         # Tool notes
-└── openclaw.json    # Gateway configuration
-```
-
-## 5. Define Your Claw's Identity
-
-Edit `SOUL.md` to give your Claw a personality:
+Open your Claw's **SOUL.md** in the editor and give it a personality:
 
 ```markdown
 # Soul
@@ -55,42 +32,22 @@ I specialize in answering questions clearly and helping with everyday tasks.
 When I'm unsure about something, I say so rather than guessing.
 ```
 
-## 6. Deploy
+This is free-form markdown — write whatever feels right. Your Claw reads this at the start of every session to know who it is.
 
-```bash
-mirascope claw deploy
-```
+## 4. Send Your First Message
 
-Your Claw is now running on Mirascope Cloud. The CLI will print your Claw's URL and status.
+Open the **Chat** tab and send a message. Your Claw will respond using the identity you defined in SOUL.md.
 
-## 7. Send Your First Message
-
-Open your Claw's dashboard in the browser:
-
-```bash
-mirascope claw open
-```
-
-Send a message in the chat interface. Your Claw will respond using the identity you defined in `SOUL.md`.
-
-## Connect a Channel
-
-Your Claw is running — now connect it to a messaging platform so you can chat from Discord, Telegram, or anywhere else.
-
-<Cards>
-  <Card title="Discord" href="/docs/channels">
-    Connect your Claw to a Discord server — the most common setup for developers.
-  </Card>
-  <Card title="All Channels" href="/docs/channels">
-    Telegram, WhatsApp, Signal, Slack, and more.
-  </Card>
-</Cards>
+That's it — you have a running Claw.
 
 ## What's Next
 
 <Cards>
+  <Card title="Connect Discord" href="/docs/channels">
+    Chat with your Claw on Discord — the most common setup for developers.
+  </Card>
   <Card title="Configuration" href="/docs/configuration">
-    Customize SOUL.md, AGENTS.md, memory, and gateway settings.
+    Customize SOUL.md, AGENTS.md, memory, and workspace settings.
   </Card>
   <Card title="Skills" href="/docs/skills">
     Add capabilities like web search, GitHub, coding, and more.
