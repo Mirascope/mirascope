@@ -1,6 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const WORDS = ["create", "listen", "learn", "grow"];
+const WORDS = [
+  "listen",
+  "create",
+  "learn",
+  "reason",
+  "grow",
+  "ponder",
+  "dream",
+  "wake up",
+];
 
 const TYPE_SPEED = 80;
 const DELETE_SPEED = 40;
@@ -104,20 +113,21 @@ export function TypingAnimation({ className }: { className?: string }) {
 
   return (
     <span className={className}>
-      {/* Fixed-width container to prevent layout shift. Sized to fit "create" (longest at 6 chars) */}
+      {/* Fixed-width container to prevent layout shift. Sized to fit "wake up" (longest at 7 chars) */}
       <span
         className="text-left text-mirple [text-shadow:0_1px_4px_rgba(0,0,0,0.15),0_2px_8px_rgba(0,0,0,0.1)]"
-        style={{ minWidth: "6ch", display: "inline" }}
+        style={{ minWidth: "7ch", display: "inline" }}
       >
         {displayText}
         <span
-          className="inline-block w-[0.08em] rounded-full translate-y-[0.05em] bg-mirple align-baseline ml-2"
+          className="font-handwriting text-mirple"
           style={{
-            height: "0.85em",
             opacity: cursorVisible ? 0.7 : 0,
             transition: "opacity 0.1s",
           }}
-        />
+        >
+          |
+        </span>
       </span>
     </span>
   );

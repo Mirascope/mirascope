@@ -26,24 +26,40 @@
 }
 
 :root {
-  --mirple: rgba(99, 102, 241, 1); /* Mirascope purple, same as #6366f1 */
+  --mirple: rgba(99, 102, 241, 1);
+  /* Mirascope purple, same as #6366f1 */
   --mirple-accent: color-mix(in srgb, var(--mirple) 60%, transparent);
-  --mirple-dark: rgba(84, 82, 220, 1); /* Darker purple */
+  --mirple-dark: rgba(84, 82, 220, 1);
+  /* Darker purple */
 
-  --text-2xs: clamp(0.5rem, 0.45rem + 0.4vw, 0.625rem); /* ~8-10px */
-  --text-xs: clamp(0.6rem, 0.55rem + 0.5vw, 0.8rem); /* ~10-13px */
-  --text-sm: clamp(0.7rem, 0.6rem + 0.75vw, 0.875rem); /* ~11-14px */
-  --text-base: clamp(0.825rem, 0.7rem + 0.875vw, 1rem); /* ~13-16px */
-  --text-lg: clamp(0.9rem, 0.75rem + 1vw, 1.125rem); /* ~14-18px */
-  --text-xl: clamp(1rem, 0.825rem + 1.125vw, 1.25rem); /* ~16-20px */
-  --text-2xl: clamp(1.125rem, 0.9rem + 1.5vw, 1.5rem); /* ~18-24px */
-  --text-3xl: clamp(1.25rem, 0.95rem + 1.75vw, 1.75rem); /* ~20-28px */
-  --text-4xl: clamp(1.5rem, 1.125rem + 2vw, 2.25rem); /* ~24-36px */
-  --text-5xl: clamp(1.75rem, 1.25rem + 2.5vw, 2.75rem); /* ~28-44px */
-  --text-6xl: clamp(2.25rem, 1.5rem + 3.5vw, 3.5rem); /* ~36-56px */
-  --text-7xl: clamp(2.75rem, 1.75rem + 4.5vw, 4.5rem); /* ~44-72px */
-  --text-8xl: clamp(3.5rem, 2.5rem + 5vw, 5.5rem); /* ~56-88px */
-  --text-9xl: clamp(4.5rem, 3rem + 6vw, 7rem); /* ~72-112px */
+  --text-2xs: clamp(0.5rem, 0.45rem + 0.4vw, 0.625rem);
+  /* ~8-10px */
+  --text-xs: clamp(0.6rem, 0.55rem + 0.5vw, 0.8rem);
+  /* ~10-13px */
+  --text-sm: clamp(0.7rem, 0.6rem + 0.75vw, 0.875rem);
+  /* ~11-14px */
+  --text-base: clamp(0.825rem, 0.7rem + 0.875vw, 1rem);
+  /* ~13-16px */
+  --text-lg: clamp(0.9rem, 0.75rem + 1vw, 1.125rem);
+  /* ~14-18px */
+  --text-xl: clamp(1rem, 0.825rem + 1.125vw, 1.25rem);
+  /* ~16-20px */
+  --text-2xl: clamp(1.125rem, 0.9rem + 1.5vw, 1.5rem);
+  /* ~18-24px */
+  --text-3xl: clamp(1.25rem, 0.95rem + 1.75vw, 1.75rem);
+  /* ~20-28px */
+  --text-4xl: clamp(1.5rem, 1.125rem + 2vw, 2.25rem);
+  /* ~24-36px */
+  --text-5xl: clamp(1.75rem, 1.25rem + 2.5vw, 2.75rem);
+  /* ~28-44px */
+  --text-6xl: clamp(2.25rem, 1.5rem + 3.5vw, 3.5rem);
+  /* ~36-56px */
+  --text-7xl: clamp(2.75rem, 1.75rem + 4.5vw, 4.5rem);
+  /* ~44-72px */
+  --text-8xl: clamp(3.5rem, 2.5rem + 5vw, 5.5rem);
+  /* ~56-88px */
+  --text-9xl: clamp(4.5rem, 3rem + 6vw, 7rem);
+  /* ~72-112px */
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -80,9 +96,12 @@
   --sidebar-ring: oklch(0.708 0 0);
 
   /* Header and footer height variables */
-  --header-height-base: 86px; /* Standard header without selector (measured) */
-  --header-height-with-selector: 140px; /* Header with sub-navbar for docs pages (measured) */
-  --header-height: var(--header-height-base); /* Default value */
+  --header-height-base: 86px;
+  /* Standard header without selector (measured) */
+  --header-height-with-selector: 140px;
+  /* Header with sub-navbar for docs pages (measured) */
+  --header-height: var(--header-height-base);
+  /* Default value */
   --footer-height: 52px;
 
   /* Nav text variables */
@@ -174,10 +193,12 @@
     color 0.2s ease,
     text-shadow 0.2s ease;
 }
+
 .nav-text:hover,
 .nav-text:hover * {
   cursor: pointer !important;
 }
+
 .nav-text:hover {
   color: var(--color-nav-text-hover);
   text-shadow: var(--color-nav-text-shadow-hover);
@@ -249,14 +270,15 @@
   --font-mono:
     "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
-  --font-handwriting: "Williams Handwriting", cursive;
-  --font-handwriting-descent: "Williams Handwriting Descent", cursive;
+  --font-handwriting: "Williams Handwriting", sans-serif;
+  --font-handwriting-descent: "Williams Handwriting Descent", sans-serif;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     /* Ported from website's body styles */
     @apply m-0 font-normal font-handwriting tracking-[0.01em] antialiased bg-background text-foreground;
