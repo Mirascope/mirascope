@@ -62,7 +62,7 @@ function SidebarLink({
     <Link
       to={to}
       params={params}
-      className={`flex items-center gap-3 px-3 py-2 text-base rounded-md text-foreground font-handwriting-descent ${
+      className={`flex items-center gap-3 px-3 py-2 text-base rounded-md text-foreground font-display ${
         isActive ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted"
       }`}
     >

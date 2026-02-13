@@ -50,7 +50,7 @@ export const Route = createRootRoute({
       },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Nunito+Sans:ital,wght@0,200..1000;1,200..1000&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap",
       },
       { rel: "stylesheet", href: globalsCss },
       {

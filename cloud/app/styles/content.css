@@ -80,7 +80,7 @@ mark,
 
 /* Headings and links use handwriting font */
 h1 {
-  font-family: var(--font-handwriting) !important;
+  font-family: var(--font-display) !important;
   @apply text-4xl;
 }
 
@@ -89,7 +89,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-handwriting) !important;
+  font-family: var(--font-display) !important;
 }
 
 /* Additional list styling */

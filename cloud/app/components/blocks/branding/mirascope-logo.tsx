@@ -50,10 +50,9 @@ const MirascopeLogo: React.FC<MirascopeLogoProps> = ({
           <span
             className={cn(
               selectedSize.text,
-              "mb-0 font-bold drop-shadow-md",
+              "mb-0 font-bold drop-shadow-md font-handwriting",
               lightText ? "text-white" : "text-mirple",
             )}
-            style={{ fontFamily: "'Williams Handwriting', sans-serif" }}
           >
             {MIRASCOPE.title}
           </span>
