@@ -15,13 +15,13 @@ export * from "@/api/api-keys.schemas";
 
 // Helpers to convert Date to ISO string for API responses.
 // Environment-scoped helpers for env-specific endpoints.
-export const toApiKey = (apiKey: EnvironmentPublicApiKey) => ({
+export const toEnvironmentApiKey = (apiKey: EnvironmentPublicApiKey) => ({
   ...apiKey,
   createdAt: apiKey.createdAt?.toISOString() ?? null,
   lastUsedAt: apiKey.lastUsedAt?.toISOString() ?? null,
 });
 
-export const toApiKeyCreateResponse = (
+export const toEnvironmentApiKeyCreateResponse = (
   apiKey: EnvironmentApiKeyCreateResponse,
 ) => ({
   ...apiKey,
@@ -49,7 +49,7 @@ export const listAllApiKeysHandler = (organizationId: string) =>
     return apiKeys.map(toApiKeyWithContext);
   });
 
-export const listApiKeysHandler = (
+export const listEnvironmentApiKeysHandler = (
   organizationId: string,
   projectId: string,
   environmentId: string,
@@ -64,10 +64,10 @@ export const listApiKeysHandler = (
         projectId,
         environmentId,
       });
-    return apiKeys.map(toApiKey);
+    return apiKeys.map(toEnvironmentApiKey);
   });
 
-export const createApiKeyHandler = (
+export const createEnvironmentApiKeyHandler = (
   organizationId: string,
   projectId: string,
   environmentId: string,
@@ -100,10 +100,10 @@ export const createApiKeyHandler = (
       distinctId: user.id,
     });
 
-    return toApiKeyCreateResponse(apiKey);
+    return toEnvironmentApiKeyCreateResponse(apiKey);
   });
 
-export const getApiKeyHandler = (
+export const getEnvironmentApiKeyHandler = (
   organizationId: string,
   projectId: string,
   environmentId: string,
@@ -120,10 +120,10 @@ export const getApiKeyHandler = (
         environmentId,
         apiKeyId,
       });
-    return toApiKey(apiKey);
+    return toEnvironmentApiKey(apiKey);
   });
 
-export const deleteApiKeyHandler = (
+export const deleteEnvironmentApiKeyHandler = (
   organizationId: string,
   projectId: string,
   environmentId: string,

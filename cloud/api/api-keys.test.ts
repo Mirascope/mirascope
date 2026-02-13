@@ -9,14 +9,14 @@ import type {
 } from "@/db/schema";
 
 import {
-  toApiKey,
-  toApiKeyCreateResponse,
+  toEnvironmentApiKey,
+  toEnvironmentApiKeyCreateResponse,
   toApiKeyWithContext,
 } from "@/api/api-keys.handlers";
 import { CreateApiKeyRequestSchema } from "@/api/api-keys.schemas";
 import { describe, it, expect, TestApiContext } from "@/tests/api";
 
-describe("toApiKey helper", () => {
+describe("toEnvironmentApiKey helper", () => {
   it("should convert dates to ISO strings", () => {
     const date = new Date("2025-01-01T00:00:00.000Z");
     const apiKey: EnvironmentPublicApiKey = {
@@ -30,7 +30,7 @@ describe("toApiKey helper", () => {
       deletedAt: null,
     };
 
-    const result = toApiKey(apiKey);
+    const result = toEnvironmentApiKey(apiKey);
 
     expect(result.createdAt).toBe("2025-01-01T00:00:00.000Z");
     expect(result.lastUsedAt).toBe("2025-01-01T00:00:00.000Z");
@@ -49,14 +49,14 @@ describe("toApiKey helper", () => {
       deletedAt: null,
     };
 
-    const result = toApiKey(apiKey);
+    const result = toEnvironmentApiKey(apiKey);
 
     expect(result.createdAt).toBeNull();
     expect(result.lastUsedAt).toBeNull();
   });
 });
 
-describe("toApiKeyCreateResponse helper", () => {
+describe("toEnvironmentApiKeyCreateResponse helper", () => {
   it("should convert dates to ISO strings", () => {
     const date = new Date("2025-01-01T00:00:00.000Z");
     const apiKey: EnvironmentApiKeyCreateResponse = {
@@ -71,7 +71,7 @@ describe("toApiKeyCreateResponse helper", () => {
       key: "mk_secret_key",
     };
 
-    const result = toApiKeyCreateResponse(apiKey);
+    const result = toEnvironmentApiKeyCreateResponse(apiKey);
 
     expect(result.createdAt).toBe("2025-01-01T00:00:00.000Z");
     expect(result.lastUsedAt).toBe("2025-01-01T00:00:00.000Z");
@@ -92,7 +92,7 @@ describe("toApiKeyCreateResponse helper", () => {
       key: "mk_secret_key",
     };
 
-    const result = toApiKeyCreateResponse(apiKey);
+    const result = toEnvironmentApiKeyCreateResponse(apiKey);
 
     expect(result.createdAt).toBeNull();
     expect(result.lastUsedAt).toBeNull();
@@ -100,7 +100,7 @@ describe("toApiKeyCreateResponse helper", () => {
   });
 });
 
-describe("toApiKeyWithContext helper", () => {
+describe("toEnvironmentApiKeyWithContext helper", () => {
   it("should convert dates to ISO strings", () => {
     const date = new Date("2025-01-01T00:00:00.000Z");
     const apiKey: EnvironmentApiKeyWithContext = {

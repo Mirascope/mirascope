@@ -11,10 +11,10 @@ import {
 import { MirascopeCloudApi } from "@/api/api";
 import {
   listAllApiKeysHandler,
-  listApiKeysHandler,
-  createApiKeyHandler,
-  getApiKeyHandler,
-  deleteApiKeyHandler,
+  listEnvironmentApiKeysHandler,
+  createEnvironmentApiKeyHandler,
+  getEnvironmentApiKeyHandler,
+  deleteEnvironmentApiKeyHandler,
 } from "@/api/api-keys.handlers";
 import {
   listClawMembersHandler,
@@ -357,14 +357,14 @@ const ApiKeysHandlersLive = HttpApiBuilder.group(
         listAllApiKeysHandler(path.organizationId),
       )
       .handle("list", ({ path }) =>
-        listApiKeysHandler(
+        listEnvironmentApiKeysHandler(
           path.organizationId,
           path.projectId,
           path.environmentId,
         ),
       )
       .handle("create", ({ path, payload }) =>
-        createApiKeyHandler(
+        createEnvironmentApiKeyHandler(
           path.organizationId,
           path.projectId,
           path.environmentId,
@@ -372,7 +372,7 @@ const ApiKeysHandlersLive = HttpApiBuilder.group(
         ),
       )
       .handle("get", ({ path }) =>
-        getApiKeyHandler(
+        getEnvironmentApiKeyHandler(
           path.organizationId,
           path.projectId,
           path.environmentId,
@@ -380,7 +380,7 @@ const ApiKeysHandlersLive = HttpApiBuilder.group(
         ),
       )
       .handle("delete", ({ path }) =>
-        deleteApiKeyHandler(
+        deleteEnvironmentApiKeyHandler(
           path.organizationId,
           path.projectId,
           path.environmentId,
