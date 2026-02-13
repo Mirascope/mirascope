@@ -127,6 +127,7 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
       apiModelName,
       args.messages,
       args.tools,
+      args.format,
       args.params,
       featureInfo,
     );
@@ -170,6 +171,7 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
       apiModelName,
       args.messages,
       args.tools,
+      args.format,
       args.params,
       featureInfo,
     );
@@ -211,6 +213,7 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
       apiModelName,
       args.messages,
       args.tools,
+      args.format,
       args.params,
       featureInfo,
     );
@@ -255,6 +258,7 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
       apiModelName,
       args.messages,
       args.tools,
+      args.format,
       args.params,
       featureInfo,
     );

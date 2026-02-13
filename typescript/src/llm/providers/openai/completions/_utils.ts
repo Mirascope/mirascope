@@ -23,6 +23,7 @@ import type {
   Text,
   ToolCall,
 } from "@/llm/content";
+import type { Format } from "@/llm/formatting";
 import type { AssistantMessage, Message } from "@/llm/messages";
 import type { Params } from "@/llm/models";
 import type { CompletionsModelFeatureInfo } from "@/llm/providers/openai/completions/_utils/feature-info";
@@ -428,6 +429,7 @@ function encodeAssistantMessage(
  * @param modelId - The model ID to use
  * @param messages - The messages to send
  * @param tools - Optional tools to make available to the model
+ * @param format - Optional format for structured output
  * @param params - Optional parameters (temperature, maxTokens, etc.)
  * @param featureInfo - Optional feature info for model capability detection
  */
@@ -435,6 +437,7 @@ export function buildRequestParams(
   modelId: OpenAIModelId,
   messages: readonly Message[],
   tools?: Tools,
+  format?: Format | null,
   params: Params = {},
   featureInfo?: CompletionsModelFeatureInfo,
 ): ChatCompletionCreateParamsNonStreaming {
@@ -457,6 +460,9 @@ export function buildRequestParams(
       messages: openaiMessages,
     };
 
+    // Collect all tools (explicit tools + format tool)
+    const allEncodedTools: ChatCompletionCreateParamsNonStreaming["tools"] = [];
+
     /* v8 ignore start - tool encoding will be tested via e2e */
     if (tools !== undefined && tools.length > 0) {
       // Filter out provider tools (not supported by Completions API)
@@ -473,8 +479,40 @@ export function buildRequestParams(
         regularTools.push(tool);
       }
       if (regularTools.length > 0) {
-        requestParams.tools = encodeTools(regularTools);
+        allEncodedTools.push(...encodeTools(regularTools));
       }
+    }
+
+    // Handle format-based tool and instructions
+    if (format) {
+      if (format.mode === "tool") {
+        const formatToolSchema = format.createToolSchema();
+        allEncodedTools.push(encodeToolSchema(formatToolSchema));
+
+        // Set tool_choice to force the format tool
+        if (tools && tools.length > 0) {
+          // When we have other tools, use 'required' to require a tool call
+          requestParams.tool_choice = "required";
+        } else {
+          // When only format tool, force that specific tool
+          requestParams.tool_choice = {
+            type: "function",
+            function: { name: formatToolSchema.name },
+          };
+        }
+      }
+
+      // Add formatting instructions as a system message
+      if (format.formattingInstructions) {
+        openaiMessages.unshift({
+          role: "system",
+          content: format.formattingInstructions,
+        });
+      }
+    }
+
+    if (allEncodedTools.length > 0) {
+      requestParams.tools = allEncodedTools;
     }
     /* v8 ignore stop */
 
