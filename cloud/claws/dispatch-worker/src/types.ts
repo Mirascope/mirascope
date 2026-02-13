@@ -23,6 +23,9 @@ export interface DispatchEnv {
 
   /** Site URL for CORS origin checking (e.g. "https://mirascope.com") */
   SITE_URL: string;
+
+  /** Enable verbose WebSocket proxy logging (set to any truthy value) */
+  DEBUG_WS?: string;
 }
 
 /**

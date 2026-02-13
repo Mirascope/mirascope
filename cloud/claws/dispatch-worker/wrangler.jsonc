@@ -54,6 +54,7 @@
   "env": {
     "dev": {
       "name": "claw-dispatch-worker-dev",
+      "vars": { "DEBUG_WS": "1" },
       "services": [{ "binding": "MIRASCOPE_CLOUD", "service": "dev" }],
       "route": {
         "pattern": "openclaw.dev.mirascope.com",
@@ -85,6 +86,7 @@
     },
     "staging": {
       "name": "claw-dispatch-worker-staging",
+      "vars": { "DEBUG_WS": "1" },
       "services": [{ "binding": "MIRASCOPE_CLOUD", "service": "staging" }],
       "route": {
         "pattern": "openclaw.staging.mirascope.com",
