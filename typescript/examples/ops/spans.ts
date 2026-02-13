@@ -81,3 +81,4 @@ if (sessionId) {
     console.log("Current session:", ops.currentSession());
   });
 }
+await ops.forceFlush();

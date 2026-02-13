@@ -60,3 +60,4 @@ await ops.session(
     console.log("Support response:", response.text());
   },
 );
+await ops.forceFlush();
