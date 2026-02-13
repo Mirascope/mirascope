@@ -68,6 +68,71 @@ export class PaymentMethods {
   }
 
   /**
+   * Creates a Stripe SetupIntent without a customer.
+   *
+   * Used during paid org creation: verifies the card and runs 3DS before
+   * the org exists. The resulting payment method can be attached to the
+   * new customer after org creation.
+   *
+   * @returns Client secret for frontend SetupElement
+   * @throws StripeError - If SetupIntent creation fails
+   */
+  createSetupIntentWithoutCustomer(): Effect.Effect<
+    { clientSecret: string },
+    StripeError,
+    Stripe
+  > {
+    return Effect.gen(function* () {
+      const stripe = yield* Stripe;
+
+      const setupIntent = yield* stripe.setupIntents.create({
+        usage: "off_session",
+        payment_method_types: ["card", "link"],
+      });
+
+      if (!setupIntent.client_secret) {
+        return yield* Effect.fail(
+          new StripeError({
+            message: "SetupIntent created but no client secret returned",
+          }),
+        );
+      }
+
+      return { clientSecret: setupIntent.client_secret };
+    });
+  }
+
+  /**
+   * Attaches a payment method to a customer and sets it as the default
+   * for invoices.
+   *
+   * Used after org creation to attach a pre-verified payment method
+   * from a customerless SetupIntent.
+   *
+   * @param stripeCustomerId - The Stripe customer ID
+   * @param paymentMethodId - The verified payment method ID
+   * @throws StripeError - If attaching or updating fails
+   */
+  attachAndSetDefault(
+    stripeCustomerId: string,
+    paymentMethodId: string,
+  ): Effect.Effect<void, StripeError, Stripe> {
+    return Effect.gen(function* () {
+      const stripe = yield* Stripe;
+
+      yield* stripe.paymentMethods.attach(paymentMethodId, {
+        customer: stripeCustomerId,
+      });
+
+      yield* stripe.customers.update(stripeCustomerId, {
+        invoice_settings: {
+          default_payment_method: paymentMethodId,
+        },
+      });
+    });
+  }
+
+  /**
    * Gets the default payment method for a customer.
    *
    * Priority:

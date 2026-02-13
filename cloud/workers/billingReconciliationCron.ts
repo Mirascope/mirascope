@@ -23,12 +23,7 @@ import { and, eq, gt, inArray, isNull, lte, or } from "drizzle-orm";
 import { Effect, Layer } from "effect";
 
 import { DrizzleORM } from "@/db/client";
-import {
-  creditReservations,
-  organizationMemberships,
-  organizations,
-  routerRequests,
-} from "@/db/schema";
+import { creditReservations, organizations, routerRequests } from "@/db/schema";
 import { DatabaseError } from "@/errors";
 import { Stripe } from "@/payments/client";
 import { Payments } from "@/payments/service";
@@ -516,143 +511,6 @@ export const processAutoReloads = Effect.gen(function* () {
 });
 
 // =============================================================================
-// Orphaned Organization Cleanup
-// =============================================================================
-
-/**
- * Grace period before cleaning up orphaned organizations (1 hour).
- * Gives users time to complete payment if the upgrade dialog was interrupted.
- */
-const ORPHAN_GRACE_PERIOD_MS = 60 * 60 * 1000;
-
-/**
- * Cleans up orphaned organizations from failed paid org creation.
- *
- * When a user creates a paid org but payment fails, the saga pattern in the
- * handler rolls back immediately. However, edge cases (crashes, timeouts) can
- * leave orphaned free-plan orgs that were intended to be paid.
- *
- * This detects users who own multiple free-plan orgs (which should never happen
- * under normal operation) and removes the newest ones, keeping only the oldest
- * free org per user.
- */
-export const cleanupOrphanedOrganizations = Effect.gen(function* () {
-  const client = yield* DrizzleORM;
-  const payments = yield* Payments;
-  const graceThreshold = new Date(Date.now() - ORPHAN_GRACE_PERIOD_MS);
-
-  // Find users who own multiple organizations
-  const ownerships = yield* client
-    .select({
-      userId: organizationMemberships.memberId,
-      organizationId: organizations.id,
-      stripeCustomerId: organizations.stripeCustomerId,
-      createdAt: organizations.createdAt,
-    })
-    .from(organizationMemberships)
-    .innerJoin(
-      organizations,
-      eq(organizationMemberships.organizationId, organizations.id),
-    )
-    .where(
-      and(
-        eq(organizationMemberships.role, "OWNER"),
-        lte(organizations.createdAt, graceThreshold),
-      ),
-    )
-    .pipe(
-      Effect.mapError(
-        (error) =>
-          new DatabaseError({
-            message:
-              "Failed to query organization ownerships for orphan cleanup",
-            cause: error,
-          }),
-      ),
-    );
-
-  // Group by user
-  const byUser = new Map<
-    string,
-    {
-      organizationId: string;
-      stripeCustomerId: string;
-      createdAt: Date | null;
-    }[]
-  >();
-  for (const row of ownerships) {
-    const list = byUser.get(row.userId) ?? [];
-    list.push({
-      organizationId: row.organizationId,
-      stripeCustomerId: row.stripeCustomerId,
-      createdAt: row.createdAt,
-    });
-    byUser.set(row.userId, list);
-  }
-
-  // For users with multiple orgs, check for multiple free-plan orgs
-  for (const [userId, orgs] of byUser) {
-    if (orgs.length < 2) continue;
-
-    const freeOrgs: typeof orgs = [];
-    for (const org of orgs) {
-      const subscription = yield* payments.customers.subscriptions
-        .get(org.stripeCustomerId)
-        .pipe(
-          Effect.map((s) => s.currentPlan),
-          Effect.catchAll(() => Effect.succeed("free" as const)),
-        );
-      if (subscription === "free") {
-        freeOrgs.push(org);
-      }
-    }
-
-    if (freeOrgs.length <= 1) continue;
-
-    // Keep the oldest free org, delete the rest
-    freeOrgs.sort(
-      (a, b) => (a.createdAt?.getTime() ?? 0) - (b.createdAt?.getTime() ?? 0),
-    );
-    const toDelete = freeOrgs.slice(1);
-
-    for (const org of toDelete) {
-      yield* Effect.gen(function* () {
-        // Cancel subscriptions
-        yield* payments.customers.subscriptions
-          .cancel(org.stripeCustomerId)
-          .pipe(Effect.catchAll(() => Effect.void));
-
-        // Delete org from DB (cascade handles memberships/audit)
-        yield* client
-          .delete(organizations)
-          .where(eq(organizations.id, org.organizationId))
-          .pipe(
-            Effect.mapError(
-              (error) =>
-                new DatabaseError({
-                  message: `Failed to delete orphaned organization ${org.organizationId}`,
-                  cause: error,
-                }),
-            ),
-          );
-
-        console.log(
-          `[billingReconciliationCron] Cleaned up orphaned organization ${org.organizationId} for user ${userId}`,
-        );
-      }).pipe(
-        Effect.catchAll((error) => {
-          console.error(
-            `[billingReconciliationCron] Failed to clean up orphaned org ${org.organizationId}:`,
-            error,
-          );
-          return Effect.succeed(undefined);
-        }),
-      );
-    }
-  }
-});
-
-// =============================================================================
 // Main Reconciliation Program
 // =============================================================================
 
@@ -666,7 +524,6 @@ export const cleanupOrphanedOrganizations = Effect.gen(function* () {
  * 4. Detect stale records (log warning)
  * 5. Detect invalid state (log critical warning)
  * 6. Process auto-reloads for eligible organizations
- * 7. Clean up orphaned organizations from failed paid creation
  */
 export const reconcileBilling = Effect.gen(function* () {
   // Step 1: Reconcile successful requests (charge + release)
@@ -686,9 +543,6 @@ export const reconcileBilling = Effect.gen(function* () {
 
   // Step 6: Process auto-reloads for eligible organizations
   yield* processAutoReloads;
-
-  // Step 7: Clean up orphaned organizations from failed paid creation
-  yield* cleanupOrphanedOrganizations;
 });
 
 // =============================================================================
@@ -700,13 +554,6 @@ export default {
    * Scheduled event handler for billing reconciliation.
    *
    * Runs all reconciliation steps in sequence:
-   * 1. Reconcile successful requests (charge + release)
-   * 2. Reconcile failed requests (release only)
-   * 3. Handle pending + expired (mark failure + release)
-   * 4. Detect stale records (log warning)
-   * 5. Detect invalid state (log critical warning)
-   * 6. Process auto-reloads for eligible organizations
-   *
    * @param _event - Cloudflare scheduled event (unused, but required by interface)
    * @param env - Cloudflare Workers environment bindings
    */

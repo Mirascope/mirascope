@@ -1124,6 +1124,9 @@ export class MockPayments {
           }
           return Effect.succeed(createTestPaymentMethod(id));
         },
+        attach: (id: string, _params: { customer: string }) =>
+          Effect.succeed(createTestPaymentMethod(id)),
+        detach: (id: string) => Effect.succeed(createTestPaymentMethod(id)),
       },
       invoices: {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1437,12 +1440,12 @@ export const MockStripe = Layer.succeed(Stripe, {
       }),
   },
   setupIntents: {
-    create: (params: { customer: string }) =>
+    create: (params?: { customer?: string }) =>
       Effect.succeed({
         id: `seti_mock_${crypto.randomUUID()}`,
         object: "setup_intent" as const,
         client_secret: `seti_mock_${crypto.randomUUID()}_secret_${crypto.randomUUID()}`,
-        customer: params.customer,
+        customer: params?.customer,
       }),
   },
   paymentMethods: {
@@ -1453,6 +1456,13 @@ export const MockStripe = Layer.succeed(Stripe, {
         has_more: false,
       }),
     retrieve: (id: string) =>
+      Effect.succeed({
+        id,
+        object: "payment_method" as const,
+        card: DEFAULT_TEST_CARD,
+        type: "card" as const,
+      }),
+    attach: (id: string) =>
       Effect.succeed({
         id,
         object: "payment_method" as const,

@@ -67,6 +67,7 @@ import {
 import {
   listOrganizationsHandler,
   createOrganizationHandler,
+  createOrgSetupIntentHandler,
   getOrganizationHandler,
   updateOrganizationHandler,
   deleteOrganizationHandler,
@@ -177,6 +178,7 @@ const OrganizationsHandlersLive = HttpApiBuilder.group(
     handlers
       .handle("list", () => listOrganizationsHandler)
       .handle("create", ({ payload }) => createOrganizationHandler(payload))
+      .handle("createOrgSetupIntent", () => createOrgSetupIntentHandler)
       .handle("get", ({ path }) => getOrganizationHandler(path.id))
       .handle("update", ({ path, payload }) =>
         updateOrganizationHandler(path.id, payload),
