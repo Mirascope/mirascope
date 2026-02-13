@@ -413,9 +413,16 @@ describe.sequential("Claws API", (it) => {
       }),
   );
 
-  // NOTE: restart router-level test skipped — ParseError when decoding 500
-  // response body (Schema.TaggedError shape mismatch). Handler-level tests
-  // below cover authorize + deployment.restart logic.
+  it.effect(
+    "POST /organizations/:organizationId/claws/:clawId/restart - restart claw",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        yield* client.claws.restart({
+          path: { organizationId: org.id, clawId: claw.id },
+        });
+      }),
+  );
 
   it.effect(
     "DELETE /organizations/:organizationId/claws/:clawId - delete claw",

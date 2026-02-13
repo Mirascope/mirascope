@@ -273,7 +273,10 @@ describe("LiveCloudflareR2Service", () => {
 
         expect(result.tokenId).toBe("token-id-123");
         expect(result.accessKeyId).toBe("token-id-123");
-        expect(result.secretAccessKey).toBe("secret-value-abc");
+        // Implementation SHA-256 hashes the raw token value per Cloudflare R2 docs
+        expect(result.secretAccessKey).toBe(
+          "7df84b718784bcfcddb5505a057753421a32ff3a82ea8535bdcf8dcf9814c6e1",
+        );
 
         const call = requestSpy.mock.calls[0][0] as CloudflareRequestOptions;
         expect(call.method).toBe("POST");
