@@ -11,10 +11,11 @@ import v1 from "./v1/_meta";
 // Claws section - landing page for /docs
 // slug "index" means content lives at docs root level
 const claws: SectionSpec = {
-  slug: "index",
+  slug: "claws",
   label: "Claws",
   children: [
     { slug: "index", label: "Welcome" },
+    { slug: "why", label: "Why Claws?" },
     { slug: "quickstart", label: "Quickstart" },
     { slug: "configuration", label: "Configuration" },
     { slug: "channels", label: "Channels" },
