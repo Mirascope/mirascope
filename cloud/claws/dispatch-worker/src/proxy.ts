@@ -90,6 +90,7 @@ export async function ensureRcloneConfig(
   ].join("\n");
 
   // Create rclone config directory and files
+  await sandbox.mkdir("/root/.config/rclone", { recursive: true });
   await sandbox.writeFile(RCLONE_CONF_PATH, rcloneConfig);
   await sandbox.writeFile(CONFIGURED_FLAG, "");
 
