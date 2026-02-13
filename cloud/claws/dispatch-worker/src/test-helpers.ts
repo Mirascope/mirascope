@@ -1,10 +1,10 @@
 /**
- * Shared test helpers: mock factories for Sandbox, Process, and OpenClawConfig.
+ * Shared test helpers: mock factories for Sandbox, Process, and OpenClawDeployConfig.
  */
 
 import { vi } from "vitest";
 
-import type { OpenClawConfig } from "./types";
+import type { OpenClawDeployConfig, DispatchEnv } from "./types";
 
 /**
  * Minimal mock of the Process interface from @cloudflare/sandbox.
@@ -67,11 +67,11 @@ export function createMockSandbox(
 }
 
 /**
- * Create a minimal valid OpenClawConfig for testing.
+ * Create a minimal valid OpenClawDeployConfig for testing.
  */
 export function createMockConfig(
-  overrides: Partial<OpenClawConfig> = {},
-): OpenClawConfig {
+  overrides: Partial<OpenClawDeployConfig> = {},
+): OpenClawDeployConfig {
   return {
     clawId: "claw-123",
     clawSlug: "test-claw",
@@ -89,6 +89,21 @@ export function createMockConfig(
       ANTHROPIC_BASE_URL: "https://router.mirascope.com/v1",
       OPENCLAW_GATEWAY_TOKEN: "gw-token-123",
     },
+    ...overrides,
+  };
+}
+
+/**
+ * Create a minimal valid DispatchEnv for testing.
+ */
+export function createMockEnv(
+  overrides: Partial<DispatchEnv> = {},
+): DispatchEnv {
+  return {
+    Sandbox: {} as unknown as DurableObjectNamespace,
+    MIRASCOPE_CLOUD: {} as unknown as Fetcher,
+    CLOUDFLARE_ACCOUNT_ID: "test-account-id",
+    SITE_URL: "https://mirascope.com",
     ...overrides,
   };
 }

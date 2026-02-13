@@ -7,6 +7,7 @@ import {
   createMockSandbox,
   createMockProcess,
   createMockConfig,
+  createMockEnv,
 } from "./test-helpers";
 
 describe("buildEnvVars", () => {
@@ -19,13 +20,15 @@ describe("buildEnvVars", () => {
         MIRASCOPE_API_KEY: "mk-test",
       },
     });
+    const env = createMockEnv();
 
-    const result = buildEnvVars(config);
+    const result = buildEnvVars(config, env);
     expect(result).toEqual({
       ANTHROPIC_API_KEY: "sk-test",
       ANTHROPIC_BASE_URL: "https://router.example.com",
       OPENCLAW_GATEWAY_TOKEN: "gw-tok",
       MIRASCOPE_API_KEY: "mk-test",
+      CLOUDFLARE_ACCOUNT_ID: "test-account-id",
       R2_ACCESS_KEY_ID: "test-access-key",
       R2_SECRET_ACCESS_KEY: "test-secret-key",
       R2_BUCKET_NAME: "claw-claw-123",
@@ -43,21 +46,38 @@ describe("buildEnvVars", () => {
         DISCORD_BOT_TOKEN: undefined,
       },
     });
+    const env = createMockEnv();
 
-    const result = buildEnvVars(config);
+    const result = buildEnvVars(config, env);
     expect(result).not.toHaveProperty("TELEGRAM_BOT_TOKEN");
     expect(result).not.toHaveProperty("DISCORD_BOT_TOKEN");
-    expect(Object.keys(result)).toHaveLength(7);
+    expect(Object.keys(result)).toHaveLength(8);
   });
 
   it("includes R2 credentials even with empty containerEnv", () => {
     const config = createMockConfig({ containerEnv: {} });
-    const result = buildEnvVars(config);
+    const env = createMockEnv();
+    const result = buildEnvVars(config, env);
     expect(result).toEqual({
+      CLOUDFLARE_ACCOUNT_ID: "test-account-id",
       R2_ACCESS_KEY_ID: "test-access-key",
       R2_SECRET_ACCESS_KEY: "test-secret-key",
       R2_BUCKET_NAME: "claw-claw-123",
     });
+  });
+
+  it("includes CLOUDFLARE_ACCOUNT_ID from dispatch worker env", () => {
+    const config = createMockConfig({ containerEnv: {} });
+    const env = createMockEnv({ CLOUDFLARE_ACCOUNT_ID: "my-cf-account" });
+    const result = buildEnvVars(config, env);
+    expect(result).toHaveProperty("CLOUDFLARE_ACCOUNT_ID", "my-cf-account");
+  });
+
+  it("omits CLOUDFLARE_ACCOUNT_ID if not set in dispatch worker env", () => {
+    const config = createMockConfig({ containerEnv: {} });
+    const env = createMockEnv({ CLOUDFLARE_ACCOUNT_ID: undefined });
+    const result = buildEnvVars(config, env);
+    expect(result).not.toHaveProperty("CLOUDFLARE_ACCOUNT_ID");
   });
 });
 

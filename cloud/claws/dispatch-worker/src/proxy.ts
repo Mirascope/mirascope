@@ -9,7 +9,7 @@
 
 import type { Sandbox, Process } from "@cloudflare/sandbox";
 
-import type { OpenClawDeployConfig } from "./types";
+import type { DispatchEnv, OpenClawDeployConfig } from "./types";
 
 import { GATEWAY_PORT, STARTUP_TIMEOUT_MS } from "./config";
 
@@ -54,6 +54,7 @@ export async function findGatewayProcess(
  */
 export function buildEnvVars(
   config: OpenClawDeployConfig,
+  env: DispatchEnv,
 ): Record<string, string> {
   const envVars: Record<string, string> = {};
 
@@ -63,6 +64,10 @@ export function buildEnvVars(
       envVars[key] = value;
     }
   }
+
+  // Infrastructure env vars from the dispatch worker itself
+  if (env.CLOUDFLARE_ACCOUNT_ID)
+    envVars.CLOUDFLARE_ACCOUNT_ID = env.CLOUDFLARE_ACCOUNT_ID;
 
   // R2 persistence credentials (used by rclone in start-openclaw.ts)
   if (config.r2.accessKeyId) envVars.R2_ACCESS_KEY_ID = config.r2.accessKeyId;
@@ -83,6 +88,7 @@ export function buildEnvVars(
 export async function ensureGateway(
   sandbox: Sandbox,
   config: OpenClawDeployConfig,
+  env: DispatchEnv,
 ): Promise<Process> {
   // Check for existing process
   const existing = await findGatewayProcess(sandbox);
@@ -113,7 +119,7 @@ export async function ensureGateway(
 
   // Start new gateway
   console.log("[proxy] Starting new gateway for claw:", config.clawId);
-  const envVars = buildEnvVars(config);
+  const envVars = buildEnvVars(config, env);
   const command = "bun /opt/openclaw/start-openclaw.ts";
 
   console.log("[proxy] Env var keys:", Object.keys(envVars));
