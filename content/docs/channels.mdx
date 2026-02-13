@@ -11,19 +11,18 @@ You can run **multiple channels simultaneously** — configure as many as you ne
 
 Channel configuration lives in `openclaw.json` under `channels.<name>`:
 
-```json5
-// ~/.openclaw/openclaw.json
+```json
 {
-  channels: {
-    discord: {
-      enabled: true,
-      token: "YOUR_DISCORD_BOT_TOKEN",
+  "channels": {
+    "discord": {
+      "enabled": true,
+      "token": "YOUR_DISCORD_BOT_TOKEN"
     },
-    telegram: {
-      enabled: true,
-      token: "YOUR_TELEGRAM_BOT_TOKEN",
-    },
-  },
+    "telegram": {
+      "enabled": true,
+      "token": "YOUR_TELEGRAM_BOT_TOKEN"
+    }
+  }
 }
 ```
 
@@ -53,15 +52,14 @@ Never share your bot token or commit it to version control. Treat it like a pass
 
 ### Step 3: Add the Token to Your Config
 
-```json5
-// ~/.openclaw/openclaw.json
+```json
 {
-  channels: {
-    discord: {
-      enabled: true,
-      token: "YOUR_DISCORD_BOT_TOKEN",
-    },
-  },
+  "channels": {
+    "discord": {
+      "enabled": true,
+      "token": "YOUR_DISCORD_BOT_TOKEN"
+    }
+  }
 }
 ```
 
@@ -104,15 +102,14 @@ Telegram is the simplest channel to set up — just a bot token from BotFather.
 
 ### Step 2: Add the Token to Your Config
 
-```json5
-// ~/.openclaw/openclaw.json
+```json
 {
-  channels: {
-    telegram: {
-      enabled: true,
-      token: "YOUR_TELEGRAM_BOT_TOKEN",
-    },
-  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "token": "YOUR_TELEGRAM_BOT_TOKEN"
+    }
+  }
 }
 ```
 
@@ -156,17 +153,15 @@ This prevents strangers from interacting with your claw without your approval.
 
 You can configure an allowlist to pre-approve specific users, skipping the pairing flow:
 
-```json5
-// ~/.openclaw/openclaw.json
+```json
 {
-  channels: {
-    discord: {
-      enabled: true,
-      token: "YOUR_TOKEN",
-    },
+  "channels": {
+    "discord": {
+      "enabled": true,
+      "token": "YOUR_TOKEN"
+    }
   },
-  // Allowlist specific user IDs
-  allowlist: ["USER_ID_1", "USER_ID_2"],
+  "allowlist": ["USER_ID_1", "USER_ID_2"]
 }
 ```
 
@@ -178,19 +173,21 @@ Guild and group channels don't require pairing — they get isolated sessions au
 
 ## Plugin Channels
 
-Beyond the built-in channels, additional platforms are available as **plugins** that can be installed separately:
+Beyond the built-in channels, additional platforms are available as **plugins**:
 
-- Mattermost
-- Microsoft Teams
-- LINE
-- Matrix
-- Nostr
-- Twitch
-- Feishu / Lark
-- Nextcloud Talk
-- Zalo
+| Plugin | Install Command |
+|---|---|
+| Mattermost | `openclaw plugins install @openclaw/mattermost` |
+| Microsoft Teams | `openclaw plugins install @openclaw/msteams` |
+| LINE | `openclaw plugins install @openclaw/line` |
+| Matrix | `openclaw plugins install @openclaw/matrix` |
+| Nostr | `openclaw plugins install @openclaw/nostr` |
+| Twitch | `openclaw plugins install @openclaw/twitch` |
+| Feishu / Lark | `openclaw plugins install @openclaw/feishu` |
+| Nextcloud Talk | `openclaw plugins install @openclaw/nextcloud-talk` |
+| Zalo | `openclaw plugins install @openclaw/zalo` |
 
-Plugin channels follow the same configuration pattern — add them under `channels.<name>` in your `openclaw.json` after installing the plugin.
+After installing, configure under `channels.<name>` in your `openclaw.json` and restart the gateway.
 
 ---
 
@@ -198,21 +195,21 @@ Plugin channels follow the same configuration pattern — add them under `channe
 
 One of OpenClaw's strengths is running multiple channels at once. Simply configure each channel in your `openclaw.json` and start the gateway:
 
-```json5
+```json
 {
-  channels: {
-    discord: {
-      enabled: true,
-      token: "DISCORD_TOKEN",
+  "channels": {
+    "discord": {
+      "enabled": true,
+      "token": "DISCORD_TOKEN"
     },
-    telegram: {
-      enabled: true,
-      token: "TELEGRAM_TOKEN",
+    "telegram": {
+      "enabled": true,
+      "token": "TELEGRAM_TOKEN"
     },
-    whatsapp: {
-      enabled: true,
-    },
-  },
+    "whatsapp": {
+      "enabled": true
+    }
+  }
 }
 ```
 
