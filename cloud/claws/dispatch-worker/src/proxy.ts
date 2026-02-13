@@ -114,7 +114,7 @@ export async function ensureGateway(
   // Start new gateway
   console.log("[proxy] Starting new gateway for claw:", config.clawId);
   const envVars = buildEnvVars(config);
-  const command = "bun /usr/local/bin/start-openclaw.ts";
+  const command = "bun /opt/openclaw/start-openclaw.ts";
 
   console.log("[proxy] Env var keys:", Object.keys(envVars));
 

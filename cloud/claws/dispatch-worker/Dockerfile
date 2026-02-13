@@ -47,7 +47,8 @@ RUN mkdir -p /root/.openclaw \
     && mkdir -p /root/.config/rclone
 
 # Copy startup script
-COPY start-openclaw.ts /usr/local/bin/start-openclaw.ts
+COPY start-openclaw.ts /opt/openclaw/start-openclaw.ts
+COPY src/ /opt/openclaw/src/
 
 # Set working directory
 WORKDIR /root/.openclaw/workspace
