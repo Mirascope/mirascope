@@ -21,6 +21,6 @@ function CloudRedirect() {
   return <Navigate to="/onboarding" replace />;
 }
 
-export const Route = createFileRoute("/cloud")({
+export const Route = createFileRoute("/org-redirect")({
   component: CloudRedirect,
 });

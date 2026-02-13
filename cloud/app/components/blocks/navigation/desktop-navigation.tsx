@@ -19,10 +19,10 @@ const NavLink = ({ href, children, className, onClick }: NavLinkProps) => {
   const currentPath = router.location.pathname;
 
   // Check if this link is active
-  // For /cloud, match any cloud app route (/{orgSlug}/...)
+  // For /org-redirect, match any cloud app route (/{orgSlug}/...)
   // For others, match exact path or paths that start with the href
   const isActive =
-    href === "/cloud"
+    href === "/org-redirect"
       ? isCloudAppRoute(currentPath)
       : currentPath === href || currentPath.startsWith(href + "/");
 
@@ -56,7 +56,7 @@ export default function DesktopNavigation({
       <NavLink href="/docs">Docs</NavLink>
       <NavLink href="/blog">Blog</NavLink>
       <NavLink href="/pricing">Pricing</NavLink>
-      <NavLink href="/cloud">Cloud</NavLink>
+      <NavLink href="/org-redirect">Dashboard</NavLink>
     </div>
   );
 }

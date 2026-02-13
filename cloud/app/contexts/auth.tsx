@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // New users go through onboarding
         void navigate({ to: "/onboarding", replace: true });
       } else {
-        void navigate({ to: "/cloud", replace: true });
+        void navigate({ to: "/org-redirect", replace: true });
       }
     }
   }, [navigate, queryClient, analytics]);

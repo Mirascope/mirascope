@@ -60,7 +60,7 @@ function AcceptInvitationPage() {
             params: { orgSlug: joinedOrg.slug },
           });
         } else {
-          void navigate({ to: "/cloud" });
+          void navigate({ to: "/org-redirect" });
         }
       }, 1000);
     } catch (error) {

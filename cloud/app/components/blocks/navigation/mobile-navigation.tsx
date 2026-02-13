@@ -40,7 +40,7 @@ export default function MobileNavigation({
 
   // Helper function to check if a link is active
   const isLinkActive = (href: string) => {
-    if (href === "/cloud") {
+    if (href === "/org-redirect") {
       return isCloudAppRoute(currentPath);
     }
     return currentPath === href || currentPath.startsWith(href + "/");
@@ -134,14 +134,14 @@ export default function MobileNavigation({
         </Link>
 
         <Link
-          to="/cloud"
+          to="/org-redirect"
           className={cn(
             NAV_LINK_STYLES.mobile,
-            isLinkActive("/cloud") && NAV_LINK_STYLES.mobileActive,
+            isLinkActive("/org-redirect") && NAV_LINK_STYLES.mobileActive,
           )}
           onClick={onClose}
         >
-          Cloud
+          Dashboard
         </Link>
       </div>
     </div>

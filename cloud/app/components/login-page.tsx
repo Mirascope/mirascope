@@ -101,7 +101,7 @@ export function LoginPage() {
 
   useEffect(() => {
     if (!isLoading && user) {
-      void navigate({ to: "/cloud", replace: true });
+      void navigate({ to: "/org-redirect", replace: true });
     }
   }, [isLoading, user, navigate]);
 

@@ -29,6 +29,7 @@ export const RESERVED_ORG_SLUGS: ReadonlySet<string> = new Set([
   "internal", // used by service binding fetch origin
   "app", // common infrastructure subdomain
   "cloud", // cloud.mirascope.com
+  "org-redirect", // /org-redirect route
   "docs", // docs.mirascope.com
   "admin", // common infrastructure subdomain
   "mail", // common infrastructure subdomain

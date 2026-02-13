@@ -8,1339 +8,1339 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as PricingRouteImport } from './routes/pricing'
-import { Route as OrganizationsRouteImport } from './routes/organizations'
-import { Route as OnboardingRouteImport } from './routes/onboarding'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as DocsRouteImport } from './routes/docs'
-import { Route as DevRouteImport } from './routes/dev'
-import { Route as CloudRouteImport } from './routes/cloud'
-import { Route as BlogRouteImport } from './routes/blog'
-import { Route as OrgSlugRouteImport } from './routes/$orgSlug'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as SettingsIndexRouteImport } from './routes/settings/index'
-import { Route as DevIndexRouteImport } from './routes/dev/index'
-import { Route as BlogIndexRouteImport } from './routes/blog.index'
-import { Route as OrgSlugIndexRouteImport } from './routes/$orgSlug/index'
-import { Route as TermsSplatRouteImport } from './routes/terms.$'
-import { Route as SettingsMeRouteImport } from './routes/settings/me'
-import { Route as InvitationsAcceptRouteImport } from './routes/invitations.accept'
-import { Route as DocsSplatRouteImport } from './routes/docs.$'
-import { Route as DevSocialCardRouteImport } from './routes/dev/social-card'
-import { Route as DevLayoutTestRouteImport } from './routes/dev/layout-test'
-import { Route as DevClawCardsRouteImport } from './routes/dev/claw-cards'
-import { Route as DevAuditMetadataRouteImport } from './routes/dev/audit-metadata'
-import { Route as DevSlugRouteImport } from './routes/dev.$slug'
-import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
-import { Route as AuthMeRouteImport } from './routes/auth/me'
-import { Route as AuthGoogleRouteImport } from './routes/auth/google'
-import { Route as AuthGithubRouteImport } from './routes/auth/github'
-import { Route as ApiAnalyticsRouteImport } from './routes/api.analytics'
-import { Route as SettingsOrganizationsIndexRouteImport } from './routes/settings/organizations/index'
-import { Route as OrgSlugProjectsIndexRouteImport } from './routes/$orgSlug/projects/index'
-import { Route as OrgSlugClawsIndexRouteImport } from './routes/$orgSlug/claws/index'
-import { Route as SettingsOrganizationsOrgSlugRouteImport } from './routes/settings/organizations/$orgSlug'
-import { Route as DocsV1SplatRouteImport } from './routes/docs.v1.$'
-import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
-import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
-import { Route as AuthGithubProxyCallbackRouteImport } from './routes/auth/github.proxy-callback'
-import { Route as AuthGithubCallbackRouteImport } from './routes/auth/github.callback'
-import { Route as ApiWebhooksStripeRouteImport } from './routes/api.webhooks.stripe'
-import { Route as ApiV2HealthRouteImport } from './routes/api.v2.health'
-import { Route as ApiV2DocsRouteImport } from './routes/api.v2.docs'
-import { Route as ApiV2SplatRouteImport } from './routes/api.v2.$'
-import { Route as ApiInternalSplatRouteImport } from './routes/api.internal.$'
-import { Route as OrgSlugProjectsProjectSlugRouteImport } from './routes/$orgSlug/projects/$projectSlug'
-import { Route as OrgSlugClawsClawSlugRouteImport } from './routes/$orgSlug/claws/$clawSlug'
-import { Route as SettingsOrganizationsOrgSlugIndexRouteImport } from './routes/settings/organizations/$orgSlug/index'
-import { Route as OrgSlugProjectsProjectSlugIndexRouteImport } from './routes/$orgSlug/projects/$projectSlug/index'
-import { Route as OrgSlugClawsClawSlugIndexRouteImport } from './routes/$orgSlug/claws/$clawSlug/index'
-import { Route as SettingsOrganizationsOrgSlugTeamRouteImport } from './routes/settings/organizations/$orgSlug/team'
-import { Route as SettingsOrganizationsOrgSlugBillingRouteImport } from './routes/settings/organizations/$orgSlug/billing'
-import { Route as SettingsOrganizationsOrgSlugApiKeysRouteImport } from './routes/settings/organizations/$orgSlug/api-keys'
-import { Route as RouterV2ProviderSplatRouteImport } from './routes/router.v2.$provider.$'
-import { Route as OrgSlugProjectsProjectSlugEnvSlugRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug'
-import { Route as OrgSlugClawsClawSlugSecretsRouteImport } from './routes/$orgSlug/claws/$clawSlug/secrets'
-import { Route as OrgSlugClawsClawSlugChatRouteImport } from './routes/$orgSlug/claws/$clawSlug/chat'
-import { Route as SettingsOrganizationsOrgSlugProjectsIndexRouteImport } from './routes/settings/organizations/$orgSlug/projects/index'
-import { Route as SettingsOrganizationsOrgSlugClawsIndexRouteImport } from './routes/settings/organizations/$orgSlug/claws/index'
-import { Route as OrgSlugProjectsProjectSlugEnvSlugIndexRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/index'
-import { Route as SettingsOrganizationsOrgSlugProjectsProjectSlugRouteImport } from './routes/settings/organizations/$orgSlug/projects/$projectSlug'
-import { Route as SettingsOrganizationsOrgSlugClawsClawSlugRouteImport } from './routes/settings/organizations/$orgSlug/claws/$clawSlug'
-import { Route as OrgSlugProjectsProjectSlugEnvSlugTracesRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/traces'
-import { Route as OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue'
-import { Route as OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/functions.index'
-import { Route as OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/functions.$functionName'
-import { Route as OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRouteImport } from './routes/$orgSlug/projects/$projectSlug/$envSlug/trace-view.$traceId.$spanId'
+import { Route as OrgSlugRouteImport } from "./routes/$orgSlug";
+import { Route as OrgSlugClawsClawSlugRouteImport } from "./routes/$orgSlug/claws/$clawSlug";
+import { Route as OrgSlugClawsClawSlugChatRouteImport } from "./routes/$orgSlug/claws/$clawSlug/chat";
+import { Route as OrgSlugClawsClawSlugIndexRouteImport } from "./routes/$orgSlug/claws/$clawSlug/index";
+import { Route as OrgSlugClawsClawSlugSecretsRouteImport } from "./routes/$orgSlug/claws/$clawSlug/secrets";
+import { Route as OrgSlugClawsIndexRouteImport } from "./routes/$orgSlug/claws/index";
+import { Route as OrgSlugIndexRouteImport } from "./routes/$orgSlug/index";
+import { Route as OrgSlugProjectsProjectSlugRouteImport } from "./routes/$orgSlug/projects/$projectSlug";
+import { Route as OrgSlugProjectsProjectSlugEnvSlugRouteImport } from "./routes/$orgSlug/projects/$projectSlug/$envSlug";
+import { Route as OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRouteImport } from "./routes/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue";
+import { Route as OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRouteImport } from "./routes/$orgSlug/projects/$projectSlug/$envSlug/functions.$functionName";
+import { Route as OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRouteImport } from "./routes/$orgSlug/projects/$projectSlug/$envSlug/functions.index";
+import { Route as OrgSlugProjectsProjectSlugEnvSlugIndexRouteImport } from "./routes/$orgSlug/projects/$projectSlug/$envSlug/index";
+import { Route as OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRouteImport } from "./routes/$orgSlug/projects/$projectSlug/$envSlug/trace-view.$traceId.$spanId";
+import { Route as OrgSlugProjectsProjectSlugEnvSlugTracesRouteImport } from "./routes/$orgSlug/projects/$projectSlug/$envSlug/traces";
+import { Route as OrgSlugProjectsProjectSlugIndexRouteImport } from "./routes/$orgSlug/projects/$projectSlug/index";
+import { Route as OrgSlugProjectsIndexRouteImport } from "./routes/$orgSlug/projects/index";
+import { Route as rootRouteImport } from "./routes/__root";
+import { Route as ApiAnalyticsRouteImport } from "./routes/api.analytics";
+import { Route as ApiInternalSplatRouteImport } from "./routes/api.internal.$";
+import { Route as ApiV2SplatRouteImport } from "./routes/api.v2.$";
+import { Route as ApiV2DocsRouteImport } from "./routes/api.v2.docs";
+import { Route as ApiV2HealthRouteImport } from "./routes/api.v2.health";
+import { Route as ApiWebhooksStripeRouteImport } from "./routes/api.webhooks.stripe";
+import { Route as AuthGithubRouteImport } from "./routes/auth/github";
+import { Route as AuthGithubCallbackRouteImport } from "./routes/auth/github.callback";
+import { Route as AuthGithubProxyCallbackRouteImport } from "./routes/auth/github.proxy-callback";
+import { Route as AuthGoogleRouteImport } from "./routes/auth/google";
+import { Route as AuthGoogleCallbackRouteImport } from "./routes/auth/google.callback";
+import { Route as AuthGoogleProxyCallbackRouteImport } from "./routes/auth/google.proxy-callback";
+import { Route as AuthMeRouteImport } from "./routes/auth/me";
+import { Route as BlogRouteImport } from "./routes/blog";
+import { Route as BlogSlugRouteImport } from "./routes/blog.$slug";
+import { Route as BlogIndexRouteImport } from "./routes/blog.index";
+import { Route as DevRouteImport } from "./routes/dev";
+import { Route as DevSlugRouteImport } from "./routes/dev.$slug";
+import { Route as DevAuditMetadataRouteImport } from "./routes/dev/audit-metadata";
+import { Route as DevClawCardsRouteImport } from "./routes/dev/claw-cards";
+import { Route as DevIndexRouteImport } from "./routes/dev/index";
+import { Route as DevLayoutTestRouteImport } from "./routes/dev/layout-test";
+import { Route as DevSocialCardRouteImport } from "./routes/dev/social-card";
+import { Route as DocsRouteImport } from "./routes/docs";
+import { Route as DocsSplatRouteImport } from "./routes/docs.$";
+import { Route as DocsV1SplatRouteImport } from "./routes/docs.v1.$";
+import { Route as IndexRouteImport } from "./routes/index";
+import { Route as InvitationsAcceptRouteImport } from "./routes/invitations.accept";
+import { Route as LoginRouteImport } from "./routes/login";
+import { Route as OnboardingRouteImport } from "./routes/onboarding";
+import { Route as OrgRedirectRouteImport } from "./routes/org-redirect";
+import { Route as OrganizationsRouteImport } from "./routes/organizations";
+import { Route as PricingRouteImport } from "./routes/pricing";
+import { Route as PrivacyRouteImport } from "./routes/privacy";
+import { Route as RouterV2ProviderSplatRouteImport } from "./routes/router.v2.$provider.$";
+import { Route as SettingsRouteImport } from "./routes/settings";
+import { Route as SettingsIndexRouteImport } from "./routes/settings/index";
+import { Route as SettingsMeRouteImport } from "./routes/settings/me";
+import { Route as SettingsOrganizationsOrgSlugRouteImport } from "./routes/settings/organizations/$orgSlug";
+import { Route as SettingsOrganizationsOrgSlugApiKeysRouteImport } from "./routes/settings/organizations/$orgSlug/api-keys";
+import { Route as SettingsOrganizationsOrgSlugBillingRouteImport } from "./routes/settings/organizations/$orgSlug/billing";
+import { Route as SettingsOrganizationsOrgSlugClawsClawSlugRouteImport } from "./routes/settings/organizations/$orgSlug/claws/$clawSlug";
+import { Route as SettingsOrganizationsOrgSlugClawsIndexRouteImport } from "./routes/settings/organizations/$orgSlug/claws/index";
+import { Route as SettingsOrganizationsOrgSlugIndexRouteImport } from "./routes/settings/organizations/$orgSlug/index";
+import { Route as SettingsOrganizationsOrgSlugProjectsProjectSlugRouteImport } from "./routes/settings/organizations/$orgSlug/projects/$projectSlug";
+import { Route as SettingsOrganizationsOrgSlugProjectsIndexRouteImport } from "./routes/settings/organizations/$orgSlug/projects/index";
+import { Route as SettingsOrganizationsOrgSlugTeamRouteImport } from "./routes/settings/organizations/$orgSlug/team";
+import { Route as SettingsOrganizationsIndexRouteImport } from "./routes/settings/organizations/index";
+import { Route as TermsSplatRouteImport } from "./routes/terms.$";
 
 const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
+  id: "/settings",
+  path: "/settings",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
+  id: "/privacy",
+  path: "/privacy",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const PricingRoute = PricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
+  id: "/pricing",
+  path: "/pricing",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const OrganizationsRoute = OrganizationsRouteImport.update({
-  id: '/organizations',
-  path: '/organizations',
+  id: "/organizations",
+  path: "/organizations",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const OnboardingRoute = OnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
+  id: "/onboarding",
+  path: "/onboarding",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+  id: "/login",
+  path: "/login",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const DocsRoute = DocsRouteImport.update({
-  id: '/docs',
-  path: '/docs',
+  id: "/docs",
+  path: "/docs",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const DevRoute = DevRouteImport.update({
-  id: '/dev',
-  path: '/dev',
+  id: "/dev",
+  path: "/dev",
   getParentRoute: () => rootRouteImport,
-} as any)
-const CloudRoute = CloudRouteImport.update({
-  id: '/cloud',
-  path: '/cloud',
+} as any);
+const OrgRedirectRoute = OrgRedirectRouteImport.update({
+  id: "/org-redirect",
+  path: "/org-redirect",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const BlogRoute = BlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
+  id: "/blog",
+  path: "/blog",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const OrgSlugRoute = OrgSlugRouteImport.update({
-  id: '/$orgSlug',
-  path: '/$orgSlug',
+  id: "/$orgSlug",
+  path: "/$orgSlug",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const SettingsIndexRoute = SettingsIndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => SettingsRoute,
-} as any)
+} as any);
 const DevIndexRoute = DevIndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => DevRoute,
-} as any)
+} as any);
 const BlogIndexRoute = BlogIndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => BlogRoute,
-} as any)
+} as any);
 const OrgSlugIndexRoute = OrgSlugIndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => OrgSlugRoute,
-} as any)
+} as any);
 const TermsSplatRoute = TermsSplatRouteImport.update({
-  id: '/terms/$',
-  path: '/terms/$',
+  id: "/terms/$",
+  path: "/terms/$",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const SettingsMeRoute = SettingsMeRouteImport.update({
-  id: '/me',
-  path: '/me',
+  id: "/me",
+  path: "/me",
   getParentRoute: () => SettingsRoute,
-} as any)
+} as any);
 const InvitationsAcceptRoute = InvitationsAcceptRouteImport.update({
-  id: '/invitations/accept',
-  path: '/invitations/accept',
+  id: "/invitations/accept",
+  path: "/invitations/accept",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const DocsSplatRoute = DocsSplatRouteImport.update({
-  id: '/$',
-  path: '/$',
+  id: "/$",
+  path: "/$",
   getParentRoute: () => DocsRoute,
-} as any)
+} as any);
 const DevSocialCardRoute = DevSocialCardRouteImport.update({
-  id: '/social-card',
-  path: '/social-card',
+  id: "/social-card",
+  path: "/social-card",
   getParentRoute: () => DevRoute,
-} as any)
+} as any);
 const DevLayoutTestRoute = DevLayoutTestRouteImport.update({
-  id: '/layout-test',
-  path: '/layout-test',
+  id: "/layout-test",
+  path: "/layout-test",
   getParentRoute: () => DevRoute,
-} as any)
+} as any);
 const DevClawCardsRoute = DevClawCardsRouteImport.update({
-  id: '/claw-cards',
-  path: '/claw-cards',
+  id: "/claw-cards",
+  path: "/claw-cards",
   getParentRoute: () => DevRoute,
-} as any)
+} as any);
 const DevAuditMetadataRoute = DevAuditMetadataRouteImport.update({
-  id: '/audit-metadata',
-  path: '/audit-metadata',
+  id: "/audit-metadata",
+  path: "/audit-metadata",
   getParentRoute: () => DevRoute,
-} as any)
+} as any);
 const DevSlugRoute = DevSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
+  id: "/$slug",
+  path: "/$slug",
   getParentRoute: () => DevRoute,
-} as any)
+} as any);
 const BlogSlugRoute = BlogSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
+  id: "/$slug",
+  path: "/$slug",
   getParentRoute: () => BlogRoute,
-} as any)
+} as any);
 const AuthMeRoute = AuthMeRouteImport.update({
-  id: '/auth/me',
-  path: '/auth/me',
+  id: "/auth/me",
+  path: "/auth/me",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const AuthGoogleRoute = AuthGoogleRouteImport.update({
-  id: '/auth/google',
-  path: '/auth/google',
+  id: "/auth/google",
+  path: "/auth/google",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const AuthGithubRoute = AuthGithubRouteImport.update({
-  id: '/auth/github',
-  path: '/auth/github',
+  id: "/auth/github",
+  path: "/auth/github",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const ApiAnalyticsRoute = ApiAnalyticsRouteImport.update({
-  id: '/api/analytics',
-  path: '/api/analytics',
+  id: "/api/analytics",
+  path: "/api/analytics",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const SettingsOrganizationsIndexRoute =
   SettingsOrganizationsIndexRouteImport.update({
-    id: '/organizations/',
-    path: '/organizations/',
+    id: "/organizations/",
+    path: "/organizations/",
     getParentRoute: () => SettingsRoute,
-  } as any)
+  } as any);
 const OrgSlugProjectsIndexRoute = OrgSlugProjectsIndexRouteImport.update({
-  id: '/projects/',
-  path: '/projects/',
+  id: "/projects/",
+  path: "/projects/",
   getParentRoute: () => OrgSlugRoute,
-} as any)
+} as any);
 const OrgSlugClawsIndexRoute = OrgSlugClawsIndexRouteImport.update({
-  id: '/claws/',
-  path: '/claws/',
+  id: "/claws/",
+  path: "/claws/",
   getParentRoute: () => OrgSlugRoute,
-} as any)
+} as any);
 const SettingsOrganizationsOrgSlugRoute =
   SettingsOrganizationsOrgSlugRouteImport.update({
-    id: '/organizations/$orgSlug',
-    path: '/organizations/$orgSlug',
+    id: "/organizations/$orgSlug",
+    path: "/organizations/$orgSlug",
     getParentRoute: () => SettingsRoute,
-  } as any)
+  } as any);
 const DocsV1SplatRoute = DocsV1SplatRouteImport.update({
-  id: '/v1/$',
-  path: '/v1/$',
+  id: "/v1/$",
+  path: "/v1/$",
   getParentRoute: () => DocsRoute,
-} as any)
+} as any);
 const AuthGoogleProxyCallbackRoute = AuthGoogleProxyCallbackRouteImport.update({
-  id: '/proxy-callback',
-  path: '/proxy-callback',
+  id: "/proxy-callback",
+  path: "/proxy-callback",
   getParentRoute: () => AuthGoogleRoute,
-} as any)
+} as any);
 const AuthGoogleCallbackRoute = AuthGoogleCallbackRouteImport.update({
-  id: '/callback',
-  path: '/callback',
+  id: "/callback",
+  path: "/callback",
   getParentRoute: () => AuthGoogleRoute,
-} as any)
+} as any);
 const AuthGithubProxyCallbackRoute = AuthGithubProxyCallbackRouteImport.update({
-  id: '/proxy-callback',
-  path: '/proxy-callback',
+  id: "/proxy-callback",
+  path: "/proxy-callback",
   getParentRoute: () => AuthGithubRoute,
-} as any)
+} as any);
 const AuthGithubCallbackRoute = AuthGithubCallbackRouteImport.update({
-  id: '/callback',
-  path: '/callback',
+  id: "/callback",
+  path: "/callback",
   getParentRoute: () => AuthGithubRoute,
-} as any)
+} as any);
 const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
-  id: '/api/webhooks/stripe',
-  path: '/api/webhooks/stripe',
+  id: "/api/webhooks/stripe",
+  path: "/api/webhooks/stripe",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const ApiV2HealthRoute = ApiV2HealthRouteImport.update({
-  id: '/api/v2/health',
-  path: '/api/v2/health',
+  id: "/api/v2/health",
+  path: "/api/v2/health",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const ApiV2DocsRoute = ApiV2DocsRouteImport.update({
-  id: '/api/v2/docs',
-  path: '/api/v2/docs',
+  id: "/api/v2/docs",
+  path: "/api/v2/docs",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const ApiV2SplatRoute = ApiV2SplatRouteImport.update({
-  id: '/api/v2/$',
-  path: '/api/v2/$',
+  id: "/api/v2/$",
+  path: "/api/v2/$",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const ApiInternalSplatRoute = ApiInternalSplatRouteImport.update({
-  id: '/api/internal/$',
-  path: '/api/internal/$',
+  id: "/api/internal/$",
+  path: "/api/internal/$",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const OrgSlugProjectsProjectSlugRoute =
   OrgSlugProjectsProjectSlugRouteImport.update({
-    id: '/projects/$projectSlug',
-    path: '/projects/$projectSlug',
+    id: "/projects/$projectSlug",
+    path: "/projects/$projectSlug",
     getParentRoute: () => OrgSlugRoute,
-  } as any)
+  } as any);
 const OrgSlugClawsClawSlugRoute = OrgSlugClawsClawSlugRouteImport.update({
-  id: '/claws/$clawSlug',
-  path: '/claws/$clawSlug',
+  id: "/claws/$clawSlug",
+  path: "/claws/$clawSlug",
   getParentRoute: () => OrgSlugRoute,
-} as any)
+} as any);
 const SettingsOrganizationsOrgSlugIndexRoute =
   SettingsOrganizationsOrgSlugIndexRouteImport.update({
-    id: '/',
-    path: '/',
+    id: "/",
+    path: "/",
     getParentRoute: () => SettingsOrganizationsOrgSlugRoute,
-  } as any)
+  } as any);
 const OrgSlugProjectsProjectSlugIndexRoute =
   OrgSlugProjectsProjectSlugIndexRouteImport.update({
-    id: '/',
-    path: '/',
+    id: "/",
+    path: "/",
     getParentRoute: () => OrgSlugProjectsProjectSlugRoute,
-  } as any)
+  } as any);
 const OrgSlugClawsClawSlugIndexRoute =
   OrgSlugClawsClawSlugIndexRouteImport.update({
-    id: '/',
-    path: '/',
+    id: "/",
+    path: "/",
     getParentRoute: () => OrgSlugClawsClawSlugRoute,
-  } as any)
+  } as any);
 const SettingsOrganizationsOrgSlugTeamRoute =
   SettingsOrganizationsOrgSlugTeamRouteImport.update({
-    id: '/team',
-    path: '/team',
+    id: "/team",
+    path: "/team",
     getParentRoute: () => SettingsOrganizationsOrgSlugRoute,
-  } as any)
+  } as any);
 const SettingsOrganizationsOrgSlugBillingRoute =
   SettingsOrganizationsOrgSlugBillingRouteImport.update({
-    id: '/billing',
-    path: '/billing',
+    id: "/billing",
+    path: "/billing",
     getParentRoute: () => SettingsOrganizationsOrgSlugRoute,
-  } as any)
+  } as any);
 const SettingsOrganizationsOrgSlugApiKeysRoute =
   SettingsOrganizationsOrgSlugApiKeysRouteImport.update({
-    id: '/api-keys',
-    path: '/api-keys',
+    id: "/api-keys",
+    path: "/api-keys",
     getParentRoute: () => SettingsOrganizationsOrgSlugRoute,
-  } as any)
+  } as any);
 const RouterV2ProviderSplatRoute = RouterV2ProviderSplatRouteImport.update({
-  id: '/router/v2/$provider/$',
-  path: '/router/v2/$provider/$',
+  id: "/router/v2/$provider/$",
+  path: "/router/v2/$provider/$",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const OrgSlugProjectsProjectSlugEnvSlugRoute =
   OrgSlugProjectsProjectSlugEnvSlugRouteImport.update({
-    id: '/$envSlug',
-    path: '/$envSlug',
+    id: "/$envSlug",
+    path: "/$envSlug",
     getParentRoute: () => OrgSlugProjectsProjectSlugRoute,
-  } as any)
+  } as any);
 const OrgSlugClawsClawSlugSecretsRoute =
   OrgSlugClawsClawSlugSecretsRouteImport.update({
-    id: '/secrets',
-    path: '/secrets',
+    id: "/secrets",
+    path: "/secrets",
     getParentRoute: () => OrgSlugClawsClawSlugRoute,
-  } as any)
+  } as any);
 const OrgSlugClawsClawSlugChatRoute =
   OrgSlugClawsClawSlugChatRouteImport.update({
-    id: '/chat',
-    path: '/chat',
+    id: "/chat",
+    path: "/chat",
     getParentRoute: () => OrgSlugClawsClawSlugRoute,
-  } as any)
+  } as any);
 const SettingsOrganizationsOrgSlugProjectsIndexRoute =
   SettingsOrganizationsOrgSlugProjectsIndexRouteImport.update({
-    id: '/projects/',
-    path: '/projects/',
+    id: "/projects/",
+    path: "/projects/",
     getParentRoute: () => SettingsOrganizationsOrgSlugRoute,
-  } as any)
+  } as any);
 const SettingsOrganizationsOrgSlugClawsIndexRoute =
   SettingsOrganizationsOrgSlugClawsIndexRouteImport.update({
-    id: '/claws/',
-    path: '/claws/',
+    id: "/claws/",
+    path: "/claws/",
     getParentRoute: () => SettingsOrganizationsOrgSlugRoute,
-  } as any)
+  } as any);
 const OrgSlugProjectsProjectSlugEnvSlugIndexRoute =
   OrgSlugProjectsProjectSlugEnvSlugIndexRouteImport.update({
-    id: '/',
-    path: '/',
+    id: "/",
+    path: "/",
     getParentRoute: () => OrgSlugProjectsProjectSlugEnvSlugRoute,
-  } as any)
+  } as any);
 const SettingsOrganizationsOrgSlugProjectsProjectSlugRoute =
   SettingsOrganizationsOrgSlugProjectsProjectSlugRouteImport.update({
-    id: '/projects/$projectSlug',
-    path: '/projects/$projectSlug',
+    id: "/projects/$projectSlug",
+    path: "/projects/$projectSlug",
     getParentRoute: () => SettingsOrganizationsOrgSlugRoute,
-  } as any)
+  } as any);
 const SettingsOrganizationsOrgSlugClawsClawSlugRoute =
   SettingsOrganizationsOrgSlugClawsClawSlugRouteImport.update({
-    id: '/claws/$clawSlug',
-    path: '/claws/$clawSlug',
+    id: "/claws/$clawSlug",
+    path: "/claws/$clawSlug",
     getParentRoute: () => SettingsOrganizationsOrgSlugRoute,
-  } as any)
+  } as any);
 const OrgSlugProjectsProjectSlugEnvSlugTracesRoute =
   OrgSlugProjectsProjectSlugEnvSlugTracesRouteImport.update({
-    id: '/traces',
-    path: '/traces',
+    id: "/traces",
+    path: "/traces",
     getParentRoute: () => OrgSlugProjectsProjectSlugEnvSlugRoute,
-  } as any)
+  } as any);
 const OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute =
   OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRouteImport.update({
-    id: '/annotation-queue',
-    path: '/annotation-queue',
+    id: "/annotation-queue",
+    path: "/annotation-queue",
     getParentRoute: () => OrgSlugProjectsProjectSlugEnvSlugRoute,
-  } as any)
+  } as any);
 const OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute =
   OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRouteImport.update({
-    id: '/functions/',
-    path: '/functions/',
+    id: "/functions/",
+    path: "/functions/",
     getParentRoute: () => OrgSlugProjectsProjectSlugEnvSlugRoute,
-  } as any)
+  } as any);
 const OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute =
   OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRouteImport.update({
-    id: '/functions/$functionName',
-    path: '/functions/$functionName',
+    id: "/functions/$functionName",
+    path: "/functions/$functionName",
     getParentRoute: () => OrgSlugProjectsProjectSlugEnvSlugRoute,
-  } as any)
+  } as any);
 const OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute =
   OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRouteImport.update({
-    id: '/trace-view/$traceId/$spanId',
-    path: '/trace-view/$traceId/$spanId',
+    id: "/trace-view/$traceId/$spanId",
+    path: "/trace-view/$traceId/$spanId",
     getParentRoute: () => OrgSlugProjectsProjectSlugEnvSlugRoute,
-  } as any)
+  } as any);
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/$orgSlug': typeof OrgSlugRouteWithChildren
-  '/blog': typeof BlogRouteWithChildren
-  '/cloud': typeof CloudRoute
-  '/dev': typeof DevRouteWithChildren
-  '/docs': typeof DocsRouteWithChildren
-  '/login': typeof LoginRoute
-  '/onboarding': typeof OnboardingRoute
-  '/organizations': typeof OrganizationsRoute
-  '/pricing': typeof PricingRoute
-  '/privacy': typeof PrivacyRoute
-  '/settings': typeof SettingsRouteWithChildren
-  '/api/analytics': typeof ApiAnalyticsRoute
-  '/auth/github': typeof AuthGithubRouteWithChildren
-  '/auth/google': typeof AuthGoogleRouteWithChildren
-  '/auth/me': typeof AuthMeRoute
-  '/blog/$slug': typeof BlogSlugRoute
-  '/dev/$slug': typeof DevSlugRoute
-  '/dev/audit-metadata': typeof DevAuditMetadataRoute
-  '/dev/claw-cards': typeof DevClawCardsRoute
-  '/dev/layout-test': typeof DevLayoutTestRoute
-  '/dev/social-card': typeof DevSocialCardRoute
-  '/docs/$': typeof DocsSplatRoute
-  '/invitations/accept': typeof InvitationsAcceptRoute
-  '/settings/me': typeof SettingsMeRoute
-  '/terms/$': typeof TermsSplatRoute
-  '/$orgSlug/': typeof OrgSlugIndexRoute
-  '/blog/': typeof BlogIndexRoute
-  '/dev/': typeof DevIndexRoute
-  '/settings/': typeof SettingsIndexRoute
-  '/$orgSlug/claws/$clawSlug': typeof OrgSlugClawsClawSlugRouteWithChildren
-  '/$orgSlug/projects/$projectSlug': typeof OrgSlugProjectsProjectSlugRouteWithChildren
-  '/api/internal/$': typeof ApiInternalSplatRoute
-  '/api/v2/$': typeof ApiV2SplatRoute
-  '/api/v2/docs': typeof ApiV2DocsRoute
-  '/api/v2/health': typeof ApiV2HealthRoute
-  '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
-  '/auth/github/callback': typeof AuthGithubCallbackRoute
-  '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
-  '/auth/google/callback': typeof AuthGoogleCallbackRoute
-  '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
-  '/docs/v1/$': typeof DocsV1SplatRoute
-  '/settings/organizations/$orgSlug': typeof SettingsOrganizationsOrgSlugRouteWithChildren
-  '/$orgSlug/claws': typeof OrgSlugClawsIndexRoute
-  '/$orgSlug/projects': typeof OrgSlugProjectsIndexRoute
-  '/settings/organizations': typeof SettingsOrganizationsIndexRoute
-  '/$orgSlug/claws/$clawSlug/chat': typeof OrgSlugClawsClawSlugChatRoute
-  '/$orgSlug/claws/$clawSlug/secrets': typeof OrgSlugClawsClawSlugSecretsRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug': typeof OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren
-  '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
-  '/settings/organizations/$orgSlug/api-keys': typeof SettingsOrganizationsOrgSlugApiKeysRoute
-  '/settings/organizations/$orgSlug/billing': typeof SettingsOrganizationsOrgSlugBillingRoute
-  '/settings/organizations/$orgSlug/team': typeof SettingsOrganizationsOrgSlugTeamRoute
-  '/$orgSlug/claws/$clawSlug/': typeof OrgSlugClawsClawSlugIndexRoute
-  '/$orgSlug/projects/$projectSlug/': typeof OrgSlugProjectsProjectSlugIndexRoute
-  '/settings/organizations/$orgSlug/': typeof SettingsOrganizationsOrgSlugIndexRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue': typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/traces': typeof OrgSlugProjectsProjectSlugEnvSlugTracesRoute
-  '/settings/organizations/$orgSlug/claws/$clawSlug': typeof SettingsOrganizationsOrgSlugClawsClawSlugRoute
-  '/settings/organizations/$orgSlug/projects/$projectSlug': typeof SettingsOrganizationsOrgSlugProjectsProjectSlugRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/': typeof OrgSlugProjectsProjectSlugEnvSlugIndexRoute
-  '/settings/organizations/$orgSlug/claws': typeof SettingsOrganizationsOrgSlugClawsIndexRoute
-  '/settings/organizations/$orgSlug/projects': typeof SettingsOrganizationsOrgSlugProjectsIndexRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/functions': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId': typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute
+  "/": typeof IndexRoute;
+  "/$orgSlug": typeof OrgSlugRouteWithChildren;
+  "/blog": typeof BlogRouteWithChildren;
+  "/org-redirect": typeof OrgRedirectRoute;
+  "/dev": typeof DevRouteWithChildren;
+  "/docs": typeof DocsRouteWithChildren;
+  "/login": typeof LoginRoute;
+  "/onboarding": typeof OnboardingRoute;
+  "/organizations": typeof OrganizationsRoute;
+  "/pricing": typeof PricingRoute;
+  "/privacy": typeof PrivacyRoute;
+  "/settings": typeof SettingsRouteWithChildren;
+  "/api/analytics": typeof ApiAnalyticsRoute;
+  "/auth/github": typeof AuthGithubRouteWithChildren;
+  "/auth/google": typeof AuthGoogleRouteWithChildren;
+  "/auth/me": typeof AuthMeRoute;
+  "/blog/$slug": typeof BlogSlugRoute;
+  "/dev/$slug": typeof DevSlugRoute;
+  "/dev/audit-metadata": typeof DevAuditMetadataRoute;
+  "/dev/claw-cards": typeof DevClawCardsRoute;
+  "/dev/layout-test": typeof DevLayoutTestRoute;
+  "/dev/social-card": typeof DevSocialCardRoute;
+  "/docs/$": typeof DocsSplatRoute;
+  "/invitations/accept": typeof InvitationsAcceptRoute;
+  "/settings/me": typeof SettingsMeRoute;
+  "/terms/$": typeof TermsSplatRoute;
+  "/$orgSlug/": typeof OrgSlugIndexRoute;
+  "/blog/": typeof BlogIndexRoute;
+  "/dev/": typeof DevIndexRoute;
+  "/settings/": typeof SettingsIndexRoute;
+  "/$orgSlug/claws/$clawSlug": typeof OrgSlugClawsClawSlugRouteWithChildren;
+  "/$orgSlug/projects/$projectSlug": typeof OrgSlugProjectsProjectSlugRouteWithChildren;
+  "/api/internal/$": typeof ApiInternalSplatRoute;
+  "/api/v2/$": typeof ApiV2SplatRoute;
+  "/api/v2/docs": typeof ApiV2DocsRoute;
+  "/api/v2/health": typeof ApiV2HealthRoute;
+  "/api/webhooks/stripe": typeof ApiWebhooksStripeRoute;
+  "/auth/github/callback": typeof AuthGithubCallbackRoute;
+  "/auth/github/proxy-callback": typeof AuthGithubProxyCallbackRoute;
+  "/auth/google/callback": typeof AuthGoogleCallbackRoute;
+  "/auth/google/proxy-callback": typeof AuthGoogleProxyCallbackRoute;
+  "/docs/v1/$": typeof DocsV1SplatRoute;
+  "/settings/organizations/$orgSlug": typeof SettingsOrganizationsOrgSlugRouteWithChildren;
+  "/$orgSlug/claws": typeof OrgSlugClawsIndexRoute;
+  "/$orgSlug/projects": typeof OrgSlugProjectsIndexRoute;
+  "/settings/organizations": typeof SettingsOrganizationsIndexRoute;
+  "/$orgSlug/claws/$clawSlug/chat": typeof OrgSlugClawsClawSlugChatRoute;
+  "/$orgSlug/claws/$clawSlug/secrets": typeof OrgSlugClawsClawSlugSecretsRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug": typeof OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren;
+  "/router/v2/$provider/$": typeof RouterV2ProviderSplatRoute;
+  "/settings/organizations/$orgSlug/api-keys": typeof SettingsOrganizationsOrgSlugApiKeysRoute;
+  "/settings/organizations/$orgSlug/billing": typeof SettingsOrganizationsOrgSlugBillingRoute;
+  "/settings/organizations/$orgSlug/team": typeof SettingsOrganizationsOrgSlugTeamRoute;
+  "/$orgSlug/claws/$clawSlug/": typeof OrgSlugClawsClawSlugIndexRoute;
+  "/$orgSlug/projects/$projectSlug/": typeof OrgSlugProjectsProjectSlugIndexRoute;
+  "/settings/organizations/$orgSlug/": typeof SettingsOrganizationsOrgSlugIndexRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue": typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/traces": typeof OrgSlugProjectsProjectSlugEnvSlugTracesRoute;
+  "/settings/organizations/$orgSlug/claws/$clawSlug": typeof SettingsOrganizationsOrgSlugClawsClawSlugRoute;
+  "/settings/organizations/$orgSlug/projects/$projectSlug": typeof SettingsOrganizationsOrgSlugProjectsProjectSlugRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/": typeof OrgSlugProjectsProjectSlugEnvSlugIndexRoute;
+  "/settings/organizations/$orgSlug/claws": typeof SettingsOrganizationsOrgSlugClawsIndexRoute;
+  "/settings/organizations/$orgSlug/projects": typeof SettingsOrganizationsOrgSlugProjectsIndexRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName": typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/functions": typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId": typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute;
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/cloud': typeof CloudRoute
-  '/docs': typeof DocsRouteWithChildren
-  '/login': typeof LoginRoute
-  '/onboarding': typeof OnboardingRoute
-  '/organizations': typeof OrganizationsRoute
-  '/pricing': typeof PricingRoute
-  '/privacy': typeof PrivacyRoute
-  '/api/analytics': typeof ApiAnalyticsRoute
-  '/auth/github': typeof AuthGithubRouteWithChildren
-  '/auth/google': typeof AuthGoogleRouteWithChildren
-  '/auth/me': typeof AuthMeRoute
-  '/blog/$slug': typeof BlogSlugRoute
-  '/dev/$slug': typeof DevSlugRoute
-  '/dev/audit-metadata': typeof DevAuditMetadataRoute
-  '/dev/claw-cards': typeof DevClawCardsRoute
-  '/dev/layout-test': typeof DevLayoutTestRoute
-  '/dev/social-card': typeof DevSocialCardRoute
-  '/docs/$': typeof DocsSplatRoute
-  '/invitations/accept': typeof InvitationsAcceptRoute
-  '/settings/me': typeof SettingsMeRoute
-  '/terms/$': typeof TermsSplatRoute
-  '/$orgSlug': typeof OrgSlugIndexRoute
-  '/blog': typeof BlogIndexRoute
-  '/dev': typeof DevIndexRoute
-  '/settings': typeof SettingsIndexRoute
-  '/api/internal/$': typeof ApiInternalSplatRoute
-  '/api/v2/$': typeof ApiV2SplatRoute
-  '/api/v2/docs': typeof ApiV2DocsRoute
-  '/api/v2/health': typeof ApiV2HealthRoute
-  '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
-  '/auth/github/callback': typeof AuthGithubCallbackRoute
-  '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
-  '/auth/google/callback': typeof AuthGoogleCallbackRoute
-  '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
-  '/docs/v1/$': typeof DocsV1SplatRoute
-  '/$orgSlug/claws': typeof OrgSlugClawsIndexRoute
-  '/$orgSlug/projects': typeof OrgSlugProjectsIndexRoute
-  '/settings/organizations': typeof SettingsOrganizationsIndexRoute
-  '/$orgSlug/claws/$clawSlug/chat': typeof OrgSlugClawsClawSlugChatRoute
-  '/$orgSlug/claws/$clawSlug/secrets': typeof OrgSlugClawsClawSlugSecretsRoute
-  '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
-  '/settings/organizations/$orgSlug/api-keys': typeof SettingsOrganizationsOrgSlugApiKeysRoute
-  '/settings/organizations/$orgSlug/billing': typeof SettingsOrganizationsOrgSlugBillingRoute
-  '/settings/organizations/$orgSlug/team': typeof SettingsOrganizationsOrgSlugTeamRoute
-  '/$orgSlug/claws/$clawSlug': typeof OrgSlugClawsClawSlugIndexRoute
-  '/$orgSlug/projects/$projectSlug': typeof OrgSlugProjectsProjectSlugIndexRoute
-  '/settings/organizations/$orgSlug': typeof SettingsOrganizationsOrgSlugIndexRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue': typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/traces': typeof OrgSlugProjectsProjectSlugEnvSlugTracesRoute
-  '/settings/organizations/$orgSlug/claws/$clawSlug': typeof SettingsOrganizationsOrgSlugClawsClawSlugRoute
-  '/settings/organizations/$orgSlug/projects/$projectSlug': typeof SettingsOrganizationsOrgSlugProjectsProjectSlugRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug': typeof OrgSlugProjectsProjectSlugEnvSlugIndexRoute
-  '/settings/organizations/$orgSlug/claws': typeof SettingsOrganizationsOrgSlugClawsIndexRoute
-  '/settings/organizations/$orgSlug/projects': typeof SettingsOrganizationsOrgSlugProjectsIndexRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/functions': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId': typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute
+  "/": typeof IndexRoute;
+  "/org-redirect": typeof OrgRedirectRoute;
+  "/docs": typeof DocsRouteWithChildren;
+  "/login": typeof LoginRoute;
+  "/onboarding": typeof OnboardingRoute;
+  "/organizations": typeof OrganizationsRoute;
+  "/pricing": typeof PricingRoute;
+  "/privacy": typeof PrivacyRoute;
+  "/api/analytics": typeof ApiAnalyticsRoute;
+  "/auth/github": typeof AuthGithubRouteWithChildren;
+  "/auth/google": typeof AuthGoogleRouteWithChildren;
+  "/auth/me": typeof AuthMeRoute;
+  "/blog/$slug": typeof BlogSlugRoute;
+  "/dev/$slug": typeof DevSlugRoute;
+  "/dev/audit-metadata": typeof DevAuditMetadataRoute;
+  "/dev/claw-cards": typeof DevClawCardsRoute;
+  "/dev/layout-test": typeof DevLayoutTestRoute;
+  "/dev/social-card": typeof DevSocialCardRoute;
+  "/docs/$": typeof DocsSplatRoute;
+  "/invitations/accept": typeof InvitationsAcceptRoute;
+  "/settings/me": typeof SettingsMeRoute;
+  "/terms/$": typeof TermsSplatRoute;
+  "/$orgSlug": typeof OrgSlugIndexRoute;
+  "/blog": typeof BlogIndexRoute;
+  "/dev": typeof DevIndexRoute;
+  "/settings": typeof SettingsIndexRoute;
+  "/api/internal/$": typeof ApiInternalSplatRoute;
+  "/api/v2/$": typeof ApiV2SplatRoute;
+  "/api/v2/docs": typeof ApiV2DocsRoute;
+  "/api/v2/health": typeof ApiV2HealthRoute;
+  "/api/webhooks/stripe": typeof ApiWebhooksStripeRoute;
+  "/auth/github/callback": typeof AuthGithubCallbackRoute;
+  "/auth/github/proxy-callback": typeof AuthGithubProxyCallbackRoute;
+  "/auth/google/callback": typeof AuthGoogleCallbackRoute;
+  "/auth/google/proxy-callback": typeof AuthGoogleProxyCallbackRoute;
+  "/docs/v1/$": typeof DocsV1SplatRoute;
+  "/$orgSlug/claws": typeof OrgSlugClawsIndexRoute;
+  "/$orgSlug/projects": typeof OrgSlugProjectsIndexRoute;
+  "/settings/organizations": typeof SettingsOrganizationsIndexRoute;
+  "/$orgSlug/claws/$clawSlug/chat": typeof OrgSlugClawsClawSlugChatRoute;
+  "/$orgSlug/claws/$clawSlug/secrets": typeof OrgSlugClawsClawSlugSecretsRoute;
+  "/router/v2/$provider/$": typeof RouterV2ProviderSplatRoute;
+  "/settings/organizations/$orgSlug/api-keys": typeof SettingsOrganizationsOrgSlugApiKeysRoute;
+  "/settings/organizations/$orgSlug/billing": typeof SettingsOrganizationsOrgSlugBillingRoute;
+  "/settings/organizations/$orgSlug/team": typeof SettingsOrganizationsOrgSlugTeamRoute;
+  "/$orgSlug/claws/$clawSlug": typeof OrgSlugClawsClawSlugIndexRoute;
+  "/$orgSlug/projects/$projectSlug": typeof OrgSlugProjectsProjectSlugIndexRoute;
+  "/settings/organizations/$orgSlug": typeof SettingsOrganizationsOrgSlugIndexRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue": typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/traces": typeof OrgSlugProjectsProjectSlugEnvSlugTracesRoute;
+  "/settings/organizations/$orgSlug/claws/$clawSlug": typeof SettingsOrganizationsOrgSlugClawsClawSlugRoute;
+  "/settings/organizations/$orgSlug/projects/$projectSlug": typeof SettingsOrganizationsOrgSlugProjectsProjectSlugRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug": typeof OrgSlugProjectsProjectSlugEnvSlugIndexRoute;
+  "/settings/organizations/$orgSlug/claws": typeof SettingsOrganizationsOrgSlugClawsIndexRoute;
+  "/settings/organizations/$orgSlug/projects": typeof SettingsOrganizationsOrgSlugProjectsIndexRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName": typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/functions": typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId": typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/$orgSlug': typeof OrgSlugRouteWithChildren
-  '/blog': typeof BlogRouteWithChildren
-  '/cloud': typeof CloudRoute
-  '/dev': typeof DevRouteWithChildren
-  '/docs': typeof DocsRouteWithChildren
-  '/login': typeof LoginRoute
-  '/onboarding': typeof OnboardingRoute
-  '/organizations': typeof OrganizationsRoute
-  '/pricing': typeof PricingRoute
-  '/privacy': typeof PrivacyRoute
-  '/settings': typeof SettingsRouteWithChildren
-  '/api/analytics': typeof ApiAnalyticsRoute
-  '/auth/github': typeof AuthGithubRouteWithChildren
-  '/auth/google': typeof AuthGoogleRouteWithChildren
-  '/auth/me': typeof AuthMeRoute
-  '/blog/$slug': typeof BlogSlugRoute
-  '/dev/$slug': typeof DevSlugRoute
-  '/dev/audit-metadata': typeof DevAuditMetadataRoute
-  '/dev/claw-cards': typeof DevClawCardsRoute
-  '/dev/layout-test': typeof DevLayoutTestRoute
-  '/dev/social-card': typeof DevSocialCardRoute
-  '/docs/$': typeof DocsSplatRoute
-  '/invitations/accept': typeof InvitationsAcceptRoute
-  '/settings/me': typeof SettingsMeRoute
-  '/terms/$': typeof TermsSplatRoute
-  '/$orgSlug/': typeof OrgSlugIndexRoute
-  '/blog/': typeof BlogIndexRoute
-  '/dev/': typeof DevIndexRoute
-  '/settings/': typeof SettingsIndexRoute
-  '/$orgSlug/claws/$clawSlug': typeof OrgSlugClawsClawSlugRouteWithChildren
-  '/$orgSlug/projects/$projectSlug': typeof OrgSlugProjectsProjectSlugRouteWithChildren
-  '/api/internal/$': typeof ApiInternalSplatRoute
-  '/api/v2/$': typeof ApiV2SplatRoute
-  '/api/v2/docs': typeof ApiV2DocsRoute
-  '/api/v2/health': typeof ApiV2HealthRoute
-  '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
-  '/auth/github/callback': typeof AuthGithubCallbackRoute
-  '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
-  '/auth/google/callback': typeof AuthGoogleCallbackRoute
-  '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
-  '/docs/v1/$': typeof DocsV1SplatRoute
-  '/settings/organizations/$orgSlug': typeof SettingsOrganizationsOrgSlugRouteWithChildren
-  '/$orgSlug/claws/': typeof OrgSlugClawsIndexRoute
-  '/$orgSlug/projects/': typeof OrgSlugProjectsIndexRoute
-  '/settings/organizations/': typeof SettingsOrganizationsIndexRoute
-  '/$orgSlug/claws/$clawSlug/chat': typeof OrgSlugClawsClawSlugChatRoute
-  '/$orgSlug/claws/$clawSlug/secrets': typeof OrgSlugClawsClawSlugSecretsRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug': typeof OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren
-  '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
-  '/settings/organizations/$orgSlug/api-keys': typeof SettingsOrganizationsOrgSlugApiKeysRoute
-  '/settings/organizations/$orgSlug/billing': typeof SettingsOrganizationsOrgSlugBillingRoute
-  '/settings/organizations/$orgSlug/team': typeof SettingsOrganizationsOrgSlugTeamRoute
-  '/$orgSlug/claws/$clawSlug/': typeof OrgSlugClawsClawSlugIndexRoute
-  '/$orgSlug/projects/$projectSlug/': typeof OrgSlugProjectsProjectSlugIndexRoute
-  '/settings/organizations/$orgSlug/': typeof SettingsOrganizationsOrgSlugIndexRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue': typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/traces': typeof OrgSlugProjectsProjectSlugEnvSlugTracesRoute
-  '/settings/organizations/$orgSlug/claws/$clawSlug': typeof SettingsOrganizationsOrgSlugClawsClawSlugRoute
-  '/settings/organizations/$orgSlug/projects/$projectSlug': typeof SettingsOrganizationsOrgSlugProjectsProjectSlugRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/': typeof OrgSlugProjectsProjectSlugEnvSlugIndexRoute
-  '/settings/organizations/$orgSlug/claws/': typeof SettingsOrganizationsOrgSlugClawsIndexRoute
-  '/settings/organizations/$orgSlug/projects/': typeof SettingsOrganizationsOrgSlugProjectsIndexRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/functions/': typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute
-  '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId': typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute
+  __root__: typeof rootRouteImport;
+  "/": typeof IndexRoute;
+  "/$orgSlug": typeof OrgSlugRouteWithChildren;
+  "/blog": typeof BlogRouteWithChildren;
+  "/org-redirect": typeof OrgRedirectRoute;
+  "/dev": typeof DevRouteWithChildren;
+  "/docs": typeof DocsRouteWithChildren;
+  "/login": typeof LoginRoute;
+  "/onboarding": typeof OnboardingRoute;
+  "/organizations": typeof OrganizationsRoute;
+  "/pricing": typeof PricingRoute;
+  "/privacy": typeof PrivacyRoute;
+  "/settings": typeof SettingsRouteWithChildren;
+  "/api/analytics": typeof ApiAnalyticsRoute;
+  "/auth/github": typeof AuthGithubRouteWithChildren;
+  "/auth/google": typeof AuthGoogleRouteWithChildren;
+  "/auth/me": typeof AuthMeRoute;
+  "/blog/$slug": typeof BlogSlugRoute;
+  "/dev/$slug": typeof DevSlugRoute;
+  "/dev/audit-metadata": typeof DevAuditMetadataRoute;
+  "/dev/claw-cards": typeof DevClawCardsRoute;
+  "/dev/layout-test": typeof DevLayoutTestRoute;
+  "/dev/social-card": typeof DevSocialCardRoute;
+  "/docs/$": typeof DocsSplatRoute;
+  "/invitations/accept": typeof InvitationsAcceptRoute;
+  "/settings/me": typeof SettingsMeRoute;
+  "/terms/$": typeof TermsSplatRoute;
+  "/$orgSlug/": typeof OrgSlugIndexRoute;
+  "/blog/": typeof BlogIndexRoute;
+  "/dev/": typeof DevIndexRoute;
+  "/settings/": typeof SettingsIndexRoute;
+  "/$orgSlug/claws/$clawSlug": typeof OrgSlugClawsClawSlugRouteWithChildren;
+  "/$orgSlug/projects/$projectSlug": typeof OrgSlugProjectsProjectSlugRouteWithChildren;
+  "/api/internal/$": typeof ApiInternalSplatRoute;
+  "/api/v2/$": typeof ApiV2SplatRoute;
+  "/api/v2/docs": typeof ApiV2DocsRoute;
+  "/api/v2/health": typeof ApiV2HealthRoute;
+  "/api/webhooks/stripe": typeof ApiWebhooksStripeRoute;
+  "/auth/github/callback": typeof AuthGithubCallbackRoute;
+  "/auth/github/proxy-callback": typeof AuthGithubProxyCallbackRoute;
+  "/auth/google/callback": typeof AuthGoogleCallbackRoute;
+  "/auth/google/proxy-callback": typeof AuthGoogleProxyCallbackRoute;
+  "/docs/v1/$": typeof DocsV1SplatRoute;
+  "/settings/organizations/$orgSlug": typeof SettingsOrganizationsOrgSlugRouteWithChildren;
+  "/$orgSlug/claws/": typeof OrgSlugClawsIndexRoute;
+  "/$orgSlug/projects/": typeof OrgSlugProjectsIndexRoute;
+  "/settings/organizations/": typeof SettingsOrganizationsIndexRoute;
+  "/$orgSlug/claws/$clawSlug/chat": typeof OrgSlugClawsClawSlugChatRoute;
+  "/$orgSlug/claws/$clawSlug/secrets": typeof OrgSlugClawsClawSlugSecretsRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug": typeof OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren;
+  "/router/v2/$provider/$": typeof RouterV2ProviderSplatRoute;
+  "/settings/organizations/$orgSlug/api-keys": typeof SettingsOrganizationsOrgSlugApiKeysRoute;
+  "/settings/organizations/$orgSlug/billing": typeof SettingsOrganizationsOrgSlugBillingRoute;
+  "/settings/organizations/$orgSlug/team": typeof SettingsOrganizationsOrgSlugTeamRoute;
+  "/$orgSlug/claws/$clawSlug/": typeof OrgSlugClawsClawSlugIndexRoute;
+  "/$orgSlug/projects/$projectSlug/": typeof OrgSlugProjectsProjectSlugIndexRoute;
+  "/settings/organizations/$orgSlug/": typeof SettingsOrganizationsOrgSlugIndexRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue": typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/traces": typeof OrgSlugProjectsProjectSlugEnvSlugTracesRoute;
+  "/settings/organizations/$orgSlug/claws/$clawSlug": typeof SettingsOrganizationsOrgSlugClawsClawSlugRoute;
+  "/settings/organizations/$orgSlug/projects/$projectSlug": typeof SettingsOrganizationsOrgSlugProjectsProjectSlugRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/": typeof OrgSlugProjectsProjectSlugEnvSlugIndexRoute;
+  "/settings/organizations/$orgSlug/claws/": typeof SettingsOrganizationsOrgSlugClawsIndexRoute;
+  "/settings/organizations/$orgSlug/projects/": typeof SettingsOrganizationsOrgSlugProjectsIndexRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName": typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/functions/": typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute;
+  "/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId": typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
+  fileRoutesByFullPath: FileRoutesByFullPath;
   fullPaths:
-    | '/'
-    | '/$orgSlug'
-    | '/blog'
-    | '/cloud'
-    | '/dev'
-    | '/docs'
-    | '/login'
-    | '/onboarding'
-    | '/organizations'
-    | '/pricing'
-    | '/privacy'
-    | '/settings'
-    | '/api/analytics'
-    | '/auth/github'
-    | '/auth/google'
-    | '/auth/me'
-    | '/blog/$slug'
-    | '/dev/$slug'
-    | '/dev/audit-metadata'
-    | '/dev/claw-cards'
-    | '/dev/layout-test'
-    | '/dev/social-card'
-    | '/docs/$'
-    | '/invitations/accept'
-    | '/settings/me'
-    | '/terms/$'
-    | '/$orgSlug/'
-    | '/blog/'
-    | '/dev/'
-    | '/settings/'
-    | '/$orgSlug/claws/$clawSlug'
-    | '/$orgSlug/projects/$projectSlug'
-    | '/api/internal/$'
-    | '/api/v2/$'
-    | '/api/v2/docs'
-    | '/api/v2/health'
-    | '/api/webhooks/stripe'
-    | '/auth/github/callback'
-    | '/auth/github/proxy-callback'
-    | '/auth/google/callback'
-    | '/auth/google/proxy-callback'
-    | '/docs/v1/$'
-    | '/settings/organizations/$orgSlug'
-    | '/$orgSlug/claws'
-    | '/$orgSlug/projects'
-    | '/settings/organizations'
-    | '/$orgSlug/claws/$clawSlug/chat'
-    | '/$orgSlug/claws/$clawSlug/secrets'
-    | '/$orgSlug/projects/$projectSlug/$envSlug'
-    | '/router/v2/$provider/$'
-    | '/settings/organizations/$orgSlug/api-keys'
-    | '/settings/organizations/$orgSlug/billing'
-    | '/settings/organizations/$orgSlug/team'
-    | '/$orgSlug/claws/$clawSlug/'
-    | '/$orgSlug/projects/$projectSlug/'
-    | '/settings/organizations/$orgSlug/'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/traces'
-    | '/settings/organizations/$orgSlug/claws/$clawSlug'
-    | '/settings/organizations/$orgSlug/projects/$projectSlug'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/'
-    | '/settings/organizations/$orgSlug/claws'
-    | '/settings/organizations/$orgSlug/projects'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/functions'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId'
-  fileRoutesByTo: FileRoutesByTo
+    | "/"
+    | "/$orgSlug"
+    | "/blog"
+    | "/org-redirect"
+    | "/dev"
+    | "/docs"
+    | "/login"
+    | "/onboarding"
+    | "/organizations"
+    | "/pricing"
+    | "/privacy"
+    | "/settings"
+    | "/api/analytics"
+    | "/auth/github"
+    | "/auth/google"
+    | "/auth/me"
+    | "/blog/$slug"
+    | "/dev/$slug"
+    | "/dev/audit-metadata"
+    | "/dev/claw-cards"
+    | "/dev/layout-test"
+    | "/dev/social-card"
+    | "/docs/$"
+    | "/invitations/accept"
+    | "/settings/me"
+    | "/terms/$"
+    | "/$orgSlug/"
+    | "/blog/"
+    | "/dev/"
+    | "/settings/"
+    | "/$orgSlug/claws/$clawSlug"
+    | "/$orgSlug/projects/$projectSlug"
+    | "/api/internal/$"
+    | "/api/v2/$"
+    | "/api/v2/docs"
+    | "/api/v2/health"
+    | "/api/webhooks/stripe"
+    | "/auth/github/callback"
+    | "/auth/github/proxy-callback"
+    | "/auth/google/callback"
+    | "/auth/google/proxy-callback"
+    | "/docs/v1/$"
+    | "/settings/organizations/$orgSlug"
+    | "/$orgSlug/claws"
+    | "/$orgSlug/projects"
+    | "/settings/organizations"
+    | "/$orgSlug/claws/$clawSlug/chat"
+    | "/$orgSlug/claws/$clawSlug/secrets"
+    | "/$orgSlug/projects/$projectSlug/$envSlug"
+    | "/router/v2/$provider/$"
+    | "/settings/organizations/$orgSlug/api-keys"
+    | "/settings/organizations/$orgSlug/billing"
+    | "/settings/organizations/$orgSlug/team"
+    | "/$orgSlug/claws/$clawSlug/"
+    | "/$orgSlug/projects/$projectSlug/"
+    | "/settings/organizations/$orgSlug/"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/traces"
+    | "/settings/organizations/$orgSlug/claws/$clawSlug"
+    | "/settings/organizations/$orgSlug/projects/$projectSlug"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/"
+    | "/settings/organizations/$orgSlug/claws"
+    | "/settings/organizations/$orgSlug/projects"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/functions"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId";
+  fileRoutesByTo: FileRoutesByTo;
   to:
-    | '/'
-    | '/cloud'
-    | '/docs'
-    | '/login'
-    | '/onboarding'
-    | '/organizations'
-    | '/pricing'
-    | '/privacy'
-    | '/api/analytics'
-    | '/auth/github'
-    | '/auth/google'
-    | '/auth/me'
-    | '/blog/$slug'
-    | '/dev/$slug'
-    | '/dev/audit-metadata'
-    | '/dev/claw-cards'
-    | '/dev/layout-test'
-    | '/dev/social-card'
-    | '/docs/$'
-    | '/invitations/accept'
-    | '/settings/me'
-    | '/terms/$'
-    | '/$orgSlug'
-    | '/blog'
-    | '/dev'
-    | '/settings'
-    | '/api/internal/$'
-    | '/api/v2/$'
-    | '/api/v2/docs'
-    | '/api/v2/health'
-    | '/api/webhooks/stripe'
-    | '/auth/github/callback'
-    | '/auth/github/proxy-callback'
-    | '/auth/google/callback'
-    | '/auth/google/proxy-callback'
-    | '/docs/v1/$'
-    | '/$orgSlug/claws'
-    | '/$orgSlug/projects'
-    | '/settings/organizations'
-    | '/$orgSlug/claws/$clawSlug/chat'
-    | '/$orgSlug/claws/$clawSlug/secrets'
-    | '/router/v2/$provider/$'
-    | '/settings/organizations/$orgSlug/api-keys'
-    | '/settings/organizations/$orgSlug/billing'
-    | '/settings/organizations/$orgSlug/team'
-    | '/$orgSlug/claws/$clawSlug'
-    | '/$orgSlug/projects/$projectSlug'
-    | '/settings/organizations/$orgSlug'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/traces'
-    | '/settings/organizations/$orgSlug/claws/$clawSlug'
-    | '/settings/organizations/$orgSlug/projects/$projectSlug'
-    | '/$orgSlug/projects/$projectSlug/$envSlug'
-    | '/settings/organizations/$orgSlug/claws'
-    | '/settings/organizations/$orgSlug/projects'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/functions'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId'
+    | "/"
+    | "/org-redirect"
+    | "/docs"
+    | "/login"
+    | "/onboarding"
+    | "/organizations"
+    | "/pricing"
+    | "/privacy"
+    | "/api/analytics"
+    | "/auth/github"
+    | "/auth/google"
+    | "/auth/me"
+    | "/blog/$slug"
+    | "/dev/$slug"
+    | "/dev/audit-metadata"
+    | "/dev/claw-cards"
+    | "/dev/layout-test"
+    | "/dev/social-card"
+    | "/docs/$"
+    | "/invitations/accept"
+    | "/settings/me"
+    | "/terms/$"
+    | "/$orgSlug"
+    | "/blog"
+    | "/dev"
+    | "/settings"
+    | "/api/internal/$"
+    | "/api/v2/$"
+    | "/api/v2/docs"
+    | "/api/v2/health"
+    | "/api/webhooks/stripe"
+    | "/auth/github/callback"
+    | "/auth/github/proxy-callback"
+    | "/auth/google/callback"
+    | "/auth/google/proxy-callback"
+    | "/docs/v1/$"
+    | "/$orgSlug/claws"
+    | "/$orgSlug/projects"
+    | "/settings/organizations"
+    | "/$orgSlug/claws/$clawSlug/chat"
+    | "/$orgSlug/claws/$clawSlug/secrets"
+    | "/router/v2/$provider/$"
+    | "/settings/organizations/$orgSlug/api-keys"
+    | "/settings/organizations/$orgSlug/billing"
+    | "/settings/organizations/$orgSlug/team"
+    | "/$orgSlug/claws/$clawSlug"
+    | "/$orgSlug/projects/$projectSlug"
+    | "/settings/organizations/$orgSlug"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/traces"
+    | "/settings/organizations/$orgSlug/claws/$clawSlug"
+    | "/settings/organizations/$orgSlug/projects/$projectSlug"
+    | "/$orgSlug/projects/$projectSlug/$envSlug"
+    | "/settings/organizations/$orgSlug/claws"
+    | "/settings/organizations/$orgSlug/projects"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/functions"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId";
   id:
-    | '__root__'
-    | '/'
-    | '/$orgSlug'
-    | '/blog'
-    | '/cloud'
-    | '/dev'
-    | '/docs'
-    | '/login'
-    | '/onboarding'
-    | '/organizations'
-    | '/pricing'
-    | '/privacy'
-    | '/settings'
-    | '/api/analytics'
-    | '/auth/github'
-    | '/auth/google'
-    | '/auth/me'
-    | '/blog/$slug'
-    | '/dev/$slug'
-    | '/dev/audit-metadata'
-    | '/dev/claw-cards'
-    | '/dev/layout-test'
-    | '/dev/social-card'
-    | '/docs/$'
-    | '/invitations/accept'
-    | '/settings/me'
-    | '/terms/$'
-    | '/$orgSlug/'
-    | '/blog/'
-    | '/dev/'
-    | '/settings/'
-    | '/$orgSlug/claws/$clawSlug'
-    | '/$orgSlug/projects/$projectSlug'
-    | '/api/internal/$'
-    | '/api/v2/$'
-    | '/api/v2/docs'
-    | '/api/v2/health'
-    | '/api/webhooks/stripe'
-    | '/auth/github/callback'
-    | '/auth/github/proxy-callback'
-    | '/auth/google/callback'
-    | '/auth/google/proxy-callback'
-    | '/docs/v1/$'
-    | '/settings/organizations/$orgSlug'
-    | '/$orgSlug/claws/'
-    | '/$orgSlug/projects/'
-    | '/settings/organizations/'
-    | '/$orgSlug/claws/$clawSlug/chat'
-    | '/$orgSlug/claws/$clawSlug/secrets'
-    | '/$orgSlug/projects/$projectSlug/$envSlug'
-    | '/router/v2/$provider/$'
-    | '/settings/organizations/$orgSlug/api-keys'
-    | '/settings/organizations/$orgSlug/billing'
-    | '/settings/organizations/$orgSlug/team'
-    | '/$orgSlug/claws/$clawSlug/'
-    | '/$orgSlug/projects/$projectSlug/'
-    | '/settings/organizations/$orgSlug/'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/traces'
-    | '/settings/organizations/$orgSlug/claws/$clawSlug'
-    | '/settings/organizations/$orgSlug/projects/$projectSlug'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/'
-    | '/settings/organizations/$orgSlug/claws/'
-    | '/settings/organizations/$orgSlug/projects/'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/functions/'
-    | '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId'
-  fileRoutesById: FileRoutesById
+    | "__root__"
+    | "/"
+    | "/$orgSlug"
+    | "/blog"
+    | "/org-redirect"
+    | "/dev"
+    | "/docs"
+    | "/login"
+    | "/onboarding"
+    | "/organizations"
+    | "/pricing"
+    | "/privacy"
+    | "/settings"
+    | "/api/analytics"
+    | "/auth/github"
+    | "/auth/google"
+    | "/auth/me"
+    | "/blog/$slug"
+    | "/dev/$slug"
+    | "/dev/audit-metadata"
+    | "/dev/claw-cards"
+    | "/dev/layout-test"
+    | "/dev/social-card"
+    | "/docs/$"
+    | "/invitations/accept"
+    | "/settings/me"
+    | "/terms/$"
+    | "/$orgSlug/"
+    | "/blog/"
+    | "/dev/"
+    | "/settings/"
+    | "/$orgSlug/claws/$clawSlug"
+    | "/$orgSlug/projects/$projectSlug"
+    | "/api/internal/$"
+    | "/api/v2/$"
+    | "/api/v2/docs"
+    | "/api/v2/health"
+    | "/api/webhooks/stripe"
+    | "/auth/github/callback"
+    | "/auth/github/proxy-callback"
+    | "/auth/google/callback"
+    | "/auth/google/proxy-callback"
+    | "/docs/v1/$"
+    | "/settings/organizations/$orgSlug"
+    | "/$orgSlug/claws/"
+    | "/$orgSlug/projects/"
+    | "/settings/organizations/"
+    | "/$orgSlug/claws/$clawSlug/chat"
+    | "/$orgSlug/claws/$clawSlug/secrets"
+    | "/$orgSlug/projects/$projectSlug/$envSlug"
+    | "/router/v2/$provider/$"
+    | "/settings/organizations/$orgSlug/api-keys"
+    | "/settings/organizations/$orgSlug/billing"
+    | "/settings/organizations/$orgSlug/team"
+    | "/$orgSlug/claws/$clawSlug/"
+    | "/$orgSlug/projects/$projectSlug/"
+    | "/settings/organizations/$orgSlug/"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/traces"
+    | "/settings/organizations/$orgSlug/claws/$clawSlug"
+    | "/settings/organizations/$orgSlug/projects/$projectSlug"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/"
+    | "/settings/organizations/$orgSlug/claws/"
+    | "/settings/organizations/$orgSlug/projects/"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/functions/"
+    | "/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  OrgSlugRoute: typeof OrgSlugRouteWithChildren
-  BlogRoute: typeof BlogRouteWithChildren
-  CloudRoute: typeof CloudRoute
-  DevRoute: typeof DevRouteWithChildren
-  DocsRoute: typeof DocsRouteWithChildren
-  LoginRoute: typeof LoginRoute
-  OnboardingRoute: typeof OnboardingRoute
-  OrganizationsRoute: typeof OrganizationsRoute
-  PricingRoute: typeof PricingRoute
-  PrivacyRoute: typeof PrivacyRoute
-  SettingsRoute: typeof SettingsRouteWithChildren
-  ApiAnalyticsRoute: typeof ApiAnalyticsRoute
-  AuthGithubRoute: typeof AuthGithubRouteWithChildren
-  AuthGoogleRoute: typeof AuthGoogleRouteWithChildren
-  AuthMeRoute: typeof AuthMeRoute
-  InvitationsAcceptRoute: typeof InvitationsAcceptRoute
-  TermsSplatRoute: typeof TermsSplatRoute
-  ApiInternalSplatRoute: typeof ApiInternalSplatRoute
-  ApiV2SplatRoute: typeof ApiV2SplatRoute
-  ApiV2DocsRoute: typeof ApiV2DocsRoute
-  ApiV2HealthRoute: typeof ApiV2HealthRoute
-  ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
-  RouterV2ProviderSplatRoute: typeof RouterV2ProviderSplatRoute
+  IndexRoute: typeof IndexRoute;
+  OrgSlugRoute: typeof OrgSlugRouteWithChildren;
+  BlogRoute: typeof BlogRouteWithChildren;
+  OrgRedirectRoute: typeof OrgRedirectRoute;
+  DevRoute: typeof DevRouteWithChildren;
+  DocsRoute: typeof DocsRouteWithChildren;
+  LoginRoute: typeof LoginRoute;
+  OnboardingRoute: typeof OnboardingRoute;
+  OrganizationsRoute: typeof OrganizationsRoute;
+  PricingRoute: typeof PricingRoute;
+  PrivacyRoute: typeof PrivacyRoute;
+  SettingsRoute: typeof SettingsRouteWithChildren;
+  ApiAnalyticsRoute: typeof ApiAnalyticsRoute;
+  AuthGithubRoute: typeof AuthGithubRouteWithChildren;
+  AuthGoogleRoute: typeof AuthGoogleRouteWithChildren;
+  AuthMeRoute: typeof AuthMeRoute;
+  InvitationsAcceptRoute: typeof InvitationsAcceptRoute;
+  TermsSplatRoute: typeof TermsSplatRoute;
+  ApiInternalSplatRoute: typeof ApiInternalSplatRoute;
+  ApiV2SplatRoute: typeof ApiV2SplatRoute;
+  ApiV2DocsRoute: typeof ApiV2DocsRoute;
+  ApiV2HealthRoute: typeof ApiV2HealthRoute;
+  ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute;
+  RouterV2ProviderSplatRoute: typeof RouterV2ProviderSplatRoute;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/organizations': {
-      id: '/organizations'
-      path: '/organizations'
-      fullPath: '/organizations'
-      preLoaderRoute: typeof OrganizationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/onboarding': {
-      id: '/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof OnboardingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/docs': {
-      id: '/docs'
-      path: '/docs'
-      fullPath: '/docs'
-      preLoaderRoute: typeof DocsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dev': {
-      id: '/dev'
-      path: '/dev'
-      fullPath: '/dev'
-      preLoaderRoute: typeof DevRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cloud': {
-      id: '/cloud'
-      path: '/cloud'
-      fullPath: '/cloud'
-      preLoaderRoute: typeof CloudRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog': {
-      id: '/blog'
-      path: '/blog'
-      fullPath: '/blog'
-      preLoaderRoute: typeof BlogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$orgSlug': {
-      id: '/$orgSlug'
-      path: '/$orgSlug'
-      fullPath: '/$orgSlug'
-      preLoaderRoute: typeof OrgSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings/': {
-      id: '/settings/'
-      path: '/'
-      fullPath: '/settings/'
-      preLoaderRoute: typeof SettingsIndexRouteImport
-      parentRoute: typeof SettingsRoute
-    }
-    '/dev/': {
-      id: '/dev/'
-      path: '/'
-      fullPath: '/dev/'
-      preLoaderRoute: typeof DevIndexRouteImport
-      parentRoute: typeof DevRoute
-    }
-    '/blog/': {
-      id: '/blog/'
-      path: '/'
-      fullPath: '/blog/'
-      preLoaderRoute: typeof BlogIndexRouteImport
-      parentRoute: typeof BlogRoute
-    }
-    '/$orgSlug/': {
-      id: '/$orgSlug/'
-      path: '/'
-      fullPath: '/$orgSlug/'
-      preLoaderRoute: typeof OrgSlugIndexRouteImport
-      parentRoute: typeof OrgSlugRoute
-    }
-    '/terms/$': {
-      id: '/terms/$'
-      path: '/terms/$'
-      fullPath: '/terms/$'
-      preLoaderRoute: typeof TermsSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings/me': {
-      id: '/settings/me'
-      path: '/me'
-      fullPath: '/settings/me'
-      preLoaderRoute: typeof SettingsMeRouteImport
-      parentRoute: typeof SettingsRoute
-    }
-    '/invitations/accept': {
-      id: '/invitations/accept'
-      path: '/invitations/accept'
-      fullPath: '/invitations/accept'
-      preLoaderRoute: typeof InvitationsAcceptRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/docs/$': {
-      id: '/docs/$'
-      path: '/$'
-      fullPath: '/docs/$'
-      preLoaderRoute: typeof DocsSplatRouteImport
-      parentRoute: typeof DocsRoute
-    }
-    '/dev/social-card': {
-      id: '/dev/social-card'
-      path: '/social-card'
-      fullPath: '/dev/social-card'
-      preLoaderRoute: typeof DevSocialCardRouteImport
-      parentRoute: typeof DevRoute
-    }
-    '/dev/layout-test': {
-      id: '/dev/layout-test'
-      path: '/layout-test'
-      fullPath: '/dev/layout-test'
-      preLoaderRoute: typeof DevLayoutTestRouteImport
-      parentRoute: typeof DevRoute
-    }
-    '/dev/claw-cards': {
-      id: '/dev/claw-cards'
-      path: '/claw-cards'
-      fullPath: '/dev/claw-cards'
-      preLoaderRoute: typeof DevClawCardsRouteImport
-      parentRoute: typeof DevRoute
-    }
-    '/dev/audit-metadata': {
-      id: '/dev/audit-metadata'
-      path: '/audit-metadata'
-      fullPath: '/dev/audit-metadata'
-      preLoaderRoute: typeof DevAuditMetadataRouteImport
-      parentRoute: typeof DevRoute
-    }
-    '/dev/$slug': {
-      id: '/dev/$slug'
-      path: '/$slug'
-      fullPath: '/dev/$slug'
-      preLoaderRoute: typeof DevSlugRouteImport
-      parentRoute: typeof DevRoute
-    }
-    '/blog/$slug': {
-      id: '/blog/$slug'
-      path: '/$slug'
-      fullPath: '/blog/$slug'
-      preLoaderRoute: typeof BlogSlugRouteImport
-      parentRoute: typeof BlogRoute
-    }
-    '/auth/me': {
-      id: '/auth/me'
-      path: '/auth/me'
-      fullPath: '/auth/me'
-      preLoaderRoute: typeof AuthMeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/google': {
-      id: '/auth/google'
-      path: '/auth/google'
-      fullPath: '/auth/google'
-      preLoaderRoute: typeof AuthGoogleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/github': {
-      id: '/auth/github'
-      path: '/auth/github'
-      fullPath: '/auth/github'
-      preLoaderRoute: typeof AuthGithubRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/analytics': {
-      id: '/api/analytics'
-      path: '/api/analytics'
-      fullPath: '/api/analytics'
-      preLoaderRoute: typeof ApiAnalyticsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings/organizations/': {
-      id: '/settings/organizations/'
-      path: '/organizations'
-      fullPath: '/settings/organizations'
-      preLoaderRoute: typeof SettingsOrganizationsIndexRouteImport
-      parentRoute: typeof SettingsRoute
-    }
-    '/$orgSlug/projects/': {
-      id: '/$orgSlug/projects/'
-      path: '/projects'
-      fullPath: '/$orgSlug/projects'
-      preLoaderRoute: typeof OrgSlugProjectsIndexRouteImport
-      parentRoute: typeof OrgSlugRoute
-    }
-    '/$orgSlug/claws/': {
-      id: '/$orgSlug/claws/'
-      path: '/claws'
-      fullPath: '/$orgSlug/claws'
-      preLoaderRoute: typeof OrgSlugClawsIndexRouteImport
-      parentRoute: typeof OrgSlugRoute
-    }
-    '/settings/organizations/$orgSlug': {
-      id: '/settings/organizations/$orgSlug'
-      path: '/organizations/$orgSlug'
-      fullPath: '/settings/organizations/$orgSlug'
-      preLoaderRoute: typeof SettingsOrganizationsOrgSlugRouteImport
-      parentRoute: typeof SettingsRoute
-    }
-    '/docs/v1/$': {
-      id: '/docs/v1/$'
-      path: '/v1/$'
-      fullPath: '/docs/v1/$'
-      preLoaderRoute: typeof DocsV1SplatRouteImport
-      parentRoute: typeof DocsRoute
-    }
-    '/auth/google/proxy-callback': {
-      id: '/auth/google/proxy-callback'
-      path: '/proxy-callback'
-      fullPath: '/auth/google/proxy-callback'
-      preLoaderRoute: typeof AuthGoogleProxyCallbackRouteImport
-      parentRoute: typeof AuthGoogleRoute
-    }
-    '/auth/google/callback': {
-      id: '/auth/google/callback'
-      path: '/callback'
-      fullPath: '/auth/google/callback'
-      preLoaderRoute: typeof AuthGoogleCallbackRouteImport
-      parentRoute: typeof AuthGoogleRoute
-    }
-    '/auth/github/proxy-callback': {
-      id: '/auth/github/proxy-callback'
-      path: '/proxy-callback'
-      fullPath: '/auth/github/proxy-callback'
-      preLoaderRoute: typeof AuthGithubProxyCallbackRouteImport
-      parentRoute: typeof AuthGithubRoute
-    }
-    '/auth/github/callback': {
-      id: '/auth/github/callback'
-      path: '/callback'
-      fullPath: '/auth/github/callback'
-      preLoaderRoute: typeof AuthGithubCallbackRouteImport
-      parentRoute: typeof AuthGithubRoute
-    }
-    '/api/webhooks/stripe': {
-      id: '/api/webhooks/stripe'
-      path: '/api/webhooks/stripe'
-      fullPath: '/api/webhooks/stripe'
-      preLoaderRoute: typeof ApiWebhooksStripeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/v2/health': {
-      id: '/api/v2/health'
-      path: '/api/v2/health'
-      fullPath: '/api/v2/health'
-      preLoaderRoute: typeof ApiV2HealthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/v2/docs': {
-      id: '/api/v2/docs'
-      path: '/api/v2/docs'
-      fullPath: '/api/v2/docs'
-      preLoaderRoute: typeof ApiV2DocsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/v2/$': {
-      id: '/api/v2/$'
-      path: '/api/v2/$'
-      fullPath: '/api/v2/$'
-      preLoaderRoute: typeof ApiV2SplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/internal/$': {
-      id: '/api/internal/$'
-      path: '/api/internal/$'
-      fullPath: '/api/internal/$'
-      preLoaderRoute: typeof ApiInternalSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$orgSlug/projects/$projectSlug': {
-      id: '/$orgSlug/projects/$projectSlug'
-      path: '/projects/$projectSlug'
-      fullPath: '/$orgSlug/projects/$projectSlug'
-      preLoaderRoute: typeof OrgSlugProjectsProjectSlugRouteImport
-      parentRoute: typeof OrgSlugRoute
-    }
-    '/$orgSlug/claws/$clawSlug': {
-      id: '/$orgSlug/claws/$clawSlug'
-      path: '/claws/$clawSlug'
-      fullPath: '/$orgSlug/claws/$clawSlug'
-      preLoaderRoute: typeof OrgSlugClawsClawSlugRouteImport
-      parentRoute: typeof OrgSlugRoute
-    }
-    '/settings/organizations/$orgSlug/': {
-      id: '/settings/organizations/$orgSlug/'
-      path: '/'
-      fullPath: '/settings/organizations/$orgSlug/'
-      preLoaderRoute: typeof SettingsOrganizationsOrgSlugIndexRouteImport
-      parentRoute: typeof SettingsOrganizationsOrgSlugRoute
-    }
-    '/$orgSlug/projects/$projectSlug/': {
-      id: '/$orgSlug/projects/$projectSlug/'
-      path: '/'
-      fullPath: '/$orgSlug/projects/$projectSlug/'
-      preLoaderRoute: typeof OrgSlugProjectsProjectSlugIndexRouteImport
-      parentRoute: typeof OrgSlugProjectsProjectSlugRoute
-    }
-    '/$orgSlug/claws/$clawSlug/': {
-      id: '/$orgSlug/claws/$clawSlug/'
-      path: '/'
-      fullPath: '/$orgSlug/claws/$clawSlug/'
-      preLoaderRoute: typeof OrgSlugClawsClawSlugIndexRouteImport
-      parentRoute: typeof OrgSlugClawsClawSlugRoute
-    }
-    '/settings/organizations/$orgSlug/team': {
-      id: '/settings/organizations/$orgSlug/team'
-      path: '/team'
-      fullPath: '/settings/organizations/$orgSlug/team'
-      preLoaderRoute: typeof SettingsOrganizationsOrgSlugTeamRouteImport
-      parentRoute: typeof SettingsOrganizationsOrgSlugRoute
-    }
-    '/settings/organizations/$orgSlug/billing': {
-      id: '/settings/organizations/$orgSlug/billing'
-      path: '/billing'
-      fullPath: '/settings/organizations/$orgSlug/billing'
-      preLoaderRoute: typeof SettingsOrganizationsOrgSlugBillingRouteImport
-      parentRoute: typeof SettingsOrganizationsOrgSlugRoute
-    }
-    '/settings/organizations/$orgSlug/api-keys': {
-      id: '/settings/organizations/$orgSlug/api-keys'
-      path: '/api-keys'
-      fullPath: '/settings/organizations/$orgSlug/api-keys'
-      preLoaderRoute: typeof SettingsOrganizationsOrgSlugApiKeysRouteImport
-      parentRoute: typeof SettingsOrganizationsOrgSlugRoute
-    }
-    '/router/v2/$provider/$': {
-      id: '/router/v2/$provider/$'
-      path: '/router/v2/$provider/$'
-      fullPath: '/router/v2/$provider/$'
-      preLoaderRoute: typeof RouterV2ProviderSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$orgSlug/projects/$projectSlug/$envSlug': {
-      id: '/$orgSlug/projects/$projectSlug/$envSlug'
-      path: '/$envSlug'
-      fullPath: '/$orgSlug/projects/$projectSlug/$envSlug'
-      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRouteImport
-      parentRoute: typeof OrgSlugProjectsProjectSlugRoute
-    }
-    '/$orgSlug/claws/$clawSlug/secrets': {
-      id: '/$orgSlug/claws/$clawSlug/secrets'
-      path: '/secrets'
-      fullPath: '/$orgSlug/claws/$clawSlug/secrets'
-      preLoaderRoute: typeof OrgSlugClawsClawSlugSecretsRouteImport
-      parentRoute: typeof OrgSlugClawsClawSlugRoute
-    }
-    '/$orgSlug/claws/$clawSlug/chat': {
-      id: '/$orgSlug/claws/$clawSlug/chat'
-      path: '/chat'
-      fullPath: '/$orgSlug/claws/$clawSlug/chat'
-      preLoaderRoute: typeof OrgSlugClawsClawSlugChatRouteImport
-      parentRoute: typeof OrgSlugClawsClawSlugRoute
-    }
-    '/settings/organizations/$orgSlug/projects/': {
-      id: '/settings/organizations/$orgSlug/projects/'
-      path: '/projects'
-      fullPath: '/settings/organizations/$orgSlug/projects'
-      preLoaderRoute: typeof SettingsOrganizationsOrgSlugProjectsIndexRouteImport
-      parentRoute: typeof SettingsOrganizationsOrgSlugRoute
-    }
-    '/settings/organizations/$orgSlug/claws/': {
-      id: '/settings/organizations/$orgSlug/claws/'
-      path: '/claws'
-      fullPath: '/settings/organizations/$orgSlug/claws'
-      preLoaderRoute: typeof SettingsOrganizationsOrgSlugClawsIndexRouteImport
-      parentRoute: typeof SettingsOrganizationsOrgSlugRoute
-    }
-    '/$orgSlug/projects/$projectSlug/$envSlug/': {
-      id: '/$orgSlug/projects/$projectSlug/$envSlug/'
-      path: '/'
-      fullPath: '/$orgSlug/projects/$projectSlug/$envSlug/'
-      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugIndexRouteImport
-      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute
-    }
-    '/settings/organizations/$orgSlug/projects/$projectSlug': {
-      id: '/settings/organizations/$orgSlug/projects/$projectSlug'
-      path: '/projects/$projectSlug'
-      fullPath: '/settings/organizations/$orgSlug/projects/$projectSlug'
-      preLoaderRoute: typeof SettingsOrganizationsOrgSlugProjectsProjectSlugRouteImport
-      parentRoute: typeof SettingsOrganizationsOrgSlugRoute
-    }
-    '/settings/organizations/$orgSlug/claws/$clawSlug': {
-      id: '/settings/organizations/$orgSlug/claws/$clawSlug'
-      path: '/claws/$clawSlug'
-      fullPath: '/settings/organizations/$orgSlug/claws/$clawSlug'
-      preLoaderRoute: typeof SettingsOrganizationsOrgSlugClawsClawSlugRouteImport
-      parentRoute: typeof SettingsOrganizationsOrgSlugRoute
-    }
-    '/$orgSlug/projects/$projectSlug/$envSlug/traces': {
-      id: '/$orgSlug/projects/$projectSlug/$envSlug/traces'
-      path: '/traces'
-      fullPath: '/$orgSlug/projects/$projectSlug/$envSlug/traces'
-      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugTracesRouteImport
-      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute
-    }
-    '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue': {
-      id: '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue'
-      path: '/annotation-queue'
-      fullPath: '/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue'
-      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRouteImport
-      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute
-    }
-    '/$orgSlug/projects/$projectSlug/$envSlug/functions/': {
-      id: '/$orgSlug/projects/$projectSlug/$envSlug/functions/'
-      path: '/functions'
-      fullPath: '/$orgSlug/projects/$projectSlug/$envSlug/functions'
-      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRouteImport
-      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute
-    }
-    '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName': {
-      id: '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName'
-      path: '/functions/$functionName'
-      fullPath: '/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName'
-      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRouteImport
-      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute
-    }
-    '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId': {
-      id: '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId'
-      path: '/trace-view/$traceId/$spanId'
-      fullPath: '/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId'
-      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRouteImport
-      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute
-    }
+    "/settings": {
+      id: "/settings";
+      path: "/settings";
+      fullPath: "/settings";
+      preLoaderRoute: typeof SettingsRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/privacy": {
+      id: "/privacy";
+      path: "/privacy";
+      fullPath: "/privacy";
+      preLoaderRoute: typeof PrivacyRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/pricing": {
+      id: "/pricing";
+      path: "/pricing";
+      fullPath: "/pricing";
+      preLoaderRoute: typeof PricingRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/organizations": {
+      id: "/organizations";
+      path: "/organizations";
+      fullPath: "/organizations";
+      preLoaderRoute: typeof OrganizationsRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/onboarding": {
+      id: "/onboarding";
+      path: "/onboarding";
+      fullPath: "/onboarding";
+      preLoaderRoute: typeof OnboardingRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/login": {
+      id: "/login";
+      path: "/login";
+      fullPath: "/login";
+      preLoaderRoute: typeof LoginRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/docs": {
+      id: "/docs";
+      path: "/docs";
+      fullPath: "/docs";
+      preLoaderRoute: typeof DocsRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/dev": {
+      id: "/dev";
+      path: "/dev";
+      fullPath: "/dev";
+      preLoaderRoute: typeof DevRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/org-redirect": {
+      id: "/org-redirect";
+      path: "/org-redirect";
+      fullPath: "/org-redirect";
+      preLoaderRoute: typeof OrgRedirectRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/blog": {
+      id: "/blog";
+      path: "/blog";
+      fullPath: "/blog";
+      preLoaderRoute: typeof BlogRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/$orgSlug": {
+      id: "/$orgSlug";
+      path: "/$orgSlug";
+      fullPath: "/$orgSlug";
+      preLoaderRoute: typeof OrgSlugRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/settings/": {
+      id: "/settings/";
+      path: "/";
+      fullPath: "/settings/";
+      preLoaderRoute: typeof SettingsIndexRouteImport;
+      parentRoute: typeof SettingsRoute;
+    };
+    "/dev/": {
+      id: "/dev/";
+      path: "/";
+      fullPath: "/dev/";
+      preLoaderRoute: typeof DevIndexRouteImport;
+      parentRoute: typeof DevRoute;
+    };
+    "/blog/": {
+      id: "/blog/";
+      path: "/";
+      fullPath: "/blog/";
+      preLoaderRoute: typeof BlogIndexRouteImport;
+      parentRoute: typeof BlogRoute;
+    };
+    "/$orgSlug/": {
+      id: "/$orgSlug/";
+      path: "/";
+      fullPath: "/$orgSlug/";
+      preLoaderRoute: typeof OrgSlugIndexRouteImport;
+      parentRoute: typeof OrgSlugRoute;
+    };
+    "/terms/$": {
+      id: "/terms/$";
+      path: "/terms/$";
+      fullPath: "/terms/$";
+      preLoaderRoute: typeof TermsSplatRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/settings/me": {
+      id: "/settings/me";
+      path: "/me";
+      fullPath: "/settings/me";
+      preLoaderRoute: typeof SettingsMeRouteImport;
+      parentRoute: typeof SettingsRoute;
+    };
+    "/invitations/accept": {
+      id: "/invitations/accept";
+      path: "/invitations/accept";
+      fullPath: "/invitations/accept";
+      preLoaderRoute: typeof InvitationsAcceptRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/docs/$": {
+      id: "/docs/$";
+      path: "/$";
+      fullPath: "/docs/$";
+      preLoaderRoute: typeof DocsSplatRouteImport;
+      parentRoute: typeof DocsRoute;
+    };
+    "/dev/social-card": {
+      id: "/dev/social-card";
+      path: "/social-card";
+      fullPath: "/dev/social-card";
+      preLoaderRoute: typeof DevSocialCardRouteImport;
+      parentRoute: typeof DevRoute;
+    };
+    "/dev/layout-test": {
+      id: "/dev/layout-test";
+      path: "/layout-test";
+      fullPath: "/dev/layout-test";
+      preLoaderRoute: typeof DevLayoutTestRouteImport;
+      parentRoute: typeof DevRoute;
+    };
+    "/dev/claw-cards": {
+      id: "/dev/claw-cards";
+      path: "/claw-cards";
+      fullPath: "/dev/claw-cards";
+      preLoaderRoute: typeof DevClawCardsRouteImport;
+      parentRoute: typeof DevRoute;
+    };
+    "/dev/audit-metadata": {
+      id: "/dev/audit-metadata";
+      path: "/audit-metadata";
+      fullPath: "/dev/audit-metadata";
+      preLoaderRoute: typeof DevAuditMetadataRouteImport;
+      parentRoute: typeof DevRoute;
+    };
+    "/dev/$slug": {
+      id: "/dev/$slug";
+      path: "/$slug";
+      fullPath: "/dev/$slug";
+      preLoaderRoute: typeof DevSlugRouteImport;
+      parentRoute: typeof DevRoute;
+    };
+    "/blog/$slug": {
+      id: "/blog/$slug";
+      path: "/$slug";
+      fullPath: "/blog/$slug";
+      preLoaderRoute: typeof BlogSlugRouteImport;
+      parentRoute: typeof BlogRoute;
+    };
+    "/auth/me": {
+      id: "/auth/me";
+      path: "/auth/me";
+      fullPath: "/auth/me";
+      preLoaderRoute: typeof AuthMeRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/auth/google": {
+      id: "/auth/google";
+      path: "/auth/google";
+      fullPath: "/auth/google";
+      preLoaderRoute: typeof AuthGoogleRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/auth/github": {
+      id: "/auth/github";
+      path: "/auth/github";
+      fullPath: "/auth/github";
+      preLoaderRoute: typeof AuthGithubRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/api/analytics": {
+      id: "/api/analytics";
+      path: "/api/analytics";
+      fullPath: "/api/analytics";
+      preLoaderRoute: typeof ApiAnalyticsRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/settings/organizations/": {
+      id: "/settings/organizations/";
+      path: "/organizations";
+      fullPath: "/settings/organizations";
+      preLoaderRoute: typeof SettingsOrganizationsIndexRouteImport;
+      parentRoute: typeof SettingsRoute;
+    };
+    "/$orgSlug/projects/": {
+      id: "/$orgSlug/projects/";
+      path: "/projects";
+      fullPath: "/$orgSlug/projects";
+      preLoaderRoute: typeof OrgSlugProjectsIndexRouteImport;
+      parentRoute: typeof OrgSlugRoute;
+    };
+    "/$orgSlug/claws/": {
+      id: "/$orgSlug/claws/";
+      path: "/claws";
+      fullPath: "/$orgSlug/claws";
+      preLoaderRoute: typeof OrgSlugClawsIndexRouteImport;
+      parentRoute: typeof OrgSlugRoute;
+    };
+    "/settings/organizations/$orgSlug": {
+      id: "/settings/organizations/$orgSlug";
+      path: "/organizations/$orgSlug";
+      fullPath: "/settings/organizations/$orgSlug";
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugRouteImport;
+      parentRoute: typeof SettingsRoute;
+    };
+    "/docs/v1/$": {
+      id: "/docs/v1/$";
+      path: "/v1/$";
+      fullPath: "/docs/v1/$";
+      preLoaderRoute: typeof DocsV1SplatRouteImport;
+      parentRoute: typeof DocsRoute;
+    };
+    "/auth/google/proxy-callback": {
+      id: "/auth/google/proxy-callback";
+      path: "/proxy-callback";
+      fullPath: "/auth/google/proxy-callback";
+      preLoaderRoute: typeof AuthGoogleProxyCallbackRouteImport;
+      parentRoute: typeof AuthGoogleRoute;
+    };
+    "/auth/google/callback": {
+      id: "/auth/google/callback";
+      path: "/callback";
+      fullPath: "/auth/google/callback";
+      preLoaderRoute: typeof AuthGoogleCallbackRouteImport;
+      parentRoute: typeof AuthGoogleRoute;
+    };
+    "/auth/github/proxy-callback": {
+      id: "/auth/github/proxy-callback";
+      path: "/proxy-callback";
+      fullPath: "/auth/github/proxy-callback";
+      preLoaderRoute: typeof AuthGithubProxyCallbackRouteImport;
+      parentRoute: typeof AuthGithubRoute;
+    };
+    "/auth/github/callback": {
+      id: "/auth/github/callback";
+      path: "/callback";
+      fullPath: "/auth/github/callback";
+      preLoaderRoute: typeof AuthGithubCallbackRouteImport;
+      parentRoute: typeof AuthGithubRoute;
+    };
+    "/api/webhooks/stripe": {
+      id: "/api/webhooks/stripe";
+      path: "/api/webhooks/stripe";
+      fullPath: "/api/webhooks/stripe";
+      preLoaderRoute: typeof ApiWebhooksStripeRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/api/v2/health": {
+      id: "/api/v2/health";
+      path: "/api/v2/health";
+      fullPath: "/api/v2/health";
+      preLoaderRoute: typeof ApiV2HealthRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/api/v2/docs": {
+      id: "/api/v2/docs";
+      path: "/api/v2/docs";
+      fullPath: "/api/v2/docs";
+      preLoaderRoute: typeof ApiV2DocsRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/api/v2/$": {
+      id: "/api/v2/$";
+      path: "/api/v2/$";
+      fullPath: "/api/v2/$";
+      preLoaderRoute: typeof ApiV2SplatRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/api/internal/$": {
+      id: "/api/internal/$";
+      path: "/api/internal/$";
+      fullPath: "/api/internal/$";
+      preLoaderRoute: typeof ApiInternalSplatRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/$orgSlug/projects/$projectSlug": {
+      id: "/$orgSlug/projects/$projectSlug";
+      path: "/projects/$projectSlug";
+      fullPath: "/$orgSlug/projects/$projectSlug";
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugRouteImport;
+      parentRoute: typeof OrgSlugRoute;
+    };
+    "/$orgSlug/claws/$clawSlug": {
+      id: "/$orgSlug/claws/$clawSlug";
+      path: "/claws/$clawSlug";
+      fullPath: "/$orgSlug/claws/$clawSlug";
+      preLoaderRoute: typeof OrgSlugClawsClawSlugRouteImport;
+      parentRoute: typeof OrgSlugRoute;
+    };
+    "/settings/organizations/$orgSlug/": {
+      id: "/settings/organizations/$orgSlug/";
+      path: "/";
+      fullPath: "/settings/organizations/$orgSlug/";
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugIndexRouteImport;
+      parentRoute: typeof SettingsOrganizationsOrgSlugRoute;
+    };
+    "/$orgSlug/projects/$projectSlug/": {
+      id: "/$orgSlug/projects/$projectSlug/";
+      path: "/";
+      fullPath: "/$orgSlug/projects/$projectSlug/";
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugIndexRouteImport;
+      parentRoute: typeof OrgSlugProjectsProjectSlugRoute;
+    };
+    "/$orgSlug/claws/$clawSlug/": {
+      id: "/$orgSlug/claws/$clawSlug/";
+      path: "/";
+      fullPath: "/$orgSlug/claws/$clawSlug/";
+      preLoaderRoute: typeof OrgSlugClawsClawSlugIndexRouteImport;
+      parentRoute: typeof OrgSlugClawsClawSlugRoute;
+    };
+    "/settings/organizations/$orgSlug/team": {
+      id: "/settings/organizations/$orgSlug/team";
+      path: "/team";
+      fullPath: "/settings/organizations/$orgSlug/team";
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugTeamRouteImport;
+      parentRoute: typeof SettingsOrganizationsOrgSlugRoute;
+    };
+    "/settings/organizations/$orgSlug/billing": {
+      id: "/settings/organizations/$orgSlug/billing";
+      path: "/billing";
+      fullPath: "/settings/organizations/$orgSlug/billing";
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugBillingRouteImport;
+      parentRoute: typeof SettingsOrganizationsOrgSlugRoute;
+    };
+    "/settings/organizations/$orgSlug/api-keys": {
+      id: "/settings/organizations/$orgSlug/api-keys";
+      path: "/api-keys";
+      fullPath: "/settings/organizations/$orgSlug/api-keys";
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugApiKeysRouteImport;
+      parentRoute: typeof SettingsOrganizationsOrgSlugRoute;
+    };
+    "/router/v2/$provider/$": {
+      id: "/router/v2/$provider/$";
+      path: "/router/v2/$provider/$";
+      fullPath: "/router/v2/$provider/$";
+      preLoaderRoute: typeof RouterV2ProviderSplatRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/$orgSlug/projects/$projectSlug/$envSlug": {
+      id: "/$orgSlug/projects/$projectSlug/$envSlug";
+      path: "/$envSlug";
+      fullPath: "/$orgSlug/projects/$projectSlug/$envSlug";
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRouteImport;
+      parentRoute: typeof OrgSlugProjectsProjectSlugRoute;
+    };
+    "/$orgSlug/claws/$clawSlug/secrets": {
+      id: "/$orgSlug/claws/$clawSlug/secrets";
+      path: "/secrets";
+      fullPath: "/$orgSlug/claws/$clawSlug/secrets";
+      preLoaderRoute: typeof OrgSlugClawsClawSlugSecretsRouteImport;
+      parentRoute: typeof OrgSlugClawsClawSlugRoute;
+    };
+    "/$orgSlug/claws/$clawSlug/chat": {
+      id: "/$orgSlug/claws/$clawSlug/chat";
+      path: "/chat";
+      fullPath: "/$orgSlug/claws/$clawSlug/chat";
+      preLoaderRoute: typeof OrgSlugClawsClawSlugChatRouteImport;
+      parentRoute: typeof OrgSlugClawsClawSlugRoute;
+    };
+    "/settings/organizations/$orgSlug/projects/": {
+      id: "/settings/organizations/$orgSlug/projects/";
+      path: "/projects";
+      fullPath: "/settings/organizations/$orgSlug/projects";
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugProjectsIndexRouteImport;
+      parentRoute: typeof SettingsOrganizationsOrgSlugRoute;
+    };
+    "/settings/organizations/$orgSlug/claws/": {
+      id: "/settings/organizations/$orgSlug/claws/";
+      path: "/claws";
+      fullPath: "/settings/organizations/$orgSlug/claws";
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugClawsIndexRouteImport;
+      parentRoute: typeof SettingsOrganizationsOrgSlugRoute;
+    };
+    "/$orgSlug/projects/$projectSlug/$envSlug/": {
+      id: "/$orgSlug/projects/$projectSlug/$envSlug/";
+      path: "/";
+      fullPath: "/$orgSlug/projects/$projectSlug/$envSlug/";
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugIndexRouteImport;
+      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute;
+    };
+    "/settings/organizations/$orgSlug/projects/$projectSlug": {
+      id: "/settings/organizations/$orgSlug/projects/$projectSlug";
+      path: "/projects/$projectSlug";
+      fullPath: "/settings/organizations/$orgSlug/projects/$projectSlug";
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugProjectsProjectSlugRouteImport;
+      parentRoute: typeof SettingsOrganizationsOrgSlugRoute;
+    };
+    "/settings/organizations/$orgSlug/claws/$clawSlug": {
+      id: "/settings/organizations/$orgSlug/claws/$clawSlug";
+      path: "/claws/$clawSlug";
+      fullPath: "/settings/organizations/$orgSlug/claws/$clawSlug";
+      preLoaderRoute: typeof SettingsOrganizationsOrgSlugClawsClawSlugRouteImport;
+      parentRoute: typeof SettingsOrganizationsOrgSlugRoute;
+    };
+    "/$orgSlug/projects/$projectSlug/$envSlug/traces": {
+      id: "/$orgSlug/projects/$projectSlug/$envSlug/traces";
+      path: "/traces";
+      fullPath: "/$orgSlug/projects/$projectSlug/$envSlug/traces";
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugTracesRouteImport;
+      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute;
+    };
+    "/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue": {
+      id: "/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue";
+      path: "/annotation-queue";
+      fullPath: "/$orgSlug/projects/$projectSlug/$envSlug/annotation-queue";
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRouteImport;
+      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute;
+    };
+    "/$orgSlug/projects/$projectSlug/$envSlug/functions/": {
+      id: "/$orgSlug/projects/$projectSlug/$envSlug/functions/";
+      path: "/functions";
+      fullPath: "/$orgSlug/projects/$projectSlug/$envSlug/functions";
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRouteImport;
+      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute;
+    };
+    "/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName": {
+      id: "/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName";
+      path: "/functions/$functionName";
+      fullPath: "/$orgSlug/projects/$projectSlug/$envSlug/functions/$functionName";
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRouteImport;
+      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute;
+    };
+    "/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId": {
+      id: "/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId";
+      path: "/trace-view/$traceId/$spanId";
+      fullPath: "/$orgSlug/projects/$projectSlug/$envSlug/trace-view/$traceId/$spanId";
+      preLoaderRoute: typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRouteImport;
+      parentRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRoute;
+    };
   }
 }
 
 interface OrgSlugClawsClawSlugRouteChildren {
-  OrgSlugClawsClawSlugChatRoute: typeof OrgSlugClawsClawSlugChatRoute
-  OrgSlugClawsClawSlugSecretsRoute: typeof OrgSlugClawsClawSlugSecretsRoute
-  OrgSlugClawsClawSlugIndexRoute: typeof OrgSlugClawsClawSlugIndexRoute
+  OrgSlugClawsClawSlugChatRoute: typeof OrgSlugClawsClawSlugChatRoute;
+  OrgSlugClawsClawSlugSecretsRoute: typeof OrgSlugClawsClawSlugSecretsRoute;
+  OrgSlugClawsClawSlugIndexRoute: typeof OrgSlugClawsClawSlugIndexRoute;
 }
 
 const OrgSlugClawsClawSlugRouteChildren: OrgSlugClawsClawSlugRouteChildren = {
   OrgSlugClawsClawSlugChatRoute: OrgSlugClawsClawSlugChatRoute,
   OrgSlugClawsClawSlugSecretsRoute: OrgSlugClawsClawSlugSecretsRoute,
   OrgSlugClawsClawSlugIndexRoute: OrgSlugClawsClawSlugIndexRoute,
-}
+};
 
 const OrgSlugClawsClawSlugRouteWithChildren =
-  OrgSlugClawsClawSlugRoute._addFileChildren(OrgSlugClawsClawSlugRouteChildren)
+  OrgSlugClawsClawSlugRoute._addFileChildren(OrgSlugClawsClawSlugRouteChildren);
 
 interface OrgSlugProjectsProjectSlugEnvSlugRouteChildren {
-  OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute: typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute
-  OrgSlugProjectsProjectSlugEnvSlugTracesRoute: typeof OrgSlugProjectsProjectSlugEnvSlugTracesRoute
-  OrgSlugProjectsProjectSlugEnvSlugIndexRoute: typeof OrgSlugProjectsProjectSlugEnvSlugIndexRoute
-  OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute: typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute
-  OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute: typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute
-  OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute: typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute
+  OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute: typeof OrgSlugProjectsProjectSlugEnvSlugAnnotationQueueRoute;
+  OrgSlugProjectsProjectSlugEnvSlugTracesRoute: typeof OrgSlugProjectsProjectSlugEnvSlugTracesRoute;
+  OrgSlugProjectsProjectSlugEnvSlugIndexRoute: typeof OrgSlugProjectsProjectSlugEnvSlugIndexRoute;
+  OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute: typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsFunctionNameRoute;
+  OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute: typeof OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute;
+  OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute: typeof OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute;
 }
 
 const OrgSlugProjectsProjectSlugEnvSlugRouteChildren: OrgSlugProjectsProjectSlugEnvSlugRouteChildren =
@@ -1357,16 +1357,16 @@ const OrgSlugProjectsProjectSlugEnvSlugRouteChildren: OrgSlugProjectsProjectSlug
       OrgSlugProjectsProjectSlugEnvSlugFunctionsIndexRoute,
     OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute:
       OrgSlugProjectsProjectSlugEnvSlugTraceViewTraceIdSpanIdRoute,
-  }
+  };
 
 const OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren =
   OrgSlugProjectsProjectSlugEnvSlugRoute._addFileChildren(
     OrgSlugProjectsProjectSlugEnvSlugRouteChildren,
-  )
+  );
 
 interface OrgSlugProjectsProjectSlugRouteChildren {
-  OrgSlugProjectsProjectSlugEnvSlugRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren
-  OrgSlugProjectsProjectSlugIndexRoute: typeof OrgSlugProjectsProjectSlugIndexRoute
+  OrgSlugProjectsProjectSlugEnvSlugRoute: typeof OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren;
+  OrgSlugProjectsProjectSlugIndexRoute: typeof OrgSlugProjectsProjectSlugIndexRoute;
 }
 
 const OrgSlugProjectsProjectSlugRouteChildren: OrgSlugProjectsProjectSlugRouteChildren =
@@ -1374,19 +1374,19 @@ const OrgSlugProjectsProjectSlugRouteChildren: OrgSlugProjectsProjectSlugRouteCh
     OrgSlugProjectsProjectSlugEnvSlugRoute:
       OrgSlugProjectsProjectSlugEnvSlugRouteWithChildren,
     OrgSlugProjectsProjectSlugIndexRoute: OrgSlugProjectsProjectSlugIndexRoute,
-  }
+  };
 
 const OrgSlugProjectsProjectSlugRouteWithChildren =
   OrgSlugProjectsProjectSlugRoute._addFileChildren(
     OrgSlugProjectsProjectSlugRouteChildren,
-  )
+  );
 
 interface OrgSlugRouteChildren {
-  OrgSlugIndexRoute: typeof OrgSlugIndexRoute
-  OrgSlugClawsClawSlugRoute: typeof OrgSlugClawsClawSlugRouteWithChildren
-  OrgSlugProjectsProjectSlugRoute: typeof OrgSlugProjectsProjectSlugRouteWithChildren
-  OrgSlugClawsIndexRoute: typeof OrgSlugClawsIndexRoute
-  OrgSlugProjectsIndexRoute: typeof OrgSlugProjectsIndexRoute
+  OrgSlugIndexRoute: typeof OrgSlugIndexRoute;
+  OrgSlugClawsClawSlugRoute: typeof OrgSlugClawsClawSlugRouteWithChildren;
+  OrgSlugProjectsProjectSlugRoute: typeof OrgSlugProjectsProjectSlugRouteWithChildren;
+  OrgSlugClawsIndexRoute: typeof OrgSlugClawsIndexRoute;
+  OrgSlugProjectsIndexRoute: typeof OrgSlugProjectsIndexRoute;
 }
 
 const OrgSlugRouteChildren: OrgSlugRouteChildren = {
@@ -1395,30 +1395,30 @@ const OrgSlugRouteChildren: OrgSlugRouteChildren = {
   OrgSlugProjectsProjectSlugRoute: OrgSlugProjectsProjectSlugRouteWithChildren,
   OrgSlugClawsIndexRoute: OrgSlugClawsIndexRoute,
   OrgSlugProjectsIndexRoute: OrgSlugProjectsIndexRoute,
-}
+};
 
 const OrgSlugRouteWithChildren =
-  OrgSlugRoute._addFileChildren(OrgSlugRouteChildren)
+  OrgSlugRoute._addFileChildren(OrgSlugRouteChildren);
 
 interface BlogRouteChildren {
-  BlogSlugRoute: typeof BlogSlugRoute
-  BlogIndexRoute: typeof BlogIndexRoute
+  BlogSlugRoute: typeof BlogSlugRoute;
+  BlogIndexRoute: typeof BlogIndexRoute;
 }
 
 const BlogRouteChildren: BlogRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
-}
+};
 
-const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
+const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren);
 
 interface DevRouteChildren {
-  DevSlugRoute: typeof DevSlugRoute
-  DevAuditMetadataRoute: typeof DevAuditMetadataRoute
-  DevClawCardsRoute: typeof DevClawCardsRoute
-  DevLayoutTestRoute: typeof DevLayoutTestRoute
-  DevSocialCardRoute: typeof DevSocialCardRoute
-  DevIndexRoute: typeof DevIndexRoute
+  DevSlugRoute: typeof DevSlugRoute;
+  DevAuditMetadataRoute: typeof DevAuditMetadataRoute;
+  DevClawCardsRoute: typeof DevClawCardsRoute;
+  DevLayoutTestRoute: typeof DevLayoutTestRoute;
+  DevSocialCardRoute: typeof DevSocialCardRoute;
+  DevIndexRoute: typeof DevIndexRoute;
 }
 
 const DevRouteChildren: DevRouteChildren = {
@@ -1428,31 +1428,31 @@ const DevRouteChildren: DevRouteChildren = {
   DevLayoutTestRoute: DevLayoutTestRoute,
   DevSocialCardRoute: DevSocialCardRoute,
   DevIndexRoute: DevIndexRoute,
-}
+};
 
-const DevRouteWithChildren = DevRoute._addFileChildren(DevRouteChildren)
+const DevRouteWithChildren = DevRoute._addFileChildren(DevRouteChildren);
 
 interface DocsRouteChildren {
-  DocsSplatRoute: typeof DocsSplatRoute
-  DocsV1SplatRoute: typeof DocsV1SplatRoute
+  DocsSplatRoute: typeof DocsSplatRoute;
+  DocsV1SplatRoute: typeof DocsV1SplatRoute;
 }
 
 const DocsRouteChildren: DocsRouteChildren = {
   DocsSplatRoute: DocsSplatRoute,
   DocsV1SplatRoute: DocsV1SplatRoute,
-}
+};
 
-const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
+const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren);
 
 interface SettingsOrganizationsOrgSlugRouteChildren {
-  SettingsOrganizationsOrgSlugApiKeysRoute: typeof SettingsOrganizationsOrgSlugApiKeysRoute
-  SettingsOrganizationsOrgSlugBillingRoute: typeof SettingsOrganizationsOrgSlugBillingRoute
-  SettingsOrganizationsOrgSlugTeamRoute: typeof SettingsOrganizationsOrgSlugTeamRoute
-  SettingsOrganizationsOrgSlugIndexRoute: typeof SettingsOrganizationsOrgSlugIndexRoute
-  SettingsOrganizationsOrgSlugClawsClawSlugRoute: typeof SettingsOrganizationsOrgSlugClawsClawSlugRoute
-  SettingsOrganizationsOrgSlugProjectsProjectSlugRoute: typeof SettingsOrganizationsOrgSlugProjectsProjectSlugRoute
-  SettingsOrganizationsOrgSlugClawsIndexRoute: typeof SettingsOrganizationsOrgSlugClawsIndexRoute
-  SettingsOrganizationsOrgSlugProjectsIndexRoute: typeof SettingsOrganizationsOrgSlugProjectsIndexRoute
+  SettingsOrganizationsOrgSlugApiKeysRoute: typeof SettingsOrganizationsOrgSlugApiKeysRoute;
+  SettingsOrganizationsOrgSlugBillingRoute: typeof SettingsOrganizationsOrgSlugBillingRoute;
+  SettingsOrganizationsOrgSlugTeamRoute: typeof SettingsOrganizationsOrgSlugTeamRoute;
+  SettingsOrganizationsOrgSlugIndexRoute: typeof SettingsOrganizationsOrgSlugIndexRoute;
+  SettingsOrganizationsOrgSlugClawsClawSlugRoute: typeof SettingsOrganizationsOrgSlugClawsClawSlugRoute;
+  SettingsOrganizationsOrgSlugProjectsProjectSlugRoute: typeof SettingsOrganizationsOrgSlugProjectsProjectSlugRoute;
+  SettingsOrganizationsOrgSlugClawsIndexRoute: typeof SettingsOrganizationsOrgSlugClawsIndexRoute;
+  SettingsOrganizationsOrgSlugProjectsIndexRoute: typeof SettingsOrganizationsOrgSlugProjectsIndexRoute;
 }
 
 const SettingsOrganizationsOrgSlugRouteChildren: SettingsOrganizationsOrgSlugRouteChildren =
@@ -1473,18 +1473,18 @@ const SettingsOrganizationsOrgSlugRouteChildren: SettingsOrganizationsOrgSlugRou
       SettingsOrganizationsOrgSlugClawsIndexRoute,
     SettingsOrganizationsOrgSlugProjectsIndexRoute:
       SettingsOrganizationsOrgSlugProjectsIndexRoute,
-  }
+  };
 
 const SettingsOrganizationsOrgSlugRouteWithChildren =
   SettingsOrganizationsOrgSlugRoute._addFileChildren(
     SettingsOrganizationsOrgSlugRouteChildren,
-  )
+  );
 
 interface SettingsRouteChildren {
-  SettingsMeRoute: typeof SettingsMeRoute
-  SettingsIndexRoute: typeof SettingsIndexRoute
-  SettingsOrganizationsOrgSlugRoute: typeof SettingsOrganizationsOrgSlugRouteWithChildren
-  SettingsOrganizationsIndexRoute: typeof SettingsOrganizationsIndexRoute
+  SettingsMeRoute: typeof SettingsMeRoute;
+  SettingsIndexRoute: typeof SettingsIndexRoute;
+  SettingsOrganizationsOrgSlugRoute: typeof SettingsOrganizationsOrgSlugRouteWithChildren;
+  SettingsOrganizationsIndexRoute: typeof SettingsOrganizationsIndexRoute;
 }
 
 const SettingsRouteChildren: SettingsRouteChildren = {
@@ -1493,45 +1493,45 @@ const SettingsRouteChildren: SettingsRouteChildren = {
   SettingsOrganizationsOrgSlugRoute:
     SettingsOrganizationsOrgSlugRouteWithChildren,
   SettingsOrganizationsIndexRoute: SettingsOrganizationsIndexRoute,
-}
+};
 
 const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
   SettingsRouteChildren,
-)
+);
 
 interface AuthGithubRouteChildren {
-  AuthGithubCallbackRoute: typeof AuthGithubCallbackRoute
-  AuthGithubProxyCallbackRoute: typeof AuthGithubProxyCallbackRoute
+  AuthGithubCallbackRoute: typeof AuthGithubCallbackRoute;
+  AuthGithubProxyCallbackRoute: typeof AuthGithubProxyCallbackRoute;
 }
 
 const AuthGithubRouteChildren: AuthGithubRouteChildren = {
   AuthGithubCallbackRoute: AuthGithubCallbackRoute,
   AuthGithubProxyCallbackRoute: AuthGithubProxyCallbackRoute,
-}
+};
 
 const AuthGithubRouteWithChildren = AuthGithubRoute._addFileChildren(
   AuthGithubRouteChildren,
-)
+);
 
 interface AuthGoogleRouteChildren {
-  AuthGoogleCallbackRoute: typeof AuthGoogleCallbackRoute
-  AuthGoogleProxyCallbackRoute: typeof AuthGoogleProxyCallbackRoute
+  AuthGoogleCallbackRoute: typeof AuthGoogleCallbackRoute;
+  AuthGoogleProxyCallbackRoute: typeof AuthGoogleProxyCallbackRoute;
 }
 
 const AuthGoogleRouteChildren: AuthGoogleRouteChildren = {
   AuthGoogleCallbackRoute: AuthGoogleCallbackRoute,
   AuthGoogleProxyCallbackRoute: AuthGoogleProxyCallbackRoute,
-}
+};
 
 const AuthGoogleRouteWithChildren = AuthGoogleRoute._addFileChildren(
   AuthGoogleRouteChildren,
-)
+);
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   OrgSlugRoute: OrgSlugRouteWithChildren,
   BlogRoute: BlogRouteWithChildren,
-  CloudRoute: CloudRoute,
+  OrgRedirectRoute: OrgRedirectRoute,
   DevRoute: DevRouteWithChildren,
   DocsRoute: DocsRouteWithChildren,
   LoginRoute: LoginRoute,
@@ -1552,16 +1552,17 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV2HealthRoute: ApiV2HealthRoute,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
   RouterV2ProviderSplatRoute: RouterV2ProviderSplatRoute,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
 
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
+import type { createStart } from "@tanstack/react-start";
+
+import type { getRouter } from "./router.tsx";
+declare module "@tanstack/react-start" {
   interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
+    ssr: true;
+    router: Awaited<ReturnType<typeof getRouter>>;
   }
 }
