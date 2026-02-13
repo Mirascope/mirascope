@@ -158,4 +158,36 @@ export class Payments extends Context.Tag("Payments")<
 
     return Payments.Default.pipe(Layer.provide(stripeLayer));
   };
+
+  /**
+   * Development layer that creates a no-op Payments service.
+   *
+   * Construction succeeds without a Stripe connection. Any method call
+   * returns `Effect.die` so handlers must catch errors gracefully
+   * (see dev fallbacks in organizations.handlers.ts).
+   */
+  static Dev = Layer.succeed(Payments, {
+    customers: devProxy("Payments.customers"),
+    products: {
+      router: devProxy("Payments.products.router"),
+      spans: devProxy("Payments.products.spans"),
+    },
+    paymentIntents: devProxy("Payments.paymentIntents"),
+    paymentMethods: devProxy("Payments.paymentMethods"),
+  } as Context.Tag.Service<Payments>);
+}
+
+/** Returns a proxy where any method call returns Effect.die with a descriptive message. */
+function devProxy(label: string): unknown {
+  return new Proxy(
+    {},
+    {
+      get:
+        (_target, prop) =>
+        (..._args: unknown[]) =>
+          Effect.die(
+            new Error(`${label}.${String(prop)} not available in dev mode`),
+          ),
+    },
+  );
 }

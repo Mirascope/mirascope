@@ -28,10 +28,15 @@ export type AppServices =
 function createAppServicesLayer(settings: SettingsConfig) {
   return Layer.mergeAll(
     Layer.succeed(Settings, settings),
-    Database.Live({
-      database: { connectionString: settings.databaseUrl },
-      payments: settings.stripe,
-    }).pipe(Layer.orDie),
+    (settings.env === "development"
+      ? Database.Dev({
+          database: { connectionString: settings.databaseUrl },
+        })
+      : Database.Live({
+          database: { connectionString: settings.databaseUrl },
+          payments: settings.stripe,
+        })
+    ).pipe(Layer.orDie),
     Layer.succeed(AuthService, createAuthService()),
     Emails.Live(settings.resend),
     executionContextLayer,

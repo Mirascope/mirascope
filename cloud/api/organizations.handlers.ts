@@ -107,7 +107,23 @@ export const getOrganizationRouterBalanceHandler = (organizationId: string) =>
 
     // Return available balance in centi-cents (client will convert to dollars for display)
     return { balance: balanceInfo.availableBalance };
-  });
+  }).pipe(
+    // In local dev, return zero balance if Stripe is not configured
+    Effect.catchAllDefect((defect) => {
+      if (process.env.ENVIRONMENT === "development") {
+        console.warn("[dev] Stripe router balance unavailable, returning 0");
+        return Effect.succeed({ balance: 0n });
+      }
+      return Effect.die(defect);
+    }),
+    Effect.catchAll((error) => {
+      if (process.env.ENVIRONMENT === "development") {
+        console.warn("[dev] Stripe router balance failed, returning 0");
+        return Effect.succeed({ balance: 0n });
+      }
+      return Effect.fail(error);
+    }),
+  );
 
 export const createPaymentIntentHandler = (
   organizationId: string,
@@ -158,7 +174,39 @@ export const getSubscriptionHandler = (organizationId: string) =>
     return yield* payments.customers.subscriptions.get(
       organization.stripeCustomerId,
     );
-  });
+  }).pipe(
+    // In local dev, return a default free plan if Stripe is not configured
+    Effect.catchAllDefect((defect) => {
+      if (process.env.ENVIRONMENT === "development") {
+        console.warn(
+          "[dev] Stripe subscription unavailable, returning free plan default",
+        );
+        return Effect.succeed({
+          subscriptionId: "sub_dev_free",
+          currentPlan: "free" as const,
+          status: "active",
+          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          hasPaymentMethod: false,
+        });
+      }
+      return Effect.die(defect);
+    }),
+    Effect.catchAll((error) => {
+      if (process.env.ENVIRONMENT === "development") {
+        console.warn(
+          "[dev] Stripe subscription failed, returning free plan default",
+        );
+        return Effect.succeed({
+          subscriptionId: "sub_dev_free",
+          currentPlan: "free" as const,
+          status: "active",
+          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          hasPaymentMethod: false,
+        });
+      }
+      return Effect.fail(error);
+    }),
+  );
 
 export const previewSubscriptionChangeHandler = (
   organizationId: string,
@@ -267,7 +315,22 @@ export const getPaymentMethodHandler = (organizationId: string) =>
     return yield* payments.paymentMethods.getDefault(
       organization.stripeCustomerId,
     );
-  });
+  }).pipe(
+    Effect.catchAllDefect((defect) => {
+      if (process.env.ENVIRONMENT === "development") {
+        console.warn("[dev] Stripe payment method unavailable, returning null");
+        return Effect.succeed(null);
+      }
+      return Effect.die(defect);
+    }),
+    Effect.catchAll((error) => {
+      if (process.env.ENVIRONMENT === "development") {
+        console.warn("[dev] Stripe payment method failed, returning null");
+        return Effect.succeed(null);
+      }
+      return Effect.fail(error);
+    }),
+  );
 
 export const removePaymentMethodHandler = (organizationId: string) =>
   Effect.gen(function* () {

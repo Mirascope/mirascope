@@ -285,4 +285,23 @@ export class Database extends Context.Tag("Database")<
 
     return Layer.mergeAll(drizzleLayer, paymentsLayer, databaseLayer);
   };
+
+  /**
+   * Development layer that uses mock Payments (no Stripe connection).
+   *
+   * Use this for local development where Stripe credentials are not available.
+   * All payment-related operations will fail at call time with descriptive errors,
+   * but the layer construction succeeds and non-payment handlers work normally.
+   */
+  static Dev = (config: { database: DrizzleORMConfig }) => {
+    const drizzleLayer = DrizzleORM.layer(config.database);
+
+    const paymentsLayer = Payments.Dev;
+
+    const databaseLayer = Database.Default.pipe(
+      Layer.provideMerge(Layer.mergeAll(drizzleLayer, paymentsLayer)),
+    );
+
+    return Layer.mergeAll(drizzleLayer, paymentsLayer, databaseLayer);
+  };
 }
