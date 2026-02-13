@@ -55,7 +55,10 @@ function AcceptInvitationPage() {
       // Brief delay for user to see success message before redirect
       setTimeout(() => {
         if (joinedOrg) {
-          void navigate({ to: "/$orgSlug", params: { orgSlug: joinedOrg.slug } });
+          void navigate({
+            to: "/$orgSlug",
+            params: { orgSlug: joinedOrg.slug },
+          });
         } else {
           void navigate({ to: "/cloud" });
         }
