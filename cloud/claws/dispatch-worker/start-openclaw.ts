@@ -131,6 +131,7 @@ log("Environment snapshot:", {
   // Claw-specific — safe to log in full
   R2_BUCKET_NAME: process.env.R2_BUCKET_NAME ?? "(not set)",
   OPENCLAW_GATEWAY_TOKEN: process.env.OPENCLAW_GATEWAY_TOKEN ?? "(not set)",
+  OPENCLAW_PRIMARY_MODEL: process.env.OPENCLAW_PRIMARY_MODEL ?? "(not set)",
   OPENCLAW_SITE_URL: process.env.OPENCLAW_SITE_URL ?? "(not set)",
   OPENCLAW_ALLOWED_ORIGINS: process.env.OPENCLAW_ALLOWED_ORIGINS ?? "(not set)",
   CF_ACCOUNT_ID: process.env.CF_ACCOUNT_ID ?? "(not set)",
@@ -298,7 +299,15 @@ if (allowedOrigins.length > 0) {
   log("No allowed origins configured for Control UI");
 }
 
+// Primary model (from claw creation payload via OPENCLAW_PRIMARY_MODEL)
+const primaryModel =
+  process.env.OPENCLAW_PRIMARY_MODEL || "anthropic/claude-haiku-4-5";
+config.agents.defaults.model.primary = primaryModel;
+log("Primary model:", { primaryModel });
+
 // Anthropic provider configuration via Mirascope router
+// OpenClaw discovers available models from the provider automatically —
+// no need to hardcode a model list.
 const baseUrl = (process.env.ANTHROPIC_BASE_URL ?? "").replace(/\/+$/, "");
 if (baseUrl) {
   log("Configuring Anthropic provider:", { baseUrl });
@@ -308,23 +317,6 @@ if (baseUrl) {
   const providerConfig: Record<string, unknown> = {
     baseUrl,
     api: "anthropic-messages",
-    models: [
-      {
-        id: "claude-opus-4-5-20251101",
-        name: "Claude Opus 4.5",
-        contextWindow: 200000,
-      },
-      {
-        id: "claude-sonnet-4-5-20250929",
-        name: "Claude Sonnet 4.5",
-        contextWindow: 200000,
-      },
-      {
-        id: "claude-haiku-4-5-20251001",
-        name: "Claude Haiku 4.5",
-        contextWindow: 200000,
-      },
-    ],
   };
 
   if (process.env.ANTHROPIC_API_KEY) {
@@ -335,24 +327,9 @@ if (baseUrl) {
   }
 
   config.models.providers.anthropic = providerConfig;
-
-  config.agents.defaults.models ??= {};
-  config.agents.defaults.models["anthropic/claude-opus-4-5-20251101"] = {
-    alias: "Opus 4.5",
-  };
-  config.agents.defaults.models["anthropic/claude-sonnet-4-5-20250929"] = {
-    alias: "Sonnet 4.5",
-  };
-  config.agents.defaults.models["anthropic/claude-haiku-4-5-20251001"] = {
-    alias: "Haiku 4.5",
-  };
-  config.agents.defaults.model.primary = "anthropic/claude-opus-4-5-20251101";
-  log("Anthropic provider configured with 3 models");
-} else if (process.env.ANTHROPIC_API_KEY) {
-  config.agents.defaults.model.primary = "anthropic/claude-opus-4-5";
-  log("Using default Anthropic provider (no base URL)");
+  log("Anthropic provider configured");
 } else {
-  log("WARNING: No Anthropic configuration at all");
+  log("No ANTHROPIC_BASE_URL set, skipping provider config");
 }
 
 // Channel configurations
