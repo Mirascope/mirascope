@@ -26,7 +26,7 @@ function ClawHeaderContent({ claw }: { claw: Claw }) {
   );
 
   return (
-    <>
+    <div>
       <div className="flex items-center gap-2 mb-1">
         <h1 className="text-2xl font-semibold">
           {claw.displayName ?? claw.slug}
@@ -70,7 +70,7 @@ function ClawHeaderContent({ claw }: { claw: Claw }) {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

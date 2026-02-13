@@ -14,7 +14,6 @@ import {
   useRestartClaw,
   useUpdateClawSecrets,
 } from "@/app/api/claws";
-import { ClawHeader } from "@/app/components/claw-header";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -158,7 +157,6 @@ function ClawsSecretsPage() {
   if (!selectedClaw) {
     return (
       <div className="p-6">
-        <ClawHeader />
         <div className="flex items-center justify-center rounded-lg border border-dashed py-12 text-center text-muted-foreground">
           <p>Select a claw to manage its secrets.</p>
         </div>
@@ -169,7 +167,6 @@ function ClawsSecretsPage() {
   if (isLoading) {
     return (
       <div className="p-6">
-        <ClawHeader />
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
@@ -180,7 +177,6 @@ function ClawsSecretsPage() {
   return (
     <>
       <div className="p-6">
-        <ClawHeader />
         <Tabs
           defaultValue="table"
           onValueChange={(value) => {

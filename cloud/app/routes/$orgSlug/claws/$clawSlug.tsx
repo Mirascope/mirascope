@@ -2,6 +2,7 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 
+import { ClawHeader } from "@/app/components/claw-header";
 import { useClaw } from "@/app/contexts/claw";
 
 function ClawLayout() {
@@ -37,7 +38,16 @@ function ClawLayout() {
     );
   }
 
-  return <Outlet />;
+  return (
+    <div className="flex h-full flex-col overflow-hidden">
+      <div className="shrink-0 px-6 pt-6">
+        <ClawHeader />
+      </div>
+      <div className="min-h-0 flex-1">
+        <Outlet />
+      </div>
+    </div>
+  );
 }
 
 export const Route = createFileRoute("/$orgSlug/claws/$clawSlug")({
