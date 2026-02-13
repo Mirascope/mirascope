@@ -67,6 +67,31 @@ export const createOrganizationHandler = (payload: CreateOrganizationRequest) =>
       userId: user.id,
     });
 
+    // If a paid plan was requested, upgrade the subscription immediately.
+    // On failure, roll back: delete the org and Stripe customer.
+    if (requestedPlan !== "free") {
+      yield* payments.customers.subscriptions
+        .update({
+          stripeCustomerId: organization.stripeCustomerId,
+          targetPlan: requestedPlan,
+          organizationId: organization.id,
+        })
+        .pipe(
+          Effect.catchAll((upgradeError) =>
+            Effect.gen(function* () {
+              // Compensating transaction: clean up the org we just created
+              yield* db.organizations
+                .delete({
+                  userId: user.id,
+                  organizationId: organization.id,
+                })
+                .pipe(Effect.catchAll(() => Effect.void));
+              return yield* Effect.fail(upgradeError);
+            }),
+          ),
+        );
+    }
+
     yield* analytics.trackEvent({
       name: "organization_created",
       properties: {
