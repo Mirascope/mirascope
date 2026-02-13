@@ -233,6 +233,12 @@ export function createOpenClawConfig(
   // Set gateway token in env vars so OpenClaw can access it
   config.env.vars.OPENCLAW_GATEWAY_TOKEN = env.OPENCLAW_GATEWAY_TOKEN;
 
+  // Control UI: disable device auth (dispatch worker handles authentication)
+  config.gateway.controlUi = {
+    ...((config.gateway.controlUi as object) ?? {}),
+    dangerouslyDisableDeviceAuth: true,
+  };
+
   // Control UI allowed origins
   const allowedOrigins = env.OPENCLAW_ALLOWED_ORIGINS.split(",")
     .map((o) => o.trim())
