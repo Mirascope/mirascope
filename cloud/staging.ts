@@ -18,10 +18,17 @@ const SESSION_TOKEN = "ok";
 const VALID_USERNAME = "mirascope";
 const VALID_PASSWORD = "mirascope";
 
+/**
+ * Dev auto-auth: deterministic session ID matching scripts/dev/seed.ts.
+ * When ENVIRONMENT=dev and no session cookie is present, this injects the
+ * seeded dev session — bypassing OAuth entirely.
+ */
+const DEV_SESSION_ID = "00000000-0000-4000-8000-000000000004";
+
 type StagingContext = {
   readonly request: Request;
   readonly url: URL;
-  readonly environment: WorkerEnv;
+  readonly environment: WorkerEnv & { ENVIRONMENT?: string };
 };
 
 function isStaging(ctx: StagingContext): boolean {
@@ -31,6 +38,10 @@ function isStaging(ctx: StagingContext): boolean {
 /** Returns true for any non-production environment (staging, dev, etc.) */
 function isNonProduction(ctx: StagingContext): boolean {
   return ctx.url.hostname !== PRODUCTION_HOSTNAME;
+}
+
+function isDev(ctx: StagingContext): boolean {
+  return ctx.environment.ENVIRONMENT === "dev";
 }
 
 /** Prevents CDN caching of HTML to avoid stale content after deployments. */
@@ -81,6 +92,39 @@ function createSessionRedirectResponse(requestUrl: string): Response {
     headers: {
       Location: requestUrl,
       "Set-Cookie": `${COOKIE_NAME}=${SESSION_TOKEN}; Path=/; HttpOnly; SameSite=Strict; Max-Age=86400`,
+    },
+  });
+}
+
+/**
+ * Dev auto-auth middleware. When ENVIRONMENT=dev:
+ * - If the request already has a valid `session` cookie → no-op
+ * - Otherwise, redirect to the same URL with the dev session cookie set
+ *
+ * This matches the seeded session from scripts/dev/seed.ts, so the dev
+ * environment never requires OAuth login.
+ */
+function handleDevAutoAuth(ctx: StagingContext): Response | null {
+  if (!isDev(ctx)) return null;
+
+  // Don't interfere with auth callback routes
+  if (ctx.url.pathname.startsWith("/auth/")) return null;
+
+  // Check if a session cookie already exists (any value — don't validate here)
+  const cookies = ctx.request.headers.get("Cookie") || "";
+  const hasSession = cookies.split(";").some((c) => {
+    const [name] = c.trim().split("=");
+    return name === "session";
+  });
+
+  if (hasSession) return null;
+
+  // Set the dev session cookie and redirect back to the same URL
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: ctx.request.url,
+      "Set-Cookie": `session=${DEV_SESSION_ID}; HttpOnly; Secure; SameSite=Lax; Max-Age=${365 * 24 * 60 * 60}; Path=/`,
     },
   });
 }
@@ -162,7 +206,13 @@ export function wrapWithStagingMiddleware(
     const url = new URL(request.url);
     const stagingCtx: StagingContext = { request, url, environment };
 
-    // 1. Staging auth (before anything)
+    // 1a. Dev auto-auth (inject session cookie if missing)
+    const devAuthResponse = handleDevAutoAuth(stagingCtx);
+    if (devAuthResponse) {
+      return devAuthResponse;
+    }
+
+    // 1b. Staging auth (before anything)
     const authResponse = handleStagingAuth(stagingCtx);
     if (authResponse) {
       return authResponse;
