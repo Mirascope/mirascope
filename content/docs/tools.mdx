@@ -44,14 +44,6 @@ The `exec` tool runs shell commands and is one of the most powerful tools availa
 - **PTY mode** — Run interactive terminal UIs and CLIs that require a TTY
 - **Timeouts** — Automatically kill processes that run too long
 
-```yaml
-# Example: running tests
-exec: npm test
-
-# Example: background process
-exec: npm run dev  # with background: true
-```
-
 ### process
 
 The `process` tool manages running background sessions started by `exec`. You can:
@@ -75,9 +67,14 @@ By default, exec requires user approval for potentially dangerous commands. You 
 
 Configure in your gateway config:
 
-```yaml
-exec:
-  security: allowlist  # or "full", "deny"
+```json
+{
+  "tools": {
+    "exec": {
+      "security": "allowlist"
+    }
+  }
+}
 ```
 
 ## Browser
@@ -156,22 +153,19 @@ The `nodes` tool controls **paired devices** (phones, tablets, other computers):
 
 ## Tool Policies
 
-Tool policies control which tools are available to a claw. Configure them in your gateway config:
+Tool policies control which tools are available to a claw. Configure them in `openclaw.json`:
 
 ### Allow / Deny Lists
 
-```yaml
-tools:
-  allow:
-    - read
-    - write
-    - edit
-    - exec
-  # OR
-  deny:
-    - browser
-    - nodes
+```json
+{
+  "tools": {
+    "deny": ["browser", "nodes"]
+  }
+}
 ```
+
+Deny always wins over allow. Wildcards (`"*"`) are supported.
 
 ### Tool Profiles
 
@@ -179,30 +173,40 @@ Profiles are preset allowlists for common use cases:
 
 | Profile | Tools Included |
 |---------|---------------|
-| `minimal` | File system tools only |
-| `coding` | File system, runtime, web |
-| `messaging` | File system, messaging, sessions |
-| `full` | All tools enabled |
+| `minimal` | `session_status` only |
+| `coding` | File system, runtime, sessions, memory, image |
+| `messaging` | Messaging, sessions (list, history, send), session_status |
+| `full` | All tools enabled (default) |
 
-```yaml
-tools:
-  profile: coding
+```json
+{
+  "tools": {
+    "profile": "coding"
+  }
+}
 ```
 
 ### Per-Agent Overrides
 
-Different agents can have different tool access:
+In multi-agent setups, different agents can have different tool access:
 
-```yaml
-agents:
-  coding-bot:
-    tools:
-      profile: coding
-  social-bot:
-    tools:
-      profile: messaging
-      allow:
-        - web_search
+```json
+{
+  "tools": {
+    "profile": "coding"
+  },
+  "agents": {
+    "list": [
+      {
+        "id": "support",
+        "tools": {
+          "profile": "messaging",
+          "allow": ["web_search"]
+        }
+      }
+    ]
+  }
+}
 ```
 
 ## TOOLS.md
