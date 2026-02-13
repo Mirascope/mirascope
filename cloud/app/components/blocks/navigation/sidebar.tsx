@@ -233,7 +233,7 @@ const SidebarLink = ({
       {...(params && { params: params as LinkProps["params"] })}
       style={style}
       className={cn(
-        "font-handwriting-descent block cursor-pointer rounded-md py-1 text-base",
+        "font-display block cursor-pointer rounded-md py-1 text-base",
         className,
         isActive ? activeClass : inactiveClass,
       )}
@@ -270,7 +270,7 @@ const SectionTab = ({
       {...(params && { params: params as LinkProps["params"] })}
       onClick={onClick}
       className={cn(
-        "font-handwriting-descent w-full cursor-pointer rounded-md px-3 py-1 text-base",
+        "font-display w-full cursor-pointer rounded-md px-3 py-1 text-base",
         className,
         isActive ? activeClass : inactiveClass,
       )}
@@ -287,7 +287,7 @@ const GroupLabel = ({ label }: { label: string }) => {
   return (
     <div
       className={cn(
-        "text-primary font-handwriting block cursor-default px-3 py-1 font-semibold",
+        "text-primary font-display block cursor-default px-3 py-1 font-semibold",
       )}
     >
       {label}

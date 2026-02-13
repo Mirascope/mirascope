@@ -37,7 +37,7 @@ export function HomePage() {
           >
             {/* Headline */}
             <h1
-              className="font-handwriting font-medium tracking-tight text-white text-shade"
+              className="font-display font-medium tracking-tight text-white text-shade"
               style={{
                 fontSize: "clamp(2.75rem, 8vw, 4rem)",
                 lineHeight: "1.15",
@@ -50,14 +50,18 @@ export function HomePage() {
 
             {/* Subtitle */}
             <p
-              className="mt-4 font-handwriting font-semibold text-white lg:mt-5 [text-shadow:0_2px_8px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.15)]"
+              className="mt-4 font-display font-semibold text-white lg:mt-5 [text-shadow:0_2px_8px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.15)]"
               style={{ fontSize: "clamp(1.25rem, 4vw, 1.75rem)" }}
             >
               <span className="inline-block whitespace-nowrap">
                 Stop repeating yourself.
               </span>{" "}
               <span className="inline-block whitespace-nowrap">
-                Your Claw remembers.
+                Your Claw{" "}
+                <span className="text-mirple [text-shadow:0_0_10px_rgba(99,102,241,0.8),0_0_24px_rgba(99,102,241,0.5),0_0_48px_rgba(99,102,241,0.3),0_2px_8px_rgba(0,0,0,0.3)]">
+                  remembers
+                </span>
+                .
               </span>
             </p>
 
@@ -66,7 +70,7 @@ export function HomePage() {
               <ButtonLink
                 href="/login"
                 size="lg"
-                className="box-shade min-h-[48px] min-w-[200px] border-0 bg-mirple font-handwriting font-bold text-white hover:bg-mirple-dark/90 hover:text-white"
+                className="box-shade min-h-[48px] min-w-[200px] border-0 bg-mirple font-display font-bold text-white hover:bg-mirple-dark/90 hover:text-white"
               >
                 <ClawIcon className="size-5" />
                 Deploy Your First Claw
@@ -75,7 +79,7 @@ export function HomePage() {
                 href="/pricing"
                 variant="outline"
                 size="lg"
-                className="box-shade min-h-[48px] min-w-[150px] border-0 bg-white font-handwriting font-bold text-black hover:bg-white/90 hover:text-black"
+                className="box-shade min-h-[48px] min-w-[150px] border-0 bg-white font-display font-bold text-black hover:bg-white/90 hover:text-black"
               >
                 See Pricing
               </ButtonLink>
@@ -87,7 +91,7 @@ export function HomePage() {
             className="w-full max-w-md min-h-fit"
             style={
               heroHeight
-                ? { height: Math.round((heroHeight * 5) / 6) }
+                ? { height: Math.round((heroHeight * 3) / 4) }
                 : undefined
             }
           >

@@ -27,7 +27,7 @@ export function ValueProps() {
             key={prop.title}
             className="rounded-xl border border-white/20 bg-white/80 p-4 shadow-sm backdrop-blur-sm dark:border-border/40 dark:bg-background/80 lg:p-5"
           >
-            <h3 className="mb-1 flex items-center gap-2 font-handwriting text-base text-slate-900 dark:text-foreground">
+            <h3 className="mb-1 flex items-center gap-2 font-display text-base text-slate-900 dark:text-foreground">
               <prop.icon className="size-4 text-mirple" />
               {prop.title}
             </h3>

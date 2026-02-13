@@ -204,15 +204,15 @@ function BlogLayout({ children }: BlogLayoutProps) {
   return (
     <>
       <WatercolorBackground />
-      <div className="font-handwriting flex justify-center">
+      <div className="font-display flex justify-center">
         <div className="mx-auto flex w-full max-w-[1800px] px-4 pt-6">
           <div className="min-w-0 flex-1">
             <div className="mx-auto max-w-5xl">
               <div className="mb-8 text-center">
-                <h1 className="font-handwriting mb-4 text-center text-4xl font-bold text-white text-shade">
+                <h1 className="font-display mb-4 text-center text-4xl font-bold text-white text-shade">
                   Blog
                 </h1>
-                <p className="font-handwriting mx-auto max-w-2xl text-xl text-white text-shade">
+                <p className="font-display mx-auto max-w-2xl text-xl text-white text-shade">
                   The latest news, updates, and insights about
                   <br />
                   Mirascope and LLM application development.

@@ -47,7 +47,7 @@ export function ClawDemo({ className }: { className?: string }) {
             key={tab.id}
             onClick={() => handleTabClick(tab.id)}
             className={cn(
-              "flex-1 px-2 py-2 text-center font-handwriting text-sm transition-colors",
+              "flex-1 px-2 py-2 text-center font-display text-sm transition-colors",
               activeTab === tab.id
                 ? "border-b-2 border-mirple font-semibold text-mirple"
                 : "text-slate-500 hover:text-slate-700 dark:text-muted-foreground dark:hover:text-foreground",

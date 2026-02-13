@@ -49,7 +49,7 @@ export const HEADER_STYLES = {
       // Margin below header (not for cloud routes)
       !isCloudRoute && "mb-2",
       // Text styling for landing page
-      "font-handwriting",
+      "font-display",
       // Background color (only on non-landing pages)
       isWatercolorPage ? "" : "bg-background",
       // Bottom border and shadow when scrolled
@@ -469,7 +469,7 @@ export const SEARCH_BAR_STYLES = {
 
   // Search footer styles
   footer:
-    "border-border bg-muted/40 text-muted-foreground flex items-center justify-between border-t p-2 text-xs font-handwriting",
+    "border-border bg-muted/40 text-muted-foreground flex items-center justify-between border-t p-2 text-xs font-display",
 
   // Loading indicator
   loadingIndicator:

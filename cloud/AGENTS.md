@@ -236,8 +236,9 @@ These utility classes are defined in `globals.css`:
 ### Brand & Typography
 
 - `text-mirple` / `bg-mirple` - Mirascope brand purple
-- `font-handwriting` - headings and UI elements
-- `font-sans` - body/content text
+- `font-display` - headings, buttons, and UI elements (Nunito)
+- `font-sans` - body/content text (Nunito Sans)
+- `font-handwriting` - logo only (Williams Handwriting)
 
 ## Authentication (`cloud/auth/`)
 

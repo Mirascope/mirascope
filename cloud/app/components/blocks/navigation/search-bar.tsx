@@ -284,7 +284,7 @@ function SearchResultsContainer({
     }
 
     return (
-      <div className="text-muted-foreground font-handwriting p-4 text-center">
+      <div className="text-muted-foreground font-display p-4 text-center">
         Type to search
       </div>
     );
