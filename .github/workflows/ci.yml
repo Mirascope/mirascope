@@ -180,6 +180,46 @@ jobs:
       - name: Run `vitest` with code coverage
         run: bun run test:coverage
 
+  typescript-runtime-tests:
+    name: TypeScript Runtime Tests
+    needs: changes
+    if: needs.changes.outputs.typescript == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: typescript
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup `bun`
+        uses: oven-sh/setup-bun@v2
+
+      - name: Setup `node`
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Setup `deno`
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build package
+        run: bun run build
+
+      - name: Test Node.js loader
+        run: node --import mirascope/loader tests/runtimes/transformer-test.ts
+
+      - name: Test Bun plugin
+        run: bun tests/runtimes/transformer-test.ts
+
+      - name: Test Deno compatibility
+        run: deno run --allow-read --allow-env --allow-net --node-modules-dir tests/runtimes/deno-test.ts
+
   cloud-lint:
     name: Cloud Lint & Type Check
     needs: changes
@@ -356,6 +396,7 @@ jobs:
         python-tests,
         typescript-lint,
         typescript-tests,
+        typescript-runtime-tests,
         cloud-lint,
         cloud-tests,
         dispatch-worker-lint,
