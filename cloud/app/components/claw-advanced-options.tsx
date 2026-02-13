@@ -22,17 +22,17 @@ import { cn } from "@/app/lib/utils";
 
 const MODELS = [
   {
-    value: "claude-haiku-4-5",
+    value: "anthropic/claude-haiku-4-5",
     label: "Claude Haiku 4.5",
     hint: "Most efficient — uses the fewest credits per request",
   },
   {
-    value: "claude-sonnet-4-5",
+    value: "anthropic/claude-sonnet-4-5",
     label: "Claude Sonnet 4.5",
     hint: "Balanced — uses moderate credits for greater intelligence",
   },
   {
-    value: "claude-opus-4-6",
+    value: "anthropic/claude-opus-4-6",
     label: "Claude Opus 4.6",
     hint: "Most capable — uses significantly more credits per request",
   },

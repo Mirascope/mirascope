@@ -3,6 +3,8 @@ import { Schema } from "effect";
 
 import { ClawDeploymentError } from "@/claws/deployment/errors";
 import { createSlugSchema } from "@/db/slug";
+
+export const DEFAULT_CLAW_MODEL = "anthropic/claude-haiku-4-5";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -66,7 +68,11 @@ export const CreateClawRequestSchema = Schema.Struct({
   slug: ClawSlugSchema,
   description: Schema.optional(Schema.String),
   model: Schema.optional(
-    Schema.Literal("claude-haiku-4-5", "claude-sonnet-4-5", "claude-opus-4-6"),
+    Schema.Literal(
+      "anthropic/claude-opus-4-6",
+      "anthropic/claude-sonnet-4-5",
+      "anthropic/claude-haiku-4-5",
+    ),
   ),
   weeklySpendingGuardrailCenticents: Schema.optional(
     Schema.NullOr(Schema.BigInt),
