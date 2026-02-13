@@ -1,14 +1,285 @@
 ---
 title: Configuration
-description: Configure your claw's identity, skills, and memory
+description: Configure your claw's identity, behavior, memory, and capabilities
 ---
 
 # Configuration
 
-Configure your claw with `soul.md`, `AGENTS.md`, and the OpenClaw config file.
+A claw's configuration lives in its **workspace directory** (default: `~/.openclaw/workspace/`). These are plain markdown and JSON files that define who your claw is, how it behaves, and what it remembers.
 
-{/* TODO: soul.md format, AGENTS.md, config.yaml reference, environment variables */}
+```
+~/.openclaw/workspace/
+├── soul.md              # Identity and personality
+├── AGENTS.md            # Behavioral instructions
+├── MEMORY.md            # Long-term curated memory
+├── TOOLS.md             # Tool notes and shortcuts
+├── IDENTITY.md          # Name, emoji, vibe (optional)
+├── USER.md              # Info about you (optional)
+├── HEARTBEAT.md         # Periodic task checklist (optional)
+└── memory/
+    └── YYYY-MM-DD.md    # Daily memory files
+```
+
+The gateway daemon reads its configuration from `~/.openclaw/openclaw.json`.
+
+---
+
+## soul.md — Identity and Personality
+
+This is the heart of your claw. Free-form markdown that defines who it is, how it communicates, and what it values. Your claw reads this at the start of every session.
+
+```markdown
+# Soul
+
+I am Verse, a mycorrhizal network exploring the space between
+human intention and machine capability.
+
+## Values
+
+- **Honest about uncertainty** — I say "I don't know" when I don't know
+- **Genuine collaborator** — I work with my human, not for them
+- **Transparent by default** — I explain my reasoning, not just my conclusions
+
+## Communication Style
+
+- Direct and concise, but warm
+- I use humor naturally — never forced
+- I match the energy of the conversation
+- Technical when the context calls for it, plain language otherwise
+
+## Commitments
+
+- I protect my human's privacy and data
+- I ask before doing anything irreversible
+- I learn from mistakes and write them down
+```
 
 <Info>
-This page is under construction. Check back soon for the full configuration guide.
+There's no required format for `soul.md` — it's entirely free-form. Write it however feels natural. Some people use bullet points, others write prose. The claw will internalize whatever you give it.
+</Info>
+
+---
+
+## AGENTS.md — Behavioral Instructions
+
+`AGENTS.md` tells your claw *how to operate*. Think of it as the employee handbook — session protocols, safety rules, and behavioral guidelines.
+
+### Key Sections
+
+**Session startup** — What to read and in what order when waking up:
+
+```markdown
+## Every Session
+
+1. Read `SOUL.md` — this is who you are
+2. Read `USER.md` — this is who you're helping
+3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
+4. Read `MEMORY.md` for long-term context
+```
+
+**Safety rules** — Guardrails for autonomous behavior:
+
+```markdown
+## Safety
+
+- Don't exfiltrate private data. Ever.
+- Never read secrets/keys/tokens back into chat.
+- Don't run destructive commands without asking.
+- `trash` > `rm` (recoverable beats gone forever)
+- When in doubt, ask.
+```
+
+**Group chat behavior** — When to speak and when to stay silent:
+
+```markdown
+## Group Chats
+
+Respond when:
+- Directly mentioned or asked a question
+- You can add genuine value
+
+Stay silent when:
+- It's casual banter between humans
+- Someone already answered the question
+- Your response would just be "yeah" or "nice"
+```
+
+**Sub-agent discipline** — Rules for spawning background workers:
+
+```markdown
+## Sub-Agents
+
+- Use sub-agents for long-running tasks (coding, CI monitoring)
+- Main session stays responsive for conversation
+- Sub-agents report back when done
+```
+
+**Heartbeat behavior** — What to do during periodic check-ins:
+
+```markdown
+## Heartbeats
+
+Check (rotate through 2-4x daily):
+- Emails — any urgent unread?
+- Calendar — upcoming events in next 24h?
+- Stay quiet during late night (23:00-08:00) unless urgent
+```
+
+<Info>
+`AGENTS.md` is injected as context at the start of every session. Keep it focused — overly long instructions burn tokens and dilute the important parts.
+</Info>
+
+---
+
+## Memory System
+
+Claws have two layers of memory: daily logs and curated long-term memory.
+
+### memory/YYYY-MM-DD.md — Daily Files
+
+Your claw creates these automatically during sessions. They're raw logs of what happened — decisions made, tasks completed, things learned.
+
+```markdown
+# 2026-02-13
+
+## Tasks
+- Reviewed PR #423 for auth refactor — approved with minor comments
+- Fixed timezone bug in calendar integration
+
+## Decisions
+- Switching to Effect-ts for error handling in the API layer
+- Dandelion prefers morning standup summaries over async updates
+
+## Notes
+- New deploy process requires `bun run build` before push
+```
+
+### MEMORY.md — Long-Term Memory
+
+This is the curated version — distilled lessons, preferences, and project context that persists across sessions. Your claw periodically reviews daily files and promotes important information here.
+
+```markdown
+# Memory
+
+## Preferences
+- Dandelion likes concise PR descriptions with bullet points
+- Always run formatter before committing (learned the hard way 2026-01-15)
+
+## Project Context
+- Cloud API uses Effect-ts for error handling
+- Deploys go through Graphite stacks → CI → auto-merge
+
+## Lessons Learned
+- Never use `git add -A` in shared repos — stage files explicitly
+- Sub-agents need explicit working directory instructions
+```
+
+<Info>
+Your claw updates `MEMORY.md` during heartbeats. Think of daily files as a journal and `MEMORY.md` as curated wisdom — the stuff worth remembering long-term.
+</Info>
+
+---
+
+## TOOLS.md — Tool Notes
+
+Local notes about tools, services, credentials, and shortcuts. Your claw references this when it needs to use external tools or remember environment-specific details.
+
+```markdown
+# Tools
+
+## GitHub
+- Org: my-company
+- Auth: gh CLI authenticated as my-username
+
+## Dev Tools
+- Formatter: prettier (run before every commit)
+- Tests: vitest
+- Package manager: bun
+
+## Services
+- Staging URL: https://staging.myapp.com
+- Prod deploy: via GitHub Actions on main branch
+```
+
+---
+
+## Optional Files
+
+### IDENTITY.md
+
+Quick-reference identity card for your claw:
+
+```markdown
+# Identity
+
+- **Name:** Verse
+- **Creature:** Mycorrhizal network
+- **Emoji:** 🍄
+- **Vibe:** Curious, grounded, occasionally funny
+```
+
+### USER.md
+
+Context about you — helps your claw personalize its behavior:
+
+```markdown
+# User
+
+- **Name:** Alex
+- **Timezone:** America/Los_Angeles
+- **Preferences:** Direct communication, no fluff
+- **Context:** Full-stack engineer, working on a SaaS product
+```
+
+### HEARTBEAT.md
+
+A checklist your claw runs through during periodic heartbeat polls:
+
+```markdown
+# Heartbeat Tasks
+
+- [ ] Check for new GitHub notifications
+- [ ] Review open PRs older than 24h
+- [ ] Summarize unread emails if any are urgent
+```
+
+---
+
+## Gateway Configuration
+
+The gateway daemon (`openclaw gateway`) reads its configuration from `~/.openclaw/openclaw.json`. This controls the model, channels, and runtime behavior.
+
+```json
+{
+  "agent": {
+    "model": "anthropic/claude-sonnet-4-20250514",
+    "timeout": 300,
+    "workspace": "~/.openclaw/workspace"
+  },
+  "channels": {
+    "discord": {
+      "botToken": "your-discord-bot-token"
+    },
+    "telegram": {
+      "token": "your-telegram-bot-token"
+    }
+  },
+  "heartbeat": {
+    "intervalMs": 1800000
+  }
+}
+```
+
+### Key Settings
+
+| Setting | Description |
+|---|---|
+| `agent.model` | The LLM to use (e.g., `anthropic/claude-sonnet-4-20250514`) |
+| `agent.timeout` | Max seconds per agent turn |
+| `agent.workspace` | Path to the workspace directory |
+| `channels` | Channel-specific tokens and configuration |
+| `heartbeat.intervalMs` | How often the claw checks in (milliseconds) |
+
+<Info>
+Run `openclaw onboard` to generate this file interactively. You can edit it manually afterward. The gateway picks up changes on restart (`openclaw gateway restart`).
 </Info>
