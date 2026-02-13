@@ -5,10 +5,10 @@ description: Configure your claw's identity, behavior, memory, and capabilities
 
 # Configuration
 
-A claw's configuration lives in its **workspace directory** (default: `~/.openclaw/workspace/`). These are plain markdown and JSON files that define who your claw is, how it behaves, and what it remembers.
+Every Claw has a **workspace** — a set of plain markdown files that define who it is, how it behaves, and what it remembers. On Mirascope Cloud, these files are managed for you and your Claw updates them through conversation. If you're self-hosting, they live in your workspace directory (default: `~/.openclaw/workspace/`).
 
 ```
-~/.openclaw/workspace/
+workspace/
 ├── SOUL.md              # Identity and personality
 ├── AGENTS.md            # Behavioral instructions
 ├── MEMORY.md            # Long-term curated memory
@@ -19,8 +19,6 @@ A claw's configuration lives in its **workspace directory** (default: `~/.opencl
 └── memory/
     └── YYYY-MM-DD.md    # Daily memory files
 ```
-
-The gateway daemon reads its configuration from `~/.openclaw/openclaw.json`.
 
 ---
 
@@ -245,7 +243,7 @@ A checklist your claw runs through during periodic heartbeat polls:
 
 ## Gateway Configuration
 
-The gateway daemon (`openclaw gateway`) reads its configuration from `~/.openclaw/openclaw.json`. This controls the model, channels, and runtime behavior.
+On Mirascope Cloud, gateway settings like model selection and channel configuration are managed through the dashboard. For self-hosted deployments, the gateway reads its configuration from `~/.openclaw/openclaw.json`.
 
 ```json
 {
@@ -279,5 +277,5 @@ The gateway daemon (`openclaw gateway`) reads its configuration from `~/.opencla
 | `heartbeat.intervalMs` | How often the claw checks in (milliseconds) |
 
 <Info>
-Run `openclaw onboard` to generate this file interactively. You can edit it manually afterward. The gateway picks up changes on restart (`openclaw gateway restart`).
+For self-hosted deployments, run `openclaw onboard` to generate this file interactively. The gateway picks up changes on restart (`openclaw gateway restart`).
 </Info>
