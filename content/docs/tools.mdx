@@ -5,7 +5,7 @@ description: Built-in tools available to claws
 
 # Tools
 
-Every claw has access to a set of **built-in tools** that let it interact with files, the web, devices, and more. Tools are the primary way claws take action in the world — from editing code to browsing the web to sending messages.
+Every Claw has access to a set of **built-in tools** that let them interact with files, the web, devices, and more. Tools are the primary way Claws take action in the world — from editing code to browsing the web to sending messages.
 
 ## Tool Categories
 
@@ -27,7 +27,7 @@ Every claw has access to a set of **built-in tools** that let it interact with f
 
 ## File System
 
-The file system tools (`read`, `write`, `edit`) operate within the claw's workspace directory. These are the most commonly used tools for any coding or writing task.
+The file system tools (`read`, `write`, `edit`) operate within your Claw's workspace directory. These are the most commonly used tools for any coding or writing task.
 
 - **read** — Read file contents, including images. Supports offset/limit for large files.
 - **write** — Create or overwrite files. Automatically creates parent directories.
@@ -61,8 +61,9 @@ By default, exec requires user approval for potentially dangerous commands. You 
 
 | Mode | Behavior |
 |------|----------|
+| `deny` | Block all exec commands |
 | `ask` | Prompt for approval on unrecognized commands (default) |
-| `allowlist` | Auto-approve commands matching an allowlist, deny others |
+| `allowlist` | Auto-approve commands matching an allowlist, ask for others |
 | `full` | Auto-approve all commands |
 
 Configure in your gateway config:
@@ -124,7 +125,7 @@ Sub-agents are ideal for:
 
 ## Memory
 
-The memory tools provide **semantic search** over the claw's memory files:
+The memory tools provide **semantic search** over your Claw's memory files:
 
 - **memory_search** — Vector search across memory files. Find relevant context by meaning, not just keywords.
 - **memory_get** — Read specific memory snippets by ID.
@@ -153,7 +154,7 @@ The `nodes` tool controls **paired devices** (phones, tablets, other computers):
 
 ## Tool Policies
 
-Tool policies control which tools are available to a claw. Configure them in your Claw's settings:
+Tool policies control which tools are available to a Claw. Configure them in your Claw's settings:
 
 ### Allow / Deny Lists
 
@@ -211,33 +212,54 @@ In multi-agent setups, different agents can have different tool access:
 
 ## Building Custom Tools
 
-Claws can create their own tools — including **AI-powered tools** built with Mirascope. This is one of the most powerful patterns: a claw that can extend its own capabilities by writing new programs.
+Claws can create their own tools — including **AI-powered tools** built with Mirascope. This is one of the most powerful patterns: a Claw that can extend their own capabilities by writing new programs.
 
 ### The Pattern
 
-A claw generates a self-contained Python program using [Mirascope](https://mirascope.com/docs/sdk) and runs it via the `exec` tool. Each program follows a standard structure:
+A Claw generates a self-contained Python program using [Mirascope](https://mirascope.com/docs/sdk) and runs it via the `exec` tool. Each program follows a standard structure:
+
+Here's a real example — an invoice generator that uses an LLM to handle calculation and formatting:
 
 ```python
 # /// script
+# requires-python = ">=3.10"
 # dependencies = ["mirascope[all]", "pydantic"]
 # ///
+"""Generates formatted invoices with line items and tax calculation."""
+from pydantic import BaseModel, Field
 from mirascope import llm, ops
-from pydantic import BaseModel
 
 ops.configure()
 ops.instrument_llm()
 
 
-class Summary(BaseModel):
-    title: str
-    key_points: list[str]
-    sentiment: str
+class LineItem(BaseModel):
+    description: str
+    hours: float
+    hourly_rate: float
 
 
-@ops.trace(tags=["summarize"])
-@llm.call("anthropic/claude-sonnet-4-5", format=Summary)
-def summarize(text: str) -> str:
-    return f"Summarize this text: {text}"
+class ProgramInput(BaseModel):
+    invoice_number: str
+    client_name: str
+    line_items: list[LineItem]
+    tax_rate: float | None = None
+
+
+class ProgramOutput(BaseModel):
+    subtotal: float
+    tax_amount: float | None
+    total: float
+    formatted_invoice: str
+
+
+@ops.trace(tags=["invoice-generator"])
+@llm.call("anthropic/claude-sonnet-4-5", format=ProgramOutput)
+def generate_invoice(input_data: ProgramInput) -> str:
+    return f"""Generate invoice for {input_data.client_name}
+Items: {input_data.line_items}
+Tax rate: {input_data.tax_rate}
+Calculate subtotals, tax, total. Return formatted invoice."""
 ```
 
 Key ingredients:
@@ -249,13 +271,14 @@ Key ingredients:
 
 ### How Claws Use Custom Tools
 
-Once a claw writes a program, it invokes it like any other command:
+Once a Claw writes a program, they invoke it like any other command:
 
 ```bash
-uv run summarize.py --input '{"text": "..."}'
+uv run invoice.py --schema                    # see input/output structure
+uv run invoice.py --input '{"invoice_number": "INV-001", "client_name": "Acme", "line_items": [{"description": "Consulting", "hours": 10, "hourly_rate": 150}], "tax_rate": 0.08}'
 ```
 
-The claw can:
+Your Claw can:
 
 1. **Generate new tools on demand** — Need a capability? Write a program for it.
 2. **Package tools as skills** — Wrap frequently-used tools into a [skill](/docs/skills) so they persist across sessions.
@@ -263,10 +286,10 @@ The claw can:
 
 ### Why Mirascope?
 
-Building tools with Mirascope gives claws access to the full SDK — structured outputs, streaming, tool use within tools, multi-provider model routing, and automatic observability. A claw can build a tool that itself uses AI, creating layered intelligence where your claw orchestrates specialized sub-tasks.
+Building tools with Mirascope gives Claws access to the full SDK — structured outputs, streaming, tool use within tools, multi-provider model routing, and automatic observability. A Claw can build a tool that itself uses AI, creating layered intelligence where your claw orchestrates specialized sub-tasks.
 
 For the full SDK documentation, see the [Mirascope SDK](/docs/sdk) section.
 
 ## TOOLS.md
 
-Each claw has a `TOOLS.md` file in its workspace for storing local notes about tool usage — API keys, device names, project-specific commands, and other configuration that helps the claw use its tools effectively. This file is maintained by the claw itself and loaded at the start of each session.
+Each Claw has a `TOOLS.md` file in their workspace for storing local notes about tool usage — API keys, device names, project-specific commands, and other configuration that helps them use their tools effectively. This file is maintained by the Claw and loaded at the start of each session.
