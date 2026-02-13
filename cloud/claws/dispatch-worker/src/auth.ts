@@ -174,6 +174,9 @@ function isAllowedOrigin(origin: string, siteUrl: string): boolean {
   try {
     const allowed = new URL(siteUrl);
     const incoming = new URL(origin);
+    // The URL API automatically normalizes default ports in .origin
+    // https://example.com:443 -> https://example.com
+    // http://example.com:80 -> http://example.com
     return incoming.origin === allowed.origin;
   } catch {
     return false;
@@ -183,14 +186,31 @@ function isAllowedOrigin(origin: string, siteUrl: string): boolean {
 export function corsHeaders(
   origin: string | null,
   env: DispatchEnv,
+  includePreflightHeaders = false,
+  requestedHeaders?: string | null,
 ): Record<string, string> {
   if (!origin || !isAllowedOrigin(origin, env.SITE_URL)) return {};
-  return {
+
+  const headers: Record<string, string> = {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Credentials": "true",
-    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Authorization, Content-Type",
+    Vary: "Origin",
   };
+
+  if (includePreflightHeaders) {
+    headers["Access-Control-Allow-Methods"] =
+      "GET, POST, PUT, PATCH, DELETE, OPTIONS";
+
+    // Echo back requested headers (trust the browser to know what it needs).
+    // The gateway performs actual header validation on the real request.
+    headers["Access-Control-Allow-Headers"] =
+      requestedHeaders || "Authorization, Content-Type";
+
+    // Cache preflight for 24 hours
+    headers["Access-Control-Max-Age"] = "86400";
+  }
+
+  return headers;
 }
 
 /**
@@ -200,14 +220,32 @@ export function handlePreflight(
   request: Request,
   env: DispatchEnv,
 ): Response | null {
-  const origin = request.headers.get("Origin");
-  if (request.method !== "OPTIONS" || !origin) return null;
+  // Only handle OPTIONS requests
+  if (request.method !== "OPTIONS") return null;
 
-  const headers = corsHeaders(origin, env);
+  const origin = request.headers.get("Origin");
+
+  // OPTIONS without Origin = non-CORS request (e.g., curl, health checks, monitoring)
+  // Return 204 without CORS headers (standard for non-CORS OPTIONS)
+  if (!origin) {
+    console.log("[cors] OPTIONS without Origin header — returning 204");
+    return new Response(null, { status: 204 });
+  }
+
+  // Check if origin is allowed
+  const requestedHeaders = request.headers.get(
+    "Access-Control-Request-Headers",
+  );
+  const headers = corsHeaders(origin, env, true, requestedHeaders);
+
   if (Object.keys(headers).length === 0) {
+    // Origin not allowed — return 403 WITHOUT CORS headers.
+    // This ensures the browser blocks the response (correct security behavior).
+    console.log("[cors] Origin not allowed:", origin);
     return new Response(null, { status: 403 });
   }
 
+  console.log("[cors] Preflight approved for origin:", origin);
   return new Response(null, { status: 204, headers });
 }
 
