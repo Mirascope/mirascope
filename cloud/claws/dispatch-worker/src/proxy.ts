@@ -68,6 +68,10 @@ export function buildEnvVars(
   // Infrastructure env vars from the dispatch worker itself
   if (env.CLOUDFLARE_ACCOUNT_ID)
     envVars.CLOUDFLARE_ACCOUNT_ID = env.CLOUDFLARE_ACCOUNT_ID;
+  if (env.SITE_URL) {
+    envVars.OPENCLAW_SITE_URL = env.SITE_URL;
+    envVars.OPENCLAW_ALLOWED_ORIGINS = env.SITE_URL;
+  }
 
   // R2 persistence credentials (used by rclone in start-openclaw.ts)
   if (config.r2.accessKeyId) envVars.R2_ACCESS_KEY_ID = config.r2.accessKeyId;

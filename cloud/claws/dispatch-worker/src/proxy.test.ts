@@ -29,6 +29,8 @@ describe("buildEnvVars", () => {
       OPENCLAW_GATEWAY_TOKEN: "gw-tok",
       MIRASCOPE_API_KEY: "mk-test",
       CLOUDFLARE_ACCOUNT_ID: "test-account-id",
+      OPENCLAW_SITE_URL: "https://mirascope.com",
+      OPENCLAW_ALLOWED_ORIGINS: "https://mirascope.com",
       R2_ACCESS_KEY_ID: "test-access-key",
       R2_SECRET_ACCESS_KEY: "test-secret-key",
       R2_BUCKET_NAME: "claw-claw-123",
@@ -51,7 +53,7 @@ describe("buildEnvVars", () => {
     const result = buildEnvVars(config, env);
     expect(result).not.toHaveProperty("TELEGRAM_BOT_TOKEN");
     expect(result).not.toHaveProperty("DISCORD_BOT_TOKEN");
-    expect(Object.keys(result)).toHaveLength(8);
+    expect(Object.keys(result)).toHaveLength(10);
   });
 
   it("includes R2 credentials even with empty containerEnv", () => {
@@ -60,6 +62,8 @@ describe("buildEnvVars", () => {
     const result = buildEnvVars(config, env);
     expect(result).toEqual({
       CLOUDFLARE_ACCOUNT_ID: "test-account-id",
+      OPENCLAW_SITE_URL: "https://mirascope.com",
+      OPENCLAW_ALLOWED_ORIGINS: "https://mirascope.com",
       R2_ACCESS_KEY_ID: "test-access-key",
       R2_SECRET_ACCESS_KEY: "test-secret-key",
       R2_BUCKET_NAME: "claw-claw-123",
@@ -78,6 +82,17 @@ describe("buildEnvVars", () => {
     const env = createMockEnv({ CLOUDFLARE_ACCOUNT_ID: undefined });
     const result = buildEnvVars(config, env);
     expect(result).not.toHaveProperty("CLOUDFLARE_ACCOUNT_ID");
+  });
+
+  it("includes OPENCLAW_SITE_URL and OPENCLAW_ALLOWED_ORIGINS from SITE_URL", () => {
+    const config = createMockConfig({ containerEnv: {} });
+    const env = createMockEnv({ SITE_URL: "https://example.com" });
+    const result = buildEnvVars(config, env);
+    expect(result).toHaveProperty("OPENCLAW_SITE_URL", "https://example.com");
+    expect(result).toHaveProperty(
+      "OPENCLAW_ALLOWED_ORIGINS",
+      "https://example.com",
+    );
   });
 });
 
