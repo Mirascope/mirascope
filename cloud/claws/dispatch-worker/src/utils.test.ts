@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import { extractClawId } from "./utils";
+import { extractClawId, startupErrorHint } from "./utils";
 
 describe("extractClawId", () => {
   it("extracts clawId from standard hostname", () => {
@@ -32,5 +32,29 @@ describe("extractClawId", () => {
 
   it("handles two-part hostname", () => {
     expect(extractClawId("claw-1.localhost")).toBe("claw-1");
+  });
+});
+
+describe("startupErrorHint", () => {
+  it("hints about API key for auth-related errors", () => {
+    expect(startupErrorHint("Missing API key for OpenAI")).toContain("API key");
+    expect(startupErrorHint("401 Unauthorized")).toContain("API key");
+  });
+
+  it("hints about memory for OOM errors", () => {
+    expect(startupErrorHint("Process killed: out of memory")).toContain(
+      "out of memory",
+    );
+    expect(startupErrorHint("Container OOM killed")).toContain("out of memory");
+  });
+
+  it("hints about crashes for connection refused", () => {
+    expect(startupErrorHint("ECONNREFUSED 127.0.0.1:8080")).toContain(
+      "crashed",
+    );
+  });
+
+  it("returns undefined for unknown errors", () => {
+    expect(startupErrorHint("Something weird happened")).toBeUndefined();
   });
 });
