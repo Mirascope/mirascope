@@ -66,6 +66,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
+    "test:runtimes": "node --import mirascope/loader tests/runtimes/transformer-test.ts && bun tests/runtimes/transformer-test.ts && deno run --allow-read --allow-env --allow-net --node-modules-dir tests/runtimes/deno-test.ts",
     "codegen": "bun run scripts/codegen/run.ts",
     "prepublishOnly": "bun run build",
     "pack:dry": "npm pack --dry-run",

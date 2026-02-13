@@ -1,0 +1,24 @@
+{
+  "id": "msg_test_runtime_001",
+  "type": "message",
+  "role": "assistant",
+  "model": "claude-haiku-4-5-20251001",
+  "content": [
+    {
+      "type": "tool_use",
+      "id": "toolu_test_runtime_001",
+      "name": "sqrt_tool",
+      "input": {
+        "number": 4242
+      }
+    }
+  ],
+  "stop_reason": "tool_use",
+  "stop_sequence": null,
+  "usage": {
+    "input_tokens": 100,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 50
+  }
+}
