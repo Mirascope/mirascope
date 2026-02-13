@@ -64,9 +64,11 @@ You don't need to write all of these yourself. Create a Claw on Mirascope, start
 
 Read [What is a Claw?](/docs/what-is-a-claw) for the full picture — persistent memory, multi-channel presence, identity, and what makes Claws different from chatbots.
 
-## For SDK Developers
+## Claws + the Mirascope SDK
 
-Claws are built on the **Mirascope SDK** — a provider-agnostic LLM toolkit for Python and TypeScript. If you want structured outputs, tool integration, tracing, and observability without the full agent infrastructure:
+Claws are built on the **Mirascope SDK**, and they use it themselves. When a Claw needs a new AI-powered capability — summarizing documents, generating reports, analyzing data — it writes a self-contained Mirascope program and runs it as a tool. Every LLM call is traced to Mirascope Cloud automatically.
+
+This means the SDK isn't just for building Claws — it's how Claws build for themselves. See [Building Custom Tools](/docs/tools#building-custom-tools) for the full pattern.
 
 <Cards>
   <Card title="Mirascope SDK" href="/docs/sdk">
