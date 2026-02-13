@@ -286,11 +286,25 @@ app.all("*", async (c) => {
     return c.json({ error: "Gateway failed to start", details: message }, 503);
   }
 
-  if (isWebSocket) {
-    return proxyWebSocket(sandbox, rewrittenRequest);
-  }
   const basePath = `/${parsed.orgSlug}/${parsed.clawSlug}`;
   const gatewayToken = configExit.value.containerEnv.OPENCLAW_GATEWAY_TOKEN;
+  const debugWs = !!c.env.DEBUG_WS;
+
+  if (isWebSocket) {
+    // Inject gateway token into the WS request so the container gateway can
+    // authenticate. The token travels only on the internal container network
+    // (worker → sandbox) and is never exposed to the client.
+    if (gatewayToken) {
+      const wsUrl = new URL(rewrittenRequest.url);
+      wsUrl.searchParams.set("token", gatewayToken);
+      const authenticatedRequest = new Request(
+        wsUrl.toString(),
+        rewrittenRequest,
+      );
+      return proxyWebSocket(sandbox, authenticatedRequest, basePath, debugWs);
+    }
+    return proxyWebSocket(sandbox, rewrittenRequest, basePath, debugWs);
+  }
   return proxyHttp(sandbox, rewrittenRequest, basePath, gatewayToken);
 });
 

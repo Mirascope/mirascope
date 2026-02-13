@@ -315,6 +315,14 @@ export async function proxyHttp(
   const headers = new Headers(response.headers);
   headers.set("X-Claw-Worker", "dispatch");
 
+  // Rewrite Location headers on redirects to include base path
+  if (basePath && response.status >= 300 && response.status < 400) {
+    const location = headers.get("Location");
+    if (location?.startsWith("/")) {
+      headers.set("Location", basePath + location);
+    }
+  }
+
   // Inject base path into OpenClaw Control UI HTML
   if (basePath && response.headers.get("content-type")?.includes("text/html")) {
     const html = await response.text();
@@ -384,16 +392,34 @@ export async function proxyHttp(
 export async function proxyWebSocket(
   sandbox: Sandbox,
   request: Request,
+  basePath?: string,
+  debug = false,
 ): Promise<Response> {
-  console.log("[proxy] WebSocket connection");
+  const url = new URL(request.url);
+  const hasToken = url.searchParams.has("token");
+  console.log(
+    `[ws] connect path=${url.pathname} hasToken=${hasToken} basePath=${basePath ?? "none"}`,
+  );
 
   const containerResponse = await sandbox.wsConnect(request, GATEWAY_PORT);
   const containerWs = containerResponse.webSocket;
 
   if (!containerWs) {
-    console.error("[proxy] No WebSocket in container response, falling back");
+    console.error(
+      "[ws] no WebSocket in container response, status:",
+      containerResponse.status,
+    );
+    if (debug) {
+      const body = await containerResponse
+        .clone()
+        .text()
+        .catch(() => "");
+      console.error("[ws:debug] container response body:", body);
+    }
     return containerResponse;
   }
+
+  if (debug) console.log("[ws:debug] container WebSocket accepted");
 
   // Create a WebSocket pair for the client
   const [clientWs, serverWs] = Object.values(new WebSocketPair());
@@ -403,23 +429,70 @@ export async function proxyWebSocket(
 
   // Relay: client -> container
   serverWs.addEventListener("message", (event) => {
+    if (debug) {
+      const preview =
+        typeof event.data === "string"
+          ? event.data.slice(0, 200)
+          : `[binary ${(event.data as ArrayBuffer).byteLength}b]`;
+      console.log("[ws:debug] client→container:", preview);
+    }
     if (containerWs.readyState === WebSocket.OPEN) {
       containerWs.send(event.data);
     }
   });
 
-  // Relay: container -> client
+  // Relay: container -> client (with URL rewriting for base path)
   containerWs.addEventListener("message", (event) => {
     if (serverWs.readyState === WebSocket.OPEN) {
-      serverWs.send(event.data);
+      let data = event.data;
+      if (debug) {
+        const preview =
+          typeof data === "string"
+            ? data.slice(0, 200)
+            : `[binary ${(data as ArrayBuffer).byteLength}b]`;
+        console.log("[ws:debug] container→client:", preview);
+      }
+      // Rewrite URLs in JSON error messages to include base path.
+      // Currently targets OpenClaw gateway's { error: { message: "..." } }
+      // shape only. Other URL-bearing fields (e.g. redirect, url) are not
+      // rewritten — extend the parsing below if those become relevant.
+      if (basePath && typeof data === "string") {
+        try {
+          const parsed = JSON.parse(data);
+          if (
+            parsed.error?.message &&
+            typeof parsed.error.message === "string"
+          ) {
+            if (debug)
+              console.log(
+                "[ws:debug] rewriting error message URLs for base path",
+              );
+            parsed.error.message = parsed.error.message.replace(
+              /wss?:\/\/([^/\s"]+)\//g,
+              (match: string, host: string) =>
+                `${match.startsWith("wss") ? "wss" : "ws"}://${host}${basePath}/`,
+            );
+            data = JSON.stringify(parsed);
+          }
+        } catch {
+          // Not JSON, pass through
+        }
+      }
+      serverWs.send(data);
     }
   });
 
   // Close events
   serverWs.addEventListener("close", (event) => {
+    console.log(
+      `[ws] client closed: code=${event.code} reason="${event.reason}"`,
+    );
     containerWs.close(event.code, event.reason);
   });
   containerWs.addEventListener("close", (event) => {
+    console.log(
+      `[ws] container closed: code=${event.code} reason="${event.reason}"`,
+    );
     let reason = event.reason;
     if (reason.length > 123) {
       reason = reason.slice(0, 120) + "...";
@@ -428,10 +501,12 @@ export async function proxyWebSocket(
   });
 
   // Error events
-  serverWs.addEventListener("error", () => {
+  serverWs.addEventListener("error", (event) => {
+    console.error("[ws] client error:", event);
     containerWs.close(1011, "Client error");
   });
-  containerWs.addEventListener("error", () => {
+  containerWs.addEventListener("error", (event) => {
+    console.error("[ws] container error:", event);
     serverWs.close(1011, "Container error");
   });
 
