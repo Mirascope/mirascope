@@ -1,7 +1,6 @@
-import type { ReactNode } from "react";
-
 import { useNavigate } from "@tanstack/react-router";
 import { BarChart3, Bot, Shield, Zap } from "lucide-react";
+import { type ReactNode, useEffect } from "react";
 
 import { Button } from "@/app/components/ui/button";
 import {
@@ -100,9 +99,11 @@ export function LoginPage() {
   const { user, isLoading, loginWithGitHub, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
-  if (!isLoading && user) {
-    void navigate({ to: "/cloud", replace: true });
-  }
+  useEffect(() => {
+    if (!isLoading && user) {
+      void navigate({ to: "/cloud", replace: true });
+    }
+  }, [isLoading, user, navigate]);
 
   const features = [
     {

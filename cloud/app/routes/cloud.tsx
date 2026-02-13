@@ -18,7 +18,7 @@ function CloudRedirect() {
   }
 
   // No org selected, redirect to login
-  return <Navigate to="/login" replace />;
+  return <Navigate to="/onboarding" replace />;
 }
 
 export const Route = createFileRoute("/cloud")({
