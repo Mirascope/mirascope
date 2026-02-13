@@ -1,89 +1,105 @@
 ---
 title: Quickstart
-description: Create and deploy your first claw
+description: Deploy your first Claw and send your first message
 ---
 
 # Quickstart
 
-Get your first claw running in 5 minutes.
+Deploy a Claw to Mirascope Cloud and chat with it in under 5 minutes.
 
-<Info>
-**Mirascope Cloud** (managed hosting) is coming soon. This guide covers the self-hosted path using OpenClaw, which is fully available today.
-</Info>
+## 1. Create a Mirascope Account
 
-## Install OpenClaw
+Sign up at [mirascope.com/cloud](/cloud/login) to get your API key. Your key is generated during onboarding, or you can create one later in [Settings](/cloud/settings/api-keys).
 
-```bash
-npm install -g openclaw
-```
-
-## Run the Onboarding Wizard
-
-The `onboard` command walks you through everything: authentication, model provider keys, and channel connections.
+## 2. Install the CLI
 
 ```bash
-openclaw onboard
+npm install -g mirascope
 ```
 
-This creates your workspace at `~/.openclaw/workspace/` with default configuration files.
+## 3. Authenticate
 
-## Configure Your Claw
+```bash
+mirascope auth login
+```
 
-Your claw's behavior is defined by a few key files in the workspace:
+This opens your browser to authorize the CLI with your Mirascope account.
 
-### `soul.md` — Identity & Personality
+## 4. Create Your Claw
 
-This is who your claw *is*. Write it in first or second person — whatever feels natural.
+```bash
+mirascope claw create my-first-claw
+```
+
+This scaffolds a new Claw workspace with default configuration files:
+
+```
+my-first-claw/
+├── SOUL.md          # Your Claw's identity and personality
+├── AGENTS.md        # Behavioral instructions
+├── MEMORY.md        # Long-term memory (starts empty)
+├── TOOLS.md         # Tool notes
+└── openclaw.json    # Gateway configuration
+```
+
+## 5. Define Your Claw's Identity
+
+Edit `SOUL.md` to give your Claw a personality:
 
 ```markdown
 # Soul
 
-You are Atlas, a helpful assistant who loves dad jokes.
-You're patient, curious, and always honest when you don't know something.
+I'm a helpful assistant named Atlas. I'm knowledgeable, concise, and friendly.
+I specialize in answering questions clearly and helping with everyday tasks.
+
+When I'm unsure about something, I say so rather than guessing.
 ```
 
-### `AGENTS.md` — Behavioral Instructions
-
-This file controls how your claw operates: safety rules, memory protocol, tool usage, and session behavior. A sensible default is created during onboarding — customize it as you go.
-
-### `MEMORY.md` — Long-Term Memory
-
-Your claw writes here to remember things across sessions. It starts empty and grows over time as your claw learns about you and your preferences.
-
-## Start the Gateway
+## 6. Deploy
 
 ```bash
-openclaw gateway start
+mirascope claw deploy
 ```
 
-The gateway is the runtime that connects your claw to the outside world — channels (Discord, Slack, etc.), tools, and scheduled tasks.
+Your Claw is now running on Mirascope Cloud. The CLI will print your Claw's URL and status.
 
-## Chat with Your Claw
+## 7. Send Your First Message
 
-Once the gateway is running, you can talk to your claw through:
-
-- **Control UI** — opens in your browser at the local gateway URL
-- **Discord** — if you connected a Discord bot during onboarding
-- **Other channels** — Slack, Telegram, and more
-
-To open the Control UI:
+Open your Claw's dashboard in the browser:
 
 ```bash
-openclaw ui
+mirascope claw open
 ```
 
-That's it — your claw is live. Say hello.
+Send a message in the chat interface. Your Claw will respond using the identity you defined in `SOUL.md`.
+
+## Connect a Channel
+
+Your Claw is running — now connect it to a messaging platform so you can chat from Discord, Telegram, or anywhere else.
+
+<Cards>
+  <Card title="Discord" href="/docs/channels">
+    Connect your Claw to a Discord server — the most common setup for developers.
+  </Card>
+  <Card title="All Channels" href="/docs/channels">
+    Telegram, WhatsApp, Signal, Slack, and more.
+  </Card>
+</Cards>
 
 ## What's Next
 
 <Cards>
   <Card title="Configuration" href="/docs/configuration">
-    Deep dive into soul.md, AGENTS.md, and all workspace files.
-  </Card>
-  <Card title="Channels" href="/docs/channels">
-    Connect Discord, Slack, Telegram, and other messaging platforms.
+    Customize SOUL.md, AGENTS.md, memory, and gateway settings.
   </Card>
   <Card title="Skills" href="/docs/skills">
-    Give your claw tools and capabilities — web search, calendars, smart home, and more.
+    Add capabilities like web search, GitHub, coding, and more.
+  </Card>
+  <Card title="Memory" href="/docs/memory">
+    Learn how Claws maintain context across sessions.
   </Card>
 </Cards>
+
+<Info>
+  Prefer to self-host? See the [Deployment guide](/docs/deployment) for running OpenClaw on your own infrastructure.
+</Info>
