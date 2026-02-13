@@ -1,18 +1,6 @@
 import { Link } from "@tanstack/react-router";
 
-import { useOrganization } from "@/app/contexts/organization";
-
-function useHomeLink(): string {
-  try {
-    const { selectedOrganization } = useOrganization();
-    if (selectedOrganization) {
-      return `/${selectedOrganization.slug}`;
-    }
-  } catch {
-    // Outside OrganizationProvider or context unavailable
-  }
-  return "/";
-}
+import { useHomeLink } from "@/app/hooks/use-home-link";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function NotFound({ children }: { children?: any }) {
