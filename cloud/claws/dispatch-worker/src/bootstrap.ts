@@ -12,7 +12,7 @@
 
 import { Data, Effect } from "effect";
 
-import type { DispatchEnv, OpenClawConfig } from "./types";
+import type { DispatchEnv, OpenClawDeployConfig } from "./types";
 
 // ---------------------------------------------------------------------------
 // Errors
@@ -73,7 +73,10 @@ function internalFetch(
 export const fetchBootstrapConfig = (
   clawId: string,
   env: DispatchEnv,
-): Effect.Effect<OpenClawConfig, BootstrapFetchError | BootstrapDecodeError> =>
+): Effect.Effect<
+  OpenClawDeployConfig,
+  BootstrapFetchError | BootstrapDecodeError
+> =>
   Effect.gen(function* () {
     const response = yield* Effect.tryPromise({
       try: () =>
@@ -105,7 +108,7 @@ export const fetchBootstrapConfig = (
     }
 
     return yield* Effect.tryPromise({
-      try: () => response.json() as Promise<OpenClawConfig>,
+      try: () => response.json() as Promise<OpenClawDeployConfig>,
       catch: (cause) =>
         new BootstrapDecodeError({
           message: `Failed to decode bootstrap config for claw ${clawId}`,

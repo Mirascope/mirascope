@@ -5,10 +5,10 @@
  * Max entries and TTL are configurable for testing.
  */
 
-import type { OpenClawConfig } from "./types";
+import type { OpenClawDeployConfig } from "./types";
 
 interface CacheEntry {
-  config: OpenClawConfig;
+  config: OpenClawDeployConfig;
   at: number;
 }
 
@@ -20,7 +20,7 @@ const configCache = new Map<string, CacheEntry>();
 export function getCachedConfig(
   clawId: string,
   now: number = Date.now(),
-): OpenClawConfig | null {
+): OpenClawDeployConfig | null {
   const entry = configCache.get(clawId);
   if (!entry) return null;
   if (now - entry.at > CONFIG_CACHE_TTL_MS) {
@@ -35,7 +35,7 @@ export function getCachedConfig(
 
 export function setCachedConfig(
   clawId: string,
-  config: OpenClawConfig,
+  config: OpenClawDeployConfig,
   now: number = Date.now(),
 ): void {
   // Evict oldest if at capacity

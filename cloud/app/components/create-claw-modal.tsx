@@ -27,9 +27,9 @@ import { generateSlug } from "@/db/slug";
 import { PLAN_LIMITS } from "@/payments/plans";
 
 const DEFAULT_MODEL: Record<PlanTier, CreateClawRequest["model"]> = {
-  free: "claude-haiku-4-5",
-  pro: "claude-sonnet-4-5",
-  team: "claude-sonnet-4-5",
+  free: "anthropic/claude-haiku-4-5",
+  pro: "anthropic/claude-sonnet-4-5",
+  team: "anthropic/claude-opus-4-6",
 };
 
 export function CreateClawModal({

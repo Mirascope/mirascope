@@ -915,39 +915,10 @@ describe("Claw handler errors", () => {
   );
 
   it.effect(
-    "createClawHandler handles provision result with no credentials or bucket",
+    "createClawHandler fails when provision result has no credentials",
     () =>
       Effect.gen(function* () {
-        let capturedSet: Record<string, unknown> | null = null;
-
-        const CapturingDrizzle = Layer.succeed(DrizzleORM, {
-          update: () => {
-            const success = Effect.succeed([mockClaw]);
-            const chain = (level = 0): unknown =>
-              new Proxy(success, {
-                get: (target, prop) => {
-                  if (prop === "pipe")
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    return (...fns: Array<(e: any) => any>) =>
-                      fns.reduce((acc, fn) => fn(acc), success);
-                  if (prop === "set")
-                    return (data: Record<string, unknown>) => {
-                      capturedSet = data;
-                      return chain(level + 1);
-                    };
-                  if (
-                    typeof prop === "string" &&
-                    ["where", "returning"].includes(prop)
-                  )
-                    return () => chain(level + 1);
-                  return Reflect.get(target, prop);
-                },
-              });
-            return chain();
-          },
-        } as never);
-
-        const result = yield* createClawHandler("mock-org-id", {
+        const error = yield* createClawHandler("mock-org-id", {
           name: "No Creds Claw",
           slug: "no-creds-claw",
         }).pipe(
@@ -960,23 +931,17 @@ describe("Claw handler errors", () => {
                 provision: () => Effect.succeed({ status: "active" as const }),
               }),
               MockSettingsLayer(),
-              CapturingDrizzle,
+              Layer.succeed(DrizzleORM, {} as never),
             ),
           ),
+          Effect.flip,
         );
 
-        // Fallback branches: r2Credentials is undefined, bucketName is undefined
-        expect(capturedSet).not.toBeNull();
-        expect(capturedSet!.bucketName).toBeNull();
-        expect(result.bucketName).toBeNull();
-        expect(capturedSet!.secretsKeyId).toBe(
-          "CLAW_SECRETS_ENCRYPTION_KEY_V1",
+        // Should fail with DeploymentError when r2Credentials is missing
+        expect(error._tag).toBe("DeploymentError");
+        expect(error.message).toBe(
+          "R2 credentials not returned from provisioning",
         );
-
-        // Secrets are encrypted even when credentials are empty strings
-        const ciphertext = capturedSet!.secretsEncrypted as string;
-        expect(typeof ciphertext).toBe("string");
-        expect(() => JSON.parse(ciphertext)).toThrow();
       }),
   );
 

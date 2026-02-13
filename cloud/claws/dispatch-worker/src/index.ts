@@ -23,7 +23,7 @@ import { Hono } from "hono";
 import type {
   AppEnv,
   DispatchEnv,
-  OpenClawConfig,
+  OpenClawDeployConfig,
   SandboxProcessStatus,
 } from "./types";
 
@@ -314,7 +314,10 @@ app.all("*", async (c) => {
 const getOrFetchConfig = (
   clawId: string,
   env: DispatchEnv,
-): Effect.Effect<OpenClawConfig, BootstrapFetchError | BootstrapDecodeError> =>
+): Effect.Effect<
+  OpenClawDeployConfig,
+  BootstrapFetchError | BootstrapDecodeError
+> =>
   Effect.gen(function* () {
     const cached = getCachedConfig(clawId);
     if (cached) {

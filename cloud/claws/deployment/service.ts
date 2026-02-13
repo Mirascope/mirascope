@@ -36,7 +36,7 @@ import { Context, Effect } from "effect";
 
 import type {
   ClawStatus,
-  OpenClawConfig,
+  OpenClawDeployConfig,
   ProvisionClawConfig,
 } from "@/claws/deployment/types";
 import type { R2ScopedCredentials } from "@/cloudflare/r2/types";
@@ -94,7 +94,7 @@ export interface ClawDeploymentServiceInterface {
   /** Update a running claw's configuration (secrets, instance type, etc.). */
   readonly update: (
     clawId: string,
-    config: Partial<OpenClawConfig>,
+    config: Partial<OpenClawDeployConfig>,
   ) => Effect.Effect<ClawDeploymentStatus, ClawDeploymentError>;
 
   /**

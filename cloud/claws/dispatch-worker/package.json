@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "effect": "^3.19.13",
-    "hono": "^4.11.6"
+    "hono": "^4.11.6",
+    "openclaw": "^2026.2.12"
   },
   "devDependencies": {
     "@cloudflare/sandbox": "*",
