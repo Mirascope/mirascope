@@ -364,6 +364,7 @@ export function createOpenClawConfig(
 // Main startup sequence
 // ============================================================
 
+log("🦡 aardvark — startup script begin");
 log("=== OpenClaw startup script begin ===");
 
 // ============================================================
@@ -384,8 +385,6 @@ function requireEnv(key: string, missing: string[]): string {
 // ============================================================
 // 0. Validate all required environment variables
 // ============================================================
-
-log("Step 0: Validating environment variables");
 
 // Collect all missing required environment variables
 const missingVars: string[] = [];
@@ -425,106 +424,55 @@ if (missingVars.length > 0) {
   throw new Error(errorMessage);
 }
 
-log("Step 0 complete: All required environment variables validated");
-
-// ============================================================
-// 1. Configure rclone for R2
-// ============================================================
-
-log("Step 1: Configuring rclone for R2");
-
 ensureRcloneConfig(r2AccessKeyId, r2SecretAccessKey, cfAccountId);
 
-log("Step 1 complete: rclone configured");
-
-// Log validated environment (claw-specific values in full, secrets redacted)
-log("Environment configuration:", {
-  // Claw-specific — safe to log in full
-  R2_BUCKET_NAME: env.R2_BUCKET_NAME,
-  OPENCLAW_GATEWAY_TOKEN: env.OPENCLAW_GATEWAY_TOKEN,
+log("aardvark — env validated, rclone configured", {
   OPENCLAW_SITE_URL: env.OPENCLAW_SITE_URL,
   OPENCLAW_ALLOWED_ORIGINS: env.OPENCLAW_ALLOWED_ORIGINS,
-  CLOUDFLARE_ACCOUNT_ID: env.CLOUDFLARE_ACCOUNT_ID,
-  ANTHROPIC_BASE_URL: env.ANTHROPIC_BASE_URL,
   PRIMARY_MODEL_ID: env.PRIMARY_MODEL_ID,
-  // Runtime
-  NODE_VERSION: process.version ?? "(unknown)",
-  BUN_VERSION: process.versions?.bun ?? "(unknown)",
+  GATEWAY_TOKEN_PREFIX: env.OPENCLAW_GATEWAY_TOKEN.slice(0, 8) + "...",
 });
 
 const bucket = env.R2_BUCKET_NAME;
 
-// ============================================================
-// 2. Bail if already running
-// ============================================================
-
-log("Step 2: Checking if gateway is already running");
 if (isGatewayRunning()) {
-  log("Gateway already running, exiting with code 0");
+  log("aardvark — gateway already running, exiting");
   process.exit(0);
 }
-log("Step 2 complete: gateway is NOT running, proceeding with startup");
 
-// ============================================================
-// 3. Create directories
-// ============================================================
-
-log("Step 3: Creating directories");
 mkdirSync(CONFIG_DIR, { recursive: true });
-log(`Created/verified: ${CONFIG_DIR}`);
 mkdirSync(WORKSPACE_DIR, { recursive: true });
-log(`Created/verified: ${WORKSPACE_DIR}`);
-log("Step 3 complete");
 
 // ============================================================
 // 4. Restore from R2 via rclone (non-fatal on failure)
 // ============================================================
 
-log("Step 4: R2 restore");
 if (rcloneConfigured()) {
   try {
-    const cmd = `rclone sync r2:${bucket}/openclaw/ ${CONFIG_DIR}/ ${RCLONE_FLAGS}`;
-    log("Running rclone restore:", { cmd });
-    const output = execSync(cmd, {
-      stdio: "pipe",
-      timeout: 30000,
-    })
-      .toString()
-      .trim();
-    if (output) log("rclone restore output:", { output });
-    log("Step 4 complete: config restored from R2");
+    execSync(
+      `rclone sync r2:${bucket}/openclaw/ ${CONFIG_DIR}/ ${RCLONE_FLAGS}`,
+      {
+        stdio: "pipe",
+        timeout: 30000,
+      },
+    );
+    log("aardvark — R2 restore complete");
   } catch (err) {
-    logError("R2 restore failed (non-fatal, continuing)", err);
+    logError("R2 restore failed (non-fatal)", err);
   }
-} else {
-  log("Step 4 skipped: rclone not configured");
 }
 
 // ============================================================
 // 5. Build openclaw.json from environment variables
 // ============================================================
 
-log("Step 5: Building openclaw.json");
-
-// Load existing config if present
 let existingConfig: OpenClawConfig | undefined;
 if (existsSync(CONFIG_FILE)) {
-  log("Found existing config file, loading");
   try {
-    const raw = readFileSync(CONFIG_FILE, "utf8");
-    existingConfig = JSON.parse(raw);
-    log("Loaded existing config successfully:", {
-      configLength: raw.length,
-      hasAgents: !!existingConfig?.agents,
-      hasGateway: !!existingConfig?.gateway,
-      hasModels: !!existingConfig?.models,
-      hasChannels: !!existingConfig?.channels,
-    });
+    existingConfig = JSON.parse(readFileSync(CONFIG_FILE, "utf8"));
   } catch (err) {
     logError("Failed to parse existing config, starting fresh", err);
   }
-} else {
-  log("No existing config found, creating new");
 }
 
 // Create config using the helper (env is already validated in Step 0)
@@ -534,44 +482,33 @@ const config = createOpenClawConfig(env, {
   existingConfig,
 });
 
-// Write config
 const configJson = JSON.stringify(config, null, 2);
 writeFileSync(CONFIG_FILE, configJson);
-log("Step 5 complete: config written to " + CONFIG_FILE, {
-  configLength: configJson.length,
-});
+log("aardvark — config written", { bytes: configJson.length });
 
 // ============================================================
 // 6. Persist config to R2 via rclone (non-fatal on failure)
 // ============================================================
 
-log("Step 6: R2 persist");
 if (rcloneConfigured()) {
   try {
-    const cmd = `rclone sync ${CONFIG_DIR}/ r2:${bucket}/openclaw/ ${RCLONE_FLAGS} ${RCLONE_EXCLUDE}`;
-    log("Running rclone persist:", { cmd });
-    const output = execSync(cmd, {
-      stdio: "pipe",
-      timeout: 30000,
-    })
-      .toString()
-      .trim();
-    if (output) log("rclone persist output:", { output });
-    log("Step 6 complete: config persisted to R2");
+    execSync(
+      `rclone sync ${CONFIG_DIR}/ r2:${bucket}/openclaw/ ${RCLONE_FLAGS} ${RCLONE_EXCLUDE}`,
+      {
+        stdio: "pipe",
+        timeout: 30000,
+      },
+    );
+    log("aardvark — R2 persist complete");
   } catch (err) {
-    logError("R2 persist failed (non-fatal, continuing to start gateway)", err);
+    logError("R2 persist failed (non-fatal)", err);
   }
-} else {
-  log("Step 6 skipped: rclone not configured");
 }
 
 // ============================================================
 // 7. Start gateway
 // ============================================================
 
-log("Step 7: Starting OpenClaw Gateway");
-
-// Clean up stale lock files
 tryUnlink("/tmp/openclaw-gateway.lock");
 tryUnlink(join(CONFIG_DIR, "gateway.lock"));
 
@@ -585,28 +522,7 @@ const args = [
   "lan",
 ];
 
-log("Spawning gateway:", { command: `openclaw ${args.join(" ")}` });
-
-// Check that openclaw binary exists
-try {
-  const which = execSync("which openclaw", { stdio: "pipe" }).toString().trim();
-  log("openclaw binary found at:", { path: which });
-} catch (err) {
-  logError("Failed to find openclaw binary!", err);
-  process.exit(1);
-}
-
-try {
-  const version = execSync("openclaw --version 2>&1", {
-    stdio: "pipe",
-    timeout: 5000,
-  })
-    .toString()
-    .trim();
-  log("openclaw version:", { version });
-} catch (err) {
-  logError("Failed to get openclaw version (non-fatal)", err);
-}
+log("aardvark — spawning gateway", { command: `openclaw ${args.join(" ")}` });
 
 // Open local log file for persistent logging
 const logFile = Bun.file(LOG_FILE);

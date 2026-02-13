@@ -336,7 +336,10 @@ export async function proxyWebSocket(
   const l = log ?? createLogger();
   const url = new URL(request.url);
   const hasToken = url.searchParams.has("token");
-  l.info("ws", `connect path=${url.pathname} hasToken=${hasToken}`);
+  l.info(
+    "ws",
+    `🦡 aardvark websocket upgrade path=${url.pathname} hasToken=${hasToken} origin=${request.headers.get("Origin") ?? "none"} proto=${request.headers.get("Sec-WebSocket-Protocol") ?? "none"}`,
+  );
   l.debug("ws", `full URL: ${redactUrl(url)}`);
 
   const containerResponse = await sandbox.wsConnect(request, GATEWAY_PORT);
