@@ -14,6 +14,7 @@ import { log } from "./logger";
 
 export interface StartupEnv {
   OPENCLAW_GATEWAY_TOKEN?: string;
+  OPENCLAW_PRIMARY_MODEL?: string;
   OPENCLAW_SITE_URL?: string;
   OPENCLAW_ALLOWED_ORIGINS?: string;
   ANTHROPIC_API_KEY?: string;
@@ -56,26 +57,8 @@ export interface OpenClawStartupConfig {
 const GATEWAY_PORT = 18789;
 const WORKSPACE_DIR = "/root/.openclaw/workspace";
 
-const ANTHROPIC_MODELS = [
-  {
-    id: "claude-opus-4-5-20251101",
-    name: "Claude Opus 4.5",
-    contextWindow: 200000,
-    alias: "Opus 4.5",
-  },
-  {
-    id: "claude-sonnet-4-5-20250929",
-    name: "Claude Sonnet 4.5",
-    contextWindow: 200000,
-    alias: "Sonnet 4.5",
-  },
-  {
-    id: "claude-haiku-4-5-20251001",
-    name: "Claude Haiku 4.5",
-    contextWindow: 200000,
-    alias: "Haiku 4.5",
-  },
-] as const;
+/** Default model if none specified via OPENCLAW_PRIMARY_MODEL */
+const DEFAULT_PRIMARY_MODEL = "anthropic/claude-haiku-4-5";
 
 // ============================================================
 // Config builder
@@ -118,6 +101,10 @@ export function buildConfig(
   // Control UI allowed origins
   config.gateway.controlUi = buildAllowedOrigins(env);
 
+  // Primary model (from claw creation payload via OPENCLAW_PRIMARY_MODEL)
+  config.agents.defaults.model.primary =
+    env.OPENCLAW_PRIMARY_MODEL || DEFAULT_PRIMARY_MODEL;
+
   // Anthropic provider
   configureAnthropic(config, env);
 
@@ -152,6 +139,10 @@ export function buildAllowedOrigins(
 
 /**
  * Configure the Anthropic provider on the config object.
+ *
+ * When ANTHROPIC_BASE_URL is set (Mirascope Router proxy), configures
+ * the provider with that base URL. OpenClaw discovers available models
+ * from the provider automatically — no need to hardcode a model list.
  */
 function configureAnthropic(
   config: OpenClawStartupConfig,
@@ -166,11 +157,6 @@ function configureAnthropic(
     const providerConfig: Record<string, unknown> = {
       baseUrl,
       api: "anthropic-messages",
-      models: ANTHROPIC_MODELS.map(({ id, name, contextWindow }) => ({
-        id,
-        name,
-        contextWindow,
-      })),
     };
 
     if (env.ANTHROPIC_API_KEY) {
@@ -178,16 +164,6 @@ function configureAnthropic(
     }
 
     config.models.providers.anthropic = providerConfig;
-
-    config.agents!.defaults!.models ??= {};
-    for (const model of ANTHROPIC_MODELS) {
-      config.agents!.defaults!.models[`anthropic/${model.id}`] = {
-        alias: model.alias,
-      };
-    }
-    config.agents!.defaults!.model!.primary = `anthropic/${ANTHROPIC_MODELS[0].id}`;
-  } else if (env.ANTHROPIC_API_KEY) {
-    config.agents!.defaults!.model!.primary = "anthropic/claude-opus-4-5";
   }
 }
 
@@ -240,6 +216,7 @@ export function logEnvironment(env: StartupEnv): void {
     // Claw-specific — safe to log in full
     R2_BUCKET_NAME: env.R2_BUCKET_NAME ?? "(not set)",
     OPENCLAW_GATEWAY_TOKEN: env.OPENCLAW_GATEWAY_TOKEN ?? "(not set)",
+    OPENCLAW_PRIMARY_MODEL: env.OPENCLAW_PRIMARY_MODEL ?? "(not set)",
     OPENCLAW_SITE_URL: env.OPENCLAW_SITE_URL ?? "(not set)",
     OPENCLAW_ALLOWED_ORIGINS: env.OPENCLAW_ALLOWED_ORIGINS ?? "(not set)",
     CF_ACCOUNT_ID: env.CF_ACCOUNT_ID ?? "(not set)",

@@ -34,6 +34,24 @@ describe("buildConfig", () => {
     expect(config.gateway?.auth).toBeUndefined();
   });
 
+  it("uses OPENCLAW_PRIMARY_MODEL when provided", () => {
+    const config = buildConfig({
+      OPENCLAW_PRIMARY_MODEL: "anthropic/claude-sonnet-4-5",
+    });
+
+    expect(config.agents?.defaults?.model?.primary).toBe(
+      "anthropic/claude-sonnet-4-5",
+    );
+  });
+
+  it("defaults to haiku when no OPENCLAW_PRIMARY_MODEL", () => {
+    const config = buildConfig(minimalEnv);
+
+    expect(config.agents?.defaults?.model?.primary).toBe(
+      "anthropic/claude-haiku-4-5",
+    );
+  });
+
   it("configures Anthropic provider with base URL and API key", () => {
     const config = buildConfig({
       ANTHROPIC_BASE_URL: "https://example.com/router/v2/anthropic",
@@ -48,23 +66,6 @@ describe("buildConfig", () => {
     expect(provider.baseUrl).toBe("https://example.com/router/v2/anthropic");
     expect(provider.apiKey).toBe("sk-test-key");
     expect(provider.api).toBe("anthropic-messages");
-
-    // Should have models
-    const models = provider.models as Array<{ id: string }>;
-    expect(models).toHaveLength(3);
-    expect(models[0].id).toBe("claude-opus-4-5-20251101");
-
-    // Should set primary model
-    expect(config.agents?.defaults?.model?.primary).toBe(
-      "anthropic/claude-opus-4-5-20251101",
-    );
-
-    // Should set model aliases
-    expect(
-      config.agents?.defaults?.models?.["anthropic/claude-opus-4-5-20251101"],
-    ).toEqual({
-      alias: "Opus 4.5",
-    });
   });
 
   it("strips trailing slashes from base URL", () => {
@@ -80,14 +81,11 @@ describe("buildConfig", () => {
     expect(provider.baseUrl).toBe("https://example.com/router");
   });
 
-  it("configures Anthropic without base URL (direct API key)", () => {
+  it("does not configure provider without base URL", () => {
     const config = buildConfig({ ANTHROPIC_API_KEY: "sk-direct" });
 
-    // No custom provider — uses default
+    // No custom provider without base URL
     expect(config.models?.providers?.anthropic).toBeUndefined();
-    expect(config.agents?.defaults?.model?.primary).toBe(
-      "anthropic/claude-opus-4-5",
-    );
   });
 
   it("configures Telegram channel", () => {
