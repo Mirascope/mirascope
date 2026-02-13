@@ -151,11 +151,19 @@ export function AccountMenu({ className }: AccountMenuProps) {
       <CreateOrganizationModal
         open={showCreateOrg}
         onOpenChange={setShowCreateOrg}
-        onCreated={(org) => {
-          void navigate({
-            to: "/settings/organizations/$orgSlug",
-            params: { orgSlug: org.slug },
-          });
+        onCreated={(org, planTier) => {
+          if (planTier !== "free") {
+            // Redirect to billing to set up payment for paid plan
+            void navigate({
+              to: "/settings/organizations/$orgSlug/billing",
+              params: { orgSlug: org.slug },
+            });
+          } else {
+            void navigate({
+              to: "/settings/organizations/$orgSlug",
+              params: { orgSlug: org.slug },
+            });
+          }
         }}
       />
     </>
