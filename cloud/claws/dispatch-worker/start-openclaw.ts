@@ -313,6 +313,24 @@ writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
 console.log("Configuration written to", CONFIG_FILE);
 
 // ============================================================
+// 4b. Persist initial config to R2 backup
+// ============================================================
+
+const r2BackupDir = join(BACKUP_DIR, "openclaw");
+if (!existsSync(BACKUP_DIR) || !statSync(BACKUP_DIR).isDirectory()) {
+  console.error("FATAL: R2 not mounted at", BACKUP_DIR);
+  process.exit(1);
+}
+
+mkdirSync(r2BackupDir, { recursive: true });
+cpSync(CONFIG_DIR, r2BackupDir, { recursive: true });
+// Write sync timestamps
+const syncTimestamp = new Date().toISOString();
+writeFileSync(join(BACKUP_DIR, ".last-sync"), syncTimestamp);
+writeFileSync(join(CONFIG_DIR, ".last-sync"), syncTimestamp);
+console.log("Initial config persisted to R2 backup at", r2BackupDir);
+
+// ============================================================
 // 5. Start gateway
 // ============================================================
 
@@ -339,13 +357,57 @@ if (gatewayToken) {
   console.log("Starting gateway (no token)...");
 }
 
-// Replace the current process with the gateway
-// Using Bun.spawn with stdio: "inherit" and unref: false to act like exec
+// Open R2 log file for persistent logging
+const LOG_FILE = join(BACKUP_DIR, "gateway.log");
+const logFile = Bun.file(LOG_FILE);
+const logWriter = logFile.writer();
+
+// Write startup header
+const startupHeader = [
+  `\n${"=".repeat(60)}`,
+  `Gateway startup: ${new Date().toISOString()}`,
+  `Token present: ${!!gatewayToken}`,
+  `Args: openclaw ${args.map((a) => (a === gatewayToken ? "***REDACTED***" : a)).join(" ")}`,
+  `${"=".repeat(60)}\n`,
+].join("\n");
+logWriter.write(startupHeader);
+logWriter.flush();
+
+// Start gateway with piped output so we can tee to R2
 const proc = Bun.spawn(["openclaw", ...args], {
-  stdio: ["inherit", "inherit", "inherit"],
+  stdio: ["inherit", "pipe", "pipe"],
   env: process.env,
 });
 
-// Wait for the gateway process to exit and propagate its exit code
-const exitCode = await proc.exited;
+// Tee streams to both console and R2 log file
+async function tee(
+  stream: ReadableStream<Uint8Array>,
+  target: NodeJS.WriteStream,
+): Promise<void> {
+  const reader = stream.getReader();
+  const decoder = new TextDecoder();
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const text = decoder.decode(value, { stream: true });
+      target.write(text);
+      logWriter.write(text);
+      logWriter.flush();
+    }
+  } catch {
+    // Stream closed
+  }
+}
+
+// Run both tees concurrently, wait for process exit
+const [exitCode] = await Promise.all([
+  proc.exited,
+  tee(proc.stdout as ReadableStream<Uint8Array>, process.stdout),
+  tee(proc.stderr as ReadableStream<Uint8Array>, process.stderr),
+]);
+
+logWriter.write(`\nGateway exited with code ${exitCode}\n`);
+logWriter.flush();
+logWriter.end();
 process.exit(exitCode);
