@@ -1,8 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Effect, Layer } from "effect";
 
+import type { ModelPricing } from "@/api/router/pricing";
+
 import { handleNonStreamingResponse } from "@/api/router/non-streaming";
-import { PROVIDER_CONFIGS, getProviderApiKey } from "@/api/router/providers";
+import {
+  PROVIDER_CONFIGS,
+  getProviderApiKey,
+  type ProviderName,
+} from "@/api/router/providers";
 import { proxyToProvider } from "@/api/router/proxy";
 import { handleStreamingResponse } from "@/api/router/streaming";
 import {
@@ -13,6 +19,10 @@ import {
 } from "@/api/router/utils";
 import { handleErrors, handleDefects } from "@/api/utils";
 import { Database } from "@/db/database";
+import { OrganizationMemberships } from "@/db/organization-memberships";
+import { ProjectApiKeys } from "@/db/project-api-keys";
+import { ProjectMemberships } from "@/db/project-memberships";
+import { Payments } from "@/payments";
 import { RateLimiter } from "@/rate-limiting";
 import {
   routerMeteringQueueLayer,
@@ -92,26 +102,57 @@ export const Route = createFileRoute("/router/v2/$provider/$")({
             userId: validated.user.id,
           });
 
-          // Get provider-specific API key from settings
-          const providerApiKey = getProviderApiKey(
-            validated.provider,
-            settings,
-          );
+          // Step 3: Check for BYOK key (Pro/Team plans only)
+          const payments = yield* Payments;
+          const planTier = yield* payments.customers.subscriptions
+            .getPlan(validated.apiKeyInfo.organizationId)
+            .pipe(Effect.catchAll(() => Effect.succeed("free" as const)));
 
-          // Step 3: Create pending router request
+          let byokKey: string | null = null;
+          if (planTier !== "free") {
+            const orgMemberships = new OrganizationMemberships();
+            const projectMemberships = new ProjectMemberships(orgMemberships);
+            const projectApiKeys = new ProjectApiKeys(projectMemberships);
+            byokKey = yield* projectApiKeys
+              .get({
+                projectId: validated.apiKeyInfo.projectId,
+                provider: validated.provider as ProviderName,
+              })
+              .pipe(Effect.catchAll(() => Effect.succeed(null)));
+          }
+
+          const isByok = byokKey !== null;
+
+          // Get provider-specific API key (BYOK or Mirascope-managed)
+          const providerApiKey =
+            byokKey ?? getProviderApiKey(validated.provider, settings);
+
+          // Step 4: Create pending router request
           const routerRequestId = yield* createPendingRouterRequest(validated);
 
-          // Step 4: Reserve funds (also validates pricing availability)
-          const { reservationId, modelPricing } = yield* reserveRouterFunds(
-            validated,
-            routerRequestId,
-            organization.stripeCustomerId,
-          );
+          // Step 5: Reserve funds (skip for BYOK — no billing)
+          let reservationId: string | undefined;
+          let modelPricing: ModelPricing | undefined;
+          if (!isByok) {
+            const funds = yield* reserveRouterFunds(
+              validated,
+              routerRequestId,
+              organization.stripeCustomerId,
+            );
+            reservationId = funds.reservationId;
+            modelPricing = funds.modelPricing;
+          }
+
+          // BYOK zero pricing: cost calculation will produce 0, skipping metering
+          const ZERO_PRICING: ModelPricing = {
+            input: 0n,
+            output: 0n,
+          };
 
           // Build request context for handlers
           const requestContext = {
             routerRequestId,
-            reservationId,
+            reservationId: reservationId ?? "",
             request: {
               userId: validated.user.id,
               organizationId: validated.apiKeyInfo.organizationId,
@@ -121,10 +162,17 @@ export const Route = createFileRoute("/router/v2/$provider/$")({
               routerRequestId,
               clawId: validated.apiKeyInfo.clawId,
             },
-            modelPricing,
+            modelPricing: modelPricing ?? ZERO_PRICING,
           };
 
-          // Step 5: Proxy request to provider with error handling
+          // Log BYOK usage for analytics
+          if (isByok) {
+            console.log(
+              `[router] BYOK request: provider=${validated.provider} project=${validated.apiKeyInfo.projectId} request=${routerRequestId}`,
+            );
+          }
+
+          // Step 6: Proxy request to provider with error handling
           const proxyResult = yield* proxyToProvider(
             request,
             {
@@ -136,18 +184,20 @@ export const Route = createFileRoute("/router/v2/$provider/$")({
             Effect.catchAll((error) => {
               // Handle proxy errors by updating request and releasing funds
               return Effect.gen(function* () {
-                yield* handleRouterRequestFailure(
-                  routerRequestId,
-                  reservationId,
-                  requestContext.request,
-                  error instanceof Error ? error.message : String(error),
-                );
+                if (reservationId) {
+                  yield* handleRouterRequestFailure(
+                    routerRequestId,
+                    reservationId,
+                    requestContext.request,
+                    error instanceof Error ? error.message : String(error),
+                  );
+                }
                 return yield* Effect.fail(error);
               });
             }),
           );
 
-          // Step 6: Handle response (streaming or non-streaming)
+          // Step 7: Handle response (streaming or non-streaming)
           if (proxyResult.isStreaming) {
             const response = yield* handleStreamingResponse(
               proxyResult,
