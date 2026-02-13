@@ -21,9 +21,9 @@ import { resolve, dirname } from "path";
 
 // ── Config ──────────────────────────────────────────────────────────────────
 
-const CF_ACCOUNT_ID =
+const CLOUDFLARE_ACCOUNT_ID =
   process.env.CLOUDFLARE_ACCOUNT_ID ?? "0257b70c7de82086ddc4e3480b0202e9";
-process.env.CLOUDFLARE_ACCOUNT_ID = CF_ACCOUNT_ID;
+process.env.CLOUDFLARE_ACCOUNT_ID = CLOUDFLARE_ACCOUNT_ID;
 
 const SCRIPT_DIR = dirname(new URL(import.meta.url).pathname);
 const CLOUD_DIR = resolve(SCRIPT_DIR, "../..");
@@ -214,8 +214,7 @@ log("Step 6: Dispatch Worker secrets");
 const secretCmd = (name: string, value: string) =>
   $`echo ${value} | npx wrangler secret put ${name} --env dev --config ${resolve(DISPATCH_DIR, "wrangler.jsonc")}`.quiet();
 
-await secretCmd("CF_ACCOUNT_ID", CF_ACCOUNT_ID);
-await secretCmd("CLOUDFLARE_ACCOUNT_ID", CF_ACCOUNT_ID);
+await secretCmd("CLOUDFLARE_ACCOUNT_ID", CLOUDFLARE_ACCOUNT_ID);
 await secretCmd("SITE_URL", DISPATCH_URL);
 ok("Secrets set");
 

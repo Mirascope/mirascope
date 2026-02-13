@@ -31,7 +31,7 @@ export interface OpenClawEnv {
   OPENCLAW_GATEWAY_TOKEN: string;
   OPENCLAW_SITE_URL: string;
   OPENCLAW_ALLOWED_ORIGINS: string;
-  CF_ACCOUNT_ID: string;
+  CLOUDFLARE_ACCOUNT_ID: string;
 
   // Anthropic configuration (required)
   ANTHROPIC_BASE_URL: string;
@@ -381,7 +381,7 @@ log("Step 0: Configuring rclone for R2");
 // R2 credentials are required environment variables passed by the dispatch worker
 const r2AccessKeyId = requireEnv("R2_ACCESS_KEY_ID");
 const r2SecretAccessKey = requireEnv("R2_SECRET_ACCESS_KEY");
-const cfAccountId = requireEnv("CF_ACCOUNT_ID");
+const cfAccountId = requireEnv("CLOUDFLARE_ACCOUNT_ID");
 
 ensureRcloneConfig(r2AccessKeyId, r2SecretAccessKey, cfAccountId);
 
@@ -400,7 +400,7 @@ const env: OpenClawEnv = {
   OPENCLAW_GATEWAY_TOKEN: requireEnv("OPENCLAW_GATEWAY_TOKEN"),
   OPENCLAW_SITE_URL: requireEnv("OPENCLAW_SITE_URL"),
   OPENCLAW_ALLOWED_ORIGINS: requireEnv("OPENCLAW_ALLOWED_ORIGINS"),
-  CF_ACCOUNT_ID: requireEnv("CF_ACCOUNT_ID"),
+  CLOUDFLARE_ACCOUNT_ID: requireEnv("CLOUDFLARE_ACCOUNT_ID"),
   // Anthropic configuration (required)
   ANTHROPIC_BASE_URL: requireEnv("ANTHROPIC_BASE_URL"),
   ANTHROPIC_API_KEY: requireEnv("ANTHROPIC_API_KEY"),
@@ -419,7 +419,7 @@ log("Environment validated:", {
   OPENCLAW_GATEWAY_TOKEN: env.OPENCLAW_GATEWAY_TOKEN,
   OPENCLAW_SITE_URL: env.OPENCLAW_SITE_URL,
   OPENCLAW_ALLOWED_ORIGINS: env.OPENCLAW_ALLOWED_ORIGINS,
-  CF_ACCOUNT_ID: env.CF_ACCOUNT_ID,
+  CLOUDFLARE_ACCOUNT_ID: env.CLOUDFLARE_ACCOUNT_ID,
   ANTHROPIC_BASE_URL: env.ANTHROPIC_BASE_URL,
   PRIMARY_MODEL_ID: env.PRIMARY_MODEL_ID,
   // Runtime
