@@ -203,6 +203,7 @@ export function CreateOrganizationModal({
         });
         analytics.trackEvent("organization_created", {
           organization_id: newOrg.id,
+          plan_tier: "free",
         });
         setSelectedOrganization(newOrg);
         onCreated?.(newOrg);
