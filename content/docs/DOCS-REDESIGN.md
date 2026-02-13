@@ -1,21 +1,21 @@
 # Documentation Redesign: Claws Front and Center
 
 **Author:** William / Verse  
-**Date:** 2025-02-13  
-**Status:** Proposal
+**Date:** 2026-02-13  
+**Status:** Approved
 
 ## Problem
 
 The mirascope.com/docs site is entirely SDK-centric. Every page assumes the reader is a Python developer looking to use the Mirascope LLM toolkit directly. With **Claws** launching as Mirascope's hosted AI agent platform, and **TypeScript SDK** support being added by Sebastian, the documentation needs to be restructured so that:
 
-1. **Claws is the primary product** — most visitors should land on Claws docs first
-2. **Mirascope SDK** (Python + TypeScript) is accessible but secondary — it's the toolkit for developers who want to build at a lower level
+1. **Claws is the primary product** — the docs landing page should be about Claws
+2. **Mirascope SDK** (Python + TypeScript) is accessible but secondary — for developers who want to build at a lower level
 3. The transition is smooth — existing SDK doc URLs shouldn't break
 
 ## Current Top-Level Navigation
 
 ```
-Welcome
+Welcome (slug: "index" — landing page at /docs)
   ├── index (Welcome to Mirascope)
   ├── why
   ├── quickstart
@@ -24,117 +24,55 @@ Learn
   ├── LLM (calls, prompts, tools, agents, streams, etc.)
   └── Ops (tracing, versioning, evals, etc.)
 Guides
-  ├── Prompt Engineering
-  └── Agent Recipes
+  └── Overview
 API Reference
+  ├── LLM
+  └── Ops
 v1 (legacy)
 ```
 
-The welcome page (`index.mdx`) leads with "Welcome to Mirascope" and focuses on the Python SDK + Cloud dashboard. No Claws documentation exists yet.
-
-## Proposed New Top-Level Navigation
+## New Top-Level Navigation
 
 ```
-Welcome
-  ├── index (redesigned — leads with Claws)
+Claws (slug: "index" — landing page at /docs)
+  ├── index (Welcome / What are Claws?)
+  ├── quickstart
+  ├── configuration
+  ├── channels (Discord, Telegram, Signal, etc.)
+  ├── skills
+  ├── memory
+  ├── tools
+  ├── deployment
   └── contributing
-Claws                              ← NEW, front and center
-  ├── What are Claws?
-  ├── Getting Started
-  ├── Configuration
-  │   ├── soul.md
-  │   ├── Skills
-  │   └── Memory
-  ├── Channels (Discord, Telegram, Signal, etc.)
-  ├── Deployment
-  ├── Managing Claws
-  ├── OpenClaw CLI
-  ├── Skill Development
-  └── Registry
-Mirascope SDK                      ← Existing content, reorganized
-  ├── Overview (why Mirascope, quickstart)
-  ├── Learn
-  │   ├── LLM (calls, prompts, tools, agents, etc.)
-  │   └── Ops (tracing, versioning, etc.)
-  ├── Guides
-  │   ├── Prompt Engineering
-  │   └── Agent Recipes
-  └── API Reference
-v1 (legacy, stays as-is)
+Guides (top-level, stays as-is)
+  └── Overview
+SDK (renamed from Learn, 1:1 content)
+  ├── LLM (calls, prompts, tools, agents, etc.)
+  └── Ops (tracing, versioning, etc.)
+API Reference (stays as-is)
+  ├── LLM
+  └── Ops
 ```
 
 ### Key Changes
 
-- **Claws section** is the second item in nav (after Welcome), making it the first real content section visitors see
-- **Mirascope SDK** wraps all existing LLM/Ops/Guides/API content under a single section, with Python and TypeScript as sub-paths or tabs
-- **Welcome page** is redesigned to lead with Claws
-- **v1** stays unchanged
+1. **Claws replaces Welcome** as the `slug: "index"` section — it becomes the `/docs` landing page and all claws content lives at `/docs/<page>` (top-level URLs)
+2. **Learn → SDK** — renamed, content is 1:1. SDK pages live at `/docs/sdk/llm/*` and `/docs/sdk/ops/*`
+3. **Guides** stays top-level at `/docs/guides/*`
+4. **API Reference** stays top-level at `/docs/api/*`
+5. **v1** — no longer in top-level nav. Add a small note in the SDK section pointing to `/docs/v1/*` for those who need it
+6. Current Welcome content (`why.mdx`, `quickstart.mdx`) moves into SDK or is rewritten for Claws
 
-## Welcome Page Redesign
+## `_meta.ts` Structure
 
-The root `index.mdx` should be restructured:
-
-**Hero section:** "Build and deploy persistent AI agents" — introduces Claws as the headline product. Primary CTA: "Get Started with Claws →"
-
-**Secondary section:** "Build with the Mirascope LLM Toolkit" — for developers who want the SDK directly. Links to Python and TypeScript quickstarts.
-
-**Tertiary:** Links to community, contributing, etc.
-
-## Implementation Plan
-
-### Phase 1: Navigation Restructure + Claws Skeleton
-
-- Update `content/docs/_meta.ts` to add the Claws section and wrap existing content under "Mirascope SDK"
-- Create placeholder pages for each Claws doc (`content/docs/claws/`)
-- Ensure existing SDK content still renders at new paths
-- Add redirects from old paths if URLs change
-
-### Phase 2: Claws Content
-
-- Write "What are Claws?" overview
-- Write Getting Started guide (install OpenClaw CLI, create first claw, deploy)
-- Write Configuration docs (soul.md format, skill definitions, memory configuration)
-- Write Deployment guide (local dev, cloud deployment)
-- Write Managing Claws guide (monitoring, updating, versioning)
-- Write OpenClaw CLI reference
-- Write Skill Development guide
-- Write Registry docs
-
-### Phase 3: Welcome Page Rewrite
-
-- Redesign `index.mdx` with Claws-first messaging
-- Update hero, CTAs, and feature highlights
-- Remove or move SDK-centric welcome content into the Mirascope SDK section
-
-### Phase 4: SDK Content Migration
-
-- Move `why.mdx` and `quickstart.mdx` under SDK section
-- Ensure Learn, Guides, and API Reference are properly nested under Mirascope SDK
-- Integrate TypeScript SDK docs (Sebastian's work) alongside Python docs
-- Update internal cross-references
-
-## Open Questions
-
-1. **URL structure:** Should Claws docs live at `/docs/claws/...` (under the docs umbrella) or `/claws/...` (top-level)? The former is simpler to implement given the current content system; the latter signals Claws as a first-class product.
-
-2. **TypeScript SDK integration:** Should TypeScript be a separate section within Mirascope SDK, or should each page have Python/TypeScript tabs (like many SDK docs do)? Tabs reduce duplication for concepts that are the same across languages, but may be complex to implement.
-
-3. **Blog posts:** Do existing blog posts reference SDK doc URLs that will change? If so, do we update them or rely on redirects?
-
-4. **Search:** How does the restructure affect search indexing? Should we update `sitemap.xml` generation and add `canonical` tags during the migration?
-
-5. **SDK version selector:** Currently v1/v2 is handled via the nav. With the restructure, should the version selector be scoped to the SDK section only?
-
-## Concrete `_meta.ts` Structure
-
-The new Claws section would be defined as:
+### `content/docs/_meta.ts`
 
 ```ts
 const claws: SectionSpec = {
-  slug: "claws",
+  slug: "index",
   label: "Claws",
   children: [
-    { slug: "index", label: "Overview" },
+    { slug: "index", label: "Welcome" },
     { slug: "quickstart", label: "Quickstart" },
     { slug: "configuration", label: "Configuration" },
     { slug: "channels", label: "Channels" },
@@ -142,55 +80,84 @@ const claws: SectionSpec = {
     { slug: "memory", label: "Memory & Context" },
     { slug: "tools", label: "Tools" },
     { slug: "deployment", label: "Deployment" },
+    { slug: "contributing", label: "Contributing" },
   ],
 };
-```
 
-The top-level spec becomes:
-
-```ts
 const docs: VersionSpec = {
-  sections: [welcome, claws, sdk, v1],
+  sections: [claws, guides, sdk, api],
 };
 ```
 
-Where `sdk` wraps the existing `learn`, `guides`, and `api` sections.
+### `content/docs/learn/_meta.ts` → rename to SDK
 
-## Redirect Table
+```ts
+const sdk: SectionSpec = {
+  slug: "sdk",
+  label: "SDK",
+  products: [
+    { slug: "llm", label: "LLM" },
+    { slug: "ops", label: "Ops" },
+  ],
+  children: [llm, ops],
+};
+```
 
-To avoid breaking existing URLs:
+## URL Changes
 
-| Old URL | New URL |
-|---------|---------|
-| `/docs/quickstart` | `/docs/sdk/python/quickstart` |
-| `/docs/learn/llm/*` | `/docs/sdk/python/llm/*` |
-| `/docs/learn/ops/*` | `/docs/sdk/python/ops/*` |
-| `/docs/guides/*` | `/docs/sdk/guides/*` |
-| `/docs/api/*` | `/docs/sdk/api/*` |
-| `/docs/why` | `/docs/sdk/why` |
+| Old URL | New URL | Action |
+|---------|---------|--------|
+| `/docs` (Welcome to Mirascope) | `/docs` (Claws landing) | Rewrite content |
+| `/docs/why` | `/docs/sdk/why` or remove | Move or drop |
+| `/docs/quickstart` | `/docs/quickstart` (Claws quickstart) | Rewrite content |
+| `/docs/learn/llm/*` | `/docs/sdk/llm/*` | Redirect (learn → sdk) |
+| `/docs/learn/ops/*` | `/docs/sdk/ops/*` | Redirect (learn → sdk) |
+| `/docs/guides/*` | `/docs/guides/*` | No change |
+| `/docs/api/*` | `/docs/api/*` | No change |
+| `/docs/v1/*` | `/docs/v1/*` | No change (just hidden from nav) |
 
-All old URLs should 301 redirect to their new locations.
+Only the `learn → sdk` rename needs redirects. Guides and API Reference URLs are unchanged.
 
-## Timeline Estimates
+## Implementation Plan
 
-- **Phase 1** (nav restructure + skeleton): 1-2 days
-- **Phase 2** (welcome page rewrite): half day
-- **Phase 3** (Claws content): 3-5 days
-- **Phase 4** (TS SDK slot): Sebastian's timeline
-- Phases 3 and 4 can run in parallel
+### Phase 1: Nav Restructure (this PR stack)
+
+1. Rename `learn` section to `sdk` in `_meta.ts`
+2. Rename `content/docs/learn/` directory to `content/docs/sdk/`
+3. Replace `welcome` section with `claws` section (slug: "index")
+4. Create Claws skeleton pages (placeholder content)
+5. Move `contributing.mdx` into Claws section
+6. Remove v1 from top-level `sections` array (content stays, just not in nav)
+7. Add `learn → sdk` redirect
+
+### Phase 2: Claws Content
+
+- Write proper Claws landing page (replaces current Welcome)
+- Write Claws quickstart (install CLI, create first claw, deploy)
+- Write configuration docs (soul.md, AGENTS.md, config file)
+- Write channels guide (Discord, Telegram, Signal setup)
+- Write skills docs (creating, installing, registry)
+- Write memory docs (MEMORY.md, daily files, context management)
+- Write tools docs (built-in tools, custom tools)
+- Write deployment guide (local dev, cloud hosting)
+
+### Phase 3: SDK Polish
+
+- Add note in SDK section pointing to v1 for legacy users
+- Integrate TypeScript SDK content (coordinate with Sebastian)
+- Update any internal cross-references
+
+## Timeline
+
+- **Phase 1** (nav restructure): 1 day
+- **Phase 2** (Claws content): 3-5 days
+- **Phase 3** (SDK polish + TS): Sebastian's timeline
+- Phases 2 and 3 can run in parallel
 
 ## Migration Risks
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| Broken external links | SEO ranking loss, user confusion | 301 redirects for all moved URLs |
-| Search index disruption | Temporary ranking drop | Sitemap update + canonical tags |
-| Collision with Sebastian's TS work | Merge conflicts, duplicated effort | Coordinate on `_meta.ts` structure before Phase 4 |
-| Incomplete Claws content at launch | Empty placeholder pages look unprofessional | Phase 1 skeleton uses "Coming Soon" markers; don't link from nav until content exists |
-
-## Technical Notes
-
-- Navigation is defined via `_meta.ts` files exporting `SectionSpec` objects (defined in `cloud/app/lib/content/spec.ts`)
-- `SectionSpec` supports `slug`, `label`, `children`, and optionally `products` (for language/framework switching)
-- The `products` field on `SectionSpec` could be used for Python/TypeScript switching within SDK docs
-- Content files are MDX and live in `content/docs/`
+| Broken `/docs/learn/*` links | 404s for bookmarked/shared URLs | 301 redirects to `/docs/sdk/*` |
+| Collision with Sebastian's TS work | Merge conflicts in `_meta.ts` | Coordinate: TS goes into SDK section's products |
+| Incomplete Claws content | Empty pages look bad | Placeholder content with "Coming Soon"; only link pages with real content from nav |
