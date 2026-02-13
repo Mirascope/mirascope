@@ -83,6 +83,11 @@ import {
   updateAutoReloadSettingsHandler,
 } from "@/api/organizations.handlers";
 import {
+  listProjectApiKeysHandler,
+  setProjectApiKeyHandler,
+  deleteProjectApiKeyHandler,
+} from "@/api/project-api-keys.handlers";
+import {
   listProjectMembersHandler,
   addProjectMemberHandler,
   updateProjectMemberRoleHandler,
@@ -582,6 +587,31 @@ const TokenCostHandlersLive = HttpApiBuilder.group(
     ),
 );
 
+const ProjectApiKeysHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "projectApiKeys",
+  (handlers) =>
+    handlers
+      .handle("list", ({ path }) =>
+        listProjectApiKeysHandler(path.organizationId, path.projectId),
+      )
+      .handle("set", ({ path, payload }) =>
+        setProjectApiKeyHandler(
+          path.organizationId,
+          path.projectId,
+          path.provider,
+          payload,
+        ),
+      )
+      .handle("delete", ({ path }) =>
+        deleteProjectApiKeyHandler(
+          path.organizationId,
+          path.projectId,
+          path.provider,
+        ),
+      ),
+);
+
 export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(HealthHandlersLive),
   Layer.provide(TracesHandlersLive),
@@ -593,6 +623,7 @@ export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(ProjectMembershipsHandlersLive),
   Layer.provide(EnvironmentsHandlersLive),
   Layer.provide(ApiKeysHandlersLive),
+  Layer.provide(ProjectApiKeysHandlersLive),
   Layer.provide(FunctionsHandlersLive),
   Layer.provide(AnnotationsHandlersLive),
   Layer.provide(ClawsHandlersLive),
