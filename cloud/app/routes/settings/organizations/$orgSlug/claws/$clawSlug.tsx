@@ -65,6 +65,17 @@ function ClawSettingsPage() {
 
   const claw = claws.find((c) => c.slug === clawSlug);
 
+  // If claw was deleted (optimistic removal), redirect to claws list
+  useEffect(() => {
+    if (!isLoading && !claw && claws.length >= 0) {
+      setShowDeleteModal(false);
+      void navigate({
+        to: "/settings/organizations/$orgSlug/claws",
+        params: { orgSlug },
+      });
+    }
+  }, [claw, isLoading, claws.length, navigate, orgSlug]);
+
   // Sync URL claw to context
   useEffect(() => {
     if (claw && selectedClaw?.id !== claw.id) {
@@ -84,6 +95,11 @@ function ClawSettingsPage() {
     }
     setSpendingError(null);
   }, [claw?.id, claw?.weeklySpendingGuardrailCenticents]);
+
+  // Don't render settings for a claw that no longer exists
+  if (!isLoading && !claw) {
+    return null;
+  }
 
   const orgRole = selectedOrganization?.role;
   const canManageMembers = orgRole === "OWNER" || orgRole === "ADMIN";
