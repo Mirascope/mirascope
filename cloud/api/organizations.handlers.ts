@@ -12,6 +12,7 @@ import type {
 import { Analytics } from "@/analytics";
 import { AuthenticatedUser } from "@/auth";
 import { Database } from "@/db/database";
+import { PlanLimitExceededError } from "@/errors";
 import { Payments } from "@/payments";
 
 export * from "@/api/organizations.schemas";
@@ -27,6 +28,34 @@ export const createOrganizationHandler = (payload: CreateOrganizationRequest) =>
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
     const analytics = yield* Analytics;
+    const payments = yield* Payments;
+
+    // Check if user already owns a free-plan organization
+    const userOrgs = yield* db.organizations.findAll({ userId: user.id });
+    const ownedOrgs = userOrgs.filter((org) => org.role === "OWNER");
+
+    for (const org of ownedOrgs) {
+      const subscription = yield* payments.customers.subscriptions
+        .get(org.stripeCustomerId)
+        .pipe(
+          Effect.catchAll(() =>
+            Effect.succeed({ currentPlan: "free" as const }),
+          ),
+        );
+      if (subscription.currentPlan === "free") {
+        return yield* Effect.fail(
+          new PlanLimitExceededError({
+            message:
+              "You can only own one free organization. Please upgrade your existing organization to create a new one.",
+            resource: "organizations",
+            limitType: "free_organizations",
+            currentUsage: 1,
+            limit: 1,
+            planTier: "free",
+          }),
+        );
+      }
+    }
 
     const organization = yield* db.organizations.create({
       data: { name: payload.name, slug: payload.slug },

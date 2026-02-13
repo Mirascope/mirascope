@@ -215,7 +215,10 @@ export class OrganizationsApi extends HttpApiGroup.make("organizations")
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(AlreadyExistsError, { status: AlreadyExistsError.status })
       .addError(DatabaseError, { status: DatabaseError.status })
-      .addError(StripeError, { status: StripeError.status }),
+      .addError(StripeError, { status: StripeError.status })
+      .addError(PlanLimitExceededError, {
+        status: PlanLimitExceededError.status,
+      }),
   )
   .add(
     HttpApiEndpoint.get("get", "/organizations/:id")
