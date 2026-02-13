@@ -8,19 +8,7 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 
-import { useOrganization } from "@/app/contexts/organization";
-
-function useHomeLink(): string {
-  try {
-    const { selectedOrganization } = useOrganization();
-    if (selectedOrganization) {
-      return `/${selectedOrganization.slug}`;
-    }
-  } catch {
-    // Outside OrganizationProvider or context unavailable
-  }
-  return "/";
-}
+import { useHomeLink } from "@/app/hooks/use-home-link";
 
 export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
   const router = useRouter();
