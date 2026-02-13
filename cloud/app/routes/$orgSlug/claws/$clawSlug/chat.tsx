@@ -56,9 +56,15 @@ function getGatewayUrl(orgSlug: string, clawSlug: string): string {
     }
     return "http://localhost:18789/";
   }
-  const base = hostname.startsWith("staging.")
-    ? "openclaw.staging.mirascope.com"
-    : "openclaw.mirascope.com";
+  // Derive dispatch worker URL from current hostname:
+  // staging.mirascope.com → openclaw.staging.mirascope.com
+  // dev.mirascope.com     → openclaw.dev.mirascope.com
+  // mirascope.com         → openclaw.mirascope.com
+  const match = hostname.match(/^([\w-]+)\.(mirascope\.com)$/);
+  const base =
+    match && match[1] !== "www"
+      ? `openclaw.${match[1]}.${match[2]}`
+      : "openclaw.mirascope.com";
   return `https://${base}/${orgSlug}/${clawSlug}/overview`;
 }
 
