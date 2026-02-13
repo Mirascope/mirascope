@@ -22,81 +22,28 @@
 import type Module from "node:module";
 
 import { readFileSync } from "node:fs";
-import { dirname, resolve as resolvePath } from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
 
+import {
+  needsTransform,
+  getCompilerOptions,
+  createProgramForFile,
+} from "./transform/compile";
 import { createToolSchemaTransformer } from "./transform/transformer";
 
-/**
- * Check if a file contains calls that need compile-time transformation.
- * Quick regex check to avoid expensive TypeScript compilation for files that don't need it.
- *
- * Patterns that trigger transformation:
- * - defineTool, defineContextTool: Tool schema injection
- * - defineFormat: Format schema injection
- * - version, versionCall: Closure metadata injection for versioning
- */
-export function needsTransform(contents: string): boolean {
-  return /\b(?:defineTool|defineContextTool|defineFormat|version(?:Call)?)\s*[<(]/.test(
-    contents,
-  );
-}
+export { needsTransform } from "./transform/compile";
 
-/** Cache for parsed tsconfig compiler options, keyed by resolved tsconfig path. */
-const tsconfigCache = new Map<string, ts.CompilerOptions>();
-
-/**
- * Resolve and cache compiler options from the nearest tsconfig.json.
- * Falls back to default options if no tsconfig is found.
- */
-function getCompilerOptions(filePath: string): ts.CompilerOptions {
-  const configPath = ts.findConfigFile(
-    dirname(filePath),
-    ts.sys.fileExists,
-    "tsconfig.json",
-  );
-
-  const defaults: ts.CompilerOptions = {
-    target: ts.ScriptTarget.ES2022,
-    module: ts.ModuleKind.ES2022,
-    moduleResolution: ts.ModuleResolutionKind.Node10,
-    esModuleInterop: true,
-    strict: true,
-    noEmit: false,
-    noEmitOnError: false,
-  };
-
-  if (!configPath) {
-    return defaults;
-  }
-
-  const cached = tsconfigCache.get(configPath);
-  if (cached) {
-    return cached;
-  }
-
-  const configFile = ts.readConfigFile(configPath, ts.sys.readFile);
-  if (configFile.error) {
-    return defaults;
-  }
-
-  const parsed = ts.parseJsonConfigFileContent(
-    configFile.config,
-    ts.sys,
-    dirname(configPath),
-  );
-
-  const options: ts.CompilerOptions = {
-    ...defaults,
-    ...parsed.options,
-    noEmit: false,
-    noEmitOnError: false,
-  };
-
-  tsconfigCache.set(configPath, options);
-  return options;
-}
+/** Node-specific compiler defaults (loader must emit JavaScript). */
+const NODE_DEFAULTS: ts.CompilerOptions = {
+  target: ts.ScriptTarget.ES2022,
+  module: ts.ModuleKind.ES2022,
+  moduleResolution: ts.ModuleResolutionKind.Node10,
+  esModuleInterop: true,
+  strict: true,
+  noEmit: false,
+  noEmitOnError: false,
+};
 
 /**
  * Transform TypeScript source code to inject tool schemas and compile to JavaScript.
@@ -111,56 +58,36 @@ export function transformSource(
 ): string {
   // If we need the Mirascope transform, create a full program
   if (applyMirascopeTransform) {
-    const compilerOptions = getCompilerOptions(filePath);
+    const compilerOptions = getCompilerOptions(filePath, NODE_DEFAULTS);
+    // Force emit flags — tsconfig may set noEmit: true but the loader must emit
+    compilerOptions.noEmit = false;
+    compilerOptions.noEmitOnError = false;
 
-    // Create a program with just this file
-    const host = ts.createCompilerHost(compilerOptions);
-    const originalGetSourceFile = host.getSourceFile;
-
-    // Override to provide our in-memory source
-    host.getSourceFile = (
-      fileName: string,
-      languageVersion: ts.ScriptTarget,
-      onError?: (message: string) => void,
-      shouldCreateNewSourceFile?: boolean,
-    ) => {
-      if (resolvePath(fileName) === resolvePath(filePath)) {
-        return ts.createSourceFile(fileName, contents, languageVersion, true);
-      }
-      return originalGetSourceFile(
-        fileName,
-        languageVersion,
-        onError,
-        shouldCreateNewSourceFile,
-      );
-    };
+    const { program, sourceFile } = createProgramForFile(
+      filePath,
+      contents,
+      compilerOptions,
+    );
 
     // Capture the emitted output
     let output: string | undefined;
-    host.writeFile = (fileName, data) => {
-      if (fileName.endsWith(".js")) {
-        output = data;
-      }
-      // Don't write to disk
-    };
 
-    const program = ts.createProgram([filePath], compilerOptions, host);
-    const sourceFile = program.getSourceFile(filePath);
-
-    // Coverage ignored: The getSourceFile override above always returns the
-    // in-memory file, so this branch is unreachable in normal operation.
-    /* v8 ignore next 3 */
-    if (!sourceFile) {
-      throw new Error(`Could not load source file: ${filePath}`);
-    }
-
-    // Apply the Mirascope transformer
     const customTransformers: ts.CustomTransformers = {
       before: [createToolSchemaTransformer(program)],
     };
 
-    // Emit JavaScript with transformers applied
-    program.emit(sourceFile, undefined, undefined, false, customTransformers);
+    // Emit JavaScript with transformers applied, capturing output in memory
+    program.emit(
+      sourceFile,
+      (fileName, data) => {
+        if (fileName.endsWith(".js")) {
+          output = data;
+        }
+      },
+      undefined,
+      false,
+      customTransformers,
+    );
 
     // Coverage ignored: TypeScript emits output even with type errors.
     // This is a defensive fallback for unexpected compiler failures.

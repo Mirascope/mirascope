@@ -23,13 +23,25 @@
  * ```
  */
 
-/* eslint-disable @typescript-eslint/unbound-method */
 import { plugin } from "bun";
 import { readFileSync } from "node:fs";
-import { resolve, dirname } from "node:path";
 import ts from "typescript";
 
+import {
+  needsTransform,
+  getCompilerOptions,
+  createProgramForFile,
+} from "./transform/compile";
 import { createToolSchemaTransformer } from "./transform/transformer";
+
+/** Bun-specific compiler defaults (Bun handles TS→JS compilation itself). */
+const BUN_DEFAULTS: ts.CompilerOptions = {
+  target: ts.ScriptTarget.ESNext,
+  module: ts.ModuleKind.ESNext,
+  moduleResolution: ts.ModuleResolutionKind.Bundler,
+  esModuleInterop: true,
+  strict: true,
+};
 
 /**
  * Options for the Mirascope Bun plugin.
@@ -48,85 +60,19 @@ export interface MirascopeBunPluginOptions {
 }
 
 /**
- * Check if a file contains calls that need compile-time transformation.
- * Quick regex check to avoid expensive TypeScript compilation for files that don't need it.
- *
- * Patterns that trigger transformation:
- * - defineTool, defineContextTool: Tool schema injection
- * - defineFormat: Format schema injection
- * - version, versionCall: Closure metadata injection for versioning
- */
-function needsTransform(contents: string): boolean {
-  return /\b(?:defineTool|defineContextTool|defineFormat|version(?:Call)?)\s*[<(]/.test(
-    contents,
-  );
-}
-
-/**
  * Transform TypeScript source code to inject tool schemas.
  */
 function transformSource(
   filePath: string,
   contents: string,
 ): string | undefined {
-  // Find tsconfig.json
-  const configPath = ts.findConfigFile(
-    dirname(filePath),
-    ts.sys.fileExists,
-    "tsconfig.json",
+  const compilerOptions = getCompilerOptions(filePath, BUN_DEFAULTS);
+  const { program, sourceFile } = createProgramForFile(
+    filePath,
+    contents,
+    compilerOptions,
   );
 
-  const compilerOptions: ts.CompilerOptions = {
-    target: ts.ScriptTarget.ESNext,
-    module: ts.ModuleKind.ESNext,
-    moduleResolution: ts.ModuleResolutionKind.Bundler,
-    esModuleInterop: true,
-    strict: true,
-  };
-
-  // Load tsconfig if found
-  if (configPath) {
-    const configFile = ts.readConfigFile(configPath, ts.sys.readFile);
-    if (!configFile.error) {
-      const parsed = ts.parseJsonConfigFileContent(
-        configFile.config,
-        ts.sys,
-        dirname(configPath),
-      );
-      Object.assign(compilerOptions, parsed.options);
-    }
-  }
-
-  // Create a program with just this file
-  const host = ts.createCompilerHost(compilerOptions);
-  const originalGetSourceFile = host.getSourceFile;
-
-  // Override to provide our in-memory source
-  host.getSourceFile = (
-    fileName: string,
-    languageVersion: ts.ScriptTarget,
-    onError?: (message: string) => void,
-    shouldCreateNewSourceFile?: boolean,
-  ) => {
-    if (resolve(fileName) === resolve(filePath)) {
-      return ts.createSourceFile(fileName, contents, languageVersion, true);
-    }
-    return originalGetSourceFile(
-      fileName,
-      languageVersion,
-      onError,
-      shouldCreateNewSourceFile,
-    );
-  };
-
-  const program = ts.createProgram([filePath], compilerOptions, host);
-  const sourceFile = program.getSourceFile(filePath);
-
-  if (!sourceFile) {
-    return undefined;
-  }
-
-  // Apply the transformer
   const transformer = createToolSchemaTransformer(program);
   const result = ts.transform(sourceFile, [transformer]);
   const transformedSourceFile = result.transformed[0];
@@ -136,7 +82,6 @@ function transformSource(
     return undefined;
   }
 
-  // Print the transformed source back to string
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
   const output = printer.printFile(transformedSourceFile);
 
