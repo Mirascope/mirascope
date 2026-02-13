@@ -15,6 +15,10 @@ import { installMockFetch } from "./mock-fetch.ts";
 // Install mock fetch BEFORE any SDK code creates provider clients
 const mockState = installMockFetch();
 
+// Ensure a dummy API key is set so the provider registry doesn't throw
+// MissingAPIKeyError before any HTTP request reaches our mock fetch.
+process.env.ANTHROPIC_API_KEY ??= "test-key";
+
 // Import SDK after mock is installed
 const { llm } = await import("mirascope");
 
