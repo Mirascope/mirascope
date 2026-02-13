@@ -5,9 +5,13 @@ description: Configure your claw's identity, behavior, memory, and capabilities
 
 # Configuration
 
-Every Claw has a **workspace** — a set of plain markdown files that define who it is, how it behaves, and what it remembers.
+Every Claw has a **workspace** — a set of plain markdown files that define who they are, how they behave, and what they remember.
 
-The primary way to configure your Claw is by **chatting with it**. Tell it to update its personality, change settings, or add a channel — it will modify the relevant files and restart the gateway so changes persist. You can also edit files directly through the Mirascope dashboard.
+The primary way to configure your Claw is by **chatting with them**. Tell them to update their personality, change settings, or add a channel — they'll modify the relevant files and restart the gateway so changes persist. You can also edit files directly through the Mirascope dashboard.
+
+<Tip>
+  **Just getting started?** You only need two things: tell your Claw who they should be (they'll update `SOUL.md`) and connect a channel. Everything else on this page is reference material for when you're ready to go deeper.
+</Tip>
 
 ```
 workspace/
@@ -26,8 +30,9 @@ workspace/
 
 ## SOUL.md — Identity and Personality
 
-This is the heart of your claw. Free-form markdown that defines who it is, how it communicates, and what it values. Your claw reads this at the start of every session.
+This is the heart of your Claw. Free-form markdown that defines who they are, how they communicate, and what they value. Your Claw reads this at the start of every session.
 
+<Info title="Example SOUL.md" collapsible={true} defaultOpen={false}>
 ```markdown
 # Soul
 
@@ -51,16 +56,17 @@ I'm Atlas, a knowledgeable and friendly assistant.
 - Project management and task tracking
 - Research and summarization
 ```
+</Info>
 
 <Info>
-There's no required format for `SOUL.md` — it's entirely free-form. Write it however feels natural. Some people use bullet points, others write prose. The claw will internalize whatever you give it.
+There's no required format for `SOUL.md` — it's entirely free-form. Write it however feels natural. Some people use bullet points, others write prose. Your Claw will internalize whatever you give them.
 </Info>
 
 ---
 
 ## AGENTS.md — Behavioral Instructions
 
-`AGENTS.md` tells your claw *how to operate*. Think of it as the employee handbook — session protocols, safety rules, and behavioral guidelines.
+`AGENTS.md` tells your Claw *how to operate*. Think of it as the employee handbook — session protocols, safety rules, and behavioral guidelines.
 
 Common sections include session startup protocols, safety rules, group chat behavior, sub-agent discipline, and heartbeat schedules.
 
@@ -135,7 +141,7 @@ Claws have two layers of memory: daily logs and curated long-term memory.
 
 ### memory/YYYY-MM-DD.md — Daily Files
 
-Your claw creates these automatically during sessions. They're raw logs of what happened — decisions made, tasks completed, things learned.
+Your Claw creates these automatically during sessions. They're raw logs of what happened — decisions made, tasks completed, things learned.
 
 ```markdown
 # 2026-02-13
@@ -154,7 +160,7 @@ Your claw creates these automatically during sessions. They're raw logs of what 
 
 ### MEMORY.md — Long-Term Memory
 
-This is the curated version — distilled lessons, preferences, and project context that persists across sessions. Your claw periodically reviews daily files and promotes important information here.
+This is the curated version — distilled lessons, preferences, and project context that persists across sessions. Your Claw periodically reviews daily files and promotes important information here.
 
 ```markdown
 # Memory
@@ -173,14 +179,14 @@ This is the curated version — distilled lessons, preferences, and project cont
 ```
 
 <Info>
-Your claw updates `MEMORY.md` during heartbeats. Think of daily files as a journal and `MEMORY.md` as curated wisdom — the stuff worth remembering long-term.
+Your Claw updates `MEMORY.md` during heartbeats. Think of daily files as a journal and `MEMORY.md` as curated wisdom — the stuff worth remembering long-term.
 </Info>
 
 ---
 
 ## TOOLS.md — Tool Notes
 
-Local notes about tools, services, credentials, and shortcuts. Your claw references this when it needs to use external tools or remember environment-specific details.
+Local notes about tools, services, credentials, and shortcuts. Your Claw references this when they need to use external tools or remember environment-specific details.
 
 ```markdown
 # Tools
@@ -218,7 +224,7 @@ Quick-reference identity card for your claw:
 
 ### USER.md
 
-Context about you — helps your claw personalize its behavior:
+Context about you — helps your Claw personalize their behavior:
 
 ```markdown
 # User
@@ -231,7 +237,7 @@ Context about you — helps your claw personalize its behavior:
 
 ### HEARTBEAT.md
 
-A checklist your claw runs through during periodic heartbeat polls:
+A checklist your Claw runs through during periodic heartbeat polls:
 
 ```markdown
 # Heartbeat Tasks
