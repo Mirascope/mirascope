@@ -7,8 +7,83 @@ description: Create and deploy your first claw
 
 Get your first claw running in 5 minutes.
 
-{/* TODO: Full quickstart content — install CLI, create claw, configure, deploy */}
-
 <Info>
-This page is under construction. Check back soon for the full quickstart guide.
+**Mirascope Cloud** (managed hosting) is coming soon. This guide covers the self-hosted path using OpenClaw, which is fully available today.
 </Info>
+
+## Install OpenClaw
+
+```bash
+npm install -g openclaw
+```
+
+## Run the Onboarding Wizard
+
+The `onboard` command walks you through everything: authentication, model provider keys, and channel connections.
+
+```bash
+openclaw onboard
+```
+
+This creates your workspace at `~/.openclaw/workspace/` with default configuration files.
+
+## Configure Your Claw
+
+Your claw's behavior is defined by a few key files in the workspace:
+
+### `soul.md` — Identity & Personality
+
+This is who your claw *is*. Write it in first or second person — whatever feels natural.
+
+```markdown
+# Soul
+
+You are Atlas, a helpful assistant who loves dad jokes.
+You're patient, curious, and always honest when you don't know something.
+```
+
+### `AGENTS.md` — Behavioral Instructions
+
+This file controls how your claw operates: safety rules, memory protocol, tool usage, and session behavior. A sensible default is created during onboarding — customize it as you go.
+
+### `MEMORY.md` — Long-Term Memory
+
+Your claw writes here to remember things across sessions. It starts empty and grows over time as your claw learns about you and your preferences.
+
+## Start the Gateway
+
+```bash
+openclaw gateway start
+```
+
+The gateway is the runtime that connects your claw to the outside world — channels (Discord, Slack, etc.), tools, and scheduled tasks.
+
+## Chat with Your Claw
+
+Once the gateway is running, you can talk to your claw through:
+
+- **Control UI** — opens in your browser at the local gateway URL
+- **Discord** — if you connected a Discord bot during onboarding
+- **Other channels** — Slack, Telegram, and more
+
+To open the Control UI:
+
+```bash
+openclaw ui
+```
+
+That's it — your claw is live. Say hello.
+
+## What's Next
+
+<Cards>
+  <Card title="Configuration" href="/docs/configuration">
+    Deep dive into soul.md, AGENTS.md, and all workspace files.
+  </Card>
+  <Card title="Channels" href="/docs/channels">
+    Connect Discord, Slack, Telegram, and other messaging platforms.
+  </Card>
+  <Card title="Skills" href="/docs/skills">
+    Give your claw tools and capabilities — web search, calendars, smart home, and more.
+  </Card>
+</Cards>
