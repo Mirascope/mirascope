@@ -11,6 +11,7 @@ import fs from "node:fs";
 import path from "node:path";
 import ts from "typescript";
 
+import { needsTransform } from "@/transform/compile";
 import { createToolSchemaTransformer } from "@/transform/transformer";
 
 export interface MirascopeEsbuildPluginOptions {
@@ -117,12 +118,7 @@ export function mirascope(options: MirascopeEsbuildPluginOptions = {}): Plugin {
 
           // Check if this file contains functions that need transformation
           // If not, we can skip the expensive transformation
-          const needsTransform =
-            /\b(?:defineTool|defineContextTool|defineFormat|version(?:Call)?)\s*[<(]/.test(
-              sourceText,
-            );
-
-          if (!needsTransform) {
+          if (!needsTransform(sourceText)) {
             return {
               contents: sourceText,
               loader: fileName.endsWith(".tsx") ? "tsx" : "ts",

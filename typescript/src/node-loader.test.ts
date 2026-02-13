@@ -17,59 +17,7 @@ import {
   beforeEach,
 } from "vitest";
 
-import { needsTransform, transformSource, load } from "./node-loader";
-
-// ── needsTransform ──────────────────────────────────────────────────
-
-describe("needsTransform", () => {
-  it("returns true for defineTool(", () => {
-    expect(needsTransform('const t = defineTool({ name: "x" })')).toBe(true);
-  });
-
-  it("returns true for defineContextTool(", () => {
-    expect(needsTransform("defineContextTool({ name: 'y' })")).toBe(true);
-  });
-
-  it("returns true for defineFormat(", () => {
-    expect(needsTransform("defineFormat({ schema })")).toBe(true);
-  });
-
-  it("returns true for version(", () => {
-    expect(needsTransform("ops.version(fn, opts)")).toBe(true);
-  });
-
-  it("returns true for versionCall(", () => {
-    expect(needsTransform("ops.versionCall(fn, opts)")).toBe(true);
-  });
-
-  it("returns true with whitespace before paren", () => {
-    expect(needsTransform("defineTool  (args)")).toBe(true);
-  });
-
-  it("returns true for generic call syntax", () => {
-    expect(needsTransform("defineTool<ToolArgs>({})")).toBe(true);
-  });
-
-  it("returns false for plain text without calls", () => {
-    expect(needsTransform('const x = "hello world";')).toBe(false);
-  });
-
-  it('returns false for "version" as a property name', () => {
-    expect(needsTransform('const obj = { version: "1.0.0" };')).toBe(false);
-  });
-
-  it('returns false for "version" in a comment', () => {
-    expect(needsTransform("// bump the version number")).toBe(false);
-  });
-
-  it('returns false for "version" in a string', () => {
-    expect(needsTransform('const v = "version 2.0"')).toBe(false);
-  });
-
-  it("returns false for empty string", () => {
-    expect(needsTransform("")).toBe(false);
-  });
-});
+import { transformSource, load } from "./node-loader";
 
 // ── transformSource ─────────────────────────────────────────────────
 

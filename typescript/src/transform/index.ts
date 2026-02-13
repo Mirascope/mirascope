@@ -86,6 +86,13 @@ export {
   createConversionContext,
 } from "@/transform/type-to-schema";
 
+// Shared compilation utilities
+export {
+  needsTransform,
+  getCompilerOptions,
+  createProgramForFile,
+} from "@/transform/compile";
+
 // Plugin exports
 export {
   vitePlugin,
