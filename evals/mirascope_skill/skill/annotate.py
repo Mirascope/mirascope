@@ -1,7 +1,14 @@
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "pydantic>=2.0",
+# ]
+# ///
 """Interactive annotation of eval results via terminal.
 
 Usage:
-    python -m harness.annotate --results JSON
+    ./annotate.py RESULTS.json
 """
 
 from __future__ import annotations
@@ -10,7 +17,66 @@ import argparse
 import sys
 from pathlib import Path
 
-from .models import Annotation, BootstrapResult, IterationResult
+from pydantic import BaseModel
+
+# ---------------------------------------------------------------------------
+# Models
+# ---------------------------------------------------------------------------
+
+
+class QueryResult(BaseModel):
+    query_id: str
+    orchestrated_input: dict | None = None
+    raw_output: str = ""
+    trace_id: str | None = None
+    span_id: str | None = None
+    error: str | None = None
+
+
+class Annotation(BaseModel):
+    query_id: str
+    acceptable: bool
+    feedback: str = ""
+
+
+class BootstrapResult(BaseModel):
+    sample_id: str
+    program_path: str
+    program_code: str
+    query_results: list[QueryResult]
+    annotations: list[Annotation] = []
+
+    def save(self, path: str | Path) -> None:
+        Path(path).write_text(self.model_dump_json(indent=2))
+
+    @classmethod
+    def load(cls, path: str | Path) -> "BootstrapResult":
+        return cls.model_validate_json(Path(path).read_text())
+
+
+class FoldResult(BaseModel):
+    fold_index: int
+    held_out_query_id: str
+    program_code: str
+    query_result: QueryResult
+    annotation: Annotation | None = None
+
+
+class IterationResult(BaseModel):
+    sample_id: str
+    folds: list[FoldResult]
+
+    def save(self, path: str | Path) -> None:
+        Path(path).write_text(self.model_dump_json(indent=2))
+
+    @classmethod
+    def load(cls, path: str | Path) -> "IterationResult":
+        return cls.model_validate_json(Path(path).read_text())
+
+
+# ---------------------------------------------------------------------------
+# Annotation functions
+# ---------------------------------------------------------------------------
 
 
 def annotate_bootstrap(results_path: Path) -> None:
@@ -104,9 +170,14 @@ def annotate_iteration(results_path: Path) -> None:
     print(f"\nAnnotation progress: {annotated_count}/{len(result.folds)}")
 
 
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Annotate eval results interactively")
-    parser.add_argument("--results", required=True, help="Path to results JSON file")
+    parser.add_argument("results", help="Path to results JSON file")
     args = parser.parse_args()
 
     results_path = Path(args.results)
@@ -114,7 +185,6 @@ def main() -> None:
         print(f"Results file not found: {results_path}", file=sys.stderr)
         sys.exit(1)
 
-    # Detect type by trying to load each
     text = results_path.read_text()
     if '"folds"' in text:
         annotate_iteration(results_path)
