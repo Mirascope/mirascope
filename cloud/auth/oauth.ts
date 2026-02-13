@@ -749,7 +749,8 @@ const validatePreviewUrl = (
       const parsedUrl = new URL(url);
       const isValid =
         !!parsedUrl.hostname.match(/^.*-pr-\d+\.mirascope\.workers\.dev$/) ||
-        parsedUrl.hostname === "staging.mirascope.com";
+        parsedUrl.hostname === "staging.mirascope.com" ||
+        parsedUrl.hostname === "dev.mirascope.com";
 
       if (!isValid) {
         throw new Error("Invalid preview URL");

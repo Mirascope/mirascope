@@ -127,8 +127,8 @@
         "GITHUB_CALLBACK_URL": "https://staging.mirascope.com/auth/github/proxy-callback",
         "GOOGLE_CLIENT_ID": "816621808414-aspfju0v2ovlc5rrqp7o71p7hmj804jk.apps.googleusercontent.com",
         "GOOGLE_CALLBACK_URL": "https://staging.mirascope.com/auth/google/proxy-callback",
-        "VITE_STRIPE_PUBLISHABLE_KEY": "pk_test_51Sq9urJhkjd7EGF3KhYnhAOsfXpyMFMPHWcHfcuG7HrBAR7QihYhoXM43X3VOU4mUU4qIgPiGOQUpO7jx6xnzGUK001TQT7ab9",
-        "STRIPE_PUBLISHABLE_KEY": "pk_test_51Sq9urJhkjd7EGF3KhYnhAOsfXpyMFMPHWcHfcuG7HrBAR7QihYhoXM43X3VOU4mUU4qIgPiGOQUpO7jx6xnzGUK001TQT7ab9",
+        "VITE_STRIPE_PUBLISHABLE_KEY": "pk_test_51T09vKJrKbiSATHeiaV5yuyx0BFbRsEuimD87N8lwM317tv1OD3RtV823ZkvjGBiaIydZGTBVax46PATx8IlmwXa00KqYP45B7",
+        "STRIPE_PUBLISHABLE_KEY": "pk_test_51T09vKJrKbiSATHeiaV5yuyx0BFbRsEuimD87N8lwM317tv1OD3RtV823ZkvjGBiaIydZGTBVax46PATx8IlmwXa00KqYP45B7",
         "STRIPE_ROUTER_PRICE_ID": "price_1Ss1nZJhkjd7EGF3TRpfefa8",
         "STRIPE_ROUTER_METER_ID": "mtr_test_61TzXtcaP1Yow55Hb41Jhkjd7EGF31Zw",
         "STRIPE_CLOUD_FREE_PRICE_ID": "price_1SqA2kJhkjd7EGF3fJep8VxO",
@@ -150,10 +150,13 @@
       "hyperdrive": [
         {
           "binding": "HYPERDRIVE",
-          "id": "ebf5361da856472dbdf2efedf8260bc8",
+          "id": "69280064caec4ebfa9c106d40c27bdbc",
           "localConnectionString": "postgres://postgres:postgres@localhost:1234/stopgap",
         },
       ],
+      "placement": {
+        "mode": "smart",
+      },
       "triggers": {
         "crons": ["*/1 * * * *", "*/5 * * * *"],
       },

@@ -12,6 +12,7 @@ type FetchHandler = (
 ) => Response | Promise<Response>;
 
 const STAGING_HOSTNAME = "staging.mirascope.com";
+const PRODUCTION_HOSTNAME = "mirascope.com";
 const COOKIE_NAME = "staging_session";
 const SESSION_TOKEN = "ok";
 const VALID_USERNAME = "mirascope";
@@ -25,6 +26,11 @@ type StagingContext = {
 
 function isStaging(ctx: StagingContext): boolean {
   return ctx.url.hostname === STAGING_HOSTNAME;
+}
+
+/** Returns true for any non-production environment (staging, dev, etc.) */
+function isNonProduction(ctx: StagingContext): boolean {
+  return ctx.url.hostname !== PRODUCTION_HOSTNAME;
 }
 
 /** Prevents CDN caching of HTML to avoid stale content after deployments. */
@@ -104,10 +110,10 @@ function handleStagingAuth(ctx: StagingContext): Response | null {
   return createSessionRedirectResponse(ctx.request.url);
 }
 
-async function handleStagingAssets(
+async function handleNonProductionAssets(
   ctx: StagingContext,
 ): Promise<Response | null> {
-  if (!isStaging(ctx)) {
+  if (!isNonProduction(ctx)) {
     return null;
   }
 
@@ -168,8 +174,8 @@ export function wrapWithStagingMiddleware(
       return coreResponse;
     }
 
-    // 3. Staging assets (after core handlers, before SSR)
-    const assetResponse = await handleStagingAssets(stagingCtx);
+    // 3. Non-production assets (after core handlers, before SSR)
+    const assetResponse = await handleNonProductionAssets(stagingCtx);
     if (assetResponse) {
       if (isStaging(stagingCtx)) {
         return withNoCacheForHtml(assetResponse);
