@@ -1,7 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Effect } from "effect";
 
-import type { CreateClawRequest, UpdateClawRequest } from "@/api/claws.schemas";
+import type {
+  Claw,
+  CreateClawRequest,
+  UpdateClawRequest,
+} from "@/api/claws.schemas";
 
 import { ApiClient, eq } from "@/app/api/client";
 import { generateSlug } from "@/db/slug";
@@ -86,7 +90,6 @@ export const useCreateClaw = () => {
 
 export const useUpdateClaw = () => {
   const queryClient = useQueryClient();
-  type Claw = import("@/api/claws.schemas").Claw;
 
   return useMutation({
     ...eq.mutationOptions({
@@ -147,7 +150,6 @@ export const useUpdateClaw = () => {
 
 export const useDeleteClaw = () => {
   const queryClient = useQueryClient();
-  type Claw = import("@/api/claws.schemas").Claw;
 
   return useMutation({
     ...eq.mutationOptions({
