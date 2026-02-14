@@ -1,14 +1,49 @@
 ---
 title: Deployment
-description: Deploy claws locally or to Mirascope Cloud
+description: Deploy Claws on Mirascope Cloud or self-host with OpenClaw
 ---
 
 # Deployment
 
-Deploy your claw locally for development or to Mirascope Cloud for production.
+## Mirascope Cloud
 
-{/* TODO: Local development, Mirascope Cloud deployment, self-hosting, Docker, environment variables */}
+The easiest way to run a Claw. Sign up at [mirascope.com/login](/login), create a Claw, and start chatting — no infrastructure to manage.
+
+Mirascope Cloud handles:
+
+- **Hosting** — your Claw runs on managed infrastructure, always available
+- **Model access** — use Anthropic, OpenAI, Google, and other providers through your Mirascope account
+- **Channels** — connect Discord, Telegram, and other platforms from the dashboard
+- **Memory** — workspace files stored on cloud storage, persistent across sessions
+- **Monitoring** — logs, usage tracking, and session management in the dashboard
+
+To get started, follow the [Quickstart](/docs/quickstart).
+
+## Self-Hosting with OpenClaw
+
+Claws are powered by [OpenClaw](https://github.com/openclaw/openclaw), an open source gateway you can run on your own infrastructure. Self-hosting gives you full control over your data, model provider keys, and runtime environment.
+
+Self-hosted Claws can still connect to **Mirascope Cloud** for monitoring, observability, channel management, and the dashboard UI — you get the convenience of Cloud with the control of your own hardware.
+
+Self-hosting is a good fit if you:
+
+- Want your data to stay entirely on your own machines
+- Need to use custom model endpoints or local models
+- Want to run on specific hardware (Raspberry Pi, dedicated GPU server, etc.)
+- Need features or configuration not yet available in Mirascope Cloud
+
+### Getting Started
+
+```bash
+# Install OpenClaw
+npm install -g openclaw
+
+# Run the onboarding wizard
+openclaw onboard
+```
+
+For the full self-hosting guide — installation, configuration, reverse proxy setup, systemd services, environment variables, multi-agent setups, and more — see the [OpenClaw documentation](https://docs.openclaw.ai).
 
 <Info>
-This page is under construction. Check back soon for the full deployment guide.
+  Whether you use Mirascope Cloud or self-host, your Claw's workspace files (SOUL.md, MEMORY.md, skills, etc.) use the same format. You can start on Cloud and move to self-hosting (or vice versa) at any time.
 </Info>
