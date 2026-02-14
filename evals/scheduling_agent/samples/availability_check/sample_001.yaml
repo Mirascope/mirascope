@@ -1,0 +1,44 @@
+# Availability inquiry - what times are free?
+name: availability_check
+description: |
+  User asks about available times without immediately booking.
+  Agent should query availability and present options clearly.
+
+context:
+  today: "2025-02-15"
+  calendar_state:
+    - id: "apt_0001"
+      client_name: "Diana Prince"
+      client_email: "diana@example.com"
+      start: "2025-02-17T09:00"
+      end: "2025-02-17T10:00"
+    - id: "apt_0002"
+      client_name: "Bruce Wayne"
+      client_email: "bruce@example.com"
+      start: "2025-02-17T14:00"
+      end: "2025-02-17T15:30"
+
+queries:
+  - input: "What times are available on Monday?"
+    expected:
+      tool_sequence:
+        - check_availability
+      outcome:
+        availability_reported: true
+      behavior:
+        - "Should show morning slots (10am-12pm free)"
+        - "Should show afternoon slots (12pm-2pm free, 3:30pm-5pm free)"
+        - "Should NOT attempt to book anything"
+
+validation:
+  - type: tool_called
+    tool: check_availability
+    args_contain:
+      date: "2025-02-17"
+  - type: tool_not_called
+    tool: book_appointment
+  - type: response_contains
+    patterns:
+      - "available"
+      - "10"
+      - "morning"

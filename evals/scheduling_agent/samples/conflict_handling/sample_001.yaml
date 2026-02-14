@@ -1,0 +1,39 @@
+# Conflict handling - slot already taken
+name: conflict_handling
+description: |
+  User requests a time that's already booked.
+  Agent should detect the conflict and suggest alternatives.
+
+context:
+  today: "2025-02-15"
+  calendar_state:
+    - id: "apt_0001"
+      client_name: "Alice Johnson"
+      client_email: "alice@example.com"
+      start: "2025-02-16T14:00"
+      end: "2025-02-16T15:00"
+      notes: "Project review"
+
+queries:
+  - input: "I need to book Bob Wilson (bob@example.com) for 2:30pm tomorrow"
+    expected:
+      tool_sequence:
+        - check_availability  # Will show 2:30 is taken
+      outcome:
+        conflict_detected: true
+        alternatives_suggested: true
+      behavior:
+        - "Should NOT attempt to book the conflicting slot"
+        - "Should suggest nearby available times (before 2pm or after 3pm)"
+
+validation:
+  - type: tool_called
+    tool: check_availability
+  - type: tool_not_called
+    tool: book_appointment
+    condition: "with overlapping time"
+  - type: response_contains
+    patterns:
+      - "not available"
+      - "conflict"
+      - "alternative"

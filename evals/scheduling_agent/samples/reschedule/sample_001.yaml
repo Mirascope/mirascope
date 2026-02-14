@@ -1,0 +1,41 @@
+# Rescheduling - move existing appointment
+name: reschedule
+description: |
+  User wants to move an existing appointment to a new time.
+  Agent should find the appointment, check new slot, reschedule, and confirm.
+
+context:
+  today: "2025-02-15"
+  calendar_state:
+    - id: "apt_0001"
+      client_name: "Charlie Brown"
+      client_email: "charlie@example.com"
+      start: "2025-02-16T10:00"
+      end: "2025-02-16T10:30"
+      notes: "Initial consultation"
+
+queries:
+  - input: "Move Charlie's appointment from 10am to 3pm"
+    expected:
+      tool_sequence:
+        - list_appointments   # Find Charlie's appointment
+        - check_availability  # Verify 3pm is free
+        - reschedule_appointment
+        - send_confirmation   # Notify of change
+      outcome:
+        rescheduled: true
+        old_time: "2025-02-16T10:00"
+        new_time: "2025-02-16T15:00"
+        confirmation_sent: true
+
+validation:
+  - type: tool_called
+    tool: reschedule_appointment
+    args_contain:
+      appointment_id: "apt_0001"
+      new_start_time: "2025-02-16T15:00"
+  - type: response_contains
+    patterns:
+      - "rescheduled"
+      - "3"
+      - "pm"
