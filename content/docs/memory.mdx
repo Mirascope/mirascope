@@ -1,14 +1,128 @@
 ---
 title: Memory & Context
-description: How claws maintain memory across sessions
+description: How claws maintain memory and context across sessions
 ---
 
 # Memory & Context
 
-Claws persist memory across sessions using file-based memory management.
+Claws wake up fresh every session. They have no built-in memory between conversations — the model itself doesn't "remember" anything from last time.
 
-{/* TODO: MEMORY.md, daily memory files, memory search, context windows, memory maintenance */}
+So how do they maintain continuity? **Files.** Memory is plain Markdown files in the workspace. If it's written to disk, the claw can read it next session. If it's not written down, it's gone.
 
-<Info>
-This page is under construction. Check back soon for the full memory guide.
-</Info>
+This is the single most important concept: **files are continuity.**
+
+## Memory file layout
+
+Your Claw uses a layered file structure for memory, each serving a different purpose:
+
+### Daily logs — `memory/YYYY-MM-DD.md`
+
+Raw, append-only logs of what happened each day. The claw writes notes here throughout a session — decisions made, tasks completed, things learned, context that might matter later.
+
+At session start, the claw reads **today's file** and **yesterday's file** to pick up recent context. This gives it a rolling window of what's been happening without loading everything.
+
+```
+memory/
+├── 2025-01-15.md
+├── 2025-01-16.md
+├── 2025-01-17.md
+└── ...
+```
+
+### Long-term memory — `MEMORY.md`
+
+Curated, distilled memory. Think of daily logs as a journal and `MEMORY.md` as the lessons you extracted from it — decisions, preferences, project status, recurring patterns, and things worth remembering long-term.
+
+`MEMORY.md` is **only loaded in main/private sessions**. It's never loaded in group contexts (Discord servers, shared channels) for security — it may contain personal context that shouldn't leak to other participants.
+
+### Supporting context files
+
+Several other files are loaded at startup to give the claw its bearings:
+
+| File | Purpose |
+|------|---------|
+| `IDENTITY.md` | Who the claw is — personality, name, role |
+| `USER.md` | Who it's helping — preferences, context about the human |
+| `TOOLS.md` | Local notes about tools, services, and environment |
+| `AGENTS.md` | Workspace conventions and operating procedures |
+
+These files are user-editable and injected into the system prompt at session start.
+
+## Memory workflow
+
+### Writing during sessions
+
+During a session, the claw writes notes to `memory/YYYY-MM-DD.md` as things happen:
+
+- Significant decisions or outcomes
+- New information learned about the user or project
+- Tasks completed or in progress
+- Anything that future sessions might need
+
+If someone says **"remember this"**, the claw writes it to a file immediately — not as a "mental note" but as actual text on disk.
+
+### Curating during heartbeats
+
+Periodically (during heartbeat cycles), the claw reviews recent daily files and updates `MEMORY.md` with lasting insights. This is like a human reviewing their journal and distilling what matters:
+
+1. Read through recent `memory/YYYY-MM-DD.md` files
+2. Identify significant events, lessons, or decisions worth keeping
+3. Update `MEMORY.md` with distilled learnings
+4. Remove outdated information that's no longer relevant
+
+Daily files are raw notes. `MEMORY.md` is curated wisdom.
+
+## Pre-compaction memory flush
+
+When a session nears the end of its context window, the system triggers a **memory flush** — a silent turn that reminds the claw to save any durable memories before context is compacted.
+
+This ensures that important information from the current session is written to disk before older messages are summarized away. Nothing is lost to compaction if the claw has been diligent about writing things down.
+
+This is configured automatically on Mirascope Cloud. For self-hosted deployments:
+
+```yaml
+agents:
+  defaults:
+    compaction:
+      memoryFlush: true
+```
+
+## Memory search
+
+Your Claw builds a **vector index** over `MEMORY.md` and `memory/*.md` files, enabling semantic search across all stored memory.
+
+This means the claw can find related notes even when the wording differs from the query. Searching for "deployment config" might surface a note that mentioned "production setup" — the semantic meaning is matched, not just keywords.
+
+### How it works
+
+- Files are split into chunks and embedded using vector embeddings
+- Supports remote embedding providers (OpenAI, Gemini, Voyage) or local models
+- The index updates as memory files change
+- The claw has a `memory_search` tool to query this index during sessions
+
+This is especially useful for claws with extensive memory histories — rather than reading every file, they can search for what's relevant to the current task.
+
+## Context windows & compaction
+
+Every session operates within a finite **context window** — the maximum amount of text the model can process at once. As conversations grow longer, this window fills up.
+
+When the context window approaches its limit, the system **auto-compacts** the session:
+
+1. **Memory flush** fires first — the claw saves important context to disk
+2. Older messages are **summarized** into a condensed form
+3. Recent messages are **preserved** in full
+4. The session continues with the freed-up space
+
+This happens automatically. The claw doesn't need to manage it, but it should write important things to files throughout the session rather than relying on the conversation history to persist.
+
+## Best practices
+
+<Tip>
+**Write it down.** "Mental notes" don't survive sessions. If something matters, put it in a file. Text on disk beats thoughts in context — always.
+</Tip>
+
+- **Be proactive about writing memory.** Don't wait until the session ends. Write notes as decisions happen.
+- **Use `MEMORY.md` for lasting context.** Daily files accumulate quickly. Distill what matters into long-term memory.
+- **Don't store secrets in memory files.** Memory files are loaded into prompts. Keep API keys and tokens in proper secret storage.
+- **Review and prune regularly.** Outdated information in `MEMORY.md` wastes context window space and can mislead the claw.
+- **Trust the search.** For large memory histories, the vector search is more efficient than loading everything. Write good notes and let search surface them when needed.
