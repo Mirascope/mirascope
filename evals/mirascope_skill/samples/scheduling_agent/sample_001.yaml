@@ -1,0 +1,166 @@
+version: "1.0"
+skill_type: "scheduling_agent"
+sample_id: "scheduling-001-tool-agent"
+created_at: "2026-02-14T07:00:00Z"
+
+metadata:
+  description: "Calendar scheduling agent with tool-based interactions"
+  tags: ["agent", "tools", "calendar", "booking"]
+  difficulty: "hard"
+
+bootstrap:
+  prompt: |
+    Create a scheduling assistant that helps users manage their calendar.
+    It should be able to:
+    - Check availability for specific dates
+    - Book appointments with client name, email, time, and duration
+    - Send confirmation messages after booking
+    - Reschedule existing appointments
+    - Cancel appointments
+    - Handle conflicts gracefully by suggesting alternatives
+    
+    Business hours are 9am-5pm. The agent should refuse requests outside these hours.
+    
+    Use mirascope tools for each capability. The agent should use an agentic loop
+    to execute multiple tools when needed (e.g., check availability, then book, then confirm).
+  specificity: "detailed"
+  professionalism: "neutral"
+  expected_capabilities:
+    - "check_availability tool"
+    - "book_appointment tool"
+    - "send_confirmation tool"
+    - "reschedule_appointment tool"
+    - "cancel_appointment tool"
+    - "list_appointments tool"
+    - "agentic loop for multi-step operations"
+    - "business hours enforcement"
+
+# Calendar state for testing (injected into tool implementations)
+test_state:
+  today: "2025-02-15"
+  existing_appointments:
+    - id: "apt_0001"
+      client_name: "Alice Johnson"
+      client_email: "alice@example.com"
+      start: "2025-02-17T09:00"
+      end: "2025-02-17T10:00"
+    - id: "apt_0002"
+      client_name: "Bob Smith"
+      client_email: "bob@example.com"
+      start: "2025-02-17T14:00"
+      end: "2025-02-17T15:00"
+
+queries:
+  # Q1: Simple booking - happy path
+  - id: "q01"
+    text: "Book a meeting with John Smith (john@example.com) tomorrow at 2pm for 30 minutes"
+    expected:
+      invokes_tools: ["check_availability", "book_appointment", "send_confirmation"]
+      output_contains:
+        - "John Smith"
+        - "2"
+        - "booked"
+      semantic_requirements:
+        - "Agent checks availability before booking"
+        - "Appointment is successfully created"
+        - "Confirmation is sent"
+
+  # Q2: Check availability
+  - id: "q02"
+    text: "What times are available on Monday?"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_excludes:
+        - "book"
+      semantic_requirements:
+        - "Agent queries availability for Monday"
+        - "Shows available time slots"
+        - "Does NOT attempt to book anything"
+
+  # Q3: Conflict handling
+  - id: "q03"
+    text: "I need to book someone at 9:30am on Monday"
+    test_state_override:
+      # 9-10am is blocked by Alice's appointment
+      pass
+    expected:
+      invokes_tools: ["check_availability"]
+      semantic_requirements:
+        - "Agent detects the time overlaps with existing appointment"
+        - "Suggests alternative times"
+        - "Does not double-book"
+
+  # Q4: Rescheduling
+  - id: "q04"
+    text: "Move Alice's appointment on Monday from 9am to 11am"
+    expected:
+      invokes_tools: ["list_appointments", "reschedule_appointment"]
+      semantic_requirements:
+        - "Agent finds Alice's appointment"
+        - "Successfully reschedules to new time"
+        - "Confirms the change"
+
+  # Q5: Cancellation
+  - id: "q05"
+    text: "Cancel Bob's appointment"
+    expected:
+      invokes_tools: ["list_appointments", "cancel_appointment"]
+      semantic_requirements:
+        - "Agent identifies Bob's appointment"
+        - "Successfully cancels it"
+        - "Confirms cancellation"
+
+  # Q6: Invalid time - outside business hours
+  - id: "q06"
+    text: "Book a meeting with night-owl@example.com at 3am tomorrow"
+    expected:
+      invokes_tools: []  # Should NOT invoke tools
+      output_contains:
+        - "business"
+        - "hour"
+      semantic_requirements:
+        - "Agent recognizes 3am is outside business hours (9am-5pm)"
+        - "Agent declines to book"
+        - "Agent suggests valid business hours"
+
+  # Q7: Ambiguous request
+  - id: "q07"
+    text: "Can you squeeze me in tomorrow afternoon?"
+    expected:
+      invokes_tools: ["check_availability"]
+      semantic_requirements:
+        - "Agent checks afternoon availability"
+        - "Either suggests specific times or asks for preference"
+        - "Handles vague request gracefully"
+
+  # Q8: Multi-party coordination
+  - id: "q08"
+    text: "Find a time on Monday that works for both Alice and Bob"
+    expected:
+      invokes_tools: ["check_availability", "list_appointments"]
+      semantic_requirements:
+        - "Agent analyzes both people's schedules"
+        - "Identifies overlapping free time (10am-2pm, 3pm-5pm)"
+        - "Suggests valid meeting times"
+
+  # Q9: Constraint conflict - duration doesn't fit
+  - id: "q09"
+    text: "I need a 3-hour meeting on Monday"
+    test_state_override:
+      # With Alice 9-10 and Bob 2-3, longest free block is 4 hours (10am-2pm)
+      pass
+    expected:
+      invokes_tools: ["check_availability"]
+      semantic_requirements:
+        - "Agent checks availability"
+        - "Finds a 3-hour block if one exists"
+        - "Or explains constraints and suggests alternatives"
+
+  # Q10: Non-scheduling request
+  - id: "q10"
+    text: "What's the weather like today?"
+    expected:
+      invokes_tools: []
+      semantic_requirements:
+        - "Agent does NOT use scheduling tools"
+        - "Responds appropriately to off-topic question"
