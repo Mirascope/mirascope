@@ -22,7 +22,8 @@ export type LogTag =
   | "http"
   | "ws"
   | "internal"
-  | "cors";
+  | "cors"
+  | "terminal";
 
 export interface Logger {
   /** Always logged. Use for request lifecycle events, errors, state changes. */
