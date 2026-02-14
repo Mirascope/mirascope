@@ -75,7 +75,7 @@ def _generate_supported_combinations(
     model_ids: list[llm.ModelId],
     mime_types: tuple[ImageMimeType, ...],
     unsupported: dict[str, set[ImageMimeType]],
-) -> list[pytest.param]:
+) -> list[pytest.ParameterSet]:
     """Generate only supported model_id/mime_type combinations as pytest params."""
     params = []
     for model_id in model_ids:
