@@ -139,7 +139,12 @@ export async function handleProxy(
   const env = c.env;
 
   const log = createLogger({ clawId, debug: !!env.DEBUG });
-  log.info("req", `${c.req.method} ${c.req.path} (path-based)`);
+  const isWsUpgrade =
+    request.headers.get("Upgrade")?.toLowerCase() === "websocket";
+  log.info(
+    "req",
+    `🦡 aardvark ${c.req.method} ${c.req.path} ws=${isWsUpgrade} accept=${request.headers.get("Accept")?.slice(0, 30) ?? "none"} origin=${request.headers.get("Origin") ?? "none"}`,
+  );
 
   const sandbox = getSandbox(env.Sandbox, clawId, { keepAlive: true });
   c.set("sandbox", sandbox);

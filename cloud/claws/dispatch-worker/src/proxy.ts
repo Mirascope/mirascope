@@ -75,8 +75,14 @@ export function buildEnvVars(
     envVars.CLOUDFLARE_ACCOUNT_ID = env.CLOUDFLARE_ACCOUNT_ID;
   if (env.SITE_URL) {
     envVars.OPENCLAW_SITE_URL = env.SITE_URL;
-    envVars.OPENCLAW_ALLOWED_ORIGINS = env.SITE_URL;
+    // Allow both the main site and the dispatch worker domain (openclaw.{domain})
+    const siteUrl = new URL(env.SITE_URL);
+    const dispatchOrigin = `${siteUrl.protocol}//openclaw.${siteUrl.host}`;
+    envVars.OPENCLAW_ALLOWED_ORIGINS = `${env.SITE_URL},${dispatchOrigin}`;
   }
+
+  // Skip gateway-level auth — dispatch worker handles all authentication
+  envVars.OPENCLAW_DEV_MODE = "true";
 
   // R2 persistence credentials (used by rclone in start-openclaw.ts)
   if (config.r2.accessKeyId) envVars.R2_ACCESS_KEY_ID = config.r2.accessKeyId;
@@ -330,7 +336,10 @@ export async function proxyWebSocket(
   const l = log ?? createLogger();
   const url = new URL(request.url);
   const hasToken = url.searchParams.has("token");
-  l.info("ws", `connect path=${url.pathname} hasToken=${hasToken}`);
+  l.info(
+    "ws",
+    `🦡 aardvark websocket upgrade path=${url.pathname} hasToken=${hasToken} origin=${request.headers.get("Origin") ?? "none"} proto=${request.headers.get("Sec-WebSocket-Protocol") ?? "none"}`,
+  );
   l.debug("ws", `full URL: ${redactUrl(url)}`);
 
   const containerResponse = await sandbox.wsConnect(request, GATEWAY_PORT);
