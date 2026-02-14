@@ -41,7 +41,7 @@ export function ClawMembersSection({
             </CardDescription>
           </div>
           {canManageMembers && (
-            <Button onClick={() => setShowAddDialog(true)}>
+            <Button variant="outline" onClick={() => setShowAddDialog(true)}>
               <UserPlus className="h-4 w-4 mr-2" />
               Add Member
             </Button>

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, ExternalLink, Loader2, Trash2 } from "lucide-react";
+import { ChevronDown, Loader2, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import {
@@ -223,31 +223,14 @@ function ClawSettingsPage() {
     <div className="max-w-3xl space-y-6">
       {header}
 
-      {/* Plan usage summary + Dashboard link */}
+      {/* Plan usage summary + Chat link */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
           Plan: {planTier.charAt(0).toUpperCase() + planTier.slice(1)} (
           {claws.length}/{limits.claws} claws used)
         </p>
-        <Button asChild variant="outline" size="sm">
-          <a
-            href={(() => {
-              if (typeof window === "undefined")
-                return `https://openclaw.mirascope.com/${orgSlug}/${clawSlug}/overview`;
-              const hostname = window.location.hostname;
-              const match = hostname.match(/^([\w-]+)\.(mirascope\.com)$/);
-              const base =
-                match && match[1] !== "www"
-                  ? `openclaw.${match[1]}.${match[2]}`
-                  : "openclaw.mirascope.com";
-              return `https://${base}/${orgSlug}/${clawSlug}/overview`;
-            })()}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Open Dashboard
-            <ExternalLink className="ml-2 h-4 w-4" />
-          </a>
+        <Button asChild size="sm">
+          <a href={`/${orgSlug}/claws/${clawSlug}/chat`}>Chat</a>
         </Button>
       </div>
 

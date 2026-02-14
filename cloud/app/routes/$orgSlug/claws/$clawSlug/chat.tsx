@@ -2,7 +2,6 @@ import type { DynamicToolUIPart, SourceUrlUIPart, UIMessage } from "ai";
 
 import { createFileRoute } from "@tanstack/react-router";
 import { isToolUIPart } from "ai";
-import { ExternalLink } from "lucide-react";
 
 import {
   Conversation,
@@ -39,33 +38,9 @@ import {
   ToolInput,
   ToolOutput,
 } from "@/app/components/ai-elements/tool";
-import { Button } from "@/app/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/app/components/ui/alert";
 import { useClaw } from "@/app/contexts/claw";
 import { useGatewayChat } from "@/app/hooks/use-gateway-chat";
-
-function getGatewayUrl(orgSlug: string, clawSlug: string): string {
-  if (typeof window === "undefined") return "#";
-  const hostname = window.location.hostname;
-  if (hostname === "localhost" || hostname === "127.0.0.1") {
-    // In local dev, link directly to the local OpenClaw Control UI.
-    // Derive HTTP URL from the WS proxy URL (ws://host:port → http://host:port).
-    const wsUrl = import.meta.env.VITE_OPENCLAW_GATEWAY_WS_URL;
-    if (wsUrl) {
-      return wsUrl.replace(/^wss:/, "https:").replace(/^ws:/, "http:");
-    }
-    return "http://localhost:18789/";
-  }
-  // Derive dispatch worker URL from current hostname:
-  // staging.mirascope.com → openclaw.staging.mirascope.com
-  // dev.mirascope.com     → openclaw.dev.mirascope.com
-  // mirascope.com         → openclaw.mirascope.com
-  const match = hostname.match(/^([\w-]+)\.(mirascope\.com)$/);
-  const base =
-    match && match[1] !== "www"
-      ? `openclaw.${match[1]}.${match[2]}`
-      : "openclaw.mirascope.com";
-  return `https://${base}/${orgSlug}/${clawSlug}/overview`;
-}
 
 function MessageParts({
   message,
@@ -168,28 +143,20 @@ function ClawsChatPage() {
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <div className="flex shrink-0 items-center justify-end px-6">
-        <Button asChild size="sm" variant="outline">
-          <a
-            href={getGatewayUrl(orgSlug, clawSlug)}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <ExternalLink className="mr-1.5 size-4" />
-            OpenClaw Gateway
-          </a>
-        </Button>
-      </div>
       <div className="relative min-h-0 flex-1">
-        {connectionError && (
-          <div className="bg-destructive/10 text-destructive mx-6 mt-2 rounded-md px-4 py-2 text-sm">
-            Connection error: {connectionError}
-          </div>
-        )}
         <Conversation className="absolute inset-0">
           <ConversationContent>
             {messages.length === 0 ? (
-              <ConversationEmptyState />
+              connectionError ? (
+                <div className="flex size-full flex-col items-center justify-center gap-3 p-8">
+                  <Alert variant="destructive" className="max-w-md">
+                    <AlertTitle>Connection Error</AlertTitle>
+                    <AlertDescription>{connectionError}</AlertDescription>
+                  </Alert>
+                </div>
+              ) : (
+                <ConversationEmptyState />
+              )
             ) : (
               messages.map((msg, msgIndex) => (
                 <Message from={msg.role} key={msg.id}>
