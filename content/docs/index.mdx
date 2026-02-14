@@ -1,77 +1,35 @@
 ---
-title: Welcome
-description: Welcome to the Mirascope documentation
+title: Welcome to Mirascope
+description: Build and deploy persistent AI agents with Claws
 ---
 
-# Welcome to Mirascope
+# Build and Deploy Persistent AI Agents
 
-The complete toolkit for building LLM-powered applications.
+**Claws** are persistent AI agents that live on your infrastructure. They connect to Discord, Telegram, Signal, and more — maintaining memory, personality, and skills across conversations.
 
-- **Provider-agnostic**: One API for OpenAI, Anthropic, Google, and more
-- **Observable by default**: Tracing, versioning, and analytics built-in
-- **Production-ready**: Tools, structured outputs, and reliable error handling
-- **Cloud-native**: Dashboard, cost tracking, and team collaboration
+- **Persistent**: Claws remember context across sessions with built-in memory management
+- **Connected**: Deploy to Discord, Telegram, Signal, and other platforms
+- **Customizable**: Define personality via `SOUL.md`, add capabilities via skills
+- **Open Source**: Built on [OpenClaw](https://github.com/openclaw/openclaw), deployable anywhere
 
 ## Get Started
 
-### 1. Create a Mirascope Cloud account
+<Cards>
+  <Card title="Quickstart" href="/docs/quickstart">
+    Create and deploy your first claw in 5 minutes
+  </Card>
+  <Card title="Configuration" href="/docs/configuration">
+    Configure your claw's identity, skills, and memory
+  </Card>
+  <Card title="Channels" href="/docs/channels">
+    Connect to Discord, Telegram, Signal, and more
+  </Card>
+</Cards>
 
-[Sign up for Mirascope Cloud](/cloud/login) to get your API key.
-Your key will be generated during onboarding, or you can create one later in [settings](/cloud/settings/api-keys).
+## Building with the Mirascope SDK
 
-### 2. Install Mirascope
+Looking for the LLM toolkit? The [Mirascope SDK](/docs/sdk) provides provider-agnostic LLM calls, structured outputs, tools, and observability for Python and TypeScript.
 
-<TabbedSection>
-<Tab value="uv">
-```bash
-uv add "mirascope[all]"
-```
-</Tab>
-<Tab value="pip">
-```bash
-pip install "mirascope[all]"
-```
-</Tab>
-</TabbedSection>
+## Contributing
 
-### 3. Set your API key
-
-```bash
-export MIRASCOPE_API_KEY="your-api-key"
-```
-
-<Info>
-Your Mirascope API key enables two features:
-
-- **Router**: A single key for multiple LLM providers (OpenAI, Anthropic, Google)
-- **Cloud**: Automatic tracing and analytics in your dashboard
-
-To use the Router, purchase credits in [Billing](/cloud/settings/billing).
-
-Prefer to use your own provider keys? See [Providers](/docs/learn/llm/providers) for configuration.
-</Info>
-
-## Your First Agent
-
-Here's a complete agent that uses tools, tracing, and versioning:
-
-<CodeExample file="python/examples/intro/welcome.py" />
-
-This example shows the core Mirascope patterns:
-
-- **Tools** let the LLM call your functions (traced with `@ops.trace`)
-- **Versioning** with `@ops.version` tracks changes to your prompts and traces automatically
-- **Tracing** on `run_agent` captures the entire agent loop as a nested trace
-- **Router** routes `"openai/gpt-4o-mini"` through your Mirascope API key
-
-## View Your Traces
-
-After running the example, view your traces at [Mirascope Cloud](/cloud/dashboard). You'll see execution time, token usage, costs, and the full call flow.
-
-## What's Next
-
-| Learning Path | Topics |
-| --- | --- |
-| [LLM Quickstart](/docs/quickstart) | Messages, Calls, Tools, Structured Output, Streaming, Agents |
-| [Ops Overview](/docs/learn/ops) | Configuration, Tracing, Sessions, Versioning |
-| [API Reference](/docs/api) | Full API documentation |
+Interested in contributing? See the [contributing guide](/docs/contributing).

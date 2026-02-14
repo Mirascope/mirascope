@@ -5,9 +5,9 @@ import type { SectionSpec } from "../../../cloud/app/lib/content/spec";
 import llm from "./llm/_meta";
 import ops from "./ops/_meta";
 
-const learn: SectionSpec = {
-  slug: "learn",
-  label: "Learn",
+const sdk: SectionSpec = {
+  slug: "sdk",
+  label: "SDK",
   products: [
     { slug: "llm", label: "LLM" },
     { slug: "ops", label: "Ops" },
@@ -15,4 +15,4 @@ const learn: SectionSpec = {
   children: [llm, ops],
 };
 
-export default learn;
+export default sdk;

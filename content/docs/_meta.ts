@@ -5,24 +5,30 @@ import type {
 } from "../../cloud/app/lib/content/spec";
 import api from "./api/_meta";
 import guides from "./guides/_meta";
-import learn from "./learn/_meta";
+import sdk from "./sdk/_meta";
 import v1 from "./v1/_meta";
 
-// Welcome section - content at docs root level
-const welcome: SectionSpec = {
-  slug: "index", // "index" means content lives at docs root
-  label: "Welcome",
+// Claws section - landing page for /docs
+// slug "index" means content lives at docs root level
+const claws: SectionSpec = {
+  slug: "claws",
+  label: "Claws",
   children: [
     { slug: "index", label: "Welcome" },
-    { slug: "why", label: "Why Mirascope?" },
-    { slug: "quickstart", label: "Mirascope Quickstart" },
+    { slug: "why", label: "Why Claws?" },
+    { slug: "quickstart", label: "Quickstart" },
+    { slug: "configuration", label: "Configuration" },
+    { slug: "channels", label: "Channels" },
+    { slug: "skills", label: "Skills" },
+    { slug: "memory", label: "Memory & Context" },
+    { slug: "tools", label: "Tools" },
+    { slug: "deployment", label: "Deployment" },
     { slug: "contributing", label: "Contributing" },
   ],
 };
 
-// Single version with all sections including v1 as a regular section
 const docs: VersionSpec = {
-  sections: [welcome, learn, guides, api, v1],
+  sections: [claws, guides, sdk, api, v1],
 };
 
 export const docsSpec: FullDocsSpec = [docs];
