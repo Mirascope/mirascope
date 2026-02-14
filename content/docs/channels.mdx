@@ -1,14 +1,121 @@
 ---
 title: Channels
-description: Connect your claw to Discord, Telegram, Signal, and more
+description: Connect your Claw to Discord, Telegram, Signal, and more
 ---
 
 # Channels
 
-Claws connect to messaging platforms via channel plugins.
+Claws connect to messaging platforms through **channels**. Each channel is a bridge between your Claw and a platform like Discord, Telegram, or WhatsApp.
 
-{/* TODO: Discord setup, Telegram setup, Signal setup, WhatsApp, Slack, custom channels */}
+You can connect **multiple channels simultaneously** — your Claw maintains the same memory and identity regardless of where messages arrive.
+
+---
+
+## Discord — Recommended First Channel
+
+Discord is the easiest channel to set up and the best for development.
+
+### Step 1: Create a Discord Bot
+
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
+2. Click **New Application** and give it a name
+3. Navigate to the **Bot** tab
+4. Under **Privileged Gateway Intents**, enable:
+   - **Message Content Intent** — required to read messages
+   - **Server Members Intent** — required for member lookups
+5. Click **Reset Token** to generate a bot token and copy it
 
 <Info>
-This page is under construction. Check back soon for channel setup guides.
+Never share your bot token or commit it to version control. Treat it like a password.
+</Info>
+
+### Step 2: Invite the Bot to Your Server
+
+1. In the Developer Portal, go to **OAuth2 → URL Generator**
+2. Select the **bot** scope
+3. Under Bot Permissions, select:
+   - Send Messages
+   - Send Messages in Threads
+   - Create Public Threads
+   - Read Message History
+   - Add Reactions
+   - Attach Files
+4. Copy the generated URL, open it in your browser, and select your server
+
+### Step 3: Connect the Channel
+
+In the Mirascope dashboard, go to your Claw's **Settings → Channels**, click **Add Channel → Discord**, and paste your bot token.
+
+Your Claw should appear online in your Discord server within a few seconds. Send them a message to test!
+
+<Info>
+In servers, each channel gets its own isolated conversation session. DMs go to the Claw's main session.
+</Info>
+
+---
+
+## Telegram
+
+Telegram is the simplest channel to set up — just a bot token from BotFather.
+
+### Step 1: Create a Bot
+
+1. Open Telegram and message [@BotFather](https://t.me/BotFather)
+2. Send `/newbot` and follow the prompts
+3. Copy the bot token BotFather gives you
+
+### Step 2: Connect the Channel
+
+In the Mirascope dashboard, go to your Claw's **Settings → Channels**, click **Add Channel → Telegram**, and paste your bot token.
+
+Message your bot on Telegram to test. It supports both private chats and group conversations.
+
+---
+
+## All Supported Channels
+
+| Channel | Setup | Notes |
+|---|---|---|
+| **Discord** | Bot token | Recommended for developers. Full server/channel/DM support. |
+| **Telegram** | Bot token via BotFather | Simple setup. Supports groups. |
+| **WhatsApp** | QR code pairing | Most popular for personal use. |
+| **Signal** | signal-cli setup | Privacy-focused. Requires signal-cli installation. |
+| **Slack** | Bolt SDK app | Workspace apps with full Slack API access. |
+| **iMessage** | BlueBubbles (macOS) | macOS only. BlueBubbles recommended for new setups. |
+| **Google Chat** | HTTP webhook app | Google Workspace integration. |
+
+You can configure channels through the Mirascope dashboard under **Settings → Channels**.
+
+---
+
+## Security
+
+### DM Pairing
+
+When someone DMs your Claw for the first time, they aren't automatically trusted. Unknown senders receive a **pairing code** — a short code they must provide to you (the Claw owner) for verification.
+
+This prevents strangers from interacting with your Claw without your approval.
+
+### Allowlists
+
+You can pre-approve specific users in your Claw's channel settings, skipping the pairing flow for trusted contacts.
+
+<Info>
+Guild and group channels don't require pairing — they get isolated sessions automatically. DM pairing only applies to direct messages.
+</Info>
+
+---
+
+## Additional Channels
+
+Beyond the built-in channels, additional platforms are available including Mattermost, Microsoft Teams, LINE, Matrix, Nostr, Twitch, Feishu/Lark, Nextcloud Talk, and Zalo. See the [OpenClaw documentation](https://docs.openclaw.ai) for details on additional channel setup.
+
+---
+
+## Running Multiple Channels
+
+Connect as many channels as you want. All channels run simultaneously — your Claw maintains separate conversation context for each chat while sharing the same identity and memory.
+
+<Info>
+  Self-hosting? Claws are powered by [OpenClaw](https://github.com/openclaw/openclaw), an open source gateway. See the [Deployment guide](/docs/deployment) and [OpenClaw docs](https://docs.openclaw.ai) for self-hosted channel configuration.
 </Info>
