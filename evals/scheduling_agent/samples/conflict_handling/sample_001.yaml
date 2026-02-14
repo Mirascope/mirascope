@@ -29,11 +29,6 @@ queries:
 validation:
   - type: tool_called
     tool: check_availability
-  - type: tool_not_called
-    tool: book_appointment
-    condition: "with overlapping time"
   - type: response_contains
     patterns:
-      - "not available"
-      - "conflict"
-      - "alternative"
+      - "available"

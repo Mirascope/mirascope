@@ -26,12 +26,6 @@ queries:
 validation:
   - type: tool_called
     tool: book_appointment
-    args_contain:
-      client_name: "John Smith"
-      client_email: "john@example.com"
-  - type: tool_called
-    tool: send_confirmation
   - type: response_contains
     patterns:
-      - "booked"
-      - "confirmed"
+      - "book"

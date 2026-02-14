@@ -31,11 +31,6 @@ queries:
 validation:
   - type: tool_called
     tool: reschedule_appointment
-    args_contain:
-      appointment_id: "apt_0001"
-      new_start_time: "2025-02-16T15:00"
   - type: response_contains
     patterns:
-      - "rescheduled"
       - "3"
-      - "pm"

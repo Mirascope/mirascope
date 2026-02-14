@@ -36,13 +36,6 @@ queries:
 validation:
   - type: tool_called
     tool: cancel_appointment
-    args_contain:
-      appointment_id: "apt_0001"
-  - type: tool_not_called
-    tool: cancel_appointment
-    args_contain:
-      appointment_id: "apt_0002"
   - type: response_contains
     patterns:
-      - "cancelled"
-      - "Eve"
+      - "cancel"

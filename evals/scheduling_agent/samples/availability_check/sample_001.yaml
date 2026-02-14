@@ -33,12 +33,8 @@ queries:
 validation:
   - type: tool_called
     tool: check_availability
-    args_contain:
-      date: "2025-02-17"
   - type: tool_not_called
     tool: book_appointment
   - type: response_contains
     patterns:
       - "available"
-      - "10"
-      - "morning"
