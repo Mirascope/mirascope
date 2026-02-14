@@ -8,6 +8,7 @@ import type {
   UpdateSubscriptionRequest,
   UpdateAutoReloadSettingsRequest,
 } from "@/api/organizations.schemas";
+import type { PublicOrganizationWithMembership } from "@/db/schema";
 
 import { ApiClient, eq } from "@/app/api/client";
 
@@ -51,6 +52,9 @@ export const useCreateOrganization = () => {
         }),
     }),
     onSuccess: (organization) => {
+      // Cancel in-flight queries so they don't overwrite our optimistic insert
+      void queryClient.cancelQueries({ queryKey: ["organizations"] });
+
       // Optimistically insert into cache to prevent "not found" flash on navigation
       queryClient.setQueryData(
         ["organizations"],
@@ -74,7 +78,26 @@ export const useDeleteOrganization = () => {
           return yield* client.organizations.delete({ path: { id } });
         }),
     }),
-    onSuccess: () => {
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ["organizations"] });
+
+      const previousOrgs = queryClient.getQueryData<
+        readonly PublicOrganizationWithMembership[]
+      >(["organizations"]);
+
+      queryClient.setQueryData<readonly PublicOrganizationWithMembership[]>(
+        ["organizations"],
+        (old) => old?.filter((o) => o.id !== id) ?? [],
+      );
+
+      return { previousOrgs };
+    },
+    onError: (_err, _id, context) => {
+      if (context?.previousOrgs) {
+        queryClient.setQueryData(["organizations"], context.previousOrgs);
+      }
+    },
+    onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: ["organizations"] });
     },
   });
