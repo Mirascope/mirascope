@@ -1,7 +1,7 @@
 import { HttpApiBuilder, HttpServer } from "@effect/platform";
 import { Context, Effect, Layer } from "effect";
 
-import type { PublicUser, ApiKeyInfo } from "@/db/schema";
+import type { PublicUser, ApiKeyAuth } from "@/db/schema";
 
 import { Analytics } from "@/analytics";
 import { ApiLive } from "@/api/router";
@@ -20,7 +20,7 @@ import { SpansIngestQueue } from "@/workers/spanIngestQueue";
 export type HandleRequestOptions = {
   prefix?: string;
   user: PublicUser;
-  apiKeyInfo?: ApiKeyInfo;
+  apiKeyInfo?: ApiKeyAuth;
   settings: SettingsConfig;
   drizzle: Context.Tag.Service<DrizzleORM>;
   analytics: Context.Tag.Service<Analytics>;
@@ -42,7 +42,7 @@ type WebHandlerOptions = {
   spansIngestQueue: Context.Tag.Service<SpansIngestQueue>;
   clawDeployment: Context.Tag.Service<ClawDeploymentService>;
   user: PublicUser;
-  apiKeyInfo?: ApiKeyInfo;
+  apiKeyInfo?: ApiKeyAuth;
   settings: SettingsConfig;
 };
 

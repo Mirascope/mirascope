@@ -169,7 +169,7 @@ export const getTraceDetailHandler = (environmentId: string, traceId: string) =>
  */
 export const getAnalyticsSummaryHandler = (params: AnalyticsSummaryRequest) =>
   Effect.gen(function* () {
-    const { apiKeyInfo } = yield* Authentication.ApiKey;
+    const { apiKeyInfo } = yield* Authentication.EnvironmentApiKey;
     const searchService = yield* ClickHouseSearch;
 
     const input: AnalyticsSummaryInput = {

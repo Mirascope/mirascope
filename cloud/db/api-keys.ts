@@ -45,7 +45,7 @@
  * });
  *
  * // Get API key info for authentication (includes owner details)
- * const apiKeyInfo = yield* db.organizations.projects.environments.apiKeys.getApiKeyInfo(key);
+ * const apiKeyInfo = yield* db.authenticateApiKey(key);
  * ```
  */
 
@@ -62,16 +62,20 @@ import { ProjectMemberships } from "@/db/project-memberships";
 import {
   apiKeys,
   claws,
+  organizations,
   users,
   environments,
   projects,
   projectMemberships,
   organizationMemberships,
   type NewApiKey,
-  type PublicApiKey,
-  type ApiKeyCreateResponse,
-  type ApiKeyInfo,
+  type EnvironmentPublicApiKey,
+  type EnvironmentApiKeyCreateResponse,
+  type ApiKeyAuth,
+  type EnvironmentApiKeyAuth,
+  type OrgApiKeyAuth,
   type ApiKeyWithContext,
+  type EnvironmentApiKeyWithContext,
   type ProjectRole,
 } from "@/db/schema";
 import { isUniqueConstraintError } from "@/db/utils";
@@ -170,8 +174,8 @@ const publicFields = {
  * - API key names must be unique within an environment
  * - Keys are hashed with SHA-256 before storage
  */
-export class ApiKeys extends BaseAuthenticatedEffectService<
-  PublicApiKey,
+export class EnvironmentApiKeys extends BaseAuthenticatedEffectService<
+  EnvironmentPublicApiKey,
   "organizations/:organizationId/projects/:projectId/environments/:environmentId/apiKeys/:apiKeyId",
   Pick<NewApiKey, "name">,
   Partial<Pick<NewApiKey, "name">>,
@@ -270,7 +274,7 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
     environmentId: string;
     data: Pick<NewApiKey, "name">;
   }): Effect.Effect<
-    ApiKeyCreateResponse,
+    EnvironmentApiKeyCreateResponse,
     AlreadyExistsError | NotFoundError | PermissionDeniedError | DatabaseError,
     DrizzleORM
   > {
@@ -320,7 +324,7 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
       return {
         ...apiKey,
         key: plaintextKey,
-      } as ApiKeyCreateResponse;
+      } as EnvironmentApiKeyCreateResponse;
     });
   }
 
@@ -349,7 +353,7 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
     projectId: string;
     environmentId: string;
   }): Effect.Effect<
-    PublicApiKey[],
+    EnvironmentPublicApiKey[],
     NotFoundError | PermissionDeniedError | DatabaseError,
     DrizzleORM
   > {
@@ -366,7 +370,8 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
         apiKeyId: "", // Not used for findAll
       });
 
-      const results: PublicApiKey[] = yield* client
+      // Filtered by environmentId — result always has environmentId set
+      const results = (yield* client
         .select(publicFields)
         .from(apiKeys)
         .where(
@@ -383,7 +388,7 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
                 cause: e,
               }),
           ),
-        );
+        )) as EnvironmentPublicApiKey[];
 
       return results;
     });
@@ -417,7 +422,7 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
     environmentId: string;
     apiKeyId: string;
   }): Effect.Effect<
-    PublicApiKey,
+    EnvironmentPublicApiKey,
     NotFoundError | PermissionDeniedError | DatabaseError,
     DrizzleORM
   > {
@@ -464,7 +469,8 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
         );
       }
 
-      return apiKey;
+      // Filtered by environmentId — result always has environmentId set
+      return apiKey as unknown as EnvironmentPublicApiKey;
     });
   }
 
@@ -501,7 +507,7 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
     apiKeyId: string;
     data: Partial<Pick<NewApiKey, "name">>;
   }): Effect.Effect<
-    PublicApiKey,
+    EnvironmentPublicApiKey,
     NotFoundError | PermissionDeniedError | AlreadyExistsError | DatabaseError,
     DrizzleORM
   > {
@@ -552,7 +558,8 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
         );
       }
 
-      return updated;
+      // Filtered by environmentId — result always has environmentId set
+      return updated as unknown as EnvironmentPublicApiKey;
     });
   }
 
@@ -686,99 +693,6 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
   // ---------------------------------------------------------------------------
 
   /**
-   * Gets complete API key information including owner details.
-   *
-   * This method is used for API key authentication. It:
-   * 1. Hashes the provided key
-   * 2. Looks up the hash in the database with an inner join on users
-   * 3. Updates the lastUsedAt timestamp
-   * 4. Returns the API key ID, full resource hierarchy, and owner information
-   *
-   * If the user associated with the API key doesn't exist, this returns a NotFoundError.
-   * This ensures that we only proceed with authentication if there is a valid user for the API key.
-   *
-   * Note: This method does NOT require authentication - it IS the authentication.
-   *
-   * @param key - The plaintext API key to verify
-   * @returns Complete API key information including owner details
-   * @throws NotFoundError - If the API key is invalid or the owner doesn't exist
-   * @throws DatabaseError - If the database operation fails
-   */
-  getApiKeyInfo(
-    key: string,
-  ): Effect.Effect<ApiKeyInfo, NotFoundError | DatabaseError, DrizzleORM> {
-    return Effect.gen(this, function* () {
-      const client = yield* DrizzleORM;
-      const keyHash = hashApiKey(key);
-
-      // Look up the API key by hash and join to get the full hierarchy and owner info
-      // Only include API keys whose owner has not been deleted
-      // LEFT JOIN to claws to get clawId for claw-user-owned keys
-      const [apiKeyInfo] = yield* client
-        .select({
-          apiKeyId: apiKeys.id,
-          environmentId: apiKeys.environmentId,
-          projectId: environments.projectId,
-          organizationId: projects.organizationId,
-          clawId: claws.id,
-          ownerId: users.id,
-          ownerEmail: users.email,
-          ownerName: users.name,
-          ownerAccountType: users.accountType,
-          ownerDeletedAt: users.deletedAt,
-        })
-        .from(apiKeys)
-        .innerJoin(environments, eq(apiKeys.environmentId, environments.id))
-        .innerJoin(projects, eq(environments.projectId, projects.id))
-        .innerJoin(users, eq(apiKeys.ownerId, users.id))
-        .leftJoin(claws, eq(claws.botUserId, users.id))
-        .where(
-          and(
-            eq(apiKeys.keyHash, keyHash),
-            isNull(users.deletedAt),
-            isNull(apiKeys.deletedAt),
-          ),
-        )
-        .limit(1)
-        .pipe(
-          Effect.mapError(
-            (e) =>
-              new DatabaseError({
-                message: "Failed to get API key info",
-                cause: e,
-              }),
-          ),
-        );
-
-      if (!apiKeyInfo) {
-        return yield* Effect.fail(
-          new NotFoundError({
-            message: "Invalid API key or owner not found",
-            resource: this.getResourceName(),
-          }),
-        );
-      }
-
-      // Update last used timestamp
-      yield* client
-        .update(apiKeys)
-        .set({ lastUsedAt: new Date() })
-        .where(eq(apiKeys.id, apiKeyInfo.apiKeyId))
-        .pipe(
-          Effect.mapError(
-            (e) =>
-              new DatabaseError({
-                message: "Failed to update API key last used timestamp",
-                cause: e,
-              }),
-          ),
-        );
-
-      return apiKeyInfo;
-    });
-  }
-
-  /**
    * Retrieves all API keys across all projects and environments in an organization
    * that the user has access to.
    *
@@ -839,8 +753,8 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
       const isOrgAdmin =
         orgMembership.role === "OWNER" || orgMembership.role === "ADMIN";
 
-      // Build the query for API keys with context
-      const baseQuery = client
+      // Query environment-scoped keys with project/environment context
+      const envKeysQuery = client
         .select({
           id: apiKeys.id,
           name: apiKeys.name,
@@ -853,16 +767,40 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
           projectId: projects.id,
           projectName: projects.name,
           environmentName: environments.name,
+          ownerName: users.name,
+          ownerAccountType: users.accountType,
         })
         .from(apiKeys)
         .innerJoin(environments, eq(apiKeys.environmentId, environments.id))
-        .innerJoin(projects, eq(environments.projectId, projects.id));
+        .innerJoin(projects, eq(environments.projectId, projects.id))
+        .innerJoin(users, eq(apiKeys.ownerId, users.id));
 
-      let results: ApiKeyWithContext[];
+      // Query org-scoped keys (only visible to org admins)
+      const orgKeysQuery = client
+        .select({
+          id: apiKeys.id,
+          name: apiKeys.name,
+          keyPrefix: apiKeys.keyPrefix,
+          environmentId: apiKeys.environmentId,
+          organizationId: apiKeys.organizationId,
+          ownerId: apiKeys.ownerId,
+          createdAt: apiKeys.createdAt,
+          lastUsedAt: apiKeys.lastUsedAt,
+          deletedAt: apiKeys.deletedAt,
+          organizationName: organizations.name,
+          ownerName: users.name,
+          ownerAccountType: users.accountType,
+        })
+        .from(apiKeys)
+        .innerJoin(organizations, eq(apiKeys.organizationId, organizations.id))
+        .innerJoin(users, eq(apiKeys.ownerId, users.id));
+
+      const results: ApiKeyWithContext[] = [];
 
       if (isOrgAdmin) {
         // Org OWNER/ADMIN can see all API keys in the organization
-        results = yield* baseQuery
+        // INNER JOIN on environments guarantees environmentId is non-null
+        const envKeys = yield* envKeysQuery
           .where(
             and(
               eq(projects.organizationId, organizationId),
@@ -873,11 +811,40 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
             Effect.mapError(
               (e) =>
                 new DatabaseError({
-                  message: "Failed to find API keys for organization",
+                  message: "Failed to find env API keys for organization",
                   cause: e,
                 }),
             ),
           );
+        results.push(...(envKeys as unknown as EnvironmentApiKeyWithContext[]));
+
+        // Org-scoped keys
+        const orgKeys = yield* orgKeysQuery
+          .where(
+            and(
+              eq(apiKeys.organizationId, organizationId),
+              isNull(apiKeys.deletedAt),
+            ),
+          )
+          .pipe(
+            Effect.mapError(
+              (e) =>
+                new DatabaseError({
+                  message: "Failed to find org API keys for organization",
+                  cause: e,
+                }),
+            ),
+          );
+        results.push(
+          ...orgKeys.map(
+            (k) =>
+              ({
+                ...k,
+                organizationId: k.organizationId!,
+                environmentId: k.environmentId as null,
+              }) satisfies ApiKeyWithContext,
+          ),
+        );
       } else {
         // Get projects where the user has ADMIN or DEVELOPER role
         const userProjectMemberships = yield* client
@@ -907,31 +874,162 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
           (m) => m.projectId,
         );
 
-        if (accessibleProjectIds.length === 0) {
-          return [];
-        }
-
-        // Get API keys for accessible projects only
-        results = yield* baseQuery
-          .where(
-            and(
-              eq(projects.organizationId, organizationId),
-              inArray(projects.id, accessibleProjectIds),
-              isNull(apiKeys.deletedAt),
-            ),
-          )
-          .pipe(
-            Effect.mapError(
-              (e) =>
-                new DatabaseError({
-                  message: "Failed to find API keys for organization",
-                  cause: e,
-                }),
-            ),
+        if (accessibleProjectIds.length > 0) {
+          // Get env-scoped API keys for accessible projects only
+          // INNER JOIN on environments guarantees environmentId is non-null
+          const envKeys = yield* envKeysQuery
+            .where(
+              and(
+                eq(projects.organizationId, organizationId),
+                inArray(projects.id, accessibleProjectIds),
+                isNull(apiKeys.deletedAt),
+              ),
+            )
+            .pipe(
+              Effect.mapError(
+                (e) =>
+                  new DatabaseError({
+                    message: "Failed to find API keys for organization",
+                    cause: e,
+                  }),
+              ),
+            );
+          results.push(
+            ...(envKeys as unknown as EnvironmentApiKeyWithContext[]),
           );
+        }
+        // Non-admin members cannot see org-scoped keys
       }
 
       return results;
     });
   }
+}
+
+// =============================================================================
+// Standalone Authentication
+// =============================================================================
+
+/**
+ * Authenticate an API key and resolve its scope + owner info.
+ *
+ * This is the authentication path — NOT a CRUD operation. It works for both
+ * environment-scoped and org-scoped keys, returning the appropriate variant
+ * of the `ApiKeyAuth` discriminated union.
+ *
+ * @param key - The plaintext API key to verify
+ * @returns `EnvironmentApiKeyAuth` or `OrgApiKeyAuth` depending on key scope
+ * @throws NotFoundError - If the API key is invalid or the owner doesn't exist
+ * @throws DatabaseError - If the database operation fails
+ */
+export function authenticateApiKey(
+  key: string,
+): Effect.Effect<ApiKeyAuth, NotFoundError | DatabaseError, DrizzleORM> {
+  return Effect.gen(function* () {
+    const client = yield* DrizzleORM;
+    const keyHash = hashApiKey(key);
+
+    // Look up the API key by hash and resolve owner info.
+    // LEFT JOINs to environments/projects (null for org-scoped keys)
+    // and to claws to detect claw-owned keys.
+    const [row] = yield* client
+      .select({
+        apiKeyId: apiKeys.id,
+        environmentId: apiKeys.environmentId,
+        organizationId: apiKeys.organizationId,
+        projectId: environments.projectId,
+        projectOrgId: projects.organizationId,
+        clawId: claws.id,
+        ownerId: users.id,
+        ownerEmail: users.email,
+        ownerName: users.name,
+        ownerAccountType: users.accountType,
+        ownerDeletedAt: users.deletedAt,
+      })
+      .from(apiKeys)
+      .leftJoin(environments, eq(apiKeys.environmentId, environments.id))
+      .leftJoin(projects, eq(environments.projectId, projects.id))
+      .innerJoin(users, eq(apiKeys.ownerId, users.id))
+      .leftJoin(claws, eq(claws.botUserId, users.id))
+      .where(
+        and(
+          eq(apiKeys.keyHash, keyHash),
+          isNull(users.deletedAt),
+          isNull(apiKeys.deletedAt),
+        ),
+      )
+      .limit(1)
+      .pipe(
+        Effect.mapError(
+          (e) =>
+            new DatabaseError({
+              message: "Failed to get API key info",
+              cause: e,
+            }),
+        ),
+      );
+
+    if (!row) {
+      return yield* Effect.fail(
+        new NotFoundError({
+          message: "Invalid API key or owner not found",
+          resource: "api_key",
+        }),
+      );
+    }
+
+    // Build the typed ApiKeyAuth based on scope
+    const base = {
+      apiKeyId: row.apiKeyId,
+      clawId: row.clawId,
+      ownerId: row.ownerId,
+      ownerEmail: row.ownerEmail,
+      ownerName: row.ownerName,
+      ownerAccountType: row.ownerAccountType,
+      ownerDeletedAt: row.ownerDeletedAt,
+    };
+
+    let apiKeyInfo: ApiKeyAuth;
+    if (row.environmentId && row.projectId && row.projectOrgId) {
+      // Environment-scoped key
+      apiKeyInfo = {
+        ...base,
+        organizationId: row.projectOrgId,
+        environmentId: row.environmentId,
+        projectId: row.projectId,
+      } satisfies EnvironmentApiKeyAuth;
+    } else if (row.organizationId) {
+      // Org-scoped key
+      apiKeyInfo = {
+        ...base,
+        organizationId: row.organizationId,
+        environmentId: null,
+      } satisfies OrgApiKeyAuth;
+    } else {
+      // Should not happen — CHECK constraint enforces one scope
+      return yield* Effect.fail(
+        new NotFoundError({
+          message: "API key has invalid scope — neither env nor org",
+          resource: "api_key",
+        }),
+      );
+    }
+
+    // Update last used timestamp
+    yield* client
+      .update(apiKeys)
+      .set({ lastUsedAt: new Date() })
+      .where(eq(apiKeys.id, row.apiKeyId))
+      .pipe(
+        Effect.mapError(
+          (e) =>
+            new DatabaseError({
+              message: "Failed to update API key last used timestamp",
+              cause: e,
+            }),
+        ),
+      );
+
+    return apiKeyInfo;
+  });
 }

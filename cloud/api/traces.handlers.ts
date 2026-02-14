@@ -37,7 +37,7 @@ export const DEFAULT_TIME_RANGE_MS =
 export const createTraceHandler = (payload: CreateTraceRequest) =>
   Effect.gen(function* () {
     const db = yield* Database;
-    const { user, apiKeyInfo } = yield* Authentication.ApiKey;
+    const { user, apiKeyInfo } = yield* Authentication.EnvironmentApiKey;
 
     const result = yield* db.organizations.projects.environments.traces.create({
       userId: user.id,
@@ -76,7 +76,7 @@ export const listByFunctionHashHandler = (
 ) =>
   Effect.gen(function* () {
     const db = yield* Database;
-    const { user, apiKeyInfo } = yield* Authentication.ApiKey;
+    const { user, apiKeyInfo } = yield* Authentication.EnvironmentApiKey;
     const clickHouseSearch = yield* ClickHouseSearch;
 
     // First, find the function by hash

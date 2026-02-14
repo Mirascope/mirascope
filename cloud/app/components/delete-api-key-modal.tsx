@@ -51,14 +51,14 @@ export function DeleteApiKeyModal({
     try {
       await deleteApiKey.mutateAsync({
         organizationId,
-        projectId: apiKey.projectId,
-        environmentId: apiKey.environmentId,
+        projectId: apiKey.projectId ?? "",
+        environmentId: apiKey.environmentId ?? "",
         apiKeyId: apiKey.id,
       });
       analytics.trackEvent("api_key_deleted", {
         api_key_id: apiKey.id,
-        environment_id: apiKey.environmentId,
-        project_id: apiKey.projectId,
+        environment_id: apiKey.environmentId ?? "",
+        project_id: apiKey.projectId ?? "",
         organization_id: organizationId,
       });
 

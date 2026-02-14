@@ -8,7 +8,7 @@ import type {
   AnalyticsSummaryResponse,
 } from "@/api/traces-search.schemas";
 import type {
-  ApiKeyInfo,
+  EnvironmentApiKeyAuth,
   PublicEnvironment,
   PublicProject,
   PublicUser,
@@ -48,7 +48,7 @@ describe.sequential("Search API", (it) => {
   let environment: PublicEnvironment;
   let apiKeyClient: Awaited<ReturnType<typeof createApiClient>>["client"];
   let disposeApiKeyClient: (() => Promise<void>) | null = null;
-  let apiKeyInfo: ApiKeyInfo | null = null;
+  let apiKeyInfo: EnvironmentApiKeyAuth | null = null;
   let ownerFromContext: PublicUser | null = null;
 
   it.effect(
@@ -83,7 +83,7 @@ describe.sequential("Search API", (it) => {
   it.effect("Create API key client for search tests", () =>
     Effect.gen(function* () {
       const { org, owner } = yield* TestApiContext;
-      const apiKeyContext: ApiKeyInfo = {
+      const apiKeyContext: EnvironmentApiKeyAuth = {
         apiKeyId: "test-search-api-key-id",
         organizationId: org.id,
         projectId: project.id,
@@ -2328,7 +2328,7 @@ describe("Realtime span merge", () => {
   const createMockSpan = buildSearchSpan;
   const createMockTraceSpan = buildTraceDetailSpan;
 
-  const mockApiKeyInfo: ApiKeyInfo = {
+  const mockEnvironmentApiKeyAuth: EnvironmentApiKeyAuth = {
     apiKeyId: "test-api-key",
     organizationId: "org-1",
     projectId: "proj-1",
@@ -2337,8 +2337,8 @@ describe("Realtime span merge", () => {
     ownerEmail: "test@example.com",
     ownerName: "Test User",
     ownerDeletedAt: null,
-    ownerAccountType: "user" as const,
     clawId: null,
+    ownerAccountType: "user" as const,
   };
 
   const mockUser: PublicUser = {
@@ -2351,7 +2351,7 @@ describe("Realtime span merge", () => {
 
   const authenticationLayer = Layer.succeed(Authentication, {
     user: mockUser,
-    apiKeyInfo: mockApiKeyInfo,
+    apiKeyInfo: mockEnvironmentApiKeyAuth,
   });
 
   const createClickHouseSearchLayer = (
@@ -2443,10 +2443,13 @@ describe("Realtime span merge", () => {
             hasMore: false,
           };
 
-          const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
-            startTime: new Date(now.getTime() - 5 * 60 * 1000).toISOString(),
-            endTime: now.toISOString(),
-          }).pipe(
+          const result = yield* searchHandler(
+            mockEnvironmentApiKeyAuth.environmentId,
+            {
+              startTime: new Date(now.getTime() - 5 * 60 * 1000).toISOString(),
+              endTime: now.toISOString(),
+            },
+          ).pipe(
             Effect.provide(
               Layer.mergeAll(
                 authenticationLayer,
@@ -2479,11 +2482,14 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
-          startTime: new Date(now.getTime() - 5 * 60 * 1000).toISOString(),
-          endTime: now.toISOString(),
-          offset: 10,
-        }).pipe(
+        const result = yield* searchHandler(
+          mockEnvironmentApiKeyAuth.environmentId,
+          {
+            startTime: new Date(now.getTime() - 5 * 60 * 1000).toISOString(),
+            endTime: now.toISOString(),
+            offset: 10,
+          },
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -2524,10 +2530,13 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
-          startTime: new Date(now.getTime() - 5 * 60 * 1000).toISOString(),
-          endTime: now.toISOString(),
-        }).pipe(
+        const result = yield* searchHandler(
+          mockEnvironmentApiKeyAuth.environmentId,
+          {
+            startTime: new Date(now.getTime() - 5 * 60 * 1000).toISOString(),
+            endTime: now.toISOString(),
+          },
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -2554,10 +2563,13 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
-          startTime: new Date(now.getTime() - 5 * 60 * 1000).toISOString(),
-          endTime: now.toISOString(),
-        }).pipe(
+        const result = yield* searchHandler(
+          mockEnvironmentApiKeyAuth.environmentId,
+          {
+            startTime: new Date(now.getTime() - 5 * 60 * 1000).toISOString(),
+            endTime: now.toISOString(),
+          },
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -2589,10 +2601,13 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
-          startTime: oldDate.toISOString(),
-          endTime: new Date(oldDate.getTime() + 60 * 1000).toISOString(),
-        }).pipe(
+        const result = yield* searchHandler(
+          mockEnvironmentApiKeyAuth.environmentId,
+          {
+            startTime: oldDate.toISOString(),
+            endTime: new Date(oldDate.getTime() + 60 * 1000).toISOString(),
+          },
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -2631,12 +2646,15 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
-          startTime: new Date(now - 5 * 60 * 1000).toISOString(),
-          endTime: new Date(now).toISOString(),
-          sortBy: "start_time",
-          sortOrder: "desc",
-        }).pipe(
+        const result = yield* searchHandler(
+          mockEnvironmentApiKeyAuth.environmentId,
+          {
+            startTime: new Date(now - 5 * 60 * 1000).toISOString(),
+            endTime: new Date(now).toISOString(),
+            sortBy: "start_time",
+            sortOrder: "desc",
+          },
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -2675,12 +2693,15 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
-          startTime: new Date(now - 5 * 60 * 1000).toISOString(),
-          endTime: new Date(now).toISOString(),
-          sortBy: "duration_ms",
-          sortOrder: "asc",
-        }).pipe(
+        const result = yield* searchHandler(
+          mockEnvironmentApiKeyAuth.environmentId,
+          {
+            startTime: new Date(now - 5 * 60 * 1000).toISOString(),
+            endTime: new Date(now).toISOString(),
+            sortBy: "duration_ms",
+            sortOrder: "asc",
+          },
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -2719,12 +2740,15 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
-          startTime: new Date(now - 5 * 60 * 1000).toISOString(),
-          endTime: new Date(now).toISOString(),
-          sortBy: "duration_ms",
-          sortOrder: "asc",
-        }).pipe(
+        const result = yield* searchHandler(
+          mockEnvironmentApiKeyAuth.environmentId,
+          {
+            startTime: new Date(now - 5 * 60 * 1000).toISOString(),
+            endTime: new Date(now).toISOString(),
+            sortBy: "duration_ms",
+            sortOrder: "asc",
+          },
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -2764,12 +2788,15 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
-          startTime: new Date(now - 5 * 60 * 1000).toISOString(),
-          endTime: new Date(now).toISOString(),
-          sortBy: "total_tokens",
-          sortOrder: "desc",
-        }).pipe(
+        const result = yield* searchHandler(
+          mockEnvironmentApiKeyAuth.environmentId,
+          {
+            startTime: new Date(now - 5 * 60 * 1000).toISOString(),
+            endTime: new Date(now).toISOString(),
+            sortBy: "total_tokens",
+            sortOrder: "desc",
+          },
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -2806,11 +2833,14 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
-          startTime: new Date(now - 5 * 60 * 1000).toISOString(),
-          endTime: new Date(now).toISOString(),
-          limit: 3,
-        }).pipe(
+        const result = yield* searchHandler(
+          mockEnvironmentApiKeyAuth.environmentId,
+          {
+            startTime: new Date(now - 5 * 60 * 1000).toISOString(),
+            endTime: new Date(now).toISOString(),
+            limit: 3,
+          },
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -2847,12 +2877,15 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
-          startTime: new Date(now - 5 * 60 * 1000).toISOString(),
-          endTime: new Date(now).toISOString(),
-          sortBy: "duration_ms",
-          sortOrder: "desc",
-        }).pipe(
+        const result = yield* searchHandler(
+          mockEnvironmentApiKeyAuth.environmentId,
+          {
+            startTime: new Date(now - 5 * 60 * 1000).toISOString(),
+            endTime: new Date(now).toISOString(),
+            sortBy: "duration_ms",
+            sortOrder: "desc",
+          },
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -2892,12 +2925,15 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
-          startTime: new Date(now - 5 * 60 * 1000).toISOString(),
-          endTime: new Date(now).toISOString(),
-          sortBy: "total_tokens",
-          sortOrder: "asc",
-        }).pipe(
+        const result = yield* searchHandler(
+          mockEnvironmentApiKeyAuth.environmentId,
+          {
+            startTime: new Date(now - 5 * 60 * 1000).toISOString(),
+            endTime: new Date(now).toISOString(),
+            sortBy: "total_tokens",
+            sortOrder: "asc",
+          },
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -2937,12 +2973,15 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
-          startTime: new Date(now - 5 * 60 * 1000).toISOString(),
-          endTime: new Date(now).toISOString(),
-          sortBy: "total_tokens",
-          sortOrder: "desc",
-        }).pipe(
+        const result = yield* searchHandler(
+          mockEnvironmentApiKeyAuth.environmentId,
+          {
+            startTime: new Date(now - 5 * 60 * 1000).toISOString(),
+            endTime: new Date(now).toISOString(),
+            sortBy: "total_tokens",
+            sortOrder: "desc",
+          },
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -2982,12 +3021,15 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
-          startTime: new Date(now - 5 * 60 * 1000).toISOString(),
-          endTime: new Date(now).toISOString(),
-          sortBy: "start_time",
-          sortOrder: "asc",
-        }).pipe(
+        const result = yield* searchHandler(
+          mockEnvironmentApiKeyAuth.environmentId,
+          {
+            startTime: new Date(now - 5 * 60 * 1000).toISOString(),
+            endTime: new Date(now).toISOString(),
+            sortBy: "start_time",
+            sortOrder: "asc",
+          },
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -3027,12 +3069,15 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
-          startTime: new Date(now - 5 * 60 * 1000).toISOString(),
-          endTime: new Date(now).toISOString(),
-          sortBy: "start_time",
-          sortOrder: "desc",
-        }).pipe(
+        const result = yield* searchHandler(
+          mockEnvironmentApiKeyAuth.environmentId,
+          {
+            startTime: new Date(now - 5 * 60 * 1000).toISOString(),
+            endTime: new Date(now).toISOString(),
+            sortBy: "start_time",
+            sortOrder: "desc",
+          },
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -3066,10 +3111,13 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
-          startTime: new Date(now - 5 * 60 * 1000).toISOString(),
-          endTime: new Date(now).toISOString(),
-        }).pipe(
+        const result = yield* searchHandler(
+          mockEnvironmentApiKeyAuth.environmentId,
+          {
+            startTime: new Date(now - 5 * 60 * 1000).toISOString(),
+            endTime: new Date(now).toISOString(),
+          },
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -3111,7 +3159,7 @@ describe("Realtime span merge", () => {
         };
 
         const result = yield* getTraceDetailHandler(
-          mockApiKeyInfo.environmentId,
+          mockEnvironmentApiKeyAuth.environmentId,
           "trace-1",
         ).pipe(
           Effect.provide(
@@ -3158,7 +3206,7 @@ describe("Realtime span merge", () => {
         };
 
         const result = yield* getTraceDetailHandler(
-          mockApiKeyInfo.environmentId,
+          mockEnvironmentApiKeyAuth.environmentId,
           "trace-1",
         ).pipe(
           Effect.provide(
@@ -3211,7 +3259,7 @@ describe("Realtime span merge", () => {
         };
 
         const result = yield* getTraceDetailHandler(
-          mockApiKeyInfo.environmentId,
+          mockEnvironmentApiKeyAuth.environmentId,
           "trace-1",
         ).pipe(
           Effect.provide(
@@ -3244,7 +3292,7 @@ describe("Realtime span merge", () => {
         };
 
         const result = yield* getTraceDetailHandler(
-          mockApiKeyInfo.environmentId,
+          mockEnvironmentApiKeyAuth.environmentId,
           "trace-1",
         ).pipe(
           Effect.provide(
@@ -3280,7 +3328,7 @@ describe("Realtime span merge", () => {
         };
 
         const result = yield* getTraceDetailHandler(
-          mockApiKeyInfo.environmentId,
+          mockEnvironmentApiKeyAuth.environmentId,
           "trace-1",
         ).pipe(
           Effect.provide(
@@ -3330,7 +3378,7 @@ describe("Realtime span merge", () => {
         };
 
         const result = yield* getTraceDetailHandler(
-          mockApiKeyInfo.environmentId,
+          mockEnvironmentApiKeyAuth.environmentId,
           "trace-1",
         ).pipe(
           Effect.provide(
@@ -3374,7 +3422,7 @@ describe("Realtime span merge", () => {
         };
 
         const result = yield* getTraceDetailHandler(
-          mockApiKeyInfo.environmentId,
+          mockEnvironmentApiKeyAuth.environmentId,
           "trace-1",
         ).pipe(
           Effect.provide(

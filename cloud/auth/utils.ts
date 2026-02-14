@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 
 import type { AuthResult } from "@/auth/context";
-import type { ApiKeyInfo } from "@/db/schema";
+import type { ApiKeyAuth } from "@/db/schema";
 import type { SettingsConfig } from "@/settings";
 
 import { getApiKeyFromRequest } from "@/auth/api-key";
@@ -137,49 +137,51 @@ export type PathParameters = {
 export const validateApiKey = (
   apiKey: string,
   pathParams?: PathParameters,
-): Effect.Effect<ApiKeyInfo, UnauthorizedError, Database> =>
+): Effect.Effect<ApiKeyAuth, UnauthorizedError, Database> =>
   Effect.gen(function* () {
     const db = yield* Database;
 
     // Get the API key info (verifies key and ensures owner exists)
-    const apiKeyInfo = yield* db.organizations.projects.environments.apiKeys
-      .getApiKeyInfo(apiKey)
-      .pipe(
-        Effect.catchAll(() =>
-          Effect.fail(
-            new UnauthorizedError({
-              message: "Invalid API key",
-            }),
-          ),
+    const apiKeyInfo = yield* db.authenticateApiKey(apiKey).pipe(
+      Effect.catchAll(() =>
+        Effect.fail(
+          new UnauthorizedError({
+            message: "Invalid API key",
+          }),
         ),
-      );
+      ),
+    );
 
     // If path parameters are provided, validate that the API key matches them
     if (pathParams) {
       // Validate environmentId if provided
-      if (
-        pathParams.environmentId &&
-        pathParams.environmentId !== apiKeyInfo.environmentId
-      ) {
-        return yield* Effect.fail(
-          new UnauthorizedError({
-            message:
-              "The environment ID in the request path does not match the environment associated with this API key",
-          }),
-        );
+      if (pathParams.environmentId) {
+        if (
+          apiKeyInfo.environmentId === null ||
+          pathParams.environmentId !== apiKeyInfo.environmentId
+        ) {
+          return yield* Effect.fail(
+            new UnauthorizedError({
+              message:
+                "The environment ID in the request path does not match the environment associated with this API key",
+            }),
+          );
+        }
       }
 
       // Validate projectId if provided
-      if (
-        pathParams.projectId &&
-        pathParams.projectId !== apiKeyInfo.projectId
-      ) {
-        return yield* Effect.fail(
-          new UnauthorizedError({
-            message:
-              "The project ID in the request path does not match the project associated with this API key",
-          }),
-        );
+      if (pathParams.projectId) {
+        if (
+          apiKeyInfo.environmentId === null ||
+          pathParams.projectId !== apiKeyInfo.projectId
+        ) {
+          return yield* Effect.fail(
+            new UnauthorizedError({
+              message:
+                "The project ID in the request path does not match the project associated with this API key",
+            }),
+          );
+        }
       }
 
       // Validate organizationId if provided
