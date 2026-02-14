@@ -238,13 +238,12 @@ def generate_program(skill_instructions: str, bootstrap_prompt: str, is_agent: b
 </request>
 
 Requirements:
-1. PEP 723 inline deps with mirascope[all]
+1. PEP 723 inline deps
 2. AgentInput (query field) and AgentOutput (response + tool_calls fields)
 3. Tools with @llm.tool decorator
 4. Agentic loop with execute_tools/resume
 5. --help, --schema, --input CLI
-6. Follow "Tool-Based Agent Programs" section
-7. CRITICAL: Use model="anthropic/claude-sonnet-4-20250514" (exact string)"""
+6. Follow "Tool-Based Agent Programs" section"""
     else:
         user_content = f"""Create a complete, self-contained Mirascope program for:
 
@@ -253,12 +252,11 @@ Requirements:
 </request>
 
 Requirements:
-1. PEP 723 inline deps with mirascope[all]
+1. PEP 723 inline deps
 2. ProgramInput and ProgramOutput Pydantic models
 3. @llm.call with format=ProgramOutput
 4. --help, --schema, --input CLI
-5. Follow robustness patterns
-6. CRITICAL: Use model="anthropic/claude-sonnet-4-20250514" (exact string)"""
+5. Follow robustness patterns"""
 
     return [
         SystemMessage(content=Text(text=f"You are a Mirascope program generator.\n\n<skill_instructions>\n{skill_instructions}\n</skill_instructions>")),
@@ -295,19 +293,13 @@ class ImprovedProgram(BaseModel):
 def improve_program(
     skill_instructions: str,
     current_code: str,
-    failures: list[dict],
-    successes: list[dict],
+    feedback: list[dict],
     is_agent: bool = False,
 ) -> list:
-    failure_text = "\n".join([
-        f"- Query: {f['query'][:80]}...\n  Expected: {f['expected']}\n  Got: {f['actual'][:100]}..."
-        for f in failures
+    feedback_text = "\n".join([
+        f"- Query: {f['query'][:100]}...\n  Issue: {f['issue']}"
+        for f in feedback
     ])
-
-    success_text = "\n".join([
-        f"- Query: {s['query'][:80]}..."
-        for s in successes
-    ]) if successes else "(none)"
 
     return [
         SystemMessage(content=Text(text=f"You improve Mirascope programs based on feedback.\n\n<skill_instructions>\n{skill_instructions}\n</skill_instructions>")),
@@ -316,16 +308,10 @@ def improve_program(
 {current_code}
 ```
 
-FAILING QUERIES (fix these):
-{failure_text}
+Feedback from failed queries:
+{feedback_text}
 
-PASSING QUERIES (preserve these - do not break existing behavior):
-{success_text}
-
-CRITICAL: Make minimal, targeted changes. Do not refactor working code.
-Fix the failing queries while ensuring passing queries continue to work.
-
-Return the complete improved code.""")]),
+Improve the program to fix these issues. Return the complete improved code.""")]),
     ]
 
 
@@ -558,78 +544,48 @@ def run_full_eval(sample_path: Path, output_dir: Path) -> EvalReport:
     ], indent=2))
 
     # -------------------------------------------------------------------------
-    # Phase 3: Leave-One-Out Cross Validation
+    # Phase 3: Leave-One-Out Iteration
     # -------------------------------------------------------------------------
-    # For each query i:
-    #   1. Use feedback from queries ≠i (from initial_results)
-    #   2. Improve the BASE program (same starting point each time)
-    #   3. Run ONLY query i on the improved program
-    #   4. Record result
-    # This gives unbiased estimation of post-iteration performance.
-    # -------------------------------------------------------------------------
-    print(f"\n[Phase 3] Leave-one-out cross validation...")
+    print(f"\n[Phase 3] Leave-one-out iteration...")
 
     iteration_results: list[IterationResult] = []
 
     for holdout_idx, holdout_query in enumerate(sample.queries):
-        initial_passed_this = initial_results[holdout_idx].passed
-
-        # Build feedback from N-1 queries (excluding holdout)
-        failures = []
-        successes = []
+        # Gather feedback from other queries (failures only)
+        feedback = []
         for i, r in enumerate(initial_results):
             if i == holdout_idx:
-                continue  # Exclude holdout to avoid leakage
-            if r.passed:
-                successes.append({"query": r.query_text})
-            else:
-                # Build expected description from query spec
-                q = sample.queries[i]
-                expected_parts = []
-                if q.expected.output_contains:
-                    expected_parts.append(f"output should contain: {q.expected.output_contains}")
-                if q.expected.output_excludes:
-                    expected_parts.append(f"output should NOT contain: {q.expected.output_excludes}")
-                if q.expected.invokes_tools:
-                    expected_parts.append(f"should invoke tools: {q.expected.invokes_tools}")
-                expected = "; ".join(expected_parts) if expected_parts else "successful execution"
-                
-                actual = r.error if r.error else r.raw_output[:200] if r.raw_output else "no output"
-                failures.append({
-                    "query": r.query_text,
-                    "expected": expected,
-                    "actual": actual,
-                })
+                continue
+            if not r.passed:
+                issue = r.error or ", ".join(r.score_details.get("failed", ["unknown"]))
+                feedback.append({"query": r.query_text, "issue": issue})
 
-        if not failures:
-            # No failures in N-1 queries → no feedback to improve from
+        if not feedback:
+            # No failures to learn from
             iteration_results.append(IterationResult(
                 query_id=holdout_query.id,
-                initial_passed=initial_passed_this,
-                improved_passed=initial_passed_this,
+                initial_passed=initial_results[holdout_idx].passed,
+                improved_passed=initial_results[holdout_idx].passed,
                 improvement="unchanged",
             ))
-            print(f"  {holdout_query.id}: No failures in other queries, skipping")
+            print(f"  {holdout_query.id}: No feedback, skipping improvement")
             continue
 
-        # Improve BASE program (program_code) using skill
-        # CRITICAL: Always start from same base, never chain improvements
+        # Improve program
         try:
-            response = improve_program(
-                skill_instructions, program_code, failures, successes, sample.is_agent
-            )
+            response = improve_program(skill_instructions, program_code, feedback, sample.is_agent)
             improved_code = response.parse().code
         except Exception as e:
             print(f"  {holdout_query.id}: Improvement failed: {e}")
             iteration_results.append(IterationResult(
                 query_id=holdout_query.id,
-                initial_passed=initial_passed_this,
-                improved_passed=initial_passed_this,
+                initial_passed=initial_results[holdout_idx].passed,
+                improved_passed=initial_results[holdout_idx].passed,
                 improvement="unchanged",
             ))
             continue
 
-        # Save improved program for this holdout
+        # Save improved program
         improved_path = output_dir / f"program_v1_holdout_{holdout_query.id}.py"
         improved_path.write_text(improved_code)
 
@@ -639,38 +595,33 @@ def run_full_eval(sample_path: Path, output_dir: Path) -> EvalReport:
             print(f"  {holdout_query.id}: Improved program invalid: {error}")
             iteration_results.append(IterationResult(
                 query_id=holdout_query.id,
-                initial_passed=initial_passed_this,
+                initial_passed=initial_results[holdout_idx].passed,
                 improved_passed=False,
-                improvement="regressed" if initial_passed_this else "unchanged",
+                improvement="regressed" if initial_results[holdout_idx].passed else "unchanged",
             ))
             continue
 
-        # Run ONLY the holdout query on improved program
+        # Run holdout query on improved program
         improved_schema = get_schema(improved_path)
-        holdout_sample = EvalSample(
+        holdout_results = run_queries(improved_path, EvalSample(
             skill_type=sample.skill_type,
             sample_id=sample.sample_id,
             bootstrap=sample.bootstrap,
             test_state=sample.test_state,
             queries=[holdout_query],
-        )
-        holdout_results = run_queries(improved_path, holdout_sample, improved_schema)
-        
-        improved_passed = holdout_results[0].passed if holdout_results else False
+        ), improved_schema)
 
-        # Determine improvement status
+        improved_passed = holdout_results[0].passed if holdout_results else False
+        initial_passed_this = initial_results[holdout_idx].passed
+
         if initial_passed_this and improved_passed:
             improvement = "unchanged"
-            print(f"  {holdout_query.id}: - unchanged (still passing)")
         elif not initial_passed_this and improved_passed:
             improvement = "fixed"
-            print(f"  {holdout_query.id}: ✓ FIXED")
         elif initial_passed_this and not improved_passed:
             improvement = "regressed"
-            print(f"  {holdout_query.id}: ✗ REGRESSED")
         else:
             improvement = "unchanged"
-            print(f"  {holdout_query.id}: - unchanged (still failing)")
 
         iteration_results.append(IterationResult(
             query_id=holdout_query.id,
@@ -678,6 +629,9 @@ def run_full_eval(sample_path: Path, output_dir: Path) -> EvalReport:
             improved_passed=improved_passed,
             improvement=improvement,
         ))
+
+        status = {"fixed": "✓ FIXED", "regressed": "✗ REGRESSED", "unchanged": "- unchanged"}[improvement]
+        print(f"  {holdout_query.id}: {status}")
 
     # -------------------------------------------------------------------------
     # Phase 4: Report
