@@ -1,0 +1,52 @@
+---
+title: What is a Claw?
+description: Understanding persistent AI agents — memory, identity, channels, and what makes Claws different
+---
+
+# What is a Claw?
+
+A Claw is a persistent AI agent that maintains identity, memory, and presence across conversations and platforms.
+
+Most AI interactions are stateless — you open a chat, get a response, and everything is forgotten. Claws are different. They wake up each session, read their files, and reconstruct who they are and what's been happening. Over days and weeks, they accumulate context that makes them genuinely useful.
+
+## Identity
+
+Every Claw starts with a `SOUL.md` — a free-form markdown file that defines its personality, values, communication style, and expertise. This isn't a system prompt buried in an API call; it's a readable document that shapes every interaction.
+
+`AGENTS.md` complements this with behavioral instructions: what to do at session start, safety rules, when to speak in group chats, how to handle sub-agents. Together, these files make the Claw's behavior consistent and predictable — without being rigid.
+
+## Memory
+
+Claws remember things by writing them down.
+
+- **Daily files** (`memory/YYYY-MM-DD.md`) capture what happens in real time — decisions, conversations, tasks completed
+- **Long-term memory** (`MEMORY.md`) holds curated insights — preferences, project context, lessons learned
+- **Semantic search** lets the Claw find relevant memories by meaning, not just keywords
+
+When the context window fills up, the Claw saves important information to files before compaction. This means continuity doesn't depend on context length — it depends on what the Claw chose to write down.
+
+## Channels
+
+A single Claw connects to multiple messaging platforms simultaneously through the OpenClaw gateway. Discord, Telegram, WhatsApp, Signal, Slack, iMessage — the same agent, the same memory, regardless of where the message arrives.
+
+Each platform conversation gets its own session context, but memory is shared. Your Claw knows what happened on Discord when you message it on Telegram.
+
+## Skills & Tools
+
+Skills are modular capabilities you add to your Claw's workspace. Install a weather skill, and your Claw can check the forecast. Install a GitHub skill, and it can review PRs. Skills are plain directories with a `SKILL.md` that teaches the Claw how to use them.
+
+Under the hood, Claws have access to powerful built-in tools: shell execution, browser automation, web search, messaging, cron scheduling, sub-agent spawning, and more.
+
+## What Makes This Different
+
+**From chatbots:** Claws accumulate context over time. A chatbot gives you the same response whether it's your first conversation or your hundredth. A Claw remembers your preferences, your projects, and your communication style.
+
+**From agent frameworks:** Claws are opinionated about identity and memory. Most frameworks give you building blocks — Claws give you a complete system for persistent agents with files, channels, and tools that work out of the box.
+
+**From hosted AI assistants:** Claws are open source. Whether you deploy to Mirascope Cloud or self-host, your data lives in plain files and you always own your agent's identity, memory, and configuration. You can export and migrate at any time.
+
+## The Stack
+
+Claws run on [OpenClaw](https://github.com/openclaw/openclaw) (open source gateway) and can be deployed to **Mirascope Cloud** (managed hosting) or self-hosted anywhere. The **Mirascope SDK** (Python + TypeScript) provides the underlying LLM toolkit — provider-agnostic calls, structured output, tracing, and observability.
+
+Ready to build one? Start with the [Quickstart](/docs/quickstart).
