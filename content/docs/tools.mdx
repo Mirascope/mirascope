@@ -1,14 +1,294 @@
 ---
 title: Tools
-description: Built-in and custom tools for claws
+description: Built-in tools available to claws
 ---
 
 # Tools
 
-Claws come with built-in tools and support custom tool definitions.
+Every claw has access to a set of **built-in tools** that let it interact with files, the web, devices, and more. Tools are the primary way claws take action in the world — from editing code to browsing the web to sending messages.
 
-{/* TODO: Built-in tools (exec, browser, web, messaging, cron), custom tools, TOOLS.md */}
+## Tool Categories
 
-<Info>
-This page is under construction. Check back soon for the full tools guide.
-</Info>
+| Category | Tools | Description |
+|----------|-------|-------------|
+| **File System** | `read`, `write`, `edit` | Read, create, and make precise edits to files in the workspace |
+| **Runtime** | `exec`, `process` | Run shell commands and manage background sessions |
+| **Browser** | `browser` | Control a web browser — navigate, click, type, screenshot, take snapshots |
+| **Web** | `web_search`, `web_fetch` | Search the web (Brave Search API) and fetch URL content as markdown |
+| **Messaging** | `message` | Send messages to channels (Discord, Telegram, etc.), manage threads, reactions, polls |
+| **Sessions** | `sessions_list`, `sessions_history`, `sessions_send`, `sessions_spawn`, `session_status` | Manage sub-agents and inspect session state |
+| **Memory** | `memory_search`, `memory_get` | Semantic vector search over memory files and read memory snippets |
+| **Cron** | `cron` | Schedule jobs, reminders, and recurring tasks |
+| **Nodes** | `nodes` | Control paired devices — phone camera, screen recording, location |
+| **Canvas** | `canvas` | Present web content to users in an interactive panel |
+| **Image** | `image` | Analyze images with vision models |
+| **TTS** | `tts` | Convert text to speech |
+| **Gateway** | `gateway` | Restart, configure, and update the gateway |
+
+## File System
+
+The file system tools (`read`, `write`, `edit`) operate within the claw's workspace directory. These are the most commonly used tools for any coding or writing task.
+
+- **read** — Read file contents, including images. Supports offset/limit for large files.
+- **write** — Create or overwrite files. Automatically creates parent directories.
+- **edit** — Make precise, surgical edits by replacing exact text matches. Preferred over `write` for modifying existing files since it preserves surrounding content.
+
+## Runtime
+
+### exec
+
+The `exec` tool runs shell commands and is one of the most powerful tools available. It supports:
+
+- **Standard execution** — Run any shell command and get the output
+- **Background mode** — Start long-running processes that continue in the background
+- **PTY mode** — Run interactive terminal UIs and CLIs that require a TTY
+- **Timeouts** — Automatically kill processes that run too long
+
+### process
+
+The `process` tool manages running background sessions started by `exec`. You can:
+
+- **list** — See all running sessions
+- **poll** — Check if a session is still running
+- **log** — Read stdout/stderr output
+- **write** — Send input to stdin
+- **send-keys** — Send keyboard input (for PTY sessions)
+- **kill** — Terminate a session
+
+### Exec Approval Modes
+
+By default, exec requires user approval for potentially dangerous commands. You can configure this behavior:
+
+| Mode | Behavior |
+|------|----------|
+| `ask` | Prompt for approval on unrecognized commands (default) |
+| `allowlist` | Auto-approve commands matching an allowlist, deny others |
+| `full` | Auto-approve all commands |
+
+Configure in your gateway config:
+
+```json
+{
+  "tools": {
+    "exec": {
+      "security": "allowlist"
+    }
+  }
+}
+```
+
+## Browser
+
+The `browser` tool provides full web browser automation. Claws can:
+
+- **Navigate** to URLs
+- **Take snapshots** — Get an accessible tree representation of the page (efficient for understanding page structure)
+- **Take screenshots** — Capture visual screenshots as images
+- **Interact** — Click elements, type text, fill forms, press keys, hover, drag, and select
+- **Run JavaScript** — Evaluate scripts in the page context
+
+The browser supports multiple profiles, including connecting to your existing Chrome tabs via the Browser Relay extension.
+
+## Web
+
+- **web_search** — Search the web using the Brave Search API. Supports region-specific and localized search. Returns titles, URLs, and snippets.
+- **web_fetch** — Fetch a URL and extract readable content as markdown or plain text. Useful for reading documentation, articles, and web pages without full browser automation.
+
+## Messaging
+
+The `message` tool lets claws communicate across platforms. Supported actions include:
+
+- **send** / **broadcast** — Send messages to channels or users
+- **thread-create** / **thread-reply** — Manage threaded conversations
+- **react** / **poll** — Add emoji reactions or create polls
+- **search** — Search message history
+- **channel-list** / **channel-create** / **channel-edit** — Manage channels
+- **pin** / **unpin** — Pin important messages
+
+Available platforms depend on your gateway configuration (Discord, Telegram, Slack, etc.).
+
+## Sessions (Sub-Agents)
+
+Claws can spawn **sub-agents** to handle tasks in parallel:
+
+- **sessions_spawn** — Create a new sub-agent session with a specific task. Sub-agents run independently and report back when complete.
+- **sessions_list** — List all active sessions
+- **sessions_history** — View conversation history of a session
+- **sessions_send** — Send a message to an existing session
+- **session_status** — Check current session info (time, model, channel)
+
+Sub-agents are ideal for:
+- Long-running coding tasks that would block conversation
+- Parallel workstreams (e.g., multiple PRs at once)
+- Background research while the main session stays responsive
+
+## Memory
+
+The memory tools provide **semantic search** over the claw's memory files:
+
+- **memory_search** — Vector search across memory files. Find relevant context by meaning, not just keywords.
+- **memory_get** — Read specific memory snippets by ID.
+
+Memory files include daily logs (`memory/YYYY-MM-DD.md`), long-term memory (`MEMORY.md`), and any other files in the workspace. See the [Memory](/docs/memory) guide for details.
+
+## Cron
+
+The `cron` tool schedules jobs to run at specific times or intervals:
+
+- **One-shot reminders** — "Remind me in 20 minutes"
+- **Recurring tasks** — "Check email every morning at 9 AM"
+- **Scheduled jobs** — Run specific prompts on a cron schedule
+
+Each cron job runs in its own session, independent of the main conversation.
+
+## Nodes
+
+The `nodes` tool controls **paired devices** (phones, tablets, other computers):
+
+- **camera_snap** / **camera_clip** — Take photos or video clips from device cameras
+- **screen_record** — Record the device screen
+- **location_get** — Get the device's current location
+- **run** — Execute commands on the device
+- **notify** — Send notifications to the device
+
+## Tool Policies
+
+Tool policies control which tools are available to a claw. Configure them in your Claw's settings:
+
+### Allow / Deny Lists
+
+```json
+{
+  "tools": {
+    "deny": ["browser", "nodes"]
+  }
+}
+```
+
+Deny always wins over allow. Wildcards (`"*"`) are supported.
+
+### Tool Profiles
+
+Profiles are preset allowlists for common use cases:
+
+| Profile | Tools Included |
+|---------|---------------|
+| `minimal` | `session_status` only |
+| `coding` | File system, runtime, sessions, memory, image |
+| `messaging` | Messaging, sessions (list, history, send), session_status |
+| `full` | All tools enabled (default) |
+
+```json
+{
+  "tools": {
+    "profile": "coding"
+  }
+}
+```
+
+### Per-Agent Overrides
+
+In multi-agent setups, different agents can have different tool access:
+
+```json
+{
+  "tools": {
+    "profile": "coding"
+  },
+  "agents": {
+    "list": [
+      {
+        "id": "support",
+        "tools": {
+          "profile": "messaging",
+          "allow": ["web_search"]
+        }
+      }
+    ]
+  }
+}
+```
+
+## Building Custom Tools
+
+Claws can create their own tools — including **AI-powered tools** built with Mirascope. This is one of the most powerful patterns: a claw that can extend its own capabilities by writing new programs.
+
+### The Pattern
+
+A claw generates a self-contained Python program using [Mirascope](https://mirascope.com/docs/sdk) and runs it via the `exec` tool. Each program follows a standard structure:
+
+Here's a real example — an invoice generator that uses an LLM to handle calculation and formatting:
+
+```python
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["mirascope[all]", "pydantic"]
+# ///
+"""Generates formatted invoices with line items and tax calculation."""
+from pydantic import BaseModel, Field
+from mirascope import llm, ops
+
+ops.configure()
+ops.instrument_llm()
+
+
+class LineItem(BaseModel):
+    description: str
+    hours: float
+    hourly_rate: float
+
+
+class ProgramInput(BaseModel):
+    invoice_number: str
+    client_name: str
+    line_items: list[LineItem]
+    tax_rate: float | None = None
+
+
+class ProgramOutput(BaseModel):
+    subtotal: float
+    tax_amount: float | None
+    total: float
+    formatted_invoice: str
+
+
+@ops.trace(tags=["invoice-generator"])
+@llm.call("anthropic/claude-sonnet-4-5", format=ProgramOutput)
+def generate_invoice(input_data: ProgramInput) -> str:
+    return f"""Generate invoice for {input_data.client_name}
+Items: {input_data.line_items}
+Tax rate: {input_data.tax_rate}
+Calculate subtotals, tax, total. Return formatted invoice."""
+```
+
+Key ingredients:
+
+- **PEP 723 inline dependencies** — No separate `requirements.txt` needed. `uv run` resolves deps automatically.
+- **`@llm.call`** — Mirascope's decorator for LLM interactions. Handles model routing, structured output, retries, and more.
+- **`ops.configure()` + `ops.instrument_llm()`** — Automatic tracing to Mirascope Cloud. Every LLM call is logged with cost, latency, and input/output.
+- **Typed I/O** — Pydantic models for structured input and output, so the claw gets reliable, parseable results.
+
+### How Claws Use Custom Tools
+
+Once a claw writes a program, it invokes it like any other command:
+
+```bash
+uv run invoice.py --schema                    # see input/output structure
+uv run invoice.py --input '{"invoice_number": "INV-001", "client_name": "Acme", "line_items": [{"description": "Consulting", "hours": 10, "hourly_rate": 150}], "tax_rate": 0.08}'
+```
+
+The claw can:
+
+1. **Generate new tools on demand** — Need a capability? Write a program for it.
+2. **Package tools as skills** — Wrap frequently-used tools into a [skill](/docs/skills) so they persist across sessions.
+3. **Trace everything** — All LLM calls inside custom tools appear in Mirascope Cloud, giving you full observability over what your claw builds and runs.
+
+### Why Mirascope?
+
+Building tools with Mirascope gives claws access to the full SDK — structured outputs, streaming, tool use within tools, multi-provider model routing, and automatic observability. A claw can build a tool that itself uses AI, creating layered intelligence where your claw orchestrates specialized sub-tasks.
+
+For the full SDK documentation, see the [Mirascope SDK](/docs/sdk) section.
+
+## TOOLS.md
+
+Each claw has a `TOOLS.md` file in its workspace for storing local notes about tool usage — API keys, device names, project-specific commands, and other configuration that helps the claw use its tools effectively. This file is maintained by the claw itself and loaded at the start of each session.
