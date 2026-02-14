@@ -15,7 +15,7 @@ context:
       notes: "Initial consultation"
 
 queries:
-  - input: "Move Charlie's appointment from 10am to 3pm"
+  - input: "Move Charlie's appointment tomorrow from 10am to 3pm"
     expected:
       tool_sequence:
         - list_appointments   # Find Charlie's appointment

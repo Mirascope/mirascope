@@ -1,0 +1,1030 @@
+[
+  {
+    "sample": "sample_001.yaml",
+    "name": "ambiguous_request",
+    "results": [
+      {
+        "input": "Can you squeeze me in tomorrow afternoon? It's for a quick chat with Sarah (sarah@example.com)",
+        "response": "Great news! I have several available slots tomorrow afternoon. Here are your options:\n\n**Available times on February 16th:**\n- 12:00 PM - 12:30 PM\n- 12:30 PM - 1:00 PM  \n- 1:00 PM - 1:30 PM\n- 1:30 PM - 2:00 PM\n- 3:00 PM - 3:30 PM\n- 3:30 PM - 4:00 PM\n- 4:00 PM - 4:30 PM\n- 4:30 PM - 5:00 PM\n\nWhich time works best for your quick chat with Sarah? Once you let me know your preferred time slot, I'll book it for you and send a confirmation email.",
+        "tool_calls": [
+          {
+            "tool": "check_availability",
+            "args": {
+              "date": "2025-02-16",
+              "start_hour": 12,
+              "end_hour": 17
+            },
+            "result": [
+              {
+                "start": "2025-02-16T12:00:00",
+                "end": "2025-02-16T12:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T12:30:00",
+                "end": "2025-02-16T13:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T13:00:00",
+                "end": "2025-02-16T13:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T13:30:00",
+                "end": "2025-02-16T14:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T14:00:00",
+                "end": "2025-02-16T14:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-16T14:30:00",
+                "end": "2025-02-16T15:00:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-16T15:00:00",
+                "end": "2025-02-16T15:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T15:30:00",
+                "end": "2025-02-16T16:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T16:00:00",
+                "end": "2025-02-16T16:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T16:30:00",
+                "end": "2025-02-16T17:00:00",
+                "available": true
+              }
+            ]
+          }
+        ],
+        "passed": [
+          "tool_called:check_availability",
+          "response_contains:afternoon"
+        ],
+        "failed": [],
+        "success": true
+      }
+    ],
+    "all_passed": true
+  },
+  {
+    "sample": "sample_001.yaml",
+    "name": "availability_check",
+    "results": [
+      {
+        "input": "What times are available on Monday?",
+        "response": "Here are the available time slots for Monday, February 17th, 2025:\n\n**Available Times:**\n- 10:00 AM - 10:30 AM\n- 10:30 AM - 11:00 AM\n- 11:00 AM - 11:30 AM\n- 11:30 AM - 12:00 PM\n- 12:00 PM - 12:30 PM\n- 12:30 PM - 1:00 PM\n- 1:00 PM - 1:30 PM\n- 1:30 PM - 2:00 PM\n- 3:30 PM - 4:00 PM\n- 4:00 PM - 4:30 PM\n- 4:30 PM - 5:00 PM\n\nThe following times are already booked:\n- 9:00 AM - 10:00 AM\n- 2:00 PM - 3:30 PM\n\nWould you like to book any of these available time slots?",
+        "tool_calls": [
+          {
+            "tool": "check_availability",
+            "args": {
+              "date": "2025-02-17"
+            },
+            "result": [
+              {
+                "start": "2025-02-17T09:00:00",
+                "end": "2025-02-17T09:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T09:30:00",
+                "end": "2025-02-17T10:00:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T10:00:00",
+                "end": "2025-02-17T10:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T10:30:00",
+                "end": "2025-02-17T11:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T11:00:00",
+                "end": "2025-02-17T11:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T11:30:00",
+                "end": "2025-02-17T12:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T12:00:00",
+                "end": "2025-02-17T12:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T12:30:00",
+                "end": "2025-02-17T13:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T13:00:00",
+                "end": "2025-02-17T13:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T13:30:00",
+                "end": "2025-02-17T14:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T14:00:00",
+                "end": "2025-02-17T14:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T14:30:00",
+                "end": "2025-02-17T15:00:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T15:00:00",
+                "end": "2025-02-17T15:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T15:30:00",
+                "end": "2025-02-17T16:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T16:00:00",
+                "end": "2025-02-17T16:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T16:30:00",
+                "end": "2025-02-17T17:00:00",
+                "available": true
+              }
+            ]
+          }
+        ],
+        "passed": [
+          "tool_called:check_availability",
+          "tool_not_called:book_appointment",
+          "response_contains:available"
+        ],
+        "failed": [],
+        "success": true
+      }
+    ],
+    "all_passed": true
+  },
+  {
+    "sample": "sample_001.yaml",
+    "name": "cancellation",
+    "results": [
+      {
+        "input": "Cancel Eve's appointment",
+        "response": "Eve's appointment has been successfully cancelled. The appointment that was scheduled for February 16th at 11:00 AM (Follow-up call) has been removed from the calendar.",
+        "tool_calls": [
+          {
+            "tool": "list_appointments",
+            "args": {},
+            "result": [
+              {
+                "id": "apt_0001",
+                "client_name": "Eve Wilson",
+                "client_email": "eve@example.com",
+                "start": "2025-02-16T11:00:00",
+                "end": "2025-02-16T11:30:00",
+                "notes": "Follow-up call"
+              },
+              {
+                "id": "apt_0002",
+                "client_name": "Frank Miller",
+                "client_email": "frank@example.com",
+                "start": "2025-02-16T14:00:00",
+                "end": "2025-02-16T15:00:00",
+                "notes": null
+              }
+            ]
+          },
+          {
+            "tool": "cancel_appointment",
+            "args": {
+              "appointment_id": "apt_0001"
+            },
+            "result": "Cancelled appointment with Eve Wilson on February 16 at 11:00 AM"
+          }
+        ],
+        "passed": [
+          "tool_called:cancel_appointment",
+          "response_contains:cancel"
+        ],
+        "failed": [],
+        "success": true
+      }
+    ],
+    "all_passed": true
+  },
+  {
+    "sample": "sample_001.yaml",
+    "name": "conflict_handling",
+    "results": [
+      {
+        "input": "I need to book Bob Wilson (bob@example.com) for 2:30pm tomorrow",
+        "response": "I see that the 2:30pm slot (14:30) is not available tomorrow. However, I have several alternative times available:\n\n**Available times near your requested slot:**\n- 1:30pm - 2:00pm\n- 3:00pm - 3:30pm  \n- 3:30pm - 4:00pm\n- 4:00pm - 4:30pm\n- 4:30pm - 5:00pm\n\n**Earlier options also available:**\n- 9:00am - 1:30pm (various 30-minute slots)\n\nWould you like me to book Bob Wilson for one of these alternative times instead? Please let me know which time works best.",
+        "tool_calls": [
+          {
+            "tool": "check_availability",
+            "args": {
+              "date": "2025-02-16"
+            },
+            "result": [
+              {
+                "start": "2025-02-16T09:00:00",
+                "end": "2025-02-16T09:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T09:30:00",
+                "end": "2025-02-16T10:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T10:00:00",
+                "end": "2025-02-16T10:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T10:30:00",
+                "end": "2025-02-16T11:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T11:00:00",
+                "end": "2025-02-16T11:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T11:30:00",
+                "end": "2025-02-16T12:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T12:00:00",
+                "end": "2025-02-16T12:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T12:30:00",
+                "end": "2025-02-16T13:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T13:00:00",
+                "end": "2025-02-16T13:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T13:30:00",
+                "end": "2025-02-16T14:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T14:00:00",
+                "end": "2025-02-16T14:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-16T14:30:00",
+                "end": "2025-02-16T15:00:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-16T15:00:00",
+                "end": "2025-02-16T15:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T15:30:00",
+                "end": "2025-02-16T16:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T16:00:00",
+                "end": "2025-02-16T16:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T16:30:00",
+                "end": "2025-02-16T17:00:00",
+                "available": true
+              }
+            ]
+          }
+        ],
+        "passed": [
+          "tool_called:check_availability",
+          "response_contains:available"
+        ],
+        "failed": [],
+        "success": true
+      }
+    ],
+    "all_passed": true
+  },
+  {
+    "sample": "sample_001.yaml",
+    "name": "constraint_conflict",
+    "results": [
+      {
+        "input": "I need a 2-hour meeting with the design team (design@example.com) on Monday",
+        "response": "I can see the availability for Monday, February 17th. For a 2-hour meeting, I need to find 4 consecutive 30-minute slots that are available. Looking at the schedule, I don't see any blocks of 4 consecutive available slots.\n\nThe available time slots are:\n- 9:30 AM (single 30-minute slot)\n- 11:30 AM (single 30-minute slot)  \n- 1:00 PM (single 30-minute slot)\n- 3:00 PM (single 30-minute slot)\n- 4:30 PM (single 30-minute slot)\n\nUnfortunately, there aren't any 2-hour blocks available on Monday. Would you like me to:\n\n1. Check availability for Tuesday (February 18th) or another day?\n2. Book a shorter meeting (like 1 hour) on Monday?\n3. Look at extending business hours if that's possible?\n\nAlso, I'll need your name to complete the booking once we find a suitable time slot.",
+        "tool_calls": [
+          {
+            "tool": "check_availability",
+            "args": {
+              "date": "2025-02-17"
+            },
+            "result": [
+              {
+                "start": "2025-02-17T09:00:00",
+                "end": "2025-02-17T09:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T09:30:00",
+                "end": "2025-02-17T10:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T10:00:00",
+                "end": "2025-02-17T10:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T10:30:00",
+                "end": "2025-02-17T11:00:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T11:00:00",
+                "end": "2025-02-17T11:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T11:30:00",
+                "end": "2025-02-17T12:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T12:00:00",
+                "end": "2025-02-17T12:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T12:30:00",
+                "end": "2025-02-17T13:00:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T13:00:00",
+                "end": "2025-02-17T13:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T13:30:00",
+                "end": "2025-02-17T14:00:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T14:00:00",
+                "end": "2025-02-17T14:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T14:30:00",
+                "end": "2025-02-17T15:00:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T15:00:00",
+                "end": "2025-02-17T15:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T15:30:00",
+                "end": "2025-02-17T16:00:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T16:00:00",
+                "end": "2025-02-17T16:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T16:30:00",
+                "end": "2025-02-17T17:00:00",
+                "available": true
+              }
+            ]
+          }
+        ],
+        "passed": [
+          "tool_called:check_availability",
+          "response_contains:available"
+        ],
+        "failed": [],
+        "success": true
+      }
+    ],
+    "all_passed": true
+  },
+  {
+    "sample": "sample_001.yaml",
+    "name": "error_recovery",
+    "results": [
+      {
+        "input": "Book a meeting with Alex (alex@example.com) tomorrow at 2pm",
+        "response": "I see that the 2:00 PM slot (14:00-14:30) is not available tomorrow. However, I have several alternative time slots available:\n\n**Available times near 2:00 PM:**\n- 1:30 PM - 2:00 PM (13:30-14:00)\n- 2:30 PM - 3:00 PM (14:30-15:00)\n- 3:00 PM - 3:30 PM (15:00-15:30)\n- 3:30 PM - 4:00 PM (15:30-16:00)\n- 4:00 PM - 4:30 PM (16:00-16:30)\n- 4:30 PM - 5:00 PM (16:30-17:00)\n\nWould you like me to book one of these alternative times instead? Please let me know which time works best for your meeting with Alex.",
+        "tool_calls": [
+          {
+            "tool": "check_availability",
+            "args": {
+              "date": "2025-02-16"
+            },
+            "result": [
+              {
+                "start": "2025-02-16T09:00:00",
+                "end": "2025-02-16T09:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T09:30:00",
+                "end": "2025-02-16T10:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T10:00:00",
+                "end": "2025-02-16T10:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T10:30:00",
+                "end": "2025-02-16T11:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T11:00:00",
+                "end": "2025-02-16T11:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T11:30:00",
+                "end": "2025-02-16T12:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T12:00:00",
+                "end": "2025-02-16T12:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T12:30:00",
+                "end": "2025-02-16T13:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T13:00:00",
+                "end": "2025-02-16T13:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T13:30:00",
+                "end": "2025-02-16T14:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T14:00:00",
+                "end": "2025-02-16T14:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-16T14:30:00",
+                "end": "2025-02-16T15:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T15:00:00",
+                "end": "2025-02-16T15:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T15:30:00",
+                "end": "2025-02-16T16:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T16:00:00",
+                "end": "2025-02-16T16:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T16:30:00",
+                "end": "2025-02-16T17:00:00",
+                "available": true
+              }
+            ]
+          }
+        ],
+        "passed": [],
+        "failed": [
+          "tool_called:book_appointment (not called)",
+          "response_contains:conflict"
+        ],
+        "success": false
+      }
+    ],
+    "all_passed": false
+  },
+  {
+    "sample": "sample_001.yaml",
+    "name": "invalid_request",
+    "results": [
+      {
+        "input": "Book a meeting with night-owl@example.com at 3am tomorrow",
+        "response": "Great! The 3:00 AM slot is available. However, to book the appointment, I need the client's name. Could you please provide the name of the person I should book this meeting for?\n\nOnce you give me the name, I'll book the meeting with:\n- Email: night-owl@example.com\n- Date/Time: February 16th, 2025 at 3:00 AM\n- Duration: 30 minutes (default)",
+        "tool_calls": [
+          {
+            "tool": "check_availability",
+            "args": {
+              "date": "2025-02-16",
+              "start_hour": 0,
+              "end_hour": 6
+            },
+            "result": [
+              {
+                "start": "2025-02-16T00:00:00",
+                "end": "2025-02-16T00:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T00:30:00",
+                "end": "2025-02-16T01:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T01:00:00",
+                "end": "2025-02-16T01:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T01:30:00",
+                "end": "2025-02-16T02:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T02:00:00",
+                "end": "2025-02-16T02:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T02:30:00",
+                "end": "2025-02-16T03:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T03:00:00",
+                "end": "2025-02-16T03:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T03:30:00",
+                "end": "2025-02-16T04:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T04:00:00",
+                "end": "2025-02-16T04:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T04:30:00",
+                "end": "2025-02-16T05:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T05:00:00",
+                "end": "2025-02-16T05:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T05:30:00",
+                "end": "2025-02-16T06:00:00",
+                "available": true
+              }
+            ]
+          }
+        ],
+        "passed": [],
+        "failed": [
+          "response_contains:hour"
+        ],
+        "success": false
+      }
+    ],
+    "all_passed": false
+  },
+  {
+    "sample": "sample_001.yaml",
+    "name": "multi_party_coordination",
+    "results": [
+      {
+        "input": "I need to schedule a meeting with both Alice and Bob on Monday, February 17th. When are they both free?",
+        "response": "Based on the availability check for Monday, February 17th, 2025, here are the available time slots where you could schedule a meeting with Alice and Bob:\n\n**Available Times:**\n- 12:00 PM - 12:30 PM\n- 12:30 PM - 1:00 PM  \n- 1:00 PM - 1:30 PM\n- 1:30 PM - 2:00 PM\n- 4:00 PM - 4:30 PM\n- 4:30 PM - 5:00 PM\n\nThe longest continuous block of availability is from **12:00 PM to 2:00 PM** (2 hours), which would be ideal for a meeting. You also have two 30-minute slots available later in the day from 4:00-5:00 PM.\n\nWould you like me to book one of these time slots? If so, please let me know:\n1. Which time slot you prefer\n2. Alice's email address\n3. Bob's email address\n4. How long you'd like the meeting to be\n5. Any notes about the meeting",
+        "tool_calls": [
+          {
+            "tool": "check_availability",
+            "args": {
+              "date": "2025-02-17"
+            },
+            "result": [
+              {
+                "start": "2025-02-17T09:00:00",
+                "end": "2025-02-17T09:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T09:30:00",
+                "end": "2025-02-17T10:00:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T10:00:00",
+                "end": "2025-02-17T10:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T10:30:00",
+                "end": "2025-02-17T11:00:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T11:00:00",
+                "end": "2025-02-17T11:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T11:30:00",
+                "end": "2025-02-17T12:00:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T12:00:00",
+                "end": "2025-02-17T12:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T12:30:00",
+                "end": "2025-02-17T13:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T13:00:00",
+                "end": "2025-02-17T13:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T13:30:00",
+                "end": "2025-02-17T14:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T14:00:00",
+                "end": "2025-02-17T14:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T14:30:00",
+                "end": "2025-02-17T15:00:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T15:00:00",
+                "end": "2025-02-17T15:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T15:30:00",
+                "end": "2025-02-17T16:00:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-17T16:00:00",
+                "end": "2025-02-17T16:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-17T16:30:00",
+                "end": "2025-02-17T17:00:00",
+                "available": true
+              }
+            ]
+          }
+        ],
+        "passed": [
+          "tool_called:check_availability",
+          "response_contains:12",
+          "response_contains:available"
+        ],
+        "failed": [],
+        "success": true
+      }
+    ],
+    "all_passed": true
+  },
+  {
+    "sample": "sample_001.yaml",
+    "name": "reschedule",
+    "results": [
+      {
+        "input": "Move Charlie's appointment tomorrow from 10am to 3pm",
+        "response": "All done! I've successfully moved Charlie Brown's appointment from tomorrow (February 16th) at 10:00 AM to 3:00 PM. The appointment details are:\n\n- **Client:** Charlie Brown\n- **New Date & Time:** February 16, 2025 at 3:00 PM - 3:30 PM\n- **Notes:** Initial consultation\n\nA confirmation email has been sent to Charlie at charlie@example.com notifying him of the schedule change.",
+        "tool_calls": [
+          {
+            "tool": "list_appointments",
+            "args": {
+              "date": "2025-02-16"
+            },
+            "result": [
+              {
+                "id": "apt_0001",
+                "client_name": "Charlie Brown",
+                "client_email": "charlie@example.com",
+                "start": "2025-02-16T10:00:00",
+                "end": "2025-02-16T10:30:00",
+                "notes": "Initial consultation"
+              }
+            ]
+          },
+          {
+            "tool": "check_availability",
+            "args": {
+              "date": "2025-02-16"
+            },
+            "result": [
+              {
+                "start": "2025-02-16T09:00:00",
+                "end": "2025-02-16T09:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T09:30:00",
+                "end": "2025-02-16T10:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T10:00:00",
+                "end": "2025-02-16T10:30:00",
+                "available": false
+              },
+              {
+                "start": "2025-02-16T10:30:00",
+                "end": "2025-02-16T11:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T11:00:00",
+                "end": "2025-02-16T11:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T11:30:00",
+                "end": "2025-02-16T12:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T12:00:00",
+                "end": "2025-02-16T12:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T12:30:00",
+                "end": "2025-02-16T13:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T13:00:00",
+                "end": "2025-02-16T13:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T13:30:00",
+                "end": "2025-02-16T14:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T14:00:00",
+                "end": "2025-02-16T14:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T14:30:00",
+                "end": "2025-02-16T15:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T15:00:00",
+                "end": "2025-02-16T15:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T15:30:00",
+                "end": "2025-02-16T16:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T16:00:00",
+                "end": "2025-02-16T16:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T16:30:00",
+                "end": "2025-02-16T17:00:00",
+                "available": true
+              }
+            ]
+          },
+          {
+            "tool": "reschedule_appointment",
+            "args": {
+              "appointment_id": "apt_0001",
+              "new_start_time": "2025-02-16T15:00:00"
+            },
+            "result": {
+              "id": "apt_0001",
+              "client_name": "Charlie Brown",
+              "client_email": "charlie@example.com",
+              "start": "2025-02-16T15:00:00",
+              "end": "2025-02-16T15:30:00",
+              "notes": "Initial consultation"
+            }
+          },
+          {
+            "tool": "send_confirmation",
+            "args": {
+              "appointment_id": "apt_0001"
+            },
+            "result": "Confirmation sent to charlie@example.com for February 16 at 03:00 PM"
+          }
+        ],
+        "passed": [
+          "tool_called:reschedule_appointment",
+          "response_contains:3"
+        ],
+        "failed": [],
+        "success": true
+      }
+    ],
+    "all_passed": true
+  },
+  {
+    "sample": "sample_001.yaml",
+    "name": "simple_booking",
+    "results": [
+      {
+        "input": "Book a meeting with John Smith (john@example.com) tomorrow at 2pm for 30 minutes",
+        "response": "\u2705 **Meeting successfully booked!**\n\n**Details:**\n- **Client:** John Smith (john@example.com)\n- **Date:** February 16, 2025\n- **Time:** 2:00 PM - 2:30 PM (30 minutes)\n- **Appointment ID:** apt_0001\n\nA confirmation email has been sent to John Smith at john@example.com. The meeting is all set!",
+        "tool_calls": [
+          {
+            "tool": "check_availability",
+            "args": {
+              "date": "2025-02-16"
+            },
+            "result": [
+              {
+                "start": "2025-02-16T09:00:00",
+                "end": "2025-02-16T09:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T09:30:00",
+                "end": "2025-02-16T10:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T10:00:00",
+                "end": "2025-02-16T10:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T10:30:00",
+                "end": "2025-02-16T11:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T11:00:00",
+                "end": "2025-02-16T11:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T11:30:00",
+                "end": "2025-02-16T12:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T12:00:00",
+                "end": "2025-02-16T12:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T12:30:00",
+                "end": "2025-02-16T13:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T13:00:00",
+                "end": "2025-02-16T13:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T13:30:00",
+                "end": "2025-02-16T14:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T14:00:00",
+                "end": "2025-02-16T14:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T14:30:00",
+                "end": "2025-02-16T15:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T15:00:00",
+                "end": "2025-02-16T15:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T15:30:00",
+                "end": "2025-02-16T16:00:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T16:00:00",
+                "end": "2025-02-16T16:30:00",
+                "available": true
+              },
+              {
+                "start": "2025-02-16T16:30:00",
+                "end": "2025-02-16T17:00:00",
+                "available": true
+              }
+            ]
+          },
+          {
+            "tool": "book_appointment",
+            "args": {
+              "client_name": "John Smith",
+              "client_email": "john@example.com",
+              "start_time": "2025-02-16T14:00",
+              "duration_minutes": 30
+            },
+            "result": {
+              "id": "apt_0001",
+              "client_name": "John Smith",
+              "client_email": "john@example.com",
+              "start": "2025-02-16T14:00:00",
+              "end": "2025-02-16T14:30:00",
+              "notes": null
+            }
+          },
+          {
+            "tool": "send_confirmation",
+            "args": {
+              "appointment_id": "apt_0001"
+            },
+            "result": "Confirmation sent to john@example.com for February 16 at 02:00 PM"
+          }
+        ],
+        "passed": [
+          "tool_called:book_appointment",
+          "response_contains:book"
+        ],
+        "failed": [],
+        "success": true
+      }
+    ],
+    "all_passed": true
+  }
+]
