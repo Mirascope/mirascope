@@ -293,13 +293,19 @@ class ImprovedProgram(BaseModel):
 def improve_program(
     skill_instructions: str,
     current_code: str,
-    feedback: list[dict],
+    failures: list[dict],
+    successes: list[dict],
     is_agent: bool = False,
 ) -> list:
-    feedback_text = "\n".join([
-        f"- Query: {f['query'][:100]}...\n  Issue: {f['issue']}"
-        for f in feedback
+    failure_text = "\n".join([
+        f"- Query: {f['query'][:80]}...\n  Expected: {f['expected']}\n  Got: {f['actual'][:100]}..."
+        for f in failures
     ])
+
+    success_text = "\n".join([
+        f"- Query: {s['query'][:80]}..."
+        for s in successes
+    ]) if successes else "(none)"
 
     return [
         SystemMessage(content=Text(text=f"You improve Mirascope programs based on feedback.\n\n<skill_instructions>\n{skill_instructions}\n</skill_instructions>")),
@@ -308,10 +314,16 @@ def improve_program(
 {current_code}
 ```
 
-Feedback from failed queries:
-{feedback_text}
+FAILING QUERIES (fix these):
+{failure_text}
 
-Improve the program to fix these issues. Return the complete improved code.""")]),
+PASSING QUERIES (preserve these - do not break existing behavior):
+{success_text}
+
+CRITICAL: Make minimal, targeted changes. Do not refactor working code.
+Fix the failing queries while ensuring passing queries continue to work.
+
+Return the complete improved code.""")]),
     ]
 
 
@@ -544,23 +556,41 @@ def run_full_eval(sample_path: Path, output_dir: Path) -> EvalReport:
     ], indent=2))
 
     # -------------------------------------------------------------------------
-    # Phase 3: Leave-One-Out Iteration
+    # Phase 3: Leave-One-Out Iteration (with regression protection)
     # -------------------------------------------------------------------------
-    print(f"\n[Phase 3] Leave-one-out iteration...")
+    print(f"\n[Phase 3] Leave-one-out iteration (with regression guard)...")
 
     iteration_results: list[IterationResult] = []
 
     for holdout_idx, holdout_query in enumerate(sample.queries):
-        # Gather feedback from other queries (failures only)
-        feedback = []
+        # Build structured feedback: failures (with expected/actual) and successes
+        failures = []
+        successes = []
         for i, r in enumerate(initial_results):
             if i == holdout_idx:
                 continue
-            if not r.passed:
-                issue = r.error or ", ".join(r.score_details.get("failed", ["unknown"]))
-                feedback.append({"query": r.query_text, "issue": issue})
+            if r.passed:
+                successes.append({"query": r.query_text})
+            else:
+                # Build expected description from query
+                q = sample.queries[i]
+                expected_parts = []
+                if q.expected.output_contains:
+                    expected_parts.append(f"output should contain: {q.expected.output_contains}")
+                if q.expected.output_excludes:
+                    expected_parts.append(f"output should NOT contain: {q.expected.output_excludes}")
+                if q.expected.invokes_tools:
+                    expected_parts.append(f"should invoke tools: {q.expected.invokes_tools}")
+                expected = "; ".join(expected_parts) if expected_parts else "successful execution"
+                
+                actual = r.error if r.error else r.raw_output[:200] if r.raw_output else "no output"
+                failures.append({
+                    "query": r.query_text,
+                    "expected": expected,
+                    "actual": actual,
+                })
 
-        if not feedback:
+        if not failures:
             # No failures to learn from
             iteration_results.append(IterationResult(
                 query_id=holdout_query.id,
@@ -568,12 +598,14 @@ def run_full_eval(sample_path: Path, output_dir: Path) -> EvalReport:
                 improved_passed=initial_results[holdout_idx].passed,
                 improvement="unchanged",
             ))
-            print(f"  {holdout_query.id}: No feedback, skipping improvement")
+            print(f"  {holdout_query.id}: No failures to learn from, skipping")
             continue
 
-        # Improve program
+        # Improve program with structured feedback
         try:
-            response = improve_program(skill_instructions, program_code, feedback, sample.is_agent)
+            response = improve_program(
+                skill_instructions, program_code, failures, successes, sample.is_agent
+            )
             improved_code = response.parse().code
         except Exception as e:
             print(f"  {holdout_query.id}: Improvement failed: {e}")
@@ -601,27 +633,36 @@ def run_full_eval(sample_path: Path, output_dir: Path) -> EvalReport:
             ))
             continue
 
-        # Run holdout query on improved program
+        # REGRESSION GUARD: Run ALL queries on improved program
         improved_schema = get_schema(improved_path)
-        holdout_results = run_queries(improved_path, EvalSample(
-            skill_type=sample.skill_type,
-            sample_id=sample.sample_id,
-            bootstrap=sample.bootstrap,
-            test_state=sample.test_state,
-            queries=[holdout_query],
-        ), improved_schema)
-
-        improved_passed = holdout_results[0].passed if holdout_results else False
+        all_improved_results = run_queries(improved_path, sample, improved_schema)
+        
+        improved_pass_count = sum(1 for r in all_improved_results if r.passed)
+        initial_pass_count = sum(1 for r in initial_results if r.passed)
+        
+        # Check if holdout query passes
+        holdout_result = next((r for r in all_improved_results if r.query_id == holdout_query.id), None)
+        improved_passed = holdout_result.passed if holdout_result else False
         initial_passed_this = initial_results[holdout_idx].passed
 
-        if initial_passed_this and improved_passed:
+        # Determine improvement status
+        if improved_pass_count < initial_pass_count:
+            # Net regression - reject this improvement
+            improvement = "rejected"
+            improved_passed = initial_passed_this  # Keep original status
+            print(f"  {holdout_query.id}: ✗ REJECTED (would regress {initial_pass_count}→{improved_pass_count})")
+        elif initial_passed_this and improved_passed:
             improvement = "unchanged"
+            print(f"  {holdout_query.id}: - unchanged")
         elif not initial_passed_this and improved_passed:
             improvement = "fixed"
+            print(f"  {holdout_query.id}: ✓ FIXED ({initial_pass_count}→{improved_pass_count})")
         elif initial_passed_this and not improved_passed:
             improvement = "regressed"
+            print(f"  {holdout_query.id}: ✗ REGRESSED")
         else:
             improvement = "unchanged"
+            print(f"  {holdout_query.id}: - unchanged (still failing)")
 
         iteration_results.append(IterationResult(
             query_id=holdout_query.id,
@@ -629,9 +670,6 @@ def run_full_eval(sample_path: Path, output_dir: Path) -> EvalReport:
             improved_passed=improved_passed,
             improvement=improvement,
         ))
-
-        status = {"fixed": "✓ FIXED", "regressed": "✗ REGRESSED", "unchanged": "- unchanged"}[improvement]
-        print(f"  {holdout_query.id}: {status}")
 
     # -------------------------------------------------------------------------
     # Phase 4: Report
