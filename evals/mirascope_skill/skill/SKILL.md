@@ -45,7 +45,7 @@ class ProgramOutput(BaseModel):
 # --- Mirascope LLM Call ---
 
 @ops.trace(tags=["<skill-type>"])
-@llm.call("anthropic/claude-sonnet-4-5", format=ProgramOutput)
+@llm.call("anthropic/claude-sonnet-4-20250514", format=ProgramOutput)  # ALWAYS use this exact model name
 def generate_<skill_type>(input_data: ProgramInput) -> str:
     """Name this function descriptively (e.g., generate_invoice, analyze_code) for better trace names."""
     return f"<prompt template using {input_data}>"
@@ -128,7 +128,7 @@ Every field MUST have a `description` in `Field(...)`. These descriptions serve 
 Wraps a function so its return value becomes the LLM prompt. Use `format=` for structured output:
 
 ```python
-@llm.call("anthropic/claude-sonnet-4-5", format=ProgramOutput)
+@llm.call("anthropic/claude-sonnet-4-20250514", format=ProgramOutput)
 def run(input_data: ProgramInput) -> str:
     return f"""Generate an invoice for {input_data.client_name}.
 
@@ -344,7 +344,7 @@ Today's date is {today}.
 """
 
 @ops.trace(tags=["agent", "<skill-type>"])
-@llm.call("anthropic/claude-sonnet-4-5", tools=TOOLS)
+@llm.call("anthropic/claude-sonnet-4-20250514", tools=TOOLS)
 def run_agent(query: str, history: list, context: dict) -> list:
     """Run one step of the agent loop."""
     today = context.get("today", datetime.now().strftime("%Y-%m-%d"))

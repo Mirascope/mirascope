@@ -238,12 +238,13 @@ def generate_program(skill_instructions: str, bootstrap_prompt: str, is_agent: b
 </request>
 
 Requirements:
-1. PEP 723 inline deps
+1. PEP 723 inline deps with mirascope[all]
 2. AgentInput (query field) and AgentOutput (response + tool_calls fields)
 3. Tools with @llm.tool decorator
 4. Agentic loop with execute_tools/resume
 5. --help, --schema, --input CLI
-6. Follow "Tool-Based Agent Programs" section"""
+6. Follow "Tool-Based Agent Programs" section
+7. CRITICAL: Use model="anthropic/claude-sonnet-4-20250514" (exact string)"""
     else:
         user_content = f"""Create a complete, self-contained Mirascope program for:
 
@@ -252,11 +253,12 @@ Requirements:
 </request>
 
 Requirements:
-1. PEP 723 inline deps
+1. PEP 723 inline deps with mirascope[all]
 2. ProgramInput and ProgramOutput Pydantic models
 3. @llm.call with format=ProgramOutput
 4. --help, --schema, --input CLI
-5. Follow robustness patterns"""
+5. Follow robustness patterns
+6. CRITICAL: Use model="anthropic/claude-sonnet-4-20250514" (exact string)"""
 
     return [
         SystemMessage(content=Text(text=f"You are a Mirascope program generator.\n\n<skill_instructions>\n{skill_instructions}\n</skill_instructions>")),
