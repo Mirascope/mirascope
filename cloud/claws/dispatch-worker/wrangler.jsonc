@@ -57,8 +57,8 @@
       "vars": { "DEBUG": "1" },
       "services": [{ "binding": "MIRASCOPE_CLOUD", "service": "dev" }],
       "route": {
-        "pattern": "openclaw.dev.mirascope.com",
-        "zone_name": "mirascope.com",
+        "pattern": "openclaw.mirascope.dev",
+        "zone_name": "mirascope.dev",
         "custom_domain": true,
       },
       "containers": [

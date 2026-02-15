@@ -2,7 +2,8 @@
 .wrangler
 .tanstack
 .dev.vars
-.env.local
+.env
+.env.*
 .build-cache/
 tsconfig.tsbuildinfo
 !app/lib
