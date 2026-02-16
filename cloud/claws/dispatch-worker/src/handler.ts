@@ -29,6 +29,7 @@ import {
   reportClawStatus,
 } from "./bootstrap";
 import { getCachedConfig, setCachedConfig } from "./cache";
+import { BUILD_FINGERPRINT } from "./fingerprint";
 import { createLogger, type Logger } from "./logger";
 import {
   findGatewayProcess,
@@ -139,7 +140,10 @@ export async function handleProxy(
   const env = c.env;
 
   const log = createLogger({ clawId, debug: !!env.DEBUG });
-  log.info("req", `${c.req.method} ${c.req.path} (path-based)`);
+  log.info(
+    "req",
+    `${c.req.method} ${c.req.path} [${BUILD_FINGERPRINT.display}]`,
+  );
 
   const sandbox = getSandbox(env.Sandbox, clawId, { keepAlive: true });
   c.set("sandbox", sandbox);

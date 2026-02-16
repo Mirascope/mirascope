@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "deploy": "wrangler deploy --define __BUILD_TIMESTAMP__:\"\\\"$(date -u +%FT%TZ)\\\"\" --define __GIT_SHA__:\"\\\"$(git rev-parse --short HEAD)\\\"\"",
     "types": "wrangler types",
     "typecheck": "tsc --noEmit",
     "lint:oxlint": "oxlint .",

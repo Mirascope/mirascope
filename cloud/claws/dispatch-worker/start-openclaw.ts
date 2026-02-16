@@ -362,7 +362,11 @@ export function createOpenClawConfig(
 // Main startup sequence
 // ============================================================
 
+// Import fingerprint for startup logging
+import { BUILD_FINGERPRINT } from "./src/fingerprint";
+
 log("=== OpenClaw startup script begin ===");
+log(`Deploy fingerprint: ${BUILD_FINGERPRINT.display}`);
 
 // ============================================================
 // 0. Configure rclone for R2 (if credentials available)
