@@ -281,15 +281,19 @@ export const authenticate = (
       return { clawId };
     }
 
-    // WebSocket upgrade: require session cookie (defense-in-depth), gateway handles token auth
+    // WebSocket upgrade: session cookie OR Bearer token
+    // The main app proxy may convert session cookies into Authorization: Bearer headers
     if (request.headers.get("Upgrade")?.toLowerCase() === "websocket") {
       const sessionId = extractSessionCookie(request);
       if (sessionId) {
-        // Validate session has access to this claw
         yield* validateSession(sessionId, parsed.orgSlug, parsed.clawSlug, env);
         return { clawId };
       }
-      // No session cookie — reject
+      // Fall through to Bearer — the main app proxy forwards the gateway token as Authorization header
+      const authHeader = request.headers.get("Authorization");
+      if (authHeader?.startsWith("Bearer ")) {
+        return { clawId, bearerToken: authHeader.slice(7) };
+      }
       return yield* new UnauthenticatedError({
         message: "WebSocket upgrade requires session authentication",
       });
