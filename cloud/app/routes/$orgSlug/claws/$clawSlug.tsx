@@ -16,6 +16,10 @@ function getGatewayUrl(orgSlug: string, clawSlug: string): string {
     }
     return "http://localhost:18789/";
   }
+  // Handle mirascope.dev (dev environment)
+  if (hostname === "mirascope.dev") {
+    return `https://openclaw.mirascope.dev/${orgSlug}/${clawSlug}/overview`;
+  }
   const match = hostname.match(/^([\w-]+)\.(mirascope\.com)$/);
   const base =
     match && match[1] !== "www"
