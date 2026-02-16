@@ -242,7 +242,11 @@ export function createOpenClawConfig(
     allowedOrigins.push(env.OPENCLAW_SITE_URL);
   }
 
-  config.gateway.controlUi = { allowedOrigins };
+  config.gateway.controlUi = {
+    ...((config.gateway.controlUi as object) ?? {}),
+    dangerouslyDisableDeviceAuth: true,
+    allowedOrigins,
+  };
 
   // Anthropic provider configuration
   const baseUrl = env.ANTHROPIC_BASE_URL.replace(/\/+$/, "");
