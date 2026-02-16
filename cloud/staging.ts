@@ -26,7 +26,9 @@ type StagingContext = {
 };
 
 function isStaging(ctx: StagingContext): boolean {
-  return ctx.url.hostname === STAGING_HOSTNAME || ctx.url.hostname === DEV_HOSTNAME;
+  return (
+    ctx.url.hostname === STAGING_HOSTNAME || ctx.url.hostname === DEV_HOSTNAME
+  );
 }
 
 /** Returns true for any non-production environment (staging, dev, etc.) */

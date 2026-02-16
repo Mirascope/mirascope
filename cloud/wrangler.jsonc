@@ -147,7 +147,7 @@
         "VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID": "G-DJHT1QG9GK",
         "POSTHOG_HOST": "https://us.i.posthog.com",
         "GOOGLE_ANALYTICS_MEASUREMENT_ID": "G-DJHT1QG9GK",
-        "CF_DO_NAMESPACE_ID": "6c99083a0a9f42b19ddd59b17cd786d1"
+        "CF_DO_NAMESPACE_ID": "6c99083a0a9f42b19ddd59b17cd786d1",
       },
       "hyperdrive": [
         {
