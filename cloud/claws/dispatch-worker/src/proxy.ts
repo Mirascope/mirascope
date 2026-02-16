@@ -13,6 +13,7 @@ import type { Logger } from "./logger";
 import type { DispatchEnv, OpenClawDeployConfig } from "./types";
 
 import { GATEWAY_PORT, STARTUP_TIMEOUT_MS } from "./config";
+import { BUILD_FINGERPRINT } from "./fingerprint";
 import { createLogger, redactUrl, summarizeEnvKeys } from "./logger";
 
 /**
@@ -132,7 +133,10 @@ export async function ensureGateway(
   }
 
   // Start new gateway
-  l.info("gateway", `starting new gateway for claw: ${config.clawId}`);
+  l.info(
+    "gateway",
+    `starting new gateway for claw: ${config.clawId} [${BUILD_FINGERPRINT.display}]`,
+  );
   const envVars = buildEnvVars(config, env);
   const command = "bun /opt/openclaw/start-openclaw.ts";
 
