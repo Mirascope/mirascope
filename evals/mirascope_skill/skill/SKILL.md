@@ -12,6 +12,8 @@ A single Python file that:
 4. Integrates with Mirascope Cloud for tracing and versioning
 5. Exposes a standard CLI: `--help`, `--schema`, `--input`
 
+**Important:** Programs accept **natural language input** — `ProgramInput` should have a `prompt` (or `query`) field containing the user's request. The program's LLM call extracts structured data from this natural language and produces structured output. The program does the hard work, not the caller.
+
 ## Required Program Structure
 
 Every program MUST follow this structure:
@@ -33,13 +35,12 @@ from mirascope import llm, ops
 # --- Input/Output Models ---
 
 class ProgramInput(BaseModel):
-    """Describe the input this program accepts."""
-    # Define fields with descriptions
-    field_name: str = Field(description="What this field represents")
+    """Input is always natural language. The LLM extracts structure from it."""
+    prompt: str = Field(description="Natural language request from the user")
 
 class ProgramOutput(BaseModel):
-    """Describe the output this program produces."""
-    # Define fields with descriptions
+    """Structured output produced by the program."""
+    # Define fields with descriptions — this is where structure lives
     field_name: str = Field(description="What this field represents")
 
 # --- Mirascope LLM Call ---
@@ -89,23 +90,25 @@ Every program MUST support these three modes:
 
 ## Input/Output Modeling Guidelines
 
-### Be Specific with Types
+### Input: Always Natural Language
 
-Use the most specific type that captures the domain:
+`ProgramInput` should accept a natural language `prompt` (or `query`) field. The program's LLM call extracts whatever structured data it needs from this. Do NOT require the caller to pre-structure the input.
 
 ```python
-# Good
-class InvoiceInput(BaseModel):
-    client_name: str = Field(description="Name of the client being invoiced")
-    line_items: list[LineItem] = Field(description="Services/products to invoice")
-    tax_rate: float | None = Field(default=None, description="Tax rate as decimal (e.g. 0.08875 for 8.875%)")
+# Good — caller passes natural language, program handles extraction
+class ProgramInput(BaseModel):
+    prompt: str = Field(description="Natural language request from the user")
 
-# Bad — too vague
-class InvoiceInput(BaseModel):
-    data: dict  # No structure, no descriptions
+# Bad — forces caller to pre-structure data
+class ProgramInput(BaseModel):
+    client_name: str
+    line_items: list[LineItem]
+    tax_rate: float | None
 ```
 
-### Use Nested Models for Complex Data
+### Output: Be Specific with Types
+
+Use the most specific type that captures the domain for output:
 
 ```python
 class LineItem(BaseModel):
@@ -113,8 +116,13 @@ class LineItem(BaseModel):
     quantity: float = Field(description="Number of units (e.g. hours worked)")
     unit_rate: float = Field(description="Price per unit in dollars")
 
-class InvoiceInput(BaseModel):
-    line_items: list[LineItem]
+class InvoiceOutput(BaseModel):
+    invoice_html: str = Field(description="Formatted invoice")
+    client_name: str = Field(description="Extracted client name")
+    line_items: list[LineItem] = Field(description="Extracted line items")
+    subtotal: float = Field(description="Sum before tax")
+    tax_amount: float = Field(description="Tax amount")
+    total: float = Field(description="Final total")
 ```
 
 ### Add Field Descriptions
@@ -130,15 +138,16 @@ Wraps a function so its return value becomes the LLM prompt. Use `format=` for s
 ```python
 @llm.call("anthropic/claude-sonnet-4-20250514", format=ProgramOutput)
 def run(input_data: ProgramInput) -> str:
-    return f"""Generate an invoice for {input_data.client_name}.
+    return f"""You are an invoice generator. Extract the client info, line items, and
+tax details from the following request, then generate a complete invoice.
 
-Line items:
-{json.dumps([item.model_dump() for item in input_data.line_items], indent=2)}
+If the request doesn't contain enough information for an invoice, set rejected=true
+with a reason explaining what's missing.
 
-Tax rate: {input_data.tax_rate or 'No tax'}"""
+Request: {input_data.prompt}"""
 ```
 
-The function's return value is sent as the user message. The `format` parameter tells Mirascope to parse the LLM response into the given Pydantic model.
+The function's return value is sent as the user message. The `format` parameter tells Mirascope to parse the LLM response into the given Pydantic model. The LLM handles extracting structured data from the natural language input.
 
 ### `@ops.trace` — Tracing
 

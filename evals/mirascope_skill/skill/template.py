@@ -16,15 +16,17 @@ from mirascope import llm, ops
 
 
 class ProgramInput(BaseModel):
-    """Structured input for this program."""
+    """Input is always natural language."""
 
-    prompt: str = Field(description="The user's request")
+    prompt: str = Field(description="Natural language request from the user")
 
 
 class ProgramOutput(BaseModel):
     """Structured output from this program."""
 
     result: str = Field(description="The generated result")
+    rejected: bool = Field(default=False, description="True if the request couldn't be fulfilled")
+    reason: str | None = Field(default=None, description="Reason for rejection if rejected")
 
 
 # --- Mirascope LLM Call ---

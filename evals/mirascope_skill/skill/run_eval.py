@@ -254,34 +254,17 @@ Requirements:
 
 Requirements:
 1. PEP 723 inline deps with mirascope[all]
-2. ProgramInput and ProgramOutput Pydantic models
-3. @llm.call with format=ProgramOutput
-4. --help, --schema, --input CLI
-5. Follow robustness patterns
-6. CRITICAL: Use model="anthropic/claude-sonnet-4-20250514" (exact string)"""
+2. ProgramInput with a `prompt` field (natural language input from user)
+3. ProgramOutput with structured fields for the result
+4. @llm.call with format=ProgramOutput — the LLM extracts data from natural language
+5. --help, --schema, --input CLI
+6. Follow robustness patterns
+7. CRITICAL: Use model="anthropic/claude-sonnet-4-20250514" (exact string)
+8. CRITICAL: Input is ALWAYS natural language via prompt field, NOT pre-structured data"""
 
     return [
         SystemMessage(content=Text(text=f"You are a Mirascope program generator.\n\n<skill_instructions>\n{skill_instructions}\n</skill_instructions>")),
         UserMessage(content=[Text(text=user_content)]),
-    ]
-
-
-class OrchestrationResult(BaseModel):
-    input_json: dict = Field(description="Structured input matching schema")
-    reasoning: str = Field(description="How query was translated")
-
-
-@ops.trace(tags=["eval", "orchestrate"])
-@llm.call(DEFAULT_MODEL, format=OrchestrationResult)
-def orchestrate_query(query_text: str, input_schema: dict) -> list:
-    return [
-        SystemMessage(content=Text(text="Translate natural language queries into structured JSON input.")),
-        UserMessage(content=[Text(text=f"""Schema:
-{json.dumps(input_schema, indent=2)}
-
-Query: {query_text}
-
-Return input_json matching the schema. Use reasonable defaults for missing info.""")]),
     ]
 
 
@@ -396,26 +379,27 @@ def run_queries(
     results = []
 
     for query in sample.queries:
-        # Build input
-        if sample.is_agent:
-            orchestrated_input = {
-                "query": query.text,
-                "context": {
-                    "today": sample.test_state.today or "2025-02-15",
-                    "existing_appointments": sample.test_state.existing_appointments,
-                },
-            }
+        # Build input — programs accept natural language via prompt/query field
+        input_props = schema.get("input", {}).get("properties", {})
+        if "query" in input_props:
+            nl_field = "query"
+        elif "prompt" in input_props:
+            nl_field = "prompt"
         else:
-            try:
-                response = orchestrate_query(query.text, schema["input"])
-                orchestrated_input = response.parse().input_json
-            except Exception as e:
-                results.append(QueryResult(
-                    query_id=query.id,
-                    query_text=query.text,
-                    error=f"Orchestration failed: {e}",
-                ))
-                continue
+            # Fallback: use first string field
+            nl_field = next(
+                (k for k, v in input_props.items() if v.get("type") == "string"),
+                "prompt",
+            )
+
+        orchestrated_input: dict[str, Any] = {nl_field: query.text}
+
+        # For agent samples, add context if the schema expects it
+        if sample.is_agent and "context" in input_props:
+            orchestrated_input["context"] = {
+                "today": sample.test_state.today or "2025-02-15",
+                "existing_appointments": sample.test_state.existing_appointments,
+            }
 
         # Run program
         try:
