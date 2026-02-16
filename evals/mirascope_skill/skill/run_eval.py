@@ -7,19 +7,17 @@
 #     "pyyaml>=6.0",
 # ]
 # ///
-"""Eval pipeline with human-in-the-loop scoring via Mirascope trace annotations.
+"""Eval pipeline for mirascope_skill — atomic subcommands for agent orchestration.
 
 Subcommands:
-    run       Generate program from sample + run all queries (creates traces)
-    iterate   Read annotations from traces, run LKO improvement
-    report    Compute pass rates from annotations
+    generate    Generate program from sample YAML + validate
+    run         Run all queries against program (creates traces)
+    annotate    Write annotations to traces from JSON file
+    iterate     Read annotations, run LKO improvement (creates new traces)
+    report      Compute pass rates from local annotations
 
-Workflow:
-    1. ./run_eval.py run --sample samples/invoice_generator/sample_001.yaml --output results/eval_001/
-    2. Review traces in Mirascope Cloud, annotate pass/fail with reasoning
-    3. ./run_eval.py iterate --output results/eval_001/ [--k 1]
-    4. Annotate new traces
-    5. ./run_eval.py report --output results/eval_001/
+Designed to be called step-by-step by an orchestrating agent that presents
+outputs to a human reviewer and collects feedback between steps.
 
 Requires MIRASCOPE_API_KEY env var.
 """
@@ -86,7 +84,6 @@ class EvalSample(BaseModel):
     def from_yaml(cls, path: str | Path) -> "EvalSample":
         with open(path) as f:
             raw = yaml.safe_load(f)
-        # Strip expected fields from queries — scoring is human-only
         for q in raw.get("queries", []):
             q.pop("expected", None)
         return cls.model_validate(raw)
@@ -96,47 +93,24 @@ class EvalSample(BaseModel):
         return "agent" in self.skill_type.lower() or "agent" in self.metadata.tags
 
 
-@dataclass
-class QueryRun:
-    """Result of running a single query against the program."""
-    query_id: str
-    query_text: str
-    input_json: dict
-    raw_output: str = ""
-    error: str | None = None
-    run_start: str = ""
-    run_end: str = ""
-    # Filled after trace lookup
-    trace_id: str | None = None
-    span_id: str | None = None
-
-    def to_dict(self) -> dict:
-        return {
-            "query_id": self.query_id,
-            "query_text": self.query_text,
-            "input_json": self.input_json,
-            "raw_output": self.raw_output,
-            "error": self.error,
-            "run_start": self.run_start,
-            "run_end": self.run_end,
-            "trace_id": self.trace_id,
-            "span_id": self.span_id,
-        }
+# ---------------------------------------------------------------------------
+# State management
+# ---------------------------------------------------------------------------
 
 
 @dataclass
 class EvalState:
-    """Persistent state for an eval run, saved to state.json."""
+    """Persistent state saved to state.json between subcommands."""
     sample_path: str
     sample_id: str
     skill_type: str
     is_agent: bool
     program_path: str
-    phase: str  # "generated", "ran", "iterated"
+    phase: str  # "generated", "ran", "annotated", "iterated"
     run_start: str = ""
     run_end: str = ""
     initial_runs: list[dict] = field(default_factory=list)
-    iteration_runs: list[dict] = field(default_factory=list)  # LKO results
+    iteration_runs: list[dict] = field(default_factory=list)
     iteration_k: int = 1
 
     def save(self, output_dir: Path) -> None:
@@ -156,28 +130,24 @@ def run_uv(program_path: str | Path, *args: str, timeout: int = 120) -> subproce
     env = os.environ.copy()
     return subprocess.run(
         ["uv", "run", str(program_path), *args],
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-        env=env,
+        capture_output=True, text=True, timeout=timeout, env=env,
     )
 
 
 def validate_program(program_path: Path) -> tuple[bool, str]:
-    """Validate program with --help and --schema."""
     if not program_path.exists():
-        return False, f"Program not found: {program_path}"
+        return False, f"Not found: {program_path}"
     try:
-        result = run_uv(program_path, "--help")
-        if result.returncode != 0:
-            return False, f"--help failed: {result.stderr}"
+        r = run_uv(program_path, "--help")
+        if r.returncode != 0:
+            return False, f"--help failed: {r.stderr}"
     except subprocess.TimeoutExpired:
         return False, "--help timed out"
     try:
-        result = run_uv(program_path, "--schema")
-        if result.returncode != 0:
-            return False, f"--schema failed: {result.stderr}"
-        schema = json.loads(result.stdout)
+        r = run_uv(program_path, "--schema")
+        if r.returncode != 0:
+            return False, f"--schema failed: {r.stderr}"
+        schema = json.loads(r.stdout)
         if "input" not in schema or "output" not in schema:
             return False, "Missing input/output in schema"
     except subprocess.TimeoutExpired:
@@ -188,13 +158,18 @@ def validate_program(program_path: Path) -> tuple[bool, str]:
 
 
 def get_schema(program_path: Path) -> dict:
-    result = run_uv(program_path, "--schema")
-    return json.loads(result.stdout)
+    return json.loads(run_uv(program_path, "--schema").stdout)
 
 
-def run_program(program_path: Path, input_json: str, timeout: int = 180) -> tuple[str, str]:
-    result = run_uv(program_path, "--input", input_json, timeout=timeout)
-    return result.stdout, result.stderr
+def get_nl_field(schema: dict) -> str:
+    props = schema.get("input", {}).get("properties", {})
+    if "query" in props:
+        return "query"
+    if "prompt" in props:
+        return "prompt"
+    return next(
+        (k for k, v in props.items() if v.get("type") == "string"), "prompt"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -211,14 +186,7 @@ class GeneratedProgram(BaseModel):
 
 @llm.call(DEFAULT_MODEL, format=GeneratedProgram)
 def generate_program(skill_instructions: str, bootstrap_prompt: str, is_agent: bool = False) -> list:
-    if is_agent:
-        user_content = f"""Create a complete, self-contained Mirascope TOOL-BASED AGENT program for:
-
-<request>
-{bootstrap_prompt}
-</request>
-
-Requirements:
+    agent_reqs = """
 1. PEP 723 inline deps with mirascope[all]
 2. AgentInput (query field) and AgentOutput (response + tool_calls fields)
 3. Tools with @llm.tool decorator
@@ -227,14 +195,8 @@ Requirements:
 6. Follow "Tool-Based Agent Programs" section
 7. CRITICAL: Use model="anthropic/claude-sonnet-4-20250514" (exact string)
 8. CRITICAL: Include ops.configure() and @ops.trace on the main function"""
-    else:
-        user_content = f"""Create a complete, self-contained Mirascope program for:
 
-<request>
-{bootstrap_prompt}
-</request>
-
-Requirements:
+    program_reqs = """
 1. PEP 723 inline deps with mirascope[all]
 2. ProgramInput with a `prompt` field (natural language input from user)
 3. ProgramOutput with structured fields for the result
@@ -245,9 +207,12 @@ Requirements:
 8. CRITICAL: Input is ALWAYS natural language via prompt field, NOT pre-structured data
 9. CRITICAL: Include ops.configure() and @ops.trace on the main function"""
 
+    kind = "TOOL-BASED AGENT" if is_agent else ""
+    reqs = agent_reqs if is_agent else program_reqs
+
     return [
         SystemMessage(content=Text(text=f"You are a Mirascope program generator.\n\n<skill_instructions>\n{skill_instructions}\n</skill_instructions>")),
-        UserMessage(content=[Text(text=user_content)]),
+        UserMessage(content=[Text(text=f"Create a complete, self-contained Mirascope {kind} program for:\n\n<request>\n{bootstrap_prompt}\n</request>\n\nRequirements:{reqs}")]),
     ]
 
 
@@ -263,18 +228,13 @@ def improve_program(
     annotations: list[dict],
     is_agent: bool = False,
 ) -> list:
-    """Improve a program based on human annotations from traces."""
     feedback_text = ""
     for a in annotations:
-        label = a.get("label", "unknown")
-        reasoning = a.get("reasoning", "")
-        query = a.get("query", "")
-        output = a.get("output", "")
-        feedback_text += f"\n### Query: {query}\n"
-        feedback_text += f"**Label:** {label}\n"
-        if reasoning:
-            feedback_text += f"**Feedback:** {reasoning}\n"
-        feedback_text += f"**Program output:**\n```\n{output}\n```\n"
+        feedback_text += f"\n### Query: {a['query']}\n"
+        feedback_text += f"**Label:** {a['label']}\n"
+        if a.get("reasoning"):
+            feedback_text += f"**Feedback:** {a['reasoning']}\n"
+        feedback_text += f"**Program output:**\n```\n{a['output']}\n```\n"
 
     return [
         SystemMessage(content=Text(text=f"You improve Mirascope programs based on human feedback.\n\n<skill_instructions>\n{skill_instructions}\n</skill_instructions>")),
@@ -291,8 +251,8 @@ Study the feedback carefully — "fail" annotations explain what's wrong.
 {feedback_text}
 
 ## Instructions
-1. **Diagnose first:** For each failure, identify the root cause (prompt wording? missing field? wrong logic?)
-2. **Make targeted fixes:** Change only what's needed to fix failures. Do not restructure working code.
+1. **Diagnose first:** For each failure, identify the root cause
+2. **Make targeted fixes:** Change only what's needed. Do not restructure working code.
 3. **Verify mentally:** For each passing query, confirm your changes won't break it.
 4. **Return the complete improved program** (full file, not a diff).""")]),
     ]
@@ -303,97 +263,53 @@ Study the feedback carefully — "fail" annotations explain what's wrong.
 # ---------------------------------------------------------------------------
 
 def find_traces_for_runs(
-    runs: list[QueryRun],
-    start_time: str,
-    end_time: str,
-) -> list[QueryRun]:
-    """Match query runs to their traces via the Mirascope API."""
+    runs: list[dict], start_time: str, end_time: str,
+) -> list[dict]:
+    """Match query runs to their traces via the Mirascope API. Mutates runs in place."""
     client = get_sync_client()
+    try:
+        response = client.traces.search(
+            start_time=start_time, end_time=end_time,
+            limit=len(runs) * 3, root_spans_only=True,
+        )
+    except Exception:
+        return runs
 
-    # Search for all traces in the time window
-    response = client.traces.search(
-        start_time=start_time,
-        end_time=end_time,
-        limit=len(runs) * 3,  # buffer for extra traces
-        root_spans_only=True,
-    )
-
-    # For each trace, get detail and try to match to a run by input content
-    matched = set()
+    matched: set[str] = set()
     for span in response.spans:
         try:
             detail = client.traces.gettracedetail(trace_id=span.trace_id)
-            for detail_span in detail.spans:
-                attrs = json.loads(detail_span.attributes) if detail_span.attributes else {}
-                # Look for input content in attributes
-                input_str = json.dumps(attrs)
+            attrs_str = ""
+            for ds in detail.spans:
+                if ds.attributes:
+                    attrs_str += ds.attributes
 
-                for run in runs:
-                    if run.query_id in matched:
-                        continue
-                    # Match by checking if the query text appears in the trace input
-                    if run.query_text[:50] in input_str:
-                        run.trace_id = span.trace_id
-                        run.span_id = span.span_id
-                        matched.add(run.query_id)
-                        break
+            for run in runs:
+                qid = run["query_id"]
+                if qid in matched:
+                    continue
+                if run["query_text"][:50] in attrs_str:
+                    run["trace_id"] = span.trace_id
+                    run["span_id"] = span.span_id
+                    matched.add(qid)
+                    break
         except Exception:
             continue
-
     return runs
 
 
-def get_annotations_for_run(run: QueryRun, local_annotations: dict[str, dict] | None = None) -> dict | None:
-    """Get the annotation for a specific trace. Falls back to local annotations."""
-    # Try API first
-    if run.trace_id and run.span_id:
-        try:
-            client = get_sync_client()
-            response = client.annotations.list(
-                otel_trace_id=run.trace_id,
-                otel_span_id=run.span_id,
-                limit=1,
-            )
-            annotations = response if isinstance(response, list) else getattr(response, "items", [])
-            if annotations:
-                ann = annotations[0]
-                return {
-                    "label": getattr(ann, "label", None),
-                    "reasoning": getattr(ann, "reasoning", None),
-                    "query": run.query_text,
-                    "output": run.raw_output,
-                }
-        except Exception:
-            pass
-
-    # Fall back to local annotations
-    if local_annotations and run.query_id in local_annotations:
-        local = local_annotations[run.query_id]
-        return {
-            "label": local["label"],
-            "reasoning": local.get("reasoning"),
-            "query": run.query_text,
-            "output": run.raw_output,
-        }
-
-    return None
-
-
 def load_local_annotations(output_dir: Path, phase: str) -> dict[str, dict]:
-    """Load local annotation file as {query_id: annotation} map."""
     ann_file = output_dir / f"annotations_{phase}.json"
     if ann_file.exists():
-        annotations = json.loads(ann_file.read_text())
-        return {a["query_id"]: a for a in annotations}
+        return {a["query_id"]: a for a in json.loads(ann_file.read_text())}
     return {}
 
 
 # ---------------------------------------------------------------------------
-# Subcommand: run
+# Subcommand: generate
 # ---------------------------------------------------------------------------
 
-def cmd_run(args: argparse.Namespace) -> None:
-    """Generate program + run all queries."""
+def cmd_generate(args: argparse.Namespace) -> None:
     sample_path = Path(args.sample)
     output_dir = Path(args.output)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -401,51 +317,48 @@ def cmd_run(args: argparse.Namespace) -> None:
     sample = EvalSample.from_yaml(sample_path)
     skill_instructions = SKILL_MD.read_text()
 
-    print(f"{'='*60}")
-    print(f"EVAL: {sample.sample_id} ({sample.skill_type})")
-    print(f"{'='*60}")
+    print(f"Generating program for {sample.sample_id}...")
 
-    # Phase 1: Generate program
-    print("\n[Phase 1] Generating program...")
-    try:
-        response = generate_program(skill_instructions, sample.bootstrap.prompt, sample.is_agent)
-        program_code = response.parse().code
-    except Exception as e:
-        print(f"  ✗ Generation failed: {e}")
-        sys.exit(1)
+    response = generate_program(skill_instructions, sample.bootstrap.prompt, sample.is_agent)
+    program_code = response.parse().code
 
     program_path = output_dir / "program.py"
     program_path.write_text(program_code)
-    print(f"  ✓ Program written to {program_path}")
 
     valid, error = validate_program(program_path)
     if not valid:
-        print(f"  ✗ Validation failed: {error}")
+        print(json.dumps({"ok": False, "error": error}))
         sys.exit(1)
-    print("  ✓ Program validated")
 
+    state = EvalState(
+        sample_path=str(sample_path),
+        sample_id=sample.sample_id,
+        skill_type=sample.skill_type,
+        is_agent=sample.is_agent,
+        program_path=str(program_path),
+        phase="generated",
+    )
+    state.save(output_dir)
+    print(json.dumps({"ok": True, "program": str(program_path)}))
+
+
+# ---------------------------------------------------------------------------
+# Subcommand: run
+# ---------------------------------------------------------------------------
+
+def cmd_run(args: argparse.Namespace) -> None:
+    output_dir = Path(args.output)
+    state = EvalState.load(output_dir)
+    sample = EvalSample.from_yaml(state.sample_path)
+    program_path = Path(state.program_path)
     schema = get_schema(program_path)
-
-    # Phase 2: Run all queries
-    print(f"\n[Phase 2] Running {len(sample.queries)} queries...")
-
-    # Determine the natural language input field name
+    nl_field = get_nl_field(schema)
     input_props = schema.get("input", {}).get("properties", {})
-    if "query" in input_props:
-        nl_field = "query"
-    elif "prompt" in input_props:
-        nl_field = "prompt"
-    else:
-        nl_field = next(
-            (k for k, v in input_props.items() if v.get("type") == "string"),
-            "prompt",
-        )
 
     batch_start = datetime.now(timezone.utc).isoformat()
 
-    def _run_query(query: EvalQuery) -> QueryRun:
+    def _run_query(query: EvalQuery) -> dict:
         input_data: dict[str, Any] = {nl_field: query.text}
-        # For agent samples, add context if schema expects it
         if sample.is_agent and "context" in input_props:
             input_data["context"] = {
                 "today": sample.test_state.today or "2025-02-15",
@@ -455,88 +368,143 @@ def cmd_run(args: argparse.Namespace) -> None:
         run_start = datetime.now(timezone.utc).isoformat()
         try:
             input_str = json.dumps(input_data)
-            stdout, stderr = run_program(program_path, input_str)
+            result = run_uv(program_path, "--input", input_str, timeout=180)
+            stdout, stderr = result.stdout, result.stderr
             run_end = datetime.now(timezone.utc).isoformat()
 
+            error = None
+            raw_output = stdout
             if stderr and not stdout.strip():
-                return QueryRun(
-                    query_id=query.id,
-                    query_text=query.text,
-                    input_json=input_data,
-                    raw_output=stderr,
-                    error=f"Program error: {stderr[:300]}",
-                    run_start=run_start,
-                    run_end=run_end,
-                )
+                error = stderr[:500]
+                raw_output = stderr
 
-            return QueryRun(
-                query_id=query.id,
-                query_text=query.text,
-                input_json=input_data,
-                raw_output=stdout,
-                run_start=run_start,
-                run_end=run_end,
-            )
+            return {
+                "query_id": query.id,
+                "query_text": query.text,
+                "input_json": input_data,
+                "raw_output": raw_output,
+                "error": error,
+                "run_start": run_start,
+                "run_end": run_end,
+                "trace_id": None,
+                "span_id": None,
+            }
         except Exception as e:
-            return QueryRun(
-                query_id=query.id,
-                query_text=query.text,
-                input_json=input_data,
-                error=f"Execution failed: {e}",
-                run_start=run_start,
-                run_end=datetime.now(timezone.utc).isoformat(),
-            )
+            return {
+                "query_id": query.id,
+                "query_text": query.text,
+                "input_json": input_data,
+                "raw_output": "",
+                "error": str(e),
+                "run_start": run_start,
+                "run_end": datetime.now(timezone.utc).isoformat(),
+                "trace_id": None,
+                "span_id": None,
+            }
 
-    # Run in parallel
     max_workers = min(len(sample.queries), 10)
-    runs: list[QueryRun] = [None] * len(sample.queries)  # type: ignore
+    runs: list[dict] = [None] * len(sample.queries)  # type: ignore
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_idx = {
-            executor.submit(_run_query, q): i
-            for i, q in enumerate(sample.queries)
+            executor.submit(_run_query, q): i for i, q in enumerate(sample.queries)
         }
         for future in concurrent.futures.as_completed(future_to_idx):
-            idx = future_to_idx[future]
-            run = future.result()
-            runs[idx] = run
-            status = "✗" if run.error else "✓"
-            print(f"  {status} {run.query_id}: {run.query_text[:50]}...")
+            runs[future_to_idx[future]] = future.result()
 
     batch_end = datetime.now(timezone.utc).isoformat()
 
-    # Wait for traces to be exported (batch processor flushes async)
-    print("\n  Waiting for traces to export...")
+    # Wait for trace export + match
     time.sleep(5)
-
-    # Match runs to traces
-    print("  Matching runs to traces...")
     runs = find_traces_for_runs(runs, batch_start, batch_end)
-    matched = sum(1 for r in runs if r.trace_id)
-    print(f"  Matched {matched}/{len(runs)} runs to traces")
 
-    # Save state
-    state = EvalState(
-        sample_path=str(sample_path),
-        sample_id=sample.sample_id,
-        skill_type=sample.skill_type,
-        is_agent=sample.is_agent,
-        program_path=str(program_path),
-        phase="ran",
-        run_start=batch_start,
-        run_end=batch_end,
-        initial_runs=[r.to_dict() for r in runs],
-    )
+    state.initial_runs = runs
+    state.run_start = batch_start
+    state.run_end = batch_end
+    state.phase = "ran"
     state.save(output_dir)
 
-    # Print summary
-    print(f"\n{'='*60}")
-    print(f"QUERIES RUN: {len(runs)}")
-    print(f"TRACES MATCHED: {matched}")
-    print(f"{'='*60}")
-    print(f"\nOutputs saved to {output_dir}/state.json")
-    print(f"Next: ./run_eval.py annotate --output {output_dir} --phase initial [--file annotations.json]")
-    print(f"Then: ./run_eval.py iterate --output {output_dir}")
+    # Output results as JSON for the orchestrating agent
+    results = []
+    for r in runs:
+        results.append({
+            "query_id": r["query_id"],
+            "query_text": r["query_text"],
+            "output": r["raw_output"],
+            "error": r["error"],
+            "has_trace": r["trace_id"] is not None,
+        })
+    print(json.dumps({"ok": True, "results": results}, indent=2))
+
+
+# ---------------------------------------------------------------------------
+# Subcommand: annotate
+# ---------------------------------------------------------------------------
+
+def cmd_annotate(args: argparse.Namespace) -> None:
+    """Write annotations from a JSON file to traces + local backup.
+
+    File format:
+    [
+      {"query_id": "q01", "label": "pass"},
+      {"query_id": "q02", "label": "fail", "reasoning": "Missing tax line"}
+    ]
+    """
+    output_dir = Path(args.output)
+    state = EvalState.load(output_dir)
+    phase = args.phase
+
+    if phase == "initial":
+        runs_data = state.initial_runs
+    elif phase == "iteration":
+        runs_data = state.iteration_runs
+    else:
+        print(json.dumps({"ok": False, "error": f"Unknown phase: {phase}"}))
+        sys.exit(1)
+
+    run_map = {r["query_id"]: r for r in runs_data}
+    file_annotations = json.loads(Path(args.file).read_text())
+
+    client = get_sync_client()
+    results = []
+
+    for ann in file_annotations:
+        qid = ann["query_id"]
+        run = run_map.get(qid)
+        if not run:
+            results.append({"query_id": qid, "status": "not_found"})
+            continue
+
+        # Write to API if trace is linked
+        api_written = False
+        if run.get("trace_id") and run.get("span_id"):
+            try:
+                client.annotations.create(
+                    otel_span_id=run["span_id"],
+                    otel_trace_id=run["trace_id"],
+                    label=ann["label"],
+                    reasoning=ann.get("reasoning"),
+                )
+                api_written = True
+            except Exception as e:
+                results.append({"query_id": qid, "status": "api_error", "error": str(e)})
+
+        results.append({
+            "query_id": qid,
+            "label": ann["label"],
+            "status": "ok",
+            "api_written": api_written,
+        })
+
+    # Save local backup
+    ann_file = output_dir / f"annotations_{phase}.json"
+    ann_file.write_text(json.dumps(file_annotations, indent=2))
+
+    if phase == "initial":
+        state.phase = "annotated"
+    state.save(output_dir)
+
+    print(json.dumps({"ok": True, "results": results}, indent=2))
 
 
 # ---------------------------------------------------------------------------
@@ -544,7 +512,6 @@ def cmd_run(args: argparse.Namespace) -> None:
 # ---------------------------------------------------------------------------
 
 def cmd_iterate(args: argparse.Namespace) -> None:
-    """Read annotations, run LKO improvement."""
     output_dir = Path(args.output)
     state = EvalState.load(output_dir)
     k = args.k
@@ -552,115 +519,69 @@ def cmd_iterate(args: argparse.Namespace) -> None:
     sample = EvalSample.from_yaml(state.sample_path)
     skill_instructions = SKILL_MD.read_text()
     program_code = Path(state.program_path).read_text()
+    program_path = Path(state.program_path)
 
-    print(f"{'='*60}")
-    print(f"LKO ITERATION (k={k}): {state.sample_id}")
-    print(f"{'='*60}")
-
-    # Reconstruct runs and get annotations
-    runs = [QueryRun(**r) for r in state.initial_runs]
-
-    print("\n[1] Reading annotations...")
+    # Load annotations
     local_anns = load_local_annotations(output_dir, "initial")
-    annotations = {}
-    for run in runs:
-        ann = get_annotations_for_run(run, local_anns)
-        if ann:
-            annotations[run.query_id] = ann
-            label = ann["label"]
-            print(f"  {run.query_id}: {label}")
-        else:
-            print(f"  {run.query_id}: (no annotation)")
-
-    if not annotations:
-        print("\n  ✗ No annotations found. Annotate traces first.")
+    if not local_anns:
+        print(json.dumps({"ok": False, "error": "No initial annotations found"}))
         sys.exit(1)
 
-    annotated_count = len(annotations)
-    print(f"\n  Found {annotated_count}/{len(runs)} annotations")
-
-    # Check all runs are annotated
-    unannotated = [r.query_id for r in runs if r.query_id not in annotations]
-    if unannotated:
-        print(f"  ⚠ Unannotated queries: {', '.join(unannotated)}")
-        print("  Continuing with available annotations...")
-
-    # Build LKO groups
-    query_ids = [r.query_id for r in runs if r.query_id in annotations]
-    groups = [query_ids[i:i + k] for i in range(0, len(query_ids), k)]
-
-    print(f"\n[2] Running {len(groups)} LKO iterations (k={k})...")
-
-    schema = get_schema(Path(state.program_path))
+    schema = get_schema(program_path)
+    nl_field = get_nl_field(schema)
     input_props = schema.get("input", {}).get("properties", {})
-    if "query" in input_props:
-        nl_field = "query"
-    elif "prompt" in input_props:
-        nl_field = "prompt"
-    else:
-        nl_field = next(
-            (k_name for k_name, v in input_props.items() if v.get("type") == "string"),
-            "prompt",
-        )
 
-    iteration_batch_start = datetime.now(timezone.utc).isoformat()
+    # Build annotated query list
+    annotated_ids = [r["query_id"] for r in state.initial_runs if r["query_id"] in local_anns]
+    groups = [annotated_ids[i:i + k] for i in range(0, len(annotated_ids), k)]
 
-    def _run_lko_group(group_idx: int, held_out_ids: list[str]) -> list[QueryRun]:
-        """Run a single LKO iteration for held-out group."""
-        # Build feedback from N-K annotations
-        train_annotations = [
-            annotations[qid] for qid in query_ids if qid not in held_out_ids
-        ]
+    iteration_start = datetime.now(timezone.utc).isoformat()
 
-        # Improve program
+    def _run_lko_group(group_idx: int, held_out_ids: list[str]) -> list[dict]:
+        # Build N-K feedback
+        train_anns = []
+        for qid in annotated_ids:
+            if qid in held_out_ids:
+                continue
+            ann = local_anns[qid]
+            run = next(r for r in state.initial_runs if r["query_id"] == qid)
+            train_anns.append({
+                "query": run["query_text"],
+                "output": run["raw_output"],
+                "label": ann["label"],
+                "reasoning": ann.get("reasoning"),
+            })
+
+        # Improve
         try:
             response = improve_program(
-                skill_instructions, program_code, train_annotations, state.is_agent
+                skill_instructions, program_code, train_anns, state.is_agent
             )
             improved_code = response.parse().code
         except Exception as e:
-            print(f"  Group {group_idx}: improvement failed: {e}")
-            return [
-                QueryRun(
-                    query_id=qid,
-                    query_text=next(r.query_text for r in runs if r.query_id == qid),
-                    input_json={},
-                    error=f"Improvement failed: {e}",
-                )
-                for qid in held_out_ids
-            ]
+            return [{
+                "query_id": qid, "query_text": "", "input_json": {},
+                "raw_output": "", "error": f"Improvement failed: {e}",
+                "run_start": "", "run_end": "",
+                "trace_id": None, "span_id": None,
+            } for qid in held_out_ids]
 
-        # Save improved program
         improved_path = output_dir / f"program_lko_{group_idx}.py"
         improved_path.write_text(improved_code)
 
-        # Validate
         valid, error = validate_program(improved_path)
         if not valid:
-            print(f"  Group {group_idx}: improved program invalid: {error}")
-            return [
-                QueryRun(
-                    query_id=qid,
-                    query_text=next(r.query_text for r in runs if r.query_id == qid),
-                    input_json={},
-                    error=f"Invalid program: {error}",
-                )
-                for qid in held_out_ids
-            ]
+            return [{
+                "query_id": qid, "query_text": "", "input_json": {},
+                "raw_output": "", "error": f"Invalid program: {error}",
+                "run_start": "", "run_end": "",
+                "trace_id": None, "span_id": None,
+            } for qid in held_out_ids]
 
         improved_schema = get_schema(improved_path)
+        improved_nl_field = get_nl_field(improved_schema)
         improved_input_props = improved_schema.get("input", {}).get("properties", {})
-        if "query" in improved_input_props:
-            improved_nl_field = "query"
-        elif "prompt" in improved_input_props:
-            improved_nl_field = "prompt"
-        else:
-            improved_nl_field = next(
-                (k_name for k_name, v in improved_input_props.items() if v.get("type") == "string"),
-                "prompt",
-            )
 
-        # Run held-out queries
         results = []
         for qid in held_out_ids:
             query = next(q for q in sample.queries if q.id == qid)
@@ -673,206 +594,64 @@ def cmd_iterate(args: argparse.Namespace) -> None:
 
             run_start = datetime.now(timezone.utc).isoformat()
             try:
-                stdout, stderr = run_program(improved_path, json.dumps(input_data))
+                result = run_uv(improved_path, "--input", json.dumps(input_data), timeout=180)
                 run_end = datetime.now(timezone.utc).isoformat()
-                if stderr and not stdout.strip():
-                    results.append(QueryRun(
-                        query_id=qid,
-                        query_text=query.text,
-                        input_json=input_data,
-                        raw_output=stderr,
-                        error=f"Program error: {stderr[:300]}",
-                        run_start=run_start,
-                        run_end=run_end,
-                    ))
-                else:
-                    results.append(QueryRun(
-                        query_id=qid,
-                        query_text=query.text,
-                        input_json=input_data,
-                        raw_output=stdout,
-                        run_start=run_start,
-                        run_end=run_end,
-                    ))
-            except Exception as e:
-                results.append(QueryRun(
-                    query_id=qid,
-                    query_text=query.text,
-                    input_json=input_data,
-                    error=f"Execution failed: {e}",
-                    run_start=run_start,
-                    run_end=datetime.now(timezone.utc).isoformat(),
-                ))
+                error_msg = None
+                raw = result.stdout
+                if result.stderr and not result.stdout.strip():
+                    error_msg = result.stderr[:500]
+                    raw = result.stderr
 
-        print(f"  Group {group_idx} ({', '.join(held_out_ids)}): done")
+                results.append({
+                    "query_id": qid, "query_text": query.text,
+                    "input_json": input_data, "raw_output": raw,
+                    "error": error_msg,
+                    "run_start": run_start, "run_end": run_end,
+                    "trace_id": None, "span_id": None,
+                })
+            except Exception as e:
+                results.append({
+                    "query_id": qid, "query_text": query.text,
+                    "input_json": input_data, "raw_output": "",
+                    "error": str(e),
+                    "run_start": run_start,
+                    "run_end": datetime.now(timezone.utc).isoformat(),
+                    "trace_id": None, "span_id": None,
+                })
         return results
 
-    # Run all LKO groups in parallel
     max_workers = min(len(groups), 10)
-    all_iteration_runs: list[QueryRun] = []
+    group_results: dict[int, list[dict]] = {}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_group = {
-            executor.submit(_run_lko_group, i, group): i
-            for i, group in enumerate(groups)
+        future_to_idx = {
+            executor.submit(_run_lko_group, i, g): i for i, g in enumerate(groups)
         }
-        group_results: dict[int, list[QueryRun]] = {}
-        for future in concurrent.futures.as_completed(future_to_group):
-            idx = future_to_group[future]
-            group_results[idx] = future.result()
+        for future in concurrent.futures.as_completed(future_to_idx):
+            group_results[future_to_idx[future]] = future.result()
 
-    # Flatten in order
+    all_runs: list[dict] = []
     for i in range(len(groups)):
-        all_iteration_runs.extend(group_results[i])
+        all_runs.extend(group_results[i])
 
-    iteration_batch_end = datetime.now(timezone.utc).isoformat()
+    iteration_end = datetime.now(timezone.utc).isoformat()
 
-    # Wait and match traces
-    print("\n  Waiting for traces to export...")
     time.sleep(5)
-    print("  Matching iteration runs to traces...")
-    all_iteration_runs = find_traces_for_runs(
-        all_iteration_runs, iteration_batch_start, iteration_batch_end
-    )
-    matched = sum(1 for r in all_iteration_runs if r.trace_id)
-    print(f"  Matched {matched}/{len(all_iteration_runs)} runs to traces")
+    all_runs = find_traces_for_runs(all_runs, iteration_start, iteration_end)
 
-    # Update state
-    state.iteration_runs = [r.to_dict() for r in all_iteration_runs]
+    state.iteration_runs = all_runs
     state.iteration_k = k
     state.phase = "iterated"
     state.save(output_dir)
 
-    print(f"\n{'='*60}")
-    print(f"LKO COMPLETE: {len(all_iteration_runs)} held-out queries run")
-    print(f"{'='*60}")
-    print(f"\nNext: ./run_eval.py annotate --output {output_dir} --phase iteration [--file annotations.json]")
-    print(f"Then: ./run_eval.py report --output {output_dir}")
-
-
-# ---------------------------------------------------------------------------
-# Subcommand: annotate
-# ---------------------------------------------------------------------------
-
-def cmd_annotate(args: argparse.Namespace) -> None:
-    """Annotate query runs with pass/fail + reasoning.
-
-    Modes:
-      --interactive: prompt for each query via stdin
-      --file FILE:   read annotations from JSON file
-
-    Annotation file format:
-    [
-      {"query_id": "q01", "label": "pass"},
-      {"query_id": "q02", "label": "fail", "reasoning": "Missing tax calculation"}
-    ]
-    """
-    output_dir = Path(args.output)
-    state = EvalState.load(output_dir)
-    phase = args.phase
-
-    if phase == "initial":
-        runs = [QueryRun(**r) for r in state.initial_runs]
-    elif phase == "iteration":
-        if not state.iteration_runs:
-            print("No iteration runs found. Run 'iterate' first.")
-            sys.exit(1)
-        runs = [QueryRun(**r) for r in state.iteration_runs]
-    else:
-        print(f"Unknown phase: {phase}")
-        sys.exit(1)
-
-    print(f"{'='*60}")
-    print(f"ANNOTATE: {state.sample_id} ({phase})")
-    print(f"{'='*60}")
-
-    # Build annotations
-    annotations: list[dict] = []
-
-    if args.file:
-        # Read from file
-        file_annotations = json.loads(Path(args.file).read_text())
-        ann_map = {a["query_id"]: a for a in file_annotations}
-        for run in runs:
-            if run.query_id in ann_map:
-                a = ann_map[run.query_id]
-                annotations.append({
-                    "run": run,
-                    "label": a["label"],
-                    "reasoning": a.get("reasoning"),
-                })
-    else:
-        # Interactive mode
-        for run in runs:
-            print(f"\n{'─'*50}")
-            print(f"Query [{run.query_id}]: {run.query_text}")
-            print(f"{'─'*50}")
-            if run.error:
-                print(f"ERROR: {run.error}")
-            else:
-                print(f"Output:\n{run.raw_output}")
-            print()
-
-            while True:
-                verdict = input("  pass/fail (p/f)? ").strip().lower()
-                if verdict in ("p", "pass"):
-                    label = "pass"
-                    break
-                elif verdict in ("f", "fail"):
-                    label = "fail"
-                    break
-                print("  Enter 'p' or 'f'")
-
-            reasoning = None
-            if label == "fail":
-                reasoning = input("  Reasoning: ").strip() or None
-
-            annotations.append({
-                "run": run,
-                "label": label,
-                "reasoning": reasoning,
-            })
-
-    # Write annotations to API
-    client = get_sync_client()
-    written = 0
-    skipped = 0
-
-    for ann in annotations:
-        run: QueryRun = ann["run"]
-        if not run.trace_id or not run.span_id:
-            print(f"  ⚠ {run.query_id}: no trace linked, skipping API write")
-            skipped += 1
-            continue
-
-        try:
-            client.annotations.create(
-                otel_span_id=run.span_id,
-                otel_trace_id=run.trace_id,
-                label=ann["label"],
-                reasoning=ann.get("reasoning"),
-            )
-            symbol = "✓" if ann["label"] == "pass" else "✗"
-            print(f"  {symbol} {run.query_id}: {ann['label']}")
-            written += 1
-        except Exception as e:
-            print(f"  ⚠ {run.query_id}: API error: {e}")
-            skipped += 1
-
-    # Also save annotations locally as backup
-    local_annotations = [
-        {
-            "query_id": ann["run"].query_id,
-            "label": ann["label"],
-            "reasoning": ann.get("reasoning"),
-        }
-        for ann in annotations
-    ]
-    ann_file = output_dir / f"annotations_{phase}.json"
-    ann_file.write_text(json.dumps(local_annotations, indent=2))
-
-    print(f"\n  Written: {written}, Skipped: {skipped}")
-    print(f"  Saved locally: {ann_file}")
+    results = [{
+        "query_id": r["query_id"],
+        "query_text": r["query_text"],
+        "output": r["raw_output"],
+        "error": r["error"],
+        "has_trace": r["trace_id"] is not None,
+    } for r in all_runs]
+    print(json.dumps({"ok": True, "results": results}, indent=2))
 
 
 # ---------------------------------------------------------------------------
@@ -880,103 +659,29 @@ def cmd_annotate(args: argparse.Namespace) -> None:
 # ---------------------------------------------------------------------------
 
 def cmd_report(args: argparse.Namespace) -> None:
-    """Compute pass rates from annotations."""
     output_dir = Path(args.output)
     state = EvalState.load(output_dir)
 
-    print(f"{'='*60}")
-    print(f"REPORT: {state.sample_id}")
-    print(f"{'='*60}")
+    initial_anns = load_local_annotations(output_dir, "initial")
+    iter_anns = load_local_annotations(output_dir, "iteration")
 
-    # Get initial annotations
-    print("\n[Initial Run]")
-    initial_runs = [QueryRun(**r) for r in state.initial_runs]
-    local_initial = load_local_annotations(output_dir, "initial")
-    initial_pass = 0
-    initial_fail = 0
-    initial_unannotated = 0
-
-    for run in initial_runs:
-        ann = get_annotations_for_run(run, local_initial)
-        if ann:
-            label = ann["label"]
-            if label == "pass":
-                initial_pass += 1
-                print(f"  ✓ {run.query_id}: pass")
-            else:
-                initial_fail += 1
-                reason = ann.get("reasoning", "")
-                print(f"  ✗ {run.query_id}: fail — {reason[:60]}")
-        else:
-            initial_unannotated += 1
-            print(f"  ? {run.query_id}: (no annotation)")
-
-    initial_total = initial_pass + initial_fail
+    initial_pass = sum(1 for a in initial_anns.values() if a["label"] == "pass")
+    initial_total = len(initial_anns)
     initial_rate = initial_pass / initial_total if initial_total else 0
 
-    # Get iteration annotations
-    iter_pass = 0
-    iter_fail = 0
-    iter_unannotated = 0
-
-    if state.iteration_runs:
-        print(f"\n[Post-LKO (k={state.iteration_k})]")
-        iteration_runs = [QueryRun(**r) for r in state.iteration_runs]
-        local_iter = load_local_annotations(output_dir, "iteration")
-
-        for run in iteration_runs:
-            ann = get_annotations_for_run(run, local_iter)
-            if ann:
-                label = ann["label"]
-                if label == "pass":
-                    iter_pass += 1
-                    print(f"  ✓ {run.query_id}: pass")
-                else:
-                    iter_fail += 1
-                    reason = ann.get("reasoning", "")
-                    print(f"  ✗ {run.query_id}: fail — {reason[:60]}")
-            else:
-                iter_unannotated += 1
-                print(f"  ? {run.query_id}: (no annotation)")
-
-    iter_total = iter_pass + iter_fail
+    iter_pass = sum(1 for a in iter_anns.values() if a["label"] == "pass")
+    iter_total = len(iter_anns)
     iter_rate = iter_pass / iter_total if iter_total else 0
-
-    # Compute improvements
-    initial_ann_map = {}
-    for run in initial_runs:
-        ann = get_annotations_for_run(run, local_initial)
-        if ann:
-            initial_ann_map[run.query_id] = ann["label"]
 
     fixed = 0
     regressed = 0
-    if state.iteration_runs:
-        iteration_runs = [QueryRun(**r) for r in state.iteration_runs]
-        for run in iteration_runs:
-            ann = get_annotations_for_run(run, local_iter if state.iteration_runs else {})
-            if not ann or run.query_id not in initial_ann_map:
-                continue
-            initial_label = initial_ann_map[run.query_id]
-            iter_label = ann["label"]
-            if initial_label == "fail" and iter_label == "pass":
+    for qid in iter_anns:
+        if qid in initial_anns:
+            if initial_anns[qid]["label"] == "fail" and iter_anns[qid]["label"] == "pass":
                 fixed += 1
-            elif initial_label == "pass" and iter_label == "fail":
+            elif initial_anns[qid]["label"] == "pass" and iter_anns[qid]["label"] == "fail":
                 regressed += 1
 
-    # Summary
-    print(f"\n{'='*60}")
-    print(f"RESULTS: {state.sample_id}")
-    print(f"{'='*60}")
-    print(f"  Initial:        {initial_pass}/{initial_total} ({initial_rate:.0%})")
-    if state.iteration_runs:
-        print(f"  Post-LKO:       {iter_pass}/{iter_total} ({iter_rate:.0%})")
-        print(f"  Fixed:          {fixed}")
-        print(f"  Regressed:      {regressed}")
-    if initial_unannotated or iter_unannotated:
-        print(f"  Unannotated:    {initial_unannotated} initial, {iter_unannotated} iteration")
-
-    # Save report
     report = {
         "sample_id": state.sample_id,
         "skill_type": state.skill_type,
@@ -984,15 +689,16 @@ def cmd_report(args: argparse.Namespace) -> None:
         "initial_pass_rate": initial_rate,
         "initial_pass": initial_pass,
         "initial_total": initial_total,
-        "post_lko_pass_rate": iter_rate if state.iteration_runs else None,
+        "post_lko_pass_rate": iter_rate if iter_total else None,
         "post_lko_pass": iter_pass,
         "post_lko_total": iter_total,
         "fixed": fixed,
         "regressed": regressed,
         "k": state.iteration_k,
     }
+
     (output_dir / "report.json").write_text(json.dumps(report, indent=2))
-    print(f"\n  Report: {output_dir / 'report.json'}")
+    print(json.dumps(report, indent=2))
 
 
 # ---------------------------------------------------------------------------
@@ -1001,31 +707,29 @@ def cmd_report(args: argparse.Namespace) -> None:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Eval pipeline with human-in-the-loop scoring via Mirascope trace annotations. "
+        description="Eval pipeline — atomic subcommands for agent orchestration. "
                     "Requires MIRASCOPE_API_KEY env var.",
     )
-    subparsers = parser.add_subparsers(dest="command", required=True)
+    sub = parser.add_subparsers(dest="command", required=True)
 
-    # run
-    run_parser = subparsers.add_parser("run", help="Generate program + run all queries")
-    run_parser.add_argument("--sample", required=True, help="Path to sample YAML")
-    run_parser.add_argument("--output", required=True, help="Output directory")
+    p = sub.add_parser("generate", help="Generate program from sample")
+    p.add_argument("--sample", required=True)
+    p.add_argument("--output", required=True)
 
-    # iterate
-    iter_parser = subparsers.add_parser("iterate", help="Read annotations, run LKO improvement")
-    iter_parser.add_argument("--output", required=True, help="Output directory (from run)")
-    iter_parser.add_argument("--k", type=int, default=1, help="Leave-K-out (default: 1)")
+    p = sub.add_parser("run", help="Run all queries against program")
+    p.add_argument("--output", required=True)
 
-    # annotate
-    ann_parser = subparsers.add_parser("annotate", help="Annotate runs with pass/fail + reasoning")
-    ann_parser.add_argument("--output", required=True, help="Output directory")
-    ann_parser.add_argument("--phase", required=True, choices=["initial", "iteration"],
-                           help="Which phase to annotate")
-    ann_parser.add_argument("--file", help="JSON file with annotations (otherwise interactive)")
+    p = sub.add_parser("annotate", help="Write annotations from JSON file")
+    p.add_argument("--output", required=True)
+    p.add_argument("--phase", required=True, choices=["initial", "iteration"])
+    p.add_argument("--file", required=True, help="JSON annotation file")
 
-    # report
-    report_parser = subparsers.add_parser("report", help="Compute pass rates from annotations")
-    report_parser.add_argument("--output", required=True, help="Output directory")
+    p = sub.add_parser("iterate", help="LKO improvement using annotations")
+    p.add_argument("--output", required=True)
+    p.add_argument("--k", type=int, default=1)
+
+    p = sub.add_parser("report", help="Compute pass rates")
+    p.add_argument("--output", required=True)
 
     args = parser.parse_args()
 
@@ -1035,14 +739,8 @@ def main():
     ops.configure()
     ops.instrument_llm()
 
-    if args.command == "run":
-        cmd_run(args)
-    elif args.command == "annotate":
-        cmd_annotate(args)
-    elif args.command == "iterate":
-        cmd_iterate(args)
-    elif args.command == "report":
-        cmd_report(args)
+    {"generate": cmd_generate, "run": cmd_run, "annotate": cmd_annotate,
+     "iterate": cmd_iterate, "report": cmd_report}[args.command](args)
 
 
 if __name__ == "__main__":

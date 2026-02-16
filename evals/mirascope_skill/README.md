@@ -23,26 +23,30 @@ evals/mirascope_skill/
 
 ## Running
 
+The eval is designed to be orchestrated by an agent (e.g. Knox) that presents outputs
+to a human reviewer and collects feedback between steps. Each subcommand outputs JSON.
+
 ```bash
 cd evals/mirascope_skill
+export MIRASCOPE_API_KEY=...
 
-# 1. Generate program + run all queries (creates traces in Mirascope Cloud)
-MIRASCOPE_API_KEY=... ./skill/run_eval.py run \
-  --sample samples/invoice_generator/sample_001.yaml \
-  --output results/invoice_eval/
+# 1. Generate program from sample
+./skill/run_eval.py generate --sample samples/invoice_generator/sample_001.yaml --output results/eval/
 
-# 2. Review traces in Mirascope Cloud, annotate each with pass/fail + reasoning
+# 2. Run all queries (parallel, creates traces)
+./skill/run_eval.py run --output results/eval/
 
-# 3. Run LKO iteration (reads annotations, improves program, runs held-out queries)
-MIRASCOPE_API_KEY=... ./skill/run_eval.py iterate \
-  --output results/invoice_eval/ \
-  --k 1
+# 3. Agent presents outputs to human, collects pass/fail + reasoning, writes JSON file
+./skill/run_eval.py annotate --output results/eval/ --phase initial --file annotations.json
 
-# 4. Annotate the new traces
+# 4. LKO iteration (reads annotations, improves program, runs held-out queries)
+./skill/run_eval.py iterate --output results/eval/ --k 1
 
-# 5. Compute final report
-MIRASCOPE_API_KEY=... ./skill/run_eval.py report \
-  --output results/invoice_eval/
+# 5. Agent presents new outputs, collects scoring
+./skill/run_eval.py annotate --output results/eval/ --phase iteration --file annotations_iter.json
+
+# 6. Compute report
+./skill/run_eval.py report --output results/eval/
 ```
 
 ## Eval Pipeline
