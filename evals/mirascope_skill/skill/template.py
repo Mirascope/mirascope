@@ -31,7 +31,7 @@ class ProgramOutput(BaseModel):
 
 
 @ops.trace(tags=["template"])
-@llm.call("anthropic/claude-sonnet-4-5", format=ProgramOutput)
+@llm.call("anthropic/claude-sonnet-4-20250514", format=ProgramOutput)
 def generate_result(input_data: ProgramInput) -> str:
     """Descriptive function name for better trace names."""
     return f"Process this request: {input_data.prompt}"
