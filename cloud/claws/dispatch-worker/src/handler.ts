@@ -310,7 +310,7 @@ async function startGatewayOrError(
 }
 
 /**
- * Proxy a WebSocket request, guarding against double token injection.
+ * Proxy a WebSocket request, injecting token and Origin header as needed.
  */
 function proxyWs(
   sandbox: Sandbox,
@@ -319,14 +319,26 @@ function proxyWs(
   gatewayToken: string | undefined,
   log: Logger,
 ): Promise<Response> {
-  if (gatewayToken) {
-    const wsUrl = new URL(request.url);
-    // Guard against double token injection — only inject if not already present
-    if (!wsUrl.searchParams.has("token")) {
-      wsUrl.searchParams.set("token", gatewayToken);
-      const authenticatedRequest = new Request(wsUrl.toString(), request);
-      return proxyWebSocket(sandbox, authenticatedRequest, basePath, log);
-    }
+  const wsUrl = new URL(request.url);
+
+  // Inject token if not already present
+  if (gatewayToken && !wsUrl.searchParams.has("token")) {
+    wsUrl.searchParams.set("token", gatewayToken);
   }
-  return proxyWebSocket(sandbox, request, basePath, log);
+
+  // Inject Origin header if missing — upstream proxies strip it on server-to-server
+  // WS upgrades, but the gateway requires it for allowedOrigins checks.
+  const headers = new Headers(request.headers);
+  if (!headers.get("Origin")) {
+    const origin = wsUrl.origin;
+    headers.set("Origin", origin);
+    log.info("ws", `injected Origin: ${origin}`);
+  }
+
+  const proxiedRequest = new Request(wsUrl.toString(), {
+    headers,
+    method: request.method,
+  });
+
+  return proxyWebSocket(sandbox, proxiedRequest, basePath, log);
 }
