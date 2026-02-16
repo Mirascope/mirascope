@@ -1,0 +1,343 @@
+version: "1.0"
+skill_type: "scheduling_agent"
+sample_id: "scheduling-001-tool-agent"
+created_at: "2026-02-14T07:00:00Z"
+
+metadata:
+  description: "Calendar scheduling agent with tool-based interactions"
+  tags: ["agent", "tools", "calendar", "booking"]
+  difficulty: "hard"
+
+bootstrap:
+  prompt: |
+    Create a scheduling assistant that helps users manage their calendar.
+    It should be able to:
+    - Check availability for specific dates
+    - Book appointments with client name, email, time, and duration
+    - Send confirmation messages after booking
+    - Reschedule existing appointments
+    - Cancel appointments
+    - Handle conflicts gracefully by suggesting alternatives
+    
+    Business hours are 9am-5pm. The agent should refuse requests outside these hours.
+    
+    Use mirascope tools for each capability. The agent should use an agentic loop
+    to execute multiple tools when needed (e.g., check availability, then book, then confirm).
+  specificity: "detailed"
+  professionalism: "neutral"
+  expected_capabilities:
+    - "check_availability tool"
+    - "book_appointment tool"
+    - "send_confirmation tool"
+    - "reschedule_appointment tool"
+    - "cancel_appointment tool"
+    - "list_appointments tool"
+    - "agentic loop for multi-step operations"
+    - "business hours enforcement"
+
+test_state:
+  today: "2025-02-15"
+  existing_appointments:
+    - id: "apt_0001"
+      client_name: "Alice Johnson"
+      client_email: "alice@example.com"
+      start: "2025-02-17T09:00"
+      end: "2025-02-17T10:00"
+    - id: "apt_0002"
+      client_name: "Bob Smith"
+      client_email: "bob@example.com"
+      start: "2025-02-17T14:00"
+      end: "2025-02-17T15:00"
+
+queries:
+  # --- Group 1: Simple booking (happy path) ---
+  - id: "q01"
+    text: "Book a meeting with John Smith (john@example.com) tomorrow at 2pm for 30 minutes"
+    expected:
+      invokes_tools: ["check_availability", "book_appointment", "send_confirmation"]
+      output_contains:
+        - "John Smith"
+        - "2"
+        - "booked"
+
+  - id: "q01b"
+    text: "Schedule an appointment with Maria Garcia (maria@test.com) tomorrow at 10am for 1 hour"
+    expected:
+      invokes_tools: ["check_availability", "book_appointment", "send_confirmation"]
+      output_contains:
+        - "Maria Garcia"
+        - "10"
+
+  - id: "q01c"
+    text: "Please book a 45-minute session with David Lee (david.lee@corp.com) tomorrow at 3:30pm"
+    expected:
+      invokes_tools: ["check_availability", "book_appointment", "send_confirmation"]
+      output_contains:
+        - "David Lee"
+        - "3"
+
+  - id: "q01d"
+    text: "Set up a meeting with Priya Patel (priya@startup.io) tomorrow at 11:15am, 30 minutes"
+    expected:
+      invokes_tools: ["check_availability", "book_appointment", "send_confirmation"]
+      output_contains:
+        - "Priya Patel"
+        - "11"
+
+  # --- Group 2: Check availability only (must NOT book) ---
+  - id: "q02"
+    text: "What times are available on Monday?"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_excludes:
+        - "booked"
+
+  - id: "q02b"
+    text: "Show me the open slots for Monday please"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_excludes:
+        - "booked"
+
+  - id: "q02c"
+    text: "I want to see what's free on Monday before I decide"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_excludes:
+        - "booked"
+
+  - id: "q02d"
+    text: "Are there any openings on Monday afternoon?"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_excludes:
+        - "booked"
+
+  # --- Group 3: Conflict handling ---
+  # These overlap with existing appointments. Agent should detect the conflict
+  # and NOT just book over it.
+  - id: "q03"
+    text: "I need to book someone at 9:30am on Monday"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_excludes:
+        - "successfully booked"
+
+  - id: "q03b"
+    text: "Can I get a meeting at 9am on Monday for an hour?"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_excludes:
+        - "successfully booked"
+
+  - id: "q03c"
+    text: "Book a slot at 2:15pm on Monday"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_excludes:
+        - "successfully booked"
+
+  - id: "q03d"
+    text: "I want to schedule something at 9:45am Monday"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_excludes:
+        - "successfully booked"
+
+  # --- Group 4: Rescheduling ---
+  - id: "q04"
+    text: "Move Alice's appointment on Monday from 9am to 11am"
+    expected:
+      invokes_tools: ["reschedule_appointment"]
+      output_contains:
+        - "Alice"
+        - "11"
+
+  - id: "q04b"
+    text: "Reschedule Alice Johnson's Monday meeting to 3pm instead"
+    expected:
+      invokes_tools: ["reschedule_appointment"]
+      output_contains:
+        - "Alice"
+        - "3"
+
+  - id: "q04c"
+    text: "Can you push Bob's 2pm appointment on Monday to 4pm?"
+    expected:
+      invokes_tools: ["reschedule_appointment"]
+      output_contains:
+        - "Bob"
+        - "4"
+
+  - id: "q04d"
+    text: "Bob Smith needs to move his Monday appointment to 10:30am"
+    expected:
+      invokes_tools: ["reschedule_appointment"]
+      output_contains:
+        - "Bob"
+        - "10"
+
+  # --- Group 5: Cancellation ---
+  - id: "q05"
+    text: "Cancel Bob's appointment"
+    expected:
+      invokes_tools: ["cancel_appointment"]
+      output_contains:
+        - "Bob"
+        - "cancel"
+
+  - id: "q05b"
+    text: "Please remove Bob Smith's meeting from the calendar"
+    expected:
+      invokes_tools: ["cancel_appointment"]
+      output_contains:
+        - "Bob"
+
+  - id: "q05c"
+    text: "Alice Johnson needs to cancel her Monday appointment"
+    expected:
+      invokes_tools: ["cancel_appointment"]
+      output_contains:
+        - "Alice"
+
+  - id: "q05d"
+    text: "Delete the 2pm appointment on Monday"
+    expected:
+      invokes_tools: ["cancel_appointment"]
+
+  # --- Group 6: Outside business hours (rejection) ---
+  # Agent may check availability first, but must ultimately refuse.
+  # Output should mention the time constraint but wording varies.
+  - id: "q06"
+    text: "Book a meeting with night-owl@example.com at 3am tomorrow"
+    expected:
+      invokes_tools: []
+      output_excludes:
+        - "booked"
+        - "confirmed"
+
+  - id: "q06b"
+    text: "Schedule something for 7am tomorrow with early@bird.com"
+    expected:
+      invokes_tools: []
+      output_excludes:
+        - "booked"
+        - "confirmed"
+
+  - id: "q06c"
+    text: "Can I book a 6pm meeting tomorrow? late@worker.com"
+    expected:
+      invokes_tools: []
+      output_excludes:
+        - "booked"
+        - "confirmed"
+
+  - id: "q06d"
+    text: "I need a meeting at 11pm tonight with urgent@client.com"
+    expected:
+      invokes_tools: []
+      output_excludes:
+        - "booked"
+        - "confirmed"
+
+  # --- Group 7: Ambiguous/vague booking request ---
+  - id: "q07"
+    text: "Can you squeeze me in tomorrow afternoon?"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_contains:
+        - "available"
+
+  - id: "q07b"
+    text: "I need some time tomorrow morning, what works?"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_contains:
+        - "available"
+
+  - id: "q07c"
+    text: "Find me a slot sometime this week"
+    expected:
+      invokes_tools: ["check_availability"]
+
+  - id: "q07d"
+    text: "Is there room for a quick meeting tomorrow?"
+    expected:
+      invokes_tools: ["check_availability"]
+
+  # --- Group 8: Multi-party coordination ---
+  # Agent needs to check existing appointments somehow — may use list_appointments,
+  # check_availability, or both. Just verify it looks up availability.
+  - id: "q08"
+    text: "Find a time on Monday that works for both Alice and Bob"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_contains:
+        - "Alice"
+        - "Bob"
+
+  - id: "q08b"
+    text: "When are both Alice Johnson and Bob Smith free on Monday?"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_contains:
+        - "Alice"
+        - "Bob"
+
+  - id: "q08c"
+    text: "I need to schedule a meeting with Alice and Bob together on Monday"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_contains:
+        - "Alice"
+        - "Bob"
+
+  # --- Group 9: Duration constraint ---
+  - id: "q09"
+    text: "I need a 3-hour meeting on Monday"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_contains:
+        - "3"
+
+  - id: "q09b"
+    text: "Find a 2-hour block on Monday for a workshop"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_contains:
+        - "2"
+
+  - id: "q09c"
+    text: "Is there space for a 4-hour session on Monday?"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_contains:
+        - "4"
+
+  - id: "q09d"
+    text: "I need 90 minutes on Monday, what's available?"
+    expected:
+      invokes_tools: ["check_availability"]
+      output_contains:
+        - "90"
+
+  # --- Group 10: Non-scheduling (rejection) ---
+  - id: "q10"
+    text: "What's the weather like today?"
+    expected:
+      invokes_tools: []
+
+  - id: "q10b"
+    text: "Can you help me draft an email?"
+    expected:
+      invokes_tools: []
+
+  - id: "q10c"
+    text: "What's the square root of 144?"
+    expected:
+      invokes_tools: []
+
+  - id: "q10d"
+    text: "Tell me about the history of calendars"
+    expected:
+      invokes_tools: []
