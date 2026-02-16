@@ -12,6 +12,7 @@ type FetchHandler = (
 ) => Response | Promise<Response>;
 
 const STAGING_HOSTNAME = "staging.mirascope.com";
+const DEV_HOSTNAME = "mirascope.dev";
 const PRODUCTION_HOSTNAME = "mirascope.com";
 const COOKIE_NAME = "staging_session";
 const SESSION_TOKEN = "ok";
@@ -25,7 +26,9 @@ type StagingContext = {
 };
 
 function isStaging(ctx: StagingContext): boolean {
-  return ctx.url.hostname === STAGING_HOSTNAME;
+  return (
+    ctx.url.hostname === STAGING_HOSTNAME || ctx.url.hostname === DEV_HOSTNAME
+  );
 }
 
 /** Returns true for any non-production environment (staging, dev, etc.) */

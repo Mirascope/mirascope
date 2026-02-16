@@ -14,7 +14,7 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_classes": ["RealtimeSpansDurableObject"],
+      "new_sqlite_classes": ["RealtimeSpansDurableObject"],
     },
   ],
   "env": {
@@ -121,11 +121,11 @@
         "ENVIRONMENT": "dev",
         "SITE_URL": "https://mirascope.dev",
         "CF_DISPATCH_WORKER_BASE_URL": "https://openclaw.mirascope.dev",
-        "CLOUDFLARE_ACCOUNT_ID": "0257b70c7de82086ddc4e3480b0202e9",
-        "GITHUB_CLIENT_ID": "Ov23liQ8xP38D6RZ7BYm",
+        "CLOUDFLARE_ACCOUNT_ID": "4441167cd7f57593dc63ff77f3a139cf",
+        "GITHUB_CLIENT_ID": "Ov23lif7keMW2I3snMD7",
         "GITHUB_CALLBACK_URL": "https://mirascope.dev/auth/github/callback",
-        "GOOGLE_CLIENT_ID": "816621808414-aspfju0v2ovlc5rrqp7o71p7hmj804jk.apps.googleusercontent.com",
-        "GOOGLE_CALLBACK_URL": "https://mirascope.dev/auth/google/proxy-callback",
+        "GOOGLE_CLIENT_ID": "816621808414-9lqsv81shs98te4ikumumjmhpotsalpt.apps.googleusercontent.com",
+        "GOOGLE_CALLBACK_URL": "https://mirascope.dev/auth/google/callback",
         "VITE_STRIPE_PUBLISHABLE_KEY": "pk_test_51T09vKJrKbiSATHeiaV5yuyx0BFbRsEuimD87N8lwM317tv1OD3RtV823ZkvjGBiaIydZGTBVax46PATx8IlmwXa00KqYP45B7",
         "STRIPE_PUBLISHABLE_KEY": "pk_test_51T09vKJrKbiSATHeiaV5yuyx0BFbRsEuimD87N8lwM317tv1OD3RtV823ZkvjGBiaIydZGTBVax46PATx8IlmwXa00KqYP45B7",
         "STRIPE_ROUTER_PRICE_ID": "price_1T0CkBJrKbiSATHetCLH8oOp",
@@ -145,11 +145,14 @@
         "VITE_POSTHOG_HOST": "https://us.i.posthog.com",
         "VITE_POSTHOG_API_KEY": "phc_tnTm56utLwHvtXvjyIwj0rF1AKc6wgfLlczRRZ2dthy",
         "VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID": "G-DJHT1QG9GK",
+        "POSTHOG_HOST": "https://us.i.posthog.com",
+        "GOOGLE_ANALYTICS_MEASUREMENT_ID": "G-DJHT1QG9GK",
+        "CF_DO_NAMESPACE_ID": "6c99083a0a9f42b19ddd59b17cd786d1",
       },
       "hyperdrive": [
         {
           "binding": "HYPERDRIVE",
-          "id": "69280064caec4ebfa9c106d40c27bdbc",
+          "id": "301e8780613f41688d9788e8ddc7cf9c",
           "localConnectionString": "postgres://postgres:postgres@localhost:1234/stopgap",
         },
       ],
