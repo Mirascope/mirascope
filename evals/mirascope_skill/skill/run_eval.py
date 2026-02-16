@@ -1,4 +1,4 @@
-#!/usr/bin/env -S uv run --python 3.13
+#!/usr/bin/env -S uv run
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
@@ -329,6 +329,19 @@ def score_result(
         details["failed"].append("Failed to parse output as JSON")
         return False, details
 
+    # Check invokes_skill: false → expect rejection
+    if not query.expected.invokes_skill:
+        rejected = parsed_output.get("rejected", False)
+        check = "rejected (invokes_skill=false)"
+        details["checks"].append(check)
+        if rejected:
+            details["passed"].append(check)
+        else:
+            details["failed"].append(check)
+        # For rejection queries, only check rejection — skip content checks
+        passed = len(details["failed"]) == 0
+        return passed, details
+
     # Check output_contains
     output_str = raw_output.lower()
     for pattern in query.expected.output_contains:
@@ -446,7 +459,7 @@ def run_queries(
     return results
 
 
-def run_full_eval(sample_path: Path, output_dir: Path) -> EvalReport:
+def run_full_eval(sample_path: Path, output_dir: Path, *, skip_iteration: bool = False) -> EvalReport:
     """Run the complete eval pipeline."""
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -551,6 +564,48 @@ def run_full_eval(sample_path: Path, output_dir: Path) -> EvalReport:
     #   4. Record result
     # This gives unbiased estimation of post-iteration performance.
     # -------------------------------------------------------------------------
+    if skip_iteration:
+        print("\n[Phase 3] Skipped (--skip-iteration)")
+        iteration_results_list: list[IterationResult] = [
+            IterationResult(
+                query_id=q.id,
+                initial_passed=initial_results[i].passed,
+                improved_passed=initial_results[i].passed,
+                improvement="unchanged",
+            )
+            for i, q in enumerate(sample.queries)
+        ]
+        queries_fixed = 0
+        queries_regressed = 0
+        post_passed = initial_passed
+        post_pass_rate = initial_pass_rate
+
+        report = EvalReport(
+            sample_id=sample.sample_id,
+            skill_type=sample.skill_type,
+            timestamp=timestamp,
+            program_generated=True,
+            program_valid=True,
+            initial_results=initial_results,
+            initial_pass_rate=initial_pass_rate,
+            iteration_results=iteration_results_list,
+            post_iteration_pass_rate=post_pass_rate,
+            queries_fixed=queries_fixed,
+            queries_regressed=queries_regressed,
+        )
+
+        report_path = output_dir / "report.json"
+        report_path.write_text(json.dumps(report.to_dict(), indent=2))
+
+        print(f"\n{'='*60}")
+        print(f"RESULTS: {sample.sample_id}")
+        print(f"{'='*60}")
+        print(f"  Initial: {initial_passed}/{len(initial_results)} ({initial_pass_rate:.0%})")
+        print(f"  (LOO skipped)")
+        print(f"\n  Report: {report_path}")
+
+        return report
+
     print(f"\n[Phase 3] Leave-one-out cross validation...")
 
     iteration_results: list[IterationResult] = []
@@ -703,15 +758,26 @@ def run_full_eval(sample_path: Path, output_dir: Path) -> EvalReport:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run full eval pipeline")
+    parser = argparse.ArgumentParser(
+        description="Run full eval pipeline (bootstrap → score → iterate → report). "
+                    "Requires MIRASCOPE_API_KEY env var for LLM calls.",
+    )
     parser.add_argument("--sample", required=True, help="Path to sample YAML")
     parser.add_argument("--output", required=True, help="Output directory")
+    parser.add_argument(
+        "--skip-iteration",
+        action="store_true",
+        help="Skip Phase 3 (LOO cross-validation). Useful for quick initial eval.",
+    )
     args = parser.parse_args()
+
+    if not os.environ.get("MIRASCOPE_API_KEY"):
+        parser.error("MIRASCOPE_API_KEY env var is required")
 
     ops.configure()
     ops.instrument_llm()
 
-    report = run_full_eval(Path(args.sample), Path(args.output))
+    report = run_full_eval(Path(args.sample), Path(args.output), skip_iteration=args.skip_iteration)
     sys.exit(0 if report.initial_pass_rate == 1.0 else 1)
 
 
