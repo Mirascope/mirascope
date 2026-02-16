@@ -253,6 +253,8 @@ export function handlePreflight(
 
 export interface AuthSuccess {
   readonly clawId: string;
+  /** When auth was via Bearer token, the raw token value for downstream validation. */
+  readonly bearerToken?: string;
 }
 
 /**
@@ -293,10 +295,10 @@ export const authenticate = (
       });
     }
 
-    // Bearer token: pass through (gateway validates)
+    // Bearer token: capture for downstream validation against gateway token
     const authHeader = request.headers.get("Authorization");
     if (authHeader?.startsWith("Bearer ")) {
-      return { clawId };
+      return { clawId, bearerToken: authHeader.slice(7) };
     }
 
     // Session cookie: validate via Cloud API

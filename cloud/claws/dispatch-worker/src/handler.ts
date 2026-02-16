@@ -192,6 +192,16 @@ export async function handleProxy(
 
   const gatewayToken = config.containerEnv.OPENCLAW_GATEWAY_TOKEN;
 
+  // Validate Bearer token against the actual gateway token.
+  // The authenticate() layer captures the raw Bearer value but can't validate
+  // it because the gateway token isn't available until config is loaded.
+  if (auth.bearerToken) {
+    if (!gatewayToken || auth.bearerToken !== gatewayToken) {
+      log.info("auth", "Bearer token mismatch — rejecting");
+      return Response.json({ error: "Invalid token" }, { status: 403 });
+    }
+  }
+
   if (isWebSocket) {
     return proxyWs(sandbox, rewrittenRequest, basePath, gatewayToken, log);
   }
