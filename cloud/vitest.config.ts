@@ -26,6 +26,7 @@ export default defineConfig({
       ],
       exclude: [
         "app", // Currently manual testing only. We should cover this at some point
+        "api/claws-ws-proxy.ts", // Requires WebSocketPair + service bindings; tested via dispatch-worker integration tests
         "**.md",
         "**/index.ts",
         // dispatch-worker has its own package.json and own tests

@@ -5,7 +5,6 @@
  *
  *   Path                           Auth Method              Validated By
  *   /{org}/{claw}/webhook/*        Platform-specific        Gateway (pass-through)
- *   /{org}/{claw}/*  + Bearer      OPENCLAW_GATEWAY_TOKEN   Gateway (pass-through)
  *   /{org}/{claw}/*  + Cookie      Mirascope session        Dispatch worker → Cloud API
  *   /{org}/{claw}/*  (no auth)     Reject                   Dispatch worker (401)
  *   /_internal/*                   Service binding          Implicit (in-process)
@@ -291,12 +290,6 @@ export const authenticate = (
       return yield* new UnauthenticatedError({
         message: "WebSocket upgrade requires session authentication",
       });
-    }
-
-    // Bearer token: pass through (gateway validates)
-    const authHeader = request.headers.get("Authorization");
-    if (authHeader?.startsWith("Bearer ")) {
-      return { clawId };
     }
 
     // Session cookie: validate via Cloud API

@@ -152,16 +152,21 @@ export async function handleClawsWebSocket(
 
     // 6. Determine upstream gateway URL
     // Route through the dispatch worker which handles container lifecycle.
-    // The dispatch worker accepts Bearer token auth (gateway token) and
-    // proxies the WebSocket to the correct container.
+    // The dispatch worker authenticates via session cookie (forwarded from
+    // the original request), then proxies to the container gateway.
     const dispatchBaseUrl =
       settings.openclawGatewayWsUrl ??
       settings.cloudflare.dispatchWorkerBaseUrl;
     const upstreamUrl = `${dispatchBaseUrl.replace(/\/$/, "")}/${orgSlug}/${clawSlug}`;
 
+    // Forward the session cookie for dispatch worker auth.
+    // The gateway token is only used for the connect handshake with the
+    // gateway inside the container — it never leaves as a credential.
+    const cookieHeader = request.headers.get("Cookie");
+
     // 7. Connect to upstream gateway, perform handshake, and relay
     return yield* Effect.tryPromise({
-      try: () => connectAndRelay(upstreamUrl, gatewayToken),
+      try: () => connectAndRelay(upstreamUrl, gatewayToken, cookieHeader),
       catch: (cause) =>
         new DatabaseError({
           message: `Failed to connect to gateway: ${cause instanceof Error ? cause.message : String(cause)}`,
@@ -218,19 +223,19 @@ export async function handleClawsWebSocket(
 async function connectAndRelay(
   gatewayBaseUrl: string,
   gatewayToken: string,
+  cookieHeader: string | null,
 ): Promise<Response> {
   // Create WebSocket pair for browser ↔ proxy
   const [clientWs, serverWs] = Object.values(new WebSocketPair());
 
   // Connect to upstream via fetch + Upgrade
-  // Routes through the dispatch worker which proxies to the container gateway.
-  // Bearer token auth lets the dispatch worker identify and route to the claw.
-  const upstreamResponse = await fetch(gatewayBaseUrl, {
-    headers: {
-      Upgrade: "websocket",
-      Authorization: `Bearer ${gatewayToken}`,
-    },
-  });
+  // Routes through the dispatch worker which authenticates via session cookie.
+  // The gateway token is used later for the connect handshake with the gateway.
+  const headers: Record<string, string> = { Upgrade: "websocket" };
+  if (cookieHeader) {
+    headers.Cookie = cookieHeader;
+  }
+  const upstreamResponse = await fetch(gatewayBaseUrl, { headers });
 
   const upstreamWs = (upstreamResponse as unknown as { webSocket?: WebSocket })
     .webSocket;
