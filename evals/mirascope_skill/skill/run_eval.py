@@ -7,26 +7,40 @@
 #     "pyyaml>=6.0",
 # ]
 # ///
-"""Full eval pipeline: bootstrap → score → iterate (leave-one-out) → report.
+"""Eval pipeline with human-in-the-loop scoring via Mirascope trace annotations.
 
-Usage:
-    ./run_eval.py --sample samples/invoice_generator/sample_001.yaml --output results/eval_001/
+Subcommands:
+    run       Generate program from sample + run all queries (creates traces)
+    iterate   Read annotations from traces, run LKO improvement
+    report    Compute pass rates from annotations
+
+Workflow:
+    1. ./run_eval.py run --sample samples/invoice_generator/sample_001.yaml --output results/eval_001/
+    2. Review traces in Mirascope Cloud, annotate pass/fail with reasoning
+    3. ./run_eval.py iterate --output results/eval_001/ [--k 1]
+    4. Annotate new traces
+    5. ./run_eval.py report --output results/eval_001/
+
+Requires MIRASCOPE_API_KEY env var.
 """
 
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import json
 import os
 import subprocess
 import sys
+import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import yaml
 from mirascope import llm, ops
+from mirascope.api.client import get_sync_client
 from mirascope.llm import SystemMessage, UserMessage, Text
 from pydantic import BaseModel, Field
 
@@ -35,20 +49,9 @@ from pydantic import BaseModel, Field
 # ---------------------------------------------------------------------------
 
 
-class QueryExpected(BaseModel):
-    invokes_skill: bool = True
-    invokes_tools: list[str] = []
-    output_contains: list[str] = []
-    output_excludes: list[str] = []
-    semantic_requirements: list[str] = []
-
-
 class EvalQuery(BaseModel):
     id: str
     text: str
-    specificity: str = ""
-    professionalism: str = ""
-    expected: QueryExpected = Field(default_factory=QueryExpected)
 
 
 class Bootstrap(BaseModel):
@@ -82,7 +85,11 @@ class EvalSample(BaseModel):
     @classmethod
     def from_yaml(cls, path: str | Path) -> "EvalSample":
         with open(path) as f:
-            return cls.model_validate(yaml.safe_load(f))
+            raw = yaml.safe_load(f)
+        # Strip expected fields from queries — scoring is human-only
+        for q in raw.get("queries", []):
+            q.pop("expected", None)
+        return cls.model_validate(raw)
 
     @property
     def is_agent(self) -> bool:
@@ -90,74 +97,55 @@ class EvalSample(BaseModel):
 
 
 @dataclass
-class QueryResult:
+class QueryRun:
+    """Result of running a single query against the program."""
     query_id: str
     query_text: str
-    orchestrated_input: dict | None = None
+    input_json: dict
     raw_output: str = ""
-    parsed_output: dict | None = None
     error: str | None = None
-    # Scoring
-    passed: bool = False
-    score_details: dict = field(default_factory=dict)
-
-
-@dataclass
-class IterationResult:
-    query_id: str
-    initial_passed: bool
-    improved_passed: bool
-    improvement: str  # "none", "fixed", "regressed", "unchanged"
-
-
-@dataclass
-class EvalReport:
-    sample_id: str
-    skill_type: str
-    timestamp: str
-    # Phase 1
-    program_generated: bool
-    program_valid: bool
-    # Phase 2
-    initial_results: list[QueryResult]
-    initial_pass_rate: float
-    # Phase 3
-    iteration_results: list[IterationResult]
-    post_iteration_pass_rate: float
-    # Summary
-    queries_fixed: int
-    queries_regressed: int
+    run_start: str = ""
+    run_end: str = ""
+    # Filled after trace lookup
+    trace_id: str | None = None
+    span_id: str | None = None
 
     def to_dict(self) -> dict:
         return {
-            "sample_id": self.sample_id,
-            "skill_type": self.skill_type,
-            "timestamp": self.timestamp,
-            "program_generated": self.program_generated,
-            "program_valid": self.program_valid,
-            "initial_pass_rate": self.initial_pass_rate,
-            "post_iteration_pass_rate": self.post_iteration_pass_rate,
-            "queries_fixed": self.queries_fixed,
-            "queries_regressed": self.queries_regressed,
-            "initial_results": [
-                {
-                    "query_id": r.query_id,
-                    "passed": r.passed,
-                    "error": r.error,
-                    "score_details": r.score_details,
-                }
-                for r in self.initial_results
-            ],
-            "iteration_results": [
-                {
-                    "query_id": r.query_id,
-                    "initial_passed": r.initial_passed,
-                    "improved_passed": r.improved_passed,
-                    "improvement": r.improvement,
-                }
-                for r in self.iteration_results
-            ],
+            "query_id": self.query_id,
+            "query_text": self.query_text,
+            "input_json": self.input_json,
+            "raw_output": self.raw_output,
+            "error": self.error,
+            "run_start": self.run_start,
+            "run_end": self.run_end,
+            "trace_id": self.trace_id,
+            "span_id": self.span_id,
         }
+
+
+@dataclass
+class EvalState:
+    """Persistent state for an eval run, saved to state.json."""
+    sample_path: str
+    sample_id: str
+    skill_type: str
+    is_agent: bool
+    program_path: str
+    phase: str  # "generated", "ran", "iterated"
+    run_start: str = ""
+    run_end: str = ""
+    initial_runs: list[dict] = field(default_factory=list)
+    iteration_runs: list[dict] = field(default_factory=list)  # LKO results
+    iteration_k: int = 1
+
+    def save(self, output_dir: Path) -> None:
+        (output_dir / "state.json").write_text(json.dumps(self.__dict__, indent=2))
+
+    @classmethod
+    def load(cls, output_dir: Path) -> "EvalState":
+        data = json.loads((output_dir / "state.json").read_text())
+        return cls(**data)
 
 
 # ---------------------------------------------------------------------------
@@ -166,9 +154,6 @@ class EvalReport:
 
 def run_uv(program_path: str | Path, *args: str, timeout: int = 120) -> subprocess.CompletedProcess[str]:
     env = os.environ.copy()
-    # Ensure MIRASCOPE_API_KEY is passed to generated programs
-    if "MIRASCOPE_API_KEY" not in env:
-        env["MIRASCOPE_API_KEY"] = os.environ.get("MIRASCOPE_API_KEY", "")
     return subprocess.run(
         ["uv", "run", str(program_path), *args],
         capture_output=True,
@@ -182,26 +167,23 @@ def validate_program(program_path: Path) -> tuple[bool, str]:
     """Validate program with --help and --schema."""
     if not program_path.exists():
         return False, f"Program not found: {program_path}"
-
     try:
         result = run_uv(program_path, "--help")
         if result.returncode != 0:
             return False, f"--help failed: {result.stderr}"
     except subprocess.TimeoutExpired:
         return False, "--help timed out"
-
     try:
         result = run_uv(program_path, "--schema")
         if result.returncode != 0:
             return False, f"--schema failed: {result.stderr}"
         schema = json.loads(result.stdout)
         if "input" not in schema or "output" not in schema:
-            return False, f"Missing input/output in schema"
+            return False, "Missing input/output in schema"
     except subprocess.TimeoutExpired:
         return False, "--schema timed out"
     except json.JSONDecodeError as e:
         return False, f"Invalid JSON from --schema: {e}"
-
     return True, ""
 
 
@@ -227,7 +209,6 @@ class GeneratedProgram(BaseModel):
     code: str = Field(description="Complete Python source code")
 
 
-@ops.trace(tags=["eval", "generate"])
 @llm.call(DEFAULT_MODEL, format=GeneratedProgram)
 def generate_program(skill_instructions: str, bootstrap_prompt: str, is_agent: bool = False) -> list:
     if is_agent:
@@ -244,7 +225,8 @@ Requirements:
 4. Agentic loop with execute_tools/resume
 5. --help, --schema, --input CLI
 6. Follow "Tool-Based Agent Programs" section
-7. CRITICAL: Use model="anthropic/claude-sonnet-4-20250514" (exact string)"""
+7. CRITICAL: Use model="anthropic/claude-sonnet-4-20250514" (exact string)
+8. CRITICAL: Include ops.configure() and @ops.trace on the main function"""
     else:
         user_content = f"""Create a complete, self-contained Mirascope program for:
 
@@ -260,7 +242,8 @@ Requirements:
 5. --help, --schema, --input CLI
 6. Follow robustness patterns
 7. CRITICAL: Use model="anthropic/claude-sonnet-4-20250514" (exact string)
-8. CRITICAL: Input is ALWAYS natural language via prompt field, NOT pre-structured data"""
+8. CRITICAL: Input is ALWAYS natural language via prompt field, NOT pre-structured data
+9. CRITICAL: Include ops.configure() and @ops.trace on the main function"""
 
     return [
         SystemMessage(content=Text(text=f"You are a Mirascope program generator.\n\n<skill_instructions>\n{skill_instructions}\n</skill_instructions>")),
@@ -273,197 +256,128 @@ class ImprovedProgram(BaseModel):
     changes: str = Field(description="What was changed and why")
 
 
-@ops.trace(tags=["eval", "improve"])
 @llm.call(DEFAULT_MODEL, format=ImprovedProgram)
 def improve_program(
     skill_instructions: str,
     current_code: str,
-    failures: list[dict],
-    successes: list[dict],
+    annotations: list[dict],
     is_agent: bool = False,
 ) -> list:
-    failure_text = "\n".join([
-        f"- Query: {f['query'][:80]}...\n  Expected: {f['expected']}\n  Got: {f['actual'][:100]}..."
-        for f in failures
-    ])
-
-    success_text = "\n".join([
-        f"- Query: {s['query'][:80]}..."
-        for s in successes
-    ]) if successes else "(none)"
+    """Improve a program based on human annotations from traces."""
+    feedback_text = ""
+    for a in annotations:
+        label = a.get("label", "unknown")
+        reasoning = a.get("reasoning", "")
+        query = a.get("query", "")
+        output = a.get("output", "")
+        feedback_text += f"\n### Query: {query}\n"
+        feedback_text += f"**Label:** {label}\n"
+        if reasoning:
+            feedback_text += f"**Feedback:** {reasoning}\n"
+        feedback_text += f"**Program output:**\n```\n{output}\n```\n"
 
     return [
-        SystemMessage(content=Text(text=f"You improve Mirascope programs based on feedback.\n\n<skill_instructions>\n{skill_instructions}\n</skill_instructions>")),
-        UserMessage(content=[Text(text=f"""Current program:
+        SystemMessage(content=Text(text=f"You improve Mirascope programs based on human feedback.\n\n<skill_instructions>\n{skill_instructions}\n</skill_instructions>")),
+        UserMessage(content=[Text(text=f"""Here is a Mirascope program that needs improvement:
+
 ```python
 {current_code}
 ```
 
-FAILING QUERIES (fix these):
-{failure_text}
+## Human Annotations
+Reviewers tested this program and provided feedback on each query's output.
+Study the feedback carefully — "fail" annotations explain what's wrong.
+"pass" annotations show correct behavior to preserve.
+{feedback_text}
 
-PASSING QUERIES (preserve these - do not break existing behavior):
-{success_text}
-
-CRITICAL: Make minimal, targeted changes. Do not refactor working code.
-Fix the failing queries while ensuring passing queries continue to work.
-
-Return the complete improved code.""")]),
+## Instructions
+1. **Diagnose first:** For each failure, identify the root cause (prompt wording? missing field? wrong logic?)
+2. **Make targeted fixes:** Change only what's needed to fix failures. Do not restructure working code.
+3. **Verify mentally:** For each passing query, confirm your changes won't break it.
+4. **Return the complete improved program** (full file, not a diff).""")]),
     ]
 
 
 # ---------------------------------------------------------------------------
-# Scoring
+# Trace helpers
 # ---------------------------------------------------------------------------
 
-def score_result(
-    query: EvalQuery,
-    raw_output: str,
-    parsed_output: dict | None,
-    is_agent: bool,
-) -> tuple[bool, dict]:
-    """Score a query result against expected behavior."""
-    details = {"checks": [], "passed": [], "failed": []}
+def find_traces_for_runs(
+    runs: list[QueryRun],
+    start_time: str,
+    end_time: str,
+) -> list[QueryRun]:
+    """Match query runs to their traces via the Mirascope API."""
+    client = get_sync_client()
 
-    if parsed_output is None:
-        details["failed"].append("Failed to parse output as JSON")
-        return False, details
+    # Search for all traces in the time window
+    response = client.traces.search(
+        start_time=start_time,
+        end_time=end_time,
+        limit=len(runs) * 3,  # buffer for extra traces
+        root_spans_only=True,
+    )
 
-    # Check invokes_skill: false → expect rejection
-    if not query.expected.invokes_skill:
-        rejected = parsed_output.get("rejected", False)
-        check = "rejected (invokes_skill=false)"
-        details["checks"].append(check)
-        if rejected:
-            details["passed"].append(check)
-        else:
-            details["failed"].append(check)
-        # For rejection queries, only check rejection — skip content checks
-        passed = len(details["failed"]) == 0
-        return passed, details
-
-    # Check output_contains
-    output_str = raw_output.lower()
-    for pattern in query.expected.output_contains:
-        check = f"contains '{pattern}'"
-        details["checks"].append(check)
-        if pattern.lower() in output_str:
-            details["passed"].append(check)
-        else:
-            details["failed"].append(check)
-
-    # Check output_excludes
-    for pattern in query.expected.output_excludes:
-        check = f"excludes '{pattern}'"
-        details["checks"].append(check)
-        if pattern.lower() not in output_str:
-            details["passed"].append(check)
-        else:
-            details["failed"].append(check)
-
-    # Check invokes_tools (for agents)
-    if is_agent and query.expected.invokes_tools:
-        tool_calls = parsed_output.get("tool_calls", [])
-        tools_called = {tc.get("tool") for tc in tool_calls if isinstance(tc, dict)}
-
-        for expected_tool in query.expected.invokes_tools:
-            check = f"invokes '{expected_tool}'"
-            details["checks"].append(check)
-            if expected_tool in tools_called:
-                details["passed"].append(check)
-            else:
-                details["failed"].append(check)
-
-    # Pass if no failures
-    passed = len(details["failed"]) == 0
-    return passed, details
-
-
-# ---------------------------------------------------------------------------
-# Main Pipeline
-# ---------------------------------------------------------------------------
-
-def run_queries(
-    program_path: Path,
-    sample: EvalSample,
-    schema: dict,
-) -> list[QueryResult]:
-    """Run all queries against a program and return results."""
-    results = []
-
-    for query in sample.queries:
-        # Build input — programs accept natural language via prompt/query field
-        input_props = schema.get("input", {}).get("properties", {})
-        if "query" in input_props:
-            nl_field = "query"
-        elif "prompt" in input_props:
-            nl_field = "prompt"
-        else:
-            # Fallback: use first string field
-            nl_field = next(
-                (k for k, v in input_props.items() if v.get("type") == "string"),
-                "prompt",
-            )
-
-        orchestrated_input: dict[str, Any] = {nl_field: query.text}
-
-        # For agent samples, add context if the schema expects it
-        if sample.is_agent and "context" in input_props:
-            orchestrated_input["context"] = {
-                "today": sample.test_state.today or "2025-02-15",
-                "existing_appointments": sample.test_state.existing_appointments,
-            }
-
-        # Run program
+    # For each trace, get detail and try to match to a run by input content
+    matched = set()
+    for span in response.spans:
         try:
-            input_str = json.dumps(orchestrated_input)
-            stdout, stderr = run_program(program_path, input_str)
+            detail = client.traces.gettracedetail(trace_id=span.trace_id)
+            for detail_span in detail.spans:
+                attrs = json.loads(detail_span.attributes) if detail_span.attributes else {}
+                # Look for input content in attributes
+                input_str = json.dumps(attrs)
 
-            if stderr and not stdout:
-                results.append(QueryResult(
-                    query_id=query.id,
-                    query_text=query.text,
-                    orchestrated_input=orchestrated_input,
-                    raw_output=stderr,
-                    error=f"Program error: {stderr[:300]}",
-                ))
-                continue
+                for run in runs:
+                    if run.query_id in matched:
+                        continue
+                    # Match by checking if the query text appears in the trace input
+                    if run.query_text[:50] in input_str:
+                        run.trace_id = span.trace_id
+                        run.span_id = span.span_id
+                        matched.add(run.query_id)
+                        break
+        except Exception:
+            continue
 
-            # Parse output
-            try:
-                parsed = json.loads(stdout)
-            except json.JSONDecodeError:
-                parsed = None
-
-            # Score
-            passed, score_details = score_result(query, stdout, parsed, sample.is_agent)
-
-            results.append(QueryResult(
-                query_id=query.id,
-                query_text=query.text,
-                orchestrated_input=orchestrated_input,
-                raw_output=stdout,
-                parsed_output=parsed,
-                passed=passed,
-                score_details=score_details,
-            ))
-
-        except Exception as e:
-            results.append(QueryResult(
-                query_id=query.id,
-                query_text=query.text,
-                orchestrated_input=orchestrated_input,
-                error=f"Execution failed: {e}",
-            ))
-
-    return results
+    return runs
 
 
-def run_full_eval(sample_path: Path, output_dir: Path, *, skip_iteration: bool = False) -> EvalReport:
-    """Run the complete eval pipeline."""
+def get_annotations_for_run(run: QueryRun) -> dict | None:
+    """Get the annotation for a specific trace."""
+    if not run.trace_id or not run.span_id:
+        return None
+    try:
+        client = get_sync_client()
+        response = client.annotations.list(
+            otel_trace_id=run.trace_id,
+            otel_span_id=run.span_id,
+            limit=1,
+        )
+        annotations = response if isinstance(response, list) else getattr(response, "items", [])
+        if annotations:
+            ann = annotations[0]
+            return {
+                "label": getattr(ann, "label", None),
+                "reasoning": getattr(ann, "reasoning", None),
+                "query": run.query_text,
+                "output": run.raw_output,
+            }
+    except Exception:
+        pass
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Subcommand: run
+# ---------------------------------------------------------------------------
+
+def cmd_run(args: argparse.Namespace) -> None:
+    """Generate program + run all queries."""
+    sample_path = Path(args.sample)
+    output_dir = Path(args.output)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Load sample
     sample = EvalSample.from_yaml(sample_path)
     skill_instructions = SKILL_MD.read_text()
 
@@ -471,304 +385,493 @@ def run_full_eval(sample_path: Path, output_dir: Path, *, skip_iteration: bool =
     print(f"EVAL: {sample.sample_id} ({sample.skill_type})")
     print(f"{'='*60}")
 
-    timestamp = datetime.now().isoformat()
-
-    # -------------------------------------------------------------------------
-    # Phase 1: Bootstrap
-    # -------------------------------------------------------------------------
+    # Phase 1: Generate program
     print("\n[Phase 1] Generating program...")
-
     try:
         response = generate_program(skill_instructions, sample.bootstrap.prompt, sample.is_agent)
         program_code = response.parse().code
-        program_generated = True
     except Exception as e:
         print(f"  ✗ Generation failed: {e}")
-        return EvalReport(
-            sample_id=sample.sample_id,
-            skill_type=sample.skill_type,
-            timestamp=timestamp,
-            program_generated=False,
-            program_valid=False,
-            initial_results=[],
-            initial_pass_rate=0.0,
-            iteration_results=[],
-            post_iteration_pass_rate=0.0,
-            queries_fixed=0,
-            queries_regressed=0,
-        )
+        sys.exit(1)
 
-    program_path = output_dir / "program_v0.py"
+    program_path = output_dir / "program.py"
     program_path.write_text(program_code)
     print(f"  ✓ Program written to {program_path}")
 
-    # Validate
     valid, error = validate_program(program_path)
     if not valid:
         print(f"  ✗ Validation failed: {error}")
-        return EvalReport(
-            sample_id=sample.sample_id,
-            skill_type=sample.skill_type,
-            timestamp=timestamp,
-            program_generated=True,
-            program_valid=False,
-            initial_results=[],
-            initial_pass_rate=0.0,
-            iteration_results=[],
-            post_iteration_pass_rate=0.0,
-            queries_fixed=0,
-            queries_regressed=0,
-        )
-
+        sys.exit(1)
     print("  ✓ Program validated")
+
     schema = get_schema(program_path)
 
-    # -------------------------------------------------------------------------
-    # Phase 2: Initial Eval
-    # -------------------------------------------------------------------------
+    # Phase 2: Run all queries
     print(f"\n[Phase 2] Running {len(sample.queries)} queries...")
 
-    initial_results = run_queries(program_path, sample, schema)
-
-    for r in initial_results:
-        status = "✓" if r.passed else "✗"
-        print(f"  {status} {r.query_id}: {r.query_text[:50]}...")
-        if r.error:
-            print(f"      Error: {r.error[:80]}")
-        elif not r.passed and r.score_details.get("failed"):
-            print(f"      Failed: {r.score_details['failed']}")
-
-    initial_passed = sum(1 for r in initial_results if r.passed)
-    initial_pass_rate = initial_passed / len(initial_results) if initial_results else 0
-    print(f"\n  Initial: {initial_passed}/{len(initial_results)} ({initial_pass_rate:.0%})")
-
-    # Save initial results
-    (output_dir / "initial_results.json").write_text(json.dumps([
-        {
-            "query_id": r.query_id,
-            "passed": r.passed,
-            "error": r.error,
-            "score_details": r.score_details,
-            "raw_output": r.raw_output[:500] if r.raw_output else None,
-        }
-        for r in initial_results
-    ], indent=2))
-
-    # -------------------------------------------------------------------------
-    # Phase 3: Leave-One-Out Cross Validation
-    # -------------------------------------------------------------------------
-    # For each query i:
-    #   1. Use feedback from queries ≠i (from initial_results)
-    #   2. Improve the BASE program (same starting point each time)
-    #   3. Run ONLY query i on the improved program
-    #   4. Record result
-    # This gives unbiased estimation of post-iteration performance.
-    # -------------------------------------------------------------------------
-    if skip_iteration:
-        print("\n[Phase 3] Skipped (--skip-iteration)")
-        iteration_results_list: list[IterationResult] = [
-            IterationResult(
-                query_id=q.id,
-                initial_passed=initial_results[i].passed,
-                improved_passed=initial_results[i].passed,
-                improvement="unchanged",
-            )
-            for i, q in enumerate(sample.queries)
-        ]
-        queries_fixed = 0
-        queries_regressed = 0
-        post_passed = initial_passed
-        post_pass_rate = initial_pass_rate
-
-        report = EvalReport(
-            sample_id=sample.sample_id,
-            skill_type=sample.skill_type,
-            timestamp=timestamp,
-            program_generated=True,
-            program_valid=True,
-            initial_results=initial_results,
-            initial_pass_rate=initial_pass_rate,
-            iteration_results=iteration_results_list,
-            post_iteration_pass_rate=post_pass_rate,
-            queries_fixed=queries_fixed,
-            queries_regressed=queries_regressed,
+    # Determine the natural language input field name
+    input_props = schema.get("input", {}).get("properties", {})
+    if "query" in input_props:
+        nl_field = "query"
+    elif "prompt" in input_props:
+        nl_field = "prompt"
+    else:
+        nl_field = next(
+            (k for k, v in input_props.items() if v.get("type") == "string"),
+            "prompt",
         )
 
-        report_path = output_dir / "report.json"
-        report_path.write_text(json.dumps(report.to_dict(), indent=2))
+    batch_start = datetime.now(timezone.utc).isoformat()
 
-        print(f"\n{'='*60}")
-        print(f"RESULTS: {sample.sample_id}")
-        print(f"{'='*60}")
-        print(f"  Initial: {initial_passed}/{len(initial_results)} ({initial_pass_rate:.0%})")
-        print(f"  (LOO skipped)")
-        print(f"\n  Report: {report_path}")
+    def _run_query(query: EvalQuery) -> QueryRun:
+        input_data: dict[str, Any] = {nl_field: query.text}
+        # For agent samples, add context if schema expects it
+        if sample.is_agent and "context" in input_props:
+            input_data["context"] = {
+                "today": sample.test_state.today or "2025-02-15",
+                "existing_appointments": sample.test_state.existing_appointments,
+            }
 
-        return report
+        run_start = datetime.now(timezone.utc).isoformat()
+        try:
+            input_str = json.dumps(input_data)
+            stdout, stderr = run_program(program_path, input_str)
+            run_end = datetime.now(timezone.utc).isoformat()
 
-    print(f"\n[Phase 3] Leave-one-out cross validation...")
+            if stderr and not stdout.strip():
+                return QueryRun(
+                    query_id=query.id,
+                    query_text=query.text,
+                    input_json=input_data,
+                    raw_output=stderr,
+                    error=f"Program error: {stderr[:300]}",
+                    run_start=run_start,
+                    run_end=run_end,
+                )
 
-    iteration_results: list[IterationResult] = []
+            return QueryRun(
+                query_id=query.id,
+                query_text=query.text,
+                input_json=input_data,
+                raw_output=stdout,
+                run_start=run_start,
+                run_end=run_end,
+            )
+        except Exception as e:
+            return QueryRun(
+                query_id=query.id,
+                query_text=query.text,
+                input_json=input_data,
+                error=f"Execution failed: {e}",
+                run_start=run_start,
+                run_end=datetime.now(timezone.utc).isoformat(),
+            )
 
-    for holdout_idx, holdout_query in enumerate(sample.queries):
-        initial_passed_this = initial_results[holdout_idx].passed
+    # Run in parallel
+    max_workers = min(len(sample.queries), 10)
+    runs: list[QueryRun] = [None] * len(sample.queries)  # type: ignore
 
-        # Build feedback from N-1 queries (excluding holdout)
-        failures = []
-        successes = []
-        for i, r in enumerate(initial_results):
-            if i == holdout_idx:
-                continue  # Exclude holdout to avoid leakage
-            if r.passed:
-                successes.append({"query": r.query_text})
-            else:
-                # Build expected description from query spec
-                q = sample.queries[i]
-                expected_parts = []
-                if q.expected.output_contains:
-                    expected_parts.append(f"output should contain: {q.expected.output_contains}")
-                if q.expected.output_excludes:
-                    expected_parts.append(f"output should NOT contain: {q.expected.output_excludes}")
-                if q.expected.invokes_tools:
-                    expected_parts.append(f"should invoke tools: {q.expected.invokes_tools}")
-                expected = "; ".join(expected_parts) if expected_parts else "successful execution"
-                
-                actual = r.error if r.error else r.raw_output[:200] if r.raw_output else "no output"
-                failures.append({
-                    "query": r.query_text,
-                    "expected": expected,
-                    "actual": actual,
-                })
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_idx = {
+            executor.submit(_run_query, q): i
+            for i, q in enumerate(sample.queries)
+        }
+        for future in concurrent.futures.as_completed(future_to_idx):
+            idx = future_to_idx[future]
+            run = future.result()
+            runs[idx] = run
+            status = "✗" if run.error else "✓"
+            print(f"  {status} {run.query_id}: {run.query_text[:50]}...")
 
-        if not failures:
-            # No failures in N-1 queries → no feedback to improve from
-            iteration_results.append(IterationResult(
-                query_id=holdout_query.id,
-                initial_passed=initial_passed_this,
-                improved_passed=initial_passed_this,
-                improvement="unchanged",
-            ))
-            print(f"  {holdout_query.id}: No failures in other queries, skipping")
-            continue
+    batch_end = datetime.now(timezone.utc).isoformat()
 
-        # Improve BASE program (program_code) using skill
-        # CRITICAL: Always start from same base, never chain improvements
+    # Wait for traces to be exported (batch processor flushes async)
+    print("\n  Waiting for traces to export...")
+    time.sleep(5)
+
+    # Match runs to traces
+    print("  Matching runs to traces...")
+    runs = find_traces_for_runs(runs, batch_start, batch_end)
+    matched = sum(1 for r in runs if r.trace_id)
+    print(f"  Matched {matched}/{len(runs)} runs to traces")
+
+    # Save state
+    state = EvalState(
+        sample_path=str(sample_path),
+        sample_id=sample.sample_id,
+        skill_type=sample.skill_type,
+        is_agent=sample.is_agent,
+        program_path=str(program_path),
+        phase="ran",
+        run_start=batch_start,
+        run_end=batch_end,
+        initial_runs=[r.to_dict() for r in runs],
+    )
+    state.save(output_dir)
+
+    # Print summary
+    print(f"\n{'='*60}")
+    print(f"QUERIES RUN: {len(runs)}")
+    print(f"TRACES MATCHED: {matched}")
+    print(f"{'='*60}")
+    print(f"\nOutputs saved to {output_dir}/state.json")
+    print("Next: review traces in Mirascope Cloud and annotate pass/fail")
+    print(f"Then: ./run_eval.py iterate --output {output_dir}")
+
+
+# ---------------------------------------------------------------------------
+# Subcommand: iterate
+# ---------------------------------------------------------------------------
+
+def cmd_iterate(args: argparse.Namespace) -> None:
+    """Read annotations, run LKO improvement."""
+    output_dir = Path(args.output)
+    state = EvalState.load(output_dir)
+    k = args.k
+
+    sample = EvalSample.from_yaml(state.sample_path)
+    skill_instructions = SKILL_MD.read_text()
+    program_code = Path(state.program_path).read_text()
+
+    print(f"{'='*60}")
+    print(f"LKO ITERATION (k={k}): {state.sample_id}")
+    print(f"{'='*60}")
+
+    # Reconstruct runs and get annotations
+    runs = [QueryRun(**r) for r in state.initial_runs]
+
+    print("\n[1] Reading annotations from traces...")
+    annotations = {}
+    for run in runs:
+        ann = get_annotations_for_run(run)
+        if ann:
+            annotations[run.query_id] = ann
+            label = ann["label"]
+            print(f"  {run.query_id}: {label}")
+        else:
+            print(f"  {run.query_id}: (no annotation)")
+
+    if not annotations:
+        print("\n  ✗ No annotations found. Annotate traces first.")
+        sys.exit(1)
+
+    annotated_count = len(annotations)
+    print(f"\n  Found {annotated_count}/{len(runs)} annotations")
+
+    # Check all runs are annotated
+    unannotated = [r.query_id for r in runs if r.query_id not in annotations]
+    if unannotated:
+        print(f"  ⚠ Unannotated queries: {', '.join(unannotated)}")
+        print("  Continuing with available annotations...")
+
+    # Build LKO groups
+    query_ids = [r.query_id for r in runs if r.query_id in annotations]
+    groups = [query_ids[i:i + k] for i in range(0, len(query_ids), k)]
+
+    print(f"\n[2] Running {len(groups)} LKO iterations (k={k})...")
+
+    schema = get_schema(Path(state.program_path))
+    input_props = schema.get("input", {}).get("properties", {})
+    if "query" in input_props:
+        nl_field = "query"
+    elif "prompt" in input_props:
+        nl_field = "prompt"
+    else:
+        nl_field = next(
+            (k_name for k_name, v in input_props.items() if v.get("type") == "string"),
+            "prompt",
+        )
+
+    iteration_batch_start = datetime.now(timezone.utc).isoformat()
+
+    def _run_lko_group(group_idx: int, held_out_ids: list[str]) -> list[QueryRun]:
+        """Run a single LKO iteration for held-out group."""
+        # Build feedback from N-K annotations
+        train_annotations = [
+            annotations[qid] for qid in query_ids if qid not in held_out_ids
+        ]
+
+        # Improve program
         try:
             response = improve_program(
-                skill_instructions, program_code, failures, successes, sample.is_agent
+                skill_instructions, program_code, train_annotations, state.is_agent
             )
             improved_code = response.parse().code
         except Exception as e:
-            print(f"  {holdout_query.id}: Improvement failed: {e}")
-            iteration_results.append(IterationResult(
-                query_id=holdout_query.id,
-                initial_passed=initial_passed_this,
-                improved_passed=initial_passed_this,
-                improvement="unchanged",
-            ))
-            continue
+            print(f"  Group {group_idx}: improvement failed: {e}")
+            return [
+                QueryRun(
+                    query_id=qid,
+                    query_text=next(r.query_text for r in runs if r.query_id == qid),
+                    input_json={},
+                    error=f"Improvement failed: {e}",
+                )
+                for qid in held_out_ids
+            ]
 
-        # Save improved program for this holdout
-        improved_path = output_dir / f"program_v1_holdout_{holdout_query.id}.py"
+        # Save improved program
+        improved_path = output_dir / f"program_lko_{group_idx}.py"
         improved_path.write_text(improved_code)
 
-        # Validate improved program
+        # Validate
         valid, error = validate_program(improved_path)
         if not valid:
-            print(f"  {holdout_query.id}: Improved program invalid: {error}")
-            iteration_results.append(IterationResult(
-                query_id=holdout_query.id,
-                initial_passed=initial_passed_this,
-                improved_passed=False,
-                improvement="regressed" if initial_passed_this else "unchanged",
-            ))
-            continue
+            print(f"  Group {group_idx}: improved program invalid: {error}")
+            return [
+                QueryRun(
+                    query_id=qid,
+                    query_text=next(r.query_text for r in runs if r.query_id == qid),
+                    input_json={},
+                    error=f"Invalid program: {error}",
+                )
+                for qid in held_out_ids
+            ]
 
-        # Run ONLY the holdout query on improved program
         improved_schema = get_schema(improved_path)
-        holdout_sample = EvalSample(
-            skill_type=sample.skill_type,
-            sample_id=sample.sample_id,
-            bootstrap=sample.bootstrap,
-            test_state=sample.test_state,
-            queries=[holdout_query],
-        )
-        holdout_results = run_queries(improved_path, holdout_sample, improved_schema)
-        
-        improved_passed = holdout_results[0].passed if holdout_results else False
-
-        # Determine improvement status
-        if initial_passed_this and improved_passed:
-            improvement = "unchanged"
-            print(f"  {holdout_query.id}: - unchanged (still passing)")
-        elif not initial_passed_this and improved_passed:
-            improvement = "fixed"
-            print(f"  {holdout_query.id}: ✓ FIXED")
-        elif initial_passed_this and not improved_passed:
-            improvement = "regressed"
-            print(f"  {holdout_query.id}: ✗ REGRESSED")
+        improved_input_props = improved_schema.get("input", {}).get("properties", {})
+        if "query" in improved_input_props:
+            improved_nl_field = "query"
+        elif "prompt" in improved_input_props:
+            improved_nl_field = "prompt"
         else:
-            improvement = "unchanged"
-            print(f"  {holdout_query.id}: - unchanged (still failing)")
+            improved_nl_field = next(
+                (k_name for k_name, v in improved_input_props.items() if v.get("type") == "string"),
+                "prompt",
+            )
 
-        iteration_results.append(IterationResult(
-            query_id=holdout_query.id,
-            initial_passed=initial_passed_this,
-            improved_passed=improved_passed,
-            improvement=improvement,
-        ))
+        # Run held-out queries
+        results = []
+        for qid in held_out_ids:
+            query = next(q for q in sample.queries if q.id == qid)
+            input_data: dict[str, Any] = {improved_nl_field: query.text}
+            if sample.is_agent and "context" in improved_input_props:
+                input_data["context"] = {
+                    "today": sample.test_state.today or "2025-02-15",
+                    "existing_appointments": sample.test_state.existing_appointments,
+                }
 
-    # -------------------------------------------------------------------------
-    # Phase 4: Report
-    # -------------------------------------------------------------------------
-    print(f"\n[Phase 4] Generating report...")
+            run_start = datetime.now(timezone.utc).isoformat()
+            try:
+                stdout, stderr = run_program(improved_path, json.dumps(input_data))
+                run_end = datetime.now(timezone.utc).isoformat()
+                if stderr and not stdout.strip():
+                    results.append(QueryRun(
+                        query_id=qid,
+                        query_text=query.text,
+                        input_json=input_data,
+                        raw_output=stderr,
+                        error=f"Program error: {stderr[:300]}",
+                        run_start=run_start,
+                        run_end=run_end,
+                    ))
+                else:
+                    results.append(QueryRun(
+                        query_id=qid,
+                        query_text=query.text,
+                        input_json=input_data,
+                        raw_output=stdout,
+                        run_start=run_start,
+                        run_end=run_end,
+                    ))
+            except Exception as e:
+                results.append(QueryRun(
+                    query_id=qid,
+                    query_text=query.text,
+                    input_json=input_data,
+                    error=f"Execution failed: {e}",
+                    run_start=run_start,
+                    run_end=datetime.now(timezone.utc).isoformat(),
+                ))
 
-    queries_fixed = sum(1 for r in iteration_results if r.improvement == "fixed")
-    queries_regressed = sum(1 for r in iteration_results if r.improvement == "regressed")
-    post_passed = sum(1 for r in iteration_results if r.improved_passed)
-    post_pass_rate = post_passed / len(iteration_results) if iteration_results else 0
+        print(f"  Group {group_idx} ({', '.join(held_out_ids)}): done")
+        return results
 
-    report = EvalReport(
-        sample_id=sample.sample_id,
-        skill_type=sample.skill_type,
-        timestamp=timestamp,
-        program_generated=True,
-        program_valid=True,
-        initial_results=initial_results,
-        initial_pass_rate=initial_pass_rate,
-        iteration_results=iteration_results,
-        post_iteration_pass_rate=post_pass_rate,
-        queries_fixed=queries_fixed,
-        queries_regressed=queries_regressed,
+    # Run all LKO groups in parallel
+    max_workers = min(len(groups), 10)
+    all_iteration_runs: list[QueryRun] = []
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_group = {
+            executor.submit(_run_lko_group, i, group): i
+            for i, group in enumerate(groups)
+        }
+        group_results: dict[int, list[QueryRun]] = {}
+        for future in concurrent.futures.as_completed(future_to_group):
+            idx = future_to_group[future]
+            group_results[idx] = future.result()
+
+    # Flatten in order
+    for i in range(len(groups)):
+        all_iteration_runs.extend(group_results[i])
+
+    iteration_batch_end = datetime.now(timezone.utc).isoformat()
+
+    # Wait and match traces
+    print("\n  Waiting for traces to export...")
+    time.sleep(5)
+    print("  Matching iteration runs to traces...")
+    all_iteration_runs = find_traces_for_runs(
+        all_iteration_runs, iteration_batch_start, iteration_batch_end
     )
+    matched = sum(1 for r in all_iteration_runs if r.trace_id)
+    print(f"  Matched {matched}/{len(all_iteration_runs)} runs to traces")
 
-    report_path = output_dir / "report.json"
-    report_path.write_text(json.dumps(report.to_dict(), indent=2))
+    # Update state
+    state.iteration_runs = [r.to_dict() for r in all_iteration_runs]
+    state.iteration_k = k
+    state.phase = "iterated"
+    state.save(output_dir)
 
     print(f"\n{'='*60}")
-    print(f"RESULTS: {sample.sample_id}")
+    print(f"LKO COMPLETE: {len(all_iteration_runs)} held-out queries run")
     print(f"{'='*60}")
-    print(f"  Initial:        {initial_passed}/{len(initial_results)} ({initial_pass_rate:.0%})")
-    print(f"  Post-iteration: {post_passed}/{len(iteration_results)} ({post_pass_rate:.0%})")
-    print(f"  Fixed:          {queries_fixed}")
-    print(f"  Regressed:      {queries_regressed}")
-    print(f"\n  Report: {report_path}")
+    print(f"\nNext: annotate the new traces in Mirascope Cloud")
+    print(f"Then: ./run_eval.py report --output {output_dir}")
 
-    return report
 
+# ---------------------------------------------------------------------------
+# Subcommand: report
+# ---------------------------------------------------------------------------
+
+def cmd_report(args: argparse.Namespace) -> None:
+    """Compute pass rates from annotations."""
+    output_dir = Path(args.output)
+    state = EvalState.load(output_dir)
+
+    print(f"{'='*60}")
+    print(f"REPORT: {state.sample_id}")
+    print(f"{'='*60}")
+
+    # Get initial annotations
+    print("\n[Initial Run]")
+    initial_runs = [QueryRun(**r) for r in state.initial_runs]
+    initial_pass = 0
+    initial_fail = 0
+    initial_unannotated = 0
+
+    for run in initial_runs:
+        ann = get_annotations_for_run(run)
+        if ann:
+            label = ann["label"]
+            if label == "pass":
+                initial_pass += 1
+                print(f"  ✓ {run.query_id}: pass")
+            else:
+                initial_fail += 1
+                reason = ann.get("reasoning", "")
+                print(f"  ✗ {run.query_id}: fail — {reason[:60]}")
+        else:
+            initial_unannotated += 1
+            print(f"  ? {run.query_id}: (no annotation)")
+
+    initial_total = initial_pass + initial_fail
+    initial_rate = initial_pass / initial_total if initial_total else 0
+
+    # Get iteration annotations
+    iter_pass = 0
+    iter_fail = 0
+    iter_unannotated = 0
+
+    if state.iteration_runs:
+        print(f"\n[Post-LKO (k={state.iteration_k})]")
+        iteration_runs = [QueryRun(**r) for r in state.iteration_runs]
+
+        for run in iteration_runs:
+            ann = get_annotations_for_run(run)
+            if ann:
+                label = ann["label"]
+                if label == "pass":
+                    iter_pass += 1
+                    print(f"  ✓ {run.query_id}: pass")
+                else:
+                    iter_fail += 1
+                    reason = ann.get("reasoning", "")
+                    print(f"  ✗ {run.query_id}: fail — {reason[:60]}")
+            else:
+                iter_unannotated += 1
+                print(f"  ? {run.query_id}: (no annotation)")
+
+    iter_total = iter_pass + iter_fail
+    iter_rate = iter_pass / iter_total if iter_total else 0
+
+    # Compute improvements
+    initial_ann_map = {}
+    for run in initial_runs:
+        ann = get_annotations_for_run(run)
+        if ann:
+            initial_ann_map[run.query_id] = ann["label"]
+
+    fixed = 0
+    regressed = 0
+    if state.iteration_runs:
+        iteration_runs = [QueryRun(**r) for r in state.iteration_runs]
+        for run in iteration_runs:
+            ann = get_annotations_for_run(run)
+            if not ann or run.query_id not in initial_ann_map:
+                continue
+            initial_label = initial_ann_map[run.query_id]
+            iter_label = ann["label"]
+            if initial_label == "fail" and iter_label == "pass":
+                fixed += 1
+            elif initial_label == "pass" and iter_label == "fail":
+                regressed += 1
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"RESULTS: {state.sample_id}")
+    print(f"{'='*60}")
+    print(f"  Initial:        {initial_pass}/{initial_total} ({initial_rate:.0%})")
+    if state.iteration_runs:
+        print(f"  Post-LKO:       {iter_pass}/{iter_total} ({iter_rate:.0%})")
+        print(f"  Fixed:          {fixed}")
+        print(f"  Regressed:      {regressed}")
+    if initial_unannotated or iter_unannotated:
+        print(f"  Unannotated:    {initial_unannotated} initial, {iter_unannotated} iteration")
+
+    # Save report
+    report = {
+        "sample_id": state.sample_id,
+        "skill_type": state.skill_type,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "initial_pass_rate": initial_rate,
+        "initial_pass": initial_pass,
+        "initial_total": initial_total,
+        "post_lko_pass_rate": iter_rate if state.iteration_runs else None,
+        "post_lko_pass": iter_pass,
+        "post_lko_total": iter_total,
+        "fixed": fixed,
+        "regressed": regressed,
+        "k": state.iteration_k,
+    }
+    (output_dir / "report.json").write_text(json.dumps(report, indent=2))
+    print(f"\n  Report: {output_dir / 'report.json'}")
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Run full eval pipeline (bootstrap → score → iterate → report). "
-                    "Requires MIRASCOPE_API_KEY env var for LLM calls.",
+        description="Eval pipeline with human-in-the-loop scoring via Mirascope trace annotations. "
+                    "Requires MIRASCOPE_API_KEY env var.",
     )
-    parser.add_argument("--sample", required=True, help="Path to sample YAML")
-    parser.add_argument("--output", required=True, help="Output directory")
-    parser.add_argument(
-        "--skip-iteration",
-        action="store_true",
-        help="Skip Phase 3 (LOO cross-validation). Useful for quick initial eval.",
-    )
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # run
+    run_parser = subparsers.add_parser("run", help="Generate program + run all queries")
+    run_parser.add_argument("--sample", required=True, help="Path to sample YAML")
+    run_parser.add_argument("--output", required=True, help="Output directory")
+
+    # iterate
+    iter_parser = subparsers.add_parser("iterate", help="Read annotations, run LKO improvement")
+    iter_parser.add_argument("--output", required=True, help="Output directory (from run)")
+    iter_parser.add_argument("--k", type=int, default=1, help="Leave-K-out (default: 1)")
+
+    # report
+    report_parser = subparsers.add_parser("report", help="Compute pass rates from annotations")
+    report_parser.add_argument("--output", required=True, help="Output directory")
+
     args = parser.parse_args()
 
     if not os.environ.get("MIRASCOPE_API_KEY"):
@@ -777,8 +880,12 @@ def main():
     ops.configure()
     ops.instrument_llm()
 
-    report = run_full_eval(Path(args.sample), Path(args.output), skip_iteration=args.skip_iteration)
-    sys.exit(0 if report.initial_pass_rate == 1.0 else 1)
+    if args.command == "run":
+        cmd_run(args)
+    elif args.command == "iterate":
+        cmd_iterate(args)
+    elif args.command == "report":
+        cmd_report(args)
 
 
 if __name__ == "__main__":

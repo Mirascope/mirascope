@@ -3,7 +3,7 @@
 Evaluates the `mirascope_skill` — specifically, how well `SKILL.md` (the skill instructions) enables an LLM to:
 
 1. **Generate** a working Mirascope program from a natural language request (one-shot)
-2. **Improve** that program when given feedback about failures (iteration)
+2. **Improve** that program when given human feedback (iteration)
 
 The skill is the thing under test. The eval measures whether following SKILL.md produces programs that actually work.
 
@@ -13,7 +13,7 @@ The skill is the thing under test. The eval measures whether following SKILL.md 
 evals/mirascope_skill/
 ├── skill/
 │   ├── SKILL.md          # The skill instructions (what we're evaluating)
-│   ├── run_eval.py       # Full eval pipeline
+│   ├── run_eval.py       # Eval pipeline (subcommands: run, iterate, report)
 │   └── template.py       # Reference template program
 ├── samples/
 │   ├── invoice_generator/ # Structured output program sample
@@ -25,8 +25,23 @@ evals/mirascope_skill/
 
 ```bash
 cd evals/mirascope_skill
-MIRASCOPE_API_KEY=... ./skill/run_eval.py \
+
+# 1. Generate program + run all queries (creates traces in Mirascope Cloud)
+MIRASCOPE_API_KEY=... ./skill/run_eval.py run \
   --sample samples/invoice_generator/sample_001.yaml \
+  --output results/invoice_eval/
+
+# 2. Review traces in Mirascope Cloud, annotate each with pass/fail + reasoning
+
+# 3. Run LKO iteration (reads annotations, improves program, runs held-out queries)
+MIRASCOPE_API_KEY=... ./skill/run_eval.py iterate \
+  --output results/invoice_eval/ \
+  --k 1
+
+# 4. Annotate the new traces
+
+# 5. Compute final report
+MIRASCOPE_API_KEY=... ./skill/run_eval.py report \
   --output results/invoice_eval/
 ```
 
@@ -34,43 +49,39 @@ MIRASCOPE_API_KEY=... ./skill/run_eval.py \
 
 ### Phase 1 — Bootstrap (one-shot capability)
 
-We give the skill a bootstrap prompt ("build me a scheduling agent" or "build me an invoice generator") and it produces a program. We validate the program structurally (does `--help` work, does `--schema` return valid JSON with input/output).
+The skill generates a program from a bootstrap prompt. Generated programs include `ops.configure()` and `@ops.trace` so every execution creates traces in Mirascope Cloud.
 
-This tells us: **can the skill produce a syntactically valid, runnable program?**
+### Phase 2 — Run Queries
 
-### Phase 2 — Initial Eval (functional correctness)
+All N queries run in parallel against the generated program. Each execution creates a trace. The harness matches runs to traces by searching input content.
 
-We run N queries against the generated program. Each query has expected criteria — output should contain certain strings, should invoke certain tools, shouldn't contain certain things. We score pass/fail for each.
+### Human Scoring
 
-This gives us the **initial pass rate** — the one-shot quality of the skill.
+You review the traces in Mirascope Cloud and annotate each with `pass`/`fail` + reasoning. This is the same workflow a real user would follow — running a program, seeing the output, and providing corrective feedback on the trace.
 
-### Phase 3 — LOO Iteration (improvement capability)
+### Phase 3 — LKO Iteration (Leave-K-Out)
 
-For each query i (1 to N):
-- Collect feedback from the other N-1 queries (their pass/fail results, what was expected vs what happened)
-- Give that feedback to the skill along with the **original base program** and ask it to improve
-- Run **only** query i on the improved program
-- Record whether it passes
+For each held-out group of K queries:
+- Read annotations from the N-K training traces
+- Give the human feedback to the skill along with the **original base program**
+- Run the held-out K queries on the improved program (creating new traces)
 
-Critical invariant: every iteration starts from the same base program. We never chain improvements. This is leave-one-out cross-validation — it gives us an unbiased estimate of post-iteration performance without leaking the held-out query's information into the improvement step.
+Critical invariant: every iteration starts from the same base program. This is leave-K-out cross-validation — it gives an unbiased estimate of whether the skill can generalize improvements.
 
-This gives us the **post-iteration pass rate** — how well the skill can improve programs based on feedback.
+### Human Scoring (round 2)
+
+Annotate the new traces from the iteration phase.
 
 ### Phase 4 — Report
 
-Compare initial vs post-iteration pass rates. Count fixed (was failing, now passing) and regressed (was passing, now failing). The delta tells us whether the skill's improvement capability actually helps.
-
-### What the metrics mean
-
-- **High initial pass rate** → skill generates good programs out of the box
-- **Positive delta** → skill can effectively learn from feedback
-- **Regressions** → skill's improvements are destructive
-- **No improvement on failures** → skill's improvement instructions are weak or feedback format is poor
+Compare initial vs post-iteration pass rates. Count fixed and regressed queries. The delta tells us whether the skill's improvement capability actually helps.
 
 ## Sample Format
 
 YAML files defining:
 - `bootstrap.prompt`: What to ask the skill to generate
-- `queries[]`: Test queries with `expected` criteria (`output_contains`, `output_excludes`, `invokes_tools`)
+- `queries[]`: Test queries with `id` and `text`
 - `test_state`: Context for agent samples (today's date, existing appointments)
 - `metadata`: Tags, difficulty, description
+
+The `expected` block in queries is optional documentation — scoring is human-only via trace annotations.
