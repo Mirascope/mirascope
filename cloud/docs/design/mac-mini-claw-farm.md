@@ -183,7 +183,7 @@ Browser
 | `cloud/api/claws.handlers.ts` | No changes to handler logic (uses `ClawDeploymentService` interface) |
 | `cloud/db/schema/claws.ts` | Add `macMiniId` foreign key, `tunnelHostname`, `localPort` columns |
 | `cloud/db/schema/index.ts` | Export new tables |
-| `cloud/claws/deployment/service.ts` | Add optional Mac Mini fields to `ClawDeploymentStatus` (see section 7.6) |
+| `cloud/claws/deployment/service.ts` | Replace `ClawDeploymentStatus` with required Mac Mini fields (see section 7.6) |
 
 ### Files to CREATE
 
@@ -1273,38 +1273,22 @@ The handler logic mostly stays the same because it uses `ClawDeploymentService` 
 +      .where(eq(claws.id, claw.id));
 ```
 
-This means `ClawDeploymentStatus` needs additional optional fields. The current interface (in `cloud/claws/deployment/service.ts`) is:
+Since we haven't released Cloudflare Containers publicly, there's no backward compatibility concern. We replace `ClawDeploymentStatus` entirely for the Mac Mini target:
 
 ```typescript
 export interface ClawDeploymentStatus {
   status: ClawStatus;
-  url?: string;
   startedAt?: Date;
   errorMessage?: string;
-  bucketName?: string;
-  r2Credentials?: R2ScopedCredentials;
+  // Mac Mini fields (required — this is the only deployment target)
+  miniId: string;
+  miniPort: number;
+  tunnelHostname: string;
+  macUsername: string;
 }
 ```
 
-Add Mac Mini-specific fields (optional, so Cloudflare impl is unaffected during migration):
-
-```typescript
-export interface ClawDeploymentStatus {
-  status: ClawStatus;
-  url?: string;
-  startedAt?: Date;
-  errorMessage?: string;
-  bucketName?: string;
-  r2Credentials?: R2ScopedCredentials;
-  // Mac Mini specific (optional — not present for Cloudflare deployments)
-  macMiniId?: string;
-  tunnelHostname?: string;
-  localPort?: number;
-  macUsername?: string;
-}
-```
-
-**Compatibility note:** The `ClawDeploymentService` tag (`Context.Tag("DeploymentService")`) means only one implementation is provided per runtime. During migration, both `LiveDeploymentService` (Cloudflare) and `MacMiniDeploymentService` can coexist as separate Layer values — the feature flag in section 7.2 selects which one to provide.
+R2 fields (`bucketName`, `r2Credentials`) are removed from the status type since R2 is only used for backups, not as part of deployment status. The `MacMiniDeploymentService` handles R2 backup internally without exposing it in the status interface.
 
 ---
 
