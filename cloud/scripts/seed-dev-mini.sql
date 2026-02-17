@@ -1,8 +1,12 @@
 -- Seed a local development Mac entry for your personal machine.
 -- Run against your local Postgres database before using DEPLOYMENT_TARGET=mac-mini.
 --
--- Customize hostname and agent_url for your machine. The hostname is just
--- a label — pick something that identifies your personal dev machine.
+-- Prerequisites:
+--   1. cloudflared installed and tunnel created on your personal Mac
+--   2. Tunnel routes *.local-{user}.claws.mirascope.dev to your agent port
+--   3. Agent running on your personal Mac
+--
+-- Customize the hostname, agent_url, and tunnel_hostname_suffix for your setup.
 --
 -- Usage:
 --   psql $DATABASE_URL -f cloud/scripts/seed-dev-mini.sql
@@ -16,9 +20,9 @@ INSERT INTO mac_minis (
   port_range_end,
   status
 ) VALUES (
-  'local-dev',                      -- change to your machine name if you prefer
-  'http://localhost:8787',           -- point at your local agent (or Tailscale IP for a remote personal Mac)
-  'local.claws.mirascope.dev',      -- local dev doesn't use tunnels, but the field is required
+  'local-william',                                          -- your machine name
+  'https://agent.local-william.claws.mirascope.dev',        -- agent exposed via tunnel (not localhost)
+  'local-william.claws.mirascope.dev',                      -- claw tunnels: claw-{id}.local-william.claws.mirascope.dev
   6,
   3001,
   3100,
