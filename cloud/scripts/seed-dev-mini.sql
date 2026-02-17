@@ -19,7 +19,7 @@ INSERT INTO mac_minis (
   6,
   3001,
   3100,
-  'online'
+  'active'
 ) ON CONFLICT (hostname) DO UPDATE SET
   agent_url = EXCLUDED.agent_url,
   tunnel_hostname_suffix = EXCLUDED.tunnel_hostname_suffix,
