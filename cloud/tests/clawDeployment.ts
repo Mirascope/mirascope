@@ -52,12 +52,10 @@ export const MockClawDeployment = {
         Effect.succeed({
           status: "active" as const,
           startedAt: new Date(),
-          bucketName: `claw-${config.clawId}`,
-          r2Credentials: {
-            tokenId: `mock-token-${config.clawId}`,
-            accessKeyId: `mock-access-${config.clawId}`,
-            secretAccessKey: `mock-secret-${config.clawId}`,
-          },
+          miniId: `mock-mini-${config.clawId}`,
+          miniPort: 18789,
+          tunnelHostname: `claw-${config.clawId}.claws.mirascope.dev`,
+          macUsername: `claw-${config.clawId}`,
         }),
       deprovision: () => Effect.void,
       getStatus: () =>

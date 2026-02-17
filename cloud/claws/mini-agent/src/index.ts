@@ -9,7 +9,7 @@ import { HttpApiBuilder, HttpServer } from "@effect/platform";
 import { Layer } from "effect";
 
 import { MiniAgentApi } from "./api.js";
-import { AgentConfigLive, AgentConfigService } from "./config.js";
+import { AgentConfigLive } from "./config.js";
 import {
   AuthMiddlewareLive,
   ClawsGroupLive,
@@ -18,10 +18,7 @@ import {
 import { Exec, ExecLive } from "./services/exec.js";
 import { Launchd, LaunchdLive } from "./services/launchd.js";
 import { Monitoring, MonitoringLive } from "./services/monitoring.js";
-import {
-  Provisioning,
-  ProvisioningLive,
-} from "./services/provisioning.js";
+import { Provisioning, ProvisioningLive } from "./services/provisioning.js";
 import { System, SystemLive } from "./services/system.js";
 import { Tunnel, TunnelLive } from "./services/tunnel.js";
 import { UserManager, UserManagerLive } from "./services/user.js";

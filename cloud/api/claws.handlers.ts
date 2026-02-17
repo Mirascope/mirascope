@@ -8,7 +8,6 @@ import { Analytics } from "@/analytics";
 import { DEFAULT_CLAW_MODEL } from "@/api/claws.schemas";
 import { AuthenticatedUser } from "@/auth";
 import { encryptSecrets } from "@/claws/crypto";
-import { ClawDeploymentError } from "@/claws/deployment/errors";
 import { ClawDeploymentService } from "@/claws/deployment/service";
 import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
@@ -53,7 +52,7 @@ export const createClawHandler = (
       },
     });
 
-    // Provision R2 bucket and scoped credentials
+    // Provision claw on Mac Mini
     const status = yield* clawDeployment.provision({
       clawId: claw.id,
       instanceType: claw.instanceType,
@@ -65,15 +64,6 @@ export const createClawHandler = (
     // Build Mirascope Router base URL for Anthropic-compatible proxy
     const routerBaseUrl = `${settings.siteUrl}/router/v2/anthropic`;
 
-    // R2 credentials must be present after provisioning
-    if (status.r2Credentials == null) {
-      return yield* Effect.fail(
-        new ClawDeploymentError({
-          message: "R2 credentials not returned from provisioning",
-        }),
-      );
-    }
-
     // Encrypt all container secrets before persisting
     const encrypted = yield* encryptSecrets({
       ANTHROPIC_API_KEY: claw.plaintextApiKey,
@@ -81,18 +71,19 @@ export const createClawHandler = (
       OPENCLAW_GATEWAY_TOKEN: gatewayToken,
       PRIMARY_MODEL_ID: payload.model ?? DEFAULT_CLAW_MODEL,
       OPENCLAW_SITE_URL: settings.siteUrl,
-      R2_ACCESS_KEY_ID: status.r2Credentials.accessKeyId,
-      R2_SECRET_ACCESS_KEY: status.r2Credentials.secretAccessKey,
     });
 
     yield* drizzle
       .update(claws)
       .set({
-        bucketName: status.bucketName ?? null,
         secretsEncrypted: encrypted.ciphertext,
         secretsKeyId: encrypted.keyId,
         status: "provisioning",
         updatedAt: new Date(),
+        miniId: status.miniId,
+        miniPort: status.miniPort,
+        tunnelHostname: status.tunnelHostname,
+        macUsername: status.macUsername,
       })
       .where(eq(claws.id, claw.id))
       .pipe(
@@ -143,7 +134,6 @@ export const createClawHandler = (
     return {
       ...claw,
       status: finalStatus,
-      bucketName: status.bucketName ?? null,
       secretsEncrypted: encrypted.ciphertext,
     };
   });

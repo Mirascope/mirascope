@@ -39,7 +39,6 @@ import type {
   OpenClawDeployConfig,
   ProvisionClawConfig,
 } from "@/claws/deployment/types";
-import type { R2ScopedCredentials } from "@/cloudflare/r2/types";
 
 import { ClawDeploymentError } from "@/claws/deployment/errors";
 
@@ -48,13 +47,16 @@ import { ClawDeploymentError } from "@/claws/deployment/errors";
  */
 export interface ClawDeploymentStatus {
   status: ClawStatus;
-  url?: string;
   startedAt?: Date;
   errorMessage?: string;
-  /** R2 bucket name created during provisioning (only present after provision). */
-  bucketName?: string;
-  /** R2 scoped credentials created during provisioning (only present after provision). */
-  r2Credentials?: R2ScopedCredentials;
+  /** Mac Mini ID hosting this claw. */
+  miniId: string;
+  /** Port allocated on the Mac Mini. */
+  miniPort: number;
+  /** Tunnel hostname for direct WS connection. */
+  tunnelHostname: string;
+  /** macOS username for the claw's sandbox user. */
+  macUsername: string;
 }
 
 /**

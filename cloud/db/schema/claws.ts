@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import {
   bigint,
+  integer,
   pgEnum,
   pgTable,
   text,
@@ -10,6 +11,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { clawMemberships } from "@/db/schema/claw-memberships";
+import { macMinis } from "@/db/schema/mac-minis";
 
 import { environments } from "./environments";
 import { organizations } from "./organizations";
@@ -56,6 +58,11 @@ export const claws = pgTable(
     secretsEncrypted: text("secrets_encrypted"),
     secretsKeyId: text("secrets_key_id"),
     bucketName: text("bucket_name"),
+    // Mac Mini deployment fields
+    miniId: uuid("mini_id").references(() => macMinis.id),
+    miniPort: integer("mini_port"),
+    tunnelHostname: text("tunnel_hostname"),
+    macUsername: text("mac_username"),
     // Bot user that owns the claw's API key and resources
     botUserId: uuid("bot_user_id")
       .references(() => users.id)
@@ -125,6 +132,10 @@ export type PublicClaw = Pick<
   | "secretsEncrypted"
   | "secretsKeyId"
   | "bucketName"
+  | "miniId"
+  | "miniPort"
+  | "tunnelHostname"
+  | "macUsername"
   | "botUserId"
   | "homeProjectId"
   | "homeEnvironmentId"
