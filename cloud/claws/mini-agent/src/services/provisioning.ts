@@ -1,297 +1,294 @@
-import type { AgentConfig } from "../lib/config.js";
-
 /**
- * Claw provisioning orchestrator.
- *
- * Coordinates user creation, launchd setup, tunnel routing, and cleanup on failure.
+ * Claw provisioning orchestrator service.
  */
-import { errorMessage } from "../lib/errors.js";
-import { type ExecFn, exec as defaultExec } from "../lib/exec.js";
-import * as launchd from "./launchd.js";
-import * as monitoring from "./monitoring.js";
-import * as tunnel from "./tunnel.js";
-import * as user from "./user.js";
+import { Context, Effect } from "effect";
+
+import type { AgentConfig } from "../config.js";
+import {
+  CapacityError,
+  DeprovisioningError,
+  ExecError,
+  ProvisioningError,
+  SystemError,
+  ValidationError,
+  errorMessage,
+} from "../errors.js";
+import { Exec } from "./exec.js";
+import { Launchd } from "./launchd.js";
+import { Monitoring } from "./monitoring.js";
+import { Tunnel } from "./tunnel.js";
+import { UserManager } from "./user.js";
 
 export interface ProvisionRequest {
-  clawId: string;
-  macUsername: string;
-  localPort: number;
-  gatewayToken: string;
-  tunnelHostname: string;
-  envVars: Record<string, string>;
+  readonly clawId: string;
+  readonly macUsername: string;
+  readonly localPort: number;
+  readonly gatewayToken: string;
+  readonly tunnelHostname: string;
+  readonly envVars: Record<string, string>;
 }
 
 export interface ProvisionResponse {
-  success: boolean;
-  macUsername: string;
-  localPort: number;
-  tunnelRouteAdded: boolean;
-  error?: string;
+  readonly success: boolean;
+  readonly macUsername: string;
+  readonly localPort: number;
+  readonly tunnelRouteAdded: boolean;
+  readonly error?: string;
 }
 
 export interface DeprovisionRequest {
-  archive?: boolean;
+  readonly archive?: boolean;
 }
 
 export interface DeprovisionResponse {
-  success: boolean;
-  archived: boolean;
-  error?: string;
+  readonly success: boolean;
+  readonly archived: boolean;
+  readonly error?: string;
 }
 
-export interface ClawStatus {
-  clawId: string;
-  macUsername: string;
-  localPort: number;
-  gatewayPid: number | null;
-  gatewayUptime: number | null;
-  memoryUsageMb: number | null;
-  chromiumPid: number | null;
-  launchdStatus: "loaded" | "unloaded" | "error";
-  tunnelRouteActive: boolean;
-}
+export class Provisioning extends Context.Tag("Provisioning")<
+  Provisioning,
+  {
+    readonly provision: (
+      request: ProvisionRequest,
+      config: AgentConfig,
+    ) => Effect.Effect<
+      ProvisionResponse,
+      | ProvisioningError
+      | ValidationError
+      | CapacityError
+      | ExecError
+      | SystemError
+    >;
+    readonly deprovision: (
+      macUsername: string,
+      config: AgentConfig,
+      request?: DeprovisionRequest,
+    ) => Effect.Effect<DeprovisionResponse, DeprovisioningError>;
+    readonly listClawUsers: () => Effect.Effect<string[], ExecError>;
+  }
+>() {}
 
-/**
- * Provision a new claw on this Mini.
- *
- * If any step fails, performs cleanup of all completed steps.
- */
-export async function provision(
-  request: ProvisionRequest,
-  config: AgentConfig,
-  execFn: ExecFn = defaultExec,
-): Promise<ProvisionResponse> {
-  const {
-    macUsername,
-    clawId,
-    localPort,
-    gatewayToken,
-    tunnelHostname,
-    envVars,
-  } = request;
+export const ProvisioningLive = Effect.gen(function* () {
+  const exec = yield* Exec;
+  const userManager = yield* UserManager;
+  const launchd = yield* Launchd;
+  const tunnel = yield* Tunnel;
+  const monitoring = yield* Monitoring;
 
-  let userCreated = false;
-  let launchdLoaded = false;
-  let tunnelRouteAdded = false;
+  const waitForGateway = (
+    port: number,
+    timeoutMs: number,
+  ): Effect.Effect<void> =>
+    Effect.gen(function* () {
+      const start = Date.now();
+      while (Date.now() - start < timeoutMs) {
+        const ok = yield* Effect.tryPromise({
+          try: async () => {
+            const response = await fetch(
+              `http://127.0.0.1:${port}/health`,
+              { signal: AbortSignal.timeout(2000) },
+            );
+            return response.ok;
+          },
+          catch: () => false,
+        }).pipe(Effect.catchAll(() => Effect.succeed(false)));
 
-  try {
-    // Step 1: Create macOS user
-    console.log(`[provision] Creating user ${macUsername} for claw ${clawId}`);
-    await user.createClawUser(
-      {
+        if (ok) return;
+        yield* Effect.sleep("1 second");
+      }
+      yield* Effect.logWarning(
+        `Gateway on port ${port} did not respond within ${timeoutMs}ms (continuing anyway)`,
+      );
+    });
+
+  const provision = (
+    request: ProvisionRequest,
+    config: AgentConfig,
+  ): Effect.Effect<
+    ProvisionResponse,
+    | ProvisioningError
+    | ValidationError
+    | CapacityError
+    | ExecError
+    | SystemError
+  > =>
+    Effect.gen(function* () {
+      const {
         macUsername,
         clawId,
         localPort,
         gatewayToken,
         tunnelHostname,
         envVars,
-      },
-      execFn,
-    );
-    userCreated = true;
+      } = request;
 
-    // Step 2: Install and load launchd service
-    console.log(`[provision] Installing launchd service for ${macUsername}`);
-    await launchd.installAndLoad(
-      {
-        macUsername,
-        localPort,
-        gatewayToken,
-        envVars,
-      },
-      execFn,
-    );
-    launchdLoaded = true;
+      let userCreated = false;
+      let launchdLoaded = false;
+      let tunnelRouteAdded = false;
 
-    // Step 3: Add tunnel route
-    console.log(
-      `[provision] Adding tunnel route: ${tunnelHostname} → localhost:${localPort}`,
-    );
-    await tunnel.addRoute(config.tunnelConfigPath, tunnelHostname, localPort);
-    tunnelRouteAdded = true;
+      try {
+        // Step 1: Create macOS user
+        yield* Effect.log(
+          `Creating user ${macUsername} for claw ${clawId}`,
+        );
+        yield* userManager.createClawUser({
+          macUsername,
+          clawId,
+          localPort,
+          gatewayToken,
+          tunnelHostname,
+          envVars,
+        });
+        userCreated = true;
 
-    // Step 4: Restart cloudflared to pick up new route
-    console.log("[provision] Restarting cloudflared");
-    await tunnel.restartCloudflared(execFn);
+        // Step 2: Install and load launchd service
+        yield* Effect.log(
+          `Installing launchd service for ${macUsername}`,
+        );
+        yield* launchd.installAndLoad({
+          macUsername,
+          localPort,
+          gatewayToken,
+          envVars,
+        });
+        launchdLoaded = true;
 
-    // Step 5: Wait for gateway to become available
-    console.log(`[provision] Waiting for gateway on port ${localPort}...`);
-    await waitForGateway(localPort, 30_000);
+        // Step 3: Add tunnel route
+        yield* Effect.log(
+          `Adding tunnel route: ${tunnelHostname} → localhost:${localPort}`,
+        );
+        yield* tunnel.addRoute(
+          config.tunnelConfigPath,
+          tunnelHostname,
+          localPort,
+        );
+        tunnelRouteAdded = true;
 
-    console.log(
-      `[provision] Successfully provisioned claw ${clawId} as ${macUsername}`,
-    );
-    return { success: true, macUsername, localPort, tunnelRouteAdded };
-  } catch (error: unknown) {
-    console.error(
-      `[provision] Failed to provision ${clawId}: ${errorMessage(error)}`,
-    );
+        // Step 4: Restart cloudflared
+        yield* Effect.log("Restarting cloudflared");
+        yield* tunnel.restartCloudflared();
 
-    // Cleanup in reverse order
-    try {
-      if (tunnelRouteAdded) {
-        console.log("[provision] Cleanup: removing tunnel route");
-        await tunnel.removeRoute(config.tunnelConfigPath, tunnelHostname);
-        await tunnel.restartCloudflared(execFn);
+        // Step 5: Wait for gateway
+        yield* Effect.log(
+          `Waiting for gateway on port ${localPort}...`,
+        );
+        yield* waitForGateway(localPort, 30_000);
+
+        yield* Effect.log(
+          `Successfully provisioned claw ${clawId} as ${macUsername}`,
+        );
+        return {
+          success: true,
+          macUsername,
+          localPort,
+          tunnelRouteAdded,
+        } as ProvisionResponse;
+      } catch (error: unknown) {
+        // Cleanup in reverse order
+        if (tunnelRouteAdded) {
+          yield* tunnel
+            .removeRoute(config.tunnelConfigPath, tunnelHostname)
+            .pipe(Effect.catchAll(() => Effect.void));
+          yield* tunnel
+            .restartCloudflared()
+            .pipe(Effect.catchAll(() => Effect.void));
+        }
+        if (launchdLoaded) {
+          yield* launchd
+            .stopAndUnload(macUsername)
+            .pipe(Effect.catchAll(() => Effect.void));
+        }
+        if (userCreated) {
+          yield* userManager
+            .deleteClawUser(macUsername)
+            .pipe(Effect.catchAll(() => Effect.void));
+        }
+
+        return {
+          success: false,
+          macUsername,
+          localPort,
+          tunnelRouteAdded: false,
+          error: errorMessage(error),
+        } as ProvisionResponse;
       }
-    } catch (e: unknown) {
-      console.error(`[provision] Cleanup tunnel failed: ${errorMessage(e)}`);
-    }
+    });
 
-    try {
-      if (launchdLoaded) {
-        console.log("[provision] Cleanup: unloading launchd");
-        await launchd.stopAndUnload(macUsername, execFn);
+  const deprovision = (
+    macUsername: string,
+    config: AgentConfig,
+    _request: DeprovisionRequest = {},
+  ): Effect.Effect<DeprovisionResponse, DeprovisioningError> =>
+    Effect.gen(function* () {
+      const errors: string[] = [];
+
+      // Step 1: Stop launchd
+      yield* launchd.stopAndUnload(macUsername).pipe(
+        Effect.catchAll((e) =>
+          Effect.sync(() => {
+            errors.push(`launchd: ${e.message}`);
+          }),
+        ),
+      );
+
+      // Step 2: Find and remove tunnel routes
+      yield* Effect.gen(function* () {
+        const tunnelConfig = yield* tunnel.readTunnelConfig(
+          config.tunnelConfigPath,
+        );
+        for (const r of tunnelConfig.ingress) {
+          if (r.hostname?.includes(macUsername.replace("claw-", ""))) {
+            yield* tunnel.removeRoute(config.tunnelConfigPath, r.hostname);
+          }
+        }
+      }).pipe(
+        Effect.catchAll((e) =>
+          Effect.sync(() => {
+            errors.push(`tunnel: ${errorMessage(e)}`);
+          }),
+        ),
+      );
+
+      // Step 3: Restart cloudflared
+      yield* tunnel.restartCloudflared().pipe(
+        Effect.catchAll((e) =>
+          Effect.sync(() => {
+            errors.push(`cloudflared restart: ${e.message}`);
+          }),
+        ),
+      );
+
+      // Step 4: Delete user
+      yield* userManager.deleteClawUser(macUsername).pipe(
+        Effect.catchAll((e) =>
+          Effect.sync(() => {
+            errors.push(`user deletion: ${e.message}`);
+          }),
+        ),
+      );
+
+      if (errors.length > 0) {
+        return {
+          success: false,
+          archived: false,
+          error: errors.join("; "),
+        };
       }
-    } catch (e: unknown) {
-      console.error(`[provision] Cleanup launchd failed: ${errorMessage(e)}`);
-    }
 
-    try {
-      if (userCreated) {
-        console.log("[provision] Cleanup: deleting user");
-        await user.deleteClawUser(macUsername, execFn);
-      }
-    } catch (e: unknown) {
-      console.error(`[provision] Cleanup user failed: ${errorMessage(e)}`);
-    }
+      return { success: true, archived: false };
+    });
 
-    return {
-      success: false,
-      macUsername,
-      localPort,
-      tunnelRouteAdded: false,
-      error: errorMessage(error),
-    };
-  }
-}
+  const listClawUsers = (): Effect.Effect<string[], ExecError> =>
+    Effect.gen(function* () {
+      const result = yield* exec.run("dscl", [".", "-list", "/Users"]);
+      if (result.exitCode !== 0) return [];
 
-/**
- * Deprovision a claw from this Mini.
- */
-export async function deprovision(
-  macUsername: string,
-  config: AgentConfig,
-  _request: DeprovisionRequest = {},
-  execFn: ExecFn = defaultExec,
-): Promise<DeprovisionResponse> {
-  const errors: string[] = [];
+      return result.stdout
+        .split("\n")
+        .map((l) => l.trim())
+        .filter((l) => l.startsWith("claw-"));
+    });
 
-  // TODO: backup to R2 if request.archive !== false
-
-  // Step 1: Stop and unload launchd service
-  try {
-    console.log(`[deprovision] Stopping launchd service for ${macUsername}`);
-    await launchd.stopAndUnload(macUsername, execFn);
-  } catch (e: unknown) {
-    errors.push(`launchd: ${errorMessage(e)}`);
-  }
-
-  // Step 2: Find and remove tunnel route
-  try {
-    // We need to figure out the hostname. List routes and find one matching the port.
-    // For now, construct from macUsername pattern
-    const tunnelConfig = await tunnel.readTunnelConfig(config.tunnelConfigPath);
-    // Find and remove routes matching this claw's username pattern
-    for (const r of tunnelConfig.ingress) {
-      if (r.hostname?.includes(macUsername.replace("claw-", ""))) {
-        console.log(`[deprovision] Removing tunnel route: ${r.hostname}`);
-        await tunnel.removeRoute(config.tunnelConfigPath, r.hostname);
-      }
-    }
-  } catch (e: unknown) {
-    errors.push(`tunnel: ${errorMessage(e)}`);
-  }
-
-  // Step 3: Restart cloudflared
-  try {
-    await tunnel.restartCloudflared(execFn);
-  } catch (e: unknown) {
-    errors.push(`cloudflared restart: ${errorMessage(e)}`);
-  }
-
-  // Step 4: Delete macOS user
-  try {
-    console.log(`[deprovision] Deleting user ${macUsername}`);
-    await user.deleteClawUser(macUsername, execFn);
-  } catch (e: unknown) {
-    errors.push(`user deletion: ${errorMessage(e)}`);
-  }
-
-  if (errors.length > 0) {
-    return { success: false, archived: false, error: errors.join("; ") };
-  }
-
-  console.log(`[deprovision] Successfully deprovisioned ${macUsername}`);
-  return { success: true, archived: false };
-}
-
-/**
- * Get the status of a claw.
- */
-export async function getClawStatus(
-  macUsername: string,
-  clawId: string,
-  localPort: number,
-  config: AgentConfig,
-  execFn: ExecFn = defaultExec,
-): Promise<ClawStatus> {
-  const [launchdStatus, resources, tunnelRouteActive] = await Promise.all([
-    launchd.getStatus(macUsername, execFn),
-    monitoring.getClawResources(macUsername, execFn),
-    tunnel
-      .hasRoute(
-        config.tunnelConfigPath,
-        `claw-${clawId}.${config.tunnelHostnameSuffix}`,
-      )
-      .catch(() => false),
-  ]);
-
-  return {
-    clawId,
-    macUsername,
-    localPort,
-    gatewayPid: resources.gatewayPid,
-    gatewayUptime: resources.gatewayUptime,
-    memoryUsageMb: resources.memoryUsageMb,
-    chromiumPid: resources.chromiumPid,
-    launchdStatus,
-    tunnelRouteActive,
-  };
-}
-
-/**
- * List all claw users on this Mini by checking for claw-* macOS users.
- */
-export async function listClawUsers(
-  execFn: ExecFn = defaultExec,
-): Promise<string[]> {
-  const result = await execFn("dscl", [".", "-list", "/Users"]);
-  if (result.exitCode !== 0) return [];
-
-  return result.stdout
-    .split("\n")
-    .map((l) => l.trim())
-    .filter((l) => l.startsWith("claw-"));
-}
-
-/**
- * Wait for a gateway to respond on a port.
- */
-async function waitForGateway(port: number, timeoutMs: number): Promise<void> {
-  const start = Date.now();
-  while (Date.now() - start < timeoutMs) {
-    try {
-      const response = await fetch(`http://127.0.0.1:${port}/health`, {
-        signal: AbortSignal.timeout(2000),
-      });
-      if (response.ok) return;
-    } catch {
-      // Not ready yet
-    }
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  }
-  console.warn(
-    `[provision] Gateway on port ${port} did not respond within ${timeoutMs}ms (continuing anyway)`,
-  );
-}
+  return { provision, deprovision, listClawUsers };
+});

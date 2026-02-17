@@ -1,13 +1,13 @@
+/**
+ * Cloudflare tunnel config management service.
+ */
 import { readFile, writeFile } from "node:fs/promises";
+
+import { Context, Effect } from "effect";
 import YAML from "yaml";
 
-/**
- * Cloudflare tunnel (cloudflared) config management.
- *
- * Manages ingress rules in the cloudflared config.yml to route
- * traffic from tunnel hostnames to local claw ports.
- */
-import { type ExecFn, exec as defaultExec } from "../lib/exec.js";
+import { ExecError, SystemError } from "../errors.js";
+import { Exec } from "./exec.js";
 
 export interface TunnelIngress {
   hostname?: string;
@@ -22,20 +22,49 @@ export interface TunnelConfig {
   [key: string]: unknown;
 }
 
-/**
- * Read the cloudflared config file.
- */
-export async function readTunnelConfig(
+export class Tunnel extends Context.Tag("Tunnel")<
+  Tunnel,
+  {
+    readonly addRoute: (
+      configPath: string,
+      hostname: string,
+      localPort: number,
+    ) => Effect.Effect<void, SystemError>;
+    readonly removeRoute: (
+      configPath: string,
+      hostname: string,
+    ) => Effect.Effect<void, SystemError>;
+    readonly hasRoute: (
+      configPath: string,
+      hostname: string,
+    ) => Effect.Effect<boolean, SystemError>;
+    readonly getRouteCount: (
+      configPath: string,
+    ) => Effect.Effect<number, SystemError>;
+    readonly restartCloudflared: () => Effect.Effect<void, ExecError>;
+    readonly readTunnelConfig: (
+      configPath: string,
+    ) => Effect.Effect<TunnelConfig, SystemError>;
+  }
+>() {}
+
+// Pure functions for tunnel config manipulation (exported for testing)
+export function readTunnelConfigSync(content: string): TunnelConfig {
+  return YAML.parse(content) as TunnelConfig;
+}
+
+export function writeTunnelConfigSync(config: TunnelConfig): string {
+  return YAML.stringify(config, { lineWidth: 0 });
+}
+
+export async function readTunnelConfigFromFile(
   configPath: string,
 ): Promise<TunnelConfig> {
   const content = await readFile(configPath, "utf-8");
   return YAML.parse(content) as TunnelConfig;
 }
 
-/**
- * Write the cloudflared config file.
- */
-export async function writeTunnelConfig(
+export async function writeTunnelConfigToFile(
   configPath: string,
   config: TunnelConfig,
 ): Promise<void> {
@@ -43,27 +72,20 @@ export async function writeTunnelConfig(
   await writeFile(configPath, content, "utf-8");
 }
 
-/**
- * Add an ingress rule for a claw to the cloudflared config.
- * The rule is inserted before the catch-all (last) rule.
- */
-export async function addRoute(
+export async function addRouteToConfig(
   configPath: string,
   hostname: string,
   localPort: number,
 ): Promise<void> {
-  const config = await readTunnelConfig(configPath);
+  const config = await readTunnelConfigFromFile(configPath);
 
-  // Check if route already exists
   if (config.ingress.some((r) => r.hostname === hostname)) {
-    console.log(`[tunnel] Route for ${hostname} already exists, updating`);
     config.ingress = config.ingress.map((r) =>
       r.hostname === hostname
         ? { hostname, service: `http://localhost:${localPort}` }
         : r,
     );
   } else {
-    // Insert before the catch-all rule (always the last one, has no hostname)
     const catchAll = config.ingress[config.ingress.length - 1];
     const hasCatchAll = catchAll && !catchAll.hostname;
 
@@ -73,7 +95,6 @@ export async function addRoute(
         service: `http://localhost:${localPort}`,
       });
     } else {
-      // No catch-all, just append and add one
       config.ingress.push({
         hostname,
         service: `http://localhost:${localPort}`,
@@ -82,63 +103,120 @@ export async function addRoute(
     }
   }
 
-  await writeTunnelConfig(configPath, config);
-  console.log(`[tunnel] Added route: ${hostname} → localhost:${localPort}`);
+  await writeTunnelConfigToFile(configPath, config);
 }
 
-/**
- * Remove an ingress rule for a claw from the cloudflared config.
- */
-export async function removeRoute(
+export async function removeRouteFromConfig(
   configPath: string,
   hostname: string,
 ): Promise<void> {
-  const config = await readTunnelConfig(configPath);
+  const config = await readTunnelConfigFromFile(configPath);
   config.ingress = config.ingress.filter((r) => r.hostname !== hostname);
 
-  // Ensure there's always a catch-all
   const last = config.ingress[config.ingress.length - 1];
   if (!last || last.hostname) {
     config.ingress.push({ service: "http_status:404" });
   }
 
-  await writeTunnelConfig(configPath, config);
-  console.log(`[tunnel] Removed route: ${hostname}`);
+  await writeTunnelConfigToFile(configPath, config);
 }
 
-/**
- * Check if a route exists for a given hostname.
- */
-export async function hasRoute(
+export async function hasRouteInConfig(
   configPath: string,
   hostname: string,
 ): Promise<boolean> {
-  const config = await readTunnelConfig(configPath);
+  const config = await readTunnelConfigFromFile(configPath);
   return config.ingress.some((r) => r.hostname === hostname);
 }
 
-/**
- * Restart cloudflared to pick up config changes.
- */
-export async function restartCloudflared(
-  execFn: ExecFn = defaultExec,
-): Promise<void> {
-  console.log("[tunnel] Restarting cloudflared...");
-  await execFn("launchctl", ["stop", "com.cloudflare.cloudflared"], {
-    sudo: true,
-  });
-  // Give it a moment to stop
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-  await execFn("launchctl", ["start", "com.cloudflare.cloudflared"], {
-    sudo: true,
-  });
-  console.log("[tunnel] cloudflared restarted");
-}
-
-/**
- * Get the number of active (non-catch-all) ingress routes.
- */
-export async function getRouteCount(configPath: string): Promise<number> {
-  const config = await readTunnelConfig(configPath);
+export async function getRouteCountFromConfig(
+  configPath: string,
+): Promise<number> {
+  const config = await readTunnelConfigFromFile(configPath);
   return config.ingress.filter((r) => r.hostname).length;
 }
+
+export const TunnelLive = Effect.gen(function* () {
+  const exec = yield* Exec;
+
+  const addRoute = (
+    configPath: string,
+    hostname: string,
+    localPort: number,
+  ): Effect.Effect<void, SystemError> =>
+    Effect.tryPromise({
+      try: () => addRouteToConfig(configPath, hostname, localPort),
+      catch: (e) =>
+        new SystemError({
+          message: `Failed to add tunnel route: ${hostname}`,
+          cause: e,
+        }),
+    });
+
+  const removeRoute = (
+    configPath: string,
+    hostname: string,
+  ): Effect.Effect<void, SystemError> =>
+    Effect.tryPromise({
+      try: () => removeRouteFromConfig(configPath, hostname),
+      catch: (e) =>
+        new SystemError({
+          message: `Failed to remove tunnel route: ${hostname}`,
+          cause: e,
+        }),
+    });
+
+  const hasRoute = (
+    configPath: string,
+    hostname: string,
+  ): Effect.Effect<boolean, SystemError> =>
+    Effect.tryPromise({
+      try: () => hasRouteInConfig(configPath, hostname),
+      catch: (e) =>
+        new SystemError({ message: `Failed to check route`, cause: e }),
+    });
+
+  const getRouteCount = (
+    configPath: string,
+  ): Effect.Effect<number, SystemError> =>
+    Effect.tryPromise({
+      try: () => getRouteCountFromConfig(configPath),
+      catch: (e) =>
+        new SystemError({
+          message: `Failed to get route count`,
+          cause: e,
+        }),
+    });
+
+  const restartCloudflared = (): Effect.Effect<void, ExecError> =>
+    Effect.gen(function* () {
+      yield* exec.run("launchctl", ["stop", "com.cloudflare.cloudflared"], {
+        sudo: true,
+      });
+      yield* Effect.sleep("2 seconds");
+      yield* exec.run("launchctl", ["start", "com.cloudflare.cloudflared"], {
+        sudo: true,
+      });
+    });
+
+  const readTunnelConfig = (
+    configPath: string,
+  ): Effect.Effect<TunnelConfig, SystemError> =>
+    Effect.tryPromise({
+      try: () => readTunnelConfigFromFile(configPath),
+      catch: (e) =>
+        new SystemError({
+          message: `Failed to read tunnel config`,
+          cause: e,
+        }),
+    });
+
+  return {
+    addRoute,
+    removeRoute,
+    hasRoute,
+    getRouteCount,
+    restartCloudflared,
+    readTunnelConfig,
+  };
+});

@@ -3,46 +3,98 @@
  *
  * Lightweight HTTP server for claw provisioning and management.
  * Runs on each Mac Mini under the `clawadmin` account.
+ * Built with Effect HttpApi.
  */
-import { Hono } from "hono";
-import { logger } from "hono/logger";
+import { HttpApiBuilder, HttpServer } from "@effect/platform";
+import { Effect, Layer } from "effect";
 
-import { loadConfig } from "./lib/config.js";
-import { authMiddleware } from "./middleware/auth.js";
-import { clawRoutes } from "./routes/claws.js";
-import { healthRoutes } from "./routes/health.js";
+import { MiniAgentApi } from "./api.js";
+import { AgentConfigLive, AgentConfigService } from "./config.js";
+import {
+  AuthMiddlewareLive,
+  ClawsGroupLive,
+  HealthGroupLive,
+} from "./handlers.js";
+import { Exec, ExecLive } from "./services/exec.js";
+import { Launchd, LaunchdLive } from "./services/launchd.js";
+import { Monitoring, MonitoringLive } from "./services/monitoring.js";
+import {
+  Provisioning,
+  ProvisioningLive,
+} from "./services/provisioning.js";
+import { System, SystemLive } from "./services/system.js";
+import { Tunnel, TunnelLive } from "./services/tunnel.js";
+import { UserManager, UserManagerLive } from "./services/user.js";
 
-const config = loadConfig();
-const app = new Hono();
+// ─── Service Layers ────────────────────────────────────────
 
-// Logging
-app.use("*", logger());
+const ExecLayer = Layer.effect(Exec, ExecLive);
+const LaunchdLayer = Layer.effect(Launchd, LaunchdLive).pipe(
+  Layer.provide(ExecLayer),
+);
+const TunnelLayer = Layer.effect(Tunnel, TunnelLive).pipe(
+  Layer.provide(ExecLayer),
+);
+const MonitoringLayer = Layer.effect(Monitoring, MonitoringLive).pipe(
+  Layer.provide(ExecLayer),
+);
+const SystemLayer = Layer.effect(System, SystemLive).pipe(
+  Layer.provide(ExecLayer),
+);
+const UserManagerLayer = Layer.effect(UserManager, UserManagerLive).pipe(
+  Layer.provide(ExecLayer),
+);
+const ProvisioningLayer = Layer.effect(Provisioning, ProvisioningLive).pipe(
+  Layer.provide(
+    Layer.mergeAll(
+      ExecLayer,
+      UserManagerLayer,
+      LaunchdLayer,
+      TunnelLayer,
+      MonitoringLayer,
+    ),
+  ),
+);
 
-// Auth on all routes except health (health is useful for tunnel verification)
-app.use("/claws/*", authMiddleware(config.authToken));
-app.use("/claws", authMiddleware(config.authToken));
+const ServicesLayer = Layer.mergeAll(
+  ExecLayer,
+  LaunchdLayer,
+  TunnelLayer,
+  MonitoringLayer,
+  SystemLayer,
+  UserManagerLayer,
+  ProvisioningLayer,
+);
 
-// Routes
-app.route("/", healthRoutes(config));
-app.route("/", clawRoutes(config));
+// ─── API Layer ─────────────────────────────────────────────
 
-// 404 handler
-app.notFound((c) => c.json({ error: "Not found" }, 404));
+const ApiLive = HttpApiBuilder.api(MiniAgentApi).pipe(
+  Layer.provide(HealthGroupLive),
+  Layer.provide(ClawsGroupLive),
+  Layer.provide(AuthMiddlewareLive),
+  Layer.provide(AgentConfigLive),
+  Layer.provide(ServicesLayer),
+);
 
-// Error handler
-app.onError((err, c) => {
-  console.error(`[error] ${err.message}`, err.stack);
-  return c.json({ error: "Internal server error", details: err.message }, 500);
+// ─── Web Handler (Bun) ────────────────────────────────────
+
+const { handler, dispose } = HttpApiBuilder.toWebHandler(
+  Layer.mergeAll(ApiLive, HttpServer.layerContext),
+);
+
+// Read port from env for Bun's default export
+const port = parseInt(process.env.MINI_AGENT_PORT ?? "7600", 10);
+
+console.log(`[mini-agent] Starting on port ${port}`);
+
+// Graceful shutdown
+process.on("SIGINT", async () => {
+  console.log("[mini-agent] Shutting down...");
+  await dispose();
+  process.exit(0);
 });
 
-console.log(`[mini-agent] Starting on port ${config.port}`);
-console.log(`[mini-agent] Max claws: ${config.maxClaws}`);
-console.log(
-  `[mini-agent] Port range: ${config.portRangeStart}-${config.portRangeEnd}`,
-);
-console.log(`[mini-agent] Tunnel config: ${config.tunnelConfigPath}`);
-
 export default {
-  port: config.port,
-  fetch: app.fetch,
+  port,
+  fetch: handler,
 };

@@ -1,9 +1,12 @@
+/**
+ * launchd plist management service.
+ */
 import { writeFile } from "node:fs/promises";
 
-/**
- * launchd plist management for claw gateway services.
- */
-import { type ExecFn, exec as defaultExec } from "../lib/exec.js";
+import { Context, Effect } from "effect";
+
+import { ExecError } from "../errors.js";
+import { Exec } from "./exec.js";
 
 const PLIST_DIR = "/Library/LaunchDaemons";
 
@@ -16,20 +19,44 @@ function plistPath(macUsername: string): string {
 }
 
 export interface LaunchdConfig {
-  macUsername: string;
-  localPort: number;
-  gatewayToken: string;
-  envVars?: Record<string, string>;
+  readonly macUsername: string;
+  readonly localPort: number;
+  readonly gatewayToken: string;
+  readonly envVars?: Record<string, string>;
 }
 
-/**
- * Generate the launchd plist XML for a claw gateway.
- */
+export class Launchd extends Context.Tag("Launchd")<
+  Launchd,
+  {
+    readonly installAndLoad: (
+      config: LaunchdConfig,
+    ) => Effect.Effect<void, ExecError>;
+    readonly stopAndUnload: (
+      macUsername: string,
+    ) => Effect.Effect<void, ExecError>;
+    readonly restart: (macUsername: string) => Effect.Effect<void, ExecError>;
+    readonly getStatus: (
+      macUsername: string,
+    ) => Effect.Effect<"loaded" | "unloaded" | "error", ExecError>;
+    readonly getPid: (
+      macUsername: string,
+    ) => Effect.Effect<number | null, ExecError>;
+  }
+>() {}
+
+function escapeXml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
 export function generatePlist(config: LaunchdConfig): string {
   const label = plistLabel(config.macUsername);
   const homeDir = `/Users/${config.macUsername}`;
 
-  // Build environment variables dict
   const envEntries = [
     ["PORT", String(config.localPort)],
     ["OPENCLAW_HOME", `${homeDir}/.openclaw`],
@@ -39,7 +66,7 @@ export function generatePlist(config: LaunchdConfig): string {
   const envXml = envEntries
     .map(
       ([k, v]) =>
-        `            <key>${escapeXml(k)}</key>\n            <string>${escapeXml(v)}</string>`,
+        `            <key>${escapeXml(k!)}</key>\n            <string>${escapeXml(v!)}</string>`,
     )
     .join("\n");
 
@@ -77,132 +104,102 @@ ${envXml}
 </plist>`;
 }
 
-/**
- * Install and load a launchd plist for a claw.
- */
-export async function installAndLoad(
-  config: LaunchdConfig,
-  execFn: ExecFn = defaultExec,
-): Promise<void> {
-  const plist = generatePlist(config);
-  const path = plistPath(config.macUsername);
+export const LaunchdLive = Effect.gen(function* () {
+  const exec = yield* Exec;
 
-  // Write plist file
-  const tmpPath = `/tmp/mini-agent-plist-${Date.now()}`;
-  await writeFile(tmpPath, plist, "utf-8");
-  await execFn("mv", [tmpPath, path], { sudo: true });
-  await execFn("chmod", ["644", path], { sudo: true });
-  await execFn("chown", ["root:wheel", path], { sudo: true });
+  const installAndLoad = (
+    config: LaunchdConfig,
+  ): Effect.Effect<void, ExecError> =>
+    Effect.gen(function* () {
+      const plist = generatePlist(config);
+      const path = plistPath(config.macUsername);
 
-  // Load the service
-  const result = await execFn("launchctl", ["load", path], { sudo: true });
-  if (result.exitCode !== 0) {
-    throw new Error(`Failed to load launchd service: ${result.stderr}`);
-  }
-}
+      const tmpPath = `/tmp/mini-agent-plist-${Date.now()}`;
+      yield* Effect.tryPromise({
+        try: () => writeFile(tmpPath, plist, "utf-8"),
+        catch: (e) =>
+          new ExecError({
+            message: `Failed to write plist`,
+            command: "writeFile",
+            exitCode: -1,
+            stderr: String(e),
+          }),
+      });
+      yield* exec.runUnsafe("mv", [tmpPath, path], { sudo: true });
+      yield* exec.runUnsafe("chmod", ["644", path], { sudo: true });
+      yield* exec.runUnsafe("chown", ["root:wheel", path], { sudo: true });
+      yield* exec.runUnsafe("launchctl", ["load", path], { sudo: true });
+    });
 
-/**
- * Stop and unload a claw's launchd service.
- */
-export async function stopAndUnload(
-  macUsername: string,
-  execFn: ExecFn = defaultExec,
-): Promise<void> {
-  const label = plistLabel(macUsername);
-  const path = plistPath(macUsername);
+  const stopAndUnload = (
+    macUsername: string,
+  ): Effect.Effect<void, ExecError> =>
+    Effect.gen(function* () {
+      const label = plistLabel(macUsername);
+      const path = plistPath(macUsername);
 
-  // Try to stop first
-  await execFn("launchctl", ["stop", label], { sudo: true });
+      yield* exec.run("launchctl", ["stop", label], { sudo: true });
+      yield* exec.run("launchctl", ["unload", path], { sudo: true });
+      yield* exec
+        .run("rm", ["-f", path], { sudo: true })
+        .pipe(Effect.catchAll(() => Effect.void));
+    });
 
-  // Unload
-  const result = await execFn("launchctl", ["unload", path], { sudo: true });
-  if (result.exitCode !== 0) {
-    console.warn(
-      `[launchd] Warning: unload failed for ${label}: ${result.stderr}`,
-    );
-  }
+  const restart = (macUsername: string): Effect.Effect<void, ExecError> =>
+    Effect.gen(function* () {
+      const label = plistLabel(macUsername);
+      yield* exec.runUnsafe(
+        "launchctl",
+        ["kickstart", "-k", `system/${label}`],
+        { sudo: true },
+      );
+    });
 
-  // Remove plist file
-  try {
-    await execFn("rm", ["-f", path], { sudo: true });
-  } catch {
-    // Ignore cleanup errors
-  }
-}
+  const getStatus = (
+    macUsername: string,
+  ): Effect.Effect<"loaded" | "unloaded" | "error", ExecError> =>
+    Effect.gen(function* () {
+      const label = plistLabel(macUsername);
+      const result = yield* exec.run("launchctl", ["list", label], {
+        sudo: true,
+      });
 
-/**
- * Restart a claw's gateway using launchctl kickstart.
- */
-export async function restart(
-  macUsername: string,
-  execFn: ExecFn = defaultExec,
-): Promise<void> {
-  const label = plistLabel(macUsername);
-  const result = await execFn(
-    "launchctl",
-    ["kickstart", "-k", `system/${label}`],
-    { sudo: true },
-  );
-  if (result.exitCode !== 0) {
-    throw new Error(`Failed to restart ${label}: ${result.stderr}`);
-  }
-}
+      if (result.exitCode !== 0) return "unloaded" as const;
 
-/**
- * Get the launchd status of a claw service.
- */
-export async function getStatus(
-  macUsername: string,
-  execFn: ExecFn = defaultExec,
-): Promise<"loaded" | "unloaded" | "error"> {
-  const label = plistLabel(macUsername);
-  const result = await execFn("launchctl", ["list", label], { sudo: true });
+      const statusMatch = result.stdout.match(
+        /"LastExitStatus"\s*=\s*(\d+)/,
+      );
+      if (statusMatch && parseInt(statusMatch[1]!, 10) !== 0) {
+        return "error" as const;
+      }
 
-  if (result.exitCode !== 0) {
-    return "unloaded";
-  }
+      return "loaded" as const;
+    });
 
-  // Check if there's an error status
-  const statusMatch = result.stdout.match(/"LastExitStatus"\s*=\s*(\d+)/);
-  if (statusMatch && parseInt(statusMatch[1]!, 10) !== 0) {
-    return "error";
-  }
+  const getPid = (
+    macUsername: string,
+  ): Effect.Effect<number | null, ExecError> =>
+    Effect.gen(function* () {
+      const label = plistLabel(macUsername);
+      const result = yield* exec.run("launchctl", ["list", label], {
+        sudo: true,
+      });
 
-  return "loaded";
-}
+      if (result.exitCode !== 0) return null;
 
-/**
- * Get the PID of a running claw gateway.
- */
-export async function getPid(
-  macUsername: string,
-  execFn: ExecFn = defaultExec,
-): Promise<number | null> {
-  const label = plistLabel(macUsername);
-  const result = await execFn("launchctl", ["list", label], { sudo: true });
+      const pidMatch = result.stdout.match(/"PID"\s*=\s*(\d+)/);
+      if (pidMatch) return parseInt(pidMatch[1]!, 10);
 
-  if (result.exitCode !== 0) return null;
+      const lines = result.stdout.trim().split("\n");
+      for (const line of lines) {
+        const parts = line.split("\t");
+        if (parts.length >= 3 && parts[2] === label && parts[0] !== "-") {
+          return parseInt(parts[0]!, 10);
+        }
+      }
 
-  const pidMatch = result.stdout.match(/"PID"\s*=\s*(\d+)/);
-  if (pidMatch) return parseInt(pidMatch[1]!, 10);
+      return null;
+    });
 
-  // Also try the tabular format: PID\tStatus\tLabel
-  const lines = result.stdout.trim().split("\n");
-  for (const line of lines) {
-    const parts = line.split("\t");
-    if (parts.length >= 3 && parts[2] === label && parts[0] !== "-") {
-      return parseInt(parts[0]!, 10);
-    }
-  }
-
-  return null;
-}
-
-function escapeXml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
-}
+  return { installAndLoad, stopAndUnload, restart, getStatus, getPid };
+});

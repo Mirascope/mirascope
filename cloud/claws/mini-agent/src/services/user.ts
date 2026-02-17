@@ -1,11 +1,38 @@
+/**
+ * macOS user creation/deletion service.
+ */
 import { randomBytes } from "node:crypto";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
 
-/**
- * macOS user creation/deletion via sysadminctl.
- */
-import { type ExecFn, exec as defaultExec } from "../lib/exec.js";
+import { Context, Effect } from "effect";
+
+import { ProvisioningError } from "../errors.js";
+import { Exec } from "./exec.js";
+
+export interface CreateUserOptions {
+  readonly macUsername: string;
+  readonly clawId: string;
+  readonly localPort: number;
+  readonly gatewayToken: string;
+  readonly tunnelHostname: string;
+  readonly envVars: Record<string, string>;
+}
+
+export class UserManager extends Context.Tag("UserManager")<
+  UserManager,
+  {
+    readonly createClawUser: (
+      options: CreateUserOptions,
+    ) => Effect.Effect<void, ProvisioningError>;
+    readonly deleteClawUser: (
+      macUsername: string,
+    ) => Effect.Effect<void, ProvisioningError>;
+    readonly userExists: (
+      macUsername: string,
+    ) => Effect.Effect<boolean, ProvisioningError>;
+  }
+>() {}
 
 const ZSHRC_TEMPLATE = `
 # Mirascope Claw user profile
@@ -18,132 +45,167 @@ export PATH="/opt/homebrew/opt/node/bin:$PATH"
 export PLAYWRIGHT_BROWSERS_PATH="/opt/homebrew/var/playwright"
 `.trim();
 
-export interface CreateUserOptions {
-  macUsername: string;
-  clawId: string;
-  localPort: number;
-  gatewayToken: string;
-  tunnelHostname: string;
-  envVars: Record<string, string>;
-}
+export const UserManagerLive = Effect.gen(function* () {
+  const exec = yield* Exec;
 
-/**
- * Create a macOS user for a claw and set up the home directory.
- */
-export async function createClawUser(
-  options: CreateUserOptions,
-  execFn: ExecFn = defaultExec,
-): Promise<void> {
-  const { macUsername, clawId, localPort, gatewayToken, envVars } = options;
-  const homeDir = `/Users/${macUsername}`;
-  const password = randomBytes(32).toString("hex");
+  const writeFileAsSudo = (
+    filePath: string,
+    content: string,
+    owner: string,
+  ): Effect.Effect<void, ProvisioningError> =>
+    Effect.gen(function* () {
+      const tmpPath = `/tmp/mini-agent-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      yield* Effect.tryPromise({
+        try: () => writeFile(tmpPath, content, "utf-8"),
+        catch: (e) =>
+          new ProvisioningError({
+            message: `Failed to write temp file: ${tmpPath}`,
+            cause: e,
+          }),
+      });
+      yield* exec.runUnsafe("mv", [tmpPath, filePath], { sudo: true }).pipe(
+        Effect.mapError(
+          (e) => new ProvisioningError({ message: e.message, cause: e }),
+        ),
+      );
+      yield* exec
+        .runUnsafe("chown", [`${owner}:staff`, filePath], { sudo: true })
+        .pipe(
+          Effect.mapError(
+            (e) => new ProvisioningError({ message: e.message, cause: e }),
+          ),
+        );
+    });
 
-  // 1. Create macOS user
-  const createResult = await execFn(
-    "sysadminctl",
-    [
-      "-addUser",
-      macUsername,
-      "-fullName",
-      `Claw ${clawId}`,
-      "-password",
-      password,
-      "-home",
-      homeDir,
-      "-shell",
-      "/bin/zsh",
-    ],
-    { sudo: true, timeout: 30_000 },
-  );
+  const createClawUser = (
+    options: CreateUserOptions,
+  ): Effect.Effect<void, ProvisioningError> =>
+    Effect.gen(function* () {
+      const { macUsername, clawId, localPort, gatewayToken, envVars } = options;
+      const homeDir = `/Users/${macUsername}`;
+      const password = randomBytes(32).toString("hex");
 
-  if (createResult.exitCode !== 0) {
-    throw new Error(
-      `Failed to create user ${macUsername}: ${createResult.stderr}`,
-    );
-  }
+      // 1. Create macOS user
+      const createResult = yield* exec
+        .run(
+          "sysadminctl",
+          [
+            "-addUser",
+            macUsername,
+            "-fullName",
+            `Claw ${clawId}`,
+            "-password",
+            password,
+            "-home",
+            homeDir,
+            "-shell",
+            "/bin/zsh",
+          ],
+          { sudo: true, timeout: 30_000 },
+        )
+        .pipe(
+          Effect.mapError(
+            (e) => new ProvisioningError({ message: e.message, cause: e }),
+          ),
+        );
 
-  // 2. Lock down home directory
-  await execFn("chmod", ["700", homeDir], { sudo: true });
+      if (createResult.exitCode !== 0) {
+        return yield* Effect.fail(
+          new ProvisioningError({
+            message: `Failed to create user ${macUsername}: ${createResult.stderr}`,
+          }),
+        );
+      }
 
-  // 3. Write .zshrc
-  const zshrcPath = path.join(homeDir, ".zshrc");
-  await writeFileAsSudo(zshrcPath, ZSHRC_TEMPLATE, macUsername, execFn);
+      // 2. Lock down home directory
+      yield* exec
+        .runUnsafe("chmod", ["700", homeDir], { sudo: true })
+        .pipe(
+          Effect.mapError(
+            (e) => new ProvisioningError({ message: e.message, cause: e }),
+          ),
+        );
 
-  // 4. Create .openclaw directories
-  const openclawDir = path.join(homeDir, ".openclaw");
-  const workspaceDir = path.join(openclawDir, "workspace");
-  const logsDir = path.join(openclawDir, "logs");
+      // 3. Write .zshrc
+      yield* writeFileAsSudo(
+        path.join(homeDir, ".zshrc"),
+        ZSHRC_TEMPLATE,
+        macUsername,
+      );
 
-  await execFn("mkdir", ["-p", workspaceDir, logsDir], {
-    sudoUser: macUsername,
-  });
+      // 4. Create .openclaw directories
+      const openclawDir = path.join(homeDir, ".openclaw");
+      const workspaceDir = path.join(openclawDir, "workspace");
+      const logsDir = path.join(openclawDir, "logs");
 
-  // 5. Write openclaw.json
-  const openclawConfig = {
-    gateway: {
-      host: "127.0.0.1",
-      port: localPort,
-      token: gatewayToken,
-    },
-  };
-  const configPath = path.join(openclawDir, "openclaw.json");
-  await writeFileAsSudo(
-    configPath,
-    JSON.stringify(openclawConfig, null, 2),
-    macUsername,
-    execFn,
-  );
+      yield* exec
+        .runUnsafe("mkdir", ["-p", workspaceDir, logsDir], {
+          sudoUser: macUsername,
+        })
+        .pipe(
+          Effect.mapError(
+            (e) => new ProvisioningError({ message: e.message, cause: e }),
+          ),
+        );
 
-  // 6. Write .env with injected environment variables
-  if (Object.keys(envVars).length > 0) {
-    const envContent = Object.entries(envVars)
-      .map(([k, v]) => `${k}=${v}`)
-      .join("\n");
-    const envPath = path.join(openclawDir, ".env");
-    await writeFileAsSudo(envPath, envContent, macUsername, execFn);
-  }
-}
+      // 5. Write openclaw.json
+      const openclawConfig = {
+        gateway: { host: "127.0.0.1", port: localPort, token: gatewayToken },
+      };
+      yield* writeFileAsSudo(
+        path.join(openclawDir, "openclaw.json"),
+        JSON.stringify(openclawConfig, null, 2),
+        macUsername,
+      );
 
-/**
- * Delete a macOS user and their home directory.
- */
-export async function deleteClawUser(
-  macUsername: string,
-  execFn: ExecFn = defaultExec,
-): Promise<void> {
-  // Delete user and home directory
-  const result = await execFn(
-    "sysadminctl",
-    ["-deleteUser", macUsername, "-secure"],
-    { sudo: true, timeout: 60_000 },
-  );
+      // 6. Write .env with injected environment variables
+      if (Object.keys(envVars).length > 0) {
+        const envContent = Object.entries(envVars)
+          .map(([k, v]) => `${k}=${v}`)
+          .join("\n");
+        yield* writeFileAsSudo(
+          path.join(openclawDir, ".env"),
+          envContent,
+          macUsername,
+        );
+      }
+    });
 
-  if (result.exitCode !== 0) {
-    throw new Error(`Failed to delete user ${macUsername}: ${result.stderr}`);
-  }
-}
+  const deleteClawUser = (
+    macUsername: string,
+  ): Effect.Effect<void, ProvisioningError> =>
+    Effect.gen(function* () {
+      const result = yield* exec
+        .run("sysadminctl", ["-deleteUser", macUsername, "-secure"], {
+          sudo: true,
+          timeout: 60_000,
+        })
+        .pipe(
+          Effect.mapError(
+            (e) => new ProvisioningError({ message: e.message, cause: e }),
+          ),
+        );
 
-/**
- * Check if a macOS user exists.
- */
-export async function userExists(
-  macUsername: string,
-  execFn: ExecFn = defaultExec,
-): Promise<boolean> {
-  const result = await execFn("id", [macUsername]);
-  return result.exitCode === 0;
-}
+      if (result.exitCode !== 0) {
+        return yield* Effect.fail(
+          new ProvisioningError({
+            message: `Failed to delete user ${macUsername}: ${result.stderr}`,
+          }),
+        );
+      }
+    });
 
-/** Write a file owned by a specific user using sudo tee */
-async function writeFileAsSudo(
-  filePath: string,
-  content: string,
-  owner: string,
-  execFn: ExecFn,
-): Promise<void> {
-  // Write via a temp approach: write to tmp, then move and chown
-  const tmpPath = `/tmp/mini-agent-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  await writeFile(tmpPath, content, "utf-8");
-  await execFn("mv", [tmpPath, filePath], { sudo: true });
-  await execFn("chown", [`${owner}:staff`, filePath], { sudo: true });
-}
+  const userExists = (
+    macUsername: string,
+  ): Effect.Effect<boolean, ProvisioningError> =>
+    exec
+      .run("id", [macUsername])
+      .pipe(
+        Effect.map((r) => r.exitCode === 0),
+        Effect.mapError(
+          (e) => new ProvisioningError({ message: e.message, cause: e }),
+        ),
+      );
+
+  return { createClawUser, deleteClawUser, userExists };
+});
