@@ -103,6 +103,7 @@ const publicFields = {
   miniId: claws.miniId,
   miniPort: claws.miniPort,
   tunnelHostname: claws.tunnelHostname,
+  macUsername: claws.macUsername,
   botUserId: claws.botUserId,
   homeProjectId: claws.homeProjectId,
   homeEnvironmentId: claws.homeEnvironmentId,
