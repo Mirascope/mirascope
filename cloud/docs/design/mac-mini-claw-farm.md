@@ -223,7 +223,7 @@ CREATE TABLE mac_minis (
   -- Network
   tailscale_ip    TEXT NOT NULL,                 -- e.g. "100.64.x.x"
   tailscale_fqdn  TEXT NOT NULL,                 -- e.g. "mini-01.tail1234.ts.net"
-  agent_url       TEXT NOT NULL,                  -- e.g. "https://agent.mini-01.claws.mirascope.dev"
+  agent_url       TEXT NOT NULL,                  -- e.g. "https://agent.local-william.claws.mirascope.dev" (local) or "https://mini-01.agent.claws.staging.mirascope.com" (staging)
   agent_port      INTEGER NOT NULL DEFAULT 7600, -- Mini agent local HTTP port
   public_ip       TEXT,                          -- residential IP (for reference)
   
@@ -700,7 +700,7 @@ export class MacMiniFleetService extends Context.Tag("MacMiniFleetService")<
 /**
  * Live fleet service — communicates with Mini agents over HTTPS via Cloudflare Tunnel.
  *
- * Mini agent base URL: https://{hostname}.agent.claws.mirascope.dev (from mac_minis.agent_url)
+ * Mini agent base URL: from mac_minis.agent_url (environment-appropriate tunnel URL, e.g. https://agent.local-{user}.claws.mirascope.dev for local)
  *
  * Placement strategy (v1 — simple):
  *   1. Query mac_minis WHERE status = 'active' AND current_claws < max_claws
@@ -1091,7 +1091,7 @@ The agent runs on each Mac Mini as a `launchd` system daemon. It's a lightweight
 
 #### Agent Security
 
-- Listens on localhost, exposed via Cloudflare Tunnel (e.g., `{hostname}.agent.claws.mirascope.dev`)
+- Listens on localhost, exposed via Cloudflare Tunnel (URL stored in `mac_minis.agent_url`, e.g. `agent.local-william.claws.mirascope.dev` for local dev)
 - Bearer token auth (shared secret between cloud backend and agent)
 - Agent runs as `clawadmin` (admin account with sudo — needed for `sysadminctl` user creation and `launchctl` management)
 - Also accessible directly via Tailscale for admin debugging
@@ -1383,7 +1383,7 @@ Complete flow when `createClawHandler` is called.
    │   │
    │   ├── fleet.provisionOnMini(miniId, { clawId, macUsername, localPort, ... })
    │   │   │
-   │   │   ├── HTTP POST https://{hostname}.agent.claws.mirascope.dev/claws
+   │   │   ├── HTTP POST https://{agent_url}/claws  (from mac_minis.agent_url)
    │   │   │   │  (Mini agent receives request)
    │   │   │   │
    │   │   │   ├── sysadminctl -addUser claw-{id8} ...
@@ -1427,7 +1427,7 @@ Complete flow when `createClawHandler` is called.
    │   │
    │   ├── fleet.deprovisionOnMini(miniId, { clawId, macUsername, archive: true })
    │   │   │
-   │   │   ├── HTTP DELETE https://{hostname}.agent.claws.mirascope.dev/claws/{clawUser}
+   │   │   ├── HTTP DELETE https://{agent_url}/claws/{clawUser}  (from mac_minis.agent_url)
    │   │   │   │
    │   │   │   ├── launchctl bootout system/com.mirascope.claw.{id}
    │   │   │   ├── tar czf /tmp/claw-{id}-archive.tar.gz /Users/claw-{id8}/
@@ -1488,7 +1488,6 @@ The `connectAndRelay` function connects to `wss://claw-{id}.claws.mirascope.com`
 
 The frontend `getGatewayUrl()` in `cloud/app/routes/$orgSlug/claws/$clawSlug.tsx` currently constructs:
 - **localhost:** Uses `VITE_OPENCLAW_GATEWAY_WS_URL` (http) or falls back to `http://localhost:18789/`
-- **mirascope.dev:** `https://openclaw.mirascope.dev/{org}/{claw}/overview`
 - **Production:** `https://openclaw.{subdomain}.mirascope.com/{org}/{claw}/overview` (or `openclaw.mirascope.com` for www/bare domain)
 
 These URLs point to the dispatch worker, which serves the OpenClaw Control UI HTML with injected base path and WS boot script.
@@ -1685,18 +1684,18 @@ The admin dashboard is the single pane of glass for managing the entire Mac Mini
 
 #### Environment Switcher
 
-The dashboard has an environment selector (Dev / Staging / Production) at the top level. Each environment connects to its own fleet database and agent URLs. The default view shows **all environments side by side** as a summary, with drill-down into individual environments.
+The dashboard has an environment selector (Local / Staging / Production) at the top level. Each environment connects to its own fleet database and agent URLs. The default view shows **all environments side by side** as a summary, with drill-down into individual environments.
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  🏠 Fleet Dashboard          [Dev] [Staging] [Production]  │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  Dev (1 Mini)        Staging (1 Mini)    Prod (0 Minis)     │
-│  ██████░░░░ 3/12     ██░░░░░░░░ 1/12     — not deployed —  │
-│  CPU 23%  RAM 41%    CPU 8%   RAM 15%                       │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│  🏠 Fleet Dashboard       [Local] [Staging] [Production]        │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Local (1 Mini)      Staging (1 Mini)    Prod (0 Minis)          │
+│  ██████░░░░ 3/12     ██░░░░░░░░ 1/12     — not deployed —       │
+│  CPU 23%  RAM 41%    CPU 8%   RAM 15%                            │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 #### Fleet Overview Page
@@ -1709,7 +1708,7 @@ The landing page shows a card grid — one card per Mac Mini across the selected
 |---------|--------|-------------|
 | **Hostname** | `mac_minis.hostname` | e.g. "mini-01", "dev-macbook" |
 | **Status badge** | `mac_minis.status` | 🟢 active, 🟡 draining, 🔴 offline, 🔧 maintenance |
-| **Environment tag** | `mac_minis.environment` | Dev / Staging / Production |
+| **Environment tag** | `mac_minis.environment` | Local / Staging / Production |
 | **Hardware** | Agent `/health` → `cpu.cores`, `memory.totalGb` | e.g. "M4 Pro · 12 cores · 32 GB" |
 | **Claw capacity meter** | Agent `/health` → `claws.active` / `claws.max` | Visual bar: "7 / 12 claws" |
 | **CPU gauge** | Agent `/health` → `cpu.usage` | Real-time CPU percentage with color thresholds |
@@ -1916,38 +1915,35 @@ The `mac_minis` table already tracks `chip`, `ram_gb`, and `disk_gb`, which the 
 
 ### Environments
 
-The Mirascope Cloud app defines four environments in `wrangler.jsonc`:
+The Mirascope Cloud app defines three environments in `wrangler.jsonc`:
 
 | Environment | URL | Description |
 |-------------|-----|-------------|
 | `local` | Local Vite dev server (`bun run dev`) | Developer's machine |
-| `dev` | mirascope.dev (Cloudflare Worker) | Development environment |
 | `staging` | staging.mirascope.com | Staging environment |
 | `production` | mirascope.com | Production environment |
+
+> **Note:** A `dev` (mirascope.dev) environment is deferred. The pipeline is: **Local → Staging → Production**.
 
 ### Infrastructure per Environment
 
 | Environment | Mac Hardware | Description |
 |-------------|-------------|-------------|
 | **Local** | Personal machine (old MacBook, individual Mac Mini, etc.) | Each developer/claw has their own machine for local dev. Runs Vite locally + agent/tunnel on the personal Mac. The entire backend path (tunnel → agent → gateway) is identical to production. |
-| **Dev** | Dedicated Mac Mini(s) | The `mirascope.dev` deployment. Real Cloudflare Worker pointing at a real Mac Mini fleet. Used to test actual CF deployment before promoting to staging. Shared environment — not affected by anyone's local dev. |
 | **Staging** | Dedicated Mac Mini(s) | Pre-production validation at `staging.mirascope.com`. |
 | **Production** | Mac Mini fleet | Production at `mirascope.com`. |
-
-**Key distinction:** Local and Dev are separate. Local is your personal sandbox (Vite dev server). Dev is a real deployed environment with its own dedicated fleet. Changes flow: **Local → Dev → Staging → Production**.
 
 **1:1 parity across all environments:** Every environment — including local — uses the exact same backend path: Cloudflare Tunnel → Agent → Gateway. The **only** difference is what serves the frontend:
 
 ```
-Local:    Vite (localhost)               → WS proxy → CF Tunnel → Agent → Gateway
-Dev:      CF Worker (mirascope.dev)      → WS proxy → CF Tunnel → Agent → Gateway
+Local:    Vite (localhost)                  → WS proxy → CF Tunnel → Agent → Gateway
 Staging:  CF Worker (staging.mirascope.com) → WS proxy → CF Tunnel → Agent → Gateway
-Prod:     CF Worker (mirascope.com)      → WS proxy → CF Tunnel → Agent → Gateway
+Prod:     CF Worker (mirascope.com)         → WS proxy → CF Tunnel → Agent → Gateway
 ```
 
-This means if it works locally, it works everywhere. There are no special dev-only code paths.
+This means if it works locally, it works everywhere. There are no special local-only code paths.
 
-Each person (developer or claw) gets their own machine for local development. This keeps the Dev environment clean and stable — it's a shared resource that should always reflect the latest `main` branch deployment, not be disrupted by in-progress work.
+Each person (developer or claw) gets their own machine for local development. This keeps staging clean and stable — it's a shared resource that should always reflect the latest `main` branch deployment, not be disrupted by in-progress work.
 
 ### Tunnel Namespaces
 
@@ -1956,7 +1952,6 @@ Each person (developer or claw) gets their own machine for local development. Th
 | Environment | Tunnel Pattern | Routes To |
 |-------------|---------------|-----------|
 | Local | `*.local-{user}.claws.mirascope.dev` | Personal machine (MacBook, Mini, etc.) |
-| Dev | `*.claws.mirascope.dev` | Dev Mac Mini(s) |
 | Staging | `*.claws.staging.mirascope.com` | Staging Mac Mini(s) |
 | Production | `*.claws.mirascope.com` | Production Mac Minis |
 
@@ -1964,7 +1959,6 @@ Each personal machine runs `cloudflared` with its own tunnel. The local tunnel n
 
 For example, a claw `abc123` would have:
 - Local (William): `claw-abc123.local-william.claws.mirascope.dev`
-- Dev: `claw-abc123.claws.mirascope.dev`
 - Staging: `claw-abc123.claws.staging.mirascope.com`
 - Production: `claw-abc123.claws.mirascope.com`
 
@@ -2051,7 +2045,7 @@ Set up the personal Mac so it can run the Mac Mini Agent and host claw accounts.
 - Playwright Chromium installed to a shared location (`/opt/playwright-browsers/`)
 - FileVault enabled (full-disk encryption at rest)
 - macOS firewall enabled (block all inbound — Tailscale and cloudflared use outbound connections)
-- cloudflared installed with a tunnel configured for the appropriate namespace (e.g., `*.claws.mirascope.dev`)
+- cloudflared installed with a tunnel configured for the appropriate namespace (e.g., `*.local-william.claws.mirascope.dev` for local, `*.claws.staging.mirascope.com` for staging)
 - cloudflared running as a launchd service
 - A fleet scripts directory at `/opt/claw-fleet/`
 
@@ -2078,7 +2072,7 @@ Set up the personal Mac so it can run the Mac Mini Agent and host claw accounts.
 - **Shell execution:** `child_process.execFile` for `sysadminctl`, `launchctl`, cloudflared config, etc.
 
 **Exposure:**
-- Exposed through Cloudflare Tunnel at `{mini-hostname}.agent.claws.mirascope.dev` (e.g., `dev-macbook.agent.claws.mirascope.dev`)
+- Exposed through Cloudflare Tunnel at the environment-appropriate agent URL (e.g., `agent.local-william.claws.mirascope.dev` for local, `{mini-hostname}.agent.claws.staging.mirascope.com` for staging)
 - The agent's tunnel route is configured alongside the claw routes in the same cloudflared config
 - This means CF Workers, local dev servers, and any HTTPS client can reach the agent
 
@@ -2134,7 +2128,7 @@ interface ProvisionRequest {
   macUsername: string;       // e.g., "claw-ab12cd34"
   localPort: number;         // e.g., 8100
   gatewayToken: string;
-  tunnelHostname: string;    // e.g., "claw-abc123.claws.mirascope.dev"
+  tunnelHostname: string;    // e.g., "claw-abc123.local-william.claws.mirascope.dev" (local) or "claw-abc123.claws.staging.mirascope.com" (staging)
   envVars: Record<string, string>; // all env vars for the claw
 }
 
@@ -2250,7 +2244,7 @@ The agent is built from `cloud/claws/mini-agent/` and deployed to each Mini at `
 </plist>
 ```
 
-The agent runs as `clawadmin` (which has admin/sudo privileges) so it can create users via `sysadminctl`, manage launchd services, and edit cloudflared config. The agent's tunnel route (`{hostname}.agent.claws.mirascope.dev → http://localhost:7600`) is added to the cloudflared config during initial Mini setup.
+The agent runs as `clawadmin` (which has admin/sudo privileges) so it can create users via `sysadminctl`, manage launchd services, and edit cloudflared config. The agent's tunnel route (e.g. `agent.local-william.claws.mirascope.dev → http://localhost:7600` for local) is added to the cloudflared config during initial Mini setup.
 
 ##### Agent Codebase Structure
 
@@ -2287,13 +2281,13 @@ The `MacMiniDeploymentService` makes HTTP requests to the agent's Cloudflare Tun
 Add the `mac_minis` table and new columns to `claws` (see [Section 5](#5-new-database-tables) for full schema).
 
 ```sql
--- Seed the personal Mac
+-- Seed the personal Mac (local dev)
 INSERT INTO mac_minis (hostname, tailscale_ip, tailscale_fqdn, agent_url, tunnel_id)
 VALUES (
-  'dev-macbook',
+  'personal-mac',
   '100.x.x.x',
-  'dev-macbook.tail1234.ts.net',
-  'https://dev-macbook.agent.claws.mirascope.dev',
+  'personal-mac.tail1234.ts.net',
+  'https://agent.local-william.claws.mirascope.dev',
   '<TUNNEL_UUID>'
 );
 ```
@@ -2306,9 +2300,9 @@ Create `cloud/mac-mini/deployment/live.ts` (already specified in [Section 6.2](#
 - **`provision(config)`:**
   1. Pick a Mini from `mac_minis` table (only one for now)
   2. Allocate next available port
-  3. Call the Mac Mini Agent: `POST https://dev-macbook.agent.claws.mirascope.dev/claws` with provision request
+  3. Call the Mac Mini Agent: `POST {agent_url}/claws` (from `mac_minis.agent_url`) with provision request
   4. Create R2 bucket + scoped credentials (backups still go to R2)
-  5. Return status with `tunnelHostname: claw-{id}.claws.mirascope.dev`
+  5. Return status with `tunnelHostname: claw-{id}.local-{user}.claws.mirascope.dev` (local) or environment-appropriate hostname
 - **`warmUp(clawId)`:** `POST` to agent `/claws/:clawUser/restart` or HTTP GET to the tunnel hostname to verify gateway responds
 - **`deprovision(clawId)`:** `DELETE` to agent `/claws/:clawUser` → agent handles everything (stop, archive, remove user, remove tunnel route)
 - **`getStatus(clawId)`:** `GET` from agent `/claws/:clawUser/status`
@@ -2371,7 +2365,7 @@ Browser (localhost:5173)
                 │  (WS proxy — same code as production)
                 │
                 ▼
-         Cloudflare Tunnel (claw-{id}.claws.mirascope.dev)
+         Cloudflare Tunnel (claw-{id}.local-{user}.claws.mirascope.dev)
                 │
                 ▼
          personal Mac → OpenClaw Gateway (launchd service)
