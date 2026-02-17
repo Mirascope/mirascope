@@ -1679,9 +1679,142 @@ Mini Agent (every 60s)
 
 The agent exports OTEL (OpenTelemetry) metrics which feed into our existing ClickHouse backend. These metrics are served through the admin dashboard at `admin.mirascope.com`, providing fleet-wide visibility without needing a separate Grafana setup.
 
-### Admin Dashboard
+### Admin Dashboard (`admin.mirascope.com`)
 
-Fleet management operations (viewing Mini status, draining Minis, triggering migrations, monitoring health) are performed through `admin.mirascope.com`. This is the primary management interface for the Mac Mini fleet.
+The admin dashboard is the single pane of glass for managing the entire Mac Mini fleet across all environments. It's a TanStack Start app deployed as a separate Cloudflare Worker, authenticated via the existing Mirascope auth system with an admin role check.
+
+#### Environment Switcher
+
+The dashboard has an environment selector (Dev / Staging / Production) at the top level. Each environment connects to its own fleet database and agent URLs. The default view shows **all environments side by side** as a summary, with drill-down into individual environments.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  🏠 Fleet Dashboard          [Dev] [Staging] [Production]  │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Dev (1 Mini)        Staging (1 Mini)    Prod (0 Minis)     │
+│  ██████░░░░ 3/12     ██░░░░░░░░ 1/12     — not deployed —  │
+│  CPU 23%  RAM 41%    CPU 8%   RAM 15%                       │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### Fleet Overview Page
+
+The landing page shows a card grid — one card per Mac Mini across the selected environment(s).
+
+**Mini Card contents:**
+
+| Element | Source | Description |
+|---------|--------|-------------|
+| **Hostname** | `mac_minis.hostname` | e.g. "mini-01", "dev-macbook" |
+| **Status badge** | `mac_minis.status` | 🟢 active, 🟡 draining, 🔴 offline, 🔧 maintenance |
+| **Environment tag** | `mac_minis.environment` | Dev / Staging / Production |
+| **Hardware** | Agent `/health` → `cpu.cores`, `memory.totalGb` | e.g. "M4 Pro · 12 cores · 32 GB" |
+| **Claw capacity meter** | Agent `/health` → `claws.active` / `claws.max` | Visual bar: "7 / 12 claws" |
+| **CPU gauge** | Agent `/health` → `cpu.usage` | Real-time CPU percentage with color thresholds |
+| **Memory gauge** | Agent `/health` → `memory.usedGb` / `memory.totalGb` | Real-time RAM usage |
+| **Disk gauge** | Agent `/health` → `disk.usedGb` / `disk.totalGb` | Disk usage with warning at >85% |
+| **Uptime** | Agent `/health` → `uptime` | "14d 3h" human-readable |
+| **Tunnel status** | Agent `/health` → `tunnel.status` | 🟢 connected / 🔴 disconnected |
+| **Last heartbeat** | Cloud DB (agent heartbeat timestamp) | "2 min ago" with warning if stale |
+
+Cards are **sortable** (by name, CPU, memory, claw count) and **filterable** (by status, environment).
+
+#### Mini Detail Page (`/minis/:miniId`)
+
+Clicking a Mini card opens the detail view with three tabs:
+
+**Tab 1: Claws**
+
+A table of all claws hosted on this Mini, sourced from Agent `GET /claws`:
+
+| Column | Source | Description |
+|--------|--------|-------------|
+| Claw ID | `clawUser` | Links to the claw's page in mirascope.com |
+| Status | `launchdStatus` | loaded / unloaded / error |
+| Gateway PID | `gatewayPid` | Process ID (null if not running) |
+| Uptime | `gatewayUptime` | Gateway process uptime |
+| Memory | `memoryUsageMb` | Per-claw memory consumption |
+| Chromium PID | `chromiumPid` | Browser process (null if not running) |
+| Disk | `diskMb` | Home directory size |
+
+**Actions per claw:**
+- 🔄 Restart (calls Agent `POST /claws/:clawUser/restart`)
+- 💾 Backup (calls Agent `POST /claws/:clawUser/backup`)
+- 🗑️ Deprovision (calls Agent `DELETE /claws/:clawUser` — requires confirmation modal)
+
+**Tab 2: Metrics (Historical)**
+
+Time-series charts powered by ClickHouse, with selectable time ranges (1h, 6h, 24h, 7d, 30d):
+
+- **CPU usage** — line chart, with per-claw breakdown available
+- **Memory usage** — stacked area chart (system + per-claw breakdown)
+- **Disk usage** — line chart with capacity ceiling line
+- **Network throughput** — inbound/outbound bytes (from Cloudflare Tunnel metrics)
+- **Claw count** — step chart showing provisioned claws over time
+- **Gateway restarts** — event markers on the timeline
+
+**Tab 3: Actions & Config**
+
+| Action | Description | API Call |
+|--------|-------------|----------|
+| **Drain** | Stop accepting new claws, begin migrating existing ones off | `PATCH /api/internal/fleet/:miniId` → `status: "draining"` |
+| **Maintenance mode** | Mark as under maintenance (should drain first) | `PATCH /api/internal/fleet/:miniId` → `status: "maintenance"` |
+| **Activate** | Return to active fleet | `PATCH /api/internal/fleet/:miniId` → `status: "active"` |
+| **Decommission** | Remove from fleet entirely (must be empty) | `DELETE /api/internal/fleet/:miniId` |
+
+Config display (read-only, sourced from `mac_minis` table):
+- Agent URL, Tailscale IP, tunnel hostname suffix
+- Max claws, port range, agent version
+- Registration date, last maintenance date
+
+#### Fleet-Wide Views
+
+**Capacity Planning** (`/fleet/capacity`):
+- Total claws across all Minis vs. total capacity, per environment
+- Projected capacity exhaustion based on current growth rate
+- Recommended action: "Add 1 Mini to production to maintain 30% headroom"
+
+**Recent Activity** (`/fleet/activity`):
+- Unified timeline of events across all Minis: provisions, deprovisions, restarts, backups, status changes, alerts
+- Filterable by Mini, environment, event type
+
+**Alerts** (`/fleet/alerts`):
+- Active alerts from the alerting pipeline (section 15.2)
+- Alert history with resolution status
+
+#### Implementation Details
+
+**Data flow:**
+1. Agent `/health` endpoints are polled every 30 seconds by a Cloudflare Worker cron trigger
+2. Health snapshots are written to ClickHouse (for historical charts) and to a KV store (for real-time dashboard display)
+3. The dashboard reads from KV for current state and queries ClickHouse for historical data
+4. Management actions go through the Cloud API (`/api/internal/fleet/*`), which calls the Mini Agent
+
+**Auth:**
+- Same auth as mirascope.com (shared auth cookies/tokens)
+- Admin role required — checked against a `role` column on the `users` table or an admin allowlist
+- All management actions are audit-logged
+
+**Tech stack:**
+- TanStack Start + React (consistent with mirascope.com)
+- Deployed as a separate Cloudflare Worker at `admin.mirascope.com`
+- Shares the same database and ClickHouse instance as the main app
+- Uses the existing `mac_minis` table + Agent API — no new data stores
+
+#### Phase 0 Dashboard (MVP)
+
+The initial build focuses on operational essentials — enough to manage the dev and staging environments confidently:
+
+- ✅ Fleet overview with Mini cards (status, capacity, CPU/RAM/disk gauges)
+- ✅ Environment switcher (Dev / Staging / Production)
+- ✅ Mini detail page with claw list and per-claw actions (restart, backup, deprovision)
+- ✅ Drain / activate / maintenance mode actions
+- ✅ Real-time health polling (agent `/health` → KV → dashboard)
+- ❌ Historical charts (Phase 1 — requires ClickHouse metrics pipeline)
+- ❌ Capacity planning projections (Phase 2)
+- ❌ Alert management UI (Phase 1 — alerts still go to Discord in Phase 0)
 
 ---
 
