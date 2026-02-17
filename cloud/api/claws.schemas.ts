@@ -42,6 +42,7 @@ export const ClawSchema = Schema.Struct({
   secretsEncrypted: Schema.NullOr(Schema.String),
   secretsKeyId: Schema.NullOr(Schema.String),
   bucketName: Schema.NullOr(Schema.String),
+  tunnelHostname: Schema.NullOr(Schema.String),
   botUserId: Schema.NullOr(Schema.String),
   homeProjectId: Schema.NullOr(Schema.String),
   homeEnvironmentId: Schema.NullOr(Schema.String),
