@@ -12862,6 +12862,7 @@
                       "weeklyUsageCenticents",
                       "burstWindowStart",
                       "burstUsageCenticents",
+                      "tunnelHostname",
                       "createdAt",
                       "updatedAt"
                     ],
@@ -13049,6 +13050,16 @@
                           }
                         ]
                       },
+                      "tunnelHostname": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
                       "createdAt": {
                         "anyOf": [
                           {
@@ -13183,6 +13194,7 @@
                     "weeklyUsageCenticents",
                     "burstWindowStart",
                     "burstUsageCenticents",
+                    "tunnelHostname",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -13364,6 +13376,16 @@
                       "anyOf": [
                         {
                           "$ref": "#/components/schemas/BigInt"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "tunnelHostname": {
+                      "anyOf": [
+                        {
+                          "type": "string"
                         },
                         {
                           "type": "null"
@@ -13602,6 +13624,7 @@
                     "weeklyUsageCenticents",
                     "burstWindowStart",
                     "burstUsageCenticents",
+                    "tunnelHostname",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -13783,6 +13806,16 @@
                       "anyOf": [
                         {
                           "$ref": "#/components/schemas/BigInt"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "tunnelHostname": {
+                      "anyOf": [
+                        {
+                          "type": "string"
                         },
                         {
                           "type": "null"
@@ -13930,6 +13963,7 @@
                     "weeklyUsageCenticents",
                     "burstWindowStart",
                     "burstUsageCenticents",
+                    "tunnelHostname",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -14111,6 +14145,16 @@
                       "anyOf": [
                         {
                           "$ref": "#/components/schemas/BigInt"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "tunnelHostname": {
+                      "anyOf": [
+                        {
+                          "type": "string"
                         },
                         {
                           "type": "null"

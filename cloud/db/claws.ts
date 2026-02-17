@@ -108,6 +108,7 @@ const publicFields = {
   weeklyUsageCenticents: claws.weeklyUsageCenticents,
   burstWindowStart: claws.burstWindowStart,
   burstUsageCenticents: claws.burstUsageCenticents,
+  tunnelHostname: claws.tunnelHostname,
   createdAt: claws.createdAt,
   updatedAt: claws.updatedAt,
 };

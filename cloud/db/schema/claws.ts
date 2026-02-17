@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import {
   bigint,
+  integer,
   pgEnum,
   pgTable,
   text,
@@ -12,6 +13,7 @@ import {
 import { clawMemberships } from "@/db/schema/claw-memberships";
 
 import { environments } from "./environments";
+import { macMinis } from "./mac-minis";
 import { organizations } from "./organizations";
 import { projects } from "./projects";
 import { users } from "./users";
@@ -83,6 +85,10 @@ export const claws = pgTable(
     burstUsageCenticents: bigint("burst_usage_centicents", {
       mode: "bigint",
     }),
+    // Mac Mini deployment fields
+    miniId: uuid("mini_id").references(() => macMinis.id),
+    miniPort: integer("mini_port"),
+    tunnelHostname: text("tunnel_hostname"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },
@@ -101,6 +107,10 @@ export const clawsRelations = relations(claws, ({ one, many }) => ({
   organization: one(organizations, {
     fields: [claws.organizationId],
     references: [organizations.id],
+  }),
+  mini: one(macMinis, {
+    fields: [claws.miniId],
+    references: [macMinis.id],
   }),
   memberships: many(clawMemberships),
 }));
@@ -133,6 +143,7 @@ export type PublicClaw = Pick<
   | "weeklyUsageCenticents"
   | "burstWindowStart"
   | "burstUsageCenticents"
+  | "tunnelHostname"
   | "createdAt"
   | "updatedAt"
 >;

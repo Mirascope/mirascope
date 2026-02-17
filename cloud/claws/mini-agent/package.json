@@ -1,6 +1,6 @@
 {
   "name": "@mirascope/mini-agent",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,10 +11,13 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "hono": "^4.11.6",
+    "@effect/platform": "^0.93.3",
+    "@effect/platform-bun": "^0.87.1",
+    "effect": "^3.19.13",
     "yaml": "^2.7.0"
   },
   "devDependencies": {
+    "@effect/vitest": "^0.27.0",
     "@types/bun": "^1.2.0",
     "vitest": "^3.0.0"
   }

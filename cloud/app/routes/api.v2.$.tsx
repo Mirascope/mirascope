@@ -6,6 +6,11 @@ import { handleRequest } from "@/api/handler";
 import { handleErrors, handleDefects } from "@/api/utils";
 import { authenticate, type PathParameters } from "@/auth";
 import { LiveDeploymentService } from "@/claws/deployment/live";
+import {
+  LiveMacMiniFleetService,
+  MacMiniFleetService,
+} from "@/claws/deployment/mac-mini-fleet";
+import { MacMiniDeploymentService } from "@/claws/deployment/mac-mini";
 import { MockDeploymentService } from "@/claws/deployment/mock";
 import { ClawDeploymentService } from "@/claws/deployment/service";
 import { CloudflareHttp } from "@/cloudflare/client";
@@ -15,6 +20,7 @@ import { LiveCloudflareR2Service } from "@/cloudflare/r2/live";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { DrizzleORM } from "@/db/client";
+
 import { Database } from "@/db/database";
 import { Emails } from "@/emails";
 import { NotFoundError } from "@/errors";
@@ -149,22 +155,41 @@ export const Route = createFileRoute("/api/v2/$")({
               Effect.gen(function* () {
                 const settings = yield* Settings;
 
+                const drizzleLayer = DrizzleORM.layer({
+                  connectionString: settings.databaseUrl,
+                });
+
                 const deploymentLayer = settings.mockDeployment
                   ? MockDeploymentService
-                  : LiveDeploymentService.pipe(
-                      Layer.provide(
-                        Layer.merge(
+                  : settings.deploymentTarget === "mac-mini"
+                    ? MacMiniDeploymentService.pipe(
+                        Layer.provide(LiveMacMiniFleetService),
+                        Layer.provide(
                           LiveCloudflareR2Service,
-                          LiveCloudflareContainerService,
                         ),
-                      ),
-                      Layer.provide(
-                        CloudflareHttp.Live(settings.cloudflare.apiToken),
-                      ),
-                      Layer.provide(
-                        CloudflareSettings.layer(settings.cloudflare),
-                      ),
-                    );
+                        Layer.provide(
+                          CloudflareHttp.Live(settings.cloudflare.apiToken),
+                        ),
+                        Layer.provide(
+                          CloudflareSettings.layer(settings.cloudflare),
+                        ),
+                        Layer.provide(drizzleLayer),
+                        Layer.provide(Layer.succeed(Settings, settings)),
+                      )
+                    : LiveDeploymentService.pipe(
+                        Layer.provide(
+                          Layer.merge(
+                            LiveCloudflareR2Service,
+                            LiveCloudflareContainerService,
+                          ),
+                        ),
+                        Layer.provide(
+                          CloudflareHttp.Live(settings.cloudflare.apiToken),
+                        ),
+                        Layer.provide(
+                          CloudflareSettings.layer(settings.cloudflare),
+                        ),
+                      );
 
                 const databaseLayer = settings.mockDeployment
                   ? Database.Dev({

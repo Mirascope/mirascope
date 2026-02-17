@@ -55,6 +55,12 @@ export interface ClawDeploymentStatus {
   bucketName?: string;
   /** R2 scoped credentials created during provisioning (only present after provision). */
   r2Credentials?: R2ScopedCredentials;
+  /** Mac Mini ID (only present for Mac Mini deployments). */
+  miniId?: string;
+  /** Port allocated on the Mac Mini (only present for Mac Mini deployments). */
+  miniPort?: number;
+  /** Tunnel hostname for direct WS connection (only present for Mac Mini deployments). */
+  tunnelHostname?: string;
 }
 
 /**

@@ -86,6 +86,7 @@ export async function handleClawsWebSocket(
         organizationId: claws.organizationId,
         secretsEncrypted: claws.secretsEncrypted,
         secretsKeyId: claws.secretsKeyId,
+        tunnelHostname: claws.tunnelHostname,
       })
       .from(claws)
       .innerJoin(organizations, eq(claws.organizationId, organizations.id))
@@ -151,17 +152,24 @@ export async function handleClawsWebSocket(
     }
 
     // 6. Determine upstream gateway URL
-    // Route through the dispatch worker which handles container lifecycle.
-    // The dispatch worker accepts Bearer token auth (gateway token) and
-    // proxies the WebSocket to the correct container.
-    const dispatchBaseUrl =
-      settings.openclawGatewayWsUrl ??
-      settings.cloudflare.dispatchWorkerBaseUrl;
-    const upstreamUrl = `${dispatchBaseUrl.replace(/\/$/, "")}/${orgSlug}/${clawSlug}`;
+    // For Mac Mini deployments, connect directly via tunnel hostname.
+    // For Cloudflare deployments, route through the dispatch worker.
+    let upstreamUrl: string;
+    const isMacMiniDeployment = !!claw.tunnelHostname;
+
+    if (isMacMiniDeployment) {
+      upstreamUrl = `wss://${claw.tunnelHostname}`;
+    } else {
+      const dispatchBaseUrl =
+        settings.openclawGatewayWsUrl ??
+        settings.cloudflare.dispatchWorkerBaseUrl;
+      upstreamUrl = `${dispatchBaseUrl.replace(/\/$/, "")}/${orgSlug}/${clawSlug}`;
+    }
 
     // 7. Connect to upstream gateway, perform handshake, and relay
     return yield* Effect.tryPromise({
-      try: () => connectAndRelay(upstreamUrl, gatewayToken),
+      try: () =>
+        connectAndRelay(upstreamUrl, gatewayToken, isMacMiniDeployment),
       catch: (cause) =>
         new DatabaseError({
           message: `Failed to connect to gateway: ${cause instanceof Error ? cause.message : String(cause)}`,
@@ -218,18 +226,20 @@ export async function handleClawsWebSocket(
 async function connectAndRelay(
   gatewayBaseUrl: string,
   gatewayToken: string,
+  isMacMiniDeployment = false,
 ): Promise<Response> {
   // Create WebSocket pair for browser ↔ proxy
   const [clientWs, serverWs] = Object.values(new WebSocketPair());
 
   // Connect to upstream via fetch + Upgrade
-  // Routes through the dispatch worker which proxies to the container gateway.
-  // Bearer token auth lets the dispatch worker identify and route to the claw.
+  // For Cloudflare: Routes through the dispatch worker with Bearer token auth.
+  // For Mac Mini: Connects directly via tunnel hostname (no Bearer needed).
+  const fetchHeaders: Record<string, string> = { Upgrade: "websocket" };
+  if (!isMacMiniDeployment) {
+    fetchHeaders["Authorization"] = `Bearer ${gatewayToken}`;
+  }
   const upstreamResponse = await fetch(gatewayBaseUrl, {
-    headers: {
-      Upgrade: "websocket",
-      Authorization: `Bearer ${gatewayToken}`,
-    },
+    headers: fetchHeaders,
   });
 
   const upstreamWs = (upstreamResponse as unknown as { webSocket?: WebSocket })

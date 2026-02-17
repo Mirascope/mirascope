@@ -50,6 +50,7 @@ export const ClawSchema = Schema.Struct({
   weeklyUsageCenticents: Schema.NullOr(Schema.BigInt),
   burstWindowStart: Schema.NullOr(Schema.Date),
   burstUsageCenticents: Schema.NullOr(Schema.BigInt),
+  tunnelHostname: Schema.NullOr(Schema.String),
   createdAt: Schema.NullOr(Schema.Date),
   updatedAt: Schema.NullOr(Schema.Date),
 });

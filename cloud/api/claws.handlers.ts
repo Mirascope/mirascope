@@ -92,6 +92,10 @@ export const createClawHandler = (
         secretsEncrypted: encrypted.ciphertext,
         secretsKeyId: encrypted.keyId,
         status: "provisioning",
+        // Mac Mini deployment fields (null for Cloudflare deployments)
+        miniId: status.miniId ?? null,
+        miniPort: status.miniPort ?? null,
+        tunnelHostname: status.tunnelHostname ?? null,
         updatedAt: new Date(),
       })
       .where(eq(claws.id, claw.id))

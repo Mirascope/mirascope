@@ -117,6 +117,7 @@ export function createMockSettings(
         "S0YrcgEScoOL1ALp/w+xI90P9O8h4s3OzEXtzlhBbHQ=",
     },
     activeEncryptionKeyId: "CLAW_SECRETS_ENCRYPTION_KEY_V1",
+    deploymentTarget: "cloudflare" as const,
   };
 
   return {
