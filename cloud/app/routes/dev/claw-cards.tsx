@@ -22,6 +22,7 @@ const baseClaw: Claw = {
   secretsEncrypted: null,
   secretsKeyId: null,
   bucketName: null,
+  tunnelHostname: null,
   botUserId: null,
   homeProjectId: null,
   homeEnvironmentId: null,

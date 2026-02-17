@@ -6,10 +6,10 @@
  * Built with Effect HttpApi.
  */
 import { HttpApiBuilder, HttpServer } from "@effect/platform";
-import { Effect, Layer } from "effect";
+import { Layer } from "effect";
 
 import { MiniAgentApi } from "./api.js";
-import { AgentConfigLive, AgentConfigService } from "./config.js";
+import { AgentConfigLive } from "./config.js";
 import {
   AuthMiddlewareLive,
   ClawsGroupLive,

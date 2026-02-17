@@ -74,7 +74,7 @@ export const ProvisioningLive = Effect.gen(function* () {
   const userManager = yield* UserManager;
   const launchd = yield* Launchd;
   const tunnel = yield* Tunnel;
-  const monitoring = yield* Monitoring;
+  const _monitoring = yield* Monitoring;
 
   const waitForGateway = (
     port: number,
