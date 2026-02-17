@@ -1929,30 +1929,41 @@ The Mirascope Cloud app defines four environments in `wrangler.jsonc`:
 
 | Environment | Mac Hardware | Description |
 |-------------|-------------|-------------|
-| **Local** | Personal machine (old MacBook, individual Mac Mini, etc.) | Each developer/claw has their own machine for local dev. Runs the local Vite server + local agent. Not a deployed environment — purely for iterating before pushing. |
+| **Local** | Personal machine (old MacBook, individual Mac Mini, etc.) | Each developer/claw has their own machine for local dev. Runs Vite locally + agent/tunnel on the personal Mac. The entire backend path (tunnel → agent → gateway) is identical to production. |
 | **Dev** | Dedicated Mac Mini(s) | The `mirascope.dev` deployment. Real Cloudflare Worker pointing at a real Mac Mini fleet. Used to test actual CF deployment before promoting to staging. Shared environment — not affected by anyone's local dev. |
 | **Staging** | Dedicated Mac Mini(s) | Pre-production validation at `staging.mirascope.com`. |
 | **Production** | Mac Mini fleet | Production at `mirascope.com`. |
 
-**Key distinction:** Local and Dev are separate. Local is your personal sandbox (Vite dev server, no Cloudflare Worker). Dev is a real deployed environment with its own dedicated fleet. Changes flow: **Local → Dev → Staging → Production**.
+**Key distinction:** Local and Dev are separate. Local is your personal sandbox (Vite dev server). Dev is a real deployed environment with its own dedicated fleet. Changes flow: **Local → Dev → Staging → Production**.
+
+**1:1 parity across all environments:** Every environment — including local — uses the exact same backend path: Cloudflare Tunnel → Agent → Gateway. The **only** difference is what serves the frontend:
+
+```
+Local:    Vite (localhost)               → WS proxy → CF Tunnel → Agent → Gateway
+Dev:      CF Worker (mirascope.dev)      → WS proxy → CF Tunnel → Agent → Gateway
+Staging:  CF Worker (staging.mirascope.com) → WS proxy → CF Tunnel → Agent → Gateway
+Prod:     CF Worker (mirascope.com)      → WS proxy → CF Tunnel → Agent → Gateway
+```
+
+This means if it works locally, it works everywhere. There are no special dev-only code paths.
 
 Each person (developer or claw) gets their own machine for local development. This keeps the Dev environment clean and stable — it's a shared resource that should always reflect the latest `main` branch deployment, not be disrupted by in-progress work.
 
-All fleet machines (Dev, Staging, Production) run the exact same software stack: same agent, same provisioning scripts, same Cloudflare Tunnel, same Tailscale. They are not second-class citizens relative to each other.
-
 ### Tunnel Namespaces
 
-Each **deployed** environment has its own Cloudflare Tunnel namespace:
+**Every** environment has its own Cloudflare Tunnel namespace, including local:
 
 | Environment | Tunnel Pattern | Routes To |
 |-------------|---------------|-----------|
+| Local | `*.local-{user}.claws.mirascope.dev` | Personal machine (MacBook, Mini, etc.) |
 | Dev | `*.claws.mirascope.dev` | Dev Mac Mini(s) |
 | Staging | `*.claws.staging.mirascope.com` | Staging Mac Mini(s) |
 | Production | `*.claws.mirascope.com` | Production Mac Minis |
 
-Local development does **not** use Cloudflare Tunnels — the local Vite server connects directly to the local agent/gateway.
+Each personal machine runs `cloudflared` with its own tunnel. The local tunnel namespace is scoped per user to avoid collisions (e.g., `*.local-william.claws.mirascope.dev`).
 
 For example, a claw `abc123` would have:
+- Local (William): `claw-abc123.local-william.claws.mirascope.dev`
 - Dev: `claw-abc123.claws.mirascope.dev`
 - Staging: `claw-abc123.claws.staging.mirascope.com`
 - Production: `claw-abc123.claws.mirascope.com`
@@ -1961,49 +1972,9 @@ For example, a claw `abc123` would have:
 
 ## 19. Local Development
 
-Two distinct development flows exist, serving different purposes.
+### Architecture: 1:1 Parity with Production
 
-### Flow 1: Local UI → Local Gateway (Debugging)
-
-**Purpose:** Debug a specific claw's issues by running the Mirascope UI locally connected directly to a local OpenClaw gateway. This is **not** for developing the Mac Mini system — it's for debugging individual claw problems.
-
-**Setup:**
-1. Developer runs `openclaw gateway start` locally (or restores a claw's state from an R2 backup to debug their specific issue)
-2. Developer runs local Mirascope Cloud (`bun run dev`)
-3. The UI connects **directly** to the local gateway — no auth, no WS proxy, no provisioning
-4. Direct WebSocket connection: `ws://localhost:{PORT}`
-
-**How it bypasses the stack:**
-
-```
-Browser (localhost:5173)
-  │
-  └─ WS ──→ ws://localhost:{GATEWAY_PORT}
-              │
-              ▼
-         Local OpenClaw Gateway
-         (running via `openclaw gateway start`)
-```
-
-No Cloudflare Tunnel, no WS proxy, no session auth. Pure local debugging.
-
-**Key implementation details:**
-- `getGatewayUrl()` in `cloud/app/routes/$orgSlug/claws/$clawSlug.tsx` already has localhost handling that returns a direct URL
-- `GatewayClient` in `cloud/app/lib/gateway-client.ts` currently connects via the WS proxy (`/api/ws/claws/:org/:claw`). For debugging mode, it needs a "direct connect" path that bypasses the proxy entirely
-- Toggle via query param (e.g., `?direct=1`) or env var (e.g., `VITE_DIRECT_GATEWAY=true`)
-- The existing `VITE_OPENCLAW_GATEWAY_WS_URL` env var partially supports this already
-- No session auth needed — purely local debugging
-
-### Flow 2: Local Cloud → Personal Mac (Full-Stack Development)
-
-**Purpose:** Full-stack development and testing of the Mac Mini system. Tests the **entire** provisioning, agent, and WebSocket stack end-to-end using your personal development machine.
-
-**Setup:**
-1. Personal Mac (old MacBook, personal Mac Mini, etc.) is provisioned with the same scripts, agent, and config as production Minis
-2. Developer runs `bun run dev` locally (Vite dev server, `.env.local`)
-3. Local dev server points at the local agent running on the same machine (or another personal machine on the Tailnet)
-
-**How it works:**
+Local development uses the **exact same backend path** as every other environment. The personal Mac runs `cloudflared`, the agent, and gateway services — identical to a production Mini. The only difference is the frontend: Vite dev server instead of a Cloudflare Worker.
 
 ```
 Browser (localhost:5173)
@@ -2014,36 +1985,44 @@ Browser (localhost:5173)
                 │  (WS proxy, same code as production)
                 │
                 ▼
-         Personal Mac (local or via Tailscale)
+         Cloudflare Tunnel (claw-{id}.local-{user}.claws.mirascope.dev)
+                │
+                ▼
+         Personal Mac
                 │  - Same macOS user isolation
                 │  - Same launchd services
                 │  - Same Mini agent
+                │  - Same cloudflared tunnel
                 │
                 ▼
          OpenClaw Gateway (per-user launchd service)
 ```
 
-This exercises the same provisioning and agent code as production. The differences:
-- Traffic goes directly to the personal Mac (no Cloudflare Tunnel needed for local dev)
-- Fleet DB has one entry pointing at the personal machine
+**Setup:**
+1. Personal Mac is provisioned with the same scripts, agent, `cloudflared` tunnel, and config as production Minis
+2. Personal Mac runs its own Cloudflare Tunnel under `*.local-{user}.claws.mirascope.dev`
+3. Developer runs `bun run dev` locally (Vite dev server, `.env.local`)
+4. Local Postgres `mac_minis` table has one entry: the personal machine with its tunnel hostname suffix
+
 **Key implementation details:**
-- `.env.local` points at the local agent (e.g., `http://localhost:8787` or Tailscale IP of personal machine)
-- `MacMiniDeploymentService` works identically — the only difference is the `mac_minis` table in local Postgres has one entry: the personal machine
-- Database: local dev uses `localConnectionString` to local Postgres
+- `.env.local` sets `tunnelHostnameSuffix` to `local-{user}.claws.mirascope.dev`
+- `MacMiniDeploymentService` works identically — the only difference is one Mini in the fleet DB
+- Agent URL in the `mac_minis` row is the tunnel URL (e.g., `https://agent.local-william.claws.mirascope.dev`), not `localhost`
+- WS proxy routes through the tunnel, same as production
 - Auth works the same as production (session-based)
-- Full provisioning flow: create claw → find personal Mac → agent HTTP API → create user → start gateway → ready
+- Full provisioning flow: create claw → find personal Mac → tunnel → agent HTTP API → create user → start gateway → tunnel route → ready
 
-**Why this matters:** If the full stack works against your personal Mac, it works in production. The same agent HTTP API and deployment service code runs everywhere — no special dev-only provisioning paths.
+**Why this matters:** There are zero special dev-only code paths. The tunnel, agent, WS proxy, and gateway all exercise the exact same code in local dev as in production. If it works locally, it works everywhere.
 
-### When to Use Which Flow
+### Direct Gateway Debugging (Escape Hatch)
 
-| Scenario | Flow |
-|----------|------|
-| "This claw is behaving weirdly, let me reproduce locally" | Flow 1 (Direct) |
-| "I'm building the provisioning system and need to test end-to-end" | Flow 2 (Personal Mac) |
-| "I changed the WS proxy code, does it still work?" | Flow 2 (Personal Mac) |
-| "I need to debug a gateway plugin issue" | Flow 1 (Direct) |
-| "I'm testing the fleet scheduler / tunnel routing" | Flow 2 (Personal Mac) |
+For debugging a specific claw's gateway issues without the full stack:
+
+1. Run `openclaw gateway start` locally
+2. Run `bun run dev`
+3. Connect directly via `ws://localhost:{PORT}` (bypasses tunnel, agent, WS proxy)
+
+Toggle via query param (`?direct=1`) or env var (`VITE_DIRECT_GATEWAY=true`). This is the escape hatch, not the default flow.
 
 ---
 
