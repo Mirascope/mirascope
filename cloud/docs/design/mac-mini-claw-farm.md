@@ -22,11 +22,13 @@
 13. [Live Migration](#13-live-migration)
 14. [Security Model](#14-security-model)
 15. [Monitoring & Alerting](#15-monitoring--alerting)
-16. [Migration from Cloudflare](#16-migration-from-cloudflare)
-17. [Environment Topology](#17-environment-topology)
-18. [Local Development](#18-local-development)
-19. [Implementation Phases](#19-implementation-phases)
-20. [Open Questions](#20-open-questions)
+16. [Fleet Onboarding](#16-fleet-onboarding)
+17. [Plan-Based Provisioning](#17-plan-based-provisioning)
+18. [Environment Topology](#18-environment-topology)
+19. [Local Development](#19-local-development)
+20. [Implementation Phases](#20-implementation-phases)
+21. [Known Limitations](#21-known-limitations)
+22. [Open Questions](#22-open-questions)
 
 ---
 
@@ -37,7 +39,7 @@ Replace Cloudflare Containers with Mac Minis running macOS. Each Mini hosts ~12 
 **Why:**
 - Cloudflare Containers have cold-start latency, limited macOS tooling, and no residential IP for browser automation
 - Mac Minis provide native macOS, Playwright/Chromium with residential IPs (bot detection advantage), persistent local storage, and predictable performance
-- M4 Pro 32GB/1TB at ~$600 supports 12 Claws — better unit economics at scale
+- M4 Pro 32GB/1TB at ~$2,000 supports 12 Claws — better unit economics at scale
 
 **POC target:** Single M4 16GB/512GB Mini, single Claw, at William's home on WiFi.  
 **Production target:** M4 Pro 32GB/1TB Minis, 12 Claws each, Ethernet, eventually colo/MacStadium.
@@ -100,7 +102,7 @@ Browser
                 │  (cloud/api/claws-ws-proxy.ts)
                 │
                 ▼
-         Cloudflare Tunnel (claw-{id}.claws.mirascope.io)
+         Cloudflare Tunnel (claw-{id}.claws.mirascope.com)
                 │
                 ▼
          Mac Mini (macOS, residential IP)
@@ -121,7 +123,7 @@ Browser
               ┌────────┴────────┐
               │  Cloudflare     │
               │  ┌────────────┐ │
-              │  │ Tunnel     │ │  ← claw-{id}.claws.mirascope.io
+              │  │ Tunnel     │ │  ← claw-{id}.claws.mirascope.com
               │  │ (ingress)  │ │
               │  └─────┬──────┘ │
               └────────┼────────┘
@@ -164,7 +166,7 @@ Browser
 
 | File | Reason |
 |------|--------|
-| `cloud/claws/dispatch-worker/` (entire directory) | Replaced by Mac Mini agent + Cloudflare Tunnel. Not deleted immediately — kept for migration period. |
+| `cloud/claws/dispatch-worker/` (entire directory) | Replaced by Mac Mini agent + Cloudflare Tunnel. Delete entirely. |
 | `cloud/cloudflare/containers/live.ts` | No more container management via dispatch worker |
 | `cloud/cloudflare/containers/mock.ts` | Mock for deleted service |
 | `cloud/cloudflare/containers/service.ts` | Interface no longer needed |
@@ -287,12 +289,50 @@ export type MacMini = typeof macMinis.$inferSelect;
 export type NewMacMini = typeof macMinis.$inferInsert;
 ```
 
+### Mac Mini Status State Machine
+
+| Status | Description | How We Get Here | Transitions To |
+|--------|------------|-----------------|----------------|
+| **`active`** | Healthy and accepting new claws | Initial registration; recovery from maintenance/offline | `draining`, `maintenance`, `offline` |
+| **`draining`** | No new claws assigned; existing claws continue running until migrated off | Admin initiates drain (pre-maintenance or decommission) | `maintenance`, `offline` (once all claws migrated) |
+| **`maintenance`** | Admin is performing maintenance (OS updates, hardware changes, etc.) | Admin puts Mini into maintenance mode; all claws migrated off | `active` (after maintenance complete) |
+| **`offline`** | Mini is unreachable or powered off | Heartbeat missing for >3 minutes (auto-detected); or manual shutdown | `active` (when heartbeat resumes) |
+
+**Detection:**
+- **`offline`** is detected automatically: if `last_heartbeat` is older than 3 minutes, the monitoring system sets status to `offline` and fires an alert
+- **`maintenance`** is set manually by an admin (via `admin.mirascope.com` or CLI) when performing maintenance. Claws should be migrated off first (via `draining`)
+- **`draining`** is set manually when preparing to take a Mini offline. The fleet scheduler excludes draining Minis from new placements
+
+**State diagram:**
+```
+                    ┌──────────┐
+       register ───→│  active   │←── maintenance complete
+                    └─────┬────┘
+                          │
+                   drain  │  heartbeat lost
+                    ┌─────┼──────────┐
+                    ▼     │          ▼
+              ┌──────────┐│   ┌─────────┐
+              │ draining  ││   │ offline │
+              └─────┬────┘│   └────┬────┘
+                    │     │        │
+         all claws  │     │  heartbeat
+         migrated   │     │  resumes
+                    ▼     │        │
+              ┌───────────┐        │
+              │maintenance│        │
+              └─────┬─────┘        │
+                    │              │
+                    └──────────────┘
+                     back to active
+```
+
 ### Additions to `claws` table
 
 ```sql
 -- Add to existing claws table
 ALTER TABLE claws ADD COLUMN mac_mini_id UUID REFERENCES mac_minis(id);
-ALTER TABLE claws ADD COLUMN tunnel_hostname TEXT;     -- e.g. "claw-{id}.claws.mirascope.io"
+ALTER TABLE claws ADD COLUMN tunnel_hostname TEXT NOT NULL;     -- e.g. "claw-{id}.claws.mirascope.com"
 ALTER TABLE claws ADD COLUMN local_port INTEGER;       -- port on the Mini
 ALTER TABLE claws ADD COLUMN mac_username TEXT;         -- macOS username, e.g. "claw-ab12cd34"
 ALTER TABLE claws ADD COLUMN archived_at TIMESTAMPTZ;  -- when archived to R2 (null = active)
@@ -303,7 +343,7 @@ ALTER TABLE claws ADD COLUMN archived_at TIMESTAMPTZ;  -- when archived to R2 (n
 // Add these columns to the existing claws pgTable definition:
 
 macMiniId: uuid("mac_mini_id").references(() => macMinis.id),
-tunnelHostname: text("tunnel_hostname"),
+tunnelHostname: text("tunnel_hostname").notNull(),
 localPort: integer("local_port"),
 macUsername: text("mac_username"),
 archivedAt: timestamp("archived_at", { withTimezone: true }),
@@ -346,7 +386,7 @@ export interface MacMiniClawStatus {
 }
 
 /** Request to provision a claw on a Mini. */
-export interface MiniProvisionRequest {
+export interface MacMiniClawProvisionRequest {
   clawId: string;
   macUsername: string;
   localPort: number;
@@ -356,14 +396,14 @@ export interface MiniProvisionRequest {
 }
 
 /** Request to deprovision a claw from a Mini. */
-export interface MiniDeprovisionRequest {
+export interface MacMiniClawDeprovisionRequest {
   clawId: string;
   macUsername: string;
   archive: boolean; // if true, backup to R2 first
 }
 
 /** Response from Mini agent provision endpoint. */
-export interface MiniProvisionResponse {
+export interface MacMiniClawProvisionResponse {
   success: boolean;
   macUsername: string;
   localPort: number;
@@ -429,7 +469,7 @@ function macUsername(clawId: string): string {
 }
 
 function tunnelHostname(clawId: string): string {
-  return `claw-${clawId}.claws.mirascope.io`;
+  return `claw-${clawId}.claws.mirascope.com`;
 }
 
 export const MacMiniDeploymentService = Layer.effect(
@@ -579,7 +619,7 @@ export const MacMiniDeploymentService = Layer.effect(
 
 import { Context, Effect } from "effect";
 
-import type { MacMiniClawStatus, MacMiniHealth, MiniProvisionRequest, MiniDeprovisionRequest } from "@/mac-mini/deployment/types";
+import type { MacMiniClawStatus, MacMiniHealth, MacMiniClawProvisionRequest, MacMiniClawDeprovisionRequest } from "@/mac-mini/deployment/types";
 import type { ClawInstanceType } from "@/claws/deployment/types";
 import { ClawDeploymentError } from "@/claws/deployment/errors";
 
@@ -615,13 +655,13 @@ export interface MacMiniFleetServiceInterface {
   /** Provision a claw on a specific Mini (calls Mini agent). */
   readonly provisionOnMini: (
     miniId: string,
-    request: MiniProvisionRequest,
+    request: MacMiniClawProvisionRequest,
   ) => Effect.Effect<void, ClawDeploymentError>;
 
   /** Deprovision a claw from a specific Mini (calls Mini agent). */
   readonly deprovisionOnMini: (
     miniId: string,
-    request: MiniDeprovisionRequest,
+    request: MacMiniClawDeprovisionRequest,
   ) => Effect.Effect<void, ClawDeploymentError>;
 
   /** Get claw status from Mini agent. */
@@ -660,7 +700,7 @@ export class MacMiniFleetService extends Context.Tag("MacMiniFleetService")<
 /**
  * Live fleet service — communicates with Mini agents over HTTPS via Cloudflare Tunnel.
  *
- * Mini agent base URL: https://agent.{hostname}.claws.mirascope.dev (from mac_minis.agent_url)
+ * Mini agent base URL: https://{hostname}.agent.claws.mirascope.dev (from mac_minis.agent_url)
  *
  * Placement strategy (v1 — simple):
  *   1. Query mac_minis WHERE status = 'active' AND current_claws < max_claws
@@ -1051,7 +1091,7 @@ The agent runs on each Mac Mini as a `launchd` system daemon. It's a lightweight
 
 #### Agent Security
 
-- Listens on localhost, exposed via Cloudflare Tunnel (e.g., `agent.{hostname}.claws.mirascope.dev`)
+- Listens on localhost, exposed via Cloudflare Tunnel (e.g., `{hostname}.agent.claws.mirascope.dev`)
 - Bearer token auth (shared secret between cloud backend and agent)
 - Agent runs as `clawadmin` (admin account with sudo — needed for `sysadminctl` user creation and `launchctl` management)
 - Also accessible directly via Tailscale for admin debugging
@@ -1074,7 +1114,7 @@ Detailed implementation is in `cloud/claws/mini-agent/src/services/`.
 
 #### Cloudflare Tunnel Configuration
 
-Each Mini runs a single `cloudflared` connector. The agent manages ingress rules that map tunnel hostnames to local ports (e.g., `claw-abc123.claws.mirascope.io → http://localhost:8100`). A catch-all rule returns 404 for unrecognized hostnames.
+Each Mini runs a single `cloudflared` connector. The agent manages ingress rules that map tunnel hostnames to local ports (e.g., `claw-abc123.claws.mirascope.com → http://localhost:8100`). A catch-all rule returns 404 for unrecognized hostnames.
 
 The agent updates routes when claws are provisioned or deprovisioned. Two approaches:
 
@@ -1273,7 +1313,7 @@ export interface ClawDeploymentStatus {
 ### Technology Stack
 
 - **Runtime:** Node.js (same stack as rest of Mirascope)
-- **HTTP Framework:** Hono or bare `node:http` (minimal dependencies)
+- **HTTP Framework:** Effect HttpApi
 - **Process management:** launchd (the agent itself is a launchd daemon)
 - **Shell execution:** `child_process.execFile` for `sysadminctl`, `launchctl`, etc.
 
@@ -1359,7 +1399,7 @@ Complete flow when `createClawHandler` is called.
    │   │
    │   ├── fleet.provisionOnMini(miniId, { clawId, macUsername, localPort, ... })
    │   │   │
-   │   │   ├── HTTP POST https://agent.{hostname}.claws.mirascope.dev/claws
+   │   │   ├── HTTP POST https://{hostname}.agent.claws.mirascope.dev/claws
    │   │   │   │  (Mini agent receives request)
    │   │   │   │
    │   │   │   ├── sysadminctl -addUser claw-{id8} ...
@@ -1403,7 +1443,7 @@ Complete flow when `createClawHandler` is called.
    │   │
    │   ├── fleet.deprovisionOnMini(miniId, { clawId, macUsername, archive: true })
    │   │   │
-   │   │   ├── HTTP DELETE https://agent.{hostname}.claws.mirascope.dev/claws/{clawUser}
+   │   │   ├── HTTP DELETE https://{hostname}.agent.claws.mirascope.dev/claws/{clawUser}
    │   │   │   │
    │   │   │   ├── launchctl bootout system/com.mirascope.claw.{id}
    │   │   │   ├── tar czf /tmp/claw-{id}-archive.tar.gz /Users/claw-{id8}/
@@ -1456,7 +1496,7 @@ Browser → WS Proxy → Dispatch Worker → Cloudflare Container → Gateway
 Browser → WS Proxy → Cloudflare Tunnel → Mac Mini → Gateway
 ```
 
-The `connectAndRelay` function connects to `wss://claw-{id}.claws.mirascope.io` instead of the dispatch worker URL. The Cloudflare Tunnel terminates TLS and routes to `localhost:{port}` on the Mini. The gateway is listening there.
+The `connectAndRelay` function connects to `wss://claw-{id}.claws.mirascope.com` instead of the dispatch worker URL. The Cloudflare Tunnel terminates TLS and routes to `localhost:{port}` on the Mini. The gateway is listening there.
 
 **Key difference:** The dispatch worker previously handled both routing AND container lifecycle. Now routing is purely Cloudflare Tunnel (infrastructure-level), and lifecycle is Mini agent (separate channel).
 
@@ -1471,7 +1511,7 @@ These URLs point to the dispatch worker, which serves the OpenClaw Control UI HT
 
 - **New:** The dispatch worker is gone. Options:
   1. **Proxy through main worker:** `/claws/{org}/{claw}` route on mirascope.com serves the gateway UI, WebSocket goes through existing WS proxy
-  2. **Direct tunnel URL:** `https://claw-{id}.claws.mirascope.io` (but this exposes the gateway directly — need auth)
+  2. **Direct tunnel URL:** `https://claw-{id}.claws.mirascope.com` (but this exposes the gateway directly — need auth)
   3. **Keep dispatch worker hostname, update DNS:** Point `openclaw.mirascope.com` to a lightweight proxy worker that routes to tunnels
 
 **Recommendation:** Option 1. The gateway UI is already served from mirascope.com. The WS proxy handles auth and relays. No separate gateway URL needed. Update `getGatewayUrl()` to point to the mirascope.com chat route instead of the dispatch worker URL.
@@ -1502,6 +1542,21 @@ The Mac Mini Agent handles backups via the `POST /claws/:clawUser/backup` endpoi
 5. Apply retention policy (7 daily, 4 weekly, 3 monthly)
 
 A launchd calendar interval triggers daily backups for all claws at 2 AM. Detailed backup scripts and launchd configuration are part of the agent codebase at `cloud/claws/mini-agent/`.
+
+### Backup Retention Cron
+
+A retention cron job runs daily (3 AM, after backups complete) on each Mini agent to enforce the retention policy (7 daily, 4 weekly, 3 monthly). The agent iterates over each claw's R2 backup prefix and deletes objects that fall outside the retention window.
+
+```typescript
+// Agent cron: runs daily at 3 AM via launchd CalendarInterval
+// For each claw:
+//   1. List all backup objects in R2 bucket (prefix: claw-{id}/)
+//   2. Parse timestamps from object keys
+//   3. Keep: 7 most recent daily, 4 most recent weekly (Sunday), 3 most recent monthly (1st)
+//   4. Delete everything else
+```
+
+Alternatively, a Cloudflare Cron Trigger on the cloud worker can call each agent's backup cleanup endpoint (`POST /claws/:clawUser/cleanup-backups`) on a schedule. This centralizes scheduling but requires the agent to be reachable.
 
 ---
 
@@ -1563,7 +1618,8 @@ For maintenance or rebalancing, claws can be migrated between Minis.
 
 - **No inbound ports:** All traffic via Cloudflare Tunnel (outbound-only connection)
 - **Tailscale:** Admin access only, ACL-restricted to Mirascope team
-- **Mini agent:** Listens only on Tailscale interface, bearer token auth
+- **Mutual TLS (mTLS):** Agent communication uses mTLS over Tailscale for authentication. Both the cloud backend and the Mini agent present certificates, providing mutual authentication beyond bearer tokens alone. This ensures only authorized cloud services can issue commands to agents and agents can verify they're talking to legitimate cloud endpoints.
+- **Mini agent:** Listens only on Tailscale interface, mTLS + bearer token auth
 - **Residential IP:** Claws browse the internet via the Mac Mini's residential IP (good for bot detection avoidance)
 
 ### SSH Hardening
@@ -1581,9 +1637,19 @@ For maintenance or rebalancing, claws can be migrated between Minis.
 - R2 credentials: Per-claw scoped, stored encrypted in DB
 - Claw env vars: Written to `/Users/claw-{id8}/.openclaw/.env` with 600 permissions
 
+### Disk Access Safety
+
+Claws need access to their own home directory for workspace files, browser data, and OpenClaw state. Disk access is isolated per-claw:
+
+- Each claw user's home directory has `700` permissions — only that user can read/write
+- The OpenClaw gateway runs as the claw user, inheriting its filesystem permissions
+- Node disk access (for file operations like reading/writing workspace files) is scoped to the claw user's home directory
+- Symlinks outside the home directory are blocked by the gateway's file access layer
+- Shared system paths (`/opt/playwright-browsers/`, `/opt/mirascope/`) are read-only for claw users
+
 ### Browser Sandboxing
 
-- Each claw runs Playwright + Chromium under its own macOS user
+- Each claw has its own Chromium installation under its user profile, ensuring complete browser isolation
 - Separate Chromium profiles (different `--user-data-dir`)
 - No cross-claw cookie/storage sharing
 - Chromium runs without `--no-sandbox` (uses macOS sandbox)
@@ -1625,66 +1691,111 @@ Mini Agent (every 60s)
   - 🟡 Warning: High CPU/memory, backup failed, gateway restart loop
   - 🟢 Info: New claw provisioned, migration complete, backup success
 
-### Dashboard
+### Metrics Pipeline
 
-Initially manual (Discord alerts + agent health endpoint). Later: Grafana with Prometheus metrics exported by the agent.
+The agent exports OTEL (OpenTelemetry) metrics which feed into our existing ClickHouse backend. These metrics are served through the admin dashboard at `admin.mirascope.com`, providing fleet-wide visibility without needing a separate Grafana setup.
 
----
+### Admin Dashboard
 
-## 16. Migration from Cloudflare
-
-### Strategy
-
-Migrate claws one at a time. Both systems run in parallel during migration.
-
-### Per-Claw Migration Steps
-
-```
-1. Put claw in maintenance mode (status: "paused")
-   └── Users see "Claw is being upgraded" message
-
-2. Export claw data from Cloudflare Container
-   ├── R2 bucket already has persistent data
-   └── Download .openclaw directory from container via dispatch worker
-
-3. Provision on Mac Mini (normal provision flow)
-
-4. Restore data
-   ├── Upload exported .openclaw directory to Mini
-   └── Restore via agent /api/claws/{id}/restore
-
-5. Update DB
-   ├── claws.mac_mini_id = miniId
-   ├── claws.tunnel_hostname = "claw-{id}.claws.mirascope.io"
-   └── claws.local_port = allocated port
-
-6. Test WS proxy connects to tunnel (not dispatch worker)
-   └── The WS proxy uses claw.tunnel_hostname which is now set
-
-7. Set status: "active"
-   └── Users can connect again
-
-8. Deprovision Cloudflare Container
-   └── containers.destroy(hostname)
-```
-
-### Rollback Plan
-
-If a migrated claw has issues:
-1. Clear `tunnel_hostname` in DB → WS proxy falls back to dispatch worker URL
-2. Recreate container on Cloudflare
-3. Investigate and fix Mini setup
-4. Re-migrate
-
-### Timeline
-
-- **Week 1:** POC — single claw on single Mini, validate end-to-end
-- **Week 2-3:** Migrate 5-10 claws, monitor stability
-- **Week 4+:** Migrate remaining claws, decommission dispatch worker
+Fleet management operations (viewing Mini status, draining Minis, triggering migrations, monitoring health) are performed through `admin.mirascope.com`. This is the primary management interface for the Mac Mini fleet.
 
 ---
 
-## 17. Environment Topology
+## 16. Fleet Onboarding
+
+### Overview
+
+Fleet onboarding is the process of going from a new Mac Mini in the box to a fully operational member of the claw fleet.
+
+### Phase 0: Manual Setup + Agent Self-Registration
+
+1. **Physical setup** — unbox, connect to power/network, create `clawadmin` admin account
+2. **Manual configuration** — follow the Mac Mini setup checklist (install Tailscale, Node.js, cloudflared, OpenClaw, enable FileVault, etc.)
+3. **Deploy agent** — install the Mac Mini Agent to `/opt/mirascope/mini-agent/`, configure launchd plist, start the service
+4. **Verification** — run `bun run verify-mac-mini --agent-url https://{hostname}.agent.claws.mirascope.com` to validate all prerequisites
+5. **Fleet registration** — run `bun run fleet:register --agent-url https://{hostname}.agent.claws.mirascope.com` from the cloud repo. This command:
+   - Calls the agent's `/health` endpoint to collect hardware info (chip, RAM, disk)
+   - Calls the agent's `/info` endpoint for Tailscale IP, tunnel ID, etc.
+   - Inserts a row into `mac_minis` table with all collected data
+   - Sets status to `active`
+   - Prints confirmation with the Mini's details
+
+Alternatively, the agent has a **self-registration startup flow**: on first boot, if not yet registered, the agent calls a cloud API endpoint (`POST /api/internal/fleet/register`) with its hardware info and agent URL. The cloud backend creates the `mac_minis` row and returns a Mini ID that the agent persists locally.
+
+### Phase 1+: Agent-Assisted Onboarding
+
+For staging and production, the process is more automated:
+
+1. **Physical setup** — still manual (unbox, connect, create admin account)
+2. **Bootstrap script** — a single `curl | bash` or `bun run bootstrap-mini` script that installs all prerequisites (Tailscale, Node.js, cloudflared, OpenClaw, agent)
+3. **Agent self-registration** — on first startup, the agent automatically registers with the fleet via the cloud API
+4. **Admin approval** — new Minis appear in `admin.mirascope.com` with status `pending_approval`. An admin reviews and activates them.
+
+The goal is to minimize manual steps: physical setup → run one script → agent handles the rest.
+
+### Verification Script
+
+After manual setup, run the verification script to validate the Mini is ready:
+
+```bash
+bun run verify-mac-mini --agent-url https://{hostname}.agent.claws.mirascope.com
+```
+
+The script checks:
+- Agent is reachable and healthy
+- Node.js version is correct
+- OpenClaw binary is installed
+- Playwright Chromium exists at the shared location
+- FileVault is enabled
+- cloudflared tunnel is connected
+- Tailscale is connected
+- Disk space is sufficient
+- macOS firewall is enabled
+
+Returns a pass/fail report with details on any failures.
+
+---
+
+## 17. Plan-Based Provisioning
+
+### Tier Definitions
+
+Claws are provisioned based on the user's subscription plan tier. Each tier maps to different hardware requirements:
+
+| Tier | RAM per Claw | Disk per Claw | Max Claws per Mini (M4 Pro 32GB/1TB) | Description |
+|------|-------------|---------------|--------------------------------------|-------------|
+| **small** | ~2 GB | ~50 GB | 12 | Light usage, basic automation |
+| **medium** | ~4 GB | ~80 GB | 6 | Standard usage, regular browser automation |
+| **large** | ~8 GB | ~150 GB | 3 | Heavy usage, intensive workloads |
+
+> **Note:** Exact resource allocations and pricing are TBD. The tier names (small, medium, large) and approximate allocations above are placeholders that will be finalized with pricing.
+
+### Fleet Selection by Tier
+
+The fleet scheduler accepts a tier/plan parameter and filters Minis accordingly:
+
+```typescript
+readonly selectMini: (
+  tier: "small" | "medium" | "large",
+) => Effect.Effect<{ id: string; hostname: string }, ClawDeploymentError>;
+```
+
+Selection logic:
+1. Filter `mac_minis` by hardware capability (e.g., `large` tier requires M4 Pro 32GB+)
+2. Check available capacity based on tier (a 32GB Mini can host 12 small, 6 medium, or 3 large claws)
+3. Pick least-loaded Mini that satisfies the tier requirement
+
+The `mac_minis` table already tracks `chip`, `ram_gb`, and `disk_gb`, which the scheduler uses to determine tier compatibility. The `max_claws` field becomes tier-dependent rather than a fixed number.
+
+### Future Considerations
+
+- Tiers may map to different Mini hardware (e.g., small → M4 16GB, large → M4 Pro 32GB)
+- Mixed-tier placement on a single Mini (e.g., some small + some medium claws)
+- Resource enforcement via macOS resource limits or cgroups-like mechanisms
+
+---
+
+## 18. Environment Topology
 
 ### Environments
 
@@ -1724,7 +1835,7 @@ For example, a claw `abc123` would have:
 
 ---
 
-## 18. Local Development
+## 19. Local Development
 
 Two distinct development flows exist, serving different purposes.
 
@@ -1817,7 +1928,7 @@ This is identical to the production flow — the only differences are:
 
 ---
 
-## 19. Implementation Phases
+## 20. Implementation Phases
 
 ### Phase 0: Dev MacBook Bootstrap
 
@@ -1864,12 +1975,12 @@ Set up the Dev MacBook so it can run the Mac Mini Agent and host claw accounts.
 
 **Technology:**
 - **Runtime:** Node.js (same stack as rest of Mirascope)
-- **HTTP Framework:** Hono (lightweight, familiar)
+- **HTTP Framework:** Effect HttpApi
 - **Process management:** Runs as a launchd service under `clawadmin`
 - **Shell execution:** `child_process.execFile` for `sysadminctl`, `launchctl`, cloudflared config, etc.
 
 **Exposure:**
-- Exposed through Cloudflare Tunnel at `agent.{mini-hostname}.claws.mirascope.dev` (e.g., `agent.dev-macbook.claws.mirascope.dev`)
+- Exposed through Cloudflare Tunnel at `{mini-hostname}.agent.claws.mirascope.dev` (e.g., `dev-macbook.agent.claws.mirascope.dev`)
 - The agent's tunnel route is configured alongside the claw routes in the same cloudflared config
 - This means CF Workers, local dev servers, and any HTTPS client can reach the agent
 
@@ -1942,13 +2053,15 @@ interface ProvisionResponse {
 The agent executes these steps locally on provision:
 1. `sysadminctl -addUser` — create macOS user (no admin, no login window)
 2. Create `.openclaw` directory structure under the user's home
-3. Write `openclaw.json` with gateway config (host, port, token)
-4. Write `.env` with all injected environment variables
-5. Install/symlink OpenClaw binary for the user
-6. Create launchd plist at `/Library/LaunchDaemons/com.mirascope.claw.{clawId}.plist`
-7. `launchctl bootstrap` — load and start the gateway service
-8. Add ingress rule to cloudflared config mapping `tunnelHostname → http://localhost:{port}`
-9. Reload cloudflared (SIGHUP or restart)
+3. **Install OpenClaw** — copy or symlink the `openclaw` binary into the user's PATH
+4. Write `openclaw.json` with gateway config (host, port, token)
+5. Write `.env` with all injected environment variables (API keys, model settings, R2 credentials, site URL, etc.)
+6. **Install per-claw Chromium** — set up isolated Chromium instance under the user's profile
+7. Create launchd plist at `/Library/LaunchDaemons/com.mirascope.claw.{clawId}.plist`
+8. `launchctl bootstrap` — load and **start the gateway** (`openclaw gateway start` via launchd)
+9. **Verify gateway is ready** — poll the gateway's health endpoint until it responds
+10. Add ingress rule to cloudflared config mapping `tunnelHostname → http://localhost:{port}`
+11. Reload cloudflared (SIGHUP or restart)
 
 **`DELETE /claws/:clawUser`** — Deprovision a claw
 
@@ -2039,7 +2152,7 @@ The agent is built from `cloud/claws/mini-agent/` and deployed to each Mini at `
 </plist>
 ```
 
-The agent runs as `clawadmin` (which has admin/sudo privileges) so it can create users via `sysadminctl`, manage launchd services, and edit cloudflared config. The agent's tunnel route (`agent.{hostname}.claws.mirascope.dev → http://localhost:7600`) is added to the cloudflared config during initial Mini setup.
+The agent runs as `clawadmin` (which has admin/sudo privileges) so it can create users via `sysadminctl`, manage launchd services, and edit cloudflared config. The agent's tunnel route (`{hostname}.agent.claws.mirascope.dev → http://localhost:7600`) is added to the cloudflared config during initial Mini setup.
 
 ##### Agent Codebase Structure
 
@@ -2048,7 +2161,7 @@ cloud/claws/mini-agent/
 ├── package.json
 ├── tsconfig.json
 ├── src/
-│   ├── server.ts          # Hono app, middleware (auth, logging)
+│   ├── server.ts          # Effect HttpApi app, middleware (auth, logging)
 │   ├── routes/
 │   │   ├── health.ts      # GET /health
 │   │   ├── claws.ts       # CRUD endpoints for /claws
@@ -2082,7 +2195,7 @@ VALUES (
   'dev-macbook',
   '100.x.x.x',
   'dev-macbook.tail1234.ts.net',
-  'https://agent.dev-macbook.claws.mirascope.dev',
+  'https://dev-macbook.agent.claws.mirascope.dev',
   '<TUNNEL_UUID>'
 );
 ```
@@ -2095,7 +2208,7 @@ Create `cloud/mac-mini/deployment/live.ts` (already specified in [Section 6.2](#
 - **`provision(config)`:**
   1. Pick a Mini from `mac_minis` table (only one for now)
   2. Allocate next available port
-  3. Call the Mac Mini Agent: `POST https://agent.dev-macbook.claws.mirascope.dev/claws` with provision request
+  3. Call the Mac Mini Agent: `POST https://dev-macbook.agent.claws.mirascope.dev/claws` with provision request
   4. Create R2 bucket + scoped credentials (backups still go to R2)
   5. Return status with `tunnelHostname: claw-{id}.claws.mirascope.dev`
 - **`warmUp(clawId)`:** `POST` to agent `/claws/:clawUser/restart` or HTTP GET to the tunnel hostname to verify gateway responds
@@ -2134,30 +2247,9 @@ Also remove the `Authorization: Bearer` header from the upstream WebSocket upgra
 
 The `createClawHandler` flow stays the same — it calls `clawDeployment.provision()` which now provisions on the Dev MacBook via the agent instead of spawning a Cloudflare container.
 
-#### Step 4: Local Claw Dashboard CLI
+#### Step 4: Debugging with `openclaw gateway start`
 
-**Goal:** A one-command tool to connect the OpenClaw Control UI directly to any gateway — no auth, no proxy, no Mirascope Cloud.
-
-```bash
-# Connect to a remote claw via tunnel:
-npx mirascope-claw-debug --gateway wss://claw-xxx.claws.mirascope.dev
-
-# Connect to a local gateway:
-npx mirascope-claw-debug --gateway ws://localhost:18789
-```
-
-**What it does:**
-1. Starts a tiny local HTTP server (e.g. on port 9999)
-2. Serves the OpenClaw Control UI HTML with the gateway URL pre-configured
-3. Opens the browser to `http://localhost:9999`
-4. You're chatting with the claw — no sign-in, no proxy, direct WebSocket
-
-**Implementation options:**
-- If OpenClaw already has a built-in Control UI (check the dispatch worker — it likely serves one), this may just be documenting how to hit it directly
-- Otherwise: a small script that serves a single HTML page importing the Control UI JS bundle, with `GATEWAY_URL` injected as a global
-- Package as `cloud/tools/claw-debug/` or as a standalone npm package
-
-**The key requirement:** ONE COMMAND to open a browser connected to a gateway. No setup, no config files.
+For debugging individual claw issues, developers can run `openclaw gateway start` locally. This starts a local OpenClaw gateway instance that can be connected to directly via `ws://localhost:{PORT}` — no auth, no proxy, no Mirascope Cloud needed. Claw state can be restored from R2 backups for reproducing specific issues.
 
 #### Step 5: Full Stack E2E
 
@@ -2204,22 +2296,23 @@ Browser (localhost:5173)
 
 ---
 
-### Phase 1: POC on Mac Mini Hardware (1 week)
+### Phase 1: Staging Environment (1 week)
 
-**Goal:** Single Claw running on a single Mac Mini, WebSocket working end-to-end.
+**Goal:** Get staging working end-to-end — on merge to main, staging deploys and connects to the staging Mac Mini.
 
-**Hardware:** M4 16GB/512GB at William's home, WiFi.
+**Hardware:** Single Mac Mini for staging environment.
 
 **Tasks:**
-1. Set up Mac Mini using the same admin setup process (Dev MacBook already validated everything)
+1. Set up staging Mac Mini using the same admin setup process (Dev MacBook already validated everything)
 2. Deploy the Mac Mini Agent (already built in Phase 0 Step 2)
-3. Add the Mini to the `mac_minis` table with its agent URL
-4. Provision one Claw through the standard UI/API flow (uses agent automatically)
-5. Test: browser → WS proxy → tunnel → Mini → gateway ✓
-6. Test: Playwright/Chromium working under claw user ✓
+3. **Automated fleet registration** — use `bun run fleet:register` or agent self-registration (no manual DB inserts). The agent registers itself with the staging cloud backend on first boot.
+4. Configure CI/CD: on merge to main, staging deploys the cloud worker + agent code
+5. Provision one Claw through the standard UI/API flow (uses agent automatically)
+6. Test: browser → WS proxy → tunnel → staging Mini → gateway ✓
+7. Test: Playwright/Chromium working under claw user ✓
 
 **Files changed:**
-- All infrastructure code already exists from Phase 0 — this phase is purely operational (add a new Mini to the fleet)
+- All infrastructure code already exists from Phase 0 — this phase is operational + CI/CD integration
 
 ### Phase 2: Production Hardening & Multi-Mini (1-2 weeks)
 
@@ -2239,16 +2332,15 @@ Browser (localhost:5173)
 - New: monitoring/alerting integration
 - Modified: fleet scheduler for smarter placement
 
-### Phase 3: Migration & Backup (1 week)
+### Phase 3: Backup & Restore (1 week)
 
-**Goal:** Migrate existing Cloudflare claws to Mac Mini. Daily backups running.
+**Goal:** Daily backups running, restore functionality verified.
 
 **Tasks:**
-1. Migration script/tooling
-2. Backup system (cron + R2 upload)
-3. Restore functionality
-4. Migrate all existing claws
-5. Verify all claws healthy on Mini
+1. Backup system (cron + R2 upload)
+2. Retention cron job (daily cleanup per retention policy)
+3. Restore functionality and testing
+4. Verify backup/restore cycle end-to-end
 
 ### Phase 4: Production Hardening (1-2 weeks)
 
@@ -2274,24 +2366,22 @@ Browser (localhost:5173)
 
 ---
 
-## 20. Open Questions
+## 21. Known Limitations
+
+1. **WiFi dependency (POC):** If there's a WiFi outage, Cloudflare Tunnels disconnect and claws cannot reach LLM APIs. Claws continue running locally but cannot serve requests or make API calls. For the POC (William's home WiFi), this is considered acceptable. Production environments will use Ethernet + UPS for reliability.
+
+2. **No kernel-level isolation:** Claws use macOS user-level isolation, not containers or VMs. A malicious or buggy claw could potentially affect system resources (CPU, memory) shared with other claws on the same Mini. Resource limits via launchd are best-effort.
+
+3. **Single point of failure per Mini:** If a Mini goes offline, all claws on it are unavailable until it recovers or claws are migrated. Live migration (Section 13) mitigates this for planned maintenance.
+
+---
+
+## 22. Open Questions
 
 1. **Cloudflare Tunnel API vs config file?** — API is cleaner for dynamic routes but has rate limits. Config file + reload is simpler for POC. **Lean:** API for production.
 
-2. **Agent auth mechanism?** — Shared bearer token is simple. Mutual TLS over Tailscale is more secure. **Lean:** Bearer token for POC, evaluate mTLS later.
+2. **OpenClaw binary distribution?** — How does the gateway binary get onto Minis? Manual copy? Homebrew tap? GitHub releases? **Lean:** Manual for POC, GitHub releases for production.
 
-3. **Instance types on Mac Mini?** — Do we still differentiate resource allocations per claw, or are all claws equal on a Mini? **Lean:** All equal for now. Differentiate by which Mini they're placed on (16GB vs 32GB).
+3. **Gateway config delivery?** — Push during provision (agent stores locally). Config includes: environment variables (API keys like `ANTHROPIC_API_KEY`, `OPENCLAW_GATEWAY_TOKEN`), model settings (`PRIMARY_MODEL_ID`), R2 backup credentials, site URL (`OPENCLAW_SITE_URL`), and gateway configuration (host, port, token). Updates via restart (re-push config, restart gateway).
 
-4. **OpenClaw binary distribution?** — How does the gateway binary get onto Minis? Manual copy? Homebrew tap? GitHub releases? **Lean:** Manual for POC, GitHub releases for production.
-
-5. **Chromium per-claw vs shared?** — Each claw gets its own Chromium, or share a pool? **Lean:** Per-claw (isolation), but lazy-start (only when browser is needed).
-
-6. **Mini bootstrapping?** — How to set up a new Mini from scratch? **Lean:** Manual script for now, Ansible playbook later.
-
-7. **What happens during WiFi outage?** — Tunnel disconnects, WS proxy returns 503. Claws keep running locally. Reconnects automatically when WiFi returns. **Acceptable for POC.** Ethernet + UPS for production.
-
-8. **DNS for tunnel hostnames?** — `claw-{id}.claws.mirascope.io` needs a wildcard CNAME to the tunnel. Cloudflare manages this if the domain is on Cloudflare. **Action:** Confirm `mirascope.io` or use `claws.mirascope.com`.
-
-9. **Gateway config delivery?** — Push during provision (agent stores locally) vs pull on start (agent calls cloud API). **Lean:** Push. Agent stores in `.openclaw/` directory. Updates via restart (re-push config, restart gateway).
-
-10. **Billing implications?** — Cloudflare Containers had per-container cost. Mac Mini is fixed cost. Update billing model? **Action:** William to decide.
+4. **Pricing tiers?** — Tiers defined as small/medium/large (see Section 17). Exact resource allocations and pricing TBD — will be finalized shortly.
