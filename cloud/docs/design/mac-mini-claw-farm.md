@@ -1929,21 +1929,28 @@ The Mirascope Cloud app defines four environments in `wrangler.jsonc`:
 
 | Environment | Mac Hardware | Description |
 |-------------|-------------|-------------|
-| **Dev** | Old MacBook ("Dev MacBook") | Operates **exactly** like a production Mac Mini — same provisioning scripts, same agent, same Cloudflare Tunnel, same Tailscale. If it works here, it works in production. |
-| **Staging** | Single Mac Mini | Staging environment for pre-production validation. |
-| **Production** | Multiple Mac Minis | Production fleet. |
+| **Local** | Personal machine (old MacBook, individual Mac Mini, etc.) | Each developer/claw has their own machine for local dev. Runs the local Vite server + local agent. Not a deployed environment — purely for iterating before pushing. |
+| **Dev** | Dedicated Mac Mini(s) | The `mirascope.dev` deployment. Real Cloudflare Worker pointing at a real Mac Mini fleet. Used to test actual CF deployment before promoting to staging. Shared environment — not affected by anyone's local dev. |
+| **Staging** | Dedicated Mac Mini(s) | Pre-production validation at `staging.mirascope.com`. |
+| **Production** | Mac Mini fleet | Production at `mirascope.com`. |
 
-The Dev MacBook is **not** a second-class citizen. It runs the exact same software, config, and provisioning as production Minis. It lives on the same Tailnet and can be SSH'd into via Tailscale just like staging/production Minis.
+**Key distinction:** Local and Dev are separate. Local is your personal sandbox (Vite dev server, no Cloudflare Worker). Dev is a real deployed environment with its own dedicated fleet. Changes flow: **Local → Dev → Staging → Production**.
+
+Each person (developer or claw) gets their own machine for local development. This keeps the Dev environment clean and stable — it's a shared resource that should always reflect the latest `main` branch deployment, not be disrupted by in-progress work.
+
+All fleet machines (Dev, Staging, Production) run the exact same software stack: same agent, same provisioning scripts, same Cloudflare Tunnel, same Tailscale. They are not second-class citizens relative to each other.
 
 ### Tunnel Namespaces
 
-Each environment has its own Cloudflare Tunnel namespace:
+Each **deployed** environment has its own Cloudflare Tunnel namespace:
 
 | Environment | Tunnel Pattern | Routes To |
 |-------------|---------------|-----------|
-| Dev | `*.claws.mirascope.dev` | Dev MacBook |
-| Staging | `*.claws.staging.mirascope.com` | Staging Mac Mini |
+| Dev | `*.claws.mirascope.dev` | Dev Mac Mini(s) |
+| Staging | `*.claws.staging.mirascope.com` | Staging Mac Mini(s) |
 | Production | `*.claws.mirascope.com` | Production Mac Minis |
+
+Local development does **not** use Cloudflare Tunnels — the local Vite server connects directly to the local agent/gateway.
 
 For example, a claw `abc123` would have:
 - Dev: `claw-abc123.claws.mirascope.dev`
@@ -1987,15 +1994,14 @@ No Cloudflare Tunnel, no WS proxy, no session auth. Pure local debugging.
 - The existing `VITE_OPENCLAW_GATEWAY_WS_URL` env var partially supports this already
 - No session auth needed — purely local debugging
 
-### Flow 2: Local Cloud → Dev MacBook (Full-Stack Development)
+### Flow 2: Local Cloud → Personal Mac (Full-Stack Development)
 
-**Purpose:** Full-stack development and testing of the Mac Mini system. Tests the **entire** provisioning, tunneling, and WebSocket stack end-to-end.
+**Purpose:** Full-stack development and testing of the Mac Mini system. Tests the **entire** provisioning, agent, and WebSocket stack end-to-end using your personal development machine.
 
 **Setup:**
-1. Dev MacBook is provisioned exactly like a production Mac Mini (same scripts, agent, tunnel, Tailscale)
-2. Dev MacBook runs Cloudflare Tunnel with namespace `*.claws.mirascope.dev`
-3. Developer runs `bun run dev` locally (Vite dev server, `env.local` wrangler config)
-4. Local dev server connects through the dev tunnel infrastructure
+1. Personal Mac (old MacBook, personal Mac Mini, etc.) is provisioned with the same scripts, agent, and config as production Minis
+2. Developer runs `bun run dev` locally (Vite dev server, `.env.local`)
+3. Local dev server points at the local agent running on the same machine (or another personal machine on the Tailnet)
 
 **How it works:**
 
@@ -2004,14 +2010,11 @@ Browser (localhost:5173)
   │
   ├─ HTTPS ──→ Local Vite Dev Server
   │
-  └─ WSS ───→ /api/ws/claws/:org/:claw
+  └─ WS ────→ /api/ws/claws/:org/:claw
                 │  (WS proxy, same code as production)
                 │
                 ▼
-         Cloudflare Tunnel (claw-{id}.claws.mirascope.dev)
-                │
-                ▼
-         Dev MacBook
+         Personal Mac (local or via Tailscale)
                 │  - Same macOS user isolation
                 │  - Same launchd services
                 │  - Same Mini agent
@@ -2020,48 +2023,47 @@ Browser (localhost:5173)
          OpenClaw Gateway (per-user launchd service)
 ```
 
-This is identical to the production flow — the only differences are:
-- Which Minis are in the fleet DB (one entry: the Dev MacBook)
-- Which tunnel namespace is used (`mirascope.dev` instead of `mirascope.com`)
-
+This exercises the same provisioning and agent code as production. The differences:
+- Traffic goes directly to the personal Mac (no Cloudflare Tunnel needed for local dev)
+- Fleet DB has one entry pointing at the personal machine
 **Key implementation details:**
-- `env.local` in `wrangler.jsonc` needs a setting pointing tunnel URLs to the dev namespace (`*.claws.mirascope.dev`)
-- `MacMiniDeploymentService` works identically — the only difference is the `mac_minis` table in local dev Postgres has one entry: the Dev MacBook
+- `.env.local` points at the local agent (e.g., `http://localhost:8787` or Tailscale IP of personal machine)
+- `MacMiniDeploymentService` works identically — the only difference is the `mac_minis` table in local Postgres has one entry: the personal machine
 - Database: local dev uses `localConnectionString` to local Postgres
 - Auth works the same as production (session-based)
-- Full provisioning flow: create claw → find Dev MacBook → agent HTTP API → create user → start gateway → tunnel route → ready
+- Full provisioning flow: create claw → find personal Mac → agent HTTP API → create user → start gateway → ready
 
-**Why this matters:** If the full stack works against the Dev MacBook, it works in production. The Dev MacBook is the same environment, just with one Mini instead of many. The same agent HTTP API is used everywhere — no special dev-only provisioning paths.
+**Why this matters:** If the full stack works against your personal Mac, it works in production. The same agent HTTP API and deployment service code runs everywhere — no special dev-only provisioning paths.
 
 ### When to Use Which Flow
 
 | Scenario | Flow |
 |----------|------|
 | "This claw is behaving weirdly, let me reproduce locally" | Flow 1 (Direct) |
-| "I'm building the provisioning system and need to test end-to-end" | Flow 2 (Dev MacBook) |
-| "I changed the WS proxy code, does it still work?" | Flow 2 (Dev MacBook) |
+| "I'm building the provisioning system and need to test end-to-end" | Flow 2 (Personal Mac) |
+| "I changed the WS proxy code, does it still work?" | Flow 2 (Personal Mac) |
 | "I need to debug a gateway plugin issue" | Flow 1 (Direct) |
-| "I'm testing the fleet scheduler / tunnel routing" | Flow 2 (Dev MacBook) |
+| "I'm testing the fleet scheduler / tunnel routing" | Flow 2 (Personal Mac) |
 
 ---
 
 ## 20. Implementation Phases
 
-### Phase 0: Dev MacBook Bootstrap
+### Phase 0: Personal Mac Bootstrap
 
-**Goal:** Before touching any Mac Mini hardware, prove the entire stack works end-to-end using a Dev MacBook as the target machine, with `bun run dev` running locally.
+**Goal:** Before touching any dedicated fleet hardware, prove the entire stack works end-to-end using a personal Mac (William's old MacBook) as the target machine, with `bun run dev` running locally.
 
-**Hardware:** Any spare MacBook (the "Dev MacBook"). Operates on William's local network + Tailscale.
+**Hardware:** Any spare Mac (old MacBook, personal Mac Mini, etc.). Operates on local network + Tailscale.
 
 **Key design decision:** ALL provisioning goes through the Mac Mini Agent HTTP API — in Phase 0 and beyond. The agent is exposed through Cloudflare Tunnel, so CF Workers can call it via standard HTTP. This means the same provisioning code works identically in local dev, staging, and production. There is no SSH-based provisioning path.
 
 #### Step 1: Mac Mini Admin Setup
 
-Set up the Dev MacBook so it can run the Mac Mini Agent and host claw accounts.
+Set up the personal Mac so it can run the Mac Mini Agent and host claw accounts.
 
 > **Note:** Detailed Mac Mini setup procedures are maintained in private operational documentation. The design doc describes *what* needs to be configured and *why*, but exact commands and configuration values are private operational knowledge.
 
-**The result is a Mac Mini (or Dev MacBook) with:**
+**The result is a Mac Mini (or personal Mac) with:**
 
 - A `clawadmin` admin account (the only admin account on the machine)
 - Remote Login (SSH) enabled with key-only auth via Tailscale (for admin debugging — not used for provisioning)
@@ -2297,7 +2299,7 @@ cloud/claws/mini-agent/
 
 #### Step 3: Provisioning from Local Dev
 
-**Goal:** Run `bun run dev` locally, create a claw through the UI (or API), and have it provision a real macOS user account on the Dev MacBook via the Mac Mini Agent.
+**Goal:** Run `bun run dev` locally, create a claw through the UI (or API), and have it provision a real macOS user account on the personal Mac via the Mac Mini Agent.
 
 The `MacMiniDeploymentService` makes HTTP requests to the agent's Cloudflare Tunnel URL. This is the **same code path** used in staging and production — CF Workers can make HTTP requests to the agent URL just like the local dev server can.
 
@@ -2306,7 +2308,7 @@ The `MacMiniDeploymentService` makes HTTP requests to the agent's Cloudflare Tun
 Add the `mac_minis` table and new columns to `claws` (see [Section 5](#5-new-database-tables) for full schema).
 
 ```sql
--- Seed the Dev MacBook
+-- Seed the personal Mac
 INSERT INTO mac_minis (hostname, tailscale_ip, tailscale_fqdn, agent_url, tunnel_id)
 VALUES (
   'dev-macbook',
@@ -2362,7 +2364,7 @@ Also remove the `Authorization: Bearer` header from the upstream WebSocket upgra
 | `cloud/db/schema/mac-minis.ts` | **Create** — `mac_minis` table |
 | `cloud/db/migrations/XXXX_add_mac_minis.ts` | **Create** — migration |
 
-The `createClawHandler` flow stays the same — it calls `clawDeployment.provision()` which now provisions on the Dev MacBook via the agent instead of spawning a Cloudflare container.
+The `createClawHandler` flow stays the same — it calls `clawDeployment.provision()` which now provisions on the personal Mac via the agent instead of spawning a Cloudflare container.
 
 #### Step 4: Debugging with `openclaw gateway start`
 
@@ -2370,12 +2372,12 @@ For debugging individual claw issues, developers can run `openclaw gateway start
 
 #### Step 5: Full Stack E2E
 
-**Goal:** Full production-identical stack working end-to-end: local Mirascope Cloud UI → WS proxy → Cloudflare Tunnel → Dev MacBook → OpenClaw gateway.
+**Goal:** Full production-identical stack working end-to-end: local Mirascope Cloud UI → WS proxy → Cloudflare Tunnel → personal Mac → OpenClaw gateway.
 
 **Prerequisites:** Steps 1-3 complete.
 
 **Setup:**
-1. Local Postgres has a `mac_minis` row for the Dev MacBook (from Step 3)
+1. Local Postgres has a `mac_minis` row for the personal Mac (from Step 3)
 2. `MacMiniDeploymentService` is wired in as the deployment Layer
 3. `bun run dev` with `CLOUDFLARE_ENV=local`
 
@@ -2393,7 +2395,7 @@ Browser (localhost:5173)
          Cloudflare Tunnel (claw-{id}.claws.mirascope.dev)
                 │
                 ▼
-         Dev MacBook → OpenClaw Gateway (launchd service)
+         personal Mac → OpenClaw Gateway (launchd service)
 ```
 
 **Implementation notes:**
@@ -2404,12 +2406,12 @@ Browser (localhost:5173)
 **Verification checklist:**
 - [ ] Local Vite server starts and loads the Mirascope UI
 - [ ] Can sign in (local dev auth)
-- [ ] Can create a new claw (provisions on Dev MacBook via agent)
+- [ ] Can create a new claw (provisions on personal Mac via agent)
 - [ ] Claw status transitions: `pending` → `provisioning` → `active`
 - [ ] Can open chat with the claw
-- [ ] Messages flow: UI → WS proxy → Cloudflare Tunnel → Dev MacBook gateway → LLM → back
+- [ ] Messages flow: UI → WS proxy → Cloudflare Tunnel → personal Mac gateway → LLM → back
 - [ ] Can restart the claw from the UI
-- [ ] Can delete the claw (deprovisions from Dev MacBook via agent)
+- [ ] Can delete the claw (deprovisions from personal Mac via agent)
 
 ---
 
@@ -2420,7 +2422,7 @@ Browser (localhost:5173)
 **Hardware:** Single Mac Mini for staging environment.
 
 **Tasks:**
-1. Set up staging Mac Mini using the same admin setup process (Dev MacBook already validated everything)
+1. Set up staging Mac Mini using the same admin setup process (personal Mac already validated everything)
 2. Deploy the Mac Mini Agent (already built in Phase 0 Step 2)
 3. **Automated fleet registration** — use `bun run fleet:register` or agent self-registration (no manual DB inserts). The agent registers itself with the staging cloud backend on first boot.
 4. Configure CI/CD: on merge to main, staging deploys the cloud worker + agent code
