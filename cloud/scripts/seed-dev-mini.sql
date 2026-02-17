@@ -1,5 +1,5 @@
 -- Seed a local development Mac entry for your personal machine.
--- Run against your local Postgres database before using DEPLOYMENT_TARGET=mac-mini.
+-- Run against your local Postgres database before using DEPLOYMENT_TARGET=mac.
 --
 -- Prerequisites:
 --   1. cloudflared installed and tunnel created on your personal Mac
@@ -11,7 +11,7 @@
 -- Usage:
 --   psql $DATABASE_URL -f cloud/scripts/seed-dev-mini.sql
 
-INSERT INTO mac_minis (
+INSERT INTO fleet_macs (
   hostname,
   agent_url,
   tunnel_hostname_suffix,

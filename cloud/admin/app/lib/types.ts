@@ -1,4 +1,4 @@
-/** Mirrors the Mac Mini Agent API schemas. */
+/** Mirrors the Mac Agent API schemas. */
 
 export interface HealthResponse {
   hostname: string;

@@ -31,7 +31,7 @@ import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
-import { claws, users } from "@/db/schema";
+import { claws, fleetMacs, users } from "@/db/schema";
 import { Emails } from "@/emails";
 import { Payments } from "@/payments";
 import { Settings, type SettingsConfig } from "@/settings";
@@ -429,6 +429,15 @@ function createSequentialDescribe(
             ownerDeletedAt: owner.deletedAt,
             clawId: null,
           };
+
+          // Seed a fleet_macs row for FK references from mock deployments
+          const drizzle = yield* DrizzleORM;
+          yield* drizzle.insert(fleetMacs).values({
+            id: "00000000-0000-0000-0000-000000000001",
+            hostname: `test-mac-${Date.now()}`,
+            agentUrl: "http://localhost:7600",
+            tunnelHostnameSuffix: "claws.mirascope.dev",
+          });
 
           return { owner, org, apiKeyInfo };
         }).pipe(Effect.provide(dbLayer)),

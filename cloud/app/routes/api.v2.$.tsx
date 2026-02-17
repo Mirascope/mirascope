@@ -5,11 +5,11 @@ import { Analytics } from "@/analytics";
 import { handleRequest } from "@/api/handler";
 import { handleErrors, handleDefects } from "@/api/utils";
 import { authenticate, type PathParameters } from "@/auth";
-import { MacMiniDeploymentLayer } from "@/claws/deployment/mac-mini";
+import { MacDeploymentLayer } from "@/claws/deployment/mac-deployment";
 import {
-  MacMiniFleetService,
-  LiveMacMiniFleetService,
-} from "@/claws/deployment/mac-mini-fleet";
+  MacFleetService,
+  LiveMacFleetService,
+} from "@/claws/deployment/mac-fleet";
 import { MockDeploymentService } from "@/claws/deployment/mock";
 import { ClawDeploymentService } from "@/claws/deployment/service";
 import { CloudflareHttp } from "@/cloudflare/client";
@@ -162,9 +162,9 @@ export const Route = createFileRoute("/api/v2/$")({
                       payments: settings.stripe,
                     });
 
-                const macMiniDeploymentLayer = MacMiniDeploymentLayer.pipe(
+                const macMiniDeploymentLayer = MacDeploymentLayer.pipe(
                   Layer.provide(
-                    Layer.effect(MacMiniFleetService, LiveMacMiniFleetService),
+                    Layer.effect(MacFleetService, LiveMacFleetService),
                   ),
                   Layer.provide(LiveCloudflareR2Service),
                   Layer.provide(

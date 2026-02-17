@@ -52,7 +52,7 @@ export const createClawHandler = (
       },
     });
 
-    // Provision claw on Mac Mini
+    // Provision claw on Mac
     const status = yield* clawDeployment.provision({
       clawId: claw.id,
       instanceType: claw.instanceType,
@@ -80,8 +80,8 @@ export const createClawHandler = (
         secretsKeyId: encrypted.keyId,
         status: "provisioning",
         updatedAt: new Date(),
-        miniId: status.miniId,
-        miniPort: status.miniPort,
+        macId: status.macId,
+        macPort: status.macPort,
         tunnelHostname: status.tunnelHostname,
         macUsername: status.macUsername,
       })

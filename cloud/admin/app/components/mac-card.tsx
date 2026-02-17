@@ -11,7 +11,7 @@ function formatUptime(s: number): string {
   return `${m}m`;
 }
 
-export function MiniCard({ health }: { health: HealthResponse }) {
+export function MacCard({ health }: { health: HealthResponse }) {
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-5">
       <div className="flex items-start justify-between">

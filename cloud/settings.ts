@@ -203,8 +203,8 @@ export type SettingsConfig = {
   // OpenClaw gateway (optional — for dev/local WS proxy)
   readonly openclawGatewayWsUrl?: string;
 
-  // Deployment target: "cloudflare" (default) or "mac-mini"
-  readonly deploymentTarget: "cloudflare" | "mac-mini";
+  // Deployment target: "cloudflare" (default) or "mac-deployment"
+  readonly deploymentTarget: "cloudflare" | "mac-deployment";
 };
 
 // =============================================================================
@@ -456,7 +456,7 @@ function validateSettingsFromSource(
       openclawGatewayWsUrl: optional("OPENCLAW_GATEWAY_WS_URL") || undefined,
 
       deploymentTarget:
-        (optional("DEPLOYMENT_TARGET") as "cloudflare" | "mac-mini") ||
+        (optional("DEPLOYMENT_TARGET") as "cloudflare" | "mac-deployment") ||
         "cloudflare",
     };
 

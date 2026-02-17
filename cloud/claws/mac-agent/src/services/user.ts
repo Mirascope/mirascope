@@ -54,7 +54,7 @@ export const UserManagerLive = Effect.gen(function* () {
     owner: string,
   ): Effect.Effect<void, ProvisioningError> =>
     Effect.gen(function* () {
-      const tmpPath = `/tmp/mini-agent-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const tmpPath = `/tmp/mac-agent-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       yield* Effect.tryPromise({
         try: () => writeFile(tmpPath, content, "utf-8"),
         catch: (e) =>

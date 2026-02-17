@@ -114,7 +114,7 @@ export const LaunchdLive = Effect.gen(function* () {
       const plist = generatePlist(config);
       const path = plistPath(config.macUsername);
 
-      const tmpPath = `/tmp/mini-agent-plist-${Date.now()}`;
+      const tmpPath = `/tmp/mac-agent-plist-${Date.now()}`;
       yield* Effect.tryPromise({
         try: () => writeFile(tmpPath, plist, "utf-8"),
         catch: (e) =>

@@ -56,8 +56,8 @@ describe("MockDeploymentService", () => {
         expect(status.status).toBe("active");
         expect(status.startedAt).toBeInstanceOf(Date);
         expect(status.errorMessage).toBeUndefined();
-        expect(status.miniId).toBe(`mock-mini-${testConfig.clawId}`);
-        expect(status.miniPort).toBe(18789);
+        expect(status.macId).toBe("00000000-0000-0000-0000-000000000001");
+        expect(status.macPort).toBe(18789);
         expect(status.tunnelHostname).toBe(
           `claw-${testConfig.clawId}.claws.mirascope.dev`,
         );

@@ -1,6 +1,6 @@
-# Mac Mini Agent
+# Mac Agent
 
-Lightweight HTTP server for claw provisioning and management on Mac Minis. Runs under the `clawadmin` account and handles macOS user creation, launchd service management, Cloudflare tunnel routing, and resource monitoring.
+Lightweight HTTP server for claw provisioning and management on Macs. Runs under the `clawadmin` account and handles macOS user creation, launchd service management, Cloudflare tunnel routing, and resource monitoring.
 
 ## Quick Start
 
@@ -59,18 +59,18 @@ All endpoints except `GET /health` require `Authorization: Bearer <token>`.
 
 ## Deployment
 
-The agent is deployed to `/opt/mirascope/mini-agent/` on each Mac Mini and runs as a launchd system daemon. See the design doc (`cloud/docs/design/mac-mini-claw-farm.md`) for the launchd plist and installation steps.
+The agent is deployed to `/opt/mirascope/mac-agent/` on each Mac and runs as a launchd system daemon. See the design doc (`cloud/docs/design/mac-claw-farm.md`) for the launchd plist and installation steps.
 
 ```bash
 # Build
 bun run build
 
 # Copy to Mini
-scp -r dist/ clawadmin@mini:/opt/mirascope/mini-agent/
+scp -r dist/ clawadmin@mini:/opt/mirascope/mac-agent/
 
 # Install launchd plist (see design doc for plist XML)
-sudo cp com.mirascope.mini-agent.plist /Library/LaunchDaemons/
-sudo launchctl load /Library/LaunchDaemons/com.mirascope.mini-agent.plist
+sudo cp com.mirascope.mac-agent.plist /Library/LaunchDaemons/
+sudo launchctl load /Library/LaunchDaemons/com.mirascope.mac-agent.plist
 ```
 
 ## Architecture

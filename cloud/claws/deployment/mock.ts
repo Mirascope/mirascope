@@ -46,8 +46,8 @@ export const MockDeploymentService = Layer.succeed(ClawDeploymentService, {
       const status: ClawDeploymentStatus = {
         status: "active",
         startedAt: new Date(),
-        miniId: `mock-mini-${config.clawId}`,
-        miniPort: 18789,
+        macId: "00000000-0000-0000-0000-000000000001",
+        macPort: 18789,
         tunnelHostname: `claw-${config.clawId}.claws.mirascope.dev`,
         macUsername: `claw-${config.clawId}`,
       };

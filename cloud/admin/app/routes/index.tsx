@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { agent } from "@/lib/agent";
-import { MiniCard } from "@/components/mini-card";
+import { MacCard } from "@/components/mac-card";
 import { ClawTable } from "@/components/claw-table";
 import { SettingsBar } from "@/components/settings-bar";
 
@@ -54,7 +54,7 @@ function FleetOverview() {
         <h2 className="text-red-400 font-medium mb-1">Agent Unreachable</h2>
         <p className="text-sm text-red-300/70">{error.message}</p>
         <p className="text-xs text-gray-500 mt-2">
-          Make sure the Mac Mini Agent is running. Check the agent URL in the settings bar.
+          Make sure the Mac Agent is running. Check the agent URL in the settings bar.
         </p>
       </div>
     );
@@ -79,7 +79,7 @@ function FleetOverview() {
         Fleet Overview
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        <MiniCard health={health} />
+        <MacCard health={health} />
       </div>
     </section>
   );

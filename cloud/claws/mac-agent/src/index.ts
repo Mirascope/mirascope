@@ -1,8 +1,8 @@
 /**
- * Mac Mini Agent — Entry point.
+ * Mac Agent — Entry point.
  *
  * Lightweight HTTP server for claw provisioning and management.
- * Runs on each Mac Mini under the `clawadmin` account.
+ * Runs on each Mac under the `clawadmin` account.
  * Built with Effect HttpApi.
  */
 import { HttpApiBuilder, HttpServer } from "@effect/platform";
@@ -82,11 +82,11 @@ const { handler, dispose } = HttpApiBuilder.toWebHandler(
 // Read port from env for Bun's default export
 const port = parseInt(process.env.MINI_AGENT_PORT ?? "7600", 10);
 
-console.log(`[mini-agent] Starting on port ${port}`);
+console.log(`[mac-agent] Starting on port ${port}`);
 
 // Graceful shutdown
 process.on("SIGINT", async () => {
-  console.log("[mini-agent] Shutting down...");
+  console.log("[mac-agent] Shutting down...");
   await dispose();
   process.exit(0);
 });
