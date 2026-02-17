@@ -6,7 +6,15 @@ import { ClawHeader } from "@/app/components/claw-header";
 import { Button } from "@/app/components/ui/button";
 import { useClaw } from "@/app/contexts/claw";
 
-function getGatewayUrl(orgSlug: string, clawSlug: string): string {
+function getGatewayUrl(
+  orgSlug: string,
+  clawSlug: string,
+  tunnelHostname?: string | null,
+): string {
+  // Mac Mini claws: use the tunnel hostname directly
+  if (tunnelHostname) {
+    return `https://${tunnelHostname}`;
+  }
   if (typeof window === "undefined") return "#";
   const hostname = window.location.hostname;
   if (hostname === "localhost" || hostname === "127.0.0.1") {
@@ -74,7 +82,7 @@ function ClawLayout() {
           </Button>
           <Button asChild size="sm" variant="default">
             <a
-              href={getGatewayUrl(orgSlug, clawSlug)}
+              href={getGatewayUrl(orgSlug, clawSlug, claw.tunnelHostname)}
               rel="noopener noreferrer"
               target="_blank"
             >
