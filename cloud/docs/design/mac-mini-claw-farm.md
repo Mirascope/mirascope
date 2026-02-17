@@ -23,8 +23,10 @@
 14. [Security Model](#14-security-model)
 15. [Monitoring & Alerting](#15-monitoring--alerting)
 16. [Migration from Cloudflare](#16-migration-from-cloudflare)
-17. [Implementation Phases](#17-implementation-phases)
-18. [Open Questions](#18-open-questions)
+17. [Environment Topology](#17-environment-topology)
+18. [Local Development](#18-local-development)
+19. [Implementation Phases](#19-implementation-phases)
+20. [Open Questions](#20-open-questions)
 
 ---
 
@@ -1867,7 +1869,140 @@ If a migrated claw has issues:
 
 ---
 
-## 17. Implementation Phases
+## 17. Environment Topology
+
+### Environments
+
+The Mirascope Cloud app defines four environments in `wrangler.jsonc`:
+
+| Environment | URL | Description |
+|-------------|-----|-------------|
+| `local` | Local Vite dev server (`bun run dev`) | Developer's machine |
+| `dev` | mirascope.dev (Cloudflare Worker) | Development environment |
+| `staging` | staging.mirascope.com | Staging environment |
+| `production` | mirascope.com | Production environment |
+
+### Infrastructure per Environment
+
+| Environment | Mac Hardware | Description |
+|-------------|-------------|-------------|
+| **Dev** | Old MacBook ("Dev MacBook") | Operates **exactly** like a production Mac Mini — same provisioning scripts, same agent, same Cloudflare Tunnel, same Tailscale. If it works here, it works in production. |
+| **Staging** | Single Mac Mini | Staging environment for pre-production validation. |
+| **Production** | Multiple Mac Minis | Production fleet. |
+
+The Dev MacBook is **not** a second-class citizen. It runs the exact same software, config, and provisioning as production Minis. It lives on the same Tailnet and can be SSH'd into via Tailscale just like staging/production Minis.
+
+### Tunnel Namespaces
+
+Each environment has its own Cloudflare Tunnel namespace:
+
+| Environment | Tunnel Pattern | Routes To |
+|-------------|---------------|-----------|
+| Dev | `*.claws.mirascope.dev` | Dev MacBook |
+| Staging | `*.claws.staging.mirascope.com` | Staging Mac Mini |
+| Production | `*.claws.mirascope.com` | Production Mac Minis |
+
+For example, a claw `abc123` would have:
+- Dev: `claw-abc123.claws.mirascope.dev`
+- Staging: `claw-abc123.claws.staging.mirascope.com`
+- Production: `claw-abc123.claws.mirascope.com`
+
+---
+
+## 18. Local Development
+
+Two distinct development flows exist, serving different purposes.
+
+### Flow 1: Local UI → Local Gateway (Debugging)
+
+**Purpose:** Debug a specific claw's issues by running the Mirascope UI locally connected directly to a local OpenClaw gateway. This is **not** for developing the Mac Mini system — it's for debugging individual claw problems.
+
+**Setup:**
+1. Developer runs `openclaw gateway start` locally (or restores a claw's state from an R2 backup to debug their specific issue)
+2. Developer runs local Mirascope Cloud (`bun run dev`)
+3. The UI connects **directly** to the local gateway — no auth, no WS proxy, no provisioning
+4. Direct WebSocket connection: `ws://localhost:{PORT}`
+
+**How it bypasses the stack:**
+
+```
+Browser (localhost:5173)
+  │
+  └─ WS ──→ ws://localhost:{GATEWAY_PORT}
+              │
+              ▼
+         Local OpenClaw Gateway
+         (running via `openclaw gateway start`)
+```
+
+No Cloudflare Tunnel, no WS proxy, no session auth. Pure local debugging.
+
+**Key implementation details:**
+- `getGatewayUrl()` in `cloud/app/routes/$orgSlug/claws/$clawSlug.tsx` already has localhost handling that returns a direct URL
+- `GatewayClient` in `cloud/app/lib/gateway-client.ts` currently connects via the WS proxy (`/api/ws/claws/:org/:claw`). For debugging mode, it needs a "direct connect" path that bypasses the proxy entirely
+- Toggle via query param (e.g., `?direct=1`) or env var (e.g., `VITE_DIRECT_GATEWAY=true`)
+- The existing `VITE_OPENCLAW_GATEWAY_WS_URL` env var partially supports this already
+- No session auth needed — purely local debugging
+
+### Flow 2: Local Cloud → Dev MacBook (Full-Stack Development)
+
+**Purpose:** Full-stack development and testing of the Mac Mini system. Tests the **entire** provisioning, tunneling, and WebSocket stack end-to-end.
+
+**Setup:**
+1. Dev MacBook is provisioned exactly like a production Mac Mini (same scripts, agent, tunnel, Tailscale)
+2. Dev MacBook runs Cloudflare Tunnel with namespace `*.claws.mirascope.dev`
+3. Developer runs `bun run dev` locally (Vite dev server, `env.local` wrangler config)
+4. Local dev server connects through the dev tunnel infrastructure
+
+**How it works:**
+
+```
+Browser (localhost:5173)
+  │
+  ├─ HTTPS ──→ Local Vite Dev Server
+  │
+  └─ WSS ───→ /api/ws/claws/:org/:claw
+                │  (WS proxy, same code as production)
+                │
+                ▼
+         Cloudflare Tunnel (claw-{id}.claws.mirascope.dev)
+                │
+                ▼
+         Dev MacBook
+                │  - Same macOS user isolation
+                │  - Same launchd services
+                │  - Same Mini agent
+                │
+                ▼
+         OpenClaw Gateway (per-user launchd service)
+```
+
+This is identical to the production flow — the only differences are:
+- Which Minis are in the fleet DB (one entry: the Dev MacBook)
+- Which tunnel namespace is used (`mirascope.dev` instead of `mirascope.com`)
+
+**Key implementation details:**
+- `env.local` in `wrangler.jsonc` needs a setting pointing tunnel URLs to the dev namespace (`*.claws.mirascope.dev`)
+- `MacMiniDeploymentService` works identically — the only difference is the `mac_minis` table in local dev Postgres has one entry: the Dev MacBook
+- Database: local dev uses `localConnectionString` to local Postgres
+- Auth works the same as production (session-based)
+- Full provisioning flow: create claw → find Dev MacBook → SSH/agent → create user → start gateway → tunnel route → ready
+
+**Why this matters:** If the full stack works against the Dev MacBook, it works in production. The Dev MacBook is the same environment, just with one Mini instead of many.
+
+### When to Use Which Flow
+
+| Scenario | Flow |
+|----------|------|
+| "This claw is behaving weirdly, let me reproduce locally" | Flow 1 (Direct) |
+| "I'm building the provisioning system and need to test end-to-end" | Flow 2 (Dev MacBook) |
+| "I changed the WS proxy code, does it still work?" | Flow 2 (Dev MacBook) |
+| "I need to debug a gateway plugin issue" | Flow 1 (Direct) |
+| "I'm testing the fleet scheduler / tunnel routing" | Flow 2 (Dev MacBook) |
+
+---
+
+## 19. Implementation Phases
 
 ### Phase 0: POC Setup (1 week)
 
@@ -1948,7 +2083,7 @@ If a migrated claw has issues:
 
 ---
 
-## 18. Open Questions
+## 20. Open Questions
 
 1. **Cloudflare Tunnel API vs config file?** — API is cleaner for dynamic routes but has rate limits. Config file + reload is simpler for POC. **Lean:** API for production.
 
