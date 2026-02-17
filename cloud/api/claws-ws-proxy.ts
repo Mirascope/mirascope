@@ -86,6 +86,7 @@ export async function handleClawsWebSocket(
         organizationId: claws.organizationId,
         secretsEncrypted: claws.secretsEncrypted,
         secretsKeyId: claws.secretsKeyId,
+        tunnelHostname: claws.tunnelHostname,
       })
       .from(claws)
       .innerJoin(organizations, eq(claws.organizationId, organizations.id))
@@ -150,16 +151,27 @@ export async function handleClawsWebSocket(
       });
     }
 
-    // 6. Determine upstream gateway URL
-    // Route through the dispatch worker which handles container lifecycle.
-    // The dispatch worker accepts Bearer token auth (gateway token) and
-    // proxies the WebSocket to the correct container.
+    // 6. Determine upstream gateway URL and connect
+    if (claw.tunnelHostname) {
+      // Mac Mini path: connect directly via Cloudflare Tunnel hostname
+      const upstreamUrl = `https://${claw.tunnelHostname}`;
+
+      return yield* Effect.tryPromise({
+        try: () => connectAndRelayViaTunnel(upstreamUrl, gatewayToken),
+        catch: (cause) =>
+          new DatabaseError({
+            message: `Failed to connect to Mac Mini gateway: ${cause instanceof Error ? cause.message : String(cause)}`,
+            cause,
+          }),
+      });
+    }
+
+    // Cloudflare Container path: route through dispatch worker
     const dispatchBaseUrl =
       settings.openclawGatewayWsUrl ??
       settings.cloudflare.dispatchWorkerBaseUrl;
     const upstreamUrl = `${dispatchBaseUrl.replace(/\/$/, "")}/${orgSlug}/${clawSlug}`;
 
-    // 7. Connect to upstream gateway, perform handshake, and relay
     return yield* Effect.tryPromise({
       try: () => connectAndRelay(upstreamUrl, gatewayToken),
       catch: (cause) =>
@@ -210,6 +222,149 @@ export async function handleClawsWebSocket(
 // ---------------------------------------------------------------------------
 // Upstream connection + handshake + relay
 // ---------------------------------------------------------------------------
+
+/**
+ * Connect to a Mac Mini via Cloudflare Tunnel.
+ *
+ * Similar to connectAndRelay but does NOT send Authorization header in the
+ * upstream fetch — the tunnel routes by hostname. The gateway token is used
+ * only in the OpenClaw connect handshake.
+ */
+async function connectAndRelayViaTunnel(
+  tunnelUrl: string,
+  gatewayToken: string,
+): Promise<Response> {
+  const [clientWs, serverWs] = Object.values(new WebSocketPair());
+
+  // Connect via tunnel — no Bearer auth header needed
+  const upstreamResponse = await fetch(tunnelUrl, {
+    headers: {
+      Upgrade: "websocket",
+    },
+  });
+
+  const upstreamWs = (upstreamResponse as unknown as { webSocket?: WebSocket })
+    .webSocket;
+  if (!upstreamWs) {
+    console.error(
+      "[ws-proxy] Tunnel response status:",
+      upstreamResponse.status,
+      "headers:",
+      Object.fromEntries(upstreamResponse.headers.entries()),
+    );
+    throw new Error("Tunnel did not return a WebSocket");
+  }
+
+  upstreamWs.accept();
+  serverWs.accept();
+
+  // Perform connect handshake (same as connectAndRelay)
+  const handshakePromise = new Promise<void>((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error("Gateway handshake timed out"));
+    }, 10_000);
+
+    const onMessage = (event: MessageEvent) => {
+      try {
+        const msg = JSON.parse(event.data as string);
+
+        if (msg.type === "event" && msg.event === "connect.challenge") {
+          upstreamWs.send(
+            JSON.stringify({
+              type: "req",
+              id: "__connect",
+              method: "connect",
+              params: {
+                minProtocol: 3,
+                maxProtocol: 3,
+                auth: { token: gatewayToken },
+                client: {
+                  id: "openclaw-control-ui",
+                  version: "dev",
+                  platform: "server",
+                  mode: "webchat",
+                },
+                role: "operator",
+                scopes: [
+                  "operator.admin",
+                  "operator.approvals",
+                  "operator.pairing",
+                ],
+                caps: [],
+              },
+            }),
+          );
+        } else if (msg.type === "res" && msg.id === "__connect") {
+          clearTimeout(timeout);
+          upstreamWs.removeEventListener("message", onMessage);
+
+          if (msg.ok) {
+            resolve();
+          } else {
+            reject(
+              new Error(
+                `Gateway connect failed: ${JSON.stringify(msg.error ?? msg.payload)}`,
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        clearTimeout(timeout);
+        reject(e);
+      }
+    };
+
+    upstreamWs.addEventListener("message", onMessage);
+  });
+
+  await handshakePromise;
+
+  serverWs.send(JSON.stringify({ type: "proxy.ready" }));
+
+  // Bidirectional relay
+  serverWs.addEventListener("message", (event) => {
+    if (upstreamWs.readyState === WebSocket.OPEN) {
+      upstreamWs.send(event.data);
+    }
+  });
+  upstreamWs.addEventListener("message", (event) => {
+    if (serverWs.readyState === WebSocket.OPEN) {
+      serverWs.send(event.data);
+    }
+  });
+
+  // Close propagation
+  serverWs.addEventListener("close", (event) => {
+    const safeCode =
+      event.code < 1000 || [1004, 1005, 1006, 1015].includes(event.code)
+        ? 1001
+        : event.code;
+    upstreamWs.close(safeCode, event.reason);
+  });
+  upstreamWs.addEventListener("close", (event) => {
+    let reason = event.reason;
+    if (new TextEncoder().encode(reason).length > 123) {
+      const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+      const bytes = encoder.encode(reason);
+      reason = decoder.decode(bytes.slice(0, 120)) + "...";
+    }
+    const safeCode =
+      event.code < 1000 || [1004, 1005, 1006, 1015].includes(event.code)
+        ? 1001
+        : event.code;
+    serverWs.close(safeCode, reason);
+  });
+
+  serverWs.addEventListener("error", () => {
+    upstreamWs.close(1011, "Client error");
+  });
+  upstreamWs.addEventListener("error", () => {
+    serverWs.close(1011, "Gateway error");
+  });
+
+  return new Response(null, { status: 101, webSocket: clientWs });
+}
 
 /**
  * Open upstream WS, perform connect handshake, then create a WebSocketPair

@@ -202,6 +202,9 @@ export type SettingsConfig = {
 
   // OpenClaw gateway (optional — for dev/local WS proxy)
   readonly openclawGatewayWsUrl?: string;
+
+  // Deployment target: "cloudflare" (default) or "mac-mini"
+  readonly deploymentTarget: "cloudflare" | "mac-mini";
 };
 
 // =============================================================================
@@ -288,6 +291,7 @@ export type CloudflareEnvironment = {
   // OpenClaw gateway (dev/local only)
   OPENCLAW_GATEWAY_WS_URL?: string;
   OPENCLAW_GATEWAY_TOKEN?: string;
+  DEPLOYMENT_TARGET?: string;
 };
 
 /**
@@ -450,6 +454,10 @@ function validateSettingsFromSource(
       activeEncryptionKeyId: "CLAW_SECRETS_ENCRYPTION_KEY_V1",
 
       openclawGatewayWsUrl: optional("OPENCLAW_GATEWAY_WS_URL") || undefined,
+
+      deploymentTarget:
+        (optional("DEPLOYMENT_TARGET") as "cloudflare" | "mac-mini") ||
+        "cloudflare",
     };
 
     // Fail if any variables are missing
