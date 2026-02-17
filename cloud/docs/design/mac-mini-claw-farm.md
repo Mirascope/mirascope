@@ -71,19 +71,19 @@ Browser
 
 | Component | Path | Role |
 |-----------|------|------|
-| **DeploymentService interface** | `cloud/claws/deployment/service.ts` | `ClawDeploymentServiceInterface` — `provision`, `deprovision`, `getStatus`, `restart`, `update`, `warmUp` |
-| **DeploymentService types** | `cloud/claws/deployment/types.ts` | `ProvisionClawConfig`, `OpenClawDeployConfig`, `ClawInstanceType`, `ClawStatus`, `ClawR2Config` |
-| **Live deployment impl** | `cloud/claws/deployment/live.ts` | `LiveDeploymentService` — composes `CloudflareR2Service` + `CloudflareContainerService` |
-| **Container service interface** | `cloud/cloudflare/containers/service.ts` | `CloudflareContainerServiceInterface` — `recreate`, `restartGateway`, `destroy`, `getState`, `warmUp`, `listInstances` |
-| **Container service impl** | `cloud/cloudflare/containers/live.ts` | HTTP calls to dispatch worker internal API |
+| **DeploymentService interface** | `cloud/claws/deployment/service.ts` | `ClawDeploymentServiceInterface` — `provision`, `deprovision`, `getStatus`, `restart`, `update`, `warmUp`. Returns `ClawDeploymentStatus` (status, url, startedAt, errorMessage, bucketName, r2Credentials). Error type: `ClawDeploymentError`. |
+| **DeploymentService types** | `cloud/claws/deployment/types.ts` | `ProvisionClawConfig`, `OpenClawDeployConfig`, `ClawInstanceType` (enum: `lite`, `basic`, `standard-1` through `standard-4`), `ClawStatus`, `ClawR2Config` |
+| **Live deployment impl** | `cloud/claws/deployment/live.ts` | `LiveDeploymentService` — composes `CloudflareR2Service` + `CloudflareContainerService`. Uses `clawHostname()` → `{clawId}.claws.mirascope.com` for internal routing. Provision only creates R2 bucket + scoped creds; caller persists to DB then calls `warmUp` separately. |
+| **Container service interface** | `cloud/cloudflare/containers/service.ts` | `CloudflareContainerServiceInterface` — `recreate`, `restartGateway`, `destroy`, `getState`, `warmUp`, `listInstances`. Error type: `CloudflareApiError`. |
+| **Container service impl** | `cloud/cloudflare/containers/live.ts` | HTTP calls to dispatch worker internal endpoints (`/_internal/recreate`, `/_internal/restart-gateway`, `/_internal/destroy`, `/_internal/state`, `/_internal/warm-up`) using `Host` header routing. Also uses Cloudflare REST API for `listInstances`. |
 | **Container types** | `cloud/cloudflare/containers/types.ts` | `ContainerState`, `ContainerStatus`, `DurableObjectInfo` |
-| **R2 service** | `cloud/cloudflare/r2/service.ts` | `CloudflareR2Service` — bucket CRUD, scoped credentials |
-| **WS proxy** | `cloud/api/claws-ws-proxy.ts` | `handleClawsWebSocket` + `connectAndRelay` — browser ↔ gateway relay |
-| **Internal API handlers** | `cloud/api/claws-internal.handlers.ts` | `resolveClawHandler`, `bootstrapClawHandler`, `reportClawStatusHandler`, `validateSessionHandler` |
+| **R2 service** | `cloud/cloudflare/r2/service.ts` | `CloudflareR2ServiceInterface` — `createBucket`, `deleteBucket`, `getBucket`, `listBuckets`, `createScopedCredentials`, `revokeScopedCredentials`. Types in `r2/types.ts`: `R2ScopedCredentials` has `tokenId`, `accessKeyId`, `secretAccessKey`, `expiresOn?`. |
+| **WS proxy** | `cloud/api/claws-ws-proxy.ts` | `handleClawsWebSocket` + `connectAndRelay`. Two-phase auth: (1) `connectAndRelay` sends `Authorization: Bearer {gatewayToken}` to upstream dispatch worker for routing, (2) performs OpenClaw handshake (challenge → connect with auth token, scopes `operator.admin`/`operator.approvals`/`operator.pairing`, client info), (3) sends `proxy.ready` to browser, (4) bidirectional relay with close/error propagation. |
+| **Internal API handlers** | `cloud/api/claws-internal.handlers.ts` | `resolveClawHandler` (slug→clawId), `bootstrapClawHandler` (returns full `OpenClawConfigResponse` with decrypted secrets, R2 creds, containerEnv), `reportClawStatusHandler` (updates DB status/lastError/lastDeployedAt), `validateSessionHandler` (session→user, checks org membership + claw access, returns role). Called via Cloudflare service binding (in-process RPC, not HTTP). |
 | **Claw CRUD handlers** | `cloud/api/claws.handlers.ts` | `createClawHandler`, `deleteClawHandler`, `restartClawHandler`, etc. |
-| **DB schema** | `cloud/db/schema/claws.ts` | `claws` table — status, instanceType, secretsEncrypted, bucketName, etc. |
-| **Dispatch worker** | `cloud/claws/dispatch-worker/` | Cloudflare Worker managing container lifecycle |
-| **Crypto utils** | `cloud/claws/crypto.ts` | `encryptSecrets`, `decryptSecrets` for AES-256-GCM |
+| **DB schema** | `cloud/db/schema/claws.ts` | `claws` table — `clawStatusEnum` (`pending`, `provisioning`, `active`, `paused`, `error`), `clawInstanceTypeEnum` (`lite`, `basic`, `standard-1` through `standard-4`), `secretsEncrypted`/`secretsKeyId` (AES-256-GCM), `bucketName`, `botUserId` (unique, references users), `homeProjectId`, `homeEnvironmentId`, `weeklySpendingGuardrailCenticents`, `weeklyWindowStart`/`weeklyUsageCenticents` (weekly billing), `burstWindowStart`/`burstUsageCenticents` (5-hour burst rate limit). |
+| **Dispatch worker** | `cloud/claws/dispatch-worker/` | Cloudflare Worker managing container lifecycle. Uses `@cloudflare/sandbox`: `getSandbox()`, `sandbox.startProcess()`, `sandbox.containerFetch()`, `sandbox.wsConnect()`, `sandbox.listProcesses()`. `ensureGateway()` finds existing process → waits for port → or starts new one. Bootstrap config fetched via `env.MIRASCOPE_CLOUD` service binding (in-process RPC). |
+| **Crypto utils** | `cloud/claws/crypto.ts` | `encryptSecrets`, `decryptSecrets` for AES-256-GCM. Wire format: base64(iv[12 bytes] ‖ ciphertext+authTag). Keys versioned via `Settings.encryptionKeys` map with `activeEncryptionKeyId` for rotation. |
 
 ---
 
@@ -179,7 +179,7 @@ Browser
 | `cloud/api/claws.handlers.ts` | No changes to handler logic (uses `ClawDeploymentService` interface) |
 | `cloud/db/schema/claws.ts` | Add `macMiniId` foreign key, `tunnelHostname`, `localPort` columns |
 | `cloud/db/schema/index.ts` | Export new tables |
-| `cloud/claws/deployment/service.ts` | No changes — interface stays the same ✓ |
+| `cloud/claws/deployment/service.ts` | Add optional Mac Mini fields to `ClawDeploymentStatus` (see section 7.6) |
 
 ### Files to CREATE
 
@@ -1238,7 +1238,26 @@ This requires adding `tunnelHostname` to the claw query in the handler (already 
 +    const upstreamUrl = `wss://${claw.tunnelHostname}`;
 ```
 
-The `connectAndRelay` function itself needs minimal changes — it already handles WebSocket upgrade and relay. The only difference is the upstream URL.
+The `connectAndRelay` function needs two changes:
+
+1. **Upstream URL** — already addressed above.
+2. **Remove Bearer token from upstream fetch** — Currently, `connectAndRelay` sends `Authorization: Bearer ${gatewayToken}` in the WebSocket upgrade request to the dispatch worker, which uses it to identify and route to the correct claw container. With Cloudflare Tunnel, routing is by hostname (no Bearer token needed for routing). The gateway itself authenticates via the OpenClaw handshake protocol (challenge → connect with `auth.token`), NOT via HTTP headers. So the Bearer header must be removed from the upstream `fetch()` call.
+
+```diff
+-  const upstreamResponse = await fetch(gatewayBaseUrl, {
+-    headers: {
+-      Upgrade: "websocket",
+-      Authorization: `Bearer ${gatewayToken}`,
+-    },
+-  });
++  const upstreamResponse = await fetch(gatewayBaseUrl, {
++    headers: {
++      Upgrade: "websocket",
++    },
++  });
+```
+
+The OpenClaw handshake (challenge → connect with token, scopes, client info → `proxy.ready`) remains unchanged — this is the gateway's own auth protocol and works the same regardless of transport.
 
 ### 7.2 `cloud/claws/deployment/live.ts` — Layer Swap
 
@@ -1272,10 +1291,10 @@ export const LiveDeploymentService = process.env.DEPLOYMENT_BACKEND === "mac-min
 
 The `bootstrapClawHandler` is currently called by the dispatch worker via service binding. With Mac Minis, the agent needs this config too but fetches it differently.
 
-**Option A:** Agent calls the same bootstrap endpoint over HTTPS (add bearer token auth for agent).  
+**Option A:** Agent calls the same bootstrap endpoint over HTTPS (add bearer token auth for agent). Note: currently the bootstrap endpoint has NO token auth — the Cloudflare service binding is the sole trust boundary. Adding HTTP auth would be required.  
 **Option B:** Cloud backend pushes config to agent during provision call.
 
-**Recommendation:** Option B — push during provisioning. The agent doesn't need to call back to the cloud. This eliminates a network dependency. The `provisionOnMini` request body includes all env vars and config.
+**Recommendation:** Option B — push during provisioning. The agent doesn't need to call back to the cloud. This eliminates a network dependency and avoids adding auth to the bootstrap endpoint. The `provisionOnMini` request body includes all env vars and config.
 
 The `resolveClawHandler` and `validateSessionHandler` are still needed for the WS proxy path (browser auth). No changes needed.
 
@@ -1315,10 +1334,9 @@ The handler logic mostly stays the same because it uses `ClawDeploymentService` 
 +      .where(eq(claws.id, claw.id));
 ```
 
-This means `ClawDeploymentStatus` needs additional optional fields:
+This means `ClawDeploymentStatus` needs additional optional fields. The current interface (in `cloud/claws/deployment/service.ts`) is:
 
 ```typescript
-// Addition to cloud/claws/deployment/service.ts
 export interface ClawDeploymentStatus {
   status: ClawStatus;
   url?: string;
@@ -1326,13 +1344,28 @@ export interface ClawDeploymentStatus {
   errorMessage?: string;
   bucketName?: string;
   r2Credentials?: R2ScopedCredentials;
-  // Mac Mini specific
+}
+```
+
+Add Mac Mini-specific fields (optional, so Cloudflare impl is unaffected during migration):
+
+```typescript
+export interface ClawDeploymentStatus {
+  status: ClawStatus;
+  url?: string;
+  startedAt?: Date;
+  errorMessage?: string;
+  bucketName?: string;
+  r2Credentials?: R2ScopedCredentials;
+  // Mac Mini specific (optional — not present for Cloudflare deployments)
   macMiniId?: string;
   tunnelHostname?: string;
   localPort?: number;
   macUsername?: string;
 }
 ```
+
+**Compatibility note:** The `ClawDeploymentService` tag (`Context.Tag("DeploymentService")`) means only one implementation is provided per runtime. During migration, both `LiveDeploymentService` (Cloudflare) and `MacMiniDeploymentService` can coexist as separate Layer values — the feature flag in section 7.2 selects which one to provide.
 
 ---
 
@@ -1429,7 +1462,20 @@ export interface ClawDeploymentStatus {
 
 ## 9. Provisioning Flow
 
-Complete flow when `createClawHandler` is called:
+Complete flow when `createClawHandler` is called.
+
+**Current `createClawHandler` flow for reference** (must be preserved):
+1. `db.organizations.claws.create()` → DB row with status `pending`, generates `plaintextApiKey` and `botUserId`
+2. `clawDeployment.provision({ clawId, instanceType })` → creates R2 bucket + scoped credentials, returns `ClawDeploymentStatus`
+3. `crypto.randomUUID()` → generates gateway token
+4. Build `routerBaseUrl` = `${settings.siteUrl}/router/v2/anthropic`
+5. `encryptSecrets()` with ALL secrets: `ANTHROPIC_API_KEY` (from `claw.plaintextApiKey`), `ANTHROPIC_BASE_URL` (routerBaseUrl), `OPENCLAW_GATEWAY_TOKEN`, `PRIMARY_MODEL_ID` (from payload or `DEFAULT_CLAW_MODEL`), `OPENCLAW_SITE_URL` (settings.siteUrl), `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`
+6. `UPDATE claws SET bucketName, secretsEncrypted, secretsKeyId, status='provisioning'`
+7. `clawDeployment.warmUp(clawId)` → triggers cold start
+8. If `settings.mockDeployment` (which is `false | PlanTier`, not just boolean): set status to `active` immediately
+9. Track analytics event
+
+**New flow with Mac Mini:**
 
 ```
 1. createClawHandler (cloud/api/claws.handlers.ts)
@@ -1553,13 +1599,19 @@ The `connectAndRelay` function connects to `wss://claw-{id}.claws.mirascope.io` 
 
 **The "Gateway button" URL** (the UI link users click to open their claw):
 
-- **Current:** `https://openclaw.mirascope.com/{org}/{claw}` (dispatch worker serves HTML shell)
-- **New:** Same URL, but the dispatch worker is gone. Options:
+The frontend `getGatewayUrl()` in `cloud/app/routes/$orgSlug/claws/$clawSlug.tsx` currently constructs:
+- **localhost:** Uses `VITE_OPENCLAW_GATEWAY_WS_URL` (http) or falls back to `http://localhost:18789/`
+- **mirascope.dev:** `https://openclaw.mirascope.dev/{org}/{claw}/overview`
+- **Production:** `https://openclaw.{subdomain}.mirascope.com/{org}/{claw}/overview` (or `openclaw.mirascope.com` for www/bare domain)
+
+These URLs point to the dispatch worker, which serves the OpenClaw Control UI HTML with injected base path and WS boot script.
+
+- **New:** The dispatch worker is gone. Options:
   1. **Proxy through main worker:** `/claws/{org}/{claw}` route on mirascope.com serves the gateway UI, WebSocket goes through existing WS proxy
   2. **Direct tunnel URL:** `https://claw-{id}.claws.mirascope.io` (but this exposes the gateway directly — need auth)
   3. **Keep dispatch worker hostname, update DNS:** Point `openclaw.mirascope.com` to a lightweight proxy worker that routes to tunnels
 
-**Recommendation:** Option 1. The gateway UI is already served from mirascope.com. The WS proxy handles auth and relays. No separate gateway URL needed.
+**Recommendation:** Option 1. The gateway UI is already served from mirascope.com. The WS proxy handles auth and relays. No separate gateway URL needed. Update `getGatewayUrl()` to point to the mirascope.com chat route instead of the dispatch worker URL.
 
 ---
 
