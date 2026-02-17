@@ -62,6 +62,7 @@ export const claws = pgTable(
     miniId: uuid("mini_id").references(() => macMinis.id),
     miniPort: integer("mini_port"),
     tunnelHostname: text("tunnel_hostname"),
+    macUsername: text("mac_username"),
     // Bot user that owns the claw's API key and resources
     botUserId: uuid("bot_user_id")
       .references(() => users.id)
@@ -134,6 +135,7 @@ export type PublicClaw = Pick<
   | "miniId"
   | "miniPort"
   | "tunnelHostname"
+  | "macUsername"
   | "botUserId"
   | "homeProjectId"
   | "homeEnvironmentId"
