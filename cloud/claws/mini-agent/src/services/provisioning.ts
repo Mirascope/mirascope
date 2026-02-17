@@ -4,6 +4,7 @@
 import { Context, Effect } from "effect";
 
 import type { AgentConfig } from "../config.js";
+
 import {
   CapacityError,
   DeprovisioningError,
@@ -74,7 +75,7 @@ export const ProvisioningLive = Effect.gen(function* () {
   const userManager = yield* UserManager;
   const launchd = yield* Launchd;
   const tunnel = yield* Tunnel;
-  const _monitoring = yield* Monitoring;
+  yield* Monitoring;
 
   const waitForGateway = (
     port: number,
@@ -85,10 +86,9 @@ export const ProvisioningLive = Effect.gen(function* () {
       while (Date.now() - start < timeoutMs) {
         const ok = yield* Effect.tryPromise({
           try: async () => {
-            const response = await fetch(
-              `http://127.0.0.1:${port}/health`,
-              { signal: AbortSignal.timeout(2000) },
-            );
+            const response = await fetch(`http://127.0.0.1:${port}/health`, {
+              signal: AbortSignal.timeout(2000),
+            });
             return response.ok;
           },
           catch: () => false,
@@ -129,9 +129,7 @@ export const ProvisioningLive = Effect.gen(function* () {
 
       try {
         // Step 1: Create macOS user
-        yield* Effect.log(
-          `Creating user ${macUsername} for claw ${clawId}`,
-        );
+        yield* Effect.log(`Creating user ${macUsername} for claw ${clawId}`);
         yield* userManager.createClawUser({
           macUsername,
           clawId,
@@ -143,9 +141,7 @@ export const ProvisioningLive = Effect.gen(function* () {
         userCreated = true;
 
         // Step 2: Install and load launchd service
-        yield* Effect.log(
-          `Installing launchd service for ${macUsername}`,
-        );
+        yield* Effect.log(`Installing launchd service for ${macUsername}`);
         yield* launchd.installAndLoad({
           macUsername,
           localPort,
@@ -170,9 +166,7 @@ export const ProvisioningLive = Effect.gen(function* () {
         yield* tunnel.restartCloudflared();
 
         // Step 5: Wait for gateway
-        yield* Effect.log(
-          `Waiting for gateway on port ${localPort}...`,
-        );
+        yield* Effect.log(`Waiting for gateway on port ${localPort}...`);
         yield* waitForGateway(localPort, 30_000);
 
         yield* Effect.log(
