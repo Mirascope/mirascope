@@ -14,7 +14,7 @@ export const macMinis = pgTable("mac_minis", {
   portRangeStart: integer("port_range_start").notNull().default(3001),
   portRangeEnd: integer("port_range_end").notNull().default(3100),
   tunnelHostnameSuffix: text("tunnel_hostname_suffix").notNull(),
-  status: text("status").notNull().default("online"),
+  status: text("status").notNull().default("active"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });
