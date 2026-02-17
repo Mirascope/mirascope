@@ -56,13 +56,12 @@ describe("MockDeploymentService", () => {
         expect(status.status).toBe("active");
         expect(status.startedAt).toBeInstanceOf(Date);
         expect(status.errorMessage).toBeUndefined();
-        expect(status.bucketName).toBe(`claw-${testConfig.clawId}`);
-        expect(status.r2Credentials).toBeDefined();
-        expect(status.r2Credentials!.tokenId).toContain(testConfig.clawId);
-        expect(status.r2Credentials!.accessKeyId).toContain(testConfig.clawId);
-        expect(status.r2Credentials!.secretAccessKey).toContain(
-          testConfig.clawId,
+        expect(status.miniId).toBe(`mock-mini-${testConfig.clawId}`);
+        expect(status.miniPort).toBe(18789);
+        expect(status.tunnelHostname).toBe(
+          `claw-${testConfig.clawId}.claws.mirascope.dev`,
         );
+        expect(status.macUsername).toBe(`claw-${testConfig.clawId}`);
       }).pipe(Effect.provide(MockDeploymentService)),
     );
   });

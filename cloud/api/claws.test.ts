@@ -126,9 +126,9 @@ describe.sequential("Claws API", (it) => {
       expect(claw.organizationId).toBe(org.id);
       expect(claw.createdByUserId).toBeDefined();
       expect(claw.id).toBeDefined();
-      // Provisioning sets status and persists R2 credentials
+      // Provisioning sets status and persists Mac Mini deployment info
       expect(claw.status).toBe("provisioning");
-      expect(claw.bucketName).toBeDefined();
+      expect(claw.miniId).toBeDefined();
       expect(claw.secretsEncrypted).toBeDefined();
     }),
   );
@@ -654,6 +654,7 @@ describe("Claw handler errors", () => {
     miniId: null,
     miniPort: null,
     tunnelHostname: null,
+    macUsername: null,
     weeklySpendingGuardrailCenticents: null,
     weeklyWindowStart: null,
     weeklyUsageCenticents: 0n,
@@ -829,12 +830,10 @@ describe("Claw handler errors", () => {
                     return {
                       status: "active" as const,
                       startedAt: new Date(),
-                      bucketName: `claw-${config.clawId}`,
-                      r2Credentials: {
-                        tokenId: "tok",
-                        accessKeyId: "ak",
-                        secretAccessKey: "sk",
-                      },
+                      miniId: `mock-mini-${config.clawId}`,
+                      miniPort: 18789,
+                      tunnelHostname: `claw-${config.clawId}.claws.mirascope.dev`,
+                      macUsername: `claw-${config.clawId}`,
                     };
                   }),
               }),
@@ -903,7 +902,8 @@ describe("Claw handler errors", () => {
 
         expect(capturedSet).not.toBeNull();
         expect(capturedSet!.status).toBe("provisioning");
-        expect(capturedSet!.bucketName).toBeDefined();
+        expect(capturedSet!.miniId).toBeDefined();
+        expect(capturedSet!.tunnelHostname).toBeDefined();
         expect(capturedSet!.secretsKeyId).toBe(
           "CLAW_SECRETS_ENCRYPTION_KEY_V1",
         );
@@ -914,37 +914,6 @@ describe("Claw handler errors", () => {
         expect(ciphertext.length).toBeGreaterThan(0);
         // Should NOT be parseable as JSON (it's encrypted)
         expect(() => JSON.parse(ciphertext)).toThrow();
-      }),
-  );
-
-  it.effect(
-    "createClawHandler fails when provision result has no credentials",
-    () =>
-      Effect.gen(function* () {
-        const error = yield* createClawHandler("mock-org-id", {
-          name: "No Creds Claw",
-          slug: "no-creds-claw",
-        }).pipe(
-          Effect.provide(
-            Layer.mergeAll(
-              Layer.succeed(AuthenticatedUser, mockUser),
-              MockAnalyticsLayer,
-              MockDatabaseLayer,
-              MockClawDeployment.layer({
-                provision: () => Effect.succeed({ status: "active" as const }),
-              }),
-              MockSettingsLayer(),
-              Layer.succeed(DrizzleORM, {} as never),
-            ),
-          ),
-          Effect.flip,
-        );
-
-        // Should fail with DeploymentError when r2Credentials is missing
-        expect(error._tag).toBe("DeploymentError");
-        expect(error.message).toBe(
-          "R2 credentials not returned from provisioning",
-        );
       }),
   );
 
@@ -1037,12 +1006,10 @@ describe("Claw handler errors", () => {
                   return {
                     status: "active" as const,
                     startedAt: new Date(),
-                    bucketName: "claw-mock-claw-id",
-                    r2Credentials: {
-                      tokenId: "tok",
-                      accessKeyId: "ak",
-                      secretAccessKey: "sk",
-                    },
+                    miniId: "mock-mini-id",
+                    miniPort: 18789,
+                    tunnelHostname: "claw-mock-claw-id.claws.mirascope.dev",
+                    macUsername: "claw-mock-claw-id",
                   };
                 }),
             }),
@@ -1183,15 +1150,11 @@ describe("Internal handler integration", () => {
           .set({
             secretsEncrypted: encrypted.ciphertext,
             secretsKeyId: encrypted.keyId,
-            bucketName: "claw-bucket",
           })
           .where(eq(claws.id, claw.id));
 
         const config = yield* bootstrapClawHandler(claw.id);
         expect(config.containerEnv.MIRASCOPE_API_KEY).toBe("test-key");
-        expect(config.r2.accessKeyId).toBe("r2-ak");
-        expect(config.r2.secretAccessKey).toBe("r2-sk");
-        expect(config.r2.bucketName).toBe("claw-bucket");
       }),
   );
 

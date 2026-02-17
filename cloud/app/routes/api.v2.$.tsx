@@ -5,7 +5,6 @@ import { Analytics } from "@/analytics";
 import { handleRequest } from "@/api/handler";
 import { handleErrors, handleDefects } from "@/api/utils";
 import { authenticate, type PathParameters } from "@/auth";
-import { LiveDeploymentService } from "@/claws/deployment/live";
 import { MacMiniDeploymentLayer } from "@/claws/deployment/mac-mini";
 import {
   MacMiniFleetService,
@@ -15,7 +14,6 @@ import { MockDeploymentService } from "@/claws/deployment/mock";
 import { ClawDeploymentService } from "@/claws/deployment/service";
 import { CloudflareHttp } from "@/cloudflare/client";
 import { CloudflareSettings } from "@/cloudflare/config";
-import { LiveCloudflareContainerService } from "@/cloudflare/containers/live";
 import { LiveCloudflareR2Service } from "@/cloudflare/r2/live";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
@@ -164,22 +162,6 @@ export const Route = createFileRoute("/api/v2/$")({
                       payments: settings.stripe,
                     });
 
-                const cloudflareDeploymentLayer =
-                  LiveDeploymentService.pipe(
-                    Layer.provide(
-                      Layer.merge(
-                        LiveCloudflareR2Service,
-                        LiveCloudflareContainerService,
-                      ),
-                    ),
-                    Layer.provide(
-                      CloudflareHttp.Live(settings.cloudflare.apiToken),
-                    ),
-                    Layer.provide(
-                      CloudflareSettings.layer(settings.cloudflare),
-                    ),
-                  );
-
                 const macMiniDeploymentLayer = MacMiniDeploymentLayer.pipe(
                   Layer.provide(
                     Layer.effect(MacMiniFleetService, LiveMacMiniFleetService),
@@ -188,17 +170,13 @@ export const Route = createFileRoute("/api/v2/$")({
                   Layer.provide(
                     CloudflareHttp.Live(settings.cloudflare.apiToken),
                   ),
-                  Layer.provide(
-                    CloudflareSettings.layer(settings.cloudflare),
-                  ),
+                  Layer.provide(CloudflareSettings.layer(settings.cloudflare)),
                   Layer.provide(databaseLayer),
                 );
 
                 const deploymentLayer = settings.mockDeployment
                   ? MockDeploymentService
-                  : settings.deploymentTarget === "mac-mini"
-                    ? macMiniDeploymentLayer
-                    : cloudflareDeploymentLayer;
+                  : macMiniDeploymentLayer;
 
                 return Layer.mergeAll(
                   Layer.succeed(Settings, settings),
