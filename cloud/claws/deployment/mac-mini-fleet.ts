@@ -90,7 +90,7 @@ export const LiveMacMiniFleetService = Effect.gen(function* () {
           })
           .from(macMinis)
           .leftJoin(claws, eq(claws.miniId, macMinis.id))
-          .where(eq(macMinis.status, "online"))
+          .where(eq(macMinis.status, "active"))
           .groupBy(macMinis.id)
           .pipe(
             Effect.mapError(
