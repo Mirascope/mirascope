@@ -1,6 +1,6 @@
 import { Effect, Schema } from "effect";
 
-import type { PublicClaw } from "@/db/schema";
+// PublicClaw import removed — test uses `any` for flexibility with schema changes
 
 import {
   ClawRoleSchema,
@@ -162,7 +162,7 @@ describe("ClawMembershipResponseSchema validation", () => {
 });
 
 describe.sequential("Claw Memberships API", (it) => {
-  let claw: PublicClaw;
+  let claw: any;
 
   // First, create a claw for the membership tests
   it.effect("setup - create a claw for membership tests", () =>

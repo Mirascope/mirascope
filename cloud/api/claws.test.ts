@@ -98,7 +98,7 @@ describe("Internal handlers", () => {
 });
 
 describe.sequential("Claws API", (it) => {
-  let claw: PublicClaw;
+  let claw: any;
 
   it.effect(
     "GET /organizations/:organizationId/claws - list claws (initially empty)",
@@ -651,6 +651,9 @@ describe("Claw handler errors", () => {
     secretsEncrypted: null,
     secretsKeyId: null,
     bucketName: null,
+    miniId: null,
+    miniPort: null,
+    tunnelHostname: null,
     weeklySpendingGuardrailCenticents: null,
     weeklyWindowStart: null,
     weeklyUsageCenticents: 0n,
