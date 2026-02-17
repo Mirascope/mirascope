@@ -1,0 +1,23 @@
+{
+  "name": "@mirascope/mini-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target node",
+    "start": "bun run src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@effect/platform": "^0.93.3",
+    "effect": "^3.19.13",
+    "yaml": "^2.7.0"
+  },
+  "devDependencies": {
+    "@effect/vitest": "^0.27.0",
+    "@types/bun": "^1.2.0",
+    "vitest": "^3.0.0"
+  }
+}
