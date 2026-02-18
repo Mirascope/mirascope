@@ -1,9 +1,9 @@
 /**
- * @fileoverview Mac Mini deployment service.
+ * @fileoverview Mac deployment service.
  *
- * Implements ClawDeploymentServiceInterface for Mac Mini infrastructure.
- * Provisions claws by calling the Mac Mini Agent API and storing
- * mini-specific fields (miniId, miniPort, tunnelHostname, macUsername)
+ * Implements ClawDeploymentServiceInterface for Mac infrastructure.
+ * Provisions claws by calling the Mac Agent API and storing
+ * mac-specific fields (macId, macPort, tunnelHostname, macUsername)
  * directly in the DB.
  */
 
@@ -18,14 +18,14 @@ import type {
 
 import { ClawDeploymentError } from "@/claws/deployment/errors";
 import {
-  MacMiniFleetService,
+  MacFleetService,
   AgentCallError,
   FleetError,
-} from "@/claws/deployment/mac-mini-fleet";
+} from "@/claws/deployment/mac-fleet";
 import { ClawDeploymentService } from "@/claws/deployment/service";
 import { CloudflareR2Service } from "@/cloudflare/r2/service";
 import { DrizzleORM } from "@/db/client";
-import { claws, macMinis } from "@/db/schema";
+import { claws, fleetMacs } from "@/db/schema";
 import { CloudflareApiError } from "@/errors";
 
 /** R2 bucket name for a given claw (used for backups only). */
@@ -64,13 +64,13 @@ function wrapR2<A>(
   );
 }
 
-/** Select the mini assignment fields from a claw row, failing if not assigned. */
-function lookupClawMini(drizzle: DrizzleORM["Type"], clawId: string) {
+/** Select the mac assignment fields from a claw row, failing if not assigned. */
+function lookupClawMac(drizzle: DrizzleORM["Type"], clawId: string) {
   return Effect.gen(function* () {
     const [claw] = yield* drizzle
       .select({
-        miniId: claws.miniId,
-        miniPort: claws.miniPort,
+        macId: claws.macId,
+        macPort: claws.macPort,
         tunnelHostname: claws.tunnelHostname,
         macUsername: claws.macUsername,
       })
@@ -88,120 +88,130 @@ function lookupClawMini(drizzle: DrizzleORM["Type"], clawId: string) {
       );
 
     if (
-      !claw?.miniId ||
-      !claw.miniPort ||
+      !claw?.macId ||
+      !claw.macPort ||
       !claw.tunnelHostname ||
       !claw.macUsername
     ) {
       return yield* Effect.fail(
         new ClawDeploymentError({
-          message: "Claw not assigned to a Mac Mini",
+          message: "Claw not assigned to a Mac",
         }),
       );
     }
 
     return claw as {
-      miniId: string;
-      miniPort: number;
+      macId: string;
+      macPort: number;
       tunnelHostname: string;
       macUsername: string;
     };
   });
 }
 
-/** Look up the agent URL and auth token for a mini. */
-function lookupMiniAgent(drizzle: DrizzleORM["Type"], miniId: string) {
+/** Look up the agent URL and auth token for a mac. */
+function lookupMacAgent(drizzle: DrizzleORM["Type"], macId: string) {
   return Effect.gen(function* () {
-    const [mini] = yield* drizzle
+    const [mac] = yield* drizzle
       .select({
-        agentUrl: macMinis.agentUrl,
-        agentAuthTokenEncrypted: macMinis.agentAuthTokenEncrypted,
+        agentUrl: fleetMacs.agentUrl,
+        agentAuthTokenEncrypted: fleetMacs.agentAuthTokenEncrypted,
       })
-      .from(macMinis)
-      .where(eq(macMinis.id, miniId))
+      .from(fleetMacs)
+      .where(eq(fleetMacs.id, macId))
       .limit(1)
       .pipe(
         Effect.mapError(
           (e) =>
             new ClawDeploymentError({
-              message: `Failed to look up mini: ${e}`,
+              message: `Failed to look up mac: ${e}`,
               cause: e,
             }),
         ),
       );
 
-    if (!mini) {
+    if (!mac) {
       return yield* Effect.fail(
-        new ClawDeploymentError({ message: "Mac Mini not found" }),
+        new ClawDeploymentError({ message: "Mac not found" }),
       );
     }
 
-    return mini;
+    return mac;
   });
 }
 
 /**
- * Mac Mini deployment layer.
+ * Mac deployment layer.
  *
- * Requires MacMiniFleetService, CloudflareR2Service (for backup buckets),
- * and DrizzleORM (to store mini-specific fields on claw rows).
+ * Requires MacFleetService, CloudflareR2Service (for backup buckets),
+ * and DrizzleORM (to store mac-specific fields on claw rows).
  */
-export const MacMiniDeploymentLayer = Layer.effect(
+export const MacDeploymentLayer = Layer.effect(
   ClawDeploymentService,
   Effect.gen(function* () {
-    const fleet = yield* MacMiniFleetService;
+    const fleet = yield* MacFleetService;
     const r2 = yield* CloudflareR2Service;
     const drizzle = yield* DrizzleORM;
 
     return {
       provision: (config: ProvisionClawConfig) =>
         Effect.gen(function* () {
-          // 1. Find available mini + port
-          const mini = yield* wrapFleet(
-            "Failed to find available mini",
-            fleet.findAvailableMini(),
+          // 1. Find available mac + port
+          const mac = yield* wrapFleet(
+            "Failed to find available mac",
+            fleet.findAvailableMac(),
           );
 
-          // 2. Look up agent auth token for the mini
-          const [miniRow] = yield* drizzle
+          // 2. Look up agent auth token for the mac
+          const [macRow] = yield* drizzle
             .select({
-              agentAuthTokenEncrypted: macMinis.agentAuthTokenEncrypted,
+              agentAuthTokenEncrypted: fleetMacs.agentAuthTokenEncrypted,
             })
-            .from(macMinis)
-            .where(eq(macMinis.id, mini.miniId))
+            .from(fleetMacs)
+            .where(eq(fleetMacs.id, mac.macId))
             .limit(1)
             .pipe(
               Effect.mapError(
                 (e) =>
                   new ClawDeploymentError({
-                    message: `Failed to look up mini auth token: ${e}`,
+                    message: `Failed to look up mac auth token: ${e}`,
                     cause: e,
                   }),
               ),
             );
 
-          const agentToken = miniRow?.agentAuthTokenEncrypted ?? "";
+          const agentToken = macRow?.agentAuthTokenEncrypted ?? "";
           const macUsername = `claw-${config.clawId}`;
 
-          // 3. Call Mini Agent to provision the claw
+          // 3. Build tunnel hostname
+          const tunnelHostname = `claw-${config.clawId}-${mac.tunnelHostnameSuffix}`;
+
+          // 4. Call Mac Agent to provision the claw
           yield* wrapFleet(
-            "Failed to provision on mini agent",
-            fleet.callAgent(mini.agentUrl, agentToken, "POST", "/claws", {
+            "Failed to provision on mac agent",
+            fleet.callAgent(mac.agentUrl, agentToken, "POST", "/claws", {
               clawId: config.clawId,
-              port: mini.port,
               macUsername,
+              localPort: mac.port,
+              gatewayToken: config.gatewayToken,
+              tunnelHostname,
+              envVars: {
+                MIRASCOPE_API_KEY: config.mirascapeApiKey,
+                ANTHROPIC_API_KEY: config.anthropicApiKey,
+                ANTHROPIC_BASE_URL: config.anthropicBaseUrl,
+                OPENCLAW_GATEWAY_TOKEN: config.gatewayToken,
+                PRIMARY_MODEL_ID: config.primaryModelId,
+                OPENCLAW_SITE_URL: config.siteUrl,
+              },
             }),
           );
 
-          // 4. Build tunnel hostname
-          const tunnelHostname = `claw-${config.clawId}.${mini.tunnelHostnameSuffix}`;
-
-          // 5. Store mini-specific fields on the claw row
+          // 5. Store mac-specific fields on the claw row
           yield* drizzle
             .update(claws)
             .set({
-              miniId: mini.miniId,
-              miniPort: mini.port,
+              macId: mac.macId,
+              macPort: mac.port,
               tunnelHostname,
               macUsername,
               updatedAt: new Date(),
@@ -211,7 +221,7 @@ export const MacMiniDeploymentLayer = Layer.effect(
               Effect.mapError(
                 (e) =>
                   new ClawDeploymentError({
-                    message: `Failed to persist mini deployment info: ${e}`,
+                    message: `Failed to persist mac deployment info: ${e}`,
                     cause: e,
                   }),
               ),
@@ -224,8 +234,8 @@ export const MacMiniDeploymentLayer = Layer.effect(
           return {
             status: "provisioning",
             startedAt: new Date(),
-            miniId: mini.miniId,
-            miniPort: mini.port,
+            macId: mac.macId,
+            macPort: mac.port,
             tunnelHostname,
             macUsername,
           } satisfies ClawDeploymentStatus;
@@ -233,23 +243,23 @@ export const MacMiniDeploymentLayer = Layer.effect(
 
       deprovision: (clawId: string) =>
         Effect.gen(function* () {
-          const claw = yield* lookupClawMini(drizzle, clawId).pipe(
+          const claw = yield* lookupClawMac(drizzle, clawId).pipe(
             Effect.catchAll(() => Effect.succeed(null)),
           );
 
           if (claw) {
-            const mini = yield* lookupMiniAgent(drizzle, claw.miniId).pipe(
+            const mac = yield* lookupMacAgent(drizzle, claw.macId).pipe(
               Effect.catchAll(() => Effect.succeed(null)),
             );
 
-            if (mini) {
+            if (mac) {
               yield* wrapFleet(
-                "Failed to deprovision on mini agent",
+                "Failed to deprovision on mac agent",
                 fleet.callAgent(
-                  mini.agentUrl,
-                  mini.agentAuthTokenEncrypted ?? "",
+                  mac.agentUrl,
+                  mac.agentAuthTokenEncrypted ?? "",
                   "DELETE",
-                  `/claws/${clawId}`,
+                  `/claws/${claw.macUsername}`,
                 ),
               ).pipe(Effect.catchAll(() => Effect.void));
             }
@@ -265,16 +275,16 @@ export const MacMiniDeploymentLayer = Layer.effect(
 
       getStatus: (clawId: string) =>
         Effect.gen(function* () {
-          const claw = yield* lookupClawMini(drizzle, clawId);
-          const mini = yield* lookupMiniAgent(drizzle, claw.miniId);
+          const claw = yield* lookupClawMac(drizzle, clawId);
+          const mac = yield* lookupMacAgent(drizzle, claw.macId);
 
           const result = yield* wrapFleet(
             "Failed to get status from agent",
             fleet.callAgent(
-              mini.agentUrl,
-              mini.agentAuthTokenEncrypted ?? "",
+              mac.agentUrl,
+              mac.agentAuthTokenEncrypted ?? "",
               "GET",
-              `/claws/${clawId}/status`,
+              `/claws/${claw.macUsername}/status`,
             ),
           );
 
@@ -290,8 +300,8 @@ export const MacMiniDeploymentLayer = Layer.effect(
             startedAt: agentStatus.startedAt
               ? new Date(agentStatus.startedAt)
               : undefined,
-            miniId: claw.miniId,
-            miniPort: claw.miniPort,
+            macId: claw.macId,
+            macPort: claw.macPort,
             tunnelHostname: claw.tunnelHostname,
             macUsername: claw.macUsername,
           } satisfies ClawDeploymentStatus;
@@ -299,24 +309,24 @@ export const MacMiniDeploymentLayer = Layer.effect(
 
       restart: (clawId: string) =>
         Effect.gen(function* () {
-          const claw = yield* lookupClawMini(drizzle, clawId);
-          const mini = yield* lookupMiniAgent(drizzle, claw.miniId);
+          const claw = yield* lookupClawMac(drizzle, clawId);
+          const mac = yield* lookupMacAgent(drizzle, claw.macId);
 
           yield* wrapFleet(
             "Failed to restart on agent",
             fleet.callAgent(
-              mini.agentUrl,
-              mini.agentAuthTokenEncrypted ?? "",
+              mac.agentUrl,
+              mac.agentAuthTokenEncrypted ?? "",
               "POST",
-              `/claws/${clawId}/restart`,
+              `/claws/${claw.macUsername}/restart`,
             ),
           );
 
           return {
             status: "provisioning",
             startedAt: new Date(),
-            miniId: claw.miniId,
-            miniPort: claw.miniPort,
+            macId: claw.macId,
+            macPort: claw.macPort,
             tunnelHostname: claw.tunnelHostname,
             macUsername: claw.macUsername,
           } satisfies ClawDeploymentStatus;
@@ -324,24 +334,24 @@ export const MacMiniDeploymentLayer = Layer.effect(
 
       update: (clawId: string, _config: Partial<OpenClawDeployConfig>) =>
         Effect.gen(function* () {
-          const claw = yield* lookupClawMini(drizzle, clawId);
-          const mini = yield* lookupMiniAgent(drizzle, claw.miniId);
+          const claw = yield* lookupClawMac(drizzle, clawId);
+          const mac = yield* lookupMacAgent(drizzle, claw.macId);
 
           yield* wrapFleet(
             "Failed to restart on agent",
             fleet.callAgent(
-              mini.agentUrl,
-              mini.agentAuthTokenEncrypted ?? "",
+              mac.agentUrl,
+              mac.agentAuthTokenEncrypted ?? "",
               "POST",
-              `/claws/${clawId}/restart`,
+              `/claws/${claw.macUsername}/restart`,
             ),
           );
 
           return {
             status: "provisioning",
             startedAt: new Date(),
-            miniId: claw.miniId,
-            miniPort: claw.miniPort,
+            macId: claw.macId,
+            macPort: claw.macPort,
             tunnelHostname: claw.tunnelHostname,
             macUsername: claw.macUsername,
           } satisfies ClawDeploymentStatus;
@@ -349,16 +359,16 @@ export const MacMiniDeploymentLayer = Layer.effect(
 
       warmUp: (clawId: string) =>
         Effect.gen(function* () {
-          const claw = yield* lookupClawMini(drizzle, clawId);
-          const mini = yield* lookupMiniAgent(drizzle, claw.miniId);
+          const claw = yield* lookupClawMac(drizzle, clawId);
+          const mac = yield* lookupMacAgent(drizzle, claw.macId);
 
           yield* wrapFleet(
             "Failed to warm up on agent",
             fleet.callAgent(
-              mini.agentUrl,
-              mini.agentAuthTokenEncrypted ?? "",
+              mac.agentUrl,
+              mac.agentAuthTokenEncrypted ?? "",
               "GET",
-              `/claws/${clawId}/status`,
+              `/claws/${claw.macUsername}/status`,
             ),
           );
         }),

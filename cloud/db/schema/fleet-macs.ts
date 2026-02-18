@@ -1,8 +1,10 @@
 import { integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-export const macMinis = pgTable("mac_minis", {
+export const fleetMacs = pgTable("fleet_macs", {
   id: uuid("id").primaryKey().defaultRandom(),
   hostname: text("hostname").notNull().unique(),
+  /** Hardware model: "mini", "macbook", "studio", "pro" */
+  model: text("model").notNull().default("mini"),
   tailscaleIp: text("tailscale_ip"),
   agentUrl: text("agent_url").notNull(),
   agentAuthTokenEncrypted: text("agent_auth_token_encrypted"),
@@ -19,5 +21,5 @@ export const macMinis = pgTable("mac_minis", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });
 
-export type MacMini = typeof macMinis.$inferSelect;
-export type NewMacMini = typeof macMinis.$inferInsert;
+export type Mac = typeof fleetMacs.$inferSelect;
+export type NewMac = typeof fleetMacs.$inferInsert;

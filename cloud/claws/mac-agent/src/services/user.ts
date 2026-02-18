@@ -42,7 +42,7 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 export PATH="/opt/homebrew/opt/node/bin:$PATH"
 
 # Playwright
-export PLAYWRIGHT_BROWSERS_PATH="/opt/homebrew/var/playwright"
+export PLAYWRIGHT_BROWSERS_PATH="/opt/playwright-browsers"
 `.trim();
 
 export const UserManagerLive = Effect.gen(function* () {
@@ -54,7 +54,7 @@ export const UserManagerLive = Effect.gen(function* () {
     owner: string,
   ): Effect.Effect<void, ProvisioningError> =>
     Effect.gen(function* () {
-      const tmpPath = `/tmp/mini-agent-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const tmpPath = `/tmp/mac-agent-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       yield* Effect.tryPromise({
         try: () => writeFile(tmpPath, content, "utf-8"),
         catch: (e) =>
@@ -117,7 +117,21 @@ export const UserManagerLive = Effect.gen(function* () {
         );
       }
 
-      // 2. Lock down home directory
+      // 2. Create and lock down home directory (sysadminctl assigns but doesn't create it)
+      yield* exec
+        .runUnsafe("mkdir", ["-p", homeDir], { sudo: true })
+        .pipe(
+          Effect.mapError(
+            (e) => new ProvisioningError({ message: e.message, cause: e }),
+          ),
+        );
+      yield* exec
+        .runUnsafe("chown", [`${macUsername}:staff`, homeDir], { sudo: true })
+        .pipe(
+          Effect.mapError(
+            (e) => new ProvisioningError({ message: e.message, cause: e }),
+          ),
+        );
       yield* exec
         .runUnsafe("chmod", ["700", homeDir], { sudo: true })
         .pipe(
@@ -150,7 +164,13 @@ export const UserManagerLive = Effect.gen(function* () {
 
       // 5. Write openclaw.json
       const openclawConfig = {
-        gateway: { host: "127.0.0.1", port: localPort, token: gatewayToken },
+        gateway: {
+          port: localPort,
+          mode: "local",
+          auth: {
+            token: gatewayToken,
+          },
+        },
       };
       yield* writeFileAsSudo(
         path.join(openclawDir, "openclaw.json"),

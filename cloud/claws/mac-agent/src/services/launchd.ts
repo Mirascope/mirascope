@@ -58,8 +58,9 @@ export function generatePlist(config: LaunchdConfig): string {
   const homeDir = `/Users/${config.macUsername}`;
 
   const envEntries = [
-    ["PORT", String(config.localPort)],
-    ["OPENCLAW_HOME", `${homeDir}/.openclaw`],
+    ["HOME", homeDir],
+    ["PLAYWRIGHT_BROWSERS_PATH", "/opt/playwright-browsers"],
+    ["PATH", "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"],
     ...(config.envVars ? Object.entries(config.envVars) : []),
   ];
 
@@ -80,7 +81,8 @@ export function generatePlist(config: LaunchdConfig): string {
     <array>
         <string>/usr/local/bin/openclaw</string>
         <string>gateway</string>
-        <string>start</string>
+        <string>--port</string>
+        <string>${config.localPort}</string>
     </array>
     <key>UserName</key>
     <string>${escapeXml(config.macUsername)}</string>
@@ -114,7 +116,7 @@ export const LaunchdLive = Effect.gen(function* () {
       const plist = generatePlist(config);
       const path = plistPath(config.macUsername);
 
-      const tmpPath = `/tmp/mini-agent-plist-${Date.now()}`;
+      const tmpPath = `/tmp/mac-agent-plist-${Date.now()}`;
       yield* Effect.tryPromise({
         try: () => writeFile(tmpPath, plist, "utf-8"),
         catch: (e) =>

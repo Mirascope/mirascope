@@ -161,6 +161,10 @@ export const ProvisioningLive = Effect.gen(function* () {
         );
         tunnelRouteAdded = true;
 
+        // Step 3b: Add DNS record for the tunnel hostname
+        yield* Effect.log(`Adding DNS route for ${tunnelHostname}`);
+        yield* tunnel.addDnsRoute(config.tunnelName, tunnelHostname);
+
         // Step 4: Restart cloudflared
         yield* Effect.log("Restarting cloudflared");
         yield* tunnel.restartCloudflared();

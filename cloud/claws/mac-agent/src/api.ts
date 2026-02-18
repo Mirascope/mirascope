@@ -16,7 +16,7 @@ export class ProvisionRequestBody extends Schema.Class<ProvisionRequestBody>(
   "ProvisionRequestBody",
 )({
   clawId: Schema.String,
-  macUsername: Schema.String.pipe(Schema.pattern(/^claw-[a-z0-9]+$/)),
+  macUsername: Schema.String.pipe(Schema.pattern(/^claw-[a-z0-9-]+$/)),
   localPort: Schema.Number.pipe(Schema.int()),
   gatewayToken: Schema.String,
   tunnelHostname: Schema.String,

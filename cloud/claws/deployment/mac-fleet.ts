@@ -1,8 +1,8 @@
 /**
- * @fileoverview Mac Mini fleet management service.
+ * @fileoverview Mac fleet management service.
  *
- * Handles fleet-level operations: finding available Mac Minis with capacity,
- * allocating ports, and making HTTP calls to the Mac Mini Agent API.
+ * Handles fleet-level operations: finding available Macs with capacity,
+ * allocating ports, and making HTTP calls to the Mac Agent API.
  */
 
 import { eq, sql } from "drizzle-orm";
@@ -10,7 +10,7 @@ import { Schema } from "effect";
 import { Context, Effect } from "effect";
 
 import { DrizzleORM } from "@/db/client";
-import { claws, macMinis } from "@/db/schema";
+import { claws, fleetMacs } from "@/db/schema";
 
 // ---------------------------------------------------------------------------
 // Errors
@@ -40,11 +40,11 @@ export class AgentCallError extends Schema.TaggedError<AgentCallError>()(
 // Service interface
 // ---------------------------------------------------------------------------
 
-export interface MacMiniFleetServiceInterface {
-  /** Find an online Mac Mini with available capacity and allocate a port. */
-  findAvailableMini(): Effect.Effect<
+export interface MacFleetServiceInterface {
+  /** Find an online Mac with available capacity and allocate a port. */
+  findAvailableMac(): Effect.Effect<
     {
-      miniId: string;
+      macId: string;
       port: number;
       agentUrl: string;
       tunnelHostnameSuffix: string;
@@ -52,7 +52,7 @@ export interface MacMiniFleetServiceInterface {
     FleetError
   >;
 
-  /** Make an HTTP call to a Mac Mini Agent. */
+  /** Make an HTTP call to a Mac Agent. */
   callAgent(
     agentUrl: string,
     agentToken: string,
@@ -62,36 +62,36 @@ export interface MacMiniFleetServiceInterface {
   ): Effect.Effect<unknown, AgentCallError>;
 }
 
-export class MacMiniFleetService extends Context.Tag("MacMiniFleetService")<
-  MacMiniFleetService,
-  MacMiniFleetServiceInterface
+export class MacFleetService extends Context.Tag("MacFleetService")<
+  MacFleetService,
+  MacFleetServiceInterface
 >() {}
 
 // ---------------------------------------------------------------------------
 // Live implementation
 // ---------------------------------------------------------------------------
 
-export const LiveMacMiniFleetService = Effect.gen(function* () {
+export const LiveMacFleetService = Effect.gen(function* () {
   const drizzle = yield* DrizzleORM;
 
   return {
-    findAvailableMini: () =>
+    findAvailableMac: () =>
       Effect.gen(function* () {
-        // Get all online minis with their current claw counts
-        const minis = yield* drizzle
+        // Get all online macs with their current claw counts
+        const macs = yield* drizzle
           .select({
-            id: macMinis.id,
-            agentUrl: macMinis.agentUrl,
-            maxClaws: macMinis.maxClaws,
-            portRangeStart: macMinis.portRangeStart,
-            portRangeEnd: macMinis.portRangeEnd,
-            tunnelHostnameSuffix: macMinis.tunnelHostnameSuffix,
+            id: fleetMacs.id,
+            agentUrl: fleetMacs.agentUrl,
+            maxClaws: fleetMacs.maxClaws,
+            portRangeStart: fleetMacs.portRangeStart,
+            portRangeEnd: fleetMacs.portRangeEnd,
+            tunnelHostnameSuffix: fleetMacs.tunnelHostnameSuffix,
             clawCount: sql<number>`count(${claws.id})::int`,
           })
-          .from(macMinis)
-          .leftJoin(claws, eq(claws.miniId, macMinis.id))
-          .where(eq(macMinis.status, "active"))
-          .groupBy(macMinis.id)
+          .from(fleetMacs)
+          .leftJoin(claws, eq(claws.macId, fleetMacs.id))
+          .where(eq(fleetMacs.status, "active"))
+          .groupBy(fleetMacs.id)
           .pipe(
             Effect.mapError(
               (e) =>
@@ -102,21 +102,21 @@ export const LiveMacMiniFleetService = Effect.gen(function* () {
             ),
           );
 
-        // Find first mini with available capacity
-        const available = minis.find((m) => m.clawCount < m.maxClaws);
+        // Find first mac with available capacity
+        const available = macs.find((m) => m.clawCount < m.maxClaws);
         if (!available) {
           return yield* Effect.fail(
             new FleetError({
-              message: "No Mac Minis available with capacity",
+              message: "No Macs available with capacity",
             }),
           );
         }
 
-        // Find next available port on this mini
+        // Find next available port on this mac
         const usedPorts = yield* drizzle
-          .select({ port: claws.miniPort })
+          .select({ port: claws.macPort })
           .from(claws)
-          .where(eq(claws.miniId, available.id))
+          .where(eq(claws.macId, available.id))
           .pipe(
             Effect.mapError(
               (e) =>
@@ -146,13 +146,13 @@ export const LiveMacMiniFleetService = Effect.gen(function* () {
         if (port == null) {
           return yield* Effect.fail(
             new FleetError({
-              message: `No available ports on mini ${available.id}`,
+              message: `No available ports on mac ${available.id}`,
             }),
           );
         }
 
         return {
-          miniId: available.id,
+          macId: available.id,
           port,
           agentUrl: available.agentUrl,
           tunnelHostnameSuffix: available.tunnelHostnameSuffix,
@@ -212,5 +212,5 @@ export const LiveMacMiniFleetService = Effect.gen(function* () {
 
         return json;
       }),
-  } satisfies MacMiniFleetServiceInterface;
+  } satisfies MacFleetServiceInterface;
 });

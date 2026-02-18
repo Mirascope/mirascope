@@ -1,4 +1,4 @@
-# Mac Mini Claw Farm — Design Document
+# Mac Claw Farm — Design Document
 
 > **Status:** Draft  
 > **Authors:** Sazed, William  
@@ -14,7 +14,7 @@
 5. [New Database Tables](#5-new-database-tables)
 6. [New Files](#6-new-files)
 7. [Modified Files](#7-modified-files)
-8. [Mac Mini Agent](#8-mac-mini-agent)
+8. [Mac Agent](#8-mac-mac-agent)
 9. [Provisioning Flow](#9-provisioning-flow)
 10. [Deprovisioning & Archival](#10-deprovisioning--archival)
 11. [WebSocket Proxy Changes](#11-websocket-proxy-changes)
@@ -34,15 +34,15 @@
 
 ## 1. Executive Summary
 
-Replace Cloudflare Containers with Mac Minis running macOS. Each Mini hosts ~12 Claws as isolated macOS user accounts. OpenClaw gateway runs as a per-user `launchd` service. Traffic routes through Cloudflare Tunnels. Admin access via Tailscale SSH. R2 becomes a backup layer (local disk is primary storage).
+Replace Cloudflare Containers with Macs running macOS. Each Mini hosts ~12 Claws as isolated macOS user accounts. OpenClaw gateway runs as a per-user `launchd` service. Traffic routes through Cloudflare Tunnels. Admin access via Tailscale SSH. R2 becomes a backup layer (local disk is primary storage).
 
 **Why:**
 - Cloudflare Containers have cold-start latency, limited macOS tooling, and no residential IP for browser automation
-- Mac Minis provide native macOS, Playwright/Chromium with residential IPs (bot detection advantage), persistent local storage, and predictable performance
+- Macs provide native macOS, Playwright/Chromium with residential IPs (bot detection advantage), persistent local storage, and predictable performance
 - M4 Pro 32GB/1TB at ~$2,000 supports 12 Claws — better unit economics at scale
 
-**POC target:** Single M4 16GB/512GB Mini, single Claw, at William's home on WiFi.  
-**Production target:** M4 Pro 32GB/1TB Minis, 12 Claws each, Ethernet, eventually colo/MacStadium.
+**POC target:** Single M4 16GB/512GB Mac, single Claw, at William's home on WiFi.  
+**Production target:** M4 Pro 32GB/1TB Macs, 12 Claws each, Ethernet, eventually colo/MacStadium.
 
 ---
 
@@ -105,7 +105,7 @@ Browser
          Cloudflare Tunnel (claw-{id}.claws.mirascope.com)
                 │
                 ▼
-         Mac Mini (macOS, residential IP)
+         Mac (macOS, residential IP)
                 │  - Per-claw macOS user account
                 │  - OpenClaw gateway as launchd service
                 │  - Playwright/Chromium per user
@@ -130,7 +130,7 @@ Browser
                        │ (encrypted tunnel)
                        │
               ┌────────┴────────┐
-              │  Mac Mini       │
+              │  Mac       │
               │  ┌────────────┐ │
               │  │ cloudflared │ │  ← runs as root launchd service
               │  │ (connector) │ │
@@ -156,7 +156,7 @@ Browser
 4. **Local disk is primary storage** — SSD is fast, R2 becomes backup/archive layer
 5. **Port-per-claw** — each gateway binds to `localhost:{BASE_PORT + offset}`, `cloudflared` routes by hostname
 6. **launchd per claw** — auto-restart, proper lifecycle management, macOS-native
-7. **Mini agent** — lightweight HTTP API on each Mini for provisioning commands, exposed through Cloudflare Tunnel and authenticated with Bearer token. Works identically from local dev, staging, and production (CF Workers make standard HTTP requests to the agent)
+7. **Mac agent** — lightweight HTTP API on each Mac for provisioning commands, exposed through Cloudflare Tunnel and authenticated with Bearer token. Works identically from local dev, staging, and production (CF Workers make standard HTTP requests to the agent)
 
 ---
 
@@ -166,7 +166,7 @@ Browser
 
 | File | Reason |
 |------|--------|
-| `cloud/claws/dispatch-worker/` (entire directory) | Replaced by Mac Mini agent + Cloudflare Tunnel. Delete entirely. |
+| `cloud/claws/dispatch-worker/` (entire directory) | Replaced by Mac agent + Cloudflare Tunnel. Delete entirely. |
 | `cloud/cloudflare/containers/live.ts` | No more container management via dispatch worker |
 | `cloud/cloudflare/containers/mock.ts` | Mock for deleted service |
 | `cloud/cloudflare/containers/service.ts` | Interface no longer needed |
@@ -176,44 +176,44 @@ Browser
 
 | File | Changes |
 |------|---------|
-| `cloud/claws/deployment/live.ts` | Replace `LiveDeploymentService` with `MacMiniDeploymentService` (or swap the Layer) |
-| `cloud/claws/deployment/types.ts` | Add Mac Mini-specific types, update `ClawInstanceType` |
+| `cloud/claws/deployment/live.ts` | Replace `LiveDeploymentService` with `MacDeploymentService` (or swap the Layer) |
+| `cloud/claws/deployment/types.ts` | Add Mac-specific types, update `ClawInstanceType` |
 | `cloud/api/claws-ws-proxy.ts` | Change upstream URL from dispatch worker to Cloudflare Tunnel hostname |
-| `cloud/api/claws-internal.handlers.ts` | Adapt bootstrap handler for Mini agent consumption |
+| `cloud/api/claws-internal.handlers.ts` | Adapt bootstrap handler for Mac agent consumption |
 | `cloud/api/claws.handlers.ts` | No changes to handler logic (uses `ClawDeploymentService` interface) |
-| `cloud/db/schema/claws.ts` | Add `macMiniId` foreign key, `tunnelHostname`, `localPort` columns |
+| `cloud/db/schema/claws.ts` | Add `macId` foreign key, `tunnelHostname`, `localPort` columns |
 | `cloud/db/schema/index.ts` | Export new tables |
-| `cloud/claws/deployment/service.ts` | Replace `ClawDeploymentStatus` with required Mac Mini fields (see section 7.6) |
+| `cloud/claws/deployment/service.ts` | Replace `ClawDeploymentStatus` with required Mac fields (see section 7.6) |
 
 ### Files to CREATE
 
 | File | Purpose |
 |------|---------|
-| `cloud/mac-mini/deployment/live.ts` | `MacMiniDeploymentService` — implements `ClawDeploymentServiceInterface` |
-| `cloud/mac-mini/deployment/types.ts` | Mac Mini-specific types (fleet, capacity, agent API) |
-| `cloud/mac-mini/agent/server.ts` | Mini agent HTTP API server (runs on each Mini) |
-| `cloud/mac-mini/agent/handlers.ts` | Agent endpoint handlers (provision, deprovision, status, etc.) |
-| `cloud/mac-mini/agent/scripts/` | Shell scripts for user creation, launchd setup, tunnel config |
-| `cloud/mac-mini/fleet/service.ts` | Fleet management service (Mini selection, capacity tracking) |
-| `cloud/mac-mini/fleet/scheduler.ts` | Placement logic (which Mini gets a new Claw) |
-| `cloud/mac-mini/backup/service.ts` | R2 backup orchestration |
-| `cloud/mac-mini/backup/scripts/` | Backup/restore shell scripts |
-| `cloud/mac-mini/tunnel/service.ts` | Cloudflare Tunnel route management |
-| `cloud/db/schema/mac-minis.ts` | `mac_minis` table |
-| `cloud/db/schema/mac-mini-claws.ts` | `mac_mini_claws` junction table |
-| `cloud/db/migrations/XXXX_add_mac_minis.ts` | Migration for new tables + column additions |
+| `cloud/mac/deployment/live.ts` | `MacDeploymentService` — implements `ClawDeploymentServiceInterface` |
+| `cloud/mac/deployment/types.ts` | Mac-specific types (fleet, capacity, agent API) |
+| `cloud/mac/agent/server.ts` | Mac agent HTTP API server (runs on each Mac) |
+| `cloud/mac/agent/handlers.ts` | Agent endpoint handlers (provision, deprovision, status, etc.) |
+| `cloud/mac/agent/scripts/` | Shell scripts for user creation, launchd setup, tunnel config |
+| `cloud/mac/fleet/service.ts` | Fleet management service (Mac selection, capacity tracking) |
+| `cloud/mac/fleet/scheduler.ts` | Placement logic (which Mac gets a new Claw) |
+| `cloud/mac/backup/service.ts` | R2 backup orchestration |
+| `cloud/mac/backup/scripts/` | Backup/restore shell scripts |
+| `cloud/mac/tunnel/service.ts` | Cloudflare Tunnel route management |
+| `cloud/db/schema/fleet-macs.ts` | `fleet_macs` table |
+| `cloud/db/schema/mac-claws.ts` | `mac_claws` junction table |
+| `cloud/db/migrations/XXXX_add_fleet_macs.ts` | Migration for new tables + column additions |
 
 ---
 
 ## 5. New Database Tables
 
-### `mac_minis` — Fleet Inventory
+### `fleet_macs` — Fleet Inventory
 
 ```sql
-CREATE TABLE mac_minis (
+CREATE TABLE fleet_macs (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  hostname        TEXT NOT NULL UNIQUE,          -- e.g. "mini-01"
-  display_name    TEXT,                          -- e.g. "William's Home Mini"
+  hostname        TEXT NOT NULL UNIQUE,          -- e.g. "mac-01"
+  display_name    TEXT,                          -- e.g. "William's Home Mac"
   
   -- Hardware
   chip            TEXT NOT NULL,                 -- e.g. "M4", "M4 Pro"
@@ -222,9 +222,9 @@ CREATE TABLE mac_minis (
   
   -- Network
   tailscale_ip    TEXT NOT NULL,                 -- e.g. "100.64.x.x"
-  tailscale_fqdn  TEXT NOT NULL,                 -- e.g. "mini-01.tail1234.ts.net"
-  agent_url       TEXT NOT NULL,                  -- e.g. "https://agent.mini-01.claws.mirascope.dev"
-  agent_port      INTEGER NOT NULL DEFAULT 7600, -- Mini agent local HTTP port
+  tailscale_fqdn  TEXT NOT NULL,                 -- e.g. "mac-01.tail1234.ts.net"
+  agent_url       TEXT NOT NULL,                  -- e.g. "https://agent.local-william.claws.mirascope.dev" (local) or "https://mac-01.agent.claws.staging.mirascope.com" (staging)
+  agent_port      INTEGER NOT NULL DEFAULT 7600, -- Mac agent local HTTP port
   public_ip       TEXT,                          -- residential IP (for reference)
   
   -- Cloudflare Tunnel
@@ -250,17 +250,17 @@ CREATE TABLE mac_minis (
 ```
 
 ```typescript
-// cloud/db/schema/mac-minis.ts
+// cloud/db/schema/fleet-macs.ts
 import { pgEnum, pgTable, text, integer, timestamp, uuid, jsonb } from "drizzle-orm/pg-core";
 
-export const macMiniStatusEnum = pgEnum("mac_mini_status", [
+export const fleetMacStatusEnum = pgEnum("fleet_mac_status", [
   "active",
   "draining",    // no new claws, existing ones run until migrated
   "offline",
   "maintenance",
 ]);
 
-export const macMinis = pgTable("mac_minis", {
+export const fleetMacs = pgTable("fleet_macs", {
   id: uuid("id").primaryKey().defaultRandom(),
   hostname: text("hostname").notNull().unique(),
   displayName: text("display_name"),
@@ -277,7 +277,7 @@ export const macMinis = pgTable("mac_minis", {
   maxClaws: integer("max_claws").notNull().default(12),
   currentClaws: integer("current_claws").notNull().default(0),
   basePort: integer("base_port").notNull().default(8100),
-  status: macMiniStatusEnum("status").notNull().default("active"),
+  status: fleetMacStatusEnum("status").notNull().default("active"),
   lastHeartbeat: timestamp("last_heartbeat", { withTimezone: true }),
   lastHealth: jsonb("last_health"),
   location: text("location"),
@@ -285,23 +285,23 @@ export const macMinis = pgTable("mac_minis", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });
 
-export type MacMini = typeof macMinis.$inferSelect;
-export type NewMacMini = typeof macMinis.$inferInsert;
+export type Mac = typeof fleetMacs.$inferSelect;
+export type NewMac = typeof fleetMacs.$inferInsert;
 ```
 
-### Mac Mini Status State Machine
+### Mac Status State Machine
 
 | Status | Description | How We Get Here | Transitions To |
 |--------|------------|-----------------|----------------|
 | **`active`** | Healthy and accepting new claws | Initial registration; recovery from maintenance/offline | `draining`, `maintenance`, `offline` |
 | **`draining`** | No new claws assigned; existing claws continue running until migrated off | Admin initiates drain (pre-maintenance or decommission) | `maintenance`, `offline` (once all claws migrated) |
-| **`maintenance`** | Admin is performing maintenance (OS updates, hardware changes, etc.) | Admin puts Mini into maintenance mode; all claws migrated off | `active` (after maintenance complete) |
-| **`offline`** | Mini is unreachable or powered off | Heartbeat missing for >3 minutes (auto-detected); or manual shutdown | `active` (when heartbeat resumes) |
+| **`maintenance`** | Admin is performing maintenance (OS updates, hardware changes, etc.) | Admin puts Mac into maintenance mode; all claws migrated off | `active` (after maintenance complete) |
+| **`offline`** | Mac is unreachable or powered off | Heartbeat missing for >3 minutes (auto-detected); or manual shutdown | `active` (when heartbeat resumes) |
 
 **Detection:**
 - **`offline`** is detected automatically: if `last_heartbeat` is older than 3 minutes, the monitoring system sets status to `offline` and fires an alert
 - **`maintenance`** is set manually by an admin (via `admin.mirascope.com` or CLI) when performing maintenance. Claws should be migrated off first (via `draining`)
-- **`draining`** is set manually when preparing to take a Mini offline. The fleet scheduler excludes draining Minis from new placements
+- **`draining`** is set manually when preparing to take a Mac offline. The fleet scheduler excludes draining Macs from new placements
 
 **State diagram:**
 ```
@@ -331,9 +331,9 @@ export type NewMacMini = typeof macMinis.$inferInsert;
 
 ```sql
 -- Add to existing claws table
-ALTER TABLE claws ADD COLUMN mac_mini_id UUID REFERENCES mac_minis(id);
+ALTER TABLE claws ADD COLUMN mac_id UUID REFERENCES fleet_macs(id);
 ALTER TABLE claws ADD COLUMN tunnel_hostname TEXT NOT NULL;     -- e.g. "claw-{id}.claws.mirascope.com"
-ALTER TABLE claws ADD COLUMN local_port INTEGER;       -- port on the Mini
+ALTER TABLE claws ADD COLUMN local_port INTEGER;       -- port on the Mac
 ALTER TABLE claws ADD COLUMN mac_username TEXT;         -- macOS username, e.g. "claw-ab12cd34"
 ALTER TABLE claws ADD COLUMN archived_at TIMESTAMPTZ;  -- when archived to R2 (null = active)
 ```
@@ -342,7 +342,7 @@ ALTER TABLE claws ADD COLUMN archived_at TIMESTAMPTZ;  -- when archived to R2 (n
 // Additions to cloud/db/schema/claws.ts
 // Add these columns to the existing claws pgTable definition:
 
-macMiniId: uuid("mac_mini_id").references(() => macMinis.id),
+macId: uuid("mac_id").references(() => fleetMacs.id),
 tunnelHostname: text("tunnel_hostname").notNull(),
 localPort: integer("local_port"),
 macUsername: text("mac_username"),
@@ -353,15 +353,15 @@ archivedAt: timestamp("archived_at", { withTimezone: true }),
 
 ## 6. New Files
 
-### 6.1 `cloud/mac-mini/deployment/types.ts`
+### 6.1 `cloud/mac/deployment/types.ts`
 
 ```typescript
 /**
- * Types for Mac Mini deployment infrastructure.
+ * Types for Mac deployment infrastructure.
  */
 
-/** Health snapshot from a Mac Mini agent. */
-export interface MacMiniHealth {
+/** Health snapshot from a Mac agent. */
+export interface MacHealth {
   cpuUsagePercent: number;
   memoryUsedGb: number;
   memoryTotalGb: number;
@@ -372,8 +372,8 @@ export interface MacMiniHealth {
   loadAverage: [number, number, number];
 }
 
-/** Per-claw status as reported by the Mini agent. */
-export interface MacMiniClawStatus {
+/** Per-claw status as reported by the Mac agent. */
+export interface MacClawStatus {
   clawId: string;
   macUsername: string;
   localPort: number;
@@ -385,8 +385,8 @@ export interface MacMiniClawStatus {
   tunnelRouteActive: boolean;
 }
 
-/** Request to provision a claw on a Mini. */
-export interface MacMiniClawProvisionRequest {
+/** Request to provision a claw on a Mac. */
+export interface MacClawProvisionRequest {
   clawId: string;
   macUsername: string;
   localPort: number;
@@ -395,15 +395,15 @@ export interface MacMiniClawProvisionRequest {
   envVars: Record<string, string>;
 }
 
-/** Request to deprovision a claw from a Mini. */
-export interface MacMiniClawDeprovisionRequest {
+/** Request to deprovision a claw from a Mac. */
+export interface MacClawDeprovisionRequest {
   clawId: string;
   macUsername: string;
   archive: boolean; // if true, backup to R2 first
 }
 
-/** Response from Mini agent provision endpoint. */
-export interface MacMiniClawProvisionResponse {
+/** Response from Mac agent provision endpoint. */
+export interface MacClawProvisionResponse {
   success: boolean;
   macUsername: string;
   localPort: number;
@@ -411,35 +411,35 @@ export interface MacMiniClawProvisionResponse {
   error?: string;
 }
 
-/** Port allocation on a Mini. */
+/** Port allocation on a Mac. */
 export interface PortAllocation {
   port: number;
   clawId: string;
 }
 ```
 
-### 6.2 `cloud/mac-mini/deployment/live.ts` — MacMiniDeploymentService
+### 6.2 `cloud/mac/deployment/live.ts` — MacDeploymentService
 
 ```typescript
 /**
- * @fileoverview Mac Mini deployment service.
+ * @fileoverview Mac deployment service.
  *
- * Implements ClawDeploymentServiceInterface by communicating with Mac Mini
+ * Implements ClawDeploymentServiceInterface by communicating with Mac
  * agents over Tailscale. Replaces LiveDeploymentService which used
  * CloudflareR2Service + CloudflareContainerService.
  *
  * ## Provision Flow
  *
- * 1. Select a Mini with available capacity (FleetScheduler)
+ * 1. Select a Mac with available capacity (FleetScheduler)
  * 2. Allocate a port and macOS username
- * 3. Call Mini agent's /provision endpoint via Tailscale
+ * 3. Call Mac agent's /provision endpoint via Tailscale
  * 4. Agent creates macOS user, configures launchd, adds tunnel route
  * 5. Create R2 bucket for backups (not primary storage)
  * 6. Return deployment status with tunnel hostname
  *
  * ## Deprovision Flow
  *
- * 1. Call Mini agent's /deprovision endpoint
+ * 1. Call Mac agent's /deprovision endpoint
  * 2. Agent stops gateway, removes launchd plist, removes tunnel route
  * 3. Optionally archives home dir to R2
  * 4. Agent deletes macOS user
@@ -457,7 +457,7 @@ import type {
 import { ClawDeploymentError } from "@/claws/deployment/errors";
 import { ClawDeploymentService } from "@/claws/deployment/service";
 import { CloudflareR2Service } from "@/cloudflare/r2/service";
-import { MacMiniFleetService } from "@/mac-mini/fleet/service";
+import { MacFleetService } from "@/mac/fleet/service";
 
 function bucketName(clawId: string): string {
   return `claw-backup-${clawId}`;
@@ -472,20 +472,20 @@ function tunnelHostname(clawId: string): string {
   return `claw-${clawId}.claws.mirascope.com`;
 }
 
-export const MacMiniDeploymentService = Layer.effect(
+export const MacDeploymentService = Layer.effect(
   ClawDeploymentService,
   Effect.gen(function* () {
     const r2 = yield* CloudflareR2Service;
-    const fleet = yield* MacMiniFleetService;
+    const fleet = yield* MacFleetService;
 
     return {
       provision: (config: ProvisionClawConfig) =>
         Effect.gen(function* () {
-          // 1. Find a Mini with capacity
-          const mini = yield* fleet.selectMini(config.instanceType);
+          // 1. Find a Mac with capacity
+          const mac = yield* fleet.selectMac(config.instanceType);
 
           // 2. Allocate port and username
-          const port = yield* fleet.allocatePort(mini.id);
+          const port = yield* fleet.allocatePort(mac.id);
           const username = macUsername(config.clawId);
           const hostname = tunnelHostname(config.clawId);
 
@@ -512,8 +512,8 @@ export const MacMiniDeploymentService = Layer.effect(
               ),
             );
 
-          // 4. Call Mini agent to provision
-          yield* fleet.provisionOnMini(mini.id, {
+          // 4. Call Mac agent to provision
+          yield* fleet.provisionOnMac(mac.id, {
             clawId: config.clawId,
             macUsername: username,
             localPort: port,
@@ -533,11 +533,11 @@ export const MacMiniDeploymentService = Layer.effect(
 
       deprovision: (clawId: string) =>
         Effect.gen(function* () {
-          // 1. Find which Mini this claw is on
+          // 1. Find which Mac this claw is on
           const assignment = yield* fleet.getClawAssignment(clawId);
 
-          // 2. Tell Mini agent to deprovision (with archive)
-          yield* fleet.deprovisionOnMini(assignment.miniId, {
+          // 2. Tell Mac agent to deprovision (with archive)
+          yield* fleet.deprovisionOnMac(assignment.macId, {
             clawId,
             macUsername: assignment.macUsername,
             archive: true,
@@ -549,14 +549,14 @@ export const MacMiniDeploymentService = Layer.effect(
           );
 
           // 4. Release port
-          yield* fleet.releasePort(assignment.miniId, assignment.localPort);
+          yield* fleet.releasePort(assignment.macId, assignment.localPort);
         }),
 
       getStatus: (clawId: string) =>
         Effect.gen(function* () {
           const assignment = yield* fleet.getClawAssignment(clawId);
-          const clawStatus = yield* fleet.getClawStatusOnMini(
-            assignment.miniId,
+          const clawStatus = yield* fleet.getClawStatusOnMac(
+            assignment.macId,
             clawId,
           );
 
@@ -576,7 +576,7 @@ export const MacMiniDeploymentService = Layer.effect(
       restart: (clawId: string) =>
         Effect.gen(function* () {
           const assignment = yield* fleet.getClawAssignment(clawId);
-          yield* fleet.restartClawOnMini(assignment.miniId, clawId);
+          yield* fleet.restartClawOnMac(assignment.macId, clawId);
 
           return {
             status: "provisioning",
@@ -586,10 +586,10 @@ export const MacMiniDeploymentService = Layer.effect(
 
       update: (clawId: string, _config: Partial<OpenClawDeployConfig>) =>
         Effect.gen(function* () {
-          // For Mac Mini, update = restart gateway to pick up new config
-          // Instance type changes are N/A (all Minis provide same resources per claw)
+          // For Mac, update = restart gateway to pick up new config
+          // Instance type changes are N/A (all Macs provide same resources per claw)
           const assignment = yield* fleet.getClawAssignment(clawId);
-          yield* fleet.restartClawOnMini(assignment.miniId, clawId);
+          yield* fleet.restartClawOnMac(assignment.macId, clawId);
 
           return {
             status: "provisioning",
@@ -600,115 +600,115 @@ export const MacMiniDeploymentService = Layer.effect(
       warmUp: (clawId: string) =>
         Effect.gen(function* () {
           const assignment = yield* fleet.getClawAssignment(clawId);
-          yield* fleet.startClawOnMini(assignment.miniId, clawId);
+          yield* fleet.startClawOnMac(assignment.macId, clawId);
         }),
     };
   }),
 );
 ```
 
-### 6.3 `cloud/mac-mini/fleet/service.ts` — Fleet Management
+### 6.3 `cloud/mac/fleet/service.ts` — Fleet Management
 
 ```typescript
 /**
- * @fileoverview Fleet management service for Mac Mini infrastructure.
+ * @fileoverview Fleet management service for Mac infrastructure.
  *
- * Handles Mini selection, port allocation, and proxying commands to Mini agents.
- * All communication with Minis goes through Tailscale (private network).
+ * Handles Mac selection, port allocation, and proxying commands to Mac agents.
+ * All communication with Macs goes through Tailscale (private network).
  */
 
 import { Context, Effect } from "effect";
 
-import type { MacMiniClawStatus, MacMiniHealth, MacMiniClawProvisionRequest, MacMiniClawDeprovisionRequest } from "@/mac-mini/deployment/types";
+import type { MacClawStatus, MacHealth, MacClawProvisionRequest, MacClawDeprovisionRequest } from "@/mac/deployment/types";
 import type { ClawInstanceType } from "@/claws/deployment/types";
 import { ClawDeploymentError } from "@/claws/deployment/errors";
 
 export interface ClawAssignment {
-  miniId: string;
+  macId: string;
   macUsername: string;
   localPort: number;
   tunnelHostname: string;
 }
 
-export interface MacMiniFleetServiceInterface {
-  /** Select the best Mini for a new claw based on capacity and health. */
-  readonly selectMini: (
+export interface MacFleetServiceInterface {
+  /** Select the best Mac for a new claw based on capacity and health. */
+  readonly selectMac: (
     instanceType: ClawInstanceType,
   ) => Effect.Effect<{ id: string; hostname: string }, ClawDeploymentError>;
 
-  /** Allocate the next available port on a Mini. */
+  /** Allocate the next available port on a Mac. */
   readonly allocatePort: (
-    miniId: string,
+    macId: string,
   ) => Effect.Effect<number, ClawDeploymentError>;
 
   /** Release a port allocation. */
   readonly releasePort: (
-    miniId: string,
+    macId: string,
     port: number,
   ) => Effect.Effect<void, ClawDeploymentError>;
 
-  /** Get which Mini a claw is assigned to. */
+  /** Get which Mac a claw is assigned to. */
   readonly getClawAssignment: (
     clawId: string,
   ) => Effect.Effect<ClawAssignment, ClawDeploymentError>;
 
-  /** Provision a claw on a specific Mini (calls Mini agent). */
-  readonly provisionOnMini: (
-    miniId: string,
-    request: MacMiniClawProvisionRequest,
+  /** Provision a claw on a specific Mac (calls Mac agent). */
+  readonly provisionOnMac: (
+    macId: string,
+    request: MacClawProvisionRequest,
   ) => Effect.Effect<void, ClawDeploymentError>;
 
-  /** Deprovision a claw from a specific Mini (calls Mini agent). */
-  readonly deprovisionOnMini: (
-    miniId: string,
-    request: MacMiniClawDeprovisionRequest,
+  /** Deprovision a claw from a specific Mac (calls Mac agent). */
+  readonly deprovisionOnMac: (
+    macId: string,
+    request: MacClawDeprovisionRequest,
   ) => Effect.Effect<void, ClawDeploymentError>;
 
-  /** Get claw status from Mini agent. */
-  readonly getClawStatusOnMini: (
-    miniId: string,
+  /** Get claw status from Mac agent. */
+  readonly getClawStatusOnMac: (
+    macId: string,
     clawId: string,
-  ) => Effect.Effect<MacMiniClawStatus, ClawDeploymentError>;
+  ) => Effect.Effect<MacClawStatus, ClawDeploymentError>;
 
-  /** Restart a claw's gateway on a Mini. */
-  readonly restartClawOnMini: (
-    miniId: string,
-    clawId: string,
-  ) => Effect.Effect<void, ClawDeploymentError>;
-
-  /** Start a claw's gateway on a Mini (warm up). */
-  readonly startClawOnMini: (
-    miniId: string,
+  /** Restart a claw's gateway on a Mac. */
+  readonly restartClawOnMac: (
+    macId: string,
     clawId: string,
   ) => Effect.Effect<void, ClawDeploymentError>;
 
-  /** Get health info for a Mini. */
-  readonly getMiniHealth: (
-    miniId: string,
-  ) => Effect.Effect<MacMiniHealth, ClawDeploymentError>;
+  /** Start a claw's gateway on a Mac (warm up). */
+  readonly startClawOnMac: (
+    macId: string,
+    clawId: string,
+  ) => Effect.Effect<void, ClawDeploymentError>;
+
+  /** Get health info for a Mac. */
+  readonly getMacHealth: (
+    macId: string,
+  ) => Effect.Effect<MacHealth, ClawDeploymentError>;
 }
 
-export class MacMiniFleetService extends Context.Tag("MacMiniFleetService")<
-  MacMiniFleetService,
-  MacMiniFleetServiceInterface
+export class MacFleetService extends Context.Tag("MacFleetService")<
+  MacFleetService,
+  MacFleetServiceInterface
 >() {}
 ```
 
-### 6.4 `cloud/mac-mini/fleet/live.ts` — Fleet Service Implementation
+### 6.4 `cloud/mac/fleet/live.ts` — Fleet Service Implementation
 
 ```typescript
 /**
- * Live fleet service — communicates with Mini agents over HTTPS via Cloudflare Tunnel.
+ * Live fleet service — communicates with Mac agents over HTTPS via Cloudflare Tunnel.
  *
- * Mini agent base URL: https://{hostname}.agent.claws.mirascope.dev (from mac_minis.agent_url)
+ * Mac agent base URL: from fleet_macs.agent_url (environment-appropriate tunnel URL, e.g. https://agent.local-{user}.claws.mirascope.dev for local)
  *
  * Placement strategy (v1 — simple):
- *   1. Query mac_minis WHERE status = 'active' AND current_claws < max_claws
+ *   1. Query fleet_macs WHERE status = 'active' AND current_claws < max_claws
  *   2. Order by current_claws ASC (least loaded first)
  *   3. Pick first
  *
  * Port allocation:
- *   - Each Mini has a base_port (default 8100)
+ *   - Each Mac has a base_port (default 8100)
  *   - Ports are base_port + 0..max_claws-1
  *   - Track allocated ports via claws.local_port column
  *   - Find first unused port in range
@@ -719,17 +719,17 @@ import { eq, and, lt, sql, isNull } from "drizzle-orm";
 
 import { ClawDeploymentError } from "@/claws/deployment/errors";
 import { DrizzleORM } from "@/db/client";
-import { macMinis } from "@/db/schema/mac-minis";
+import { fleetMacs } from "@/db/schema/fleet-macs";
 import { claws } from "@/db/schema";
-import { MacMiniFleetService } from "@/mac-mini/fleet/service";
+import { MacFleetService } from "@/mac/fleet/service";
 
-export const LiveMacMiniFleetService = Layer.effect(
-  MacMiniFleetService,
+export const LiveMacFleetService = Layer.effect(
+  MacFleetService,
   Effect.gen(function* () {
     const db = yield* DrizzleORM;
     const agentToken = process.env.MINI_AGENT_TOKEN!; // shared secret for agent auth
 
-    /** Call a Mini agent endpoint via its Cloudflare Tunnel URL. */
+    /** Call a Mac agent endpoint via its Cloudflare Tunnel URL. */
     function callAgent<T>(
       agentBaseUrl: string,
       agentToken: string,
@@ -755,25 +755,25 @@ export const LiveMacMiniFleetService = Layer.effect(
         },
         catch: (e) =>
           new ClawDeploymentError({
-            message: `Mini agent call failed: ${e instanceof Error ? e.message : String(e)}`,
+            message: `Mac agent call failed: ${e instanceof Error ? e.message : String(e)}`,
             cause: e,
           }),
       });
     }
 
     return {
-      selectMini: (_instanceType) =>
+      selectMac: (_instanceType) =>
         Effect.gen(function* () {
-          const [mini] = yield* db
-            .select({ id: macMinis.id, hostname: macMinis.hostname })
-            .from(macMinis)
+          const [mac] = yield* db
+            .select({ id: fleetMacs.id, hostname: fleetMacs.hostname })
+            .from(fleetMacs)
             .where(
               and(
-                eq(macMinis.status, "active"),
-                lt(macMinis.currentClaws, macMinis.maxClaws),
+                eq(fleetMacs.status, "active"),
+                lt(fleetMacs.currentClaws, fleetMacs.maxClaws),
               ),
             )
-            .orderBy(macMinis.currentClaws)
+            .orderBy(fleetMacs.currentClaws)
             .limit(1)
             .pipe(
               Effect.mapError(
@@ -785,26 +785,26 @@ export const LiveMacMiniFleetService = Layer.effect(
               ),
             );
 
-          if (!mini) {
+          if (!mac) {
             return yield* Effect.fail(
               new ClawDeploymentError({
-                message: "No Mac Minis available with capacity",
+                message: "No Macs available with capacity",
               }),
             );
           }
 
-          return mini;
+          return mac;
         }),
 
-      allocatePort: (miniId) =>
+      allocatePort: (macId) =>
         Effect.gen(function* () {
-          const [mini] = yield* db
+          const [mac] = yield* db
             .select({
-              basePort: macMinis.basePort,
-              maxClaws: macMinis.maxClaws,
+              basePort: fleetMacs.basePort,
+              maxClaws: fleetMacs.maxClaws,
             })
-            .from(macMinis)
-            .where(eq(macMinis.id, miniId))
+            .from(fleetMacs)
+            .where(eq(fleetMacs.id, macId))
             .limit(1)
             .pipe(
               Effect.mapError(
@@ -813,17 +813,17 @@ export const LiveMacMiniFleetService = Layer.effect(
               ),
             );
 
-          if (!mini) {
+          if (!mac) {
             return yield* Effect.fail(
-              new ClawDeploymentError({ message: `Mini ${miniId} not found` }),
+              new ClawDeploymentError({ message: `Mac ${macId} not found` }),
             );
           }
 
-          // Find used ports on this Mini
+          // Find used ports on this Mac
           const usedPorts = yield* db
             .select({ localPort: claws.localPort })
             .from(claws)
-            .where(eq(claws.macMiniId, miniId))
+            .where(eq(claws.macId, macId))
             .pipe(
               Effect.mapError(
                 (e) =>
@@ -833,25 +833,25 @@ export const LiveMacMiniFleetService = Layer.effect(
 
           const usedSet = new Set(usedPorts.map((r) => r.localPort));
 
-          for (let offset = 0; offset < mini.maxClaws; offset++) {
-            const port = mini.basePort + offset;
+          for (let offset = 0; offset < mac.maxClaws; offset++) {
+            const port = mac.basePort + offset;
             if (!usedSet.has(port)) {
               return port;
             }
           }
 
           return yield* Effect.fail(
-            new ClawDeploymentError({ message: `No ports available on Mini ${miniId}` }),
+            new ClawDeploymentError({ message: `No ports available on Mac ${macId}` }),
           );
         }),
 
-      releasePort: (_miniId, _port) => Effect.void,
+      releasePort: (_macId, _port) => Effect.void,
 
       getClawAssignment: (clawId) =>
         Effect.gen(function* () {
           const [row] = yield* db
             .select({
-              miniId: claws.macMiniId,
+              macId: claws.macId,
               macUsername: claws.macUsername,
               localPort: claws.localPort,
               tunnelHostname: claws.tunnelHostname,
@@ -866,30 +866,30 @@ export const LiveMacMiniFleetService = Layer.effect(
               ),
             );
 
-          if (!row?.miniId || !row.macUsername || !row.localPort || !row.tunnelHostname) {
+          if (!row?.macId || !row.macUsername || !row.localPort || !row.tunnelHostname) {
             return yield* Effect.fail(
               new ClawDeploymentError({
-                message: `Claw ${clawId} has no Mac Mini assignment`,
+                message: `Claw ${clawId} has no Mac assignment`,
               }),
             );
           }
 
           return {
-            miniId: row.miniId,
+            macId: row.macId,
             macUsername: row.macUsername,
             localPort: row.localPort,
             tunnelHostname: row.tunnelHostname,
           };
         }),
 
-      provisionOnMini: (miniId, request) =>
+      provisionOnMac: (macId, request) =>
         Effect.gen(function* () {
-          const [mini] = yield* db
+          const [mac] = yield* db
             .select({
-              agentUrl: macMinis.agentUrl,
+              agentUrl: fleetMacs.agentUrl,
             })
-            .from(macMinis)
-            .where(eq(macMinis.id, miniId))
+            .from(fleetMacs)
+            .where(eq(fleetMacs.id, macId))
             .limit(1)
             .pipe(
               Effect.mapError(
@@ -898,19 +898,19 @@ export const LiveMacMiniFleetService = Layer.effect(
               ),
             );
 
-          if (!mini) {
+          if (!mac) {
             return yield* Effect.fail(
-              new ClawDeploymentError({ message: `Mini ${miniId} not found` }),
+              new ClawDeploymentError({ message: `Mac ${macId} not found` }),
             );
           }
 
-          yield* callAgent(mini.agentUrl, agentToken, "/claws", "POST", request);
+          yield* callAgent(mac.agentUrl, agentToken, "/claws", "POST", request);
 
           // Increment current_claws counter
           yield* db
-            .update(macMinis)
-            .set({ currentClaws: sql`${macMinis.currentClaws} + 1`, updatedAt: new Date() })
-            .where(eq(macMinis.id, miniId))
+            .update(fleetMacs)
+            .set({ currentClaws: sql`${fleetMacs.currentClaws} + 1`, updatedAt: new Date() })
+            .where(eq(fleetMacs.id, macId))
             .pipe(
               Effect.mapError(
                 (e) =>
@@ -919,15 +919,15 @@ export const LiveMacMiniFleetService = Layer.effect(
             );
         }),
 
-      deprovisionOnMini: (miniId, request) =>
+      deprovisionOnMac: (macId, request) =>
         Effect.gen(function* () {
-          const [mini] = yield* db
+          const [mac] = yield* db
             .select({
-              agentUrl: macMinis.agentUrl,
+              agentUrl: fleetMacs.agentUrl,
               
             })
-            .from(macMinis)
-            .where(eq(macMinis.id, miniId))
+            .from(fleetMacs)
+            .where(eq(fleetMacs.id, macId))
             .limit(1)
             .pipe(
               Effect.mapError(
@@ -936,19 +936,19 @@ export const LiveMacMiniFleetService = Layer.effect(
               ),
             );
 
-          if (!mini) {
+          if (!mac) {
             return yield* Effect.fail(
-              new ClawDeploymentError({ message: `Mini ${miniId} not found` }),
+              new ClawDeploymentError({ message: `Mac ${macId} not found` }),
             );
           }
 
-          yield* callAgent(mini.agentUrl, agentToken, `/claws/${request.macUsername}`, "DELETE", request);
+          yield* callAgent(mac.agentUrl, agentToken, `/claws/${request.macUsername}`, "DELETE", request);
 
           // Decrement current_claws counter
           yield* db
-            .update(macMinis)
-            .set({ currentClaws: sql`${macMinis.currentClaws} - 1`, updatedAt: new Date() })
-            .where(eq(macMinis.id, miniId))
+            .update(fleetMacs)
+            .set({ currentClaws: sql`${fleetMacs.currentClaws} - 1`, updatedAt: new Date() })
+            .where(eq(fleetMacs.id, macId))
             .pipe(
               Effect.mapError(
                 (e) =>
@@ -957,15 +957,15 @@ export const LiveMacMiniFleetService = Layer.effect(
             );
         }),
 
-      getClawStatusOnMini: (miniId, clawId) =>
+      getClawStatusOnMac: (macId, clawId) =>
         Effect.gen(function* () {
-          const [mini] = yield* db
+          const [mac] = yield* db
             .select({
-              agentUrl: macMinis.agentUrl,
+              agentUrl: fleetMacs.agentUrl,
               
             })
-            .from(macMinis)
-            .where(eq(macMinis.id, miniId))
+            .from(fleetMacs)
+            .where(eq(fleetMacs.id, macId))
             .limit(1)
             .pipe(
               Effect.mapError(
@@ -974,25 +974,25 @@ export const LiveMacMiniFleetService = Layer.effect(
               ),
             );
 
-          if (!mini) {
+          if (!mac) {
             return yield* Effect.fail(
-              new ClawDeploymentError({ message: `Mini ${miniId} not found` }),
+              new ClawDeploymentError({ message: `Mac ${macId} not found` }),
             );
           }
 
           // Agent is accessible via Cloudflare Tunnel
-          return yield* callAgent(mini.agentUrl, agentToken, `/claws/${clawId}/status`);
+          return yield* callAgent(mac.agentUrl, agentToken, `/claws/${clawId}/status`);
         }),
 
-      restartClawOnMini: (miniId, clawId) =>
+      restartClawOnMac: (macId, clawId) =>
         Effect.gen(function* () {
-          const [mini] = yield* db
+          const [mac] = yield* db
             .select({
-              agentUrl: macMinis.agentUrl,
+              agentUrl: fleetMacs.agentUrl,
               
             })
-            .from(macMinis)
-            .where(eq(macMinis.id, miniId))
+            .from(fleetMacs)
+            .where(eq(fleetMacs.id, macId))
             .limit(1)
             .pipe(
               Effect.mapError(
@@ -1001,25 +1001,25 @@ export const LiveMacMiniFleetService = Layer.effect(
               ),
             );
 
-          if (!mini) {
+          if (!mac) {
             return yield* Effect.fail(
-              new ClawDeploymentError({ message: `Mini ${miniId} not found` }),
+              new ClawDeploymentError({ message: `Mac ${macId} not found` }),
             );
           }
 
           // Agent is accessible via Cloudflare Tunnel
-          yield* callAgent(mini.agentUrl, agentToken, `/claws/${clawId}/restart`, "POST");
+          yield* callAgent(mac.agentUrl, agentToken, `/claws/${clawId}/restart`, "POST");
         }),
 
-      startClawOnMini: (miniId, clawId) =>
+      startClawOnMac: (macId, clawId) =>
         Effect.gen(function* () {
-          const [mini] = yield* db
+          const [mac] = yield* db
             .select({
-              agentUrl: macMinis.agentUrl,
+              agentUrl: fleetMacs.agentUrl,
               
             })
-            .from(macMinis)
-            .where(eq(macMinis.id, miniId))
+            .from(fleetMacs)
+            .where(eq(fleetMacs.id, macId))
             .limit(1)
             .pipe(
               Effect.mapError(
@@ -1028,25 +1028,25 @@ export const LiveMacMiniFleetService = Layer.effect(
               ),
             );
 
-          if (!mini) {
+          if (!mac) {
             return yield* Effect.fail(
-              new ClawDeploymentError({ message: `Mini ${miniId} not found` }),
+              new ClawDeploymentError({ message: `Mac ${macId} not found` }),
             );
           }
 
           // Agent is accessible via Cloudflare Tunnel
-          yield* callAgent(mini.agentUrl, agentToken, `/claws/${clawId}/start`, "POST");
+          yield* callAgent(mac.agentUrl, agentToken, `/claws/${clawId}/start`, "POST");
         }),
 
-      getMiniHealth: (miniId) =>
+      getMacHealth: (macId) =>
         Effect.gen(function* () {
-          const [mini] = yield* db
+          const [mac] = yield* db
             .select({
-              agentUrl: macMinis.agentUrl,
+              agentUrl: fleetMacs.agentUrl,
               
             })
-            .from(macMinis)
-            .where(eq(macMinis.id, miniId))
+            .from(fleetMacs)
+            .where(eq(fleetMacs.id, macId))
             .limit(1)
             .pipe(
               Effect.mapError(
@@ -1055,31 +1055,31 @@ export const LiveMacMiniFleetService = Layer.effect(
               ),
             );
 
-          if (!mini) {
+          if (!mac) {
             return yield* Effect.fail(
-              new ClawDeploymentError({ message: `Mini ${miniId} not found` }),
+              new ClawDeploymentError({ message: `Mac ${macId} not found` }),
             );
           }
 
           // Agent is accessible via Cloudflare Tunnel
-          return yield* callAgent(mini.agentUrl, agentToken, "/health");
+          return yield* callAgent(mac.agentUrl, agentToken, "/health");
         }),
     };
   }),
 );
 ```
 
-### 6.5 Mac Mini Agent
+### 6.5 Mac Agent
 
-The agent runs on each Mac Mini as a `launchd` system daemon. It's a lightweight HTTP server that accepts provisioning commands from the cloud backend over Tailscale.
+The agent runs on each Mac as a `launchd` system daemon. It's a lightweight HTTP server that accepts provisioning commands from the cloud backend over Tailscale.
 
-**Location:** `cloud/mac-mini/agent/` (deployed separately to each Mini, not part of the Cloudflare Worker build)
+**Location:** `cloud/mac/agent/` (deployed separately to each Mac, not part of the Cloudflare Worker build)
 
 #### Agent API Endpoints
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/health` | Mini health metrics (CPU, RAM, disk, uptime, claw count) |
+| `GET` | `/health` | Mac health metrics (CPU, RAM, disk, uptime, claw count) |
 | `GET` | `/claws` | List all claws with status |
 | `POST` | `/claws` | Provision a new claw (create user, configure launchd, add tunnel route, start gateway) |
 | `GET` | `/claws/:clawUser/status` | Single claw status (PID, memory, launchd state) |
@@ -1091,7 +1091,7 @@ The agent runs on each Mac Mini as a `launchd` system daemon. It's a lightweight
 
 #### Agent Security
 
-- Listens on localhost, exposed via Cloudflare Tunnel (e.g., `{hostname}.agent.claws.mirascope.dev`)
+- Listens on localhost, exposed via Cloudflare Tunnel (URL stored in `fleet_macs.agent_url`, e.g. `agent.local-william.claws.mirascope.dev` for local dev)
 - Bearer token auth (shared secret between cloud backend and agent)
 - Agent runs as `clawadmin` (admin account with sudo — needed for `sysadminctl` user creation and `launchctl` management)
 - Also accessible directly via Tailscale for admin debugging
@@ -1110,7 +1110,7 @@ The agent's provision endpoint executes these steps locally:
 8. Add Cloudflare Tunnel ingress rule mapping the tunnel hostname to `localhost:{port}`
 9. Reload cloudflared to pick up the new route
 
-Detailed implementation is in `cloud/claws/mini-agent/src/services/`.
+Detailed implementation is in `cloud/claws/mac-agent/src/services/`.
 
 #### Cloudflare Tunnel Configuration
 
@@ -1170,7 +1170,7 @@ This requires adding `tunnelHostname` to the claw query in the handler (already 
 -      settings.openclawGatewayWsUrl ??
 -      settings.cloudflare.dispatchWorkerBaseUrl;
 -    const upstreamUrl = `${dispatchBaseUrl.replace(/\/$/, "")}/${orgSlug}/${clawSlug}`;
-+    // Route through Cloudflare Tunnel to the Mac Mini
++    // Route through Cloudflare Tunnel to the Mac
 +    if (!claw.tunnelHostname) {
 +      return new Response("Claw infrastructure not ready", { status: 503 });
 +    }
@@ -1202,15 +1202,15 @@ The OpenClaw handshake (challenge → connect with token, scopes, client info �
 
 The existing `LiveDeploymentService` is replaced. Two options:
 
-**Option A (clean):** Delete `cloud/claws/deployment/live.ts`, create `cloud/mac-mini/deployment/live.ts` (shown above). Update the Layer composition wherever `LiveDeploymentService` is provided.
+**Option A (clean):** Delete `cloud/claws/deployment/live.ts`, create `cloud/mac/deployment/live.ts` (shown above). Update the Layer composition wherever `LiveDeploymentService` is provided.
 
 **Option B (gradual):** Keep `live.ts`, add a feature flag:
 
 ```typescript
-import { MacMiniDeploymentService } from "@/mac-mini/deployment/live";
+import { MacDeploymentService } from "@/mac/deployment/live";
 
 export const LiveDeploymentService = process.env.DEPLOYMENT_BACKEND === "mac-mini"
-  ? MacMiniDeploymentService
+  ? MacDeploymentService
   : CloudflareDeploymentService; // existing impl renamed
 ```
 
@@ -1218,54 +1218,54 @@ export const LiveDeploymentService = process.env.DEPLOYMENT_BACKEND === "mac-min
 
 ### 7.3 `cloud/claws/deployment/types.ts`
 
-`ClawInstanceType` becomes less relevant since Mac Minis don't have per-container resource tiers. Options:
+`ClawInstanceType` becomes less relevant since Macs don't have per-container resource tiers. Options:
 
-1. Keep the type but map all to the same resource allocation on Mini
-2. Simplify to just `"standard"` for Mac Mini backend
+1. Keep the type but map all to the same resource allocation on Mac
+2. Simplify to just `"standard"` for Mac backend
 3. Keep for billing tiers, decouple from infrastructure
 
-**Recommendation:** Keep the enum for billing/plan purposes. The `MacMiniDeploymentService` ignores it for resource allocation.
+**Recommendation:** Keep the enum for billing/plan purposes. The `MacDeploymentService` ignores it for resource allocation.
 
 ### 7.4 `cloud/api/claws-internal.handlers.ts`
 
-The `bootstrapClawHandler` is currently called by the dispatch worker via service binding. With Mac Minis, the agent needs this config too but fetches it differently.
+The `bootstrapClawHandler` is currently called by the dispatch worker via service binding. With Macs, the agent needs this config too but fetches it differently.
 
 **Option A:** Agent calls the same bootstrap endpoint over HTTPS (add bearer token auth for agent). Note: currently the bootstrap endpoint has NO token auth — the Cloudflare service binding is the sole trust boundary. Adding HTTP auth would be required.  
 **Option B:** Cloud backend pushes config to agent during provision call.
 
-**Recommendation:** Option B — push during provisioning. The agent doesn't need to call back to the cloud. This eliminates a network dependency and avoids adding auth to the bootstrap endpoint. The `provisionOnMini` request body includes all env vars and config.
+**Recommendation:** Option B — push during provisioning. The agent doesn't need to call back to the cloud. This eliminates a network dependency and avoids adding auth to the bootstrap endpoint. The `provisionOnMac` request body includes all env vars and config.
 
 The `resolveClawHandler` and `validateSessionHandler` are still needed for the WS proxy path (browser auth). No changes needed.
 
-The `reportClawStatusHandler` can be adapted for the Mini agent to report status, or the cloud backend can poll the agent. **Recommendation:** Agent pushes heartbeats every 60s (reuse the existing status report endpoint with bearer token auth).
+The `reportClawStatusHandler` can be adapted for the Mac agent to report status, or the cloud backend can poll the agent. **Recommendation:** Agent pushes heartbeats every 60s (reuse the existing status report endpoint with bearer token auth).
 
 ### 7.5 `cloud/db/schema/claws.ts`
 
-Add columns (shown in section 5). The `clawsRelations` also needs a relation to `macMinis`:
+Add columns (shown in section 5). The `clawsRelations` also needs a relation to `fleetMacs`:
 
 ```typescript
 export const clawsRelations = relations(claws, ({ one, many }) => ({
   createdBy: one(users, { ... }),
   organization: one(organizations, { ... }),
   memberships: many(clawMemberships),
-  macMini: one(macMinis, {
-    fields: [claws.macMiniId],
-    references: [macMinis.id],
+  macMini: one(fleetMacs, {
+    fields: [claws.macId],
+    references: [fleetMacs.id],
   }),
 }));
 ```
 
 ### 7.6 `cloud/api/claws.handlers.ts` — `createClawHandler`
 
-The handler logic mostly stays the same because it uses `ClawDeploymentService` interface. But after provisioning, we need to persist the Mac Mini assignment:
+The handler logic mostly stays the same because it uses `ClawDeploymentService` interface. But after provisioning, we need to persist the Mac assignment:
 
 ```diff
  // After clawDeployment.provision()
-+    // Persist Mac Mini assignment
++    // Persist Mac assignment
 +    yield* drizzle
 +      .update(claws)
 +      .set({
-+        macMiniId: status.macMiniId,        // new field on ClawDeploymentStatus
++        macId: status.macId,        // new field on ClawDeploymentStatus
 +        tunnelHostname: status.tunnelHostname,
 +        localPort: status.localPort,
 +        macUsername: status.macUsername,
@@ -1273,26 +1273,26 @@ The handler logic mostly stays the same because it uses `ClawDeploymentService` 
 +      .where(eq(claws.id, claw.id));
 ```
 
-Since we haven't released Cloudflare Containers publicly, there's no backward compatibility concern. We replace `ClawDeploymentStatus` entirely for the Mac Mini target:
+Since we haven't released Cloudflare Containers publicly, there's no backward compatibility concern. We replace `ClawDeploymentStatus` entirely for the Mac target:
 
 ```typescript
 export interface ClawDeploymentStatus {
   status: ClawStatus;
   startedAt?: Date;
   errorMessage?: string;
-  // Mac Mini fields (required — this is the only deployment target)
-  miniId: string;
-  miniPort: number;
+  // Mac fields (required — this is the only deployment target)
+  macId: string;
+  macPort: number;
   tunnelHostname: string;
   macUsername: string;
 }
 ```
 
-R2 fields (`bucketName`, `r2Credentials`) are removed from the status type since R2 is only used for backups, not as part of deployment status. The `MacMiniDeploymentService` handles R2 backup internally without exposing it in the status interface.
+R2 fields (`bucketName`, `r2Credentials`) are removed from the status type since R2 is only used for backups, not as part of deployment status. The `MacDeploymentService` handles R2 backup internally without exposing it in the status interface.
 
 ---
 
-## 8. Mac Mini Agent
+## 8. Mac Agent
 
 ### Technology Stack
 
@@ -1303,13 +1303,13 @@ R2 fields (`bucketName`, `r2Credentials`) are removed from the status type since
 
 ### Agent launchd Plist
 
-See Phase 0 Step 2 for the canonical agent launchd plist. The agent runs as `clawadmin` under `/Library/LaunchDaemons/com.mirascope.mini-agent.plist`.
+See Phase 0 Step 2 for the canonical agent launchd plist. The agent runs as `clawadmin` under `/Library/LaunchDaemons/com.mirascope.mac-agent.plist`.
 
 ### Agent Health Check Response
 
 ```json
 {
-  "hostname": "mini-01",
+  "hostname": "mac-01",
   "uptime": 864000,
   "cpu": {
     "usage": 23.5,
@@ -1362,7 +1362,7 @@ Complete flow when `createClawHandler` is called.
 8. If `settings.mockDeployment` (which is `false | PlanTier`, not just boolean): set status to `active` immediately
 9. Track analytics event
 
-**New flow with Mac Mini:**
+**New flow with Mac:**
 
 ```
 1. createClawHandler (cloud/api/claws.handlers.ts)
@@ -1370,21 +1370,21 @@ Complete flow when `createClawHandler` is called.
    ├── db.organizations.claws.create() → creates DB row (status: "pending")
    │
    ├── clawDeployment.provision({ clawId, instanceType })
-   │   │  (cloud/mac-mini/deployment/live.ts)
+   │   │  (cloud/mac/deployment/live.ts)
    │   │
-   │   ├── fleet.selectMini() → pick least-loaded active Mini
-   │   │   (SELECT FROM mac_minis WHERE status='active' AND current_claws < max_claws
+   │   ├── fleet.selectMac() → pick least-loaded active Mini
+   │   │   (SELECT FROM fleet_macs WHERE status='active' AND current_claws < max_claws
    │   │    ORDER BY current_claws ASC LIMIT 1)
    │   │
-   │   ├── fleet.allocatePort(miniId) → find unused port in base_port..base_port+max_claws
+   │   ├── fleet.allocatePort(macId) → find unused port in base_port..base_port+max_claws
    │   │
    │   ├── r2.createBucket("claw-backup-{clawId}") → backup bucket
    │   ├── r2.createScopedCredentials("claw-backup-{clawId}") → backup creds
    │   │
-   │   ├── fleet.provisionOnMini(miniId, { clawId, macUsername, localPort, ... })
+   │   ├── fleet.provisionOnMac(macId, { clawId, macUsername, localPort, ... })
    │   │   │
-   │   │   ├── HTTP POST https://{hostname}.agent.claws.mirascope.dev/claws
-   │   │   │   │  (Mini agent receives request)
+   │   │   ├── HTTP POST https://{agent_url}/claws  (from fleet_macs.agent_url)
+   │   │   │   │  (Mac agent receives request)
    │   │   │   │
    │   │   │   ├── sysadminctl -addUser claw-{id8} ...
    │   │   │   ├── mkdir -p /Users/claw-{id8}/.openclaw/workspace
@@ -1396,17 +1396,17 @@ Complete flow when `createClawHandler` is called.
    │   │   │   ├── Update cloudflared ingress (API or config file)
    │   │   │   └── Return { success: true }
    │   │   │
-   │   │   └── UPDATE mac_minis SET current_claws = current_claws + 1
+   │   │   └── UPDATE fleet_macs SET current_claws = current_claws + 1
    │   │
    │   └── Return { status: "provisioning", bucketName, r2Credentials, tunnelHostname, ... }
    │
    ├── encryptSecrets({ GATEWAY_TOKEN, API_KEY, R2_CREDS, ... })
    │
-   ├── UPDATE claws SET bucketName, secretsEncrypted, macMiniId,
+   ├── UPDATE claws SET bucketName, secretsEncrypted, macId,
    │   tunnelHostname, localPort, macUsername, status='provisioning'
    │
    ├── clawDeployment.warmUp(clawId)
-   │   │  (sends POST to Mini agent /api/claws/{id}/start)
+   │   │  (sends POST to Mac agent /api/claws/{id}/start)
    │   └── (agent verifies gateway is running via launchctl)
    │
    └── Return claw to frontend
@@ -1423,11 +1423,11 @@ Complete flow when `createClawHandler` is called.
    │
    ├── deployment.deprovision(clawId)
    │   │
-   │   ├── fleet.getClawAssignment(clawId) → { miniId, macUsername, ... }
+   │   ├── fleet.getClawAssignment(clawId) → { macId, macUsername, ... }
    │   │
-   │   ├── fleet.deprovisionOnMini(miniId, { clawId, macUsername, archive: true })
+   │   ├── fleet.deprovisionOnMac(macId, { clawId, macUsername, archive: true })
    │   │   │
-   │   │   ├── HTTP DELETE https://{hostname}.agent.claws.mirascope.dev/claws/{clawUser}
+   │   │   ├── HTTP DELETE https://{agent_url}/claws/{clawUser}  (from fleet_macs.agent_url)
    │   │   │   │
    │   │   │   ├── launchctl bootout system/com.mirascope.claw.{id}
    │   │   │   ├── tar czf /tmp/claw-{id}-archive.tar.gz /Users/claw-{id8}/
@@ -1436,7 +1436,7 @@ Complete flow when `createClawHandler` is called.
    │   │   │   ├── sysadminctl -deleteUser claw-{id8}
    │   │   │   └── rm -rf /Users/claw-{id8}
    │   │   │
-   │   │   └── UPDATE mac_minis SET current_claws = current_claws - 1
+   │   │   └── UPDATE fleet_macs SET current_claws = current_claws - 1
    │   │
    │   └── (R2 backup bucket is KEPT — don't delete on deprovision)
    │
@@ -1452,7 +1452,7 @@ Complete flow when `createClawHandler` is called.
 1. createClawHandler with restore flag
    │
    ├── Provision new claw (normal flow)
-   ├── After gateway starts, call Mini agent /api/claws/{id}/restore
+   ├── After gateway starts, call Mac agent /api/claws/{id}/restore
    │   │
    │   ├── Download archive.tar.gz from R2
    │   ├── Extract to /Users/claw-{id8}/
@@ -1477,18 +1477,17 @@ Browser → WS Proxy → Dispatch Worker → Cloudflare Container → Gateway
 ### After
 
 ```
-Browser → WS Proxy → Cloudflare Tunnel → Mac Mini → Gateway
+Browser → WS Proxy → Cloudflare Tunnel → Mac → Gateway
 ```
 
-The `connectAndRelay` function connects to `wss://claw-{id}.claws.mirascope.com` instead of the dispatch worker URL. The Cloudflare Tunnel terminates TLS and routes to `localhost:{port}` on the Mini. The gateway is listening there.
+The `connectAndRelay` function connects to `wss://claw-{id}.claws.mirascope.com` instead of the dispatch worker URL. The Cloudflare Tunnel terminates TLS and routes to `localhost:{port}` on the Mac. The gateway is listening there.
 
-**Key difference:** The dispatch worker previously handled both routing AND container lifecycle. Now routing is purely Cloudflare Tunnel (infrastructure-level), and lifecycle is Mini agent (separate channel).
+**Key difference:** The dispatch worker previously handled both routing AND container lifecycle. Now routing is purely Cloudflare Tunnel (infrastructure-level), and lifecycle is Mac agent (separate channel).
 
 **The "Gateway button" URL** (the UI link users click to open their claw):
 
 The frontend `getGatewayUrl()` in `cloud/app/routes/$orgSlug/claws/$clawSlug.tsx` currently constructs:
 - **localhost:** Uses `VITE_OPENCLAW_GATEWAY_WS_URL` (http) or falls back to `http://localhost:18789/`
-- **mirascope.dev:** `https://openclaw.mirascope.dev/{org}/{claw}/overview`
 - **Production:** `https://openclaw.{subdomain}.mirascope.com/{org}/{claw}/overview` (or `openclaw.mirascope.com` for www/bare domain)
 
 These URLs point to the dispatch worker, which serves the OpenClaw Control UI HTML with injected base path and WS boot script.
@@ -1507,7 +1506,7 @@ These URLs point to the dispatch worker, which serves the OpenClaw Control UI HT
 ### Architecture
 
 ```
-Mac Mini (local SSD — primary)
+Mac (local SSD — primary)
   │
   ├── Daily backup cron (2 AM local time)
   │   └── tar + upload to R2
@@ -1517,7 +1516,7 @@ Mac Mini (local SSD — primary)
 
 ### Backup Implementation
 
-The Mac Mini Agent handles backups via the `POST /claws/:clawUser/backup` endpoint. The backup flow:
+The Mac Agent handles backups via the `POST /claws/:clawUser/backup` endpoint. The backup flow:
 
 1. Briefly stop the gateway for a consistent snapshot
 2. Create a tarball of the claw's home directory (excluding caches, `node_modules`, Chromium cache)
@@ -1525,11 +1524,11 @@ The Mac Mini Agent handles backups via the `POST /claws/:clawUser/backup` endpoi
 4. Restart the gateway
 5. Apply retention policy (7 daily, 4 weekly, 3 monthly)
 
-A launchd calendar interval triggers daily backups for all claws at 2 AM. Detailed backup scripts and launchd configuration are part of the agent codebase at `cloud/claws/mini-agent/`.
+A launchd calendar interval triggers daily backups for all claws at 2 AM. Detailed backup scripts and launchd configuration are part of the agent codebase at `cloud/claws/mac-agent/`.
 
 ### Backup Retention Cron
 
-A retention cron job runs daily (3 AM, after backups complete) on each Mini agent to enforce the retention policy (7 daily, 4 weekly, 3 monthly). The agent iterates over each claw's R2 backup prefix and deletes objects that fall outside the retention window.
+A retention cron job runs daily (3 AM, after backups complete) on each Mac agent to enforce the retention policy (7 daily, 4 weekly, 3 monthly). The agent iterates over each claw's R2 backup prefix and deletes objects that fall outside the retention window.
 
 ```typescript
 // Agent cron: runs daily at 3 AM via launchd CalendarInterval
@@ -1546,12 +1545,12 @@ Alternatively, a Cloudflare Cron Trigger on the cloud worker can call each agent
 
 ## 13. Live Migration
 
-For maintenance or rebalancing, claws can be migrated between Minis.
+For maintenance or rebalancing, claws can be migrated between Macs.
 
 ### Migration Flow
 
 ```
-1. Cloud backend calls: fleet.migrateClawToMini(clawId, targetMiniId)
+1. Cloud backend calls: fleet.migrateClawToMac(clawId, targetMiniId)
    │
    ├── Source Mini: POST /api/claws/{id}/migrate-out
    │   ├── Stop gateway (launchctl bootout)
@@ -1569,15 +1568,15 @@ For maintenance or rebalancing, claws can be migrated between Minis.
    │   ├── Start gateway
    │   └── Verify health
    │
-   ├── Update DB: claws.mac_mini_id = targetMiniId, local_port = newPort
+   ├── Update DB: claws.mac_id = targetMiniId, local_port = newPort
    │
-   └── Update source: mac_minis.current_claws -= 1
-       Update target: mac_minis.current_claws += 1
+   └── Update source: fleet_macs.current_claws -= 1
+       Update target: fleet_macs.current_claws += 1
 ```
 
 **Downtime:** ~2-5 minutes per claw (stop, archive, transfer, restore, start). The WS proxy will get connection errors during this window, which the browser handles with reconnection.
 
-**Draining a Mini:** Set `mac_minis.status = 'draining'`. No new claws assigned. Migrate all existing claws off. Then `status = 'offline'` for maintenance.
+**Draining a Mac:** Set `fleet_macs.status = 'draining'`. No new claws assigned. Migrate all existing claws off. Then `status = 'offline'` for maintenance.
 
 ---
 
@@ -1593,7 +1592,7 @@ For maintenance or rebalancing, claws can be migrated between Minis.
 
 ### Filesystem Security
 
-- **FileVault:** Enabled on all Minis (full-disk encryption at rest)
+- **FileVault:** Enabled on all Macs (full-disk encryption at rest)
 - **Gateway binary:** Read-only, owned by root, claws can execute but not modify
 - **Agent scripts:** Owned by root, not writable by claw users
 - **No shared directories** between claws
@@ -1602,9 +1601,9 @@ For maintenance or rebalancing, claws can be migrated between Minis.
 
 - **No inbound ports:** All traffic via Cloudflare Tunnel (outbound-only connection)
 - **Tailscale:** Admin access only, ACL-restricted to Mirascope team
-- **Mutual TLS (mTLS):** Agent communication uses mTLS over Tailscale for authentication. Both the cloud backend and the Mini agent present certificates, providing mutual authentication beyond bearer tokens alone. This ensures only authorized cloud services can issue commands to agents and agents can verify they're talking to legitimate cloud endpoints.
-- **Mini agent:** Listens only on Tailscale interface, mTLS + bearer token auth
-- **Residential IP:** Claws browse the internet via the Mac Mini's residential IP (good for bot detection avoidance)
+- **Mutual TLS (mTLS):** Agent communication uses mTLS over Tailscale for authentication. Both the cloud backend and the Mac agent present certificates, providing mutual authentication beyond bearer tokens alone. This ensures only authorized cloud services can issue commands to agents and agents can verify they're talking to legitimate cloud endpoints.
+- **Mac agent:** Listens only on Tailscale interface, mTLS + bearer token auth
+- **Residential IP:** Claws browse the internet via the Mac's residential IP (good for bot detection avoidance)
 
 ### SSH Hardening
 
@@ -1645,12 +1644,12 @@ Claws need access to their own home directory for workspace files, browser data,
 ### Health Check Pipeline
 
 ```
-Mini Agent (every 60s)
+Mac Agent (every 60s)
   │
   ├── POST /api/internal/claws/:clawId/status → Cloud DB
   │   (reuse existing reportClawStatusHandler)
   │
-  └── POST /api/internal/mini/:miniId/health → Cloud DB
+  └── POST /api/internal/mini/:macId/health → Cloud DB
       (new endpoint for Mini-level health)
 ```
 
@@ -1681,35 +1680,35 @@ The agent exports OTEL (OpenTelemetry) metrics which feed into our existing Clic
 
 ### Admin Dashboard (`admin.mirascope.com`)
 
-The admin dashboard is the single pane of glass for managing the entire Mac Mini fleet across all environments. It's a TanStack Start app deployed as a separate Cloudflare Worker, authenticated via the existing Mirascope auth system with an admin role check.
+The admin dashboard is the single pane of glass for managing the entire Mac fleet across all environments. It's a TanStack Start app deployed as a separate Cloudflare Worker, authenticated via the existing Mirascope auth system with an admin role check.
 
 #### Environment Switcher
 
-The dashboard has an environment selector (Dev / Staging / Production) at the top level. Each environment connects to its own fleet database and agent URLs. The default view shows **all environments side by side** as a summary, with drill-down into individual environments.
+The dashboard has an environment selector (Local / Staging / Production) at the top level. Each environment connects to its own fleet database and agent URLs. The default view shows **all environments side by side** as a summary, with drill-down into individual environments.
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  🏠 Fleet Dashboard          [Dev] [Staging] [Production]  │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  Dev (1 Mini)        Staging (1 Mini)    Prod (0 Minis)     │
-│  ██████░░░░ 3/12     ██░░░░░░░░ 1/12     — not deployed —  │
-│  CPU 23%  RAM 41%    CPU 8%   RAM 15%                       │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│  🏠 Fleet Dashboard       [Local] [Staging] [Production]        │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Local (1 Mini)      Staging (1 Mini)    Prod (0 Minis)          │
+│  ██████░░░░ 3/12     ██░░░░░░░░ 1/12     — not deployed —       │
+│  CPU 23%  RAM 41%    CPU 8%   RAM 15%                            │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 #### Fleet Overview Page
 
-The landing page shows a card grid — one card per Mac Mini across the selected environment(s).
+The landing page shows a card grid — one card per Mac across the selected environment(s).
 
 **Mini Card contents:**
 
 | Element | Source | Description |
 |---------|--------|-------------|
-| **Hostname** | `mac_minis.hostname` | e.g. "mini-01", "dev-macbook" |
-| **Status badge** | `mac_minis.status` | 🟢 active, 🟡 draining, 🔴 offline, 🔧 maintenance |
-| **Environment tag** | `mac_minis.environment` | Dev / Staging / Production |
+| **Hostname** | `fleet_macs.hostname` | e.g. "mac-01", "dev-macbook" |
+| **Status badge** | `fleet_macs.status` | 🟢 active, 🟡 draining, 🔴 offline, 🔧 maintenance |
+| **Environment tag** | `fleet_macs.environment` | Local / Staging / Production |
 | **Hardware** | Agent `/health` → `cpu.cores`, `memory.totalGb` | e.g. "M4 Pro · 12 cores · 32 GB" |
 | **Claw capacity meter** | Agent `/health` → `claws.active` / `claws.max` | Visual bar: "7 / 12 claws" |
 | **CPU gauge** | Agent `/health` → `cpu.usage` | Real-time CPU percentage with color thresholds |
@@ -1721,13 +1720,13 @@ The landing page shows a card grid — one card per Mac Mini across the selected
 
 Cards are **sortable** (by name, CPU, memory, claw count) and **filterable** (by status, environment).
 
-#### Mini Detail Page (`/minis/:miniId`)
+#### Mini Detail Page (`/minis/:macId`)
 
-Clicking a Mini card opens the detail view with three tabs:
+Clicking a Mac card opens the detail view with three tabs:
 
 **Tab 1: Claws**
 
-A table of all claws hosted on this Mini, sourced from Agent `GET /claws`:
+A table of all claws hosted on this Mac, sourced from Agent `GET /claws`:
 
 | Column | Source | Description |
 |--------|--------|-------------|
@@ -1759,12 +1758,12 @@ Time-series charts powered by ClickHouse, with selectable time ranges (1h, 6h, 2
 
 | Action | Description | API Call |
 |--------|-------------|----------|
-| **Drain** | Stop accepting new claws, begin migrating existing ones off | `PATCH /api/internal/fleet/:miniId` → `status: "draining"` |
-| **Maintenance mode** | Mark as under maintenance (should drain first) | `PATCH /api/internal/fleet/:miniId` → `status: "maintenance"` |
-| **Activate** | Return to active fleet | `PATCH /api/internal/fleet/:miniId` → `status: "active"` |
-| **Decommission** | Remove from fleet entirely (must be empty) | `DELETE /api/internal/fleet/:miniId` |
+| **Drain** | Stop accepting new claws, begin migrating existing ones off | `PATCH /api/internal/fleet/:macId` → `status: "draining"` |
+| **Maintenance mode** | Mark as under maintenance (should drain first) | `PATCH /api/internal/fleet/:macId` → `status: "maintenance"` |
+| **Activate** | Return to active fleet | `PATCH /api/internal/fleet/:macId` → `status: "active"` |
+| **Decommission** | Remove from fleet entirely (must be empty) | `DELETE /api/internal/fleet/:macId` |
 
-Config display (read-only, sourced from `mac_minis` table):
+Config display (read-only, sourced from `fleet_macs` table):
 - Agent URL, Tailscale IP, tunnel hostname suffix
 - Max claws, port range, agent version
 - Registration date, last maintenance date
@@ -1772,12 +1771,12 @@ Config display (read-only, sourced from `mac_minis` table):
 #### Fleet-Wide Views
 
 **Capacity Planning** (`/fleet/capacity`):
-- Total claws across all Minis vs. total capacity, per environment
+- Total claws across all Macs vs. total capacity, per environment
 - Projected capacity exhaustion based on current growth rate
 - Recommended action: "Add 1 Mini to production to maintain 30% headroom"
 
 **Recent Activity** (`/fleet/activity`):
-- Unified timeline of events across all Minis: provisions, deprovisions, restarts, backups, status changes, alerts
+- Unified timeline of events across all Macs: provisions, deprovisions, restarts, backups, status changes, alerts
 - Filterable by Mini, environment, event type
 
 **Alerts** (`/fleet/alerts`):
@@ -1790,7 +1789,7 @@ Config display (read-only, sourced from `mac_minis` table):
 1. Agent `/health` endpoints are polled every 30 seconds by a Cloudflare Worker cron trigger
 2. Health snapshots are written to ClickHouse (for historical charts) and to a KV store (for real-time dashboard display)
 3. The dashboard reads from KV for current state and queries ClickHouse for historical data
-4. Management actions go through the Cloud API (`/api/internal/fleet/*`), which calls the Mini Agent
+4. Management actions go through the Cloud API (`/api/internal/fleet/*`), which calls the Mac Agent
 
 **Auth:**
 - Same auth as mirascope.com (shared auth cookies/tokens)
@@ -1801,7 +1800,7 @@ Config display (read-only, sourced from `mac_minis` table):
 - TanStack Start + React (consistent with mirascope.com)
 - Deployed as a separate Cloudflare Worker at `admin.mirascope.com`
 - Shares the same database and ClickHouse instance as the main app
-- Uses the existing `mac_minis` table + Agent API — no new data stores
+- Uses the existing `fleet_macs` table + Agent API — no new data stores
 
 #### Phase 0 Dashboard (MVP)
 
@@ -1822,22 +1821,22 @@ The initial build focuses on operational essentials — enough to manage the dev
 
 ### Overview
 
-Fleet onboarding is the process of going from a new Mac Mini in the box to a fully operational member of the claw fleet.
+Fleet onboarding is the process of going from a new Mac in the box to a fully operational member of the claw fleet.
 
 ### Phase 0: Manual Setup + Agent Self-Registration
 
 1. **Physical setup** — unbox, connect to power/network, create `clawadmin` admin account
-2. **Manual configuration** — follow the Mac Mini setup checklist (install Tailscale, Node.js, cloudflared, OpenClaw, enable FileVault, etc.)
-3. **Deploy agent** — install the Mac Mini Agent to `/opt/mirascope/mini-agent/`, configure launchd plist, start the service
+2. **Manual configuration** — follow the Mac setup checklist (install Tailscale, Node.js, cloudflared, OpenClaw, enable FileVault, etc.)
+3. **Deploy agent** — install the Mac Agent to `/opt/mirascope/mac-agent/`, configure launchd plist, start the service
 4. **Verification** — run `bun run verify-mac-mini --agent-url https://{hostname}.agent.claws.mirascope.com` to validate all prerequisites
 5. **Fleet registration** — run `bun run fleet:register --agent-url https://{hostname}.agent.claws.mirascope.com` from the cloud repo. This command:
    - Calls the agent's `/health` endpoint to collect hardware info (chip, RAM, disk)
    - Calls the agent's `/info` endpoint for Tailscale IP, tunnel ID, etc.
-   - Inserts a row into `mac_minis` table with all collected data
+   - Inserts a row into `fleet_macs` table with all collected data
    - Sets status to `active`
-   - Prints confirmation with the Mini's details
+   - Prints confirmation with the Mac's details
 
-Alternatively, the agent has a **self-registration startup flow**: on first boot, if not yet registered, the agent calls a cloud API endpoint (`POST /api/internal/fleet/register`) with its hardware info and agent URL. The cloud backend creates the `mac_minis` row and returns a Mini ID that the agent persists locally.
+Alternatively, the agent has a **self-registration startup flow**: on first boot, if not yet registered, the agent calls a cloud API endpoint (`POST /api/internal/fleet/register`) with its hardware info and agent URL. The cloud backend creates the `fleet_macs` row and returns a Mac ID that the agent persists locally.
 
 ### Phase 1+: Agent-Assisted Onboarding
 
@@ -1846,13 +1845,13 @@ For staging and production, the process is more automated:
 1. **Physical setup** — still manual (unbox, connect, create admin account)
 2. **Bootstrap script** — a single `curl | bash` or `bun run bootstrap-mini` script that installs all prerequisites (Tailscale, Node.js, cloudflared, OpenClaw, agent)
 3. **Agent self-registration** — on first startup, the agent automatically registers with the fleet via the cloud API
-4. **Admin approval** — new Minis appear in `admin.mirascope.com` with status `pending_approval`. An admin reviews and activates them.
+4. **Admin approval** — new Macs appear in `admin.mirascope.com` with status `pending_approval`. An admin reviews and activates them.
 
 The goal is to minimize manual steps: physical setup → run one script → agent handles the rest.
 
 ### Verification Script
 
-After manual setup, run the verification script to validate the Mini is ready:
+After manual setup, run the verification script to validate the Mac is ready:
 
 ```bash
 bun run verify-mac-mini --agent-url https://{hostname}.agent.claws.mirascope.com
@@ -1879,7 +1878,7 @@ Returns a pass/fail report with details on any failures.
 
 Claws are provisioned based on the user's subscription plan tier. Each tier maps to different hardware requirements:
 
-| Tier | RAM per Claw | Disk per Claw | Max Claws per Mini (M4 Pro 32GB/1TB) | Description |
+| Tier | RAM per Claw | Disk per Claw | Max Claws per Mac (M4 Pro 32GB/1TB) | Description |
 |------|-------------|---------------|--------------------------------------|-------------|
 | **small** | ~2 GB | ~50 GB | 12 | Light usage, basic automation |
 | **medium** | ~4 GB | ~80 GB | 6 | Standard usage, regular browser automation |
@@ -1892,22 +1891,22 @@ Claws are provisioned based on the user's subscription plan tier. Each tier maps
 The fleet scheduler accepts a tier/plan parameter and filters Minis accordingly:
 
 ```typescript
-readonly selectMini: (
+readonly selectMac: (
   tier: "small" | "medium" | "large",
 ) => Effect.Effect<{ id: string; hostname: string }, ClawDeploymentError>;
 ```
 
 Selection logic:
-1. Filter `mac_minis` by hardware capability (e.g., `large` tier requires M4 Pro 32GB+)
+1. Filter `fleet_macs` by hardware capability (e.g., `large` tier requires M4 Pro 32GB+)
 2. Check available capacity based on tier (a 32GB Mini can host 12 small, 6 medium, or 3 large claws)
-3. Pick least-loaded Mini that satisfies the tier requirement
+3. Pick least-loaded Mac that satisfies the tier requirement
 
-The `mac_minis` table already tracks `chip`, `ram_gb`, and `disk_gb`, which the scheduler uses to determine tier compatibility. The `max_claws` field becomes tier-dependent rather than a fixed number.
+The `fleet_macs` table already tracks `chip`, `ram_gb`, and `disk_gb`, which the scheduler uses to determine tier compatibility. The `max_claws` field becomes tier-dependent rather than a fixed number.
 
 ### Future Considerations
 
 - Tiers may map to different Mini hardware (e.g., small → M4 16GB, large → M4 Pro 32GB)
-- Mixed-tier placement on a single Mini (e.g., some small + some medium claws)
+- Mixed-tier placement on a single Mac (e.g., some small + some medium claws)
 - Resource enforcement via macOS resource limits or cgroups-like mechanisms
 
 ---
@@ -1916,38 +1915,35 @@ The `mac_minis` table already tracks `chip`, `ram_gb`, and `disk_gb`, which the 
 
 ### Environments
 
-The Mirascope Cloud app defines four environments in `wrangler.jsonc`:
+The Mirascope Cloud app defines three environments in `wrangler.jsonc`:
 
 | Environment | URL | Description |
 |-------------|-----|-------------|
 | `local` | Local Vite dev server (`bun run dev`) | Developer's machine |
-| `dev` | mirascope.dev (Cloudflare Worker) | Development environment |
 | `staging` | staging.mirascope.com | Staging environment |
 | `production` | mirascope.com | Production environment |
+
+> **Note:** A `dev` (mirascope.dev) environment is deferred. The pipeline is: **Local → Staging → Production**.
 
 ### Infrastructure per Environment
 
 | Environment | Mac Hardware | Description |
 |-------------|-------------|-------------|
-| **Local** | Personal machine (old MacBook, individual Mac Mini, etc.) | Each developer/claw has their own machine for local dev. Runs Vite locally + agent/tunnel on the personal Mac. The entire backend path (tunnel → agent → gateway) is identical to production. |
-| **Dev** | Dedicated Mac Mini(s) | The `mirascope.dev` deployment. Real Cloudflare Worker pointing at a real Mac Mini fleet. Used to test actual CF deployment before promoting to staging. Shared environment — not affected by anyone's local dev. |
-| **Staging** | Dedicated Mac Mini(s) | Pre-production validation at `staging.mirascope.com`. |
-| **Production** | Mac Mini fleet | Production at `mirascope.com`. |
-
-**Key distinction:** Local and Dev are separate. Local is your personal sandbox (Vite dev server). Dev is a real deployed environment with its own dedicated fleet. Changes flow: **Local → Dev → Staging → Production**.
+| **Local** | Personal machine (old MacBook, individual Mac, etc.) | Each developer/claw has their own machine for local dev. Runs Vite locally + agent/tunnel on the personal Mac. The entire backend path (tunnel → agent → gateway) is identical to production. |
+| **Staging** | Dedicated Mac(s) | Pre-production validation at `staging.mirascope.com`. |
+| **Production** | Mac fleet | Production at `mirascope.com`. |
 
 **1:1 parity across all environments:** Every environment — including local — uses the exact same backend path: Cloudflare Tunnel → Agent → Gateway. The **only** difference is what serves the frontend:
 
 ```
-Local:    Vite (localhost)               → WS proxy → CF Tunnel → Agent → Gateway
-Dev:      CF Worker (mirascope.dev)      → WS proxy → CF Tunnel → Agent → Gateway
+Local:    Vite (localhost)                  → WS proxy → CF Tunnel → Agent → Gateway
 Staging:  CF Worker (staging.mirascope.com) → WS proxy → CF Tunnel → Agent → Gateway
-Prod:     CF Worker (mirascope.com)      → WS proxy → CF Tunnel → Agent → Gateway
+Prod:     CF Worker (mirascope.com)         → WS proxy → CF Tunnel → Agent → Gateway
 ```
 
-This means if it works locally, it works everywhere. There are no special dev-only code paths.
+This means if it works locally, it works everywhere. There are no special local-only code paths.
 
-Each person (developer or claw) gets their own machine for local development. This keeps the Dev environment clean and stable — it's a shared resource that should always reflect the latest `main` branch deployment, not be disrupted by in-progress work.
+Each person (developer or claw) gets their own machine for local development. This keeps staging clean and stable — it's a shared resource that should always reflect the latest `main` branch deployment, not be disrupted by in-progress work.
 
 ### Tunnel Namespaces
 
@@ -1956,15 +1952,13 @@ Each person (developer or claw) gets their own machine for local development. Th
 | Environment | Tunnel Pattern | Routes To |
 |-------------|---------------|-----------|
 | Local | `*.local-{user}.claws.mirascope.dev` | Personal machine (MacBook, Mini, etc.) |
-| Dev | `*.claws.mirascope.dev` | Dev Mac Mini(s) |
-| Staging | `*.claws.staging.mirascope.com` | Staging Mac Mini(s) |
-| Production | `*.claws.mirascope.com` | Production Mac Minis |
+| Staging | `*.claws.staging.mirascope.com` | Staging Mac(s) |
+| Production | `*.claws.mirascope.com` | Production Macs |
 
 Each personal machine runs `cloudflared` with its own tunnel. The local tunnel namespace is scoped per user to avoid collisions (e.g., `*.local-william.claws.mirascope.dev`).
 
 For example, a claw `abc123` would have:
 - Local (William): `claw-abc123.local-william.claws.mirascope.dev`
-- Dev: `claw-abc123.claws.mirascope.dev`
 - Staging: `claw-abc123.claws.staging.mirascope.com`
 - Production: `claw-abc123.claws.mirascope.com`
 
@@ -1974,7 +1968,7 @@ For example, a claw `abc123` would have:
 
 ### Architecture: 1:1 Parity with Production
 
-Local development uses the **exact same backend path** as every other environment. The personal Mac runs `cloudflared`, the agent, and gateway services — identical to a production Mini. The only difference is the frontend: Vite dev server instead of a Cloudflare Worker.
+Local development uses the **exact same backend path** as every other environment. The personal Mac runs `cloudflared`, the agent, and gateway services — identical to a production Mac. The only difference is the frontend: Vite dev server instead of a Cloudflare Worker.
 
 ```
 Browser (localhost:5173)
@@ -1991,7 +1985,7 @@ Browser (localhost:5173)
          Personal Mac
                 │  - Same macOS user isolation
                 │  - Same launchd services
-                │  - Same Mini agent
+                │  - Same Mac agent
                 │  - Same cloudflared tunnel
                 │
                 ▼
@@ -1999,15 +1993,15 @@ Browser (localhost:5173)
 ```
 
 **Setup:**
-1. Personal Mac is provisioned with the same scripts, agent, `cloudflared` tunnel, and config as production Minis
+1. Personal Mac is provisioned with the same scripts, agent, `cloudflared` tunnel, and config as production Macs
 2. Personal Mac runs its own Cloudflare Tunnel under `*.local-{user}.claws.mirascope.dev`
 3. Developer runs `bun run dev` locally (Vite dev server, `.env.local`)
-4. Local Postgres `mac_minis` table has one entry: the personal machine with its tunnel hostname suffix
+4. Local Postgres `fleet_macs` table has one entry: the personal machine with its tunnel hostname suffix
 
 **Key implementation details:**
 - `.env.local` sets `tunnelHostnameSuffix` to `local-{user}.claws.mirascope.dev`
-- `MacMiniDeploymentService` works identically — the only difference is one Mini in the fleet DB
-- Agent URL in the `mac_minis` row is the tunnel URL (e.g., `https://agent.local-william.claws.mirascope.dev`), not `localhost`
+- `MacDeploymentService` works identically — the only difference is one Mini in the fleet DB
+- Agent URL in the `fleet_macs` row is the tunnel URL (e.g., `https://agent.local-william.claws.mirascope.dev`), not `localhost`
 - WS proxy routes through the tunnel, same as production
 - Auth works the same as production (session-based)
 - Full provisioning flow: create claw → find personal Mac → tunnel → agent HTTP API → create user → start gateway → tunnel route → ready
@@ -2032,17 +2026,17 @@ Toggle via query param (`?direct=1`) or env var (`VITE_DIRECT_GATEWAY=true`). Th
 
 **Goal:** Before touching any dedicated fleet hardware, prove the entire stack works end-to-end using a personal Mac (William's old MacBook) as the target machine, with `bun run dev` running locally.
 
-**Hardware:** Any spare Mac (old MacBook, personal Mac Mini, etc.). Operates on local network + Tailscale.
+**Hardware:** Any spare Mac (old MacBook, personal Mac, etc.). Operates on local network + Tailscale.
 
-**Key design decision:** ALL provisioning goes through the Mac Mini Agent HTTP API — in Phase 0 and beyond. The agent is exposed through Cloudflare Tunnel, so CF Workers can call it via standard HTTP. This means the same provisioning code works identically in local dev, staging, and production. There is no SSH-based provisioning path.
+**Key design decision:** ALL provisioning goes through the Mac Agent HTTP API — in Phase 0 and beyond. The agent is exposed through Cloudflare Tunnel, so CF Workers can call it via standard HTTP. This means the same provisioning code works identically in local dev, staging, and production. There is no SSH-based provisioning path.
 
-#### Step 1: Mac Mini Admin Setup
+#### Step 1: Mac Admin Setup
 
-Set up the personal Mac so it can run the Mac Mini Agent and host claw accounts.
+Set up the personal Mac so it can run the Mac Agent and host claw accounts.
 
-> **Note:** Detailed Mac Mini setup procedures are maintained in private operational documentation. The design doc describes *what* needs to be configured and *why*, but exact commands and configuration values are private operational knowledge.
+> **Note:** Detailed Mac setup procedures are maintained in private operational documentation. The design doc describes *what* needs to be configured and *why*, but exact commands and configuration values are private operational knowledge.
 
-**The result is a Mac Mini (or personal Mac) with:**
+**The result is a Mac (or personal Mac) with:**
 
 - A `clawadmin` admin account (the only admin account on the machine)
 - Remote Login (SSH) enabled with key-only auth via Tailscale (for admin debugging — not used for provisioning)
@@ -2051,7 +2045,7 @@ Set up the personal Mac so it can run the Mac Mini Agent and host claw accounts.
 - Playwright Chromium installed to a shared location (`/opt/playwright-browsers/`)
 - FileVault enabled (full-disk encryption at rest)
 - macOS firewall enabled (block all inbound — Tailscale and cloudflared use outbound connections)
-- cloudflared installed with a tunnel configured for the appropriate namespace (e.g., `*.claws.mirascope.dev`)
+- cloudflared installed with a tunnel configured for the appropriate namespace (e.g., `*.local-william.claws.mirascope.dev` for local, `*.claws.staging.mirascope.com` for staging)
 - cloudflared running as a launchd service
 - A fleet scripts directory at `/opt/claw-fleet/`
 
@@ -2065,11 +2059,11 @@ Set up the personal Mac so it can run the Mac Mini Agent and host claw accounts.
 - [ ] `cloudflared tunnel list` → shows the tunnel
 - [ ] cloudflared launchd service is running
 
-#### Step 2: Build the Mac Mini Agent
+#### Step 2: Build the Mac Agent
 
-**Goal:** Build the Mac Mini Agent — a lightweight HTTP server that runs on each Mini under the `clawadmin` account. This is the **first real implementation step** and the foundation of all provisioning.
+**Goal:** Build the Mac Agent — a lightweight HTTP server that runs on each Mac under the `clawadmin` account. This is the **first real implementation step** and the foundation of all provisioning.
 
-**Location:** `cloud/claws/mini-agent/` (a separate package in the Mirascope monorepo, deployed to each Mini)
+**Location:** `cloud/claws/mac-agent/` (a separate package in the Mirascope monorepo, deployed to each Mac)
 
 **Technology:**
 - **Runtime:** Node.js (same stack as rest of Mirascope)
@@ -2078,7 +2072,7 @@ Set up the personal Mac so it can run the Mac Mini Agent and host claw accounts.
 - **Shell execution:** `child_process.execFile` for `sysadminctl`, `launchctl`, cloudflared config, etc.
 
 **Exposure:**
-- Exposed through Cloudflare Tunnel at `{mini-hostname}.agent.claws.mirascope.dev` (e.g., `dev-macbook.agent.claws.mirascope.dev`)
+- Exposed through Cloudflare Tunnel at the environment-appropriate agent URL (e.g., `agent.local-william.claws.mirascope.dev` for local, `{mini-hostname}.agent.claws.staging.mirascope.com` for staging)
 - The agent's tunnel route is configured alongside the claw routes in the same cloudflared config
 - This means CF Workers, local dev servers, and any HTTPS client can reach the agent
 
@@ -2089,7 +2083,7 @@ Set up the personal Mac so it can run the Mac Mini Agent and host claw accounts.
 
 ##### Agent API Spec
 
-**`GET /health`** — Mini health (CPU, RAM, disk, available slots)
+**`GET /health`** — Mac health (CPU, RAM, disk, available slots)
 
 ```typescript
 // Response: 200 OK
@@ -2105,7 +2099,7 @@ interface HealthResponse {
 }
 ```
 
-**`GET /claws`** — List all claws on this Mini
+**`GET /claws`** — List all claws on this Mac
 
 ```typescript
 // Response: 200 OK
@@ -2134,7 +2128,7 @@ interface ProvisionRequest {
   macUsername: string;       // e.g., "claw-ab12cd34"
   localPort: number;         // e.g., 8100
   gatewayToken: string;
-  tunnelHostname: string;    // e.g., "claw-abc123.claws.mirascope.dev"
+  tunnelHostname: string;    // e.g., "claw-abc123.local-william.claws.mirascope.dev" (local) or "claw-abc123.claws.staging.mirascope.com" (staging)
   envVars: Record<string, string>; // all env vars for the claw
 }
 
@@ -2214,20 +2208,20 @@ interface ClawStatusResponse {
 
 ##### Agent Installation & Running
 
-The agent is built from `cloud/claws/mini-agent/` and deployed to each Mini at `/opt/mirascope/mini-agent/`. It runs as a launchd system daemon:
+The agent is built from `cloud/claws/mac-agent/` and deployed to each Mac at `/opt/mirascope/mac-agent/`. It runs as a launchd system daemon:
 
 ```xml
-<!-- /Library/LaunchDaemons/com.mirascope.mini-agent.plist -->
+<!-- /Library/LaunchDaemons/com.mirascope.mac-agent.plist -->
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.mirascope.mini-agent</string>
+    <string>com.mirascope.mac-agent</string>
     <key>ProgramArguments</key>
     <array>
         <string>/usr/local/bin/node</string>
-        <string>/opt/mirascope/mini-agent/server.js</string>
+        <string>/opt/mirascope/mac-agent/server.js</string>
     </array>
     <key>KeepAlive</key>
     <true/>
@@ -2243,19 +2237,19 @@ The agent is built from `cloud/claws/mini-agent/` and deployed to each Mini at `
         <string>__AGENT_AUTH_TOKEN__</string>
     </dict>
     <key>StandardOutPath</key>
-    <string>/var/log/mirascope/mini-agent.log</string>
+    <string>/var/log/mirascope/mac-agent.log</string>
     <key>StandardErrorPath</key>
-    <string>/var/log/mirascope/mini-agent.err</string>
+    <string>/var/log/mirascope/mac-agent.err</string>
 </dict>
 </plist>
 ```
 
-The agent runs as `clawadmin` (which has admin/sudo privileges) so it can create users via `sysadminctl`, manage launchd services, and edit cloudflared config. The agent's tunnel route (`{hostname}.agent.claws.mirascope.dev → http://localhost:7600`) is added to the cloudflared config during initial Mini setup.
+The agent runs as `clawadmin` (which has admin/sudo privileges) so it can create users via `sysadminctl`, manage launchd services, and edit cloudflared config. The agent's tunnel route (e.g. `agent.local-william.claws.mirascope.dev → http://localhost:7600` for local) is added to the cloudflared config during initial Mac setup.
 
 ##### Agent Codebase Structure
 
 ```
-cloud/claws/mini-agent/
+cloud/claws/mac-agent/
 ├── package.json
 ├── tsconfig.json
 ├── src/
@@ -2273,42 +2267,42 @@ cloud/claws/mini-agent/
 │       ├── exec.ts        # child_process wrapper with timeout/error handling
 │       └── config.ts      # Agent config from env vars
 └── scripts/
-    └── install.sh         # Copies built agent to /opt/mirascope/mini-agent/, installs plist
+    └── install.sh         # Copies built agent to /opt/mirascope/mac-agent/, installs plist
 ```
 
 #### Step 3: Provisioning from Local Dev
 
-**Goal:** Run `bun run dev` locally, create a claw through the UI (or API), and have it provision a real macOS user account on the personal Mac via the Mac Mini Agent.
+**Goal:** Run `bun run dev` locally, create a claw through the UI (or API), and have it provision a real macOS user account on the personal Mac via the Mac Agent.
 
-The `MacMiniDeploymentService` makes HTTP requests to the agent's Cloudflare Tunnel URL. This is the **same code path** used in staging and production — CF Workers can make HTTP requests to the agent URL just like the local dev server can.
+The `MacDeploymentService` makes HTTP requests to the agent's Cloudflare Tunnel URL. This is the **same code path** used in staging and production — CF Workers can make HTTP requests to the agent URL just like the local dev server can.
 
 ##### Database Changes
 
-Add the `mac_minis` table and new columns to `claws` (see [Section 5](#5-new-database-tables) for full schema).
+Add the `fleet_macs` table and new columns to `claws` (see [Section 5](#5-new-database-tables) for full schema).
 
 ```sql
--- Seed the personal Mac
-INSERT INTO mac_minis (hostname, tailscale_ip, tailscale_fqdn, agent_url, tunnel_id)
+-- Seed the personal Mac (local dev)
+INSERT INTO fleet_macs (hostname, tailscale_ip, tailscale_fqdn, agent_url, tunnel_id)
 VALUES (
-  'dev-macbook',
+  'personal-mac',
   '100.x.x.x',
-  'dev-macbook.tail1234.ts.net',
-  'https://dev-macbook.agent.claws.mirascope.dev',
+  'personal-mac.tail1234.ts.net',
+  'https://agent.local-william.claws.mirascope.dev',
   '<TUNNEL_UUID>'
 );
 ```
 
-##### MacMiniDeploymentService
+##### MacDeploymentService
 
-Create `cloud/mac-mini/deployment/live.ts` (already specified in [Section 6.2](#62-cloudmac-minideploymentlivets--macminideploymentservice)):
+Create `cloud/mac/deployment/live.ts` (already specified in [Section 6.2](#62-cloudmac-minideploymentlivets--macminideploymentservice)):
 
 - Implements `ClawDeploymentServiceInterface` (same interface as the existing Cloudflare deployment)
 - **`provision(config)`:**
-  1. Pick a Mini from `mac_minis` table (only one for now)
+  1. Pick a Mac from `fleet_macs` table (only one for now)
   2. Allocate next available port
-  3. Call the Mac Mini Agent: `POST https://dev-macbook.agent.claws.mirascope.dev/claws` with provision request
+  3. Call the Mac Agent: `POST {agent_url}/claws` (from `fleet_macs.agent_url`) with provision request
   4. Create R2 bucket + scoped credentials (backups still go to R2)
-  5. Return status with `tunnelHostname: claw-{id}.claws.mirascope.dev`
+  5. Return status with `tunnelHostname: claw-{id}.local-{user}.claws.mirascope.dev` (local) or environment-appropriate hostname
 - **`warmUp(clawId)`:** `POST` to agent `/claws/:clawUser/restart` or HTTP GET to the tunnel hostname to verify gateway responds
 - **`deprovision(clawId)`:** `DELETE` to agent `/claws/:clawUser` → agent handles everything (stop, archive, remove user, remove tunnel route)
 - **`getStatus(clawId)`:** `GET` from agent `/claws/:clawUser/status`
@@ -2321,7 +2315,7 @@ Create `cloud/mac-mini/deployment/live.ts` (already specified in [Section 6.2](#
 -      settings.openclawGatewayWsUrl ??
 -      settings.cloudflare.dispatchWorkerBaseUrl;
 -    const upstreamUrl = `${dispatchBaseUrl.replace(/\/$/, "")}/${orgSlug}/${clawSlug}`;
-+    // Route through Cloudflare Tunnel to the Mac Mini
++    // Route through Cloudflare Tunnel to the Mac
 +    if (!claw.tunnelHostname) {
 +      return new Response("Claw infrastructure not ready", { status: 503 });
 +    }
@@ -2334,14 +2328,14 @@ Also remove the `Authorization: Bearer` header from the upstream WebSocket upgra
 
 | File | Action |
 |------|--------|
-| `cloud/mac-mini/deployment/live.ts` | **Create** — `MacMiniDeploymentService` (HTTP calls to agent) |
-| `cloud/mac-mini/fleet/service.ts` | **Create** — fleet ops interface |
-| `cloud/mac-mini/fleet/live.ts` | **Create** — fleet ops impl (Mini selection, port allocation, agent HTTP calls) |
-| `cloud/claws/deployment/live.ts` | **Modify** — swap Layer to use `MacMiniDeploymentService` |
+| `cloud/mac/deployment/live.ts` | **Create** — `MacDeploymentService` (HTTP calls to agent) |
+| `cloud/mac/fleet/service.ts` | **Create** — fleet ops interface |
+| `cloud/mac/fleet/live.ts` | **Create** — fleet ops impl (Mac selection, port allocation, agent HTTP calls) |
+| `cloud/claws/deployment/live.ts` | **Modify** — swap Layer to use `MacDeploymentService` |
 | `cloud/api/claws-ws-proxy.ts` | **Modify** — read `tunnel_hostname` from DB, connect there |
-| `cloud/db/schema/claws.ts` | **Modify** — add `macMiniId`, `tunnelHostname`, `localPort`, `macUsername` columns |
-| `cloud/db/schema/mac-minis.ts` | **Create** — `mac_minis` table |
-| `cloud/db/migrations/XXXX_add_mac_minis.ts` | **Create** — migration |
+| `cloud/db/schema/claws.ts` | **Modify** — add `macId`, `tunnelHostname`, `localPort`, `macUsername` columns |
+| `cloud/db/schema/fleet-macs.ts` | **Create** — `fleet_macs` table |
+| `cloud/db/migrations/XXXX_add_fleet_macs.ts` | **Create** — migration |
 
 The `createClawHandler` flow stays the same — it calls `clawDeployment.provision()` which now provisions on the personal Mac via the agent instead of spawning a Cloudflare container.
 
@@ -2356,8 +2350,8 @@ For debugging individual claw issues, developers can run `openclaw gateway start
 **Prerequisites:** Steps 1-3 complete.
 
 **Setup:**
-1. Local Postgres has a `mac_minis` row for the personal Mac (from Step 3)
-2. `MacMiniDeploymentService` is wired in as the deployment Layer
+1. Local Postgres has a `fleet_macs` row for the personal Mac (from Step 3)
+2. `MacDeploymentService` is wired in as the deployment Layer
 3. `bun run dev` with `CLOUDFLARE_ENV=local`
 
 **What to test:**
@@ -2371,7 +2365,7 @@ Browser (localhost:5173)
                 │  (WS proxy — same code as production)
                 │
                 ▼
-         Cloudflare Tunnel (claw-{id}.claws.mirascope.dev)
+         Cloudflare Tunnel (claw-{id}.local-{user}.claws.mirascope.dev)
                 │
                 ▼
          personal Mac → OpenClaw Gateway (launchd service)
@@ -2396,17 +2390,17 @@ Browser (localhost:5173)
 
 ### Phase 1: Staging Environment (1 week)
 
-**Goal:** Get staging working end-to-end — on merge to main, staging deploys and connects to the staging Mac Mini.
+**Goal:** Get staging working end-to-end — on merge to main, staging deploys and connects to the staging Mac.
 
-**Hardware:** Single Mac Mini for staging environment.
+**Hardware:** Single Mac for staging environment.
 
 **Tasks:**
-1. Set up staging Mac Mini using the same admin setup process (personal Mac already validated everything)
-2. Deploy the Mac Mini Agent (already built in Phase 0 Step 2)
+1. Set up staging Mac using the same admin setup process (personal Mac already validated everything)
+2. Deploy the Mac Agent (already built in Phase 0 Step 2)
 3. **Automated fleet registration** — use `bun run fleet:register` or agent self-registration (no manual DB inserts). The agent registers itself with the staging cloud backend on first boot.
 4. Configure CI/CD: on merge to main, staging deploys the cloud worker + agent code
 5. Provision one Claw through the standard UI/API flow (uses agent automatically)
-6. Test: browser → WS proxy → tunnel → staging Mini → gateway ✓
+6. Test: browser → WS proxy → tunnel → staging Mac → gateway ✓
 7. Test: Playwright/Chromium working under claw user ✓
 
 **Files changed:**
@@ -2422,7 +2416,7 @@ Browser (localhost:5173)
 3. Monitoring + Discord alerts (agent heartbeats → cloud DB → alerting)
 4. Draining workflow for Mini maintenance
 5. Test create/delete/restart/migrate flows at scale
-6. Stress test: 12 claws per Mini
+6. Stress test: 12 claws per Mac
 
 **Files:**
 - All core infrastructure already exists from Phase 0
@@ -2445,18 +2439,18 @@ Browser (localhost:5173)
 **Goal:** Multi-Mini fleet, monitoring, live migration.
 
 **Tasks:**
-1. Add second Mini (M4 Pro 32GB)
+1. Add second Mac (M4 Pro 32GB)
 2. Fleet scheduler (placement optimization)
-3. Live migration between Minis
+3. Live migration between Macs
 4. Monitoring + Discord alerts
 5. Draining workflow for maintenance
 6. Decommission dispatch worker
 7. Move to Ethernet
-8. Stress test: 12 claws per Mini
+8. Stress test: 12 claws per Mac
 
 ### Phase 5: Scale (ongoing)
 
-- Add more Minis as demand grows
+- Add more Macs as demand grows
 - Move to colo/MacStadium for better uptime
 - Advanced scheduling (CPU/memory aware placement)
 - Grafana dashboard
@@ -2470,7 +2464,7 @@ Browser (localhost:5173)
 
 2. **No kernel-level isolation:** Claws use macOS user-level isolation, not containers or VMs. A malicious or buggy claw could potentially affect system resources (CPU, memory) shared with other claws on the same Mini. Resource limits via launchd are best-effort.
 
-3. **Single point of failure per Mini:** If a Mini goes offline, all claws on it are unavailable until it recovers or claws are migrated. Live migration (Section 13) mitigates this for planned maintenance.
+3. **Single point of failure per Mac:** If a Mac goes offline, all claws on it are unavailable until it recovers or claws are migrated. Live migration (Section 13) mitigates this for planned maintenance.
 
 ---
 
@@ -2478,7 +2472,7 @@ Browser (localhost:5173)
 
 1. **Cloudflare Tunnel API vs config file?** — API is cleaner for dynamic routes but has rate limits. Config file + reload is simpler for POC. **Lean:** API for production.
 
-2. **OpenClaw binary distribution?** — How does the gateway binary get onto Minis? Manual copy? Homebrew tap? GitHub releases? **Lean:** Manual for POC, GitHub releases for production.
+2. **OpenClaw binary distribution?** — How does the gateway binary get onto Macs? Manual copy? Homebrew tap? GitHub releases? **Lean:** Manual for POC, GitHub releases for production.
 
 3. **Gateway config delivery?** — Push during provision (agent stores locally). Config includes: environment variables (API keys like `ANTHROPIC_API_KEY`, `OPENCLAW_GATEWAY_TOKEN`), model settings (`PRIMARY_MODEL_ID`), R2 backup credentials, site URL (`OPENCLAW_SITE_URL`), and gateway configuration (host, port, token). Updates via restart (re-push config, restart gateway).
 

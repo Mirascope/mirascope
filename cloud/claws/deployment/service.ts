@@ -49,10 +49,10 @@ export interface ClawDeploymentStatus {
   status: ClawStatus;
   startedAt?: Date;
   errorMessage?: string;
-  /** Mac Mini ID hosting this claw. */
-  miniId: string;
-  /** Port allocated on the Mac Mini. */
-  miniPort: number;
+  /** Mac ID hosting this claw. */
+  macId: string;
+  /** Port allocated on the Mac. */
+  macPort: number;
   /** Tunnel hostname for direct WS connection. */
   tunnelHostname: string;
   /** macOS username for the claw's sandbox user. */

@@ -30,6 +30,10 @@ export class Tunnel extends Context.Tag("Tunnel")<
       hostname: string,
       localPort: number,
     ) => Effect.Effect<void, SystemError>;
+    readonly addDnsRoute: (
+      tunnelName: string,
+      hostname: string,
+    ) => Effect.Effect<void, SystemError>;
     readonly removeRoute: (
       configPath: string,
       hostname: string,
@@ -153,6 +157,34 @@ export const TunnelLive = Effect.gen(function* () {
         }),
     });
 
+  const addDnsRoute = (
+    tunnelName: string,
+    hostname: string,
+  ): Effect.Effect<void, SystemError> =>
+    Effect.gen(function* () {
+      const result = yield* exec
+        .run("/opt/homebrew/bin/cloudflared", ["tunnel", "route", "dns", tunnelName, hostname])
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new SystemError({
+                message: `Failed to add DNS route for ${hostname}: ${e.message}`,
+                cause: e,
+              }),
+          ),
+        );
+      if (result.exitCode !== 0) {
+        // Ignore "already exists" errors
+        if (!result.stderr.includes("already exists")) {
+          yield* Effect.fail(
+            new SystemError({
+              message: `cloudflared tunnel route dns failed: ${result.stderr}`,
+            }),
+          );
+        }
+      }
+    });
+
   const removeRoute = (
     configPath: string,
     hostname: string,
@@ -213,6 +245,7 @@ export const TunnelLive = Effect.gen(function* () {
 
   return {
     addRoute,
+    addDnsRoute,
     removeRoute,
     hasRoute,
     getRouteCount,

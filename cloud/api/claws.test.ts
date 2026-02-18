@@ -126,9 +126,9 @@ describe.sequential("Claws API", (it) => {
       expect(claw.organizationId).toBe(org.id);
       expect(claw.createdByUserId).toBeDefined();
       expect(claw.id).toBeDefined();
-      // Provisioning sets status and persists Mac Mini deployment info
+      // Provisioning sets status and persists Mac deployment info
       expect(claw.status).toBe("provisioning");
-      expect(claw.miniId).toBeDefined();
+      expect(claw.macId).toBeDefined();
       expect(claw.secretsEncrypted).toBeDefined();
     }),
   );
@@ -350,16 +350,16 @@ describe.sequential("Claws API", (it) => {
   );
 
   it.effect(
-    "GET /organizations/:organizationId/claws/:clawId/secrets - get secrets (R2 credentials from provisioning)",
+    "GET /organizations/:organizationId/claws/:clawId/secrets - get secrets (provisioned secrets)",
     () =>
       Effect.gen(function* () {
         const { client, org } = yield* TestApiContext;
         const secrets = yield* client.claws.getSecrets({
           path: { organizationId: org.id, clawId: claw.id },
         });
-        // Provisioning stores R2 credentials as secrets
-        expect(secrets.R2_ACCESS_KEY_ID).toBeDefined();
-        expect(secrets.R2_SECRET_ACCESS_KEY).toBeDefined();
+        // Provisioning stores gateway token and API key as secrets
+        expect(secrets.OPENCLAW_GATEWAY_TOKEN).toBeDefined();
+        expect(secrets.ANTHROPIC_API_KEY).toBeDefined();
       }),
   );
 
@@ -651,8 +651,8 @@ describe("Claw handler errors", () => {
     secretsEncrypted: null,
     secretsKeyId: null,
     bucketName: null,
-    miniId: null,
-    miniPort: null,
+    macId: null,
+    macPort: null,
     tunnelHostname: null,
     macUsername: null,
     weeklySpendingGuardrailCenticents: null,
@@ -830,8 +830,8 @@ describe("Claw handler errors", () => {
                     return {
                       status: "active" as const,
                       startedAt: new Date(),
-                      miniId: `mock-mini-${config.clawId}`,
-                      miniPort: 18789,
+                      macId: "00000000-0000-0000-0000-000000000001",
+                      macPort: 18789,
                       tunnelHostname: `claw-${config.clawId}.claws.mirascope.dev`,
                       macUsername: `claw-${config.clawId}`,
                     };
@@ -902,7 +902,7 @@ describe("Claw handler errors", () => {
 
         expect(capturedSet).not.toBeNull();
         expect(capturedSet!.status).toBe("provisioning");
-        expect(capturedSet!.miniId).toBeDefined();
+        expect(capturedSet!.macId).toBeDefined();
         expect(capturedSet!.tunnelHostname).toBeDefined();
         expect(capturedSet!.secretsKeyId).toBe(
           "CLAW_SECRETS_ENCRYPTION_KEY_V1",
@@ -1006,8 +1006,8 @@ describe("Claw handler errors", () => {
                   return {
                     status: "active" as const,
                     startedAt: new Date(),
-                    miniId: "mock-mini-id",
-                    miniPort: 18789,
+                    macId: "00000000-0000-0000-0000-000000000001",
+                    macPort: 18789,
                     tunnelHostname: "claw-mock-claw-id.claws.mirascope.dev",
                     macUsername: "claw-mock-claw-id",
                   };

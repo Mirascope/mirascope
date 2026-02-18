@@ -203,8 +203,8 @@ export type SettingsConfig = {
   // OpenClaw gateway (optional — for dev/local WS proxy)
   readonly openclawGatewayWsUrl?: string;
 
-  // Deployment target: "cloudflare" (default) or "mac-mini"
-  readonly deploymentTarget: "cloudflare" | "mac-mini";
+  // Deployment target: "cloudflare" (default) or "mac-deployment"
+  readonly deploymentTarget: "cloudflare" | "mac";
 };
 
 // =============================================================================
@@ -340,6 +340,8 @@ function validateSettingsFromSource(
       return source.get(name)?.trim() ?? "";
     };
 
+    const isMac = optional("DEPLOYMENT_TARGET") === "mac";
+
     // Helper: parse boolean env var (required)
     const requiredBool = (name: string): boolean => {
       const value = source.get(name)?.trim();
@@ -425,28 +427,28 @@ function validateSettingsFromSource(
       },
 
       cloudflare: {
-        accountId: mockDeployment
+        accountId: mockDeployment || isMac
           ? optional("CLOUDFLARE_ACCOUNT_ID")
           : required("CLOUDFLARE_ACCOUNT_ID"),
-        apiToken: mockDeployment
+        apiToken: mockDeployment || isMac
           ? optional("CLOUDFLARE_API_TOKEN")
           : required("CLOUDFLARE_API_TOKEN"),
-        r2BucketItemReadPermissionGroupId: mockDeployment
+        r2BucketItemReadPermissionGroupId: mockDeployment || isMac
           ? optional("CF_R2_READ_PERMISSION_GROUP_ID")
           : required("CF_R2_READ_PERMISSION_GROUP_ID"),
-        r2BucketItemWritePermissionGroupId: mockDeployment
+        r2BucketItemWritePermissionGroupId: mockDeployment || isMac
           ? optional("CF_R2_WRITE_PERMISSION_GROUP_ID")
           : required("CF_R2_WRITE_PERMISSION_GROUP_ID"),
-        durableObjectNamespaceId: mockDeployment
+        durableObjectNamespaceId: mockDeployment || isMac
           ? optional("CF_DO_NAMESPACE_ID")
           : required("CF_DO_NAMESPACE_ID"),
-        dispatchWorkerBaseUrl: mockDeployment
+        dispatchWorkerBaseUrl: mockDeployment || isMac
           ? optional("CF_DISPATCH_WORKER_BASE_URL")
           : required("CF_DISPATCH_WORKER_BASE_URL"),
       },
 
       encryptionKeys: {
-        CLAW_SECRETS_ENCRYPTION_KEY_V1: mockDeployment
+        CLAW_SECRETS_ENCRYPTION_KEY_V1: mockDeployment || isMac
           ? optional("CLAW_SECRETS_ENCRYPTION_KEY_V1") ||
             "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
           : required("CLAW_SECRETS_ENCRYPTION_KEY_V1"),
@@ -456,8 +458,7 @@ function validateSettingsFromSource(
       openclawGatewayWsUrl: optional("OPENCLAW_GATEWAY_WS_URL") || undefined,
 
       deploymentTarget:
-        (optional("DEPLOYMENT_TARGET") as "cloudflare" | "mac-mini") ||
-        "cloudflare",
+        (optional("DEPLOYMENT_TARGET") as "cloudflare" | "mac") || "cloudflare",
     };
 
     // Fail if any variables are missing

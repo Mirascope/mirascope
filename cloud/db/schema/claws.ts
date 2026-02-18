@@ -11,7 +11,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { clawMemberships } from "@/db/schema/claw-memberships";
-import { macMinis } from "@/db/schema/mac-minis";
+import { fleetMacs } from "@/db/schema/fleet-macs";
 
 import { environments } from "./environments";
 import { organizations } from "./organizations";
@@ -58,9 +58,9 @@ export const claws = pgTable(
     secretsEncrypted: text("secrets_encrypted"),
     secretsKeyId: text("secrets_key_id"),
     bucketName: text("bucket_name"),
-    // Mac Mini deployment fields
-    miniId: uuid("mini_id").references(() => macMinis.id),
-    miniPort: integer("mini_port"),
+    // Mac deployment fields
+    macId: uuid("mac_id").references(() => fleetMacs.id),
+    macPort: integer("mac_port"),
     tunnelHostname: text("tunnel_hostname"),
     macUsername: text("mac_username"),
     // Bot user that owns the claw's API key and resources
@@ -132,8 +132,8 @@ export type PublicClaw = Pick<
   | "secretsEncrypted"
   | "secretsKeyId"
   | "bucketName"
-  | "miniId"
-  | "miniPort"
+  | "macId"
+  | "macPort"
   | "tunnelHostname"
   | "macUsername"
   | "botUserId"

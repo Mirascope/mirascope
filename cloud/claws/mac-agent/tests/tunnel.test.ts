@@ -24,7 +24,7 @@ ingress:
 `;
 
   beforeEach(async () => {
-    tmpDir = await mkdtemp(path.join(tmpdir(), "mini-agent-test-"));
+    tmpDir = await mkdtemp(path.join(tmpdir(), "mac-agent-test-"));
     configPath = path.join(tmpDir, "config.yml");
     await writeFile(configPath, baseConfig, "utf-8");
   });
