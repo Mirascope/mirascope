@@ -174,9 +174,10 @@ export const Route = createFileRoute("/api/v2/$")({
                   Layer.provide(databaseLayer),
                 );
 
-                const deploymentLayer = settings.mockDeployment
-                  ? MockDeploymentService
-                  : macMiniDeploymentLayer;
+                const deploymentLayer =
+                  settings.mockDeployment && settings.deploymentTarget !== "mac"
+                    ? MockDeploymentService
+                    : macMiniDeploymentLayer;
 
                 return Layer.mergeAll(
                   Layer.succeed(Settings, settings),
