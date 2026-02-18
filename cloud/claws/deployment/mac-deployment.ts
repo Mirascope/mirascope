@@ -259,7 +259,7 @@ export const MacDeploymentLayer = Layer.effect(
                   mac.agentUrl,
                   mac.agentAuthTokenEncrypted ?? "",
                   "DELETE",
-                  `/claws/${clawId}`,
+                  `/claws/${claw.macUsername}`,
                 ),
               ).pipe(Effect.catchAll(() => Effect.void));
             }
@@ -284,7 +284,7 @@ export const MacDeploymentLayer = Layer.effect(
               mac.agentUrl,
               mac.agentAuthTokenEncrypted ?? "",
               "GET",
-              `/claws/${clawId}/status`,
+              `/claws/${claw.macUsername}/status`,
             ),
           );
 
@@ -318,7 +318,7 @@ export const MacDeploymentLayer = Layer.effect(
               mac.agentUrl,
               mac.agentAuthTokenEncrypted ?? "",
               "POST",
-              `/claws/${clawId}/restart`,
+              `/claws/${claw.macUsername}/restart`,
             ),
           );
 
@@ -343,7 +343,7 @@ export const MacDeploymentLayer = Layer.effect(
               mac.agentUrl,
               mac.agentAuthTokenEncrypted ?? "",
               "POST",
-              `/claws/${clawId}/restart`,
+              `/claws/${claw.macUsername}/restart`,
             ),
           );
 
@@ -368,7 +368,7 @@ export const MacDeploymentLayer = Layer.effect(
               mac.agentUrl,
               mac.agentAuthTokenEncrypted ?? "",
               "GET",
-              `/claws/${clawId}/status`,
+              `/claws/${claw.macUsername}/status`,
             ),
           );
         }),
