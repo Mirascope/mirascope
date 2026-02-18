@@ -32,7 +32,12 @@ export class TokenDecryptionError extends Data.TaggedError(
 export function refreshAccessToken(
   clawId: string,
 ): Effect.Effect<
-  { accessToken: string; expiresIn: number },
+  {
+    accessToken: string;
+    expiresIn: number;
+    connectedEmail: string;
+    scopes: string;
+  },
   TokenNotFoundError | TokenDecryptionError | TokenRefreshError,
   DrizzleORM | Settings
 > {
@@ -57,6 +62,8 @@ export function refreshAccessToken(
       .select({
         encryptedRefreshToken: clawIntegrationGoogleWorkspace.encryptedRefreshToken,
         refreshTokenKeyId: clawIntegrationGoogleWorkspace.refreshTokenKeyId,
+        connectedEmail: clawIntegrationGoogleWorkspace.connectedEmail,
+        scopes: clawIntegrationGoogleWorkspace.scopes,
       })
       .from(clawIntegrationGoogleWorkspace)
       .where(eq(clawIntegrationGoogleWorkspace.clawId, clawId))
@@ -159,6 +166,8 @@ export function refreshAccessToken(
     return {
       accessToken: tokenResponse.access_token,
       expiresIn,
+      connectedEmail: connection.connectedEmail,
+      scopes: connection.scopes,
     };
   });
 }

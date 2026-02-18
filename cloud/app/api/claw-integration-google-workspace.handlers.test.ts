@@ -4,12 +4,13 @@ import { afterEach, beforeEach, vi } from "vitest";
 
 import {
   callbackOAuthEffect,
+  googleWorkspaceTokenEffect,
   revokeConnectionEffect,
   startOAuthEffect,
 } from "@/app/api/claw-integration-google-workspace.handlers";
 import { encryptSecrets } from "@/claws/crypto";
 import { DrizzleORM } from "@/db/client";
-import { clawIntegrationGoogleWorkspace, sessions } from "@/db/schema";
+import { claws, clawIntegrationGoogleWorkspace, sessions } from "@/db/schema";import { claws, clawIntegrationGoogleWorkspace, sessions } from "@/db/schema";
 import { signState } from "@/integrations/google-workspace/hmac";
 import { describe, expect, it, TestClawFixture } from "@/tests/db";
 
@@ -544,5 +545,187 @@ describe("revokeConnectionEffect", () => {
         .limit(1);
       expect(remaining).toBeUndefined();
     }),
+  );
+});
+
+// =============================================================================
+// googleWorkspaceTokenEffect tests
+// =============================================================================
+
+const GATEWAY_TOKEN = "test-gateway-token-abc123";
+
+/**
+ * Helper: set up a claw with encrypted secrets containing a gateway token,
+ * and a Google Workspace connection with an encrypted refresh token.
+ */
+function setupClawWithConnection() {
+  return Effect.gen(function* () {
+    const fixture = yield* TestClawFixture;
+    const client = yield* DrizzleORM;
+
+    // Encrypt claw secrets with a gateway token
+    const clawSecrets = yield* encryptSecrets({
+      OPENCLAW_GATEWAY_TOKEN: GATEWAY_TOKEN,
+    });
+    yield* client
+      .update(claws)
+      .set({
+        secretsEncrypted: clawSecrets.ciphertext,
+        secretsKeyId: clawSecrets.keyId,
+      })
+      .where(eq(claws.id, fixture.claw.id));
+
+    // Create a Google Workspace connection
+    const connSecrets = yield* encryptSecrets({
+      refresh_token: "test-refresh-token",
+    });
+    yield* client.insert(clawIntegrationGoogleWorkspace).values({
+      clawId: fixture.claw.id,
+      userId: fixture.owner.id,
+      encryptedRefreshToken: connSecrets.ciphertext,
+      refreshTokenKeyId: connSecrets.keyId,
+      scopes: "gmail.send calendar",
+      connectedEmail: "workspace@example.com",
+    });
+
+    return fixture;
+  });
+}
+
+function buildTokenRequest(clawId: string | null, token?: string): Request {
+  const url = clawId
+    ? `http://localhost:3000/api/google-workspace-connections/token?claw_id=${clawId}`
+    : "http://localhost:3000/api/google-workspace-connections/token";
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  return new Request(url, { method: "GET", headers });
+}
+
+describe("googleWorkspaceTokenEffect", () => {
+  it.effect("returns 400 when claw_id is missing", () =>
+    Effect.gen(function* () {
+      const request = buildTokenRequest(null, GATEWAY_TOKEN);
+      const response = yield* googleWorkspaceTokenEffect(request);
+      expect(response.status).toBe(400);
+      const body = (yield* Effect.promise(() => response.json())) as {
+        error: string;
+      };
+      expect(body.error).toContain("Missing claw_id");
+    }),
+  );
+
+  it.effect("returns 401 when Authorization header is missing", () =>
+    Effect.gen(function* () {
+      const request = buildTokenRequest("some-claw-id");
+      const response = yield* googleWorkspaceTokenEffect(request);
+      expect(response.status).toBe(401);
+      const body = (yield* Effect.promise(() => response.json())) as {
+        error: string;
+      };
+      expect(body.error).toContain("Authorization");
+    }),
+  );
+
+  it.effect("returns 401 when bearer token is invalid", () =>
+    Effect.gen(function* () {
+      const { claw } = yield* setupClawWithConnection();
+      const request = buildTokenRequest(claw.id, "wrong-token");
+      const response = yield* googleWorkspaceTokenEffect(request);
+      expect(response.status).toBe(401);
+      const body = (yield* Effect.promise(() => response.json())) as {
+        error: string;
+      };
+      expect(body.error).toContain("Invalid gateway token");
+    }),
+  );
+
+  it.effect("returns 404 when no Google Workspace connection exists", () =>
+    Effect.gen(function* () {
+      const fixture = yield* TestClawFixture;
+      const client = yield* DrizzleORM;
+
+      // Set up claw secrets but NO Google Workspace connection
+      const clawSecrets = yield* encryptSecrets({
+        OPENCLAW_GATEWAY_TOKEN: GATEWAY_TOKEN,
+      });
+      yield* client
+        .update(claws)
+        .set({
+          secretsEncrypted: clawSecrets.ciphertext,
+          secretsKeyId: clawSecrets.keyId,
+        })
+        .where(eq(claws.id, fixture.claw.id));
+
+      // Mock Google token refresh — it will fail with TokenNotFoundError
+      // (no connection in DB), so no fetch mock needed
+
+      const request = buildTokenRequest(fixture.claw.id, GATEWAY_TOKEN);
+      const response = yield* googleWorkspaceTokenEffect(request);
+      expect(response.status).toBe(404);
+      const body = (yield* Effect.promise(() => response.json())) as {
+        error: string;
+      };
+      expect(body.error).toContain("No Google Workspace connection");
+    }),
+  );
+
+  it.effect("returns 502 when token refresh fails", () =>
+    Effect.gen(function* () {
+      const { claw } = yield* setupClawWithConnection();
+
+      // Mock Google token endpoint returning an error
+      mockFetch.mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            error: "invalid_grant",
+            error_description: "Token has been revoked",
+          }),
+        ),
+      );
+
+      const request = buildTokenRequest(claw.id, GATEWAY_TOKEN);
+      const response = yield* googleWorkspaceTokenEffect(request);
+      expect(response.status).toBe(502);
+      const body = (yield* Effect.promise(() => response.json())) as {
+        error: string;
+      };
+      expect(body.error).toContain("Token refresh failed");
+    }),
+  );
+
+  it.effect(
+    "returns access token on success with valid claw_id and bearer token",
+    () =>
+      Effect.gen(function* () {
+        const { claw } = yield* setupClawWithConnection();
+
+        // Mock Google token refresh endpoint
+        mockFetch.mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              access_token: "fresh-access-token",
+              expires_in: 3600,
+            }),
+          ),
+        );
+
+        const request = buildTokenRequest(claw.id, GATEWAY_TOKEN);
+        const response = yield* googleWorkspaceTokenEffect(request);
+        expect(response.status).toBe(200);
+        const body = (yield* Effect.promise(() => response.json())) as {
+          access_token: string;
+          expires_in: number;
+          connected_email: string;
+          claw_id: string;
+          scopes: string;
+        };
+        expect(body.access_token).toBe("fresh-access-token");
+        expect(body.expires_in).toBe(3600);
+        expect(body.connected_email).toBe("workspace@example.com");
+        expect(body.claw_id).toBe(claw.id);
+        expect(body.scopes).toBe("gmail.send calendar");
+      }),
   );
 });
