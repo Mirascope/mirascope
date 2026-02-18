@@ -60,6 +60,7 @@ export function generatePlist(config: LaunchdConfig): string {
   const envEntries = [
     ["PORT", String(config.localPort)],
     ["OPENCLAW_HOME", `${homeDir}/.openclaw`],
+    ["PLAYWRIGHT_BROWSERS_PATH", "/opt/playwright-browsers"],
     ...(config.envVars ? Object.entries(config.envVars) : []),
   ];
 

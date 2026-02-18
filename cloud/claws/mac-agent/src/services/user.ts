@@ -42,7 +42,7 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 export PATH="/opt/homebrew/opt/node/bin:$PATH"
 
 # Playwright
-export PLAYWRIGHT_BROWSERS_PATH="/opt/homebrew/var/playwright"
+export PLAYWRIGHT_BROWSERS_PATH="/opt/playwright-browsers"
 `.trim();
 
 export const UserManagerLive = Effect.gen(function* () {
