@@ -943,7 +943,7 @@ export function SpanDetailPanel({
                       {showFullCode ? "Show Signature" : "Show Full Code"}
                     </Button>
                   </div>
-                  <div className="rounded-md border">
+                  <div className="rounded-md border dark:border-muted-foreground/20 dark:bg-black">
                     <CodeBlock
                       code={
                         showFullCode
