@@ -64,9 +64,9 @@ export type GoogleConfig = {
  * Google Workspace integration OAuth configuration.
  */
 export type GoogleWorkspaceConfig = {
-  readonly clientId: string;
-  readonly clientSecret: string;
-  readonly callbackUrl: string;
+  readonly clientId: string | undefined;
+  readonly clientSecret: string | undefined;
+  readonly callbackUrl: string | undefined;
 };
 
 /**
@@ -380,9 +380,9 @@ function validateSettingsFromSource(
       },
 
       googleWorkspace: {
-        clientId: optional("GOOGLE_WORKSPACE_CLIENT_ID"),
-        clientSecret: optional("GOOGLE_WORKSPACE_CLIENT_SECRET"),
-        callbackUrl: optional("GOOGLE_WORKSPACE_CALLBACK_URL"),
+        clientId: optional("GOOGLE_WORKSPACE_CLIENT_ID") || undefined,
+        clientSecret: optional("GOOGLE_WORKSPACE_CLIENT_SECRET") || undefined,
+        callbackUrl: optional("GOOGLE_WORKSPACE_CALLBACK_URL") || undefined,
       },
 
       stripe: {

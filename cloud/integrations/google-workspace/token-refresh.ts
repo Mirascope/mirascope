@@ -40,6 +40,18 @@ export function refreshAccessToken(
     const settings = yield* Settings;
     const client = yield* DrizzleORM;
 
+    // Validate Google Workspace credentials are configured
+    if (
+      !settings.googleWorkspace.clientId ||
+      !settings.googleWorkspace.clientSecret
+    ) {
+      return yield* Effect.fail(
+        new TokenRefreshError({
+          message: "Google Workspace OAuth is not configured",
+        }),
+      );
+    }
+
     // Look up the connection
     const [connection] = yield* client
       .select({
@@ -99,8 +111,8 @@ export function refreshAccessToken(
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: new URLSearchParams({
             grant_type: "refresh_token",
-            client_id: settings.googleWorkspace.clientId,
-            client_secret: settings.googleWorkspace.clientSecret,
+            client_id: settings.googleWorkspace.clientId!,
+            client_secret: settings.googleWorkspace.clientSecret!,
             refresh_token: secrets.refresh_token!,
           }),
         });
