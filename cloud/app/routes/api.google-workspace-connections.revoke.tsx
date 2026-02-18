@@ -11,7 +11,7 @@ import { claws, googleWorkspaceConnections } from "@/db/schema";
 import { Settings } from "@/settings";
 
 export const Route = createFileRoute(
-  "/api/integrations/google-workspace/revoke",
+  "/api/google-workspace-connections/revoke",
 )({
   server: {
     handlers: {

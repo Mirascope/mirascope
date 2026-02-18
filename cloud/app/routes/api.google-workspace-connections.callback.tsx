@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { eq } from "drizzle-orm";
 import { Effect } from "effect";
 
 import { runEffectResponse } from "@/app/lib/effect";
@@ -6,7 +7,7 @@ import { InvalidStateError, OAuthError } from "@/auth/errors";
 import { isSecure } from "@/auth/utils";
 import { encryptSecrets } from "@/claws/crypto";
 import { DrizzleORM } from "@/db/client";
-import { googleWorkspaceConnections } from "@/db/schema";
+import { claws, googleWorkspaceConnections, organizations } from "@/db/schema";
 import { Settings } from "@/settings";
 
 function getCookieValue(request: Request, name: string): string | null {
@@ -20,7 +21,7 @@ function getCookieValue(request: Request, name: string): string | null {
 }
 
 export const Route = createFileRoute(
-  "/api/integrations/google-workspace/callback",
+  "/api/google-workspace-connections/callback",
 )({
   server: {
     handlers: {
@@ -218,6 +219,29 @@ export const Route = createFileRoute(
                 ),
               );
 
+            // Look up org slug and claw slug for redirect
+            const [clawRow] = yield* client
+              .select({
+                clawSlug: claws.slug,
+                orgSlug: organizations.slug,
+              })
+              .from(claws)
+              .innerJoin(
+                organizations,
+                eq(claws.organizationId, organizations.id),
+              )
+              .where(eq(claws.id, stateData.clawId))
+              .limit(1)
+              .pipe(
+                Effect.mapError(
+                  () =>
+                    new OAuthError({
+                      message: "Failed to look up claw for redirect",
+                      provider: "google-workspace",
+                    }),
+                ),
+              );
+
             // Clear state cookie and redirect to claw settings
             const clearCookieParts = [
               "gw_oauth_state=;",
@@ -228,8 +252,10 @@ export const Route = createFileRoute(
               "Path=/",
             ];
 
+            const orgSlug = clawRow?.orgSlug || stateData.organizationId;
+            const clawSlug = clawRow?.clawSlug || stateData.clawId;
             const redirectUrl = new URL(
-              `/${stateData.organizationId}/claws/${stateData.clawId}/settings`,
+              `/${orgSlug}/claws/${clawSlug}/settings`,
               siteUrl,
             );
             redirectUrl.searchParams.set("integration", "google-workspace");

@@ -10,7 +10,7 @@ import { claws } from "@/db/schema";
 import { Settings } from "@/settings";
 
 export const Route = createFileRoute(
-  "/api/integrations/google-workspace/start",
+  "/api/google-workspace-connections/start",
 )({
   server: {
     handlers: {
@@ -108,6 +108,7 @@ export const Route = createFileRoute(
             authUrl.searchParams.set(
               "scope",
               [
+                "https://www.googleapis.com/auth/userinfo.email",
                 "https://www.googleapis.com/auth/gmail.send",
                 "https://www.googleapis.com/auth/calendar",
                 "https://www.googleapis.com/auth/drive.file",
