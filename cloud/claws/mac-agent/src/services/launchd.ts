@@ -61,6 +61,7 @@ export function generatePlist(config: LaunchdConfig): string {
     ["PORT", String(config.localPort)],
     ["OPENCLAW_HOME", `${homeDir}/.openclaw`],
     ["PLAYWRIGHT_BROWSERS_PATH", "/opt/playwright-browsers"],
+    ["PATH", "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"],
     ...(config.envVars ? Object.entries(config.envVars) : []),
   ];
 
