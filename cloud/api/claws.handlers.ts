@@ -52,17 +52,24 @@ export const createClawHandler = (
       },
     });
 
-    // Provision claw on Mac
-    const status = yield* clawDeployment.provision({
-      clawId: claw.id,
-      instanceType: claw.instanceType,
-    });
-
-    // Generate gateway token for container auth
+    // Generate gateway token and API keys BEFORE provisioning —
+    // the Mac Agent needs them to configure the gateway at install time.
     const gatewayToken = crypto.randomUUID();
 
     // Build Mirascope Router base URL for Anthropic-compatible proxy
     const routerBaseUrl = `${settings.siteUrl}/router/v2/anthropic`;
+
+    // Provision claw on Mac (passes keys via envVars to the agent)
+    const status = yield* clawDeployment.provision({
+      clawId: claw.id,
+      instanceType: claw.instanceType,
+      gatewayToken,
+      mirascapeApiKey: claw.plaintextApiKey,
+      anthropicApiKey: claw.plaintextApiKey,
+      anthropicBaseUrl: routerBaseUrl,
+      primaryModelId: payload.model ?? DEFAULT_CLAW_MODEL,
+      siteUrl: settings.siteUrl,
+    });
 
     // Encrypt all container secrets before persisting
     const encrypted = yield* encryptSecrets({

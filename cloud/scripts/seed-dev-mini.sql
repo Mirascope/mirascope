@@ -3,7 +3,7 @@
 --
 -- Prerequisites:
 --   1. cloudflared installed and tunnel created on your personal Mac
---   2. Tunnel routes *.local-{user}.claws.mirascope.dev to your agent port
+--   2. Tunnel routes *-local-{user}-claws.mirascope.dev to your agent port
 --   3. Agent running on your personal Mac
 --
 -- Customize the hostname, agent_url, and tunnel_hostname_suffix for your setup.
@@ -21,8 +21,8 @@ INSERT INTO fleet_macs (
   status
 ) VALUES (
   'local-william',                                          -- your machine name
-  'https://agent.local-william.claws.mirascope.dev',        -- agent exposed via tunnel (not localhost)
-  'local-william.claws.mirascope.dev',                      -- claw tunnels: claw-{id}.local-william.claws.mirascope.dev
+  'https://agent-local-william-claws.mirascope.dev',        -- agent exposed via tunnel (flat hyphens)
+  'local-william-claws.mirascope.dev',                      -- claw tunnels: claw-{id}-local-william-claws.mirascope.dev
   6,
   3001,
   3100,

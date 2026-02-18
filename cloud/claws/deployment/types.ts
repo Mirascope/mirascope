@@ -63,6 +63,24 @@ export interface ProvisionClawConfig {
 
   /** Container instance type determining resources */
   instanceType: ClawInstanceType;
+
+  /** Auth token for the OpenClaw gateway (generated before provisioning) */
+  gatewayToken: string;
+
+  /** Mirascope API key for LLM routing */
+  mirascapeApiKey: string;
+
+  /** Anthropic API key (typically same as mirascapeApiKey, routed via Mirascope) */
+  anthropicApiKey: string;
+
+  /** Base URL for Anthropic-compatible API (via Mirascope router) */
+  anthropicBaseUrl: string;
+
+  /** Primary model ID for the claw */
+  primaryModelId: string;
+
+  /** Site URL for OpenClaw */
+  siteUrl: string;
 }
 
 /**

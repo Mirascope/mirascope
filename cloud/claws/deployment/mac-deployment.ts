@@ -183,18 +183,28 @@ export const MacDeploymentLayer = Layer.effect(
           const agentToken = macRow?.agentAuthTokenEncrypted ?? "";
           const macUsername = `claw-${config.clawId}`;
 
-          // 3. Call Mac Agent to provision the claw
+          // 3. Build tunnel hostname
+          const tunnelHostname = `claw-${config.clawId}-${mac.tunnelHostnameSuffix}`;
+
+          // 4. Call Mac Agent to provision the claw
           yield* wrapFleet(
             "Failed to provision on mac agent",
             fleet.callAgent(mac.agentUrl, agentToken, "POST", "/claws", {
               clawId: config.clawId,
-              port: mac.port,
               macUsername,
+              localPort: mac.port,
+              gatewayToken: config.gatewayToken,
+              tunnelHostname,
+              envVars: {
+                MIRASCOPE_API_KEY: config.mirascapeApiKey,
+                ANTHROPIC_API_KEY: config.anthropicApiKey,
+                ANTHROPIC_BASE_URL: config.anthropicBaseUrl,
+                OPENCLAW_GATEWAY_TOKEN: config.gatewayToken,
+                PRIMARY_MODEL_ID: config.primaryModelId,
+                OPENCLAW_SITE_URL: config.siteUrl,
+              },
             }),
           );
-
-          // 4. Build tunnel hostname
-          const tunnelHostname = `claw-${config.clawId}.${mac.tunnelHostnameSuffix}`;
 
           // 5. Store mac-specific fields on the claw row
           yield* drizzle
