@@ -7,6 +7,7 @@ export interface AgentConfig {
   readonly authToken: string;
   readonly port: number;
   readonly tunnelConfigPath: string;
+  readonly tunnelName: string;
   readonly tunnelHostnameSuffix: string;
   readonly maxClaws: number;
   readonly portRangeStart: number;
@@ -30,6 +31,9 @@ export const AgentConfigLive = Layer.effect(
     const tunnelConfigPath = yield* Config.string(
       "MAC_AGENT_TUNNEL_CONFIG",
     ).pipe(Config.withDefault("/etc/cloudflared/config.yml"));
+    const tunnelName = yield* Config.string("MAC_AGENT_TUNNEL_NAME").pipe(
+      Config.withDefault("local-william"),
+    );
     const tunnelHostnameSuffix = yield* Config.string(
       "MAC_AGENT_TUNNEL_SUFFIX",
     ).pipe(Config.withDefault("claws.mirascope.dev"));
@@ -47,6 +51,7 @@ export const AgentConfigLive = Layer.effect(
       authToken,
       port,
       tunnelConfigPath,
+      tunnelName,
       tunnelHostnameSuffix,
       maxClaws,
       portRangeStart,
