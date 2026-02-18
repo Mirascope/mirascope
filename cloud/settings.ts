@@ -326,8 +326,6 @@ function validateSettingsFromSource(
           ? (mockDeploymentRaw as PlanTier)
           : false;
 
-    const isMac = optional("DEPLOYMENT_TARGET") === "mac";
-
     // Helper: validate required env var, collect missing ones
     const required = (name: string): string => {
       const value = source.get(name)?.trim();
@@ -341,6 +339,8 @@ function validateSettingsFromSource(
     const optional = (name: string): string => {
       return source.get(name)?.trim() ?? "";
     };
+
+    const isMac = optional("DEPLOYMENT_TARGET") === "mac";
 
     // Helper: parse boolean env var (required)
     const requiredBool = (name: string): boolean => {
