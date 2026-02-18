@@ -181,7 +181,7 @@ export const MacDeploymentLayer = Layer.effect(
             );
 
           const agentToken = macRow?.agentAuthTokenEncrypted ?? "";
-          const macUsername = `claw-${config.clawId}`;
+          const macUsername = `claw-${config.clawId.replace(/-/g, "").slice(0, 12)}`;
 
           // 3. Build tunnel hostname
           const tunnelHostname = `claw-${config.clawId}-${mac.tunnelHostnameSuffix}`;
