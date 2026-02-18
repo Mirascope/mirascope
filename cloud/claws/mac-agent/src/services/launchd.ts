@@ -82,7 +82,6 @@ export function generatePlist(config: LaunchdConfig): string {
     <array>
         <string>/usr/local/bin/openclaw</string>
         <string>gateway</string>
-        <string>start</string>
     </array>
     <key>UserName</key>
     <string>${escapeXml(config.macUsername)}</string>
