@@ -113,10 +113,12 @@ export function createMockSettings(
     },
 
     googleWorkspace: {
-      clientId: "test-gw-client-id",
-      clientSecret: "test-gw-client-secret",
+      clientId: "test-gw-client-id" as string | undefined,
+      clientSecret: "test-gw-client-secret" as string | undefined,
       callbackUrl:
-        "http://localhost:3000/api/google-workspace-connections/callback",
+        "http://localhost:3000/api/google-workspace-connections/callback" as
+          | string
+          | undefined,
     },
 
     encryptionKeys: {
