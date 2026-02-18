@@ -117,7 +117,21 @@ export const UserManagerLive = Effect.gen(function* () {
         );
       }
 
-      // 2. Lock down home directory
+      // 2. Create and lock down home directory (sysadminctl assigns but doesn't create it)
+      yield* exec
+        .runUnsafe("mkdir", ["-p", homeDir], { sudo: true })
+        .pipe(
+          Effect.mapError(
+            (e) => new ProvisioningError({ message: e.message, cause: e }),
+          ),
+        );
+      yield* exec
+        .runUnsafe("chown", [`${macUsername}:staff`, homeDir], { sudo: true })
+        .pipe(
+          Effect.mapError(
+            (e) => new ProvisioningError({ message: e.message, cause: e }),
+          ),
+        );
       yield* exec
         .runUnsafe("chmod", ["700", homeDir], { sudo: true })
         .pipe(
