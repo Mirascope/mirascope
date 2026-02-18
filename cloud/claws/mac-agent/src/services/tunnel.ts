@@ -163,7 +163,7 @@ export const TunnelLive = Effect.gen(function* () {
   ): Effect.Effect<void, SystemError> =>
     Effect.gen(function* () {
       const result = yield* exec
-        .run("cloudflared", ["tunnel", "route", "dns", tunnelName, hostname])
+        .run("/opt/homebrew/bin/cloudflared", ["tunnel", "route", "dns", tunnelName, hostname])
         .pipe(
           Effect.mapError(
             (e) =>
