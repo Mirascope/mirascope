@@ -174,6 +174,7 @@ export const Route = createFileRoute("/api/v2/$")({
                   Layer.provide(databaseLayer),
                 );
 
+                console.log("[api.v2] deploymentTarget:", settings.deploymentTarget, "mockDeployment:", settings.mockDeployment);
                 const deploymentLayer =
                   settings.mockDeployment && settings.deploymentTarget !== "mac"
                     ? MockDeploymentService
