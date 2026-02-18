@@ -21,26 +21,26 @@ export class AgentConfigService extends Context.Tag("AgentConfig")<
 export const AgentConfigLive = Layer.effect(
   AgentConfigService,
   Effect.gen(function* () {
-    const authToken = yield* Config.string("MINI_AGENT_AUTH_TOKEN").pipe(
+    const authToken = yield* Config.string("MAC_AGENT_AUTH_TOKEN").pipe(
       Config.withDefault("changeme"),
     );
-    const port = yield* Config.integer("MINI_AGENT_PORT").pipe(
+    const port = yield* Config.integer("MAC_AGENT_PORT").pipe(
       Config.withDefault(7600),
     );
     const tunnelConfigPath = yield* Config.string(
-      "MINI_AGENT_TUNNEL_CONFIG",
+      "MAC_AGENT_TUNNEL_CONFIG",
     ).pipe(Config.withDefault("/etc/cloudflared/config.yml"));
     const tunnelHostnameSuffix = yield* Config.string(
-      "MINI_AGENT_TUNNEL_SUFFIX",
+      "MAC_AGENT_TUNNEL_SUFFIX",
     ).pipe(Config.withDefault("claws.mirascope.dev"));
-    const maxClaws = yield* Config.integer("MINI_AGENT_MAX_CLAWS").pipe(
+    const maxClaws = yield* Config.integer("MAC_AGENT_MAX_CLAWS").pipe(
       Config.withDefault(12),
     );
     const portRangeStart = yield* Config.integer(
-      "MINI_AGENT_PORT_RANGE_START",
+      "MAC_AGENT_PORT_RANGE_START",
     ).pipe(Config.withDefault(3001));
     const portRangeEnd = yield* Config.integer(
-      "MINI_AGENT_PORT_RANGE_END",
+      "MAC_AGENT_PORT_RANGE_END",
     ).pipe(Config.withDefault(3100));
 
     return {

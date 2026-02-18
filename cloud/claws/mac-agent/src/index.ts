@@ -80,7 +80,7 @@ const { handler, dispose } = HttpApiBuilder.toWebHandler(
 );
 
 // Read port from env for Bun's default export
-const port = parseInt(process.env.MINI_AGENT_PORT ?? "7600", 10);
+const port = parseInt(process.env.MAC_AGENT_PORT ?? "7600", 10);
 
 console.log(`[mac-agent] Starting on port ${port}`);
 
