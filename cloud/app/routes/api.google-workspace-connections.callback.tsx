@@ -255,7 +255,7 @@ export const Route = createFileRoute(
             const orgSlug = clawRow?.orgSlug || stateData.organizationId;
             const clawSlug = clawRow?.clawSlug || stateData.clawId;
             const redirectUrl = new URL(
-              `/${orgSlug}/claws/${clawSlug}/settings`,
+              `/${orgSlug}/claws/${clawSlug}/chat`,
               siteUrl,
             );
             redirectUrl.searchParams.set("integration", "google-workspace");
