@@ -61,6 +61,15 @@ export type GoogleConfig = {
 };
 
 /**
+ * Google Workspace integration OAuth configuration.
+ */
+export type GoogleWorkspaceConfig = {
+  readonly clientId: string;
+  readonly clientSecret: string;
+  readonly callbackUrl: string;
+};
+
+/**
  * Stripe payments configuration.
  * Used by Settings and Stripe.layer().
  */
@@ -174,6 +183,9 @@ export type SettingsConfig = {
   readonly github: GitHubConfig;
   readonly google: GoogleConfig;
 
+  // Integrations
+  readonly googleWorkspace: GoogleWorkspaceConfig;
+
   // Payments
   readonly stripe: StripeConfig;
 
@@ -245,6 +257,9 @@ export type CloudflareEnvironment = {
   GOOGLE_CLIENT_ID?: string;
   GOOGLE_CLIENT_SECRET?: string;
   GOOGLE_CALLBACK_URL?: string;
+  GOOGLE_WORKSPACE_CLIENT_ID?: string;
+  GOOGLE_WORKSPACE_CLIENT_SECRET?: string;
+  GOOGLE_WORKSPACE_CALLBACK_URL?: string;
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;
   STRIPE_ROUTER_PRICE_ID?: string;
@@ -362,6 +377,12 @@ function validateSettingsFromSource(
         clientId: required("GOOGLE_CLIENT_ID"),
         clientSecret: required("GOOGLE_CLIENT_SECRET"),
         callbackUrl: required("GOOGLE_CALLBACK_URL"),
+      },
+
+      googleWorkspace: {
+        clientId: optional("GOOGLE_WORKSPACE_CLIENT_ID"),
+        clientSecret: optional("GOOGLE_WORKSPACE_CLIENT_SECRET"),
+        callbackUrl: optional("GOOGLE_WORKSPACE_CALLBACK_URL"),
       },
 
       stripe: {
