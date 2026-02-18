@@ -164,7 +164,12 @@ export const UserManagerLive = Effect.gen(function* () {
 
       // 5. Write openclaw.json
       const openclawConfig = {
-        gateway: { host: "127.0.0.1", port: localPort, token: gatewayToken },
+        gateway: {
+          host: "127.0.0.1",
+          port: localPort,
+          token: gatewayToken,
+          mode: "local",
+        },
       };
       yield* writeFileAsSudo(
         path.join(openclawDir, "openclaw.json"),
