@@ -70,6 +70,17 @@ export type GoogleWorkspaceConfig = {
 };
 
 /**
+ * Dedicated workspace provisioning configuration.
+ * Uses a GCP service account with domain-wide delegation to provision
+ * dedicated workspace accounts via the Google Admin SDK Directory API.
+ */
+export type DedicatedWorkspaceConfig = {
+  readonly saKeyJson: string | undefined;
+  readonly adminEmail: string | undefined;
+  readonly domain: string | undefined;
+};
+
+/**
  * Stripe payments configuration.
  * Used by Settings and Stripe.layer().
  */
@@ -185,6 +196,7 @@ export type SettingsConfig = {
 
   // Integrations
   readonly googleWorkspace: GoogleWorkspaceConfig;
+  readonly dedicatedWorkspace: DedicatedWorkspaceConfig;
 
   // Payments
   readonly stripe: StripeConfig;
@@ -260,6 +272,9 @@ export type CloudflareEnvironment = {
   GOOGLE_WORKSPACE_CLIENT_ID?: string;
   GOOGLE_WORKSPACE_CLIENT_SECRET?: string;
   GOOGLE_WORKSPACE_CALLBACK_URL?: string;
+  DEDICATED_WORKSPACE_SA_KEY_JSON?: string;
+  DEDICATED_WORKSPACE_ADMIN_EMAIL?: string;
+  DEDICATED_WORKSPACE_DOMAIN?: string;
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;
   STRIPE_ROUTER_PRICE_ID?: string;
@@ -383,6 +398,12 @@ function validateSettingsFromSource(
         clientId: optional("GOOGLE_WORKSPACE_CLIENT_ID") || undefined,
         clientSecret: optional("GOOGLE_WORKSPACE_CLIENT_SECRET") || undefined,
         callbackUrl: optional("GOOGLE_WORKSPACE_CALLBACK_URL") || undefined,
+      },
+
+      dedicatedWorkspace: {
+        saKeyJson: optional("DEDICATED_WORKSPACE_SA_KEY_JSON") || undefined,
+        adminEmail: optional("DEDICATED_WORKSPACE_ADMIN_EMAIL") || undefined,
+        domain: optional("DEDICATED_WORKSPACE_DOMAIN") || undefined,
       },
 
       stripe: {
