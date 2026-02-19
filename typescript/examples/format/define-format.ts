@@ -3,7 +3,7 @@ import { llm } from "mirascope";
  * Example using defineFormat for explicit mode control.
  *
  * Shows how to use defineFormat() to specify the formatting mode
- * (tool, json, or strict) when you need explicit control.
+ * (tool or json) when you need explicit control.
  *
  * Run with: bun run example examples/format/define-format.ts
  */
@@ -25,16 +25,16 @@ type Recipe = z.infer<typeof RecipeSchema>;
 // Use defineCall<VarsType>()({...}) to specify variables type while inferring format type.
 const getRecipe = llm.defineCall<{ dish: string }>()({
   model: "openai/gpt-4o-mini",
-  maxTokens: 2048,
+  maxTokens: 4096,
   format: llm.defineFormat<Recipe>({
-    mode: "json",
+    mode: "tool",
     validator: RecipeSchema,
   }),
   template: ({ dish }) =>
     `Provide a detailed recipe for making ${dish}. Include all ingredients and step-by-step instructions.`,
 });
 
-const response = await getRecipe({ dish: "chocolate chip cookies" });
+const response = await getRecipe({ dish: "scrambled eggs" });
 // parse() returns the parsed object (fully typed)
 const recipe = response.parse();
 

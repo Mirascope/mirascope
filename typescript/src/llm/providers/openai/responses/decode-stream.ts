@@ -26,6 +26,7 @@ import {
   toolCallChunk,
   toolCallEnd,
 } from "@/llm/content";
+import { serializeOutputItem } from "@/llm/providers/openai/responses/_utils";
 import {
   finishReasonChunk,
   usageDeltaChunk,
@@ -240,6 +241,18 @@ function handleCompleted(
   chunks: StreamResponseChunk[],
 ): void {
   const response = event.response;
+
+  // Emit the completed output items as rawMessage for round-tripping.
+  // This overrides the initial rawMessage from response.created and enables
+  // encodeMessages to reuse the original output items (with correct IDs)
+  // when resuming a conversation after tool execution.
+  if (response.output) {
+    chunks.push(
+      rawMessageChunk(
+        response.output.map(serializeOutputItem) as unknown as Jsonable,
+      ),
+    );
+  }
 
   // Check for finish reason from incomplete_details
   /* v8 ignore start - incomplete_details only present when stream is incomplete */
