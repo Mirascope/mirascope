@@ -44,6 +44,10 @@ export interface OpenClawEnv {
   TELEGRAM_BOT_TOKEN?: string;
   SLACK_BOT_TOKEN?: string;
   SLACK_APP_TOKEN?: string;
+
+  // Cloud identity (optional)
+  MIRASCOPE_CLOUD_URL?: string;
+  MIRASCOPE_CLAW_ID?: string;
 }
 
 export interface OpenClawConfigOptions {
@@ -233,6 +237,14 @@ export function createOpenClawConfig(
   // Set gateway token in env vars so OpenClaw can access it
   config.env.vars.OPENCLAW_GATEWAY_TOKEN = env.OPENCLAW_GATEWAY_TOKEN;
 
+  // Cloud identity env vars so the claw knows its cloud context
+  if (env.MIRASCOPE_CLOUD_URL) {
+    config.env.vars.MIRASCOPE_CLOUD_URL = env.MIRASCOPE_CLOUD_URL;
+  }
+  if (env.MIRASCOPE_CLAW_ID) {
+    config.env.vars.MIRASCOPE_CLAW_ID = env.MIRASCOPE_CLAW_ID;
+  }
+
   // Control UI allowed origins
   const allowedOrigins = env.OPENCLAW_ALLOWED_ORIGINS.split(",")
     .map((o) => o.trim())
@@ -406,6 +418,9 @@ const env: OpenClawEnv = {
   TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
   SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN,
   SLACK_APP_TOKEN: process.env.SLACK_APP_TOKEN,
+  // Cloud identity (derived from dispatch worker env)
+  MIRASCOPE_CLOUD_URL: process.env.MIRASCOPE_CLOUD_URL,
+  MIRASCOPE_CLAW_ID: process.env.MIRASCOPE_CLAW_ID,
 };
 
 // If any required variables are missing, throw a single error with all of them

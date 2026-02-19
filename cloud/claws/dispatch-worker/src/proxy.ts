@@ -76,7 +76,9 @@ export function buildEnvVars(
   if (env.SITE_URL) {
     envVars.OPENCLAW_SITE_URL = env.SITE_URL;
     envVars.OPENCLAW_ALLOWED_ORIGINS = env.SITE_URL;
+    envVars.MIRASCOPE_CLOUD_URL = env.SITE_URL;
   }
+  envVars.MIRASCOPE_CLAW_ID = config.clawId;
 
   // R2 persistence credentials (used by rclone in start-openclaw.ts)
   if (config.r2.accessKeyId) envVars.R2_ACCESS_KEY_ID = config.r2.accessKeyId;
