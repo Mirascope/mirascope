@@ -84,6 +84,13 @@ export interface Format<T = unknown> {
   readonly validator: ZodLike | null;
 
   /**
+   * When the original schema is non-object (e.g. array), the tool schema wraps it
+   * in an object property. This key indicates which property to extract before validation.
+   * Null when the schema is already an object and no unwrapping is needed.
+   */
+  readonly toolSchemaUnwrapKey: string | null;
+
+  /**
    * Optional OutputParser for custom parsing.
    * When set, indicates this format uses custom parsing instead of JSON.
    */
@@ -272,9 +279,7 @@ function createFormatFromZod<T>(
   mode: FormattingMode,
 ): Format<T> {
   // Extract JSON schema from Zod
-  // Note: In production, we'd use zod-to-json-schema or similar
-  // For now, we assume the transformer or runtime handles this
-  const schema = extractSchemaFromZod(zodSchema);
+  const { schema, unwrapKey } = extractSchemaFromZod(zodSchema);
   const name = extractNameFromZod(zodSchema);
   // Zod 4: description at top level, Zod 3: in _def.description
   const def = zodSchema._def as { description?: string };
@@ -287,6 +292,7 @@ function createFormatFromZod<T>(
     mode,
     validator: zodSchema,
     outputParser: null,
+    toolSchemaUnwrapKey: unwrapKey,
   });
 }
 
@@ -311,6 +317,7 @@ function createFormatFromSchema<T>(
     mode,
     validator,
     outputParser: null,
+    toolSchemaUnwrapKey: null,
   });
 }
 
@@ -333,6 +340,7 @@ function createFormatFromOutputParser<T>(parser: OutputParser<T>): Format<T> {
     mode: "parser",
     validator: null,
     outputParser: parser,
+    toolSchemaUnwrapKey: null,
   });
 }
 
@@ -346,13 +354,22 @@ interface CreateFormatOptions<T> {
   mode: FormattingMode;
   validator: ZodLike | null;
   outputParser: OutputParser<T> | null;
+  toolSchemaUnwrapKey: string | null;
 }
 
 /**
  * Create a Format object with all properties.
  */
 function createFormat<T>(options: CreateFormatOptions<T>): Format<T> {
-  const { name, description, schema, mode, validator, outputParser } = options;
+  const {
+    name,
+    description,
+    schema,
+    mode,
+    validator,
+    outputParser,
+    toolSchemaUnwrapKey,
+  } = options;
 
   // Compute formatting instructions based on mode
   let formattingInstructions: string | null;
@@ -379,6 +396,7 @@ function createFormat<T>(options: CreateFormatOptions<T>): Format<T> {
     mode,
     validator,
     outputParser,
+    toolSchemaUnwrapKey,
     formattingInstructions,
     createToolSchema(): ToolSchema {
       const toolDescription = `Use this tool to extract data in ${name} format for a final response.${
@@ -410,13 +428,34 @@ function createFormat<T>(options: CreateFormatOptions<T>): Format<T> {
 }
 
 /**
+ * Result of extracting a schema from a Zod type.
+ * When the Zod type is non-object (e.g. array, primitive), it is wrapped in
+ * an object with a single property so it can be used as a tool parameter schema.
+ * `unwrapKey` indicates which property to extract after parsing, or null if no
+ * unwrapping is needed.
+ */
+export interface ExtractedSchema {
+  schema: ToolParameterSchema;
+  unwrapKey: string | null;
+}
+
+/**
+ * The property name used to wrap non-object schemas.
+ * Matches the Python SDK's `PrimitiveWrapperModel.output` field.
+ */
+const WRAP_KEY = "output";
+
+/**
  * Extract JSON schema from a Zod schema.
  *
  * Supports both Zod 3 and Zod 4:
  * - Zod 4: Uses toJSONSchema() method if available
  * - Zod 3: Manually extracts from _def structure
+ *
+ * Non-object schemas (arrays, primitives) are automatically wrapped in an
+ * object with an "output" property so they can be used as tool parameter schemas.
  */
-export function extractSchemaFromZod(zodSchema: ZodLike): ToolParameterSchema {
+export function extractSchemaFromZod(zodSchema: ZodLike): ExtractedSchema {
   const schemaAny = zodSchema as unknown as Record<string, unknown>;
 
   // Zod 4: Use toJSONSchema() if available (preferred method)
@@ -426,34 +465,41 @@ export function extractSchemaFromZod(zodSchema: ZodLike): ToolParameterSchema {
         string,
         unknown
       >;
-      // Ensure additionalProperties is false for strict matching
-      // Note: ?? fallbacks are for edge cases where toJSONSchema returns incomplete data
-      const properties =
-        /* v8 ignore next */
-        (jsonSchema.properties as ToolParameterSchema["properties"]) ?? {};
-      const required =
-        /* v8 ignore next */
-        (jsonSchema.required as ToolParameterSchema["required"]) ?? [];
-      const $defs = jsonSchema.$defs as ToolParameterSchema["$defs"];
 
-      // Include $defs if present (for nested schemas)
-      /* v8 ignore start */
-      if ($defs) {
-        return {
-          type: "object",
-          properties,
-          required,
-          additionalProperties: false,
-          $defs,
-        } as const satisfies ToolParameterSchema;
+      // Check if the schema is already an object type
+      if (jsonSchema.type === "object") {
+        // Ensure additionalProperties is false for strict matching
+        // Note: ?? fallbacks are for edge cases where toJSONSchema returns incomplete data
+        const properties =
+          /* v8 ignore next */
+          (jsonSchema.properties as ToolParameterSchema["properties"]) ?? {};
+        const required =
+          /* v8 ignore next */
+          (jsonSchema.required as ToolParameterSchema["required"]) ?? [];
+        const $defs = jsonSchema.$defs as ToolParameterSchema["$defs"];
+
+        // Include $defs if present (for nested schemas)
+        /* v8 ignore start */
+        const schema: ToolParameterSchema = $defs
+          ? {
+              type: "object",
+              properties,
+              required,
+              additionalProperties: false,
+              $defs,
+            }
+          : {
+              type: "object",
+              properties,
+              required,
+              additionalProperties: false,
+            };
+        /* v8 ignore end */
+        return { schema, unwrapKey: null };
       }
-      /* v8 ignore end */
-      return {
-        type: "object",
-        properties,
-        required,
-        additionalProperties: false,
-      } as const satisfies ToolParameterSchema;
+
+      // Non-object schema (array, primitive, etc.) — wrap in object
+      return wrapNonObjectSchema(jsonSchema);
     } catch /* v8 ignore start */ {
       // Fall through to manual extraction
     } /* v8 ignore end */
@@ -465,27 +511,55 @@ export function extractSchemaFromZod(zodSchema: ZodLike): ToolParameterSchema {
 
     // Zod 3: typeName is 'ZodObject', shape is a function
     if (def.typeName === "ZodObject" && typeof def.shape === "function") {
-      return extractSchemaFromZod3(def);
+      return { schema: extractSchemaFromZod3(def), unwrapKey: null };
     }
 
     /* v8 ignore start */
     // Zod 4: type is 'object', shape is a getter (object)
     if (def.type === "object" && typeof def.shape === "object") {
-      return extractSchemaFromZod4(def);
+      return { schema: extractSchemaFromZod4(def), unwrapKey: null };
     }
     /* v8 ignore end */
+
+    // Zod 3: Non-object types (ZodArray, ZodString, etc.)
+    if (def.typeName && def.typeName !== "ZodObject") {
+      const fieldSchema = extractFieldSchema(zodSchema);
+      return wrapNonObjectSchema(fieldSchema as Record<string, unknown>);
+    }
   }
 
   // Fallback: return empty schema
   // The transformer should inject proper schema at compile time
   /* v8 ignore start */
   return {
-    type: "object",
-    properties: {},
-    required: [],
-    additionalProperties: false,
+    schema: {
+      type: "object",
+      properties: {},
+      required: [],
+      additionalProperties: false,
+    },
+    unwrapKey: null,
   };
   /* v8 ignore end */
+}
+
+/**
+ * Wrap a non-object JSON schema in an object with an "output" property.
+ */
+function wrapNonObjectSchema(
+  innerSchema: Record<string, unknown>,
+): ExtractedSchema {
+  return {
+    schema: {
+      type: "object",
+      properties: {
+        [WRAP_KEY]: innerSchema as { type?: string; description?: string },
+      },
+      required: [WRAP_KEY],
+      additionalProperties: false,
+    },
+    unwrapKey: WRAP_KEY,
+  };
 }
 
 /**

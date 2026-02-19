@@ -164,6 +164,7 @@ describe("buildRequestParams thinking config", () => {
       "google/gemini-2.5-flash",
       messages,
       undefined,
+      undefined,
       {
         thinking: { level: "medium" },
         maxTokens: 10000,
@@ -182,7 +183,13 @@ describe("image encoding", () => {
     const messages = [user(["Check this image", urlImage])];
 
     expect(() =>
-      buildRequestParams("google/gemini-2.5-flash", messages, undefined, {}),
+      buildRequestParams(
+        "google/gemini-2.5-flash",
+        messages,
+        undefined,
+        undefined,
+        {},
+      ),
     ).toThrow(FeatureNotSupportedError);
   });
 });
@@ -202,6 +209,7 @@ describe("document encoding", () => {
     const params = buildRequestParams(
       "google/gemini-2.5-flash",
       messages,
+      undefined,
       undefined,
       {},
     );
@@ -232,6 +240,7 @@ describe("document encoding", () => {
       "google/gemini-2.5-flash",
       messages,
       undefined,
+      undefined,
       {},
     );
 
@@ -251,7 +260,13 @@ describe("document encoding", () => {
     const messages = [user(["Read this", doc])];
 
     expect(() =>
-      buildRequestParams("google/gemini-2.5-flash", messages, undefined, {}),
+      buildRequestParams(
+        "google/gemini-2.5-flash",
+        messages,
+        undefined,
+        undefined,
+        {},
+      ),
     ).toThrow(FeatureNotSupportedError);
   });
 });

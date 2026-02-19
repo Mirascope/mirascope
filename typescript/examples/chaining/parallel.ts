@@ -17,7 +17,7 @@ const chefSelector = llm.defineCall<{ ingredient: string }>({
     `Identify a chef known for cooking with ${ingredient}. Return only their name.`,
 });
 
-const ingredientsIdentifier = llm.defineCall<{ ingredient: string }>({
+const ingredientsIdentifier = llm.defineCall<{ ingredient: string }>()({
   model,
   format: z.array(z.string()),
   template: ({ ingredient }) =>

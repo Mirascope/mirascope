@@ -44,6 +44,34 @@ describe("extractSerializedJson", () => {
       expect(extractSerializedJson(json)).toBe(json);
     });
 
+    it("extracts plain JSON array", () => {
+      const json = '["apple", "cinnamon", "sugar"]';
+      expect(extractSerializedJson(json)).toBe(json);
+    });
+
+    it("extracts JSON array with preamble text", () => {
+      const text =
+        'Here are the ingredients:\n["apple", "cinnamon", "sugar"]\nEnjoy!';
+      expect(extractSerializedJson(text)).toBe(
+        '["apple", "cinnamon", "sugar"]',
+      );
+    });
+
+    it("extracts JSON array from markdown code block", () => {
+      const text = '```json\n["apple", "cinnamon"]\n```';
+      expect(extractSerializedJson(text)).toBe('["apple", "cinnamon"]');
+    });
+
+    it("handles nested arrays", () => {
+      const json = '[["a", "b"], ["c", "d"]]';
+      expect(extractSerializedJson(json)).toBe(json);
+    });
+
+    it("handles arrays of objects", () => {
+      const json = '[{"name": "Alice"}, {"name": "Bob"}]';
+      expect(extractSerializedJson(json)).toBe(json);
+    });
+
     it("handles strings with braces inside", () => {
       const json = '{"text": "Hello {world}!"}';
       expect(extractSerializedJson(json)).toBe(json);
@@ -66,21 +94,27 @@ describe("extractSerializedJson", () => {
   });
 
   describe("error cases", () => {
-    it("throws for missing opening brace", () => {
+    it("throws for missing opening brace or bracket", () => {
       expect(() => extractSerializedJson("No JSON here")).toThrow(
-        "No JSON object found in response: missing '{'",
+        "No JSON found in response: missing '{' or '['",
       );
     });
 
     it("throws for empty string", () => {
       expect(() => extractSerializedJson("")).toThrow(
-        "No JSON object found in response: missing '{'",
+        "No JSON found in response: missing '{' or '['",
       );
     });
 
     it("throws for unclosed object", () => {
       expect(() => extractSerializedJson('{"title": "1984"')).toThrow(
-        "No JSON object found in response: missing '}'",
+        "No JSON found in response: missing '}'",
+      );
+    });
+
+    it("throws for unclosed array", () => {
+      expect(() => extractSerializedJson('["apple", "cinnamon"')).toThrow(
+        "No JSON found in response: missing ']'",
       );
     });
 
@@ -192,6 +226,23 @@ describe("parsePartial", () => {
     it("handles incomplete arrays", () => {
       const result = parsePartial<{ items: string[] }>('{"items": ["a", "b');
       expect(result).toEqual({ items: ["a", "b"] });
+    });
+
+    it("handles top-level arrays", () => {
+      const result = parsePartial<string[]>('["apple", "cinnamon", "sugar"]');
+      expect(result).toEqual(["apple", "cinnamon", "sugar"]);
+    });
+
+    it("handles incomplete top-level arrays", () => {
+      const result = parsePartial<string[]>('["apple", "cinn');
+      expect(result).toEqual(["apple", "cinn"]);
+    });
+
+    it("handles top-level array with preamble", () => {
+      const result = parsePartial<string[]>(
+        'Here are the items:\n["apple", "cinnamon"]',
+      );
+      expect(result).toEqual(["apple", "cinnamon"]);
     });
   });
 });
