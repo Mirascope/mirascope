@@ -31,6 +31,8 @@ describe("buildEnvVars", () => {
       CLOUDFLARE_ACCOUNT_ID: "test-account-id",
       OPENCLAW_SITE_URL: "https://mirascope.com",
       OPENCLAW_ALLOWED_ORIGINS: "https://mirascope.com",
+      MIRASCOPE_CLOUD_URL: "https://mirascope.com",
+      MIRASCOPE_CLAW_ID: "claw-123",
       R2_ACCESS_KEY_ID: "test-access-key",
       R2_SECRET_ACCESS_KEY: "test-secret-key",
       R2_BUCKET_NAME: "claw-claw-123",
@@ -53,7 +55,7 @@ describe("buildEnvVars", () => {
     const result = buildEnvVars(config, env);
     expect(result).not.toHaveProperty("TELEGRAM_BOT_TOKEN");
     expect(result).not.toHaveProperty("DISCORD_BOT_TOKEN");
-    expect(Object.keys(result)).toHaveLength(10);
+    expect(Object.keys(result)).toHaveLength(12);
   });
 
   it("includes R2 credentials even with empty containerEnv", () => {
@@ -64,6 +66,8 @@ describe("buildEnvVars", () => {
       CLOUDFLARE_ACCOUNT_ID: "test-account-id",
       OPENCLAW_SITE_URL: "https://mirascope.com",
       OPENCLAW_ALLOWED_ORIGINS: "https://mirascope.com",
+      MIRASCOPE_CLOUD_URL: "https://mirascope.com",
+      MIRASCOPE_CLAW_ID: "claw-123",
       R2_ACCESS_KEY_ID: "test-access-key",
       R2_SECRET_ACCESS_KEY: "test-secret-key",
       R2_BUCKET_NAME: "claw-claw-123",
