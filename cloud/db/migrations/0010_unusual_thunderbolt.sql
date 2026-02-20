@@ -1,4 +1,4 @@
-CREATE TABLE "google_workspace_connections" (
+CREATE TABLE "claw_integration_google_workspace" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"claw_id" uuid NOT NULL,
 	"user_id" uuid NOT NULL,
@@ -9,8 +9,8 @@ CREATE TABLE "google_workspace_connections" (
 	"token_expires_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now(),
 	"updated_at" timestamp with time zone DEFAULT now(),
-	CONSTRAINT "google_workspace_connections_claw_id_unique" UNIQUE("claw_id")
+	CONSTRAINT "claw_integration_google_workspace_claw_id_unique" UNIQUE("claw_id")
 );
 --> statement-breakpoint
-ALTER TABLE "google_workspace_connections" ADD CONSTRAINT "google_workspace_connections_claw_id_claws_id_fk" FOREIGN KEY ("claw_id") REFERENCES "public"."claws"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "google_workspace_connections" ADD CONSTRAINT "google_workspace_connections_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "claw_integration_google_workspace" ADD CONSTRAINT "claw_integration_google_workspace_claw_id_claws_id_fk" FOREIGN KEY ("claw_id") REFERENCES "public"."claws"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "claw_integration_google_workspace" ADD CONSTRAINT "claw_integration_google_workspace_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;

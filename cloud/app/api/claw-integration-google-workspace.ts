@@ -3,8 +3,8 @@ import { Effect } from "effect";
 
 import { DrizzleORM } from "@/db/client";
 import {
-  googleWorkspaceConnections,
-  type PublicGoogleWorkspaceConnection,
+  clawIntegrationGoogleWorkspace,
+  type PublicClawIntegrationGoogleWorkspace,
 } from "@/db/schema";
 import { DatabaseError, NotFoundError } from "@/errors";
 
@@ -14,7 +14,7 @@ import { DatabaseError, NotFoundError } from "@/errors";
 export function getConnectionByClaw(
   clawId: string,
 ): Effect.Effect<
-  PublicGoogleWorkspaceConnection,
+  PublicClawIntegrationGoogleWorkspace,
   NotFoundError | DatabaseError,
   DrizzleORM
 > {
@@ -23,17 +23,17 @@ export function getConnectionByClaw(
 
     const [connection] = yield* client
       .select({
-        id: googleWorkspaceConnections.id,
-        clawId: googleWorkspaceConnections.clawId,
-        userId: googleWorkspaceConnections.userId,
-        scopes: googleWorkspaceConnections.scopes,
-        connectedEmail: googleWorkspaceConnections.connectedEmail,
-        tokenExpiresAt: googleWorkspaceConnections.tokenExpiresAt,
-        createdAt: googleWorkspaceConnections.createdAt,
-        updatedAt: googleWorkspaceConnections.updatedAt,
+        id: clawIntegrationGoogleWorkspace.id,
+        clawId: clawIntegrationGoogleWorkspace.clawId,
+        userId: clawIntegrationGoogleWorkspace.userId,
+        scopes: clawIntegrationGoogleWorkspace.scopes,
+        connectedEmail: clawIntegrationGoogleWorkspace.connectedEmail,
+        tokenExpiresAt: clawIntegrationGoogleWorkspace.tokenExpiresAt,
+        createdAt: clawIntegrationGoogleWorkspace.createdAt,
+        updatedAt: clawIntegrationGoogleWorkspace.updatedAt,
       })
-      .from(googleWorkspaceConnections)
-      .where(eq(googleWorkspaceConnections.clawId, clawId))
+      .from(clawIntegrationGoogleWorkspace)
+      .where(eq(clawIntegrationGoogleWorkspace.clawId, clawId))
       .limit(1)
       .pipe(
         Effect.mapError(
@@ -68,8 +68,8 @@ export function deleteConnection(
     const client = yield* DrizzleORM;
 
     yield* client
-      .delete(googleWorkspaceConnections)
-      .where(eq(googleWorkspaceConnections.clawId, clawId))
+      .delete(clawIntegrationGoogleWorkspace)
+      .where(eq(clawIntegrationGoogleWorkspace.clawId, clawId))
       .pipe(
         Effect.mapError(
           (e) =>
@@ -92,9 +92,9 @@ export function hasConnection(
     const client = yield* DrizzleORM;
 
     const [row] = yield* client
-      .select({ id: googleWorkspaceConnections.id })
-      .from(googleWorkspaceConnections)
-      .where(eq(googleWorkspaceConnections.clawId, clawId))
+      .select({ id: clawIntegrationGoogleWorkspace.id })
+      .from(clawIntegrationGoogleWorkspace)
+      .where(eq(clawIntegrationGoogleWorkspace.clawId, clawId))
       .limit(1)
       .pipe(
         Effect.mapError(

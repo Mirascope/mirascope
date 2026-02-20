@@ -1042,8 +1042,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.google_workspace_connections": {
-      "name": "google_workspace_connections",
+    "public.claw_integration_google_workspace": {
+      "name": "claw_integration_google_workspace",
       "schema": "",
       "columns": {
         "id": {
@@ -1112,18 +1112,18 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "google_workspace_connections_claw_id_claws_id_fk": {
-          "name": "google_workspace_connections_claw_id_claws_id_fk",
-          "tableFrom": "google_workspace_connections",
+        "claw_integration_google_workspace_claw_id_claws_id_fk": {
+          "name": "claw_integration_google_workspace_claw_id_claws_id_fk",
+          "tableFrom": "claw_integration_google_workspace",
           "tableTo": "claws",
           "columnsFrom": ["claw_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "google_workspace_connections_user_id_users_id_fk": {
-          "name": "google_workspace_connections_user_id_users_id_fk",
-          "tableFrom": "google_workspace_connections",
+        "claw_integration_google_workspace_user_id_users_id_fk": {
+          "name": "claw_integration_google_workspace_user_id_users_id_fk",
+          "tableFrom": "claw_integration_google_workspace",
           "tableTo": "users",
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
@@ -1133,8 +1133,8 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "google_workspace_connections_claw_id_unique": {
-          "name": "google_workspace_connections_claw_id_unique",
+        "claw_integration_google_workspace_claw_id_unique": {
+          "name": "claw_integration_google_workspace_claw_id_unique",
           "nullsNotDistinct": false,
           "columns": ["claw_id"]
         }

@@ -17,7 +17,7 @@ export * from "@/db/schema/credit-reservations";
 export * from "@/db/schema/claws";
 export * from "@/db/schema/claw-memberships";
 export * from "@/db/schema/claw-membership-audit";
-export * from "@/db/schema/google-workspace-connections";
+export * from "@/db/schema/claw-integration-google-workspace";
 
 export type { PublicSession } from "@/db/schema/sessions";
 export type { PublicUser, AccountType } from "@/db/schema/users";
@@ -69,7 +69,7 @@ export type {
   ClawRole,
 } from "@/db/schema/claw-memberships";
 export type { PublicClawMembershipAudit } from "@/db/schema/claw-membership-audit";
-export type { PublicGoogleWorkspaceConnection } from "@/db/schema/google-workspace-connections";
+export type { PublicClawIntegrationGoogleWorkspace } from "@/db/schema/claw-integration-google-workspace";
 
 import { annotations } from "@/db/schema/annotations";
 import { apiKeys } from "@/db/schema/api-keys";
@@ -79,7 +79,7 @@ import { claws } from "@/db/schema/claws";
 import { creditReservations } from "@/db/schema/credit-reservations";
 import { environments } from "@/db/schema/environments";
 import { functions } from "@/db/schema/functions";
-import { googleWorkspaceConnections } from "@/db/schema/google-workspace-connections";
+import { clawIntegrationGoogleWorkspace } from "@/db/schema/claw-integration-google-workspace";
 import { organizationInvitations } from "@/db/schema/organization-invitations";
 import { organizationMembershipAudit } from "@/db/schema/organization-membership-audit";
 import { organizationMemberships } from "@/db/schema/organization-memberships";
@@ -112,4 +112,4 @@ export type DatabaseTable =
   | typeof claws
   | typeof clawMemberships
   | typeof clawMembershipAudit
-  | typeof googleWorkspaceConnections;
+  | typeof clawIntegrationGoogleWorkspace;

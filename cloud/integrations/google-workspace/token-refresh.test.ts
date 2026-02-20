@@ -4,7 +4,7 @@ import { afterEach, beforeEach, vi } from "vitest";
 
 import { encryptSecrets } from "@/claws/crypto";
 import { DrizzleORM } from "@/db/client";
-import { googleWorkspaceConnections } from "@/db/schema";
+import { clawIntegrationGoogleWorkspace } from "@/db/schema";
 import {
   TokenDecryptionError,
   TokenNotFoundError,
@@ -69,7 +69,7 @@ describe("Token Refresh", () => {
         });
 
         // Insert a connection with encrypted token
-        yield* client.insert(googleWorkspaceConnections).values({
+        yield* client.insert(clawIntegrationGoogleWorkspace).values({
           clawId: claw.id,
           userId: owner.id,
           encryptedRefreshToken: ciphertext,
@@ -111,7 +111,7 @@ describe("Token Refresh", () => {
           refresh_token: "expired-refresh-token",
         });
 
-        yield* client.insert(googleWorkspaceConnections).values({
+        yield* client.insert(clawIntegrationGoogleWorkspace).values({
           clawId: claw.id,
           userId: owner.id,
           encryptedRefreshToken: ciphertext,
@@ -148,7 +148,7 @@ describe("Token Refresh", () => {
           refresh_token: "test-refresh-token",
         });
 
-        yield* client.insert(googleWorkspaceConnections).values({
+        yield* client.insert(clawIntegrationGoogleWorkspace).values({
           clawId: claw.id,
           userId: owner.id,
           encryptedRefreshToken: ciphertext,
@@ -174,7 +174,7 @@ describe("Token Refresh", () => {
         const client = yield* DrizzleORM;
 
         // Insert connection with valid base64 but invalid encrypted data
-        yield* client.insert(googleWorkspaceConnections).values({
+        yield* client.insert(clawIntegrationGoogleWorkspace).values({
           clawId: claw.id,
           userId: owner.id,
           encryptedRefreshToken: btoa("not-valid-aes-gcm-ciphertext"),
@@ -202,7 +202,7 @@ describe("Token Refresh", () => {
             refresh_token: "test-refresh-token",
           });
 
-          yield* client.insert(googleWorkspaceConnections).values({
+          yield* client.insert(clawIntegrationGoogleWorkspace).values({
             clawId: claw.id,
             userId: owner.id,
             encryptedRefreshToken: ciphertext,
@@ -225,10 +225,10 @@ describe("Token Refresh", () => {
           // Check that tokenExpiresAt was updated
           const [updated] = yield* client
             .select({
-              tokenExpiresAt: googleWorkspaceConnections.tokenExpiresAt,
+              tokenExpiresAt: clawIntegrationGoogleWorkspace.tokenExpiresAt,
             })
-            .from(googleWorkspaceConnections)
-            .where(eq(googleWorkspaceConnections.clawId, claw.id))
+            .from(clawIntegrationGoogleWorkspace)
+            .where(eq(clawIntegrationGoogleWorkspace.clawId, claw.id))
             .limit(1);
 
           // tokenExpiresAt should be set (not null)

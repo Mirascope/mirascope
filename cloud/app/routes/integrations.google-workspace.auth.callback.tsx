@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { callbackOAuthEffect } from "@/app/api/google-workspace-connections.handlers";
+import { callbackOAuthEffect } from "@/app/api/claw-integration-google-workspace.handlers";
 import { runEffectResponse } from "@/app/lib/effect";
 
 export const Route = createFileRoute(
