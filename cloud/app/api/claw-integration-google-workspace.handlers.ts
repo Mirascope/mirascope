@@ -1,5 +1,5 @@
 import { and, eq, isNull } from "drizzle-orm";
-import { Effect } from "effect";
+import { Data, Effect } from "effect";
 
 import {
   AuthenticationFailedError,
@@ -18,6 +18,7 @@ import {
   users,
 } from "@/db/schema";
 import { signState, verifyState } from "@/integrations/google-workspace/hmac";
+import { refreshAccessToken } from "@/integrations/google-workspace/token-refresh";
 import { Settings } from "@/settings";
 
 // =============================================================================
@@ -639,6 +640,168 @@ export function revokeConnectionEffect(request: Request) {
       return Effect.succeed(
         Response.json({ error: error.message }, { status: 500 }),
       );
+    }),
+  );
+}
+
+// =============================================================================
+// Token vending handler (for claw gateway → cloud)
+// =============================================================================
+
+class GatewayAuthError extends Data.TaggedError("GatewayAuthError")<{
+  readonly message: string;
+}> {}
+
+class GatewayBadRequestError extends Data.TaggedError(
+  "GatewayBadRequestError",
+)<{
+  readonly message: string;
+}> {}
+
+class ConnectionNotFoundError extends Data.TaggedError(
+  "ConnectionNotFoundError",
+)<{
+  readonly message: string;
+}> {}
+
+class TokenVendingError extends Data.TaggedError("TokenVendingError")<{
+  readonly message: string;
+  readonly cause?: unknown;
+}> {}
+
+/**
+ * Constant-time comparison of two strings to prevent timing attacks.
+ * Uses bitwise OR accumulator to avoid early exit on mismatch.
+ */
+function timingSafeEqual(a: string, b: string): boolean {
+  const encoder = new TextEncoder();
+  const aBuf = encoder.encode(a);
+  const bBuf = encoder.encode(b);
+  if (aBuf.length !== bBuf.length) return false;
+  let result = 0;
+  for (let i = 0; i < aBuf.length; i++) {
+    result |= aBuf[i] ^ bBuf[i];
+  }
+  return result === 0;
+}
+
+export function googleWorkspaceTokenEffect(request: Request) {
+  return Effect.gen(function* () {
+    // Extract claw_id from query params
+    const url = new URL(request.url);
+    const clawId = url.searchParams.get("claw_id");
+    if (!clawId) {
+      return yield* Effect.fail(
+        new GatewayBadRequestError({
+          message: "Missing claw_id parameter",
+        }),
+      );
+    }
+
+    // Extract bearer token from Authorization header
+    const authHeader = request.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return yield* Effect.fail(
+        new GatewayAuthError({
+          message: "Missing or invalid Authorization header",
+        }),
+      );
+    }
+    const bearerToken = authHeader.slice(7);
+
+    // Look up the claw and verify the gateway token
+    const client = yield* DrizzleORM;
+    const [claw] = yield* client
+      .select({
+        secretsEncrypted: claws.secretsEncrypted,
+        secretsKeyId: claws.secretsKeyId,
+      })
+      .from(claws)
+      .where(eq(claws.id, clawId))
+      .limit(1)
+      .pipe(
+        Effect.mapError(
+          () =>
+            new TokenVendingError({
+              message: "Failed to look up claw",
+            }),
+        ),
+      );
+
+    if (!claw || !claw.secretsEncrypted || !claw.secretsKeyId) {
+      return yield* Effect.fail(
+        new GatewayAuthError({ message: "Claw not found" }),
+      );
+    }
+
+    // Decrypt claw secrets and verify gateway token
+    const secrets = yield* decryptSecrets(
+      claw.secretsEncrypted,
+      claw.secretsKeyId,
+    ).pipe(
+      Effect.mapError(
+        (e) =>
+          new TokenVendingError({
+            message: `Failed to decrypt claw secrets: ${e.message}`,
+            cause: e,
+          }),
+      ),
+    );
+
+    if (!secrets.OPENCLAW_GATEWAY_TOKEN) {
+      return yield* Effect.fail(
+        new GatewayAuthError({ message: "Invalid gateway token" }),
+      );
+    }
+
+    if (!timingSafeEqual(secrets.OPENCLAW_GATEWAY_TOKEN!, bearerToken)) {
+      return yield* Effect.fail(
+        new GatewayAuthError({ message: "Invalid gateway token" }),
+      );
+    }
+
+    // Refresh the access token (also returns connectedEmail and scopes)
+    const result = yield* refreshAccessToken(clawId).pipe(
+      Effect.mapError((e) => {
+        if (e._tag === "TokenNotFoundError") {
+          return new ConnectionNotFoundError({
+            message: e.message,
+          });
+        }
+        return new TokenVendingError({
+          message: e.message,
+          cause: e,
+        });
+      }),
+    );
+
+    return Response.json({
+      access_token: result.accessToken,
+      expires_in: result.expiresIn,
+      connected_email: result.connectedEmail,
+      claw_id: clawId,
+      scopes: result.scopes,
+    });
+  }).pipe(
+    Effect.catchAll((error) => {
+      switch (error._tag) {
+        case "GatewayBadRequestError":
+          return Effect.succeed(
+            Response.json({ error: error.message }, { status: 400 }),
+          );
+        case "GatewayAuthError":
+          return Effect.succeed(
+            Response.json({ error: error.message }, { status: 401 }),
+          );
+        case "ConnectionNotFoundError":
+          return Effect.succeed(
+            Response.json({ error: error.message }, { status: 404 }),
+          );
+        case "TokenVendingError":
+          return Effect.succeed(
+            Response.json({ error: error.message }, { status: 502 }),
+          );
+      }
     }),
   );
 }
