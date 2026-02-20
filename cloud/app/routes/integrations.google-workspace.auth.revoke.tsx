@@ -4,7 +4,7 @@ import { revokeConnectionEffect } from "@/app/api/google-workspace-connections.h
 import { runEffectResponse } from "@/app/lib/effect";
 
 export const Route = createFileRoute(
-  "/api/google-workspace-connections/revoke",
+  "/integrations/google-workspace/auth/revoke",
 )({
   server: {
     handlers: {
