@@ -124,19 +124,6 @@ const prefixRedirects: Array<{
   to: string;
   status: RedirectStatus;
 }> = [
-  // todo(sebastian): do we still need these?
-  // External legacy redirects (must be before /api/* catch-all)
-  {
-    prefix: "/integrations/",
-    to: "https://legacy.mirascope.com/integrations/",
-    status: 301,
-  },
-  {
-    prefix: "/api/integrations/",
-    to: "https://legacy.mirascope.com/api/integrations/",
-    status: 301,
-  },
-
   // Section redirects (trailing slash ensures path boundary matching)
   { prefix: "/docs/mirascope/", to: "/docs/v1/", status: 301 },
   { prefix: "/docs/mirascope/learn/", to: "/docs/v1/learn/", status: 301 },
