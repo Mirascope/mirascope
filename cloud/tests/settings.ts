@@ -121,6 +121,12 @@ export function createMockSettings(
           | undefined,
     },
 
+    dedicatedWorkspace: {
+      saKeyJson: undefined as string | undefined,
+      adminEmail: undefined as string | undefined,
+      domain: undefined as string | undefined,
+    },
+
     encryptionKeys: {
       CLAW_SECRETS_ENCRYPTION_KEY_V1:
         "S0YrcgEScoOL1ALp/w+xI90P9O8h4s3OzEXtzlhBbHQ=",
@@ -154,6 +160,10 @@ export function createMockSettings(
     googleWorkspace: {
       ...defaults.googleWorkspace,
       ...overrides.googleWorkspace,
+    },
+    dedicatedWorkspace: {
+      ...defaults.dedicatedWorkspace,
+      ...overrides.dedicatedWorkspace,
     },
     cloudflare: { ...defaults.cloudflare, ...overrides.cloudflare },
     encryptionKeys: {
