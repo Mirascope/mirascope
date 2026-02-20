@@ -112,6 +112,15 @@ export function createMockSettings(
       dispatchWorkerBaseUrl: "https://dispatch.test.workers.dev",
     },
 
+    googleWorkspace: {
+      clientId: "test-gw-client-id" as string | undefined,
+      clientSecret: "test-gw-client-secret" as string | undefined,
+      callbackUrl:
+        "http://localhost:3000/integrations/google-workspace/auth/callback" as
+          | string
+          | undefined,
+    },
+
     encryptionKeys: {
       CLAW_SECRETS_ENCRYPTION_KEY_V1:
         "S0YrcgEScoOL1ALp/w+xI90P9O8h4s3OzEXtzlhBbHQ=",
@@ -142,6 +151,10 @@ export function createMockSettings(
       ...overrides.googleAnalytics,
     },
     frontend: { ...defaults.frontend, ...overrides.frontend },
+    googleWorkspace: {
+      ...defaults.googleWorkspace,
+      ...overrides.googleWorkspace,
+    },
     cloudflare: { ...defaults.cloudflare, ...overrides.cloudflare },
     encryptionKeys: {
       ...defaults.encryptionKeys,

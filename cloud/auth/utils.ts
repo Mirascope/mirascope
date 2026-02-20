@@ -31,7 +31,7 @@ export function isSecure(settings: SettingsConfig): boolean {
   );
 }
 
-function getCookieValue(request: Request, name: string): string | null {
+export function getCookieValue(request: Request, name: string): string | null {
   const cookieHeader = request.headers.get("Cookie");
   if (!cookieHeader) return null;
 
