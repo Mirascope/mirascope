@@ -594,8 +594,8 @@ function setupClawWithConnection() {
 
 function buildTokenRequest(clawId: string | null, token?: string): Request {
   const url = clawId
-    ? `http://localhost:3000/api/google-workspace-connections/token?claw_id=${clawId}`
-    : "http://localhost:3000/api/google-workspace-connections/token";
+    ? `http://localhost:3000/integrations/google-workspace/token?claw_id=${clawId}`
+    : "http://localhost:3000/integrations/google-workspace/token";
   const headers: Record<string, string> = {};
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;

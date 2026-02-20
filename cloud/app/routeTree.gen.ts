@@ -43,6 +43,7 @@ import { Route as SettingsOrganizationsIndexRouteImport } from './routes/setting
 import { Route as OrgSlugProjectsIndexRouteImport } from './routes/$orgSlug/projects/index'
 import { Route as OrgSlugClawsIndexRouteImport } from './routes/$orgSlug/claws/index'
 import { Route as SettingsOrganizationsOrgSlugRouteImport } from './routes/settings/organizations/$orgSlug'
+import { Route as IntegrationsGoogleWorkspaceTokenRouteImport } from './routes/integrations.google-workspace.token'
 import { Route as DocsV1SplatRouteImport } from './routes/docs.v1.$'
 import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
@@ -53,7 +54,6 @@ import { Route as ApiV2HealthRouteImport } from './routes/api.v2.health'
 import { Route as ApiV2DocsRouteImport } from './routes/api.v2.docs'
 import { Route as ApiV2SplatRouteImport } from './routes/api.v2.$'
 import { Route as ApiInternalSplatRouteImport } from './routes/api.internal.$'
-import { Route as ApiGoogleWorkspaceConnectionsTokenRouteImport } from './routes/api.google-workspace-connections.token'
 import { Route as OrgSlugProjectsProjectSlugRouteImport } from './routes/$orgSlug/projects/$projectSlug'
 import { Route as OrgSlugClawsClawSlugRouteImport } from './routes/$orgSlug/claws/$clawSlug'
 import { Route as SettingsOrganizationsOrgSlugIndexRouteImport } from './routes/settings/organizations/$orgSlug/index'
@@ -252,6 +252,12 @@ const SettingsOrganizationsOrgSlugRoute =
     path: '/organizations/$orgSlug',
     getParentRoute: () => SettingsRoute,
   } as any)
+const IntegrationsGoogleWorkspaceTokenRoute =
+  IntegrationsGoogleWorkspaceTokenRouteImport.update({
+    id: '/integrations/google-workspace/token',
+    path: '/integrations/google-workspace/token',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const DocsV1SplatRoute = DocsV1SplatRouteImport.update({
   id: '/v1/$',
   path: '/v1/$',
@@ -302,12 +308,6 @@ const ApiInternalSplatRoute = ApiInternalSplatRouteImport.update({
   path: '/api/internal/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiGoogleWorkspaceConnectionsTokenRoute =
-  ApiGoogleWorkspaceConnectionsTokenRouteImport.update({
-    id: '/api/google-workspace-connections/token',
-    path: '/api/google-workspace-connections/token',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const OrgSlugProjectsProjectSlugRoute =
   OrgSlugProjectsProjectSlugRouteImport.update({
     id: '/projects/$projectSlug',
@@ -490,7 +490,6 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof SettingsIndexRoute
   '/$orgSlug/claws/$clawSlug': typeof OrgSlugClawsClawSlugRouteWithChildren
   '/$orgSlug/projects/$projectSlug': typeof OrgSlugProjectsProjectSlugRouteWithChildren
-  '/api/google-workspace-connections/token': typeof ApiGoogleWorkspaceConnectionsTokenRoute
   '/api/internal/$': typeof ApiInternalSplatRoute
   '/api/v2/$': typeof ApiV2SplatRoute
   '/api/v2/docs': typeof ApiV2DocsRoute
@@ -501,6 +500,7 @@ export interface FileRoutesByFullPath {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/integrations/google-workspace/token': typeof IntegrationsGoogleWorkspaceTokenRoute
   '/settings/organizations/$orgSlug': typeof SettingsOrganizationsOrgSlugRouteWithChildren
   '/$orgSlug/claws': typeof OrgSlugClawsIndexRoute
   '/$orgSlug/projects': typeof OrgSlugProjectsIndexRoute
@@ -556,7 +556,6 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/dev': typeof DevIndexRoute
   '/settings': typeof SettingsIndexRoute
-  '/api/google-workspace-connections/token': typeof ApiGoogleWorkspaceConnectionsTokenRoute
   '/api/internal/$': typeof ApiInternalSplatRoute
   '/api/v2/$': typeof ApiV2SplatRoute
   '/api/v2/docs': typeof ApiV2DocsRoute
@@ -567,6 +566,7 @@ export interface FileRoutesByTo {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/integrations/google-workspace/token': typeof IntegrationsGoogleWorkspaceTokenRoute
   '/$orgSlug/claws': typeof OrgSlugClawsIndexRoute
   '/$orgSlug/projects': typeof OrgSlugProjectsIndexRoute
   '/settings/organizations': typeof SettingsOrganizationsIndexRoute
@@ -627,7 +627,6 @@ export interface FileRoutesById {
   '/settings/': typeof SettingsIndexRoute
   '/$orgSlug/claws/$clawSlug': typeof OrgSlugClawsClawSlugRouteWithChildren
   '/$orgSlug/projects/$projectSlug': typeof OrgSlugProjectsProjectSlugRouteWithChildren
-  '/api/google-workspace-connections/token': typeof ApiGoogleWorkspaceConnectionsTokenRoute
   '/api/internal/$': typeof ApiInternalSplatRoute
   '/api/v2/$': typeof ApiV2SplatRoute
   '/api/v2/docs': typeof ApiV2DocsRoute
@@ -638,6 +637,7 @@ export interface FileRoutesById {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/integrations/google-workspace/token': typeof IntegrationsGoogleWorkspaceTokenRoute
   '/settings/organizations/$orgSlug': typeof SettingsOrganizationsOrgSlugRouteWithChildren
   '/$orgSlug/claws/': typeof OrgSlugClawsIndexRoute
   '/$orgSlug/projects/': typeof OrgSlugProjectsIndexRoute
@@ -701,7 +701,6 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/$orgSlug/claws/$clawSlug'
     | '/$orgSlug/projects/$projectSlug'
-    | '/api/google-workspace-connections/token'
     | '/api/internal/$'
     | '/api/v2/$'
     | '/api/v2/docs'
@@ -712,6 +711,7 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/docs/v1/$'
+    | '/integrations/google-workspace/token'
     | '/settings/organizations/$orgSlug'
     | '/$orgSlug/claws'
     | '/$orgSlug/projects'
@@ -767,7 +767,6 @@ export interface FileRouteTypes {
     | '/blog'
     | '/dev'
     | '/settings'
-    | '/api/google-workspace-connections/token'
     | '/api/internal/$'
     | '/api/v2/$'
     | '/api/v2/docs'
@@ -778,6 +777,7 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/docs/v1/$'
+    | '/integrations/google-workspace/token'
     | '/$orgSlug/claws'
     | '/$orgSlug/projects'
     | '/settings/organizations'
@@ -837,7 +837,6 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/$orgSlug/claws/$clawSlug'
     | '/$orgSlug/projects/$projectSlug'
-    | '/api/google-workspace-connections/token'
     | '/api/internal/$'
     | '/api/v2/$'
     | '/api/v2/docs'
@@ -848,6 +847,7 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/docs/v1/$'
+    | '/integrations/google-workspace/token'
     | '/settings/organizations/$orgSlug'
     | '/$orgSlug/claws/'
     | '/$orgSlug/projects/'
@@ -896,12 +896,12 @@ export interface RootRouteChildren {
   AuthMeRoute: typeof AuthMeRoute
   InvitationsAcceptRoute: typeof InvitationsAcceptRoute
   TermsSplatRoute: typeof TermsSplatRoute
-  ApiGoogleWorkspaceConnectionsTokenRoute: typeof ApiGoogleWorkspaceConnectionsTokenRoute
   ApiInternalSplatRoute: typeof ApiInternalSplatRoute
   ApiV2SplatRoute: typeof ApiV2SplatRoute
   ApiV2DocsRoute: typeof ApiV2DocsRoute
   ApiV2HealthRoute: typeof ApiV2HealthRoute
   ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
+  IntegrationsGoogleWorkspaceTokenRoute: typeof IntegrationsGoogleWorkspaceTokenRoute
   IntegrationsGoogleWorkspaceAuthCallbackRoute: typeof IntegrationsGoogleWorkspaceAuthCallbackRoute
   IntegrationsGoogleWorkspaceAuthRevokeRoute: typeof IntegrationsGoogleWorkspaceAuthRevokeRoute
   IntegrationsGoogleWorkspaceAuthStartRoute: typeof IntegrationsGoogleWorkspaceAuthStartRoute
@@ -1148,6 +1148,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsOrganizationsOrgSlugRouteImport
       parentRoute: typeof SettingsRoute
     }
+    '/integrations/google-workspace/token': {
+      id: '/integrations/google-workspace/token'
+      path: '/integrations/google-workspace/token'
+      fullPath: '/integrations/google-workspace/token'
+      preLoaderRoute: typeof IntegrationsGoogleWorkspaceTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/docs/v1/$': {
       id: '/docs/v1/$'
       path: '/v1/$'
@@ -1216,13 +1223,6 @@ declare module '@tanstack/react-router' {
       path: '/api/internal/$'
       fullPath: '/api/internal/$'
       preLoaderRoute: typeof ApiInternalSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/google-workspace-connections/token': {
-      id: '/api/google-workspace-connections/token'
-      path: '/api/google-workspace-connections/token'
-      fullPath: '/api/google-workspace-connections/token'
-      preLoaderRoute: typeof ApiGoogleWorkspaceConnectionsTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$orgSlug/projects/$projectSlug': {
@@ -1630,13 +1630,12 @@ const rootRouteChildren: RootRouteChildren = {
   AuthMeRoute: AuthMeRoute,
   InvitationsAcceptRoute: InvitationsAcceptRoute,
   TermsSplatRoute: TermsSplatRoute,
-  ApiGoogleWorkspaceConnectionsTokenRoute:
-    ApiGoogleWorkspaceConnectionsTokenRoute,
   ApiInternalSplatRoute: ApiInternalSplatRoute,
   ApiV2SplatRoute: ApiV2SplatRoute,
   ApiV2DocsRoute: ApiV2DocsRoute,
   ApiV2HealthRoute: ApiV2HealthRoute,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
+  IntegrationsGoogleWorkspaceTokenRoute: IntegrationsGoogleWorkspaceTokenRoute,
   IntegrationsGoogleWorkspaceAuthCallbackRoute:
     IntegrationsGoogleWorkspaceAuthCallbackRoute,
   IntegrationsGoogleWorkspaceAuthRevokeRoute:
