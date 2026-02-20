@@ -12,7 +12,7 @@ import { decryptSecrets, encryptSecrets } from "@/claws/crypto";
 import { DrizzleORM } from "@/db/client";
 import {
   claws,
-  googleWorkspaceConnections,
+  clawIntegrationGoogleWorkspace,
   organizationMemberships,
   organizations,
   users,
@@ -375,14 +375,14 @@ export function callbackOAuthEffect(request: Request) {
       ),
     );
 
-    // Upsert into google_workspace_connections
+    // Upsert into claw_integration_google_workspace
     const client = yield* DrizzleORM;
     const tokenExpiresAt = tokenResponse.expires_in
       ? new Date(Date.now() + tokenResponse.expires_in * 1000)
       : null;
 
     yield* client
-      .insert(googleWorkspaceConnections)
+      .insert(clawIntegrationGoogleWorkspace)
       .values({
         clawId: stateData.clawId,
         userId: user.id,
@@ -393,7 +393,7 @@ export function callbackOAuthEffect(request: Request) {
         tokenExpiresAt,
       })
       .onConflictDoUpdate({
-        target: [googleWorkspaceConnections.clawId],
+        target: [clawIntegrationGoogleWorkspace.clawId],
         set: {
           userId: user.id,
           encryptedRefreshToken: ciphertext,
@@ -538,12 +538,12 @@ export function revokeConnectionEffect(request: Request) {
     // Get the connection
     const [connection] = yield* client
       .select({
-        id: googleWorkspaceConnections.id,
-        encryptedRefreshToken: googleWorkspaceConnections.encryptedRefreshToken,
-        refreshTokenKeyId: googleWorkspaceConnections.refreshTokenKeyId,
+        id: clawIntegrationGoogleWorkspace.id,
+        encryptedRefreshToken: clawIntegrationGoogleWorkspace.encryptedRefreshToken,
+        refreshTokenKeyId: clawIntegrationGoogleWorkspace.refreshTokenKeyId,
       })
-      .from(googleWorkspaceConnections)
-      .where(eq(googleWorkspaceConnections.clawId, body.claw_id))
+      .from(clawIntegrationGoogleWorkspace)
+      .where(eq(clawIntegrationGoogleWorkspace.clawId, body.claw_id))
       .limit(1)
       .pipe(
         Effect.mapError(
@@ -601,8 +601,8 @@ export function revokeConnectionEffect(request: Request) {
 
     // Delete the connection from DB
     yield* client
-      .delete(googleWorkspaceConnections)
-      .where(eq(googleWorkspaceConnections.clawId, body.claw_id))
+      .delete(clawIntegrationGoogleWorkspace)
+      .where(eq(clawIntegrationGoogleWorkspace.clawId, body.claw_id))
       .pipe(
         Effect.mapError(
           () =>

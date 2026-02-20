@@ -5,9 +5,9 @@ import {
   deleteConnection,
   getConnectionByClaw,
   hasConnection,
-} from "@/app/api/google-workspace-connections";
+} from "@/app/api/claw-integration-google-workspace";
 import { DrizzleORM } from "@/db/client";
-import { googleWorkspaceConnections } from "@/db/schema";
+import { clawIntegrationGoogleWorkspace } from "@/db/schema";
 import { describe, expect, it, TestClawFixture } from "@/tests/db";
 
 describe("Google Workspace Connections API", () => {
@@ -28,7 +28,7 @@ describe("Google Workspace Connections API", () => {
         const { claw, owner } = yield* TestClawFixture;
         const client = yield* DrizzleORM;
 
-        yield* client.insert(googleWorkspaceConnections).values({
+        yield* client.insert(clawIntegrationGoogleWorkspace).values({
           clawId: claw.id,
           userId: owner.id,
           encryptedRefreshToken: "encrypted-token",
@@ -50,7 +50,7 @@ describe("Google Workspace Connections API", () => {
         const { claw, owner } = yield* TestClawFixture;
         const client = yield* DrizzleORM;
 
-        yield* client.insert(googleWorkspaceConnections).values({
+        yield* client.insert(clawIntegrationGoogleWorkspace).values({
           clawId: claw.id,
           userId: owner.id,
           encryptedRefreshToken: "encrypted-token",
@@ -81,7 +81,7 @@ describe("Google Workspace Connections API", () => {
         const { claw, owner } = yield* TestClawFixture;
         const client = yield* DrizzleORM;
 
-        yield* client.insert(googleWorkspaceConnections).values({
+        yield* client.insert(clawIntegrationGoogleWorkspace).values({
           clawId: claw.id,
           userId: owner.id,
           encryptedRefreshToken: "encrypted-token",
@@ -111,7 +111,7 @@ describe("Google Workspace Connections API", () => {
         const { claw, owner } = yield* TestClawFixture;
         const client = yield* DrizzleORM;
 
-        yield* client.insert(googleWorkspaceConnections).values({
+        yield* client.insert(clawIntegrationGoogleWorkspace).values({
           clawId: claw.id,
           userId: owner.id,
           encryptedRefreshToken: "encrypted-token",

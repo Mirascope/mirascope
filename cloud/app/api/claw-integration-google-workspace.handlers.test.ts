@@ -6,10 +6,10 @@ import {
   callbackOAuthEffect,
   revokeConnectionEffect,
   startOAuthEffect,
-} from "@/app/api/google-workspace-connections.handlers";
+} from "@/app/api/claw-integration-google-workspace.handlers";
 import { encryptSecrets } from "@/claws/crypto";
 import { DrizzleORM } from "@/db/client";
-import { googleWorkspaceConnections, sessions } from "@/db/schema";
+import { clawIntegrationGoogleWorkspace, sessions } from "@/db/schema";
 import { signState } from "@/integrations/google-workspace/hmac";
 import { describe, expect, it, TestClawFixture } from "@/tests/db";
 
@@ -360,8 +360,8 @@ describe("callbackOAuthEffect", () => {
       // Verify connection was created
       const [connection] = yield* client
         .select()
-        .from(googleWorkspaceConnections)
-        .where(eq(googleWorkspaceConnections.clawId, claw.id))
+        .from(clawIntegrationGoogleWorkspace)
+        .where(eq(clawIntegrationGoogleWorkspace.clawId, claw.id))
         .limit(1);
       expect(connection).toBeDefined();
       expect(connection.connectedEmail).toBe("user@example.com");
@@ -510,7 +510,7 @@ describe("revokeConnectionEffect", () => {
         refresh_token: "test-refresh-token",
       });
 
-      yield* client.insert(googleWorkspaceConnections).values({
+      yield* client.insert(clawIntegrationGoogleWorkspace).values({
         clawId: claw.id,
         userId: owner.id,
         encryptedRefreshToken: ciphertext,
@@ -539,8 +539,8 @@ describe("revokeConnectionEffect", () => {
       // Verify connection was deleted
       const [remaining] = yield* client
         .select()
-        .from(googleWorkspaceConnections)
-        .where(eq(googleWorkspaceConnections.clawId, claw.id))
+        .from(clawIntegrationGoogleWorkspace)
+        .where(eq(clawIntegrationGoogleWorkspace.clawId, claw.id))
         .limit(1);
       expect(remaining).toBeUndefined();
     }),

@@ -3,7 +3,7 @@ import { Data, Effect } from "effect";
 
 import { decryptSecrets } from "@/claws/crypto";
 import { DrizzleORM } from "@/db/client";
-import { googleWorkspaceConnections } from "@/db/schema";
+import { clawIntegrationGoogleWorkspace } from "@/db/schema";
 import { Settings } from "@/settings";
 
 export class TokenNotFoundError extends Data.TaggedError("TokenNotFoundError")<{
@@ -55,11 +55,11 @@ export function refreshAccessToken(
     // Look up the connection
     const [connection] = yield* client
       .select({
-        encryptedRefreshToken: googleWorkspaceConnections.encryptedRefreshToken,
-        refreshTokenKeyId: googleWorkspaceConnections.refreshTokenKeyId,
+        encryptedRefreshToken: clawIntegrationGoogleWorkspace.encryptedRefreshToken,
+        refreshTokenKeyId: clawIntegrationGoogleWorkspace.refreshTokenKeyId,
       })
-      .from(googleWorkspaceConnections)
-      .where(eq(googleWorkspaceConnections.clawId, clawId))
+      .from(clawIntegrationGoogleWorkspace)
+      .where(eq(clawIntegrationGoogleWorkspace.clawId, clawId))
       .limit(1)
       .pipe(
         Effect.mapError(
@@ -141,12 +141,12 @@ export function refreshAccessToken(
     // Update token expiry in DB
     const expiresIn = tokenResponse.expires_in || 3600;
     yield* client
-      .update(googleWorkspaceConnections)
+      .update(clawIntegrationGoogleWorkspace)
       .set({
         tokenExpiresAt: new Date(Date.now() + expiresIn * 1000),
         updatedAt: new Date(),
       })
-      .where(eq(googleWorkspaceConnections.clawId, clawId))
+      .where(eq(clawIntegrationGoogleWorkspace.clawId, clawId))
       .pipe(
         Effect.mapError(
           () =>
