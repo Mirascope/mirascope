@@ -1,15 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Effect, Layer } from "effect";
 
-import { googleWorkspaceTokenEffect } from "@/app/api/google-workspace-connections.handlers";
+import { googleWorkspaceTokenEffect } from "@/app/api/claw-integration-google-workspace.handlers";
 import { Database } from "@/db/database";
 import { settingsLayer } from "@/server-entry";
 import { Settings } from "@/settings";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- route path not in generated route tree yet
-export const Route = createFileRoute(
-  "/api/google-workspace-connections/token" as any,
-)({
+export const Route = createFileRoute("/integrations/google-workspace/token")({
   server: {
     handlers: {
       GET: async ({ request }) => {
