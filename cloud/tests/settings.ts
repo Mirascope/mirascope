@@ -116,7 +116,7 @@ export function createMockSettings(
       clientId: "test-gw-client-id" as string | undefined,
       clientSecret: "test-gw-client-secret" as string | undefined,
       callbackUrl:
-        "http://localhost:3000/api/google-workspace-connections/callback" as
+        "http://localhost:3000/integrations/google-workspace/auth/callback" as
           | string
           | undefined,
     },

@@ -47,7 +47,7 @@ describe("startOAuthEffect", () => {
     Effect.gen(function* () {
       const { claw } = yield* TestClawFixture;
       const request = buildRequest(
-        `http://localhost:3000/api/google-workspace-connections/start?claw_id=${claw.id}`,
+        `http://localhost:3000/integrations/google-workspace/auth/start?claw_id=${claw.id}`,
       );
       const result = yield* startOAuthEffect(request).pipe(Effect.either);
       expect(Either.isLeft(result)).toBe(true);
@@ -69,7 +69,7 @@ describe("startOAuthEffect", () => {
         .returning();
 
       const request = buildRequest(
-        `http://localhost:3000/api/google-workspace-connections/start?claw_id=${claw.id}`,
+        `http://localhost:3000/integrations/google-workspace/auth/start?claw_id=${claw.id}`,
         { sessionId: session.id },
       );
       const result = yield* startOAuthEffect(request).pipe(Effect.either);
@@ -94,7 +94,7 @@ describe("startOAuthEffect", () => {
         .returning();
 
       const request = buildRequest(
-        "http://localhost:3000/api/google-workspace-connections/start",
+        "http://localhost:3000/integrations/google-workspace/auth/start",
         { sessionId: session.id },
       );
       const result = yield* startOAuthEffect(request).pipe(Effect.either);
@@ -119,7 +119,7 @@ describe("startOAuthEffect", () => {
         .returning();
 
       const request = buildRequest(
-        `http://localhost:3000/api/google-workspace-connections/start?claw_id=00000000-0000-0000-0000-000000000000`,
+        `http://localhost:3000/integrations/google-workspace/auth/start?claw_id=00000000-0000-0000-0000-000000000000`,
         { sessionId: session.id },
       );
       const result = yield* startOAuthEffect(request).pipe(Effect.either);
@@ -144,7 +144,7 @@ describe("startOAuthEffect", () => {
         .returning();
 
       const request = buildRequest(
-        `http://localhost:3000/api/google-workspace-connections/start?claw_id=${claw.id}`,
+        `http://localhost:3000/integrations/google-workspace/auth/start?claw_id=${claw.id}`,
         { sessionId: session.id },
       );
       const response = yield* startOAuthEffect(request);
@@ -175,7 +175,7 @@ describe("startOAuthEffect", () => {
         .returning();
 
       const request = buildRequest(
-        `http://localhost:3000/api/google-workspace-connections/start?claw_id=${claw.id}`,
+        `http://localhost:3000/integrations/google-workspace/auth/start?claw_id=${claw.id}`,
         { sessionId: session.id },
       );
       const response = yield* startOAuthEffect(request);
@@ -204,7 +204,7 @@ describe("callbackOAuthEffect", () => {
         }),
       );
       const request = buildRequest(
-        `http://localhost:3000/api/google-workspace-connections/callback?code=test-code&state=${forgedState}`,
+        `http://localhost:3000/integrations/google-workspace/auth/callback?code=test-code&state=${forgedState}`,
         { sessionId: "some-session" },
       );
       // Set the CSRF cookie to match
@@ -245,7 +245,7 @@ describe("callbackOAuthEffect", () => {
       });
 
       const request = new Request(
-        `http://localhost:3000/api/google-workspace-connections/callback?code=test-code&state=${encodedState}`,
+        `http://localhost:3000/integrations/google-workspace/auth/callback?code=test-code&state=${encodedState}`,
         {
           headers: {
             Cookie: `gw_oauth_state=${randomState}; session=${session.id}`,
@@ -282,7 +282,7 @@ describe("callbackOAuthEffect", () => {
       });
 
       const request = new Request(
-        `http://localhost:3000/api/google-workspace-connections/callback?code=test-code&state=${encodedState}`,
+        `http://localhost:3000/integrations/google-workspace/auth/callback?code=test-code&state=${encodedState}`,
         {
           headers: {
             Cookie: `gw_oauth_state=wrong-csrf; session=${session.id}`,
@@ -342,7 +342,7 @@ describe("callbackOAuthEffect", () => {
       );
 
       const request = new Request(
-        `http://localhost:3000/api/google-workspace-connections/callback?code=test-auth-code&state=${encodedState}`,
+        `http://localhost:3000/integrations/google-workspace/auth/callback?code=test-auth-code&state=${encodedState}`,
         {
           headers: {
             Cookie: `gw_oauth_state=${randomState}; session=${session.id}`,
@@ -372,7 +372,7 @@ describe("callbackOAuthEffect", () => {
   it.effect("rejects when Google returns error parameter", () =>
     Effect.gen(function* () {
       const request = buildRequest(
-        "http://localhost:3000/api/google-workspace-connections/callback?error=access_denied",
+        "http://localhost:3000/integrations/google-workspace/auth/callback?error=access_denied",
       );
       const result = yield* callbackOAuthEffect(request).pipe(Effect.either);
       expect(Either.isLeft(result)).toBe(true);
@@ -387,7 +387,7 @@ describe("revokeConnectionEffect", () => {
   it.effect("returns 401 for unauthenticated requests", () =>
     Effect.gen(function* () {
       const request = buildRequest(
-        "http://localhost:3000/api/google-workspace-connections/revoke",
+        "http://localhost:3000/integrations/google-workspace/auth/revoke",
         { method: "POST", body: { claw_id: "test" } },
       );
       const response = yield* revokeConnectionEffect(request);
@@ -409,7 +409,7 @@ describe("revokeConnectionEffect", () => {
         .returning();
 
       const request = new Request(
-        "http://localhost:3000/api/google-workspace-connections/revoke",
+        "http://localhost:3000/integrations/google-workspace/auth/revoke",
         {
           method: "POST",
           headers: {
@@ -444,7 +444,7 @@ describe("revokeConnectionEffect", () => {
         .returning();
 
       const request = new Request(
-        "http://localhost:3000/api/google-workspace-connections/revoke",
+        "http://localhost:3000/integrations/google-workspace/auth/revoke",
         {
           method: "POST",
           headers: {
@@ -473,7 +473,7 @@ describe("revokeConnectionEffect", () => {
         .returning();
 
       const request = new Request(
-        "http://localhost:3000/api/google-workspace-connections/revoke",
+        "http://localhost:3000/integrations/google-workspace/auth/revoke",
         {
           method: "POST",
           headers: {
@@ -523,7 +523,7 @@ describe("revokeConnectionEffect", () => {
       mockFetch.mockResolvedValueOnce(new Response(null, { status: 200 }));
 
       const request = new Request(
-        "http://localhost:3000/api/google-workspace-connections/revoke",
+        "http://localhost:3000/integrations/google-workspace/auth/revoke",
         {
           method: "POST",
           headers: {
