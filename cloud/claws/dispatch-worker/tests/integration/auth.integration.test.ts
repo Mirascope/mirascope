@@ -3,7 +3,6 @@
  *
  * Tests the auth decision matrix from DESIGN.md:
  *   /{org}/{claw}/webhook/*   → pass-through (no auth)
- *   /{org}/{claw}/* + Bearer  → pass-through (gateway validates)
  *   /{org}/{claw}/* + Cookie  → validate session via Cloud API
  *   /{org}/{claw}/* (no auth) → 401
  *   CORS preflight (OPTIONS)  → 204 with CORS headers
@@ -96,37 +95,18 @@ describe("webhook pass-through", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Bearer token pass-through
+// Bearer token rejection (removed — no longer accepted)
 // ---------------------------------------------------------------------------
 
-describe("Bearer token pass-through", () => {
-  it("passes through requests with Bearer token", async () => {
+describe("Bearer token rejection", () => {
+  it("rejects requests with Bearer token (no longer accepted)", async () => {
     const res = await mf.dispatchFetch(
       "http://test/test-org/my-claw/api/chat",
       {
         headers: { Authorization: "Bearer gw-tok-12345" },
       },
     );
-    expect(res.ok).toBe(true);
-
-    const body = (await res.json()) as unknown;
-    expect(body.action).toBe("pass-through");
-    expect(body.clawId).toBe("resolved-my-claw");
-    expect(body.remainder).toBe("/api/chat");
-  });
-
-  it("does not validate the Bearer token itself", async () => {
-    // Even an invalid token should pass through — gateway validates
-    const res = await mf.dispatchFetch(
-      "http://test/test-org/my-claw/api/chat",
-      {
-        headers: { Authorization: "Bearer totally-invalid-token" },
-      },
-    );
-    expect(res.ok).toBe(true);
-
-    const body = (await res.json()) as unknown;
-    expect(body.action).toBe("pass-through");
+    expect(res.status).toBe(401);
   });
 });
 
@@ -202,7 +182,7 @@ describe("unknown org/claw resolution", () => {
     const res = await mf.dispatchFetch(
       "http://test/unknown-org/my-claw/api/chat",
       {
-        headers: { Authorization: "Bearer some-token" },
+        headers: { Cookie: "session=valid-sess-123" },
       },
     );
     expect(res.status).toBe(404);
@@ -257,7 +237,7 @@ describe("CORS preflight", () => {
         method: "GET",
         headers: {
           Origin: "https://mirascope.com",
-          Authorization: "Bearer some-token",
+          Cookie: "session=valid-sess-123",
         },
       },
     );
@@ -297,7 +277,7 @@ describe("path parsing", () => {
     const res = await mf.dispatchFetch(
       "http://test/acme/support-bot/api/mcp/session",
       {
-        headers: { Authorization: "Bearer tok" },
+        headers: { Cookie: "session=valid-sess-123" },
       },
     );
     expect(res.ok).toBe(true);
@@ -310,7 +290,7 @@ describe("path parsing", () => {
 
   it("handles root remainder (just /{org}/{claw})", async () => {
     const res = await mf.dispatchFetch("http://test/acme/support-bot", {
-      headers: { Authorization: "Bearer tok" },
+      headers: { Cookie: "session=valid-sess-123" },
     });
     expect(res.ok).toBe(true);
 
