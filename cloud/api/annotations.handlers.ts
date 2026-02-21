@@ -35,7 +35,7 @@ export const listAnnotationsHandler = (params: {
 }) =>
   Effect.gen(function* () {
     const db = yield* Database;
-    const { user, apiKeyInfo } = yield* Authentication.ApiKey;
+    const { user, apiKeyInfo } = yield* Authentication.EnvironmentApiKey;
 
     const results =
       yield* db.organizations.projects.environments.traces.annotations.findAll({
@@ -65,7 +65,7 @@ export const listAnnotationsHandler = (params: {
 export const createAnnotationHandler = (payload: CreateAnnotationRequest) =>
   Effect.gen(function* () {
     const db = yield* Database;
-    const { user, apiKeyInfo } = yield* Authentication.ApiKey;
+    const { user, apiKeyInfo } = yield* Authentication.EnvironmentApiKey;
 
     const tags =
       payload.tags === null ? null : payload.tags ? [...payload.tags] : null;
@@ -96,7 +96,7 @@ export const createAnnotationHandler = (payload: CreateAnnotationRequest) =>
 export const getAnnotationHandler = (id: string) =>
   Effect.gen(function* () {
     const db = yield* Database;
-    const { user, apiKeyInfo } = yield* Authentication.ApiKey;
+    const { user, apiKeyInfo } = yield* Authentication.EnvironmentApiKey;
 
     const result =
       yield* db.organizations.projects.environments.traces.annotations.findById(
@@ -122,7 +122,7 @@ export const updateAnnotationHandler = (
 ) =>
   Effect.gen(function* () {
     const db = yield* Database;
-    const { user, apiKeyInfo } = yield* Authentication.ApiKey;
+    const { user, apiKeyInfo } = yield* Authentication.EnvironmentApiKey;
 
     const tags =
       payload.tags === null
@@ -156,7 +156,7 @@ export const updateAnnotationHandler = (
 export const deleteAnnotationHandler = (id: string) =>
   Effect.gen(function* () {
     const db = yield* Database;
-    const { user, apiKeyInfo } = yield* Authentication.ApiKey;
+    const { user, apiKeyInfo } = yield* Authentication.EnvironmentApiKey;
 
     yield* db.organizations.projects.environments.traces.annotations.delete({
       userId: user.id,

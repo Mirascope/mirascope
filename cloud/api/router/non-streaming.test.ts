@@ -8,7 +8,7 @@ import type {
   RouterRequestContext,
   ValidatedRouterRequest,
 } from "@/api/router/utils";
-import type { PublicUser, ApiKeyInfo } from "@/db/schema";
+import type { PublicUser, EnvironmentApiKeyAuth } from "@/db/schema";
 
 import { handleNonStreamingResponse } from "@/api/router/non-streaming";
 import { RouterMeteringQueueService } from "@/workers/routerMeteringQueue";
@@ -79,7 +79,7 @@ describe("Non-Streaming", () => {
           ownerAccountType: "user",
           ownerDeletedAt: null,
           clawId: null,
-        } satisfies ApiKeyInfo,
+        } satisfies EnvironmentApiKeyAuth,
         provider: "openai",
         modelId: "gpt-4",
         parsedRequestBody: {},
@@ -146,7 +146,7 @@ describe("Non-Streaming", () => {
           ownerAccountType: "user",
           ownerDeletedAt: null,
           clawId: null,
-        } satisfies ApiKeyInfo,
+        } satisfies EnvironmentApiKeyAuth,
         provider: "openai",
         modelId: "gpt-4",
         parsedRequestBody: {},
@@ -224,7 +224,7 @@ describe("Non-Streaming", () => {
           ownerAccountType: "user",
           ownerDeletedAt: null,
           clawId: null,
-        } satisfies ApiKeyInfo,
+        } satisfies EnvironmentApiKeyAuth,
         provider: "openai",
         modelId: "gpt-4",
         parsedRequestBody: {},
@@ -301,7 +301,7 @@ describe("Non-Streaming", () => {
           ownerAccountType: "user",
           ownerDeletedAt: null,
           clawId: null,
-        } satisfies ApiKeyInfo,
+        } satisfies EnvironmentApiKeyAuth,
         provider: "openai",
         modelId: "gpt-4",
         parsedRequestBody: {},

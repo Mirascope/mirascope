@@ -11,10 +11,10 @@ import {
 import { MirascopeCloudApi } from "@/api/api";
 import {
   listAllApiKeysHandler,
-  listApiKeysHandler,
-  createApiKeyHandler,
-  getApiKeyHandler,
-  deleteApiKeyHandler,
+  listEnvironmentApiKeysHandler,
+  createEnvironmentApiKeyHandler,
+  getEnvironmentApiKeyHandler,
+  deleteEnvironmentApiKeyHandler,
 } from "@/api/api-keys.handlers";
 import {
   listClawMembersHandler,
@@ -135,7 +135,7 @@ const TracesHandlersLive = HttpApiBuilder.group(
       // API key route - extracts environmentId from apiKeyInfo
       .handle("search", ({ payload }) =>
         Effect.gen(function* () {
-          const { apiKeyInfo } = yield* Authentication.ApiKey;
+          const { apiKeyInfo } = yield* Authentication.EnvironmentApiKey;
           return yield* searchHandler(apiKeyInfo.environmentId, payload);
         }),
       )
@@ -146,7 +146,7 @@ const TracesHandlersLive = HttpApiBuilder.group(
       // API key route - extracts environmentId from apiKeyInfo
       .handle("getTraceDetail", ({ path }) =>
         Effect.gen(function* () {
-          const { apiKeyInfo } = yield* Authentication.ApiKey;
+          const { apiKeyInfo } = yield* Authentication.EnvironmentApiKey;
           return yield* getTraceDetailHandler(
             apiKeyInfo.environmentId,
             path.traceId,
@@ -359,14 +359,14 @@ const ApiKeysHandlersLive = HttpApiBuilder.group(
         listAllApiKeysHandler(path.organizationId),
       )
       .handle("list", ({ path }) =>
-        listApiKeysHandler(
+        listEnvironmentApiKeysHandler(
           path.organizationId,
           path.projectId,
           path.environmentId,
         ),
       )
       .handle("create", ({ path, payload }) =>
-        createApiKeyHandler(
+        createEnvironmentApiKeyHandler(
           path.organizationId,
           path.projectId,
           path.environmentId,
@@ -374,7 +374,7 @@ const ApiKeysHandlersLive = HttpApiBuilder.group(
         ),
       )
       .handle("get", ({ path }) =>
-        getApiKeyHandler(
+        getEnvironmentApiKeyHandler(
           path.organizationId,
           path.projectId,
           path.environmentId,
@@ -382,7 +382,7 @@ const ApiKeysHandlersLive = HttpApiBuilder.group(
         ),
       )
       .handle("delete", ({ path }) =>
-        deleteApiKeyHandler(
+        deleteEnvironmentApiKeyHandler(
           path.organizationId,
           path.projectId,
           path.environmentId,
@@ -399,7 +399,7 @@ const FunctionsHandlersLive = HttpApiBuilder.group(
       // API key route - extracts IDs from apiKeyInfo
       .handle("list", () =>
         Effect.gen(function* () {
-          const { apiKeyInfo } = yield* Authentication.ApiKey;
+          const { apiKeyInfo } = yield* Authentication.EnvironmentApiKey;
           return yield* listFunctionsHandler(
             apiKeyInfo.organizationId,
             apiKeyInfo.projectId,
@@ -411,7 +411,7 @@ const FunctionsHandlersLive = HttpApiBuilder.group(
       // API key route - extracts IDs from apiKeyInfo
       .handle("get", ({ path }) =>
         Effect.gen(function* () {
-          const { apiKeyInfo } = yield* Authentication.ApiKey;
+          const { apiKeyInfo } = yield* Authentication.EnvironmentApiKey;
           return yield* getFunctionHandler(
             apiKeyInfo.organizationId,
             apiKeyInfo.projectId,
@@ -423,7 +423,7 @@ const FunctionsHandlersLive = HttpApiBuilder.group(
       // API key route - extracts IDs from apiKeyInfo
       .handle("delete", ({ path }) =>
         Effect.gen(function* () {
-          const { apiKeyInfo } = yield* Authentication.ApiKey;
+          const { apiKeyInfo } = yield* Authentication.EnvironmentApiKey;
           return yield* deleteFunctionHandler(
             apiKeyInfo.organizationId,
             apiKeyInfo.projectId,
@@ -435,7 +435,7 @@ const FunctionsHandlersLive = HttpApiBuilder.group(
       // API key route - extracts IDs from apiKeyInfo
       .handle("findByHash", ({ path }) =>
         Effect.gen(function* () {
-          const { apiKeyInfo } = yield* Authentication.ApiKey;
+          const { apiKeyInfo } = yield* Authentication.EnvironmentApiKey;
           return yield* findByHashHandler(
             apiKeyInfo.organizationId,
             apiKeyInfo.projectId,

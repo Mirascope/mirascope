@@ -46,8 +46,23 @@ export type {
 } from "@/db/schema/environments";
 export type { PublicTag } from "@/db/schema/tags";
 export type {
+  BasePublicApiKey,
+  EnvironmentPublicApiKey,
+  OrgPublicApiKey,
   PublicApiKey,
+  EnvironmentApiKeyCreateResponse,
+  OrgApiKeyCreateResponse,
   ApiKeyCreateResponse,
+  ApiKeyOwner,
+  BaseApiKeyAuth,
+  EnvironmentApiKeyAuth,
+  OrgApiKeyAuth,
+  ApiKeyAuth,
+  EnvironmentApiKeyInfo,
+  ApiKeyInfo,
+  BaseApiKeyContext,
+  EnvironmentApiKeyWithContext,
+  OrgApiKeyWithContext,
   ApiKeyWithContext,
 } from "@/db/schema/api-keys";
 export type { PublicFunction } from "@/db/schema/functions";

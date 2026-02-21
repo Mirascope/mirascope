@@ -1243,10 +1243,10 @@ describe("ApiKeys", () => {
   });
 
   // ===========================================================================
-  // getApiKeyInfo
+  // authenticateApiKey
   // ===========================================================================
 
-  describe("getApiKeyInfo", () => {
+  describe("authenticateApiKey", () => {
     it.effect("gets complete API key info including owner details", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner } =
@@ -1262,13 +1262,13 @@ describe("ApiKeys", () => {
             data: { name: "info-test-key" },
           });
 
-        const result =
-          yield* db.organizations.projects.environments.apiKeys.getApiKeyInfo(
-            created.key,
-          );
+        const result = yield* db.authenticateApiKey(created.key);
 
         expect(result.apiKeyId).toBe(created.id);
         expect(result.environmentId).toBe(environment.id);
+        // Narrow to env-scoped key
+        expect(result.environmentId).not.toBeNull();
+        if (result.environmentId === null) throw new Error("unreachable");
         expect(result.projectId).toBe(project.id);
         expect(result.organizationId).toBe(org.id);
         expect(result.ownerId).toBe(owner.id);
@@ -1294,9 +1294,7 @@ describe("ApiKeys", () => {
           });
 
         // Get the API key info
-        yield* db.organizations.projects.environments.apiKeys.getApiKeyInfo(
-          created.key,
-        );
+        yield* db.authenticateApiKey(created.key);
 
         // Check the lastUsedAt was updated
         const apiKey =
@@ -1327,8 +1325,8 @@ describe("ApiKeys", () => {
           data: { name: "real-key" },
         });
 
-        const result = yield* db.organizations.projects.environments.apiKeys
-          .getApiKeyInfo("mk_invalid_key_that_does_not_exist")
+        const result = yield* db
+          .authenticateApiKey("mk_invalid_key_that_does_not_exist")
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
@@ -1356,8 +1354,8 @@ describe("ApiKeys", () => {
         yield* db.users.delete({ userId: owner.id });
 
         // Try to get API key info - should fail because owner doesn't exist
-        const result = yield* db.organizations.projects.environments.apiKeys
-          .getApiKeyInfo(created.key)
+        const result = yield* db
+          .authenticateApiKey(created.key)
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
@@ -1369,8 +1367,8 @@ describe("ApiKeys", () => {
       Effect.gen(function* () {
         const db = yield* Database;
 
-        const result = yield* db.organizations.projects.environments.apiKeys
-          .getApiKeyInfo("mk_test_key")
+        const result = yield* db
+          .authenticateApiKey("mk_test_key")
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -1378,7 +1376,7 @@ describe("ApiKeys", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // getApiKeyInfo query fails
+            // authenticateApiKey query fails
             .select(new Error("Database connection failed"))
             .build(),
         ),
@@ -1389,8 +1387,8 @@ describe("ApiKeys", () => {
       Effect.gen(function* () {
         const db = yield* Database;
 
-        const result = yield* db.organizations.projects.environments.apiKeys
-          .getApiKeyInfo("mk_test_key")
+        const result = yield* db
+          .authenticateApiKey("mk_test_key")
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -1400,7 +1398,7 @@ describe("ApiKeys", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // getApiKeyInfo query succeeds
+            // authenticateApiKey query succeeds
             .select([
               {
                 apiKeyId: "key-id",
@@ -1505,10 +1503,14 @@ describe("ApiKeys", () => {
 
           expect(apiKeys).toHaveLength(2);
           expect(apiKeys.map((k) => k.name).sort()).toEqual(["key-1", "key-2"]);
-          // Should include project and environment context
-          expect(apiKeys[0].projectName).toBeDefined();
-          expect(apiKeys[0].environmentName).toBeDefined();
-          expect(apiKeys[0].projectId).toBeDefined();
+          // Should include project and environment context (env-scoped keys)
+          const envKey = apiKeys[0];
+          expect(envKey.environmentId).not.toBeNull();
+          if (envKey.environmentId !== null) {
+            expect(envKey.projectName).toBeDefined();
+            expect(envKey.environmentName).toBeDefined();
+            expect(envKey.projectId).toBeDefined();
+          }
         }),
     );
 
@@ -1861,39 +1863,41 @@ describe("ApiKeys", () => {
       }),
     );
 
-    it.effect("soft-deleted keys fail authentication (getApiKeyInfo)", () =>
-      Effect.gen(function* () {
-        const { org, project, environment, owner } =
-          yield* TestEnvironmentFixture;
-        const db = yield* Database;
+    it.effect(
+      "soft-deleted keys fail authentication (authenticateApiKey)",
+      () =>
+        Effect.gen(function* () {
+          const { org, project, environment, owner } =
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
 
-        // Create an API key
-        const created =
-          yield* db.organizations.projects.environments.apiKeys.create({
+          // Create an API key
+          const created =
+            yield* db.organizations.projects.environments.apiKeys.create({
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              data: { name: "auth-test-key" },
+            });
+
+          // Soft-delete it
+          yield* db.organizations.projects.environments.apiKeys.delete({
             userId: owner.id,
             organizationId: org.id,
             projectId: project.id,
             environmentId: environment.id,
-            data: { name: "auth-test-key" },
+            apiKeyId: created.id,
           });
 
-        // Soft-delete it
-        yield* db.organizations.projects.environments.apiKeys.delete({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          apiKeyId: created.id,
-        });
+          // Try to authenticate - should fail
+          const result = yield* db
+            .authenticateApiKey(created.key)
+            .pipe(Effect.flip);
 
-        // Try to authenticate - should fail
-        const result = yield* db.organizations.projects.environments.apiKeys
-          .getApiKeyInfo(created.key)
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe("Invalid API key or owner not found");
-      }),
+          expect(result).toBeInstanceOf(NotFoundError);
+          expect(result.message).toBe("Invalid API key or owner not found");
+        }),
     );
 
     it.effect("soft-deleted keys cannot be updated", () =>

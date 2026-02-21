@@ -1,25 +1,25 @@
 import { Effect, Schema } from "effect";
 
 import type {
-  PublicApiKey,
-  ApiKeyCreateResponse,
-  ApiKeyWithContext,
+  EnvironmentPublicApiKey,
+  EnvironmentApiKeyCreateResponse,
+  EnvironmentApiKeyWithContext,
   PublicProject,
   PublicEnvironment,
 } from "@/db/schema";
 
 import {
-  toApiKey,
-  toApiKeyCreateResponse,
+  toEnvironmentApiKey,
+  toEnvironmentApiKeyCreateResponse,
   toApiKeyWithContext,
 } from "@/api/api-keys.handlers";
 import { CreateApiKeyRequestSchema } from "@/api/api-keys.schemas";
 import { describe, it, expect, TestApiContext } from "@/tests/api";
 
-describe("toApiKey helper", () => {
+describe("toEnvironmentApiKey helper", () => {
   it("should convert dates to ISO strings", () => {
     const date = new Date("2025-01-01T00:00:00.000Z");
-    const apiKey: PublicApiKey = {
+    const apiKey: EnvironmentPublicApiKey = {
       id: "test-id",
       name: "test-key",
       keyPrefix: "mk_abc...",
@@ -30,7 +30,7 @@ describe("toApiKey helper", () => {
       deletedAt: null,
     };
 
-    const result = toApiKey(apiKey);
+    const result = toEnvironmentApiKey(apiKey);
 
     expect(result.createdAt).toBe("2025-01-01T00:00:00.000Z");
     expect(result.lastUsedAt).toBe("2025-01-01T00:00:00.000Z");
@@ -38,7 +38,7 @@ describe("toApiKey helper", () => {
   });
 
   it("should handle null dates", () => {
-    const apiKey: PublicApiKey = {
+    const apiKey: EnvironmentPublicApiKey = {
       id: "test-id",
       name: "test-key",
       keyPrefix: "mk_abc...",
@@ -49,17 +49,17 @@ describe("toApiKey helper", () => {
       deletedAt: null,
     };
 
-    const result = toApiKey(apiKey);
+    const result = toEnvironmentApiKey(apiKey);
 
     expect(result.createdAt).toBeNull();
     expect(result.lastUsedAt).toBeNull();
   });
 });
 
-describe("toApiKeyCreateResponse helper", () => {
+describe("toEnvironmentApiKeyCreateResponse helper", () => {
   it("should convert dates to ISO strings", () => {
     const date = new Date("2025-01-01T00:00:00.000Z");
-    const apiKey: ApiKeyCreateResponse = {
+    const apiKey: EnvironmentApiKeyCreateResponse = {
       id: "test-id",
       name: "test-key",
       keyPrefix: "mk_abc...",
@@ -71,7 +71,7 @@ describe("toApiKeyCreateResponse helper", () => {
       key: "mk_secret_key",
     };
 
-    const result = toApiKeyCreateResponse(apiKey);
+    const result = toEnvironmentApiKeyCreateResponse(apiKey);
 
     expect(result.createdAt).toBe("2025-01-01T00:00:00.000Z");
     expect(result.lastUsedAt).toBe("2025-01-01T00:00:00.000Z");
@@ -80,7 +80,7 @@ describe("toApiKeyCreateResponse helper", () => {
   });
 
   it("should handle null dates", () => {
-    const apiKey: ApiKeyCreateResponse = {
+    const apiKey: EnvironmentApiKeyCreateResponse = {
       id: "test-id",
       name: "test-key",
       keyPrefix: "mk_abc...",
@@ -92,7 +92,7 @@ describe("toApiKeyCreateResponse helper", () => {
       key: "mk_secret_key",
     };
 
-    const result = toApiKeyCreateResponse(apiKey);
+    const result = toEnvironmentApiKeyCreateResponse(apiKey);
 
     expect(result.createdAt).toBeNull();
     expect(result.lastUsedAt).toBeNull();
@@ -100,10 +100,10 @@ describe("toApiKeyCreateResponse helper", () => {
   });
 });
 
-describe("toApiKeyWithContext helper", () => {
+describe("toEnvironmentApiKeyWithContext helper", () => {
   it("should convert dates to ISO strings", () => {
     const date = new Date("2025-01-01T00:00:00.000Z");
-    const apiKey: ApiKeyWithContext = {
+    const apiKey: EnvironmentApiKeyWithContext = {
       id: "test-id",
       name: "test-key",
       keyPrefix: "mk_abc...",
@@ -115,19 +115,25 @@ describe("toApiKeyWithContext helper", () => {
       projectId: "project-id",
       projectName: "My Project",
       environmentName: "production",
+      ownerName: "Test User",
+      ownerAccountType: "user" as const,
     };
 
     const result = toApiKeyWithContext(apiKey);
 
     expect(result.createdAt).toBe("2025-01-01T00:00:00.000Z");
     expect(result.lastUsedAt).toBe("2025-01-01T00:00:00.000Z");
-    expect(result.projectId).toBe("project-id");
-    expect(result.projectName).toBe("My Project");
-    expect(result.environmentName).toBe("production");
+    // Env-scoped fields accessible after narrowing on environmentId
+    expect(result.environmentId).toBe("env-id");
+    expect("projectId" in result && result.projectId).toBe("project-id");
+    expect("projectName" in result && result.projectName).toBe("My Project");
+    expect("environmentName" in result && result.environmentName).toBe(
+      "production",
+    );
   });
 
   it("should handle null dates", () => {
-    const apiKey: ApiKeyWithContext = {
+    const apiKey: EnvironmentApiKeyWithContext = {
       id: "test-id",
       name: "test-key",
       keyPrefix: "mk_abc...",
@@ -139,6 +145,8 @@ describe("toApiKeyWithContext helper", () => {
       projectId: "project-id",
       projectName: "My Project",
       environmentName: "production",
+      ownerName: "Test User",
+      ownerAccountType: "user" as const,
     };
 
     const result = toApiKeyWithContext(apiKey);
