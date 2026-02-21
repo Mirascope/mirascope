@@ -143,22 +143,47 @@ if (mode === "full") {
 
   const databaseUrl = requireEnv("DATABASE_URL");
   const masked = databaseUrl.replace(/:\/\/[^@]+@/, "://****@");
-  console.log(`  ⚠️  This will DROP ALL TABLES in the dev database.`);
   console.log(`  DB: ${masked}`);
-
-  if (!(await confirm("Continue?"))) fail("Aborted");
 
   console.log("  Dropping schema...");
   const postgres = (await import("postgres")).default;
   const sql = postgres(databaseUrl);
   await sql`DROP SCHEMA public CASCADE`;
+  await sql`DROP SCHEMA IF EXISTS drizzle CASCADE`;
   await sql`CREATE SCHEMA public`;
+  await sql`GRANT ALL ON SCHEMA public TO public`;
   await sql.end();
-  ok("Schema dropped and recreated");
+  ok("Schema dropped and recreated (including drizzle migration state)");
+
+  // Verify DB is accessible before running migrations
+  const verify = postgres(databaseUrl);
+  const [{ current_schema }] = await verify`SELECT current_schema`;
+  console.log(`  Schema: ${current_schema}`);
+  await verify.end();
 
   console.log("  Running migrations...");
   await $`cd ${CLOUD_DIR} && DATABASE_URL=${databaseUrl} bun run db:migrate`;
+
+  // Verify tables exist after migration
+  const check = (await import("postgres")).default(databaseUrl);
+  const tables = await check`
+    SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename
+  `;
+  await check.end();
+  if (tables.length === 0) {
+    fail(
+      "Migrations ran but no tables exist! Check drizzle.config.ts and migration files.",
+    );
+  }
+  console.log(
+    `  Tables: ${tables.map((t: { tablename: string }) => t.tablename).join(", ")}`,
+  );
   ok("Migrations applied");
+
+  // Seed dev data (same IDs as scripts/dev/seed.ts + staging.ts auto-auth)
+  console.log("  Seeding dev data...");
+  await $`cd ${CLOUD_DIR} && DATABASE_URL=${databaseUrl} bun run scripts/dev/seed.ts`;
+  ok("Dev data seeded (test user + test-org + session)");
 } else {
   skip("Step 1: Database (use --full to reset)");
 }
