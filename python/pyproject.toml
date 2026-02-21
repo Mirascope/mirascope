@@ -98,6 +98,7 @@ dev = [
     "datamodel-code-generator>=0.39.0",
     "fastmcp>=0.3.0",
     "tomli>=2.2.1",
+    "mirascope[all]",
 ]
 
 
@@ -255,6 +256,9 @@ omit = []
 
 [tool.coverage.report]
 exclude_also = ["@overload", "@abstractmethod", "if TYPE_CHECKING:"]
+
+[tool.uv.sources]
+mirascope = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]
