@@ -3,6 +3,7 @@ import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 
 import { CloudLayout } from "@/app/components/cloud-layout";
+import { NotFound } from "@/app/components/not-found";
 import { Protected } from "@/app/components/protected";
 import { ClawProvider } from "@/app/contexts/claw";
 import { EnvironmentProvider } from "@/app/contexts/environment";
@@ -33,14 +34,7 @@ function OrgLayout() {
 
   const org = organizations.find((o) => o.slug === orgSlug);
   if (!org) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold">Not Found</h1>
-          <p className="text-muted-foreground mt-2">Organization not found.</p>
-        </div>
-      </div>
-    );
+    return <NotFound />;
   }
 
   return (
