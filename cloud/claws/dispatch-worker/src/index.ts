@@ -108,6 +108,42 @@ app.get("/:orgSlug/:clawSlug/_health", async (c) => {
 });
 
 // ---------------------------------------------------------------------------
+// Terminal endpoint — authenticated WebSocket PTY into the container
+// ---------------------------------------------------------------------------
+app.get("/:orgSlug/:clawSlug/_terminal", async (c) => {
+  const request = c.req.raw;
+
+  // Must be a WebSocket upgrade
+  if (request.headers.get("Upgrade")?.toLowerCase() !== "websocket") {
+    return c.json({ error: "WebSocket upgrade required" }, 426);
+  }
+
+  const parsed = parsePath(c.req.path);
+  if (!parsed) {
+    return c.json({ error: "Invalid path" }, 400);
+  }
+
+  // Authenticate (same flow as external routes)
+  const auth = await runAuth(request, parsed, c.env);
+  if (auth instanceof Response) return auth;
+
+  const { clawId } = auth;
+  const log = createLogger({ clawId, debug: !!c.env.DEBUG });
+  log.info("terminal", "opening terminal session");
+
+  const sandbox = getSandbox(c.env.Sandbox, clawId, { keepAlive: true });
+
+  // Support named sessions via query param, default to "terminal"
+  const url = new URL(request.url);
+  const sessionId = url.searchParams.get("session") ?? "terminal";
+  const cols = parseInt(url.searchParams.get("cols") ?? "80", 10);
+  const rows = parseInt(url.searchParams.get("rows") ?? "24", 10);
+
+  const session = await sandbox.getSession(sessionId);
+  return session.terminal(request, { cols, rows });
+});
+
+// ---------------------------------------------------------------------------
 // External routes: /{orgSlug}/{clawSlug}/* — path-based routing with auth
 // ---------------------------------------------------------------------------
 app.all("*", async (c) => {
