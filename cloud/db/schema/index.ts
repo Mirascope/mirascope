@@ -15,6 +15,7 @@ export * from "@/db/schema/annotations";
 export * from "@/db/schema/router-requests";
 export * from "@/db/schema/credit-reservations";
 export * from "@/db/schema/claws";
+export * from "@/db/schema/mac-minis";
 export * from "@/db/schema/claw-memberships";
 export * from "@/db/schema/claw-membership-audit";
 
@@ -74,6 +75,7 @@ import { apiKeys } from "@/db/schema/api-keys";
 import { clawMembershipAudit } from "@/db/schema/claw-membership-audit";
 import { clawMemberships } from "@/db/schema/claw-memberships";
 import { claws } from "@/db/schema/claws";
+import { macMinis } from "@/db/schema/mac-minis";
 import { creditReservations } from "@/db/schema/credit-reservations";
 import { environments } from "@/db/schema/environments";
 import { functions } from "@/db/schema/functions";
@@ -107,5 +109,6 @@ export type DatabaseTable =
   | typeof routerRequests
   | typeof creditReservations
   | typeof claws
+  | typeof macMinis
   | typeof clawMemberships
   | typeof clawMembershipAudit;

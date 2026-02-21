@@ -1,0 +1,17 @@
+{
+  "name": "mirascope-claw-debug",
+  "version": "0.1.0",
+  "private": true,
+  "description": "One-command tool to connect the OpenClaw Control UI to any gateway for debugging",
+  "type": "module",
+  "bin": {
+    "mirascope-claw-debug": "./src/index.ts"
+  },
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.0"
+  }
+}
