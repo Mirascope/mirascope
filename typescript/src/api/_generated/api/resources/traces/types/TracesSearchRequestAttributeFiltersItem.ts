@@ -3,7 +3,7 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface TracesSearchRequestAttributeFiltersItem {
-  key: string;
-  operator: Mirascope.TracesSearchRequestAttributeFiltersItemOperator;
-  value?: string;
+    key: string;
+    operator: Mirascope.TracesSearchRequestAttributeFiltersItemOperator;
+    value?: string;
 }

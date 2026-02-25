@@ -14,31 +14,17 @@ from .organizations_preview_subscription_change_response_validation_errors_item 
 
 class OrganizationsPreviewSubscriptionChangeResponse(UniversalBaseModel):
     is_upgrade: typing_extensions.Annotated[bool, FieldMetadata(alias="isUpgrade")]
-    prorated_amount_in_dollars: typing_extensions.Annotated[
-        float, FieldMetadata(alias="proratedAmountInDollars")
-    ]
-    next_billing_date: typing_extensions.Annotated[
-        Date, FieldMetadata(alias="nextBillingDate")
-    ]
-    recurring_amount_in_dollars: typing_extensions.Annotated[
-        float, FieldMetadata(alias="recurringAmountInDollars")
-    ]
-    can_downgrade: typing_extensions.Annotated[
-        typing.Optional[bool], FieldMetadata(alias="canDowngrade")
-    ] = None
+    prorated_amount_in_dollars: typing_extensions.Annotated[float, FieldMetadata(alias="proratedAmountInDollars")]
+    next_billing_date: typing_extensions.Annotated[Date, FieldMetadata(alias="nextBillingDate")]
+    recurring_amount_in_dollars: typing_extensions.Annotated[float, FieldMetadata(alias="recurringAmountInDollars")]
+    can_downgrade: typing_extensions.Annotated[typing.Optional[bool], FieldMetadata(alias="canDowngrade")] = None
     validation_errors: typing_extensions.Annotated[
-        typing.Optional[
-            typing.List[
-                OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItem
-            ]
-        ],
+        typing.Optional[typing.List[OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItem]],
         FieldMetadata(alias="validationErrors"),
     ] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

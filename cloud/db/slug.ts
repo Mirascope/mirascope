@@ -22,7 +22,6 @@ import { Schema } from "effect";
  */
 export const RESERVED_ORG_SLUGS: ReadonlySet<string> = new Set([
   // Infrastructure subdomains
-  "claws", // internal container addressing: *.claws.mirascope.com
   "staging", // staging.mirascope.com
   "www", // standard web subdomain
   "api", // future API subdomain

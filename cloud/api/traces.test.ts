@@ -329,9 +329,7 @@ describe.sequential("Traces API", (it) => {
         ownerId: owner.id,
         ownerEmail: owner.email,
         ownerName: owner.name,
-        ownerAccountType: "user" as const,
         ownerDeletedAt: owner.deletedAt,
-        clawId: null,
       };
 
       const result = yield* Effect.promise(() =>
@@ -495,8 +493,6 @@ describe.sequential("Traces API", (it) => {
         ownerEmail: owner.email,
         ownerName: owner.name,
         ownerDeletedAt: owner.deletedAt,
-        ownerAccountType: "user" as const,
-        clawId: null,
       };
 
       const { client: apiKeyClient, dispose } = yield* Effect.promise(() =>

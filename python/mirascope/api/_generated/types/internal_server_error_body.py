@@ -9,6 +9,21 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .database_error_tag import DatabaseErrorTag
 
 
+class InternalServerErrorBody_ClickHouseError(UniversalBaseModel):
+    tag: typing.Literal["ClickHouseError"] = "ClickHouseError"
+    message: str
+    cause: typing.Optional[typing.Optional[typing.Any]] = None
+
+    if IS_PYDANTIC_V2:
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
+    else:
+
+        class Config:
+            frozen = True
+            smart_union = True
+            extra = pydantic.Extra.allow
+
+
 class InternalServerErrorBody_DatabaseError(UniversalBaseModel):
     tag: typing.Literal["DatabaseError"] = "DatabaseError"
     message: str
@@ -16,9 +31,7 @@ class InternalServerErrorBody_DatabaseError(UniversalBaseModel):
     tag: DatabaseErrorTag
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:
@@ -27,23 +40,4 @@ class InternalServerErrorBody_DatabaseError(UniversalBaseModel):
             extra = pydantic.Extra.allow
 
 
-class InternalServerErrorBody_StripeError(UniversalBaseModel):
-    tag: typing.Literal["StripeError"] = "StripeError"
-    message: str
-    cause: typing.Optional[typing.Optional[typing.Any]] = None
-
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
-
-
-InternalServerErrorBody = typing.Union[
-    InternalServerErrorBody_DatabaseError, InternalServerErrorBody_StripeError
-]
+InternalServerErrorBody = typing.Union[InternalServerErrorBody_ClickHouseError, InternalServerErrorBody_DatabaseError]

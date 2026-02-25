@@ -5,7 +5,12 @@ import { getRequest } from "@tanstack/react-start/server";
 import { Effect } from "effect";
 
 import type { Result } from "@/app/lib/types";
-import type { PublicOrganizationWithMembership, PublicClaw } from "@/db/schema";
+import type {
+  PublicOrganizationWithMembership,
+  PublicProject,
+  PublicEnvironment,
+  ApiKeyCreateResponse,
+} from "@/db/schema";
 
 import { runEffect } from "@/app/lib/effect";
 import { authenticate } from "@/auth";
@@ -15,11 +20,13 @@ import { generateSlug } from "@/db/slug";
 
 /**
  * Response from the onboarding server function.
- * Contains the created organization and first claw.
+ * Contains all created resources including the plaintext API key.
  */
 export interface OnboardingResponse {
   organization: PublicOrganizationWithMembership;
-  claw: PublicClaw;
+  project: PublicProject;
+  environment: PublicEnvironment;
+  apiKey: ApiKeyCreateResponse;
 }
 
 /**
@@ -27,15 +34,13 @@ export interface OnboardingResponse {
  */
 export interface OnboardingRequest {
   organizationName: string;
-  clawName: string;
 }
 
 /**
  * Server function that handles the complete onboarding flow.
  *
- * Creates an organization and first claw in a single atomic transaction.
- * The claw creation automatically sets up its home project, environment,
- * and API key internally. If any step fails, all changes are rolled back.
+ * Creates an organization, default project, default environment, and default API key
+ * in a single atomic transaction. If any step fails, all changes are rolled back.
  */
 export const completeOnboarding = createServerFn({ method: "POST" })
   .inputValidator((data: OnboardingRequest) => data)
@@ -75,17 +80,33 @@ export const completeOnboarding = createServerFn({ method: "POST" })
               },
             });
 
-            // Create claw (auto-creates home project, environment, API key, and bot user)
-            const claw = yield* db.organizations.claws.create({
+            // Create default project (includes automatic ADMIN membership)
+            const project = yield* db.organizations.projects.create({
               userId: user.id,
               organizationId: organization.id,
-              data: {
-                displayName: data.clawName.trim(),
-                slug: generateSlug(data.clawName.trim()),
-              },
+              data: { name: "Default", slug: "default" },
             });
 
-            return { organization, claw };
+            // Create default environment
+            const environment =
+              yield* db.organizations.projects.environments.create({
+                userId: user.id,
+                organizationId: organization.id,
+                projectId: project.id,
+                data: { name: "Default", slug: "default" },
+              });
+
+            // Create default API key (returns plaintext key only at creation)
+            const apiKey =
+              yield* db.organizations.projects.environments.apiKeys.create({
+                userId: user.id,
+                organizationId: organization.id,
+                projectId: project.id,
+                environmentId: environment.id,
+                data: { name: "Default API Key" },
+              });
+
+            return { organization, project, environment, apiKey };
           }),
         );
       }),
@@ -111,21 +132,9 @@ export const useCompleteOnboarding = () => {
       }
       return result.data;
     },
-    onSuccess: (data) => {
-      // Optimistically insert into cache to prevent "not found" flash on navigation
-      queryClient.setQueryData(
-        ["organizations"],
-        (old: unknown[] | undefined) =>
-          old ? [...old, data.organization] : [data.organization],
-      );
-      queryClient.setQueryData(
-        ["claws", data.organization.id],
-        (old: unknown[] | undefined) =>
-          old ? [...old, data.claw] : [data.claw],
-      );
-      // Invalidate to ensure eventual consistency with the server
+    onSuccess: () => {
+      // Invalidate organizations to refresh the sidebar
       void queryClient.invalidateQueries({ queryKey: ["organizations"] });
-      void queryClient.invalidateQueries({ queryKey: ["claws"] });
     },
   });
 };

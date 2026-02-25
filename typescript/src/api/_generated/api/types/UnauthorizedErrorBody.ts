@@ -3,6 +3,6 @@
 import type * as Mirascope from "../index.js";
 
 export interface UnauthorizedErrorBody {
-  message: string;
-  tag: Mirascope.UnauthorizedErrorTag;
+    message: string;
+    tag: Mirascope.UnauthorizedErrorTag;
 }

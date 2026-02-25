@@ -13,7 +13,6 @@ import {
   CardTitle,
 } from "@/app/components/ui/card";
 import { useAuth } from "@/app/contexts/auth";
-import { useOrganization } from "@/app/contexts/organization";
 
 export const Route = createFileRoute("/invitations/accept")({
   component: AcceptInvitationPage,
@@ -28,7 +27,6 @@ function AcceptInvitationPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const acceptInvitation = useAcceptInvitation();
-  const { organizations } = useOrganization();
   const [state, setState] = useState<AcceptState>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -43,26 +41,19 @@ function AcceptInvitationPage() {
     setErrorMessage(null);
 
     try {
-      const membership = await acceptInvitation.mutateAsync(token);
+      const result = await acceptInvitation.mutateAsync(token);
       setState("success");
 
-      // Organizations cache is already fresh (useAcceptInvitation awaits invalidation)
-      // Find the joined org's slug for a direct redirect
-      const joinedOrg = organizations.find(
-        (org) => org.id === membership.organizationId,
+      // Store the organization ID so it gets selected on dashboard
+      localStorage.setItem(
+        "mirascope:selectedOrganizationId",
+        result.organizationId,
       );
 
-      // Brief delay for user to see success message before redirect
+      // Redirect to cloud dashboard after short delay
       setTimeout(() => {
-        if (joinedOrg) {
-          void navigate({
-            to: "/$orgSlug",
-            params: { orgSlug: joinedOrg.slug },
-          });
-        } else {
-          void navigate({ to: "/org-redirect" });
-        }
-      }, 1000);
+        void navigate({ to: "/cloud/dashboard" });
+      }, 2000);
     } catch (error) {
       setState("error");
       if (error instanceof Error) {
@@ -85,7 +76,7 @@ function AcceptInvitationPage() {
         setErrorMessage("Failed to accept invitation");
       }
     }
-  }, [token, acceptInvitation, navigate, organizations]);
+  }, [token, acceptInvitation, navigate]);
 
   // Auto-accept if user is logged in
   useEffect(() => {
@@ -99,12 +90,12 @@ function AcceptInvitationPage() {
     const handleSignIn = () => {
       const redirectUrl = `/invitations/accept?token=${token}`;
       sessionStorage.setItem("redirectAfterLogin", redirectUrl);
-      void navigate({ to: "/login" });
+      void navigate({ to: "/cloud/login" });
     };
 
     return (
       <>
-        <div className="fixed inset-0 bg-background" />
+        <div className="fixed inset-0 bg-black/50" />
         <div className="fixed inset-0 top-[60px] flex items-center justify-center p-4">
           <Card className="w-full max-w-md">
             <CardHeader>
@@ -127,7 +118,7 @@ function AcceptInvitationPage() {
   if (!token) {
     return (
       <>
-        <div className="fixed inset-0 bg-background" />
+        <div className="fixed inset-0 bg-black/50" />
         <div className="fixed inset-0 top-[60px] flex items-center justify-center p-4">
           <Card className="w-full max-w-md">
             <CardHeader>
@@ -156,7 +147,7 @@ function AcceptInvitationPage() {
 
   return (
     <>
-      <div className="fixed inset-0 bg-background" />
+      <div className="fixed inset-0 bg-black/50" />
       <div className="fixed inset-0 top-[60px] flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           {state === "accepting" && (

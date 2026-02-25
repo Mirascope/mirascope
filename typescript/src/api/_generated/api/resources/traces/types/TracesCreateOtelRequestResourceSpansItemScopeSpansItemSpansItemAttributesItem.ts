@@ -3,6 +3,6 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem {
-  key: string;
-  value: Mirascope.TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue;
+    key: string;
+    value: Mirascope.TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue;
 }

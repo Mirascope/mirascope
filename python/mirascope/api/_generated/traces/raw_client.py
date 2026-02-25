@@ -25,35 +25,19 @@ from ..types.permission_denied_error import PermissionDeniedError
 from ..types.plan_limit_exceeded_error import PlanLimitExceededError
 from ..types.rate_limit_error import RateLimitError
 from ..types.unauthorized_error_body import UnauthorizedErrorBody
-from .types.traces_create_otel_request_resource_spans_item import (
-    TracesCreateOtelRequestResourceSpansItem,
-)
+from .types.traces_create_otel_request_resource_spans_item import TracesCreateOtelRequestResourceSpansItem
 from .types.traces_create_otel_response import TracesCreateOtelResponse
-from .types.traces_create_request_resource_spans_item import (
-    TracesCreateRequestResourceSpansItem,
-)
+from .types.traces_create_request_resource_spans_item import TracesCreateRequestResourceSpansItem
 from .types.traces_create_response import TracesCreateResponse
-from .types.traces_get_analytics_summary_response import (
-    TracesGetAnalyticsSummaryResponse,
-)
-from .types.traces_get_trace_detail_by_env_response import (
-    TracesGetTraceDetailByEnvResponse,
-)
+from .types.traces_get_analytics_summary_response import TracesGetAnalyticsSummaryResponse
+from .types.traces_get_trace_detail_by_env_response import TracesGetTraceDetailByEnvResponse
 from .types.traces_get_trace_detail_response import TracesGetTraceDetailResponse
-from .types.traces_list_by_function_hash_response import (
-    TracesListByFunctionHashResponse,
-)
-from .types.traces_search_by_env_request_attribute_filters_item import (
-    TracesSearchByEnvRequestAttributeFiltersItem,
-)
+from .types.traces_list_by_function_hash_response import TracesListByFunctionHashResponse
+from .types.traces_search_by_env_request_attribute_filters_item import TracesSearchByEnvRequestAttributeFiltersItem
 from .types.traces_search_by_env_request_sort_by import TracesSearchByEnvRequestSortBy
-from .types.traces_search_by_env_request_sort_order import (
-    TracesSearchByEnvRequestSortOrder,
-)
+from .types.traces_search_by_env_request_sort_order import TracesSearchByEnvRequestSortOrder
 from .types.traces_search_by_env_response import TracesSearchByEnvResponse
-from .types.traces_search_request_attribute_filters_item import (
-    TracesSearchRequestAttributeFiltersItem,
-)
+from .types.traces_search_request_attribute_filters_item import TracesSearchRequestAttributeFiltersItem
 from .types.traces_search_request_sort_by import TracesSearchRequestSortBy
 from .types.traces_search_request_sort_order import TracesSearchRequestSortOrder
 from .types.traces_search_response import TracesSearchResponse
@@ -212,16 +196,8 @@ class RawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def createotel(
         self,
@@ -248,9 +224,7 @@ class RawTracesClient:
             json={
                 "resourceSpans": convert_and_respect_annotation_metadata(
                     object_=resource_spans,
-                    annotation=typing.Sequence[
-                        TracesCreateOtelRequestResourceSpansItem
-                    ],
+                    annotation=typing.Sequence[TracesCreateOtelRequestResourceSpansItem],
                     direction="write",
                 ),
             },
@@ -371,16 +345,8 @@ class RawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def search(
         self,
@@ -403,9 +369,7 @@ class RawTracesClient:
         max_tokens: typing.Optional[float] = OMIT,
         min_duration: typing.Optional[float] = OMIT,
         max_duration: typing.Optional[float] = OMIT,
-        attribute_filters: typing.Optional[
-            typing.Sequence[TracesSearchRequestAttributeFiltersItem]
-        ] = OMIT,
+        attribute_filters: typing.Optional[typing.Sequence[TracesSearchRequestAttributeFiltersItem]] = OMIT,
         limit: typing.Optional[float] = OMIT,
         offset: typing.Optional[float] = OMIT,
         sort_by: typing.Optional[TracesSearchRequestSortBy] = OMIT,
@@ -589,16 +553,8 @@ class RawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def gettracedetail(
         self, trace_id: str, *, request_options: typing.Optional[RequestOptions] = None
@@ -710,16 +666,8 @@ class RawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def getanalyticssummary(
         self,
@@ -834,16 +782,8 @@ class RawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def listbyfunctionhash(
         self,
@@ -968,16 +908,8 @@ class RawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def searchbyenv(
         self,
@@ -1003,9 +935,7 @@ class RawTracesClient:
         max_tokens: typing.Optional[float] = OMIT,
         min_duration: typing.Optional[float] = OMIT,
         max_duration: typing.Optional[float] = OMIT,
-        attribute_filters: typing.Optional[
-            typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem]
-        ] = OMIT,
+        attribute_filters: typing.Optional[typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem]] = OMIT,
         limit: typing.Optional[float] = OMIT,
         offset: typing.Optional[float] = OMIT,
         sort_by: typing.Optional[TracesSearchByEnvRequestSortBy] = OMIT,
@@ -1102,9 +1032,7 @@ class RawTracesClient:
                 "maxDuration": max_duration,
                 "attributeFilters": convert_and_respect_annotation_metadata(
                     object_=attribute_filters,
-                    annotation=typing.Sequence[
-                        TracesSearchByEnvRequestAttributeFiltersItem
-                    ],
+                    annotation=typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem],
                     direction="write",
                 ),
                 "limit": limit,
@@ -1208,16 +1136,8 @@ class RawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def gettracedetailbyenv(
         self,
@@ -1341,16 +1261,8 @@ class RawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
 class AsyncRawTracesClient:
@@ -1503,16 +1415,8 @@ class AsyncRawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def createotel(
         self,
@@ -1539,9 +1443,7 @@ class AsyncRawTracesClient:
             json={
                 "resourceSpans": convert_and_respect_annotation_metadata(
                     object_=resource_spans,
-                    annotation=typing.Sequence[
-                        TracesCreateOtelRequestResourceSpansItem
-                    ],
+                    annotation=typing.Sequence[TracesCreateOtelRequestResourceSpansItem],
                     direction="write",
                 ),
             },
@@ -1662,16 +1564,8 @@ class AsyncRawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def search(
         self,
@@ -1694,9 +1588,7 @@ class AsyncRawTracesClient:
         max_tokens: typing.Optional[float] = OMIT,
         min_duration: typing.Optional[float] = OMIT,
         max_duration: typing.Optional[float] = OMIT,
-        attribute_filters: typing.Optional[
-            typing.Sequence[TracesSearchRequestAttributeFiltersItem]
-        ] = OMIT,
+        attribute_filters: typing.Optional[typing.Sequence[TracesSearchRequestAttributeFiltersItem]] = OMIT,
         limit: typing.Optional[float] = OMIT,
         offset: typing.Optional[float] = OMIT,
         sort_by: typing.Optional[TracesSearchRequestSortBy] = OMIT,
@@ -1880,16 +1772,8 @@ class AsyncRawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def gettracedetail(
         self, trace_id: str, *, request_options: typing.Optional[RequestOptions] = None
@@ -2001,16 +1885,8 @@ class AsyncRawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def getanalyticssummary(
         self,
@@ -2125,16 +2001,8 @@ class AsyncRawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def listbyfunctionhash(
         self,
@@ -2259,16 +2127,8 @@ class AsyncRawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def searchbyenv(
         self,
@@ -2294,9 +2154,7 @@ class AsyncRawTracesClient:
         max_tokens: typing.Optional[float] = OMIT,
         min_duration: typing.Optional[float] = OMIT,
         max_duration: typing.Optional[float] = OMIT,
-        attribute_filters: typing.Optional[
-            typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem]
-        ] = OMIT,
+        attribute_filters: typing.Optional[typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem]] = OMIT,
         limit: typing.Optional[float] = OMIT,
         offset: typing.Optional[float] = OMIT,
         sort_by: typing.Optional[TracesSearchByEnvRequestSortBy] = OMIT,
@@ -2393,9 +2251,7 @@ class AsyncRawTracesClient:
                 "maxDuration": max_duration,
                 "attributeFilters": convert_and_respect_annotation_metadata(
                     object_=attribute_filters,
-                    annotation=typing.Sequence[
-                        TracesSearchByEnvRequestAttributeFiltersItem
-                    ],
+                    annotation=typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem],
                     direction="write",
                 ),
                 "limit": limit,
@@ -2499,16 +2355,8 @@ class AsyncRawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def gettracedetailbyenv(
         self,
@@ -2632,13 +2480,5 @@ class AsyncRawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)

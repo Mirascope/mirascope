@@ -3,16 +3,16 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface EnvironmentsGetAnalyticsResponse {
-  totalSpans: number;
-  avgDurationMs: number | null;
-  p50DurationMs: number | null;
-  p95DurationMs: number | null;
-  p99DurationMs: number | null;
-  errorRate: number;
-  totalTokens: number;
-  totalInputTokens: number;
-  totalOutputTokens: number;
-  totalCostUsd: number;
-  topModels: Mirascope.EnvironmentsGetAnalyticsResponseTopModelsItem[];
-  topFunctions: Mirascope.EnvironmentsGetAnalyticsResponseTopFunctionsItem[];
+    totalSpans: number;
+    avgDurationMs: number | null;
+    p50DurationMs: number | null;
+    p95DurationMs: number | null;
+    p99DurationMs: number | null;
+    errorRate: number;
+    totalTokens: number;
+    totalInputTokens: number;
+    totalOutputTokens: number;
+    totalCostUsd: number;
+    topModels: Mirascope.EnvironmentsGetAnalyticsResponseTopModelsItem[];
+    topFunctions: Mirascope.EnvironmentsGetAnalyticsResponseTopFunctionsItem[];
 }

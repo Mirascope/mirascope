@@ -7,5 +7,5 @@
  *     }
  */
 export interface FunctionsDeleteRequest {
-  id: string;
+    id: string;
 }

@@ -16,15 +16,11 @@ import Header from "@/app/components/blocks/navigation/header";
 import {
   ThemeProvider,
   useIsLandingPage,
-  useIsLoginPage,
-  useIsWatercolorPage,
 } from "@/app/components/blocks/theme-provider";
 import { Toaster } from "@/app/components/ui/sonner";
 import { AnalyticsProvider } from "@/app/contexts/analytics";
 import { AuthProvider } from "@/app/contexts/auth";
-import { OrganizationProvider } from "@/app/contexts/organization";
 import { usePageView } from "@/app/hooks/use-page-view";
-import { isApplicationRoute } from "@/app/lib/route-utils";
 import globalsCss from "@/app/styles/globals.css?url";
 
 export const Route = createRootRoute({
@@ -42,16 +38,6 @@ export const Route = createRootRoute({
       },
     ],
     links: [
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      {
-        rel: "preconnect",
-        href: "https://fonts.gstatic.com",
-        crossOrigin: "anonymous",
-      },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Nunito+Sans:ital,wght@0,200..1000;1,200..1000&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap",
-      },
       { rel: "stylesheet", href: globalsCss },
       {
         rel: "apple-touch-icon",
@@ -82,35 +68,31 @@ function AppContent() {
 
   const router = useRouterState();
   const currentPath = router.location.pathname;
-  const isAppRoute = isApplicationRoute(currentPath);
+  const isCloudRoute =
+    currentPath === "/cloud" || currentPath.startsWith("/cloud/");
   const isDocsRoute =
     currentPath === "/docs" || currentPath.startsWith("/docs/");
-  const isWatercolorPage = useIsWatercolorPage();
   const isLandingPage = useIsLandingPage();
-  const isLoginPage = useIsLoginPage();
-  const isFullBleedPage = isLandingPage || isLoginPage;
 
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
       <div
         className={
-          isAppRoute
+          isCloudRoute
             ? "w-full grow pt-[60px]"
-            : isFullBleedPage
-              ? "flex w-full grow flex-col pt-(--header-height)"
-              : isWatercolorPage
-                ? "w-full grow pt-(--header-height)"
-                : isDocsRoute
-                  ? "mx-auto w-full max-w-7xl grow pt-(--header-height-with-selector)"
-                  : "mx-auto w-full max-w-7xl grow pt-(--header-height)"
+            : isLandingPage
+              ? "w-full pt-(--header-height)"
+              : isDocsRoute
+                ? "mx-auto w-full max-w-7xl grow pt-(--header-height-with-selector)"
+                : "mx-auto w-full max-w-7xl grow pt-(--header-height)"
         }
       >
-        <main className="flex grow flex-col">
+        <main className="grow">
           <Outlet />
         </main>
       </div>
-      {!isAppRoute && <Footer />}
+      {!isCloudRoute && <Footer />}
       <Toaster />
       <TanStackRouterDevtools />
       <DevToolsButton className="fixed bottom-10 left-2 z-50" />
@@ -130,9 +112,7 @@ function RootComponent() {
           <QueryClientProvider client={queryClient}>
             <AnalyticsProvider>
               <AuthProvider>
-                <OrganizationProvider>
-                  <AppContent />
-                </OrganizationProvider>
+                <AppContent />
               </AuthProvider>
             </AnalyticsProvider>
           </QueryClientProvider>

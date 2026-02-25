@@ -24,14 +24,8 @@ interface ThemeAPI {
   setViewMode: (mode: ViewMode) => void;
   // Whether the current page is the landing page
   isLandingPage: boolean;
-  // Whether the current page is the login page
-  isLoginPage: boolean;
   // Whether the current page is the router waitlist page
   isRouterWaitlistPage: boolean;
-  // Whether the current page is the pricing page
-  isPricingPage: boolean;
-  // Whether the current page has a watercolor background
-  isWatercolorPage: boolean;
 }
 
 // Create the context with default values
@@ -42,10 +36,7 @@ const ThemeContext = createContext<ThemeAPI>({
   viewMode: "human",
   setViewMode: () => {},
   isLandingPage: false,
-  isLoginPage: false,
   isRouterWaitlistPage: false,
-  isPricingPage: false,
-  isWatercolorPage: false,
 });
 
 // Hook for components to use the theme
@@ -63,24 +54,9 @@ export function useIsLandingPage() {
   return useContext(ThemeContext).isLandingPage;
 }
 
-// Hook specifically for login page status
-export function useIsLoginPage() {
-  return useContext(ThemeContext).isLoginPage;
-}
-
 // Hook specifically for router waitlist page status
 export function useIsRouterWaitlistPage() {
   return useContext(ThemeContext).isRouterWaitlistPage;
-}
-
-// Hook specifically for pricing page status
-export function useIsPricingPage() {
-  return useContext(ThemeContext).isPricingPage;
-}
-
-// Hook for whether the current page has a watercolor background
-export function useIsWatercolorPage() {
-  return useContext(ThemeContext).isWatercolorPage;
 }
 
 // Get stored theme preference from localStorage
@@ -128,21 +104,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   // Track if client-side code has run
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Get router to determine page type
+  // Get router to determine if we're on the landing page or router waitlist page
   const router = useRouterState();
   const isLandingPage = router.location.pathname === "/";
-  const isLoginPage = router.location.pathname === "/login";
   const isRouterWaitlistPage = router.location.pathname === "/router-waitlist";
-  const isPricingPage = router.location.pathname === "/pricing";
-  const isBlogPage =
-    router.location.pathname === "/blog" ||
-    router.location.pathname.startsWith("/blog/");
-  const isWatercolorPage =
-    isLandingPage ||
-    isLoginPage ||
-    isRouterWaitlistPage ||
-    isPricingPage ||
-    isBlogPage;
 
   // Initialize theme and view mode on mount
   useEffect(() => {
@@ -204,23 +169,21 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     }
   };
 
-  // Add watercolor-page / home-page classes to the HTML element
-  if (isHydrated && typeof document !== "undefined") {
-    if (isWatercolorPage) {
-      document.documentElement.classList.add("watercolor-page");
-    } else {
-      document.documentElement.classList.remove("watercolor-page");
-    }
+  // todo(sebastian): why won't hydration work?
+  // Don't render anything during SSR to avoid hydration mismatches
+  if (!isHydrated) {
+    return <>{children}</>;
+  }
 
-    if (isLandingPage || isLoginPage || isRouterWaitlistPage) {
+  // Add the home-page class to the HTML element
+  if (isHydrated && typeof document !== "undefined") {
+    if (isLandingPage || isRouterWaitlistPage) {
       document.documentElement.classList.add("home-page");
     } else {
       document.documentElement.classList.remove("home-page");
     }
   }
 
-  // Always render ThemeContext.Provider to avoid unmounting/remounting children
-  // when isHydrated changes from false to true
   return (
     <ThemeContext.Provider
       value={{
@@ -230,10 +193,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
         viewMode,
         setViewMode: setViewModeHandler,
         isLandingPage,
-        isLoginPage,
         isRouterWaitlistPage,
-        isPricingPage,
-        isWatercolorPage,
       }}
     >
       {children}
@@ -248,10 +208,7 @@ interface StorybookThemeProviderProps {
   initialCurrent?: "light" | "dark";
   initialViewMode?: ViewMode;
   isLandingPage?: boolean;
-  isLoginPage?: boolean;
   isRouterWaitlistPage?: boolean;
-  isPricingPage?: boolean;
-  isWatercolorPage?: boolean;
 }
 
 /**
@@ -268,10 +225,7 @@ export function StorybookThemeProvider({
   initialCurrent = "light",
   initialViewMode = "human",
   isLandingPage = false,
-  isLoginPage = false,
   isRouterWaitlistPage = false,
-  isPricingPage = false,
-  isWatercolorPage = false,
 }: StorybookThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(initialTheme);
   const [current, setCurrent] = useState<"light" | "dark">(initialCurrent);
@@ -300,10 +254,7 @@ export function StorybookThemeProvider({
         viewMode,
         setViewMode,
         isLandingPage,
-        isLoginPage,
         isRouterWaitlistPage,
-        isPricingPage,
-        isWatercolorPage,
       }}
     >
       {children}

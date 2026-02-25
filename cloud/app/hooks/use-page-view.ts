@@ -38,8 +38,8 @@ export function usePageView() {
   const { user } = useAuth();
 
   useEffect(() => {
-    // Only track real users in browsers, not prerender builds
-    if (typeof document === "undefined") return;
+    // Only track page views on the client
+    if (typeof window === "undefined") return;
 
     analytics.trackPageView(
       {

@@ -2,6 +2,4 @@
 
 import typing
 
-TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano = (
-    typing.Union[str, float]
-)
+TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano = typing.Union[str, float]

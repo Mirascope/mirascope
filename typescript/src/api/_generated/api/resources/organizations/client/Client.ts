@@ -139,6 +139,7 @@ export class OrganizationsClient {
    * @param {OrganizationsClient.RequestOptions} requestOptions - Request-specific configuration.
    *
    * @throws {@link Mirascope.BadRequestError}
+   * @throws {@link Mirascope.PaymentRequiredError}
    * @throws {@link Mirascope.NotFoundError}
    * @throws {@link Mirascope.ConflictError}
    * @throws {@link Mirascope.TooManyRequestsError}
@@ -216,6 +217,20 @@ export class OrganizationsClient {
             _response.error.body,
             _response.rawResponse,
           );
+        case 402:
+          throw new Mirascope.PaymentRequiredError(
+            serializers.PlanLimitExceededError.parseOrThrow(
+              _response.error.body,
+              {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+              },
+            ),
+            _response.rawResponse,
+          );
         case 404:
           throw new Mirascope.NotFoundError(
             serializers.NotFoundErrorBody.parseOrThrow(_response.error.body, {
@@ -267,6 +282,114 @@ export class OrganizationsClient {
       _response.rawResponse,
       "POST",
       "/organizations",
+    );
+  }
+
+  /**
+   * @param {OrganizationsClient.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link Mirascope.BadRequestError}
+   * @throws {@link Mirascope.TooManyRequestsError}
+   * @throws {@link Mirascope.InternalServerError}
+   * @throws {@link Mirascope.ServiceUnavailableError}
+   *
+   * @example
+   *     await client.organizations.createorgsetupintent()
+   */
+  public createorgsetupintent(
+    requestOptions?: OrganizationsClient.RequestOptions,
+  ): core.HttpResponsePromise<Mirascope.OrganizationsCreateOrgSetupIntentResponse> {
+    return core.HttpResponsePromise.fromPromise(
+      this.__createorgsetupintent(requestOptions),
+    );
+  }
+
+  private async __createorgsetupintent(
+    requestOptions?: OrganizationsClient.RequestOptions,
+  ): Promise<
+    core.WithRawResponse<Mirascope.OrganizationsCreateOrgSetupIntentResponse>
+  > {
+    const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+      this._options?.headers,
+      requestOptions?.headers,
+    );
+    const _response = await core.fetcher({
+      url: core.url.join(
+        (await core.Supplier.get(this._options.baseUrl)) ??
+          (await core.Supplier.get(this._options.environment)) ??
+          environments.MirascopeEnvironment.Production,
+        "organizations/setup-intent",
+      ),
+      method: "POST",
+      headers: _headers,
+      queryParameters: requestOptions?.queryParams,
+      timeoutMs:
+        (requestOptions?.timeoutInSeconds ??
+          this._options?.timeoutInSeconds ??
+          180) * 1000,
+      maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+      abortSignal: requestOptions?.abortSignal,
+      fetchFn: this._options?.fetch,
+      logging: this._options.logging,
+    });
+    if (_response.ok) {
+      return {
+        data: serializers.OrganizationsCreateOrgSetupIntentResponse.parseOrThrow(
+          _response.body,
+          {
+            unrecognizedObjectKeys: "passthrough",
+            allowUnrecognizedUnionMembers: true,
+            allowUnrecognizedEnumValues: true,
+            skipValidation: true,
+            breadcrumbsPrefix: ["response"],
+          },
+        ),
+        rawResponse: _response.rawResponse,
+      };
+    }
+
+    if (_response.error.reason === "status-code") {
+      switch (_response.error.statusCode) {
+        case 400:
+          throw new Mirascope.BadRequestError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 429:
+          throw new Mirascope.TooManyRequestsError(
+            serializers.RateLimitError.parseOrThrow(_response.error.body, {
+              unrecognizedObjectKeys: "passthrough",
+              allowUnrecognizedUnionMembers: true,
+              allowUnrecognizedEnumValues: true,
+              skipValidation: true,
+              breadcrumbsPrefix: ["response"],
+            }),
+            _response.rawResponse,
+          );
+        case 500:
+          throw new Mirascope.InternalServerError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        case 503:
+          throw new Mirascope.ServiceUnavailableError(
+            _response.error.body,
+            _response.rawResponse,
+          );
+        default:
+          throw new errors.MirascopeError({
+            statusCode: _response.error.statusCode,
+            body: _response.error.body,
+            rawResponse: _response.rawResponse,
+          });
+      }
+    }
+
+    return handleNonStatusCodeError(
+      _response.error,
+      _response.rawResponse,
+      "POST",
+      "/organizations/setup-intent",
     );
   }
 

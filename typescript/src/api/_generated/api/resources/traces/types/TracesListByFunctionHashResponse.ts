@@ -3,6 +3,6 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface TracesListByFunctionHashResponse {
-  traces: Mirascope.TracesListByFunctionHashResponseTracesItem[];
-  total: number;
+    traces: Mirascope.TracesListByFunctionHashResponseTracesItem[];
+    total: number;
 }

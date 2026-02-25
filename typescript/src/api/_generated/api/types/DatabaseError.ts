@@ -3,7 +3,7 @@
 import type * as Mirascope from "../index.js";
 
 export interface DatabaseError {
-  message: string;
-  cause?: unknown;
-  tag: Mirascope.DatabaseErrorTag;
+    message: string;
+    cause?: unknown;
+    tag: Mirascope.DatabaseErrorTag;
 }

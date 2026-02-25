@@ -3,7 +3,7 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface TracesSearchByEnvRequestAttributeFiltersItem {
-  key: string;
-  operator: Mirascope.TracesSearchByEnvRequestAttributeFiltersItemOperator;
-  value?: string;
+    key: string;
+    operator: Mirascope.TracesSearchByEnvRequestAttributeFiltersItemOperator;
+    value?: string;
 }

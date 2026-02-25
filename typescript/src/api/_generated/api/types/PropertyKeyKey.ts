@@ -6,6 +6,6 @@ import type * as Mirascope from "../index.js";
  * an object to be decoded into a globally shared symbol
  */
 export interface PropertyKeyKey {
-  tag: Mirascope.PropertyKeyKeyTag;
-  key: string;
+    tag: Mirascope.PropertyKeyKeyTag;
+    key: string;
 }

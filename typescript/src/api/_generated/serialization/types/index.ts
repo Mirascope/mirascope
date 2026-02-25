@@ -28,6 +28,7 @@ export * from "./RateLimitErrorTag.js";
 export * from "./ServiceUnavailableErrorBody.js";
 export * from "./ServiceUnavailableErrorTag.js";
 export * from "./StripeError.js";
+export * from "./StripeErrorTag.js";
 export * from "./SubscriptionPastDueError.js";
 export * from "./SubscriptionPastDueErrorTag.js";
 export * from "./UnauthorizedErrorBody.js";

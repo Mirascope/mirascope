@@ -10,10 +10,10 @@ import type * as Mirascope from "../../../../index.js";
  *     }
  */
 export interface AnnotationsCreateRequest {
-  otelSpanId: string;
-  otelTraceId: string;
-  label?: Mirascope.AnnotationsCreateRequestLabel | null;
-  reasoning?: string | null;
-  metadata?: Record<string, unknown> | null;
-  tags?: string[] | null;
+    otelSpanId: string;
+    otelTraceId: string;
+    label?: Mirascope.AnnotationsCreateRequestLabel | null;
+    reasoning?: string | null;
+    metadata?: Record<string, unknown> | null;
+    tags?: string[] | null;
 }

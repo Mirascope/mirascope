@@ -1,7 +1,7 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
 
-import { createSlugSchema, RESERVED_ORG_SLUGS } from "@/db/slug";
+import { createSlugSchema } from "@/db/slug";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -17,7 +17,6 @@ export const OrganizationRoleSchema = Schema.Literal(
   "OWNER",
   "ADMIN",
   "MEMBER",
-  "BOT",
 );
 
 export const OrganizationSchema = Schema.Struct({
@@ -43,14 +42,8 @@ const OrganizationNameSchema = Schema.String.pipe(
   }),
 );
 
-// Organization slug validation (with reserved slug check for DNS safety)
-const OrganizationSlugSchema = createSlugSchema("Organization").pipe(
-  Schema.filter((slug) =>
-    RESERVED_ORG_SLUGS.has(slug)
-      ? `"${slug}" is a reserved slug and cannot be used as an organization slug`
-      : undefined,
-  ),
-);
+// Organization slug validation
+const OrganizationSlugSchema = createSlugSchema("Organization");
 
 export const CreateOrganizationRequestSchema = Schema.Struct({
   name: OrganizationNameSchema,
@@ -129,7 +122,7 @@ export const DowngradeValidationErrorSchema: Schema.Schema<
   DowngradeValidationError,
   DowngradeValidationError
 > = Schema.Struct({
-  resource: Schema.Literal("seats", "projects", "claws"),
+  resource: Schema.Literal("seats", "projects"),
   currentUsage: Schema.Number,
   limit: Schema.Number,
   message: Schema.String,

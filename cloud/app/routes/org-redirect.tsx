@@ -17,8 +17,8 @@ function CloudRedirect() {
     );
   }
 
-  // No org selected, redirect to login
-  return <Navigate to="/onboarding" replace />;
+  // No org selected, redirect to organizations page
+  return <Navigate to="/organizations" replace />;
 }
 
 export const Route = createFileRoute("/org-redirect")({

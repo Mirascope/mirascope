@@ -8,7 +8,7 @@
  *     }
  */
 export interface TracesGetAnalyticsSummaryRequest {
-  startTime: string;
-  endTime: string;
-  functionId?: string;
+    startTime: string;
+    endTime: string;
+    functionId?: string;
 }

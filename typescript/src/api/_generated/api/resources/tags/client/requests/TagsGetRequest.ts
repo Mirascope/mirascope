@@ -9,7 +9,7 @@
  *     }
  */
 export interface TagsGetRequest {
-  organizationId: string;
-  projectId: string;
-  tagId: string;
+    organizationId: string;
+    projectId: string;
+    tagId: string;
 }

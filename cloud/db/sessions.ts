@@ -314,7 +314,6 @@ export class Sessions extends BaseEffectService<
           id: users.id,
           email: users.email,
           name: users.name,
-          accountType: users.accountType,
           deletedAt: users.deletedAt,
           expiresAt: sessions.expiresAt,
         })
@@ -363,7 +362,6 @@ export class Sessions extends BaseEffectService<
         id: userWithExpiration.id,
         email: userWithExpiration.email,
         name: userWithExpiration.name,
-        accountType: userWithExpiration.accountType,
         deletedAt: userWithExpiration.deletedAt,
       } satisfies PublicUser;
     });

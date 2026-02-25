@@ -4,9 +4,7 @@ import typing
 
 import pydantic
 from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .functions_list_by_env_response_functions_item import (
-    FunctionsListByEnvResponseFunctionsItem,
-)
+from .functions_list_by_env_response_functions_item import FunctionsListByEnvResponseFunctionsItem
 
 
 class FunctionsListByEnvResponse(UniversalBaseModel):
@@ -14,9 +12,7 @@ class FunctionsListByEnvResponse(UniversalBaseModel):
     total: float
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

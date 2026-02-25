@@ -7,5 +7,5 @@
  *     }
  */
 export interface OrganizationsSubscriptionRequest {
-  id: string;
+    id: string;
 }

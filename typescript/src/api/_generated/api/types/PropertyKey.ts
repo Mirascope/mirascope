@@ -3,8 +3,8 @@
 import type * as Mirascope from "../index.js";
 
 export type PropertyKey =
-  | string
-  | number
-  /**
-   * an object to be decoded into a globally shared symbol */
-  | Mirascope.PropertyKeyKey;
+    | string
+    | number
+    /**
+     * an object to be decoded into a globally shared symbol */
+    | Mirascope.PropertyKeyKey;

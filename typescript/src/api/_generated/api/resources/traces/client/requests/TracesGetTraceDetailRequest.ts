@@ -7,5 +7,5 @@
  *     }
  */
 export interface TracesGetTraceDetailRequest {
-  traceId: string;
+    traceId: string;
 }

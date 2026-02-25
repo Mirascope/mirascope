@@ -1,11 +1,8 @@
-import { eq } from "drizzle-orm";
 import { Effect, Layer } from "effect";
 
 import type { PublicProject } from "@/db/schema";
 
-import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
-import { projects } from "@/db/schema";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -383,27 +380,6 @@ describe("Projects", () => {
             ),
           ),
         ),
-    );
-
-    it.effect("created project has type standard by default", () =>
-      Effect.gen(function* () {
-        const { org, owner } = yield* TestOrganizationFixture;
-        const db = yield* Database;
-        const client = yield* DrizzleORM;
-
-        const project = yield* db.organizations.projects.create({
-          userId: owner.id,
-          organizationId: org.id,
-          data: { name: "Test Standard Project", slug: "test-standard" },
-        });
-
-        // Verify the project has standard type
-        const [dbProject] = yield* client
-          .select()
-          .from(projects)
-          .where(eq(projects.id, project.id));
-        expect(dbProject.type).toBe("standard");
-      }),
     );
   });
 
@@ -1129,98 +1105,6 @@ describe("Projects", () => {
               .select([{ id: "project-id", type: "standard" }])
               // delete returns empty array (defensive case)
               .delete([])
-              .build(),
-          ),
-        ),
-    );
-
-    it.effect("blocks deletion of claw_home project with active claw", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const result = yield* db.organizations.projects
-          .delete({
-            userId: "owner-id",
-            organizationId: "org-id",
-            projectId: "home-project-id",
-          })
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(PermissionDeniedError);
-        expect(result.message).toBe(
-          "Cannot delete a claw home project directly. Delete the claw instead.",
-        );
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            // projects.getRole -> projectMemberships.getRole -> org membership
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            // verifyProjectExists
-            .select([{ id: "home-project-id" }])
-            // fetch project type - claw_home
-            .select([{ id: "home-project-id", type: "claw_home" }])
-            // check if claw still references this project - found one
-            .select([{ id: "claw-id" }])
-            .build(),
-        ),
-      ),
-    );
-
-    it.effect(
-      "allows deletion of orphaned claw_home project (no active claw)",
-      () =>
-        Effect.gen(function* () {
-          const db = yield* Database;
-
-          // Should succeed (no error thrown)
-          yield* db.organizations.projects.delete({
-            userId: "owner-id",
-            organizationId: "org-id",
-            projectId: "orphan-project-id",
-          });
-        }).pipe(
-          Effect.provide(
-            new MockDrizzleORM()
-              // projects.getRole -> projectMemberships.getRole -> org membership
-              .select([
-                {
-                  role: "OWNER",
-                  organizationId: "org-id",
-                  memberId: "owner-id",
-                  createdAt: new Date(),
-                },
-              ])
-              .select([
-                {
-                  role: "OWNER",
-                  organizationId: "org-id",
-                  memberId: "owner-id",
-                  createdAt: new Date(),
-                },
-              ])
-              // verifyProjectExists
-              .select([{ id: "orphan-project-id" }])
-              // fetch project type - claw_home
-              .select([{ id: "orphan-project-id", type: "claw_home" }])
-              // check if claw references this project - none found
-              .select([])
-              // actual delete
-              .delete([{ id: "orphan-project-id" }])
               .build(),
           ),
         ),

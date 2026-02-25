@@ -4,6 +4,7 @@ import type * as Mirascope from "../../../../../api/index.js";
 import type * as serializers from "../../../../index.js";
 
 import * as core from "../../../../../core/index.js";
+import { OrganizationsCreateRequestPlanTier } from "../../types/OrganizationsCreateRequestPlanTier.js";
 
 export const OrganizationsCreateRequest: core.serialization.Schema<
   serializers.OrganizationsCreateRequest.Raw,
@@ -11,11 +12,15 @@ export const OrganizationsCreateRequest: core.serialization.Schema<
 > = core.serialization.object({
   name: core.serialization.string(),
   slug: core.serialization.string(),
+  planTier: OrganizationsCreateRequestPlanTier.optional(),
+  paymentMethodId: core.serialization.string().optional(),
 });
 
 export declare namespace OrganizationsCreateRequest {
   export interface Raw {
     name: string;
     slug: string;
+    planTier?: OrganizationsCreateRequestPlanTier.Raw | null;
+    paymentMethodId?: string | null;
   }
 }

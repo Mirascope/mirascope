@@ -8,6 +8,6 @@
  *     }
  */
 export interface ProjectsGetRequest {
-  organizationId: string;
-  projectId: string;
+    organizationId: string;
+    projectId: string;
 }

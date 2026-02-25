@@ -9,7 +9,7 @@ import type * as Mirascope from "../../../../index.js";
  *     }
  */
 export interface TracesListByFunctionHashRequest {
-  hash: string;
-  limit?: Mirascope.NumberFromString;
-  offset?: Mirascope.NumberFromString;
+    hash: string;
+    limit?: Mirascope.NumberFromString;
+    offset?: Mirascope.NumberFromString;
 }

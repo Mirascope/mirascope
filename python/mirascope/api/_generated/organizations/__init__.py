@@ -3,8 +3,10 @@
 # isort: skip_file
 
 from .types import (
+    OrganizationsCreateOrgSetupIntentResponse,
     OrganizationsCreatePaymentIntentResponse,
     OrganizationsCreatePaymentIntentResponseStatus,
+    OrganizationsCreateRequestPlanTier,
     OrganizationsCreateResponse,
     OrganizationsCreateResponseRole,
     OrganizationsCreateSetupIntentResponse,
@@ -32,8 +34,10 @@ from .types import (
 )
 
 __all__ = [
+    "OrganizationsCreateOrgSetupIntentResponse",
     "OrganizationsCreatePaymentIntentResponse",
     "OrganizationsCreatePaymentIntentResponseStatus",
+    "OrganizationsCreateRequestPlanTier",
     "OrganizationsCreateResponse",
     "OrganizationsCreateResponseRole",
     "OrganizationsCreateSetupIntentResponse",

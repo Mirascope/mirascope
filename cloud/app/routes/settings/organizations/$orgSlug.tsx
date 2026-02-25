@@ -2,7 +2,6 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 
-import { ClawProvider } from "@/app/contexts/claw";
 import { EnvironmentProvider } from "@/app/contexts/environment";
 import { useOrganization } from "@/app/contexts/organization";
 import { ProjectProvider } from "@/app/contexts/project";
@@ -44,9 +43,7 @@ function OrgSettingsLayout() {
   return (
     <ProjectProvider>
       <EnvironmentProvider>
-        <ClawProvider>
-          <Outlet />
-        </ClawProvider>
+        <Outlet />
       </EnvironmentProvider>
     </ProjectProvider>
   );

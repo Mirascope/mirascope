@@ -9,7 +9,7 @@
  *     }
  */
 export interface ProjectMembershipsGetRequest {
-  organizationId: string;
-  projectId: string;
-  memberId: string;
+    organizationId: string;
+    projectId: string;
+    memberId: string;
 }

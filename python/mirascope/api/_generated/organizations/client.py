@@ -6,8 +6,14 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.big_int import BigInt
 from .raw_client import AsyncRawOrganizationsClient, RawOrganizationsClient
+from .types.organizations_create_org_setup_intent_response import (
+    OrganizationsCreateOrgSetupIntentResponse,
+)
 from .types.organizations_create_payment_intent_response import (
     OrganizationsCreatePaymentIntentResponse,
+)
+from .types.organizations_create_request_plan_tier import (
+    OrganizationsCreateRequestPlanTier,
 )
 from .types.organizations_create_response import OrganizationsCreateResponse
 from .types.organizations_create_setup_intent_response import (
@@ -90,6 +96,8 @@ class OrganizationsClient:
         *,
         name: str,
         slug: str,
+        plan_tier: typing.Optional[OrganizationsCreateRequestPlanTier] = OMIT,
+        payment_method_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> OrganizationsCreateResponse:
         """
@@ -100,6 +108,10 @@ class OrganizationsClient:
 
         slug : str
             a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
+
+        plan_tier : typing.Optional[OrganizationsCreateRequestPlanTier]
+
+        payment_method_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -120,7 +132,37 @@ class OrganizationsClient:
         )
         """
         _response = self._raw_client.create(
-            name=name, slug=slug, request_options=request_options
+            name=name,
+            slug=slug,
+            plan_tier=plan_tier,
+            payment_method_id=payment_method_id,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def createorgsetupintent(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> OrganizationsCreateOrgSetupIntentResponse:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsCreateOrgSetupIntentResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.organizations.createorgsetupintent()
+        """
+        _response = self._raw_client.createorgsetupintent(
+            request_options=request_options
         )
         return _response.data
 
@@ -644,6 +686,8 @@ class AsyncOrganizationsClient:
         *,
         name: str,
         slug: str,
+        plan_tier: typing.Optional[OrganizationsCreateRequestPlanTier] = OMIT,
+        payment_method_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> OrganizationsCreateResponse:
         """
@@ -654,6 +698,10 @@ class AsyncOrganizationsClient:
 
         slug : str
             a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
+
+        plan_tier : typing.Optional[OrganizationsCreateRequestPlanTier]
+
+        payment_method_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -682,7 +730,45 @@ class AsyncOrganizationsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            name=name, slug=slug, request_options=request_options
+            name=name,
+            slug=slug,
+            plan_tier=plan_tier,
+            payment_method_id=payment_method_id,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def createorgsetupintent(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> OrganizationsCreateOrgSetupIntentResponse:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsCreateOrgSetupIntentResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.organizations.createorgsetupintent()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.createorgsetupintent(
+            request_options=request_options
         )
         return _response.data
 

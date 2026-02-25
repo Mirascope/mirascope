@@ -3,7 +3,7 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface TracesCreateRequestResourceSpansItem {
-  resource?: Mirascope.TracesCreateRequestResourceSpansItemResource;
-  scopeSpans: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItem[];
-  schemaUrl?: string;
+    resource?: Mirascope.TracesCreateRequestResourceSpansItemResource;
+    scopeSpans: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItem[];
+    schemaUrl?: string;
 }

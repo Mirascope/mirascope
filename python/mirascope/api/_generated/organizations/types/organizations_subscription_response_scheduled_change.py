@@ -14,18 +14,13 @@ from .organizations_subscription_response_scheduled_change_target_plan import (
 
 class OrganizationsSubscriptionResponseScheduledChange(UniversalBaseModel):
     target_plan: typing_extensions.Annotated[
-        OrganizationsSubscriptionResponseScheduledChangeTargetPlan,
-        FieldMetadata(alias="targetPlan"),
+        OrganizationsSubscriptionResponseScheduledChangeTargetPlan, FieldMetadata(alias="targetPlan")
     ]
-    effective_date: typing_extensions.Annotated[
-        Date, FieldMetadata(alias="effectiveDate")
-    ]
+    effective_date: typing_extensions.Annotated[Date, FieldMetadata(alias="effectiveDate")]
     schedule_id: typing_extensions.Annotated[str, FieldMetadata(alias="scheduleId")]
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import ContentLayout from "@/app/components/content-layout";
-import { createPageHead } from "@/app/lib/seo/head";
 
 /**
  * Test component for visualizing ContentLayout behavior
@@ -9,12 +8,6 @@ import { createPageHead } from "@/app/lib/seo/head";
  * Note: Footer is handled by root layout and doesn't need to be included here
  */
 export const Route = createFileRoute("/dev/layout-test")({
-  head: () =>
-    createPageHead({
-      route: "/dev/layout-test",
-      title: "Developer Tools - Layout Test",
-      description: "Test ContentLayout component behavior",
-    }),
   component: LayoutTestPage,
 });
 

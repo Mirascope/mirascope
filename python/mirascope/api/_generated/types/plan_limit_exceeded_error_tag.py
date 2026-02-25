@@ -2,6 +2,4 @@
 
 import typing
 
-PlanLimitExceededErrorTag = typing.Union[
-    typing.Literal["PlanLimitExceededError"], typing.Any
-]
+PlanLimitExceededErrorTag = typing.Union[typing.Literal["PlanLimitExceededError"], typing.Any]

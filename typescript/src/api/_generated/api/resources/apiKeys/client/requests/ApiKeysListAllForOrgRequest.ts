@@ -7,5 +7,5 @@
  *     }
  */
 export interface ApiKeysListAllForOrgRequest {
-  organizationId: string;
+    organizationId: string;
 }

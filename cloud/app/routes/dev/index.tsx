@@ -4,16 +4,8 @@ import { useMemo } from "react";
 import DevLayout from "@/app/components/blocks/dev/dev-layout";
 import LoadingContent from "@/app/components/blocks/loading-content";
 import { getAllDevMeta } from "@/app/lib/content/virtual-module";
-import { createPageHead } from "@/app/lib/seo/head";
 
 export const Route = createFileRoute("/dev/")({
-  head: () =>
-    createPageHead({
-      route: "/dev",
-      title: "Developer Tools",
-      description:
-        "Development tools and utilities for maintaining the Mirascope website",
-    }),
   component: DevIndexPage,
   loader: () => {
     const devPages = getAllDevMeta();
@@ -82,21 +74,6 @@ function DevIndexPage() {
             <p className="mb-4">
               Test and visualize the AppLayout component with highlighted
               sections for debugging layout issues.
-            </p>
-          </div>
-
-          {/* Cloud component routes */}
-          <h2 className="mt-8 mb-4 text-2xl font-semibold">Cloud Components</h2>
-
-          <div className="rounded-lg border p-6 shadow-sm">
-            <a href="/dev/claw-cards" className="hover:underline">
-              <h2 className="text-primary mb-2 text-xl font-semibold">
-                Claw Cards
-              </h2>
-            </a>
-            <p className="mb-4">
-              All claw card variants — status colors, instance types, edge
-              cases, and the full status x instance matrix.
             </p>
           </div>
 

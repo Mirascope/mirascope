@@ -14,10 +14,10 @@ import type * as Mirascope from "../../../../index.js";
  *     }
  */
 export interface TokenCostCalculateRequest {
-  /** a non empty string */
-  provider: string;
-  /** a non empty string */
-  model: string;
-  usage: Mirascope.TokenCostCalculateRequestUsage;
-  viaRouter?: boolean;
+    /** a non empty string */
+    provider: string;
+    /** a non empty string */
+    model: string;
+    usage: Mirascope.TokenCostCalculateRequestUsage;
+    viaRouter?: boolean;
 }

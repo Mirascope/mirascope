@@ -19,5 +19,5 @@ import type * as Mirascope from "../../../../index.js";
  *     }
  */
 export interface TracesCreateOtelRequest {
-  resourceSpans: Mirascope.TracesCreateOtelRequestResourceSpansItem[];
+    resourceSpans: Mirascope.TracesCreateOtelRequestResourceSpansItem[];
 }

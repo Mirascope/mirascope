@@ -15,18 +15,14 @@ class TracesCreateOtelRequestResourceSpansItemScopeSpansItemScope(UniversalBaseM
     name: str
     version: typing.Optional[str] = None
     attributes: typing.Optional[
-        typing.List[
-            TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItem
-        ]
+        typing.List[TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItem]
     ] = None
     dropped_attributes_count: typing_extensions.Annotated[
         typing.Optional[float], FieldMetadata(alias="droppedAttributesCount")
     ] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

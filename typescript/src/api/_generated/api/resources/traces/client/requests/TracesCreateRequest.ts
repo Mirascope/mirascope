@@ -19,5 +19,5 @@ import type * as Mirascope from "../../../../index.js";
  *     }
  */
 export interface TracesCreateRequest {
-  resourceSpans: Mirascope.TracesCreateRequestResourceSpansItem[];
+    resourceSpans: Mirascope.TracesCreateRequestResourceSpansItem[];
 }

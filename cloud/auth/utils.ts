@@ -220,7 +220,6 @@ export const authenticate = (
           id: apiKeyInfo.ownerId,
           email: apiKeyInfo.ownerEmail,
           name: apiKeyInfo.ownerName,
-          accountType: apiKeyInfo.ownerAccountType,
           deletedAt: apiKeyInfo.ownerDeletedAt,
         },
         apiKeyInfo,

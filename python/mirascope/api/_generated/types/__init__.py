@@ -19,8 +19,8 @@ from .http_api_decode_error_tag import HttpApiDecodeErrorTag
 from .immutable_resource_error import ImmutableResourceError
 from .internal_server_error_body import (
     InternalServerErrorBody,
+    InternalServerErrorBody_ClickHouseError,
     InternalServerErrorBody_DatabaseError,
-    InternalServerErrorBody_StripeError,
 )
 from .issue import Issue
 from .issue_tag import IssueTag
@@ -40,6 +40,7 @@ from .rate_limit_error_tag import RateLimitErrorTag
 from .service_unavailable_error_body import ServiceUnavailableErrorBody
 from .service_unavailable_error_tag import ServiceUnavailableErrorTag
 from .stripe_error import StripeError
+from .stripe_error_tag import StripeErrorTag
 from .subscription_past_due_error import SubscriptionPastDueError
 from .subscription_past_due_error_tag import SubscriptionPastDueErrorTag
 from .unauthorized_error_body import UnauthorizedErrorBody
@@ -60,8 +61,8 @@ __all__ = [
     "HttpApiDecodeErrorTag",
     "ImmutableResourceError",
     "InternalServerErrorBody",
+    "InternalServerErrorBody_ClickHouseError",
     "InternalServerErrorBody_DatabaseError",
-    "InternalServerErrorBody_StripeError",
     "Issue",
     "IssueTag",
     "NotFoundErrorBody",
@@ -80,6 +81,7 @@ __all__ = [
     "ServiceUnavailableErrorBody",
     "ServiceUnavailableErrorTag",
     "StripeError",
+    "StripeErrorTag",
     "SubscriptionPastDueError",
     "SubscriptionPastDueErrorTag",
     "UnauthorizedErrorBody",

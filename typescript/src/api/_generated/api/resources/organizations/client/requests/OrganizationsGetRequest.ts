@@ -7,5 +7,5 @@
  *     }
  */
 export interface OrganizationsGetRequest {
-  id: string;
+    id: string;
 }

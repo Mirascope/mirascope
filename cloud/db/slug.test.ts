@@ -155,10 +155,6 @@ describe("isReservedOrgSlug", () => {
     expect(isReservedOrgSlug("claws-inc")).toBe(false);
   });
 
-  it("should include claws as reserved", () => {
-    expect(RESERVED_ORG_SLUGS.has("claws")).toBe(true);
-  });
-
   it("should include staging as reserved", () => {
     expect(RESERVED_ORG_SLUGS.has("staging")).toBe(true);
   });

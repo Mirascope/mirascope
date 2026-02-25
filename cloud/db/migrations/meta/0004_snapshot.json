@@ -1,5 +1,5 @@
 {
-  "id": "32362567-d166-489b-bb81-4472a1b4a625",
+  "id": "46e920c3-5ff3-41ce-9b83-3a5c3f51c299",
   "prevId": "01d1bf91-b522-4489-bbb1-62d84a5e7db7",
   "version": "7",
   "dialect": "postgresql",
@@ -246,361 +246,6 @@
           "name": "api_keys_environment_id_name_unique",
           "nullsNotDistinct": false,
           "columns": ["environment_id", "name"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.claw_membership_audit": {
-      "name": "claw_membership_audit",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "claw_id": {
-          "name": "claw_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "actor_id": {
-          "name": "actor_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "target_id": {
-          "name": "target_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "action": {
-          "name": "action",
-          "type": "audit_action",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "previous_role": {
-          "name": "previous_role",
-          "type": "claw_role",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "new_role": {
-          "name": "new_role",
-          "type": "claw_role",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "claw_membership_audit_claw_id_claws_id_fk": {
-          "name": "claw_membership_audit_claw_id_claws_id_fk",
-          "tableFrom": "claw_membership_audit",
-          "tableTo": "claws",
-          "columnsFrom": ["claw_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "claw_membership_audit_actor_id_users_id_fk": {
-          "name": "claw_membership_audit_actor_id_users_id_fk",
-          "tableFrom": "claw_membership_audit",
-          "tableTo": "users",
-          "columnsFrom": ["actor_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "claw_membership_audit_target_id_users_id_fk": {
-          "name": "claw_membership_audit_target_id_users_id_fk",
-          "tableFrom": "claw_membership_audit",
-          "tableTo": "users",
-          "columnsFrom": ["target_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.claw_memberships": {
-      "name": "claw_memberships",
-      "schema": "",
-      "columns": {
-        "member_id": {
-          "name": "member_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "organization_id": {
-          "name": "organization_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "claw_id": {
-          "name": "claw_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "role": {
-          "name": "role",
-          "type": "claw_role",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "claw_memberships_member_id_organization_id_organization_memberships_member_id_organization_id_fk": {
-          "name": "claw_memberships_member_id_organization_id_organization_memberships_member_id_organization_id_fk",
-          "tableFrom": "claw_memberships",
-          "tableTo": "organization_memberships",
-          "columnsFrom": ["member_id", "organization_id"],
-          "columnsTo": ["member_id", "organization_id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "claw_memberships_claw_id_organization_id_claws_id_organization_id_fk": {
-          "name": "claw_memberships_claw_id_organization_id_claws_id_organization_id_fk",
-          "tableFrom": "claw_memberships",
-          "tableTo": "claws",
-          "columnsFrom": ["claw_id", "organization_id"],
-          "columnsTo": ["id", "organization_id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "claw_memberships_member_id_claw_id_pk": {
-          "name": "claw_memberships_member_id_claw_id_pk",
-          "columns": ["member_id", "claw_id"]
-        }
-      },
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.claws": {
-      "name": "claws",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "slug": {
-          "name": "slug",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "display_name": {
-          "name": "display_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "organization_id": {
-          "name": "organization_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_by_user_id": {
-          "name": "created_by_user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "home_project_id": {
-          "name": "home_project_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "status": {
-          "name": "status",
-          "type": "claw_status",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'pending'"
-        },
-        "instance_type": {
-          "name": "instance_type",
-          "type": "claw_instance_type",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'basic'"
-        },
-        "last_deployed_at": {
-          "name": "last_deployed_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "last_error": {
-          "name": "last_error",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "secrets_encrypted": {
-          "name": "secrets_encrypted",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "secrets_key_id": {
-          "name": "secrets_key_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "bucket_name": {
-          "name": "bucket_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "weekly_spending_guardrail_centicents": {
-          "name": "weekly_spending_guardrail_centicents",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "weekly_window_start": {
-          "name": "weekly_window_start",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "weekly_usage_centicents": {
-          "name": "weekly_usage_centicents",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "burst_window_start": {
-          "name": "burst_window_start",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "burst_usage_centicents": {
-          "name": "burst_usage_centicents",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "claws_organization_id_organizations_id_fk": {
-          "name": "claws_organization_id_organizations_id_fk",
-          "tableFrom": "claws",
-          "tableTo": "organizations",
-          "columnsFrom": ["organization_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "claws_created_by_user_id_users_id_fk": {
-          "name": "claws_created_by_user_id_users_id_fk",
-          "tableFrom": "claws",
-          "tableTo": "users",
-          "columnsFrom": ["created_by_user_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "claws_home_project_id_projects_id_fk": {
-          "name": "claws_home_project_id_projects_id_fk",
-          "tableFrom": "claws",
-          "tableTo": "projects",
-          "columnsFrom": ["home_project_id"],
-          "columnsTo": ["id"],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "claws_organization_id_slug_unique": {
-          "name": "claws_organization_id_slug_unique",
-          "nullsNotDistinct": false,
-          "columns": ["organization_id", "slug"]
-        },
-        "claws_id_organization_id_unique": {
-          "name": "claws_id_organization_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["id", "organization_id"]
         }
       },
       "policies": {},
@@ -1149,6 +794,33 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "auto_reload_enabled": {
+          "name": "auto_reload_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "auto_reload_threshold_centicents": {
+          "name": "auto_reload_threshold_centicents",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "0"
+        },
+        "auto_reload_amount_centicents": {
+          "name": "auto_reload_amount_centicents",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "500000"
+        },
+        "last_auto_reload_at": {
+          "name": "last_auto_reload_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -2030,21 +1702,6 @@
       "name": "annotation_label",
       "schema": "public",
       "values": ["pass", "fail"]
-    },
-    "public.claw_role": {
-      "name": "claw_role",
-      "schema": "public",
-      "values": ["ADMIN", "DEVELOPER", "VIEWER", "ANNOTATOR"]
-    },
-    "public.claw_instance_type": {
-      "name": "claw_instance_type",
-      "schema": "public",
-      "values": ["basic", "standard-2", "standard-3", "standard-4"]
-    },
-    "public.claw_status": {
-      "name": "claw_status",
-      "schema": "public",
-      "values": ["pending", "provisioning", "active", "paused", "error"]
     },
     "public.reservation_status": {
       "name": "reservation_status",

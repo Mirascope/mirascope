@@ -3,8 +3,8 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface OrganizationInvitationsAcceptResponse {
-  memberId: string;
-  organizationId: string;
-  role: Mirascope.OrganizationInvitationsAcceptResponseRole;
-  createdAt: Mirascope.Date_ | null;
+    memberId: string;
+    organizationId: string;
+    role: Mirascope.OrganizationInvitationsAcceptResponseRole;
+    createdAt: Mirascope.Date_ | null;
 }

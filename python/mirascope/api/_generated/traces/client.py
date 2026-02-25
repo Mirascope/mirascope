@@ -6,35 +6,19 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.number_from_string import NumberFromString
 from .raw_client import AsyncRawTracesClient, RawTracesClient
-from .types.traces_create_otel_request_resource_spans_item import (
-    TracesCreateOtelRequestResourceSpansItem,
-)
+from .types.traces_create_otel_request_resource_spans_item import TracesCreateOtelRequestResourceSpansItem
 from .types.traces_create_otel_response import TracesCreateOtelResponse
-from .types.traces_create_request_resource_spans_item import (
-    TracesCreateRequestResourceSpansItem,
-)
+from .types.traces_create_request_resource_spans_item import TracesCreateRequestResourceSpansItem
 from .types.traces_create_response import TracesCreateResponse
-from .types.traces_get_analytics_summary_response import (
-    TracesGetAnalyticsSummaryResponse,
-)
-from .types.traces_get_trace_detail_by_env_response import (
-    TracesGetTraceDetailByEnvResponse,
-)
+from .types.traces_get_analytics_summary_response import TracesGetAnalyticsSummaryResponse
+from .types.traces_get_trace_detail_by_env_response import TracesGetTraceDetailByEnvResponse
 from .types.traces_get_trace_detail_response import TracesGetTraceDetailResponse
-from .types.traces_list_by_function_hash_response import (
-    TracesListByFunctionHashResponse,
-)
-from .types.traces_search_by_env_request_attribute_filters_item import (
-    TracesSearchByEnvRequestAttributeFiltersItem,
-)
+from .types.traces_list_by_function_hash_response import TracesListByFunctionHashResponse
+from .types.traces_search_by_env_request_attribute_filters_item import TracesSearchByEnvRequestAttributeFiltersItem
 from .types.traces_search_by_env_request_sort_by import TracesSearchByEnvRequestSortBy
-from .types.traces_search_by_env_request_sort_order import (
-    TracesSearchByEnvRequestSortOrder,
-)
+from .types.traces_search_by_env_request_sort_order import TracesSearchByEnvRequestSortOrder
 from .types.traces_search_by_env_response import TracesSearchByEnvResponse
-from .types.traces_search_request_attribute_filters_item import (
-    TracesSearchRequestAttributeFiltersItem,
-)
+from .types.traces_search_request_attribute_filters_item import TracesSearchRequestAttributeFiltersItem
 from .types.traces_search_request_sort_by import TracesSearchRequestSortBy
 from .types.traces_search_request_sort_order import TracesSearchRequestSortOrder
 from .types.traces_search_response import TracesSearchResponse
@@ -107,9 +91,7 @@ class TracesClient:
             ],
         )
         """
-        _response = self._raw_client.create(
-            resource_spans=resource_spans, request_options=request_options
-        )
+        _response = self._raw_client.create(resource_spans=resource_spans, request_options=request_options)
         return _response.data
 
     def createotel(
@@ -161,9 +143,7 @@ class TracesClient:
             ],
         )
         """
-        _response = self._raw_client.createotel(
-            resource_spans=resource_spans, request_options=request_options
-        )
+        _response = self._raw_client.createotel(resource_spans=resource_spans, request_options=request_options)
         return _response.data
 
     def search(
@@ -187,9 +167,7 @@ class TracesClient:
         max_tokens: typing.Optional[float] = OMIT,
         min_duration: typing.Optional[float] = OMIT,
         max_duration: typing.Optional[float] = OMIT,
-        attribute_filters: typing.Optional[
-            typing.Sequence[TracesSearchRequestAttributeFiltersItem]
-        ] = OMIT,
+        attribute_filters: typing.Optional[typing.Sequence[TracesSearchRequestAttributeFiltersItem]] = OMIT,
         limit: typing.Optional[float] = OMIT,
         offset: typing.Optional[float] = OMIT,
         sort_by: typing.Optional[TracesSearchRequestSortBy] = OMIT,
@@ -320,9 +298,7 @@ class TracesClient:
             trace_id="traceId",
         )
         """
-        _response = self._raw_client.gettracedetail(
-            trace_id, request_options=request_options
-        )
+        _response = self._raw_client.gettracedetail(trace_id, request_options=request_options)
         return _response.data
 
     def getanalyticssummary(
@@ -361,10 +337,7 @@ class TracesClient:
         )
         """
         _response = self._raw_client.getanalyticssummary(
-            start_time=start_time,
-            end_time=end_time,
-            function_id=function_id,
-            request_options=request_options,
+            start_time=start_time, end_time=end_time, function_id=function_id, request_options=request_options
         )
         return _response.data
 
@@ -431,9 +404,7 @@ class TracesClient:
         max_tokens: typing.Optional[float] = OMIT,
         min_duration: typing.Optional[float] = OMIT,
         max_duration: typing.Optional[float] = OMIT,
-        attribute_filters: typing.Optional[
-            typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem]
-        ] = OMIT,
+        attribute_filters: typing.Optional[typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem]] = OMIT,
         limit: typing.Optional[float] = OMIT,
         offset: typing.Optional[float] = OMIT,
         sort_by: typing.Optional[TracesSearchByEnvRequestSortBy] = OMIT,
@@ -592,11 +563,7 @@ class TracesClient:
         )
         """
         _response = self._raw_client.gettracedetailbyenv(
-            organization_id,
-            project_id,
-            environment_id,
-            trace_id,
-            request_options=request_options,
+            organization_id, project_id, environment_id, trace_id, request_options=request_options
         )
         return _response.data
 
@@ -673,9 +640,7 @@ class AsyncTracesClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.create(
-            resource_spans=resource_spans, request_options=request_options
-        )
+        _response = await self._raw_client.create(resource_spans=resource_spans, request_options=request_options)
         return _response.data
 
     async def createotel(
@@ -735,9 +700,7 @@ class AsyncTracesClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.createotel(
-            resource_spans=resource_spans, request_options=request_options
-        )
+        _response = await self._raw_client.createotel(resource_spans=resource_spans, request_options=request_options)
         return _response.data
 
     async def search(
@@ -761,9 +724,7 @@ class AsyncTracesClient:
         max_tokens: typing.Optional[float] = OMIT,
         min_duration: typing.Optional[float] = OMIT,
         max_duration: typing.Optional[float] = OMIT,
-        attribute_filters: typing.Optional[
-            typing.Sequence[TracesSearchRequestAttributeFiltersItem]
-        ] = OMIT,
+        attribute_filters: typing.Optional[typing.Sequence[TracesSearchRequestAttributeFiltersItem]] = OMIT,
         limit: typing.Optional[float] = OMIT,
         offset: typing.Optional[float] = OMIT,
         sort_by: typing.Optional[TracesSearchRequestSortBy] = OMIT,
@@ -910,9 +871,7 @@ class AsyncTracesClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.gettracedetail(
-            trace_id, request_options=request_options
-        )
+        _response = await self._raw_client.gettracedetail(trace_id, request_options=request_options)
         return _response.data
 
     async def getanalyticssummary(
@@ -959,10 +918,7 @@ class AsyncTracesClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.getanalyticssummary(
-            start_time=start_time,
-            end_time=end_time,
-            function_id=function_id,
-            request_options=request_options,
+            start_time=start_time, end_time=end_time, function_id=function_id, request_options=request_options
         )
         return _response.data
 
@@ -1037,9 +993,7 @@ class AsyncTracesClient:
         max_tokens: typing.Optional[float] = OMIT,
         min_duration: typing.Optional[float] = OMIT,
         max_duration: typing.Optional[float] = OMIT,
-        attribute_filters: typing.Optional[
-            typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem]
-        ] = OMIT,
+        attribute_filters: typing.Optional[typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem]] = OMIT,
         limit: typing.Optional[float] = OMIT,
         offset: typing.Optional[float] = OMIT,
         sort_by: typing.Optional[TracesSearchByEnvRequestSortBy] = OMIT,
@@ -1214,10 +1168,6 @@ class AsyncTracesClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.gettracedetailbyenv(
-            organization_id,
-            project_id,
-            environment_id,
-            trace_id,
-            request_options=request_options,
+            organization_id, project_id, environment_id, trace_id, request_options=request_options
         )
         return _response.data

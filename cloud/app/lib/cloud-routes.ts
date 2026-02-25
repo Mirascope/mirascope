@@ -6,18 +6,6 @@ export function orgRoute(orgSlug: string) {
   return `/${orgSlug}`;
 }
 
-export function clawsRoute(orgSlug: string) {
-  return `/${orgSlug}/claws`;
-}
-
-export function clawChatRoute(orgSlug: string, clawSlug: string) {
-  return `/${orgSlug}/claws/${clawSlug}/chat`;
-}
-
-export function clawSecretsRoute(orgSlug: string, clawSlug: string) {
-  return `/${orgSlug}/claws/${clawSlug}/secrets`;
-}
-
 export function projectsRoute(orgSlug: string) {
   return `/${orgSlug}/projects`;
 }

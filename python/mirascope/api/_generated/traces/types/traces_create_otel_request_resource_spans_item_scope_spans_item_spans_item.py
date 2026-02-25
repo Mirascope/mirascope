@@ -20,14 +20,10 @@ from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item
 )
 
 
-class TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem(
-    UniversalBaseModel
-):
+class TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem(UniversalBaseModel):
     trace_id: typing_extensions.Annotated[str, FieldMetadata(alias="traceId")]
     span_id: typing_extensions.Annotated[str, FieldMetadata(alias="spanId")]
-    parent_span_id: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="parentSpanId")
-    ] = None
+    parent_span_id: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="parentSpanId")] = None
     name: str
     kind: typing.Optional[float] = None
     start_time_unix_nano: typing_extensions.Annotated[
@@ -39,9 +35,7 @@ class TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem(
         FieldMetadata(alias="endTimeUnixNano"),
     ]
     attributes: typing.Optional[
-        typing.List[
-            TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem
-        ]
+        typing.List[TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem]
     ] = None
     dropped_attributes_count: typing_extensions.Annotated[
         typing.Optional[float], FieldMetadata(alias="droppedAttributesCount")
@@ -50,18 +44,14 @@ class TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem(
     dropped_events_count: typing_extensions.Annotated[
         typing.Optional[float], FieldMetadata(alias="droppedEventsCount")
     ] = None
-    status: typing.Optional[
-        TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStatus
-    ] = None
+    status: typing.Optional[TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStatus] = None
     links: typing.Optional[typing.List[typing.Optional[typing.Any]]] = None
     dropped_links_count: typing_extensions.Annotated[
         typing.Optional[float], FieldMetadata(alias="droppedLinksCount")
     ] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

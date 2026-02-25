@@ -17,9 +17,7 @@ class BadRequestErrorBody_HttpApiDecodeError(UniversalBaseModel):
     tag: HttpApiDecodeErrorTag
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:
@@ -34,9 +32,7 @@ class BadRequestErrorBody_ImmutableResourceError(UniversalBaseModel):
     resource: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:
@@ -45,6 +41,4 @@ class BadRequestErrorBody_ImmutableResourceError(UniversalBaseModel):
             extra = pydantic.Extra.allow
 
 
-BadRequestErrorBody = typing.Union[
-    BadRequestErrorBody_HttpApiDecodeError, BadRequestErrorBody_ImmutableResourceError
-]
+BadRequestErrorBody = typing.Union[BadRequestErrorBody_HttpApiDecodeError, BadRequestErrorBody_ImmutableResourceError]

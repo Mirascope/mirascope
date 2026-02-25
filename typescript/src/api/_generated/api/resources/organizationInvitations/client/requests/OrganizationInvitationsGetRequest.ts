@@ -8,6 +8,6 @@
  *     }
  */
 export interface OrganizationInvitationsGetRequest {
-  organizationId: string;
-  invitationId: string;
+    organizationId: string;
+    invitationId: string;
 }

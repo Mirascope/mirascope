@@ -33,9 +33,6 @@
 
 import { Context, Effect, Layer } from "effect";
 
-import type { CloudflareConfig } from "@/cloudflare/config";
-import type { PlanTier } from "@/payments/plans";
-
 import { SettingsValidationError } from "@/errors";
 
 // =============================================================================
@@ -146,18 +143,6 @@ export type FrontendConfig = {
 };
 
 /**
- * Encryption key configuration for claw secrets.
- *
- * Keys are versioned so that rotation is possible without re-encrypting
- * all rows at once. The `secretsKeyId` column in the DB records which
- * env-var name was used to encrypt a given row, and on decrypt we look
- * up that name in this map.
- */
-export type EncryptionKeysConfig = {
-  readonly [keyId: string]: string; // keyId → base64-encoded 256-bit key
-};
-
-/**
  * Complete application settings configuration.
  * All fields are required and guaranteed to be non-empty strings.
  */
@@ -166,9 +151,6 @@ export type SettingsConfig = {
   readonly env: string;
   readonly databaseUrl: string;
   readonly siteUrl: string;
-
-  // Development — false when disabled, or the plan tier to simulate ("free"|"pro"|"team")
-  readonly mockDeployment: false | PlanTier;
 
   // Auth
   readonly github: GitHubConfig;
@@ -192,16 +174,6 @@ export type SettingsConfig = {
 
   // Frontend (validated but not accessed server-side)
   readonly frontend: FrontendConfig;
-
-  // Cloudflare infrastructure
-  readonly cloudflare: CloudflareConfig;
-
-  // Encryption
-  readonly encryptionKeys: EncryptionKeysConfig;
-  readonly activeEncryptionKeyId: string;
-
-  // OpenClaw gateway (optional — for dev/local WS proxy)
-  readonly openclawGatewayWsUrl?: string;
 };
 
 // =============================================================================
@@ -235,7 +207,6 @@ export type HyperdriveBinding = {
  * Extends as needed for additional bindings.
  */
 export type CloudflareEnvironment = {
-  MOCK_DEPLOYMENT?: string;
   ENVIRONMENT?: string;
   HYPERDRIVE?: HyperdriveBinding;
   SITE_URL?: string;
@@ -276,18 +247,6 @@ export type CloudflareEnvironment = {
   VITE_POSTHOG_API_KEY?: string;
   VITE_POSTHOG_HOST?: string;
   VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID?: string;
-  // Cloudflare infrastructure (for claw deployment)
-  CLOUDFLARE_ACCOUNT_ID?: string;
-  CLOUDFLARE_API_TOKEN?: string;
-  CF_R2_READ_PERMISSION_GROUP_ID?: string;
-  CF_R2_WRITE_PERMISSION_GROUP_ID?: string;
-  CF_DO_NAMESPACE_ID?: string;
-  CF_DISPATCH_WORKER_BASE_URL?: string;
-  // Encryption keys for claw secrets (versioned)
-  CLAW_SECRETS_ENCRYPTION_KEY_V1?: string;
-  // OpenClaw gateway (dev/local only)
-  OPENCLAW_GATEWAY_WS_URL?: string;
-  OPENCLAW_GATEWAY_TOKEN?: string;
 };
 
 /**
@@ -313,14 +272,6 @@ function validateSettingsFromSource(
 ): Effect.Effect<SettingsConfig, SettingsValidationError> {
   return Effect.gen(function* () {
     const missing: string[] = [];
-    const mockDeploymentRaw = source.get("MOCK_DEPLOYMENT")?.trim();
-    const VALID_MOCK_TIERS = ["free", "pro", "team"] as const;
-    const mockDeployment: false | PlanTier =
-      mockDeploymentRaw === "true"
-        ? "free"
-        : VALID_MOCK_TIERS.includes(mockDeploymentRaw as PlanTier)
-          ? (mockDeploymentRaw as PlanTier)
-          : false;
 
     // Helper: validate required env var, collect missing ones
     const required = (name: string): string => {
@@ -350,7 +301,6 @@ function validateSettingsFromSource(
       env: required("ENVIRONMENT"),
       databaseUrl: required("DATABASE_URL"),
       siteUrl: required("SITE_URL"),
-      mockDeployment,
 
       github: {
         clientId: required("GITHUB_CLIENT_ID"),
@@ -419,37 +369,6 @@ function validateSettingsFromSource(
           "VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID",
         ),
       },
-
-      cloudflare: {
-        accountId: mockDeployment
-          ? optional("CLOUDFLARE_ACCOUNT_ID")
-          : required("CLOUDFLARE_ACCOUNT_ID"),
-        apiToken: mockDeployment
-          ? optional("CLOUDFLARE_API_TOKEN")
-          : required("CLOUDFLARE_API_TOKEN"),
-        r2BucketItemReadPermissionGroupId: mockDeployment
-          ? optional("CF_R2_READ_PERMISSION_GROUP_ID")
-          : required("CF_R2_READ_PERMISSION_GROUP_ID"),
-        r2BucketItemWritePermissionGroupId: mockDeployment
-          ? optional("CF_R2_WRITE_PERMISSION_GROUP_ID")
-          : required("CF_R2_WRITE_PERMISSION_GROUP_ID"),
-        durableObjectNamespaceId: mockDeployment
-          ? optional("CF_DO_NAMESPACE_ID")
-          : required("CF_DO_NAMESPACE_ID"),
-        dispatchWorkerBaseUrl: mockDeployment
-          ? optional("CF_DISPATCH_WORKER_BASE_URL")
-          : required("CF_DISPATCH_WORKER_BASE_URL"),
-      },
-
-      encryptionKeys: {
-        CLAW_SECRETS_ENCRYPTION_KEY_V1: mockDeployment
-          ? optional("CLAW_SECRETS_ENCRYPTION_KEY_V1") ||
-            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
-          : required("CLAW_SECRETS_ENCRYPTION_KEY_V1"),
-      },
-      activeEncryptionKeyId: "CLAW_SECRETS_ENCRYPTION_KEY_V1",
-
-      openclawGatewayWsUrl: optional("OPENCLAW_GATEWAY_WS_URL") || undefined,
     };
 
     // Fail if any variables are missing

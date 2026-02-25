@@ -7,5 +7,5 @@
  *     }
  */
 export interface OrganizationMembershipsListRequest {
-  organizationId: string;
+    organizationId: string;
 }

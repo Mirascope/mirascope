@@ -6,7 +6,7 @@ import type * as Mirascope from "../index.js";
  * The request did not match the expected schema
  */
 export interface HttpApiDecodeError {
-  issues: Mirascope.Issue[];
-  message: string;
-  tag: Mirascope.HttpApiDecodeErrorTag;
+    issues: Mirascope.Issue[];
+    message: string;
+    tag: Mirascope.HttpApiDecodeErrorTag;
 }

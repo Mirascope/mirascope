@@ -102,6 +102,13 @@ describe("getCookieDomain", () => {
     });
     expect(getCookieDomain(settings)).toBeNull();
   });
+
+  it("should return null for invalid URL", () => {
+    const settings = createMockSettings({
+      siteUrl: "not-a-valid-url",
+    });
+    expect(getCookieDomain(settings)).toBeNull();
+  });
 });
 
 describe("setSessionCookie", () => {

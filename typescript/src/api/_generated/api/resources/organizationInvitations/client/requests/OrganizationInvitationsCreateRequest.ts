@@ -11,8 +11,8 @@ import type * as Mirascope from "../../../../index.js";
  *     }
  */
 export interface OrganizationInvitationsCreateRequest {
-  organizationId: string;
-  /** a string matching the pattern ^[^ \t\n\r\f\v@]+@[^ \t\n\r\f\v@]+[.][^ \t\n\r\f\v@]+$ */
-  recipientEmail: string;
-  role: Mirascope.OrganizationInvitationsCreateRequestRole;
+    organizationId: string;
+    /** a string matching the pattern ^[^ \t\n\r\f\v@]+@[^ \t\n\r\f\v@]+[.][^ \t\n\r\f\v@]+$ */
+    recipientEmail: string;
+    role: Mirascope.OrganizationInvitationsCreateRequestRole;
 }

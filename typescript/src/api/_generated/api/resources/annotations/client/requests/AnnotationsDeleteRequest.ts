@@ -7,5 +7,5 @@
  *     }
  */
 export interface AnnotationsDeleteRequest {
-  id: string;
+    id: string;
 }

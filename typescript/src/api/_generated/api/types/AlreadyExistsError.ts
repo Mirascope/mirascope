@@ -3,7 +3,7 @@
 import type * as Mirascope from "../index.js";
 
 export interface AlreadyExistsError {
-  message: string;
-  resource?: string;
-  tag: Mirascope.AlreadyExistsErrorTag;
+    message: string;
+    resource?: string;
+    tag: Mirascope.AlreadyExistsErrorTag;
 }

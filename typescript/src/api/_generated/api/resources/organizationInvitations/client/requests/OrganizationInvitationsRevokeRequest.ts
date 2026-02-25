@@ -8,6 +8,6 @@
  *     }
  */
 export interface OrganizationInvitationsRevokeRequest {
-  organizationId: string;
-  invitationId: string;
+    organizationId: string;
+    invitationId: string;
 }

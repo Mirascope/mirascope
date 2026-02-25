@@ -1,20 +1,20 @@
-import { Plug, Rocket, Sparkles } from "lucide-react";
+import { Eye, Rocket, Sparkles } from "lucide-react";
 
 const PROPS = [
   {
     icon: Rocket,
-    title: "Instant Deployment",
-    body: "Name it, deploy it. Your Claw runs serverlessly in seconds. No infrastructure, no code, no waiting.",
+    title: "Ship Faster",
+    body: "Build LLM-powered features with clean abstractions. Focus on your product, not boilerplate.",
   },
   {
     icon: Sparkles,
-    title: "AI That Creates",
-    body: "Powered by the Mirascope Skill, your Claw writes, versions, and optimizes its own AI automations.",
+    title: "AI-Powered Optimization",
+    body: "Version, trace, and optimize your prompts and agents with built-in observability.",
   },
   {
-    icon: Plug,
-    title: "Integrations Made Easy",
-    body: "Connect to Slack, Discord, Telegram, and more. Your Claw fits right into the tools you already use.",
+    icon: Eye,
+    title: "Full Observability",
+    body: "Trace every call, monitor costs, and debug issues across all your LLM providers in one place.",
   },
 ] as const;
 

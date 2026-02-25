@@ -5,8 +5,6 @@ import ViewModeSwitcher from "@/app/components/blocks/navigation/view-mode-switc
 import { useViewMode } from "@/app/components/blocks/theme-provider";
 import { Badge } from "@/app/components/ui/badge";
 import { ButtonLink } from "@/app/components/ui/button-link";
-import { WatercolorBackground } from "@/app/components/watercolor-background";
-import { useSunsetTime } from "@/app/hooks/sunset-time";
 import { highlightCode, fallbackHighlighter } from "@/app/lib/code-highlight";
 import { cn } from "@/app/lib/utils";
 import { PLAN_LIMITS, type PlanTier } from "@/payments/plans";
@@ -25,10 +23,8 @@ Get started with the Free plan today. No credit card required.
 ## Plans Overview
 
 ### Free - $0/month
-For individuals getting started with AI bots.
+For individuals just getting started.
 
-- **Claws:** 1
-- **Instance Size:** Small
 - **Seats:** 1
 - **Projects:** 1
 - **Tracing:** 1M spans/month (hard limit, no overages)
@@ -37,10 +33,8 @@ For individuals getting started with AI bots.
 - **Support:** Community only
 
 ### Pro - $49/month
-For professionals who need more power.
+For professionals with growing projects.
 
-- **Claws:** 1
-- **Instance Size:** Medium
 - **Seats:** 5
 - **Projects:** 5
 - **Tracing:** 1M spans/month included, then $5 per additional million
@@ -49,10 +43,8 @@ For professionals who need more power.
 - **Support:** Community + Chat/Email
 
 ### Team - $199/month
-For teams running multiple AI bots.
+For organizations requiring dedicated support.
 
-- **Claws:** 3
-- **Instance Size:** Large
 - **Seats:** Unlimited
 - **Projects:** Unlimited
 - **Tracing:** 1M spans/month included, then $5 per additional million
@@ -64,8 +56,6 @@ For teams running multiple AI bots.
 
 | Feature | Free | Pro | Team |
 |---------|------|-----|------|
-| Claws | 1 | 1 | 3 |
-| Instance Size | Small | Medium | Large |
 | Seats | 1 | 5 | Unlimited |
 | Projects | 1 | 5 | Unlimited |
 | Tracing | 1M spans/month (no overages) | 1M spans/month + $5/additional M | 1M spans/month + $5/additional M |
@@ -77,7 +67,7 @@ For teams running multiple AI bots.
 
 ## Getting Started
 
-Visit https://mirascope.com/login to create your free account.
+Visit https://mirascope.com/cloud/login to create your free account.
 
 ## Questions?
 
@@ -116,7 +106,7 @@ function MachinePricingContent() {
     return (
       <div className="mx-auto max-w-4xl px-4 py-4">
         <div
-          className="machine-mode-code highlight-container w-full overflow-auto rounded-md border bg-white text-sm dark:bg-black [&>pre]:overflow-x-auto [&>pre]:py-3 [&>pre]:pr-5 [&>pre]:pl-4"
+          className="machine-mode-code highlight-container w-full overflow-auto rounded-md border text-sm [&>pre]:overflow-x-auto [&>pre]:py-3 [&>pre]:pr-5 [&>pre]:pl-4"
           dangerouslySetInnerHTML={{ __html: fallback.themeHtml }}
         />
         <ViewModeSwitcher />
@@ -127,7 +117,7 @@ function MachinePricingContent() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-4">
       <div
-        className="machine-mode-code highlight-container w-full overflow-auto rounded-md border bg-white text-sm dark:bg-black [&>pre]:overflow-x-auto [&>pre]:py-3 [&>pre]:pr-5 [&>pre]:pl-4"
+        className="machine-mode-code highlight-container w-full overflow-auto rounded-md border text-sm [&>pre]:overflow-x-auto [&>pre]:py-3 [&>pre]:pr-5 [&>pre]:pl-4"
         dangerouslySetInnerHTML={{ __html: highlightedHtml }}
       />
       <ViewModeSwitcher />
@@ -226,7 +216,6 @@ const PlanDetailsRow = ({ detail, free, pro, team }: PlanDetailsRowProps) => {
 export interface UsageData {
   projects: number;
   seats: number;
-  claws: number;
 }
 
 interface UsageIndicatorProps {
@@ -303,11 +292,7 @@ const PricingTier = ({
             {name}
           </h3>
         </div>
-        <p className="text-muted-foreground mb-1">{description}</p>
-        <p className="text-muted-foreground mb-4 text-sm">
-          {limits.claws} {limits.claws === 1 ? "Claw" : "Claws"} ·{" "}
-          {INSTANCE_SIZE[tier]}
-        </p>
+        <p className="text-muted-foreground mb-4">{description}</p>
         <div className="mb-5">
           <span className="text-foreground text-3xl font-bold">{price}</span>
           {price !== "TBD" && price !== "N/A" && (
@@ -316,11 +301,6 @@ const PricingTier = ({
         </div>
         {usage && (
           <div className="border-border mb-5 space-y-3 border-t pt-4">
-            <UsageIndicator
-              label="Claws"
-              current={usage.claws}
-              limit={limits.claws}
-            />
             <UsageIndicator
               label="Seats"
               current={usage.seats}
@@ -395,26 +375,7 @@ interface PricingActions {
  * 1. `PRICING_MARKDOWN` above (the machine-readable markdown view)
  * 2. `public/pricing.md` (the static markdown file served at /pricing.md)
  */
-/** Instance size display names keyed by plan tier */
-const INSTANCE_SIZE: Record<PlanTier, string> = {
-  free: "Small",
-  pro: "Medium",
-  team: "Large",
-};
-
 export const cloudHostedDetails = [
-  {
-    detail: "Claws",
-    free: String(PLAN_LIMITS.free.claws),
-    pro: String(PLAN_LIMITS.pro.claws),
-    team: String(PLAN_LIMITS.team.claws),
-  },
-  {
-    detail: "Instance Size",
-    free: INSTANCE_SIZE.free,
-    pro: INSTANCE_SIZE.pro,
-    team: INSTANCE_SIZE.team,
-  },
   { detail: "Seats", free: "1", pro: "5", team: "Unlimited" },
   { detail: "Projects", free: "1", pro: "5", team: "Unlimited" },
   {
@@ -466,65 +427,56 @@ interface PricingProps {
 
 export function PricingPage({ actions, currentPlan, usage }: PricingProps) {
   const viewMode = useViewMode();
-  useSunsetTime();
 
-  // In MACHINE mode, render markdown content with watercolor background
+  // In MACHINE mode, render markdown content for AI agents
   if (viewMode === "machine") {
-    return (
-      <>
-        <WatercolorBackground />
-        <MachinePricingContent />
-      </>
-    );
+    return <MachinePricingContent />;
   }
 
   // In HUMAN mode, render the full interactive pricing page
   return (
-    <>
-      <WatercolorBackground />
-      <div className="px-4 py-4">
-        <div className="mx-auto max-w-4xl">
-          <div className="mb-4 text-center">
-            <h1 className="mb-4 text-center text-4xl font-bold text-white text-shade">
-              Pricing
-            </h1>
-            <p className="mx-auto mb-2 max-w-2xl text-xl text-white text-shade">
-              Get started with the Free plan today.
-            </p>
-            <p className="mx-auto max-w-2xl text-sm italic text-white/80 text-shade">
-              No credit card required.
-            </p>
-          </div>
-
-          <CloudPricing
-            hostedActions={actions.hosted}
-            currentPlan={currentPlan}
-            usage={usage}
-          />
-
-          {/* Plan comparison table */}
-          <PlanComparisonTable details={cloudHostedDetails} />
-
-          <div className="mt-10 rounded-xl border border-white/20 bg-white/80 p-8 text-center shadow-sm backdrop-blur-sm dark:border-border/40 dark:bg-background/80">
-            <h2 className="text-foreground mb-4 text-2xl font-semibold">
-              Have questions about our pricing?
-            </h2>
-            <p className="text-muted-foreground">
-              Join our{" "}
-              <ButtonLink
-                href="https://mirascope.com/discord-invite?"
-                variant="link"
-                className="h-auto p-0"
-              >
-                community
-              </ButtonLink>{" "}
-              and ask the team directly!
-            </p>
-          </div>
+    <div className="px-4 py-4">
+      <div className="mx-auto max-w-4xl">
+        <div className="mb-4 text-center">
+          <h1 className="text-foreground mb-4 text-center text-4xl font-bold">
+            Pricing
+          </h1>
+          <p className="text-foreground mx-auto mb-2 max-w-2xl text-xl">
+            Get started with the Free plan today.
+          </p>
+          <p className="text-muted-foreground mx-auto max-w-2xl text-sm italic">
+            No credit card required.
+          </p>
         </div>
-        <ViewModeSwitcher />
+
+        <CloudPricing
+          hostedActions={actions.hosted}
+          currentPlan={currentPlan}
+          usage={usage}
+        />
+
+        {/* Plan comparison table */}
+        <PlanComparisonTable details={cloudHostedDetails} />
+
+        <div className="mt-16 text-center">
+          <h2 className="text-foreground mb-4 text-2xl font-semibold">
+            Have questions about our pricing?
+          </h2>
+          <p className="text-muted-foreground">
+            Join our{" "}
+            <ButtonLink
+              href="https://mirascope.com/discord-invite?"
+              variant="link"
+              className="h-auto p-0"
+            >
+              community
+            </ButtonLink>{" "}
+            and ask the team directly!
+          </p>
+        </div>
       </div>
-    </>
+      <ViewModeSwitcher />
+    </div>
   );
 }
 
@@ -546,7 +498,7 @@ export const CloudPricing = ({
       name: "Free",
       tier: "free",
       price: "$0",
-      description: "For individuals getting started with AI bots",
+      description: "For individuals just getting started",
       button: hostedActions.free.button,
       isCurrentPlan: currentPlan === "free",
       usage,
@@ -555,7 +507,7 @@ export const CloudPricing = ({
       name: "Pro",
       tier: "pro",
       price: "$49",
-      description: "For professionals who need more power",
+      description: "For professionals with growing projects",
       button: hostedActions.pro.button,
       isCurrentPlan: currentPlan === "pro",
       usage,
@@ -564,7 +516,7 @@ export const CloudPricing = ({
       name: "Team",
       tier: "team",
       price: "$199",
-      description: "For teams running multiple AI bots",
+      description: "For organizations requiring dedicated support",
       button: hostedActions.team.button,
       isCurrentPlan: currentPlan === "team",
       usage,

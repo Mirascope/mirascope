@@ -4,6 +4,7 @@ import type * as Mirascope from "../../api/index.js";
 import type * as serializers from "../index.js";
 
 import * as core from "../../core/index.js";
+import { StripeErrorTag } from "./StripeErrorTag.js";
 
 export const StripeError: core.serialization.ObjectSchema<
   serializers.StripeError.Raw,
@@ -11,11 +12,13 @@ export const StripeError: core.serialization.ObjectSchema<
 > = core.serialization.object({
   message: core.serialization.string(),
   cause: core.serialization.unknown().optional(),
+  tag: StripeErrorTag,
 });
 
 export declare namespace StripeError {
   export interface Raw {
     message: string;
     cause?: unknown | null;
+    tag: StripeErrorTag.Raw;
   }
 }

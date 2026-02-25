@@ -56,7 +56,6 @@ import { DrizzleORM } from "@/db/client";
 import { OrganizationMemberships } from "@/db/organization-memberships";
 import { ProjectMemberships } from "@/db/project-memberships";
 import {
-  claws,
   projects,
   projectMemberships,
   type NewProject,
@@ -83,7 +82,6 @@ const publicFields = {
   slug: projects.slug,
   organizationId: projects.organizationId,
   createdByUserId: projects.createdByUserId,
-  type: projects.type,
 };
 
 /**
@@ -161,16 +159,11 @@ export class Projects extends BaseAuthenticatedEffectService<
       const limits =
         yield* payments.customers.subscriptions.getPlanLimits(planTier);
 
-      // Count active projects (exclude claw_home projects)
+      // Count active projects
       const [projectCount] = yield* client
         .select({ count: sql<number>`count(*)::int` })
         .from(projects)
-        .where(
-          and(
-            eq(projects.organizationId, organizationId),
-            eq(projects.type, "standard"),
-          ),
-        )
+        .where(and(eq(projects.organizationId, organizationId)))
         .pipe(
           Effect.mapError(
             (e) =>
@@ -621,66 +614,6 @@ export class Projects extends BaseAuthenticatedEffectService<
         organizationId,
         projectId,
       });
-
-      // Prevent direct deletion of claw_home projects that still have an
-      // active claw. These should only be deleted via the claw deletion
-      // cascade. Orphaned claw_home projects (where the claw has already
-      // been deleted) can be cleaned up directly.
-      const [project] = yield* client
-        .select({ id: projects.id, type: projects.type })
-        .from(projects)
-        .where(
-          and(
-            eq(projects.id, projectId),
-            eq(projects.organizationId, organizationId),
-          ),
-        )
-        .limit(1)
-        .pipe(
-          Effect.mapError(
-            (e) =>
-              new DatabaseError({
-                message: "Failed to fetch project",
-                cause: e,
-              }),
-          ),
-        );
-
-      if (!project) {
-        return yield* Effect.fail(
-          new NotFoundError({
-            message: `Project with projectId ${projectId} not found`,
-            resource: this.getResourceName(),
-          }),
-        );
-      }
-
-      if (project.type === "claw_home") {
-        // Check if a claw still references this project
-        const [activeClaw] = yield* client
-          .select({ id: claws.id })
-          .from(claws)
-          .where(eq(claws.homeProjectId, projectId))
-          .limit(1)
-          .pipe(
-            Effect.mapError(
-              (e) =>
-                new DatabaseError({
-                  message: "Failed to check claw association",
-                  cause: e,
-                }),
-            ),
-          );
-
-        if (activeClaw) {
-          return yield* Effect.fail(
-            new PermissionDeniedError({
-              message:
-                "Cannot delete a claw home project directly. Delete the claw instead.",
-            }),
-          );
-        }
-      }
 
       const [deleted] = yield* client
         .delete(projects)

@@ -3,24 +3,21 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface FunctionsListResponseFunctionsItem {
-  id: string;
-  hash: string;
-  signatureHash: string;
-  name: string;
-  description: string | null;
-  version: string;
-  tags: string[] | null;
-  metadata: Record<string, string | null> | null;
-  code: string;
-  signature: string;
-  language: string;
-  dependencies: Record<
-    string,
-    Mirascope.FunctionsListResponseFunctionsItemDependenciesValue | null
-  > | null;
-  environmentId: string;
-  projectId: string;
-  organizationId: string;
-  createdAt: string | null;
-  updatedAt: string | null;
+    id: string;
+    hash: string;
+    signatureHash: string;
+    name: string;
+    description: string | null;
+    version: string;
+    tags: string[] | null;
+    metadata: Record<string, string | null> | null;
+    code: string;
+    signature: string;
+    language: string;
+    dependencies: Record<string, Mirascope.FunctionsListResponseFunctionsItemDependenciesValue | null> | null;
+    environmentId: string;
+    projectId: string;
+    organizationId: string;
+    createdAt: string | null;
+    updatedAt: string | null;
 }

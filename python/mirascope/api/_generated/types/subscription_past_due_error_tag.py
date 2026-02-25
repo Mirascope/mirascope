@@ -2,6 +2,4 @@
 
 import typing
 
-SubscriptionPastDueErrorTag = typing.Union[
-    typing.Literal["SubscriptionPastDueError"], typing.Any
-]
+SubscriptionPastDueErrorTag = typing.Union[typing.Literal["SubscriptionPastDueError"], typing.Any]

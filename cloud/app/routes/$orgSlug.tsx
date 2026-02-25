@@ -4,7 +4,6 @@ import { useEffect } from "react";
 
 import { CloudLayout } from "@/app/components/cloud-layout";
 import { Protected } from "@/app/components/protected";
-import { ClawProvider } from "@/app/contexts/claw";
 import { EnvironmentProvider } from "@/app/contexts/environment";
 import { useOrganization } from "@/app/contexts/organization";
 import { ProjectProvider } from "@/app/contexts/project";
@@ -47,11 +46,9 @@ function OrgLayout() {
     <Protected>
       <ProjectProvider>
         <EnvironmentProvider>
-          <ClawProvider>
-            <CloudLayout>
-              <Outlet />
-            </CloudLayout>
-          </ClawProvider>
+          <CloudLayout>
+            <Outlet />
+          </CloudLayout>
         </EnvironmentProvider>
       </ProjectProvider>
     </Protected>

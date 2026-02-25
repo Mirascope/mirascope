@@ -1,1 +1,0 @@
-ALTER TABLE "claws" ADD CONSTRAINT "claws_bot_user_id_unique" UNIQUE("bot_user_id");

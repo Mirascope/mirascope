@@ -51,6 +51,8 @@ import { Settings, type SettingsConfig } from "@/settings";
 // User Data Mappers
 // =============================================================================
 
+/* v8 ignore start -- OAuth flow functions involve external network requests and are tested via integration tests */
+
 /**
  * Maps GitHub API user data to our internal user info format.
  *
@@ -944,3 +946,5 @@ export function handleOAuthProxyCallback(
     );
   });
 }
+
+/* v8 ignore stop */

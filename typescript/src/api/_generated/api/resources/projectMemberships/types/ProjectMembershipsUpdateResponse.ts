@@ -3,9 +3,9 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface ProjectMembershipsUpdateResponse {
-  memberId: string;
-  organizationId: string;
-  projectId: string;
-  role: Mirascope.ProjectMembershipsUpdateResponseRole;
-  createdAt: Mirascope.Date_ | null;
+    memberId: string;
+    organizationId: string;
+    projectId: string;
+    role: Mirascope.ProjectMembershipsUpdateResponseRole;
+    createdAt: Mirascope.Date_ | null;
 }

@@ -35,7 +35,6 @@ export function createMockSettings(
     env: "test",
     databaseUrl: "postgres://test:test@localhost:5432/test",
     siteUrl: "http://localhost:3000",
-    mockDeployment: false,
 
     github: {
       clientId: "test-github-client-id",
@@ -102,21 +101,6 @@ export function createMockSettings(
       posthogHost: "https://app.posthog.com",
       googleAnalyticsMeasurementId: "G-TEST",
     },
-
-    cloudflare: {
-      accountId: "test-cf-account-id",
-      apiToken: "test-cf-api-token",
-      r2BucketItemReadPermissionGroupId: "test-r2-read-perm",
-      r2BucketItemWritePermissionGroupId: "test-r2-write-perm",
-      durableObjectNamespaceId: "test-do-namespace-id",
-      dispatchWorkerBaseUrl: "https://dispatch.test.workers.dev",
-    },
-
-    encryptionKeys: {
-      CLAW_SECRETS_ENCRYPTION_KEY_V1:
-        "S0YrcgEScoOL1ALp/w+xI90P9O8h4s3OzEXtzlhBbHQ=",
-    },
-    activeEncryptionKeyId: "CLAW_SECRETS_ENCRYPTION_KEY_V1",
   };
 
   return {
@@ -142,11 +126,6 @@ export function createMockSettings(
       ...overrides.googleAnalytics,
     },
     frontend: { ...defaults.frontend, ...overrides.frontend },
-    cloudflare: { ...defaults.cloudflare, ...overrides.cloudflare },
-    encryptionKeys: {
-      ...defaults.encryptionKeys,
-      ...overrides.encryptionKeys,
-    },
   };
 }
 

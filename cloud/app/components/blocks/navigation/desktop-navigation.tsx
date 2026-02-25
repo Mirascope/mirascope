@@ -1,7 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import React from "react";
 
-import { isCloudAppRoute } from "@/app/lib/route-utils";
 import { cn } from "@/app/lib/utils";
 
 import { NAV_LINK_STYLES, DESKTOP_NAV_STYLES } from "./styles";
@@ -19,11 +18,11 @@ const NavLink = ({ href, children, className, onClick }: NavLinkProps) => {
   const currentPath = router.location.pathname;
 
   // Check if this link is active
-  // For /org-redirect, match any cloud app route (/{orgSlug}/...)
+  // For /cloud, match /cloud and /cloud/*
   // For others, match exact path or paths that start with the href
   const isActive =
-    href === "/org-redirect"
-      ? isCloudAppRoute(currentPath)
+    href === "/cloud"
+      ? currentPath === "/cloud" || currentPath.startsWith("/cloud/")
       : currentPath === href || currentPath.startsWith(href + "/");
 
   return (
@@ -56,7 +55,7 @@ export default function DesktopNavigation({
       <NavLink href="/docs">Docs</NavLink>
       <NavLink href="/blog">Blog</NavLink>
       <NavLink href="/pricing">Pricing</NavLink>
-      <NavLink href="/org-redirect">Dashboard</NavLink>
+      <NavLink href="/cloud">Cloud</NavLink>
     </div>
   );
 }

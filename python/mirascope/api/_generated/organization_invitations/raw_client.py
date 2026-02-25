@@ -21,21 +21,11 @@ from ..types.not_found_error_body import NotFoundErrorBody
 from ..types.permission_denied_error import PermissionDeniedError
 from ..types.plan_limit_exceeded_error import PlanLimitExceededError
 from ..types.rate_limit_error import RateLimitError
-from .types.organization_invitations_accept_response import (
-    OrganizationInvitationsAcceptResponse,
-)
-from .types.organization_invitations_create_request_role import (
-    OrganizationInvitationsCreateRequestRole,
-)
-from .types.organization_invitations_create_response import (
-    OrganizationInvitationsCreateResponse,
-)
-from .types.organization_invitations_get_response import (
-    OrganizationInvitationsGetResponse,
-)
-from .types.organization_invitations_list_response_item import (
-    OrganizationInvitationsListResponseItem,
-)
+from .types.organization_invitations_accept_response import OrganizationInvitationsAcceptResponse
+from .types.organization_invitations_create_request_role import OrganizationInvitationsCreateRequestRole
+from .types.organization_invitations_create_response import OrganizationInvitationsCreateResponse
+from .types.organization_invitations_get_response import OrganizationInvitationsGetResponse
+from .types.organization_invitations_list_response_item import OrganizationInvitationsListResponseItem
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -46,10 +36,7 @@ class RawOrganizationInvitationsClient:
         self._client_wrapper = client_wrapper
 
     def list(
-        self,
-        organization_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[typing.List[OrganizationInvitationsListResponseItem]]:
         """
         Parameters
@@ -147,16 +134,8 @@ class RawOrganizationInvitationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def create(
         self,
@@ -297,23 +276,11 @@ class RawOrganizationInvitationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def get(
-        self,
-        organization_id: str,
-        invitation_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, invitation_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[OrganizationInvitationsGetResponse]:
         """
         Parameters
@@ -413,23 +380,11 @@ class RawOrganizationInvitationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def resend(
-        self,
-        organization_id: str,
-        invitation_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, invitation_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[None]:
         """
         Parameters
@@ -521,23 +476,11 @@ class RawOrganizationInvitationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def revoke(
-        self,
-        organization_id: str,
-        invitation_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, invitation_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[None]:
         """
         Parameters
@@ -629,16 +572,8 @@ class RawOrganizationInvitationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def accept(
         self, *, token: str, request_options: typing.Optional[RequestOptions] = None
@@ -768,16 +703,8 @@ class RawOrganizationInvitationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
 class AsyncRawOrganizationInvitationsClient:
@@ -785,10 +712,7 @@ class AsyncRawOrganizationInvitationsClient:
         self._client_wrapper = client_wrapper
 
     async def list(
-        self,
-        organization_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[typing.List[OrganizationInvitationsListResponseItem]]:
         """
         Parameters
@@ -886,16 +810,8 @@ class AsyncRawOrganizationInvitationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def create(
         self,
@@ -1036,23 +952,11 @@ class AsyncRawOrganizationInvitationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def get(
-        self,
-        organization_id: str,
-        invitation_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, invitation_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[OrganizationInvitationsGetResponse]:
         """
         Parameters
@@ -1152,23 +1056,11 @@ class AsyncRawOrganizationInvitationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def resend(
-        self,
-        organization_id: str,
-        invitation_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, invitation_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[None]:
         """
         Parameters
@@ -1260,23 +1152,11 @@ class AsyncRawOrganizationInvitationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def revoke(
-        self,
-        organization_id: str,
-        invitation_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, invitation_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[None]:
         """
         Parameters
@@ -1368,16 +1248,8 @@ class AsyncRawOrganizationInvitationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def accept(
         self, *, token: str, request_options: typing.Optional[RequestOptions] = None
@@ -1507,13 +1379,5 @@ class AsyncRawOrganizationInvitationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)

@@ -3,10 +3,10 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface OrganizationsPreviewSubscriptionChangeResponse {
-  isUpgrade: boolean;
-  proratedAmountInDollars: number;
-  nextBillingDate: Mirascope.Date_;
-  recurringAmountInDollars: number;
-  canDowngrade?: boolean;
-  validationErrors?: Mirascope.OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItem[];
+    isUpgrade: boolean;
+    proratedAmountInDollars: number;
+    nextBillingDate: Mirascope.Date_;
+    recurringAmountInDollars: number;
+    canDowngrade?: boolean;
+    validationErrors?: Mirascope.OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItem[];
 }

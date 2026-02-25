@@ -37,7 +37,6 @@ const publicFields = {
   id: users.id,
   email: users.email,
   name: users.name,
-  accountType: users.accountType,
   deletedAt: users.deletedAt,
 };
 

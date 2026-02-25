@@ -3,6 +3,6 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface AnnotationsListResponse {
-  annotations: Mirascope.AnnotationsListResponseAnnotationsItem[];
-  total: number;
+    annotations: Mirascope.AnnotationsListResponseAnnotationsItem[];
+    total: number;
 }

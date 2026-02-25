@@ -3,6 +3,6 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface TagsListResponse {
-  tags: Mirascope.TagsListResponseTagsItem[];
-  total: number;
+    tags: Mirascope.TagsListResponseTagsItem[];
+    total: number;
 }

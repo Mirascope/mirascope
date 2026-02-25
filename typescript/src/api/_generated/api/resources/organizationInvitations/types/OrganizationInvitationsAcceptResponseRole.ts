@@ -4,7 +4,6 @@ export const OrganizationInvitationsAcceptResponseRole = {
   Owner: "OWNER",
   Admin: "ADMIN",
   Member: "MEMBER",
-  Bot: "BOT",
 } as const;
 export type OrganizationInvitationsAcceptResponseRole =
   (typeof OrganizationInvitationsAcceptResponseRole)[keyof typeof OrganizationInvitationsAcceptResponseRole];

@@ -3,18 +3,18 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem {
-  traceId: string;
-  spanId: string;
-  parentSpanId?: string | null;
-  name: string;
-  kind?: number;
-  startTimeUnixNano: Mirascope.TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano;
-  endTimeUnixNano: Mirascope.TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano;
-  attributes?: Mirascope.TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem[];
-  droppedAttributesCount?: number;
-  events?: unknown[];
-  droppedEventsCount?: number;
-  status?: Mirascope.TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStatus;
-  links?: unknown[];
-  droppedLinksCount?: number;
+    traceId: string;
+    spanId: string;
+    parentSpanId?: string | null;
+    name: string;
+    kind?: number;
+    startTimeUnixNano: Mirascope.TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano;
+    endTimeUnixNano: Mirascope.TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano;
+    attributes?: Mirascope.TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem[];
+    droppedAttributesCount?: number;
+    events?: unknown[];
+    droppedEventsCount?: number;
+    status?: Mirascope.TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItemStatus;
+    links?: unknown[];
+    droppedLinksCount?: number;
 }

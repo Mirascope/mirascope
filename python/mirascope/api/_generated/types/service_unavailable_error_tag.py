@@ -2,6 +2,4 @@
 
 import typing
 
-ServiceUnavailableErrorTag = typing.Union[
-    typing.Literal["ServiceUnavailableError"], typing.Any
-]
+ServiceUnavailableErrorTag = typing.Union[typing.Literal["ServiceUnavailableError"], typing.Any]

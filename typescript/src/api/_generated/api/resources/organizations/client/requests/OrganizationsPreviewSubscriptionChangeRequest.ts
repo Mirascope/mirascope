@@ -10,6 +10,6 @@ import type * as Mirascope from "../../../../index.js";
  *     }
  */
 export interface OrganizationsPreviewSubscriptionChangeRequest {
-  id: string;
-  targetPlan: Mirascope.OrganizationsPreviewSubscriptionChangeRequestTargetPlan;
+    id: string;
+    targetPlan: Mirascope.OrganizationsPreviewSubscriptionChangeRequestTargetPlan;
 }

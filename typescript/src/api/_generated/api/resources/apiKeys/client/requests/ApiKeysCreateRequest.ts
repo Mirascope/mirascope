@@ -10,9 +10,9 @@
  *     }
  */
 export interface ApiKeysCreateRequest {
-  organizationId: string;
-  projectId: string;
-  environmentId: string;
-  /** a string at most 100 character(s) long */
-  name: string;
+    organizationId: string;
+    projectId: string;
+    environmentId: string;
+    /** a string at most 100 character(s) long */
+    name: string;
 }

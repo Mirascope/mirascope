@@ -14,17 +14,14 @@ import type * as Mirascope from "../../../../index.js";
  *     }
  */
 export interface FunctionsCreateRequest {
-  code: string;
-  hash: string;
-  signature: string;
-  signatureHash: string;
-  name: string;
-  language: string;
-  description?: string | null;
-  tags?: string[] | null;
-  metadata?: Record<string, string | null> | null;
-  dependencies?: Record<
-    string,
-    Mirascope.FunctionsCreateRequestDependenciesValue | null
-  > | null;
+    code: string;
+    hash: string;
+    signature: string;
+    signatureHash: string;
+    name: string;
+    language: string;
+    description?: string | null;
+    tags?: string[] | null;
+    metadata?: Record<string, string | null> | null;
+    dependencies?: Record<string, Mirascope.FunctionsCreateRequestDependenciesValue | null> | null;
 }

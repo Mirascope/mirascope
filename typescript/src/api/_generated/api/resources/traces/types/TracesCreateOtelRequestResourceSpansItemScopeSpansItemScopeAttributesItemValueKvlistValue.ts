@@ -3,5 +3,5 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValue {
-  values: Mirascope.TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValueValuesItem[];
+    values: Mirascope.TracesCreateOtelRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValueValuesItem[];
 }

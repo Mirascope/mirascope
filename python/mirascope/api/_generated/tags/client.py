@@ -30,11 +30,7 @@ class TagsClient:
         return self._raw_client
 
     def list(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, project_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> TagsListResponse:
         """
         Parameters
@@ -61,9 +57,7 @@ class TagsClient:
             project_id="projectId",
         )
         """
-        _response = self._raw_client.list(
-            organization_id, project_id, request_options=request_options
-        )
+        _response = self._raw_client.list(organization_id, project_id, request_options=request_options)
         return _response.data
 
     def create(
@@ -103,9 +97,7 @@ class TagsClient:
             name="name",
         )
         """
-        _response = self._raw_client.create(
-            organization_id, project_id, name=name, request_options=request_options
-        )
+        _response = self._raw_client.create(organization_id, project_id, name=name, request_options=request_options)
         return _response.data
 
     def get(
@@ -144,9 +136,7 @@ class TagsClient:
             tag_id="tagId",
         )
         """
-        _response = self._raw_client.get(
-            organization_id, project_id, tag_id, request_options=request_options
-        )
+        _response = self._raw_client.get(organization_id, project_id, tag_id, request_options=request_options)
         return _response.data
 
     def update(
@@ -190,11 +180,7 @@ class TagsClient:
         )
         """
         _response = self._raw_client.update(
-            organization_id,
-            project_id,
-            tag_id,
-            name=name,
-            request_options=request_options,
+            organization_id, project_id, tag_id, name=name, request_options=request_options
         )
         return _response.data
 
@@ -233,9 +219,7 @@ class TagsClient:
             tag_id="tagId",
         )
         """
-        _response = self._raw_client.delete(
-            organization_id, project_id, tag_id, request_options=request_options
-        )
+        _response = self._raw_client.delete(organization_id, project_id, tag_id, request_options=request_options)
         return _response.data
 
 
@@ -255,11 +239,7 @@ class AsyncTagsClient:
         return self._raw_client
 
     async def list(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, project_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> TagsListResponse:
         """
         Parameters
@@ -294,9 +274,7 @@ class AsyncTagsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.list(
-            organization_id, project_id, request_options=request_options
-        )
+        _response = await self._raw_client.list(organization_id, project_id, request_options=request_options)
         return _response.data
 
     async def create(
@@ -393,9 +371,7 @@ class AsyncTagsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get(
-            organization_id, project_id, tag_id, request_options=request_options
-        )
+        _response = await self._raw_client.get(organization_id, project_id, tag_id, request_options=request_options)
         return _response.data
 
     async def update(
@@ -447,11 +423,7 @@ class AsyncTagsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.update(
-            organization_id,
-            project_id,
-            tag_id,
-            name=name,
-            request_options=request_options,
+            organization_id, project_id, tag_id, name=name, request_options=request_options
         )
         return _response.data
 
@@ -498,7 +470,5 @@ class AsyncTagsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.delete(
-            organization_id, project_id, tag_id, request_options=request_options
-        )
+        _response = await self._raw_client.delete(organization_id, project_id, tag_id, request_options=request_options)
         return _response.data

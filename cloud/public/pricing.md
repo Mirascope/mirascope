@@ -1,6 +1,6 @@
 ---
 title: "Pricing"
-description: "Pricing plans for Mirascope Cloud AI bots and observability"
+description: "Mirascope Cloud pricing plans and features"
 url: "https://mirascope.com/pricing"
 ---
 
@@ -11,10 +11,8 @@ Get started with the Free plan today. No credit card required.
 ## Plans Overview
 
 ### Free - $0/month
-For individuals getting started with AI bots.
+For individuals just getting started.
 
-- **Claws:** 1
-- **Instance Size:** Small
 - **Seats:** 1
 - **Projects:** 1
 - **Tracing:** 1M spans/month (hard limit, no overages)
@@ -23,10 +21,8 @@ For individuals getting started with AI bots.
 - **Support:** Community only
 
 ### Pro - $49/month
-For professionals who need more power.
+For professionals with growing projects.
 
-- **Claws:** 1
-- **Instance Size:** Medium
 - **Seats:** 5
 - **Projects:** 5
 - **Tracing:** 1M spans/month included, then $5 per additional million
@@ -35,10 +31,8 @@ For professionals who need more power.
 - **Support:** Community + Chat/Email
 
 ### Team - $199/month
-For teams running multiple AI bots.
+For organizations requiring dedicated support.
 
-- **Claws:** 3
-- **Instance Size:** Large
 - **Seats:** Unlimited
 - **Projects:** Unlimited
 - **Tracing:** 1M spans/month included, then $5 per additional million
@@ -50,8 +44,6 @@ For teams running multiple AI bots.
 
 | Feature | Free | Pro | Team |
 |---------|------|-----|------|
-| Claws | 1 | 1 | 3 |
-| Instance Size | Small | Medium | Large |
 | Seats | 1 | 5 | Unlimited |
 | Projects | 1 | 5 | Unlimited |
 | Tracing | 1M spans/month (no overages) | 1M spans/month + $5/additional M | 1M spans/month + $5/additional M |

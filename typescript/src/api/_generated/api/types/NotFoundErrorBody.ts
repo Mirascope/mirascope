@@ -3,7 +3,7 @@
 import type * as Mirascope from "../index.js";
 
 export interface NotFoundErrorBody {
-  message: string;
-  resource?: string;
-  tag: Mirascope.NotFoundErrorTag;
+    message: string;
+    resource?: string;
+    tag: Mirascope.NotFoundErrorTag;
 }

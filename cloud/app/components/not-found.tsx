@@ -1,11 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
-import { useHomeLink } from "@/app/hooks/use-home-link";
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function NotFound({ children }: { children?: any }) {
-  const homeLink = useHomeLink();
-
   return (
     <div className="space-y-2 p-2">
       <div className="text-gray-600 dark:text-gray-400">
@@ -19,7 +15,7 @@ export function NotFound({ children }: { children?: any }) {
           Go back
         </button>
         <Link
-          to={homeLink}
+          to="/"
           className="bg-cyan-600 text-white px-2 py-1 rounded-sm uppercase font-black text-sm"
         >
           Start Over

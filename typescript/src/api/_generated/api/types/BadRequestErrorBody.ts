@@ -3,16 +3,15 @@
 import type * as Mirascope from "../index.js";
 
 export type BadRequestErrorBody =
-  | Mirascope.BadRequestErrorBody.HttpApiDecodeError
-  | Mirascope.BadRequestErrorBody.ImmutableResourceError;
+    | Mirascope.BadRequestErrorBody.HttpApiDecodeError
+    | Mirascope.BadRequestErrorBody.ImmutableResourceError;
 
 export namespace BadRequestErrorBody {
-  export interface HttpApiDecodeError extends Mirascope.HttpApiDecodeError {
-    tag: "HttpApiDecodeError";
-  }
+    export interface HttpApiDecodeError extends Mirascope.HttpApiDecodeError {
+        tag: "HttpApiDecodeError";
+    }
 
-  export interface ImmutableResourceError
-    extends Mirascope.ImmutableResourceError {
-    tag: "ImmutableResourceError";
-  }
+    export interface ImmutableResourceError extends Mirascope.ImmutableResourceError {
+        tag: "ImmutableResourceError";
+    }
 }

@@ -37,7 +37,7 @@ export const ANIMATION_TIMING = {
 export const HEADER_STYLES = {
   // Container styles for the header with conditional appearance based on landing page and scroll
   container: (
-    isWatercolorPage: boolean,
+    isLandingPage: boolean,
     scrolled: boolean,
     isCloudRoute: boolean = false,
   ) =>
@@ -49,14 +49,12 @@ export const HEADER_STYLES = {
       // Margin below header (not for cloud routes)
       !isCloudRoute && "mb-2",
       // Text styling for landing page
-      "font-display",
+      "font-handwriting",
       // Background color (only on non-landing pages)
-      isWatercolorPage ? "" : "bg-background",
-      // Bottom border and shadow when scrolled
-      !isCloudRoute && scrolled
-        ? isWatercolorPage
-          ? "border-white/20 border-b shadow-md backdrop-blur-xs"
-          : "border-border border-b shadow-sm"
+      isLandingPage ? "" : "bg-background",
+      // Bottom border and shadow when scrolled (only on non-landing pages, not for cloud routes)
+      !isCloudRoute && scrolled && !isLandingPage
+        ? "border-border border-b shadow-sm"
         : "",
     ),
 
@@ -111,7 +109,10 @@ export const NAV_LINK_STYLES = {
   ),
 
   // Active state for desktop navigation links
-  active: "font-semibold nav-link-active",
+  active: cn(
+    // Highlight the active link - use !important to override nav-text utility
+    "!text-primary font-semibold",
+  ),
 
   // Styles for mobile navigation links
   mobile: cn(
@@ -197,7 +198,7 @@ export const THEME_SWITCHER_STYLES = {
   // Button trigger styles
   trigger: cn(
     // Base styles
-    "rounded-md p-2 hover:cursor-pointer",
+    "rounded-md p-2 cursor-pointer",
     // Transitions
     "transition-colors duration-300 ease-in-out",
     // Focus state
@@ -209,13 +210,13 @@ export const THEME_SWITCHER_STYLES = {
   ),
 
   // Dropdown content - z-index higher than header (z-[100])
-  content: (isWatercolorPage: boolean) =>
+  content: (isLandingPage: boolean) =>
     cn(
       // Base styling comes from the UI component
       // z-index to appear above header, mt-2 for spacing from trigger
       "z-[110] mt-2",
       // Apply textured background on landing page
-      isWatercolorPage && "textured-bg-absolute",
+      isLandingPage && "textured-bg-absolute",
     ),
 
   // Radio items (inherited from dropdown menu component)
@@ -272,12 +273,12 @@ export const DESKTOP_NAV_STYLES = {
   ),
 
   // Mobile nav content styles
-  mobileNavContent: (isWatercolorPage: boolean) =>
+  mobileNavContent: (isLandingPage: boolean) =>
     cn(
       // Base styles
       "bg-background p-2 [text-shadow:none]",
       // Conditional textured background
-      isWatercolorPage ? "textured-bg-absolute" : "",
+      isLandingPage ? "textured-bg-absolute" : "",
     ),
 
   // Product grid styles
@@ -305,11 +306,11 @@ export const SEARCH_BAR_STYLES = {
     ),
 
   // Mobile search button
-  mobileSearchButton: (isWatercolorPage: boolean) =>
+  mobileSearchButton: (isLandingPage: boolean) =>
     cn(
       "relative flex items-center justify-center w-9 h-9 rounded-full",
       "transition-colors duration-300",
-      isWatercolorPage
+      isLandingPage
         ? "border-0 bg-white/10 hover:bg-white/20"
         : "bg-background/20 hover:bg-primary/10 hover:border-primary/80 border",
     ),
@@ -333,30 +334,30 @@ export const SEARCH_BAR_STYLES = {
   mobileSearchContainer: cn("w-full px-3 py-2 flex items-center"),
 
   // Close button for mobile overlay
-  closeButton: (isWatercolorPage: boolean) =>
+  closeButton: (isLandingPage: boolean) =>
     cn(
       "absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full",
       "transition-colors duration-300",
       "cursor-pointer",
-      isWatercolorPage ? "text-white" : "text-foreground",
+      isLandingPage ? "text-white" : "text-foreground",
     ),
 
   // Input container styles - matches parent width
-  inputContainer: (isWatercolorPage: boolean, isMobile: boolean) =>
+  inputContainer: (isLandingPage: boolean, isMobile: boolean) =>
     cn(
       "search-input-container",
       // Base styles
-      "h-9 rounded-full relative flex items-center overflow-visible w-full hover:cursor-pointer",
+      "h-9 rounded-full relative flex items-center overflow-visible w-full",
       // Conditional styles based on page type
-      isWatercolorPage
+      isLandingPage
         ? "border-0 bg-white/10 hover:bg-white/20"
         : "border-border bg-background/20 hover:bg-primary/10 hover:border-primary/80 border",
-      isMobile && !isWatercolorPage ? "bg-background hover:bg-background" : "",
+      isMobile && !isLandingPage ? "bg-background hover:bg-background" : "",
     ),
 
   // Inline styles for input container based on landing page
-  getInputContainerStyles: (isWatercolorPage: boolean) =>
-    isWatercolorPage
+  getInputContainerStyles: (isLandingPage: boolean) =>
+    isLandingPage
       ? {
           boxShadow:
             "0 1px 5px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1)",
@@ -375,11 +376,7 @@ export const SEARCH_BAR_STYLES = {
     ),
 
   // Input field styles
-  input: (
-    isOpen: boolean,
-    isWatercolorPage: boolean,
-    isMobile: boolean = false,
-  ) =>
+  input: (isOpen: boolean, isLandingPage: boolean, isMobile: boolean = false) =>
     cn(
       // Base styles
       "cursor-pointer overflow-visible bg-transparent py-0 outline-none",
@@ -388,7 +385,7 @@ export const SEARCH_BAR_STYLES = {
       // Transitions from central config - match container timing
       `transition-all duration-[${ANIMATION_TIMING.searchExpand.duration}ms] ease-in-out delay-[${ANIMATION_TIMING.searchExpand.delay}ms]`,
       // Text color based on page type
-      isWatercolorPage
+      isLandingPage
         ? "text-white placeholder:text-white/90"
         : "text-foreground placeholder:text-foreground",
       // Visibility and spacing based on open state - add extra right padding in mobile mode for close button
@@ -400,7 +397,7 @@ export const SEARCH_BAR_STYLES = {
     ),
 
   // Keyboard shortcut badge
-  kbd: (isWatercolorPage: boolean, isOpen: boolean = false) =>
+  kbd: (isLandingPage: boolean, isOpen: boolean = false) =>
     cn(
       "font-small absolute top-1/2 right-3 h-5 -translate-y-1/2 items-center gap-1 rounded border px-1.5 font-mono text-[10px]",
       // Make it always hidden on mobile
@@ -412,14 +409,14 @@ export const SEARCH_BAR_STYLES = {
         ? "opacity-80 translate-x-0 scale-100"
         : "opacity-0 translate-x-4 scale-90 pointer-events-none",
       // Background color based on page type
-      isWatercolorPage
+      isLandingPage
         ? "bg-white/10 text-white"
         : "border-border bg-muted text-foreground",
     ),
 
   // Results container - matches parent container width
   resultsContainer: (
-    isWatercolorPage: boolean,
+    isLandingPage: boolean,
     isMobile: boolean = false,
     isVisible: boolean = false,
   ) =>
@@ -440,13 +437,13 @@ export const SEARCH_BAR_STYLES = {
         ? "absolute top-full mt-4 left-0 right-0 z-[90] max-h-[calc(100vh-var(--header-height-base)*1.2)]" // Mobile: now part of the overlay
         : "absolute top-full z-50 mt-2 right-0 lg:right-auto lg:left-0", // Desktop: dropdown below
       // Conditional textured background
-      isWatercolorPage ? "textured-bg-absolute" : "",
+      isLandingPage ? "textured-bg-absolute" : "",
     ),
 
   // Inline styles for results container based on page type
   // No longer controlling opacity here since it's handled by classes
-  getResultsContainerStyles: (isWatercolorPage: boolean) => {
-    if (isWatercolorPage) {
+  getResultsContainerStyles: (isLandingPage: boolean) => {
+    if (isLandingPage) {
       return {
         boxShadow:
           "0 1px 5px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1)",
@@ -469,7 +466,7 @@ export const SEARCH_BAR_STYLES = {
 
   // Search footer styles
   footer:
-    "border-border bg-muted/40 text-muted-foreground flex items-center justify-between border-t p-2 text-xs font-display",
+    "border-border bg-muted/40 text-muted-foreground flex items-center justify-between border-t p-2 text-xs font-handwriting",
 
   // Loading indicator
   loadingIndicator:

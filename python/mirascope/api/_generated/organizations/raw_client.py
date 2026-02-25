@@ -22,8 +22,14 @@ from ..types.not_found_error_body import NotFoundErrorBody
 from ..types.permission_denied_error import PermissionDeniedError
 from ..types.plan_limit_exceeded_error import PlanLimitExceededError
 from ..types.rate_limit_error import RateLimitError
+from .types.organizations_create_org_setup_intent_response import (
+    OrganizationsCreateOrgSetupIntentResponse,
+)
 from .types.organizations_create_payment_intent_response import (
     OrganizationsCreatePaymentIntentResponse,
+)
+from .types.organizations_create_request_plan_tier import (
+    OrganizationsCreateRequestPlanTier,
 )
 from .types.organizations_create_response import OrganizationsCreateResponse
 from .types.organizations_create_setup_intent_response import (
@@ -157,6 +163,8 @@ class RawOrganizationsClient:
         *,
         name: str,
         slug: str,
+        plan_tier: typing.Optional[OrganizationsCreateRequestPlanTier] = OMIT,
+        payment_method_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[OrganizationsCreateResponse]:
         """
@@ -167,6 +175,10 @@ class RawOrganizationsClient:
 
         slug : str
             a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
+
+        plan_tier : typing.Optional[OrganizationsCreateRequestPlanTier]
+
+        payment_method_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -182,6 +194,8 @@ class RawOrganizationsClient:
             json={
                 "name": name,
                 "slug": slug,
+                "planTier": plan_tier,
+                "paymentMethodId": payment_method_id,
             },
             headers={
                 "content-type": "application/json",
@@ -210,6 +224,17 @@ class RawOrganizationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 402:
+                raise PaymentRequiredError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PlanLimitExceededError,
+                        parse_obj_as(
+                            type_=PlanLimitExceededError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
                     headers=dict(_response.headers),
@@ -223,6 +248,92 @@ class RawOrganizationsClient:
                 )
             if _response.status_code == 409:
                 raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    def createorgsetupintent(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[OrganizationsCreateOrgSetupIntentResponse]:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[OrganizationsCreateOrgSetupIntentResponse]
+            Success
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "organizations/setup-intent",
+            method="POST",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    OrganizationsCreateOrgSetupIntentResponse,
+                    parse_obj_as(
+                        type_=OrganizationsCreateOrgSetupIntentResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],
@@ -1998,6 +2109,8 @@ class AsyncRawOrganizationsClient:
         *,
         name: str,
         slug: str,
+        plan_tier: typing.Optional[OrganizationsCreateRequestPlanTier] = OMIT,
+        payment_method_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[OrganizationsCreateResponse]:
         """
@@ -2008,6 +2121,10 @@ class AsyncRawOrganizationsClient:
 
         slug : str
             a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
+
+        plan_tier : typing.Optional[OrganizationsCreateRequestPlanTier]
+
+        payment_method_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2023,6 +2140,8 @@ class AsyncRawOrganizationsClient:
             json={
                 "name": name,
                 "slug": slug,
+                "planTier": plan_tier,
+                "paymentMethodId": payment_method_id,
             },
             headers={
                 "content-type": "application/json",
@@ -2051,6 +2170,17 @@ class AsyncRawOrganizationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 402:
+                raise PaymentRequiredError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PlanLimitExceededError,
+                        parse_obj_as(
+                            type_=PlanLimitExceededError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
                     headers=dict(_response.headers),
@@ -2064,6 +2194,92 @@ class AsyncRawOrganizationsClient:
                 )
             if _response.status_code == 409:
                 raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    async def createorgsetupintent(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[OrganizationsCreateOrgSetupIntentResponse]:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[OrganizationsCreateOrgSetupIntentResponse]
+            Success
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "organizations/setup-intent",
+            method="POST",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    OrganizationsCreateOrgSetupIntentResponse,
+                    parse_obj_as(
+                        type_=OrganizationsCreateOrgSetupIntentResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         typing.Optional[typing.Any],

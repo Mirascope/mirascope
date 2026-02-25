@@ -172,36 +172,11 @@ export function updateAndSettleRouterRequest(
       },
     );
 
-    if (data.request.clawId) {
-      // Claw request: record usage (checks per-claw guardrail),
-      // then check if within included credits pool
-      yield* db.organizations.claws.recordUsage({
-        clawId: data.request.clawId,
-        organizationId: data.request.organizationId,
-        amountCenticents: costs.totalCost,
-      });
-
-      const pool = yield* db.organizations.claws.getInternalPoolUsage({
-        organizationId: data.request.organizationId,
-      });
-
-      if (pool.totalUsageCenticents <= BigInt(pool.limitCenticents)) {
-        // Within included credits — release reservation without charging meter
-        yield* payments.products.router.releaseFunds(data.reservationId);
-      } else {
-        // Over included credits — charge the Stripe meter
-        yield* payments.products.router.settleFunds(
-          data.reservationId,
-          costs.totalCost,
-        );
-      }
-    } else {
-      // Non-claw request — settle normally
-      yield* payments.products.router.settleFunds(
-        data.reservationId,
-        costs.totalCost,
-      );
-    }
+    // Non-claw request — settle normally
+    yield* payments.products.router.settleFunds(
+      data.reservationId,
+      costs.totalCost,
+    );
   });
 }
 

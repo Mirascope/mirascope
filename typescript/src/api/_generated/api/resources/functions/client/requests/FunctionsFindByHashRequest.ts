@@ -7,5 +7,5 @@
  *     }
  */
 export interface FunctionsFindByHashRequest {
-  hash: string;
+    hash: string;
 }

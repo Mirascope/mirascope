@@ -9,17 +9,11 @@ from .traces_create_otel_request_resource_spans_item_resource_attributes_item_va
 )
 
 
-class TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueKvlistValue(
-    UniversalBaseModel
-):
-    values: typing.List[
-        TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueKvlistValueValuesItem
-    ]
+class TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueKvlistValue(UniversalBaseModel):
+    values: typing.List[TracesCreateOtelRequestResourceSpansItemResourceAttributesItemValueKvlistValueValuesItem]
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

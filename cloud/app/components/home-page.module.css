@@ -1,0 +1,90 @@
+/* Watercolor background - iOS Safari compatible fixed version */
+.watercolorBg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* Fallback */
+  height: 100dvh;
+  /* Dynamic viewport height for iOS */
+  min-height: 100vh;
+  /* Ensures it's at least as tall as viewport */
+  background-image: url("/assets/backgrounds/light.webp");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+  z-index: -1;
+  pointer-events: none;
+  transition: background-image 0.2s ease-in-out;
+  -webkit-transition: background-image 0.2s ease-in-out;
+  /* Add extra space to ensure coverage when scrolling */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Responsive backgrounds for smaller screens */
+@media (max-width: 1200px) {
+  .watercolorBg {
+    background-image: url("/assets/backgrounds/light-medium.webp");
+    height: 100dvh;
+    /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
+@media (max-width: 800px) {
+  .watercolorBg {
+    background-image: url("/assets/backgrounds/light-small.webp");
+    height: 100dvh;
+    /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
+/* Global selectors for theme classes */
+:global(.dark) .watercolorBg {
+  background-image: url("/assets/backgrounds/dark.webp");
+  transition: background-image 0.3s ease;
+  -webkit-transition: background-image 0.3s ease;
+}
+
+/* Responsive dark backgrounds for smaller screens */
+@media (max-width: 1200px) {
+  :global(.dark) .watercolorBg {
+    background-image: url("/assets/backgrounds/dark-medium.webp");
+    height: 100dvh;
+    /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
+@media (max-width: 800px) {
+  :global(.dark) .watercolorBg {
+    background-image: url("/assets/backgrounds/dark-small.webp");
+    height: 100dvh;
+    /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
+/* Apply sunset background during sunset time */
+:global(.sunset-time) .watercolorBg {
+  background-image: url("/assets/backgrounds/sunset.webp");
+  transition: background-image 0.3s ease;
+  -webkit-transition: background-image 0.3s ease;
+}
+
+/* Responsive sunset backgrounds for smaller screens */
+@media (max-width: 1200px) {
+  :global(.sunset-time) .watercolorBg {
+    background-image: url("/assets/backgrounds/sunset-medium.webp");
+    height: 100dvh;
+    /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
+@media (max-width: 800px) {
+  :global(.sunset-time) .watercolorBg {
+    background-image: url("/assets/backgrounds/sunset-small.webp");
+    height: 100dvh;
+    /* Ensure dynamic viewport height at this breakpoint */
+  }
+}

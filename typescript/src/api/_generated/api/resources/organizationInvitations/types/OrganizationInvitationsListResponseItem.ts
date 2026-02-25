@@ -3,15 +3,15 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface OrganizationInvitationsListResponseItem {
-  id: string;
-  organizationId: string;
-  senderId: string;
-  recipientEmail: string;
-  role: Mirascope.OrganizationInvitationsListResponseItemRole;
-  status: Mirascope.OrganizationInvitationsListResponseItemStatus;
-  expiresAt: Mirascope.Date_;
-  createdAt: Mirascope.Date_;
-  updatedAt: Mirascope.Date_;
-  acceptedAt: Mirascope.Date_ | null;
-  revokedAt: Mirascope.Date_ | null;
+    id: string;
+    organizationId: string;
+    senderId: string;
+    recipientEmail: string;
+    role: Mirascope.OrganizationInvitationsListResponseItemRole;
+    status: Mirascope.OrganizationInvitationsListResponseItemStatus;
+    expiresAt: Mirascope.Date_;
+    createdAt: Mirascope.Date_;
+    updatedAt: Mirascope.Date_;
+    acceptedAt: Mirascope.Date_ | null;
+    revokedAt: Mirascope.Date_ | null;
 }

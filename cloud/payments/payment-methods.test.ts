@@ -87,6 +87,133 @@ describe("payment methods", () => {
     );
   });
 
+  describe("createSetupIntentWithoutCustomer", () => {
+    it.effect(
+      "creates setup intent without customer and returns client secret",
+      () =>
+        Effect.gen(function* () {
+          const payments = yield* Payments;
+
+          const result =
+            yield* payments.paymentMethods.createSetupIntentWithoutCustomer();
+
+          expect(result.clientSecret).toBe("seti_nocust_secret");
+        }).pipe(
+          Effect.provide(
+            Payments.Default.pipe(
+              Layer.provide(
+                Layer.succeed(Stripe, {
+                  setupIntents: {
+                    create: (params: {
+                      usage: string;
+                      payment_method_types: string[];
+                    }) => {
+                      expect(params.usage).toBe("off_session");
+                      expect(params.payment_method_types).toEqual([
+                        "card",
+                        "link",
+                      ]);
+                      return Effect.succeed({
+                        id: "seti_nocust",
+                        client_secret: "seti_nocust_secret",
+                      });
+                    },
+                  },
+                  config: mockConfig,
+                } as unknown as Context.Tag.Service<typeof Stripe>),
+              ),
+            ),
+          ),
+        ),
+    );
+
+    it.effect(
+      "returns StripeError when setup intent has no client secret",
+      () =>
+        Effect.gen(function* () {
+          const payments = yield* Payments;
+
+          const result = yield* payments.paymentMethods
+            .createSetupIntentWithoutCustomer()
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(StripeError);
+          expect(result.message).toBe(
+            "SetupIntent created but no client secret returned",
+          );
+        }).pipe(
+          Effect.provide(
+            Payments.Default.pipe(
+              Layer.provide(
+                Layer.succeed(Stripe, {
+                  setupIntents: {
+                    create: () =>
+                      Effect.succeed({
+                        id: "seti_nocust",
+                        client_secret: null,
+                      }),
+                  },
+                  config: mockConfig,
+                } as unknown as Context.Tag.Service<typeof Stripe>),
+              ),
+            ),
+          ),
+        ),
+    );
+  });
+
+  describe("attachAndSetDefault", () => {
+    it.effect("attaches payment method and sets as default", () => {
+      let attached = false;
+      let customerUpdated = false;
+
+      return Effect.gen(function* () {
+        const payments = yield* Payments;
+
+        yield* payments.paymentMethods.attachAndSetDefault(
+          "cus_test123",
+          "pm_verified",
+        );
+
+        expect(attached).toBe(true);
+        expect(customerUpdated).toBe(true);
+      }).pipe(
+        Effect.provide(
+          Payments.Default.pipe(
+            Layer.provide(
+              Layer.succeed(Stripe, {
+                paymentMethods: {
+                  attach: (id: string, params: { customer: string }) => {
+                    expect(id).toBe("pm_verified");
+                    expect(params.customer).toBe("cus_test123");
+                    attached = true;
+                    return Effect.succeed({ id });
+                  },
+                },
+                customers: {
+                  update: (
+                    id: string,
+                    params: {
+                      invoice_settings: { default_payment_method: string };
+                    },
+                  ) => {
+                    expect(id).toBe("cus_test123");
+                    expect(params.invoice_settings.default_payment_method).toBe(
+                      "pm_verified",
+                    );
+                    customerUpdated = true;
+                    return Effect.succeed({ id });
+                  },
+                },
+                config: mockConfig,
+              } as unknown as Context.Tag.Service<typeof Stripe>),
+            ),
+          ),
+        ),
+      );
+    });
+  });
+
   describe("getDefault", () => {
     it.effect(
       "returns payment method from customer invoice_settings default",

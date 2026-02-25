@@ -25,12 +25,11 @@ export const STATIC_ROUTE_REGISTRY: Partial<
 > = {
   "/": {
     title: "Home",
-    description:
-      "Deploy your own AI agents — Claws that listen, learn, create, and grow. Instant deployment, full observability, no code required.",
+    description: "The complete toolkit for AI engineers",
   },
   "/pricing": {
     title: "Pricing",
-    description: "Pricing plans for Mirascope Cloud AI bots and observability",
+    description: "Mirascope cloud's pricing plans and features",
   },
   "/blog/": {
     title: "Blog",

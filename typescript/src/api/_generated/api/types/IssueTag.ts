@@ -2,13 +2,13 @@
 
 /** The tag identifying the type of parse issue */
 export const IssueTag = {
-  Pointer: "Pointer",
-  Unexpected: "Unexpected",
-  Missing: "Missing",
-  Composite: "Composite",
-  Refinement: "Refinement",
-  Transformation: "Transformation",
-  Type: "Type",
-  Forbidden: "Forbidden",
+    Pointer: "Pointer",
+    Unexpected: "Unexpected",
+    Missing: "Missing",
+    Composite: "Composite",
+    Refinement: "Refinement",
+    Transformation: "Transformation",
+    Type: "Type",
+    Forbidden: "Forbidden",
 } as const;
 export type IssueTag = (typeof IssueTag)[keyof typeof IssueTag];

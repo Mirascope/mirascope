@@ -15,18 +15,12 @@ from .traces_create_otel_request_resource_spans_item_scope_spans_item_spans_item
 
 
 class TracesCreateOtelRequestResourceSpansItemScopeSpansItem(UniversalBaseModel):
-    scope: typing.Optional[
-        TracesCreateOtelRequestResourceSpansItemScopeSpansItemScope
-    ] = None
+    scope: typing.Optional[TracesCreateOtelRequestResourceSpansItemScopeSpansItemScope] = None
     spans: typing.List[TracesCreateOtelRequestResourceSpansItemScopeSpansItemSpansItem]
-    schema_url: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="schemaUrl")
-    ] = None
+    schema_url: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="schemaUrl")] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

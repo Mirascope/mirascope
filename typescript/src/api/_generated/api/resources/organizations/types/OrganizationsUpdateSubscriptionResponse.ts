@@ -3,8 +3,8 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface OrganizationsUpdateSubscriptionResponse {
-  requiresPayment: boolean;
-  clientSecret?: string;
-  scheduledFor?: Mirascope.Date_;
-  scheduleId?: string;
+    requiresPayment: boolean;
+    clientSecret?: string;
+    scheduledFor?: Mirascope.Date_;
+    scheduleId?: string;
 }

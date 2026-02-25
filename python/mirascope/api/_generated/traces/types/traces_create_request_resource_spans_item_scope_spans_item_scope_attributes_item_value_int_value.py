@@ -2,6 +2,4 @@
 
 import typing
 
-TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueIntValue = (
-    typing.Union[str, float]
-)
+TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueIntValue = typing.Union[str, float]

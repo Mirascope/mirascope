@@ -3,10 +3,10 @@
 import type * as Mirascope from "../index.js";
 
 export interface RateLimitError {
-  message: string;
-  organizationId: string;
-  limit: number;
-  retryAfter: number;
-  planTier: string;
-  tag: Mirascope.RateLimitErrorTag;
+    message: string;
+    organizationId: string;
+    limit: number;
+    retryAfter: number;
+    planTier: string;
+    tag: Mirascope.RateLimitErrorTag;
 }

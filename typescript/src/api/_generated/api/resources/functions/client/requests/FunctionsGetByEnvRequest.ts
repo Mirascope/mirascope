@@ -10,8 +10,8 @@
  *     }
  */
 export interface FunctionsGetByEnvRequest {
-  organizationId: string;
-  projectId: string;
-  environmentId: string;
-  functionId: string;
+    organizationId: string;
+    projectId: string;
+    environmentId: string;
+    functionId: string;
 }

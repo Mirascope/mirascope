@@ -3,9 +3,9 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface OrganizationsCreateResponse {
-  id: string;
-  name: string;
-  slug: string;
-  stripeCustomerId: string;
-  role: Mirascope.OrganizationsCreateResponseRole;
+    id: string;
+    name: string;
+    slug: string;
+    stripeCustomerId: string;
+    role: Mirascope.OrganizationsCreateResponseRole;
 }

@@ -19,27 +19,15 @@ class AnnotationsGetResponse(UniversalBaseModel):
     reasoning: typing.Optional[str] = None
     metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = None
     tags: typing.List[str]
-    environment_id: typing_extensions.Annotated[
-        str, FieldMetadata(alias="environmentId")
-    ]
+    environment_id: typing_extensions.Annotated[str, FieldMetadata(alias="environmentId")]
     project_id: typing_extensions.Annotated[str, FieldMetadata(alias="projectId")]
-    organization_id: typing_extensions.Annotated[
-        str, FieldMetadata(alias="organizationId")
-    ]
-    created_by: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="createdBy")
-    ] = None
-    created_at: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="createdAt")
-    ] = None
-    updated_at: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="updatedAt")
-    ] = None
+    organization_id: typing_extensions.Annotated[str, FieldMetadata(alias="organizationId")]
+    created_by: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="createdBy")] = None
+    created_at: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="createdAt")] = None
+    updated_at: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="updatedAt")] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

@@ -65,7 +65,6 @@ const CAN_OPERATE_ON: Record<OrganizationRole, OrganizationRole[]> = {
   OWNER: ["ADMIN", "MEMBER"],
   ADMIN: ["MEMBER"],
   MEMBER: [],
-  BOT: [],
 };
 
 // Display labels for roles
@@ -73,7 +72,6 @@ const ROLE_LABELS: Record<OrganizationRole, string> = {
   OWNER: "Owner",
   ADMIN: "Admin",
   MEMBER: "Member",
-  BOT: "Bot",
 };
 
 type ConfirmDialogState = {

@@ -127,9 +127,7 @@ function DowngradeBlockedContent({
             const action =
               error.resource === "seats"
                 ? `remove ${excess} member${excess > 1 ? "s" : ""}`
-                : error.resource === "claws"
-                  ? `delete ${excess} claw${excess > 1 ? "s" : ""}`
-                  : `delete ${excess} project${excess > 1 ? "s" : ""}`;
+                : `delete ${excess} project${excess > 1 ? "s" : ""}`;
             return (
               <span key={error.resource}>
                 {i > 0 && " and "}

@@ -11,9 +11,9 @@
  *     }
  */
 export interface EnvironmentsGetAnalyticsRequest {
-  organizationId: string;
-  projectId: string;
-  environmentId: string;
-  startTime: string;
-  endTime: string;
+    organizationId: string;
+    projectId: string;
+    environmentId: string;
+    startTime: string;
+    endTime: string;
 }

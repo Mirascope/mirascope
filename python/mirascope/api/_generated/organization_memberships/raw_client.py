@@ -18,15 +18,9 @@ from ..errors.too_many_requests_error import TooManyRequestsError
 from ..types.not_found_error_body import NotFoundErrorBody
 from ..types.permission_denied_error import PermissionDeniedError
 from ..types.rate_limit_error import RateLimitError
-from .types.organization_memberships_list_response_item import (
-    OrganizationMembershipsListResponseItem,
-)
-from .types.organization_memberships_update_request_role import (
-    OrganizationMembershipsUpdateRequestRole,
-)
-from .types.organization_memberships_update_response import (
-    OrganizationMembershipsUpdateResponse,
-)
+from .types.organization_memberships_list_response_item import OrganizationMembershipsListResponseItem
+from .types.organization_memberships_update_request_role import OrganizationMembershipsUpdateRequestRole
+from .types.organization_memberships_update_response import OrganizationMembershipsUpdateResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -37,10 +31,7 @@ class RawOrganizationMembershipsClient:
         self._client_wrapper = client_wrapper
 
     def list(
-        self,
-        organization_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[typing.List[OrganizationMembershipsListResponseItem]]:
         """
         Parameters
@@ -138,23 +129,11 @@ class RawOrganizationMembershipsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def delete(
-        self,
-        organization_id: str,
-        member_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, member_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[None]:
         """
         Parameters
@@ -246,16 +225,8 @@ class RawOrganizationMembershipsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def update(
         self,
@@ -372,16 +343,8 @@ class RawOrganizationMembershipsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
 class AsyncRawOrganizationMembershipsClient:
@@ -389,10 +352,7 @@ class AsyncRawOrganizationMembershipsClient:
         self._client_wrapper = client_wrapper
 
     async def list(
-        self,
-        organization_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[typing.List[OrganizationMembershipsListResponseItem]]:
         """
         Parameters
@@ -490,23 +450,11 @@ class AsyncRawOrganizationMembershipsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def delete(
-        self,
-        organization_id: str,
-        member_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, member_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[None]:
         """
         Parameters
@@ -598,16 +546,8 @@ class AsyncRawOrganizationMembershipsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def update(
         self,
@@ -724,13 +664,5 @@ class AsyncRawOrganizationMembershipsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)

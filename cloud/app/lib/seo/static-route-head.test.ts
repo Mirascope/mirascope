@@ -24,9 +24,7 @@ describe("createStaticRouteHead", () => {
     const descMeta = result.meta.find(
       (m) => "name" in m && m.name === "description",
     ) as { name: string; content: string } | undefined;
-    expect(descMeta?.content).toBe(
-      "Deploy your own AI agents — Claws that listen, learn, create, and grow. Instant deployment, full observability, no code required.",
-    );
+    expect(descMeta?.content).toBe("The complete toolkit for AI engineers");
   });
 
   it("creates head function for pricing route", () => {

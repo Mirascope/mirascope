@@ -3,18 +3,18 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem {
-  traceId: string;
-  spanId: string;
-  parentSpanId?: string | null;
-  name: string;
-  kind?: number;
-  startTimeUnixNano: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano;
-  endTimeUnixNano: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano;
-  attributes?: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem[];
-  droppedAttributesCount?: number;
-  events?: unknown[];
-  droppedEventsCount?: number;
-  status?: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus;
-  links?: unknown[];
-  droppedLinksCount?: number;
+    traceId: string;
+    spanId: string;
+    parentSpanId?: string | null;
+    name: string;
+    kind?: number;
+    startTimeUnixNano: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano;
+    endTimeUnixNano: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano;
+    attributes?: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem[];
+    droppedAttributesCount?: number;
+    events?: unknown[];
+    droppedEventsCount?: number;
+    status?: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus;
+    links?: unknown[];
+    droppedLinksCount?: number;
 }

@@ -2,6 +2,4 @@
 
 import typing
 
-TracesSearchByEnvRequestSortOrder = typing.Union[
-    typing.Literal["asc", "desc"], typing.Any
-]
+TracesSearchByEnvRequestSortOrder = typing.Union[typing.Literal["asc", "desc"], typing.Any]

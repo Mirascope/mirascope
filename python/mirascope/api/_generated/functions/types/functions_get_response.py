@@ -6,17 +6,13 @@ import pydantic
 import typing_extensions
 from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ...core.serialization import FieldMetadata
-from .functions_get_response_dependencies_value import (
-    FunctionsGetResponseDependenciesValue,
-)
+from .functions_get_response_dependencies_value import FunctionsGetResponseDependenciesValue
 
 
 class FunctionsGetResponse(UniversalBaseModel):
     id: str
     hash: str
-    signature_hash: typing_extensions.Annotated[
-        str, FieldMetadata(alias="signatureHash")
-    ]
+    signature_hash: typing_extensions.Annotated[str, FieldMetadata(alias="signatureHash")]
     name: str
     description: typing.Optional[str] = None
     version: str
@@ -25,27 +21,15 @@ class FunctionsGetResponse(UniversalBaseModel):
     code: str
     signature: str
     language: str
-    dependencies: typing.Optional[
-        typing.Dict[str, typing.Optional[FunctionsGetResponseDependenciesValue]]
-    ] = None
-    environment_id: typing_extensions.Annotated[
-        str, FieldMetadata(alias="environmentId")
-    ]
+    dependencies: typing.Optional[typing.Dict[str, typing.Optional[FunctionsGetResponseDependenciesValue]]] = None
+    environment_id: typing_extensions.Annotated[str, FieldMetadata(alias="environmentId")]
     project_id: typing_extensions.Annotated[str, FieldMetadata(alias="projectId")]
-    organization_id: typing_extensions.Annotated[
-        str, FieldMetadata(alias="organizationId")
-    ]
-    created_at: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="createdAt")
-    ] = None
-    updated_at: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="updatedAt")
-    ] = None
+    organization_id: typing_extensions.Annotated[str, FieldMetadata(alias="organizationId")]
+    created_at: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="createdAt")] = None
+    updated_at: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="updatedAt")] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

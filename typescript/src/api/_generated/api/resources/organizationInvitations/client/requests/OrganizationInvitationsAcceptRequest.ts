@@ -7,5 +7,5 @@
  *     }
  */
 export interface OrganizationInvitationsAcceptRequest {
-  token: string;
+    token: string;
 }

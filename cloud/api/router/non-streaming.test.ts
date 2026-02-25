@@ -1,6 +1,5 @@
-import { describe, it, expect } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 import type { ModelPricing } from "@/api/router/pricing";
 import type { ProxyResult } from "@/api/router/proxy";
@@ -55,7 +54,6 @@ describe("Non-Streaming", () => {
           environmentId: "env_test",
           apiKeyId: "key_test",
           routerRequestId: "req_test123",
-          clawId: null,
         },
         modelPricing: mockPricing,
       };
@@ -65,7 +63,6 @@ describe("Non-Streaming", () => {
           id: "user_test",
           name: "Test User",
           email: "test@example.com",
-          accountType: "user",
           deletedAt: null,
         } satisfies PublicUser,
         apiKeyInfo: {
@@ -76,9 +73,7 @@ describe("Non-Streaming", () => {
           ownerId: "user_test",
           ownerName: "Test User",
           ownerEmail: "test@example.com",
-          ownerAccountType: "user",
           ownerDeletedAt: null,
-          clawId: null,
         } satisfies ApiKeyInfo,
         provider: "openai",
         modelId: "gpt-4",
@@ -122,7 +117,6 @@ describe("Non-Streaming", () => {
           environmentId: "env_test",
           apiKeyId: "key_test",
           routerRequestId: "req_test123",
-          clawId: null,
         },
         modelPricing: mockPricing,
       };
@@ -132,7 +126,6 @@ describe("Non-Streaming", () => {
           id: "user_test",
           name: "Test User",
           email: "test@example.com",
-          accountType: "user",
           deletedAt: null,
         } satisfies PublicUser,
         apiKeyInfo: {
@@ -143,9 +136,7 @@ describe("Non-Streaming", () => {
           ownerId: "user_test",
           ownerName: "Test User",
           ownerEmail: "test@example.com",
-          ownerAccountType: "user",
           ownerDeletedAt: null,
-          clawId: null,
         } satisfies ApiKeyInfo,
         provider: "openai",
         modelId: "gpt-4",
@@ -200,7 +191,6 @@ describe("Non-Streaming", () => {
           environmentId: "env_test",
           apiKeyId: "key_test",
           routerRequestId: "req_test123",
-          clawId: null,
         },
         modelPricing: mockPricing,
       };
@@ -210,7 +200,6 @@ describe("Non-Streaming", () => {
           id: "user_test",
           name: "Test User",
           email: "test@example.com",
-          accountType: "user",
           deletedAt: null,
         } satisfies PublicUser,
         apiKeyInfo: {
@@ -221,9 +210,7 @@ describe("Non-Streaming", () => {
           ownerId: "user_test",
           ownerName: "Test User",
           ownerEmail: "test@example.com",
-          ownerAccountType: "user",
           ownerDeletedAt: null,
-          clawId: null,
         } satisfies ApiKeyInfo,
         provider: "openai",
         modelId: "gpt-4",
@@ -277,7 +264,6 @@ describe("Non-Streaming", () => {
           environmentId: "env_test",
           apiKeyId: "key_test",
           routerRequestId: "req_test123",
-          clawId: null,
         },
         modelPricing: mockPricing,
       };
@@ -287,7 +273,6 @@ describe("Non-Streaming", () => {
           id: "user_test",
           name: "Test User",
           email: "test@example.com",
-          accountType: "user",
           deletedAt: null,
         } satisfies PublicUser,
         apiKeyInfo: {
@@ -298,9 +283,7 @@ describe("Non-Streaming", () => {
           ownerId: "user_test",
           ownerName: "Test User",
           ownerEmail: "test@example.com",
-          ownerAccountType: "user",
           ownerDeletedAt: null,
-          clawId: null,
         } satisfies ApiKeyInfo,
         provider: "openai",
         modelId: "gpt-4",

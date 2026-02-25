@@ -73,11 +73,7 @@ class TokenCostClient:
         )
         """
         _response = self._raw_client.calculate(
-            provider=provider,
-            model=model,
-            usage=usage,
-            via_router=via_router,
-            request_options=request_options,
+            provider=provider, model=model, usage=usage, via_router=via_router, request_options=request_options
         )
         return _response.data
 
@@ -151,10 +147,6 @@ class AsyncTokenCostClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.calculate(
-            provider=provider,
-            model=model,
-            usage=usage,
-            via_router=via_router,
-            request_options=request_options,
+            provider=provider, model=model, usage=usage, via_router=via_router, request_options=request_options
         )
         return _response.data

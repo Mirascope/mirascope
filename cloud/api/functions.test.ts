@@ -118,9 +118,7 @@ describe.sequential("Functions API", (it) => {
         ownerId: owner.id,
         ownerEmail: owner.email,
         ownerName: owner.name,
-        ownerAccountType: "user" as const,
         ownerDeletedAt: owner.deletedAt,
-        clawId: null,
       };
 
       const result = yield* Effect.promise(() =>

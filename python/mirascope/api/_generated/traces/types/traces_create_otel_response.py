@@ -6,21 +6,16 @@ import pydantic
 import typing_extensions
 from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ...core.serialization import FieldMetadata
-from .traces_create_otel_response_partial_success import (
-    TracesCreateOtelResponsePartialSuccess,
-)
+from .traces_create_otel_response_partial_success import TracesCreateOtelResponsePartialSuccess
 
 
 class TracesCreateOtelResponse(UniversalBaseModel):
     partial_success: typing_extensions.Annotated[
-        typing.Optional[TracesCreateOtelResponsePartialSuccess],
-        FieldMetadata(alias="partialSuccess"),
+        typing.Optional[TracesCreateOtelResponsePartialSuccess], FieldMetadata(alias="partialSuccess")
     ] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

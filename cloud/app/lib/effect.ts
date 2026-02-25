@@ -28,15 +28,10 @@ export type AppServices =
 function createAppServicesLayer(settings: SettingsConfig) {
   return Layer.mergeAll(
     Layer.succeed(Settings, settings),
-    (settings.env === "development"
-      ? Database.Dev({
-          database: { connectionString: settings.databaseUrl },
-        })
-      : Database.Live({
-          database: { connectionString: settings.databaseUrl },
-          payments: settings.stripe,
-        })
-    ).pipe(Layer.orDie),
+    Database.Live({
+      database: { connectionString: settings.databaseUrl },
+      payments: settings.stripe,
+    }).pipe(Layer.orDie),
     Layer.succeed(AuthService, createAuthService()),
     Emails.Live(settings.resend),
     executionContextLayer,
@@ -76,7 +71,7 @@ export async function runEffectResponse<E extends { message: string }>(
     // Settings validation failed - return error response
     const error = settingsResult.left;
     return Response.redirect(
-      `http://localhost:3000/login?error=${encodeURIComponent(String(error))}`,
+      `http://localhost:3000/cloud/login?error=${encodeURIComponent(String(error))}`,
       302,
     );
   }
@@ -90,7 +85,7 @@ export async function runEffectResponse<E extends { message: string }>(
     // Return a proper error response instead of throwing
     const siteUrl = settings.siteUrl;
     return Response.redirect(
-      `${siteUrl}/login?error=${encodeURIComponent(result.left.message)}`,
+      `${siteUrl}/cloud/login?error=${encodeURIComponent(result.left.message)}`,
       302,
     );
   }

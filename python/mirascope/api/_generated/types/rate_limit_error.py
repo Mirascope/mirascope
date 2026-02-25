@@ -11,18 +11,14 @@ from .rate_limit_error_tag import RateLimitErrorTag
 
 class RateLimitError(UniversalBaseModel):
     message: str
-    organization_id: typing_extensions.Annotated[
-        str, FieldMetadata(alias="organizationId")
-    ]
+    organization_id: typing_extensions.Annotated[str, FieldMetadata(alias="organizationId")]
     limit: float
     retry_after: typing_extensions.Annotated[float, FieldMetadata(alias="retryAfter")]
     plan_tier: typing_extensions.Annotated[str, FieldMetadata(alias="planTier")]
     tag: RateLimitErrorTag
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

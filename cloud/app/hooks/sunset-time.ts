@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 
 import {
-  useIsWatercolorPage,
-  useTheme,
+  useIsLandingPage,
+  useIsRouterWaitlistPage,
 } from "@/app/components/blocks/theme-provider";
 
 // Enable this flag to see detailed logs about sunset calculations
@@ -254,8 +254,8 @@ function isAroundSunsetTime(): boolean {
  */
 export function useSunsetTime(): boolean {
   const [isSunsetTime, setIsSunsetTime] = useState(false);
-  const { theme } = useTheme();
-  const isWatercolorPage = useIsWatercolorPage();
+  const isLandingPage = useIsLandingPage();
+  const isRouterWaitlistPage = useIsRouterWaitlistPage();
 
   useEffect(() => {
     // Initial check
@@ -291,9 +291,9 @@ export function useSunsetTime(): boolean {
     };
   }, []);
 
-  // Apply sunset-time class when needed (only when theme is "system")
+  // Apply sunset-time class when needed
   useEffect(() => {
-    if (isWatercolorPage && isSunsetTime && theme === "system") {
+    if ((isLandingPage || isRouterWaitlistPage) && isSunsetTime) {
       if (VERBOSE_LOGGING) {
         console.log(
           "%cSunset Hook: Adding sunset-time class to document",
@@ -314,7 +314,7 @@ export function useSunsetTime(): boolean {
       );
     }
     document.documentElement.classList.remove("sunset-time");
-  }, [isSunsetTime, isWatercolorPage, theme]);
+  }, [isSunsetTime, isLandingPage, isRouterWaitlistPage]);
 
   return isSunsetTime;
 }

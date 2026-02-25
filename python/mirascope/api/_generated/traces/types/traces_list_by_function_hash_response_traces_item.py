@@ -11,31 +11,18 @@ from ...core.serialization import FieldMetadata
 class TracesListByFunctionHashResponseTracesItem(UniversalBaseModel):
     id: str
     otel_trace_id: typing_extensions.Annotated[str, FieldMetadata(alias="otelTraceId")]
-    environment_id: typing_extensions.Annotated[
-        str, FieldMetadata(alias="environmentId")
-    ]
+    environment_id: typing_extensions.Annotated[str, FieldMetadata(alias="environmentId")]
     project_id: typing_extensions.Annotated[str, FieldMetadata(alias="projectId")]
-    organization_id: typing_extensions.Annotated[
-        str, FieldMetadata(alias="organizationId")
-    ]
-    service_name: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="serviceName")
-    ] = None
-    service_version: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="serviceVersion")
-    ] = None
+    organization_id: typing_extensions.Annotated[str, FieldMetadata(alias="organizationId")]
+    service_name: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="serviceName")] = None
+    service_version: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="serviceVersion")] = None
     resource_attributes: typing_extensions.Annotated[
-        typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]],
-        FieldMetadata(alias="resourceAttributes"),
+        typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]], FieldMetadata(alias="resourceAttributes")
     ] = None
-    created_at: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="createdAt")
-    ] = None
+    created_at: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="createdAt")] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

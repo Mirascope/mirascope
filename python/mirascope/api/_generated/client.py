@@ -5,27 +5,16 @@ import typing
 import httpx
 from .annotations.client import AnnotationsClient, AsyncAnnotationsClient
 from .api_keys.client import ApiKeysClient, AsyncApiKeysClient
-from .claw_memberships.client import AsyncClawMembershipsClient, ClawMembershipsClient
-from .claws.client import AsyncClawsClient, ClawsClient
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .docs.client import AsyncDocsClient, DocsClient
 from .environment import MirascopeEnvironment
 from .environments.client import AsyncEnvironmentsClient, EnvironmentsClient
 from .functions.client import AsyncFunctionsClient, FunctionsClient
 from .health.client import AsyncHealthClient, HealthClient
-from .organization_invitations.client import (
-    AsyncOrganizationInvitationsClient,
-    OrganizationInvitationsClient,
-)
-from .organization_memberships.client import (
-    AsyncOrganizationMembershipsClient,
-    OrganizationMembershipsClient,
-)
+from .organization_invitations.client import AsyncOrganizationInvitationsClient, OrganizationInvitationsClient
+from .organization_memberships.client import AsyncOrganizationMembershipsClient, OrganizationMembershipsClient
 from .organizations.client import AsyncOrganizationsClient, OrganizationsClient
-from .project_memberships.client import (
-    AsyncProjectMembershipsClient,
-    ProjectMembershipsClient,
-)
+from .project_memberships.client import AsyncProjectMembershipsClient, ProjectMembershipsClient
 from .projects.client import AsyncProjectsClient, ProjectsClient
 from .tags.client import AsyncTagsClient, TagsClient
 from .token_cost.client import AsyncTokenCostClient, TokenCostClient
@@ -76,19 +65,13 @@ class Mirascope:
         httpx_client: typing.Optional[httpx.Client] = None,
     ):
         _defaulted_timeout = (
-            timeout
-            if timeout is not None
-            else 180
-            if httpx_client is None
-            else httpx_client.timeout.read
+            timeout if timeout is not None else 180 if httpx_client is None else httpx_client.timeout.read
         )
         self._client_wrapper = SyncClientWrapper(
             base_url=_get_base_url(base_url=base_url, environment=environment),
             httpx_client=httpx_client
             if httpx_client is not None
-            else httpx.Client(
-                timeout=_defaulted_timeout, follow_redirects=follow_redirects
-            )
+            else httpx.Client(timeout=_defaulted_timeout, follow_redirects=follow_redirects)
             if follow_redirects is not None
             else httpx.Client(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
@@ -97,24 +80,14 @@ class Mirascope:
         self.traces = TracesClient(client_wrapper=self._client_wrapper)
         self.docs = DocsClient(client_wrapper=self._client_wrapper)
         self.organizations = OrganizationsClient(client_wrapper=self._client_wrapper)
-        self.organization_invitations = OrganizationInvitationsClient(
-            client_wrapper=self._client_wrapper
-        )
-        self.organization_memberships = OrganizationMembershipsClient(
-            client_wrapper=self._client_wrapper
-        )
+        self.organization_invitations = OrganizationInvitationsClient(client_wrapper=self._client_wrapper)
+        self.organization_memberships = OrganizationMembershipsClient(client_wrapper=self._client_wrapper)
         self.projects = ProjectsClient(client_wrapper=self._client_wrapper)
-        self.project_memberships = ProjectMembershipsClient(
-            client_wrapper=self._client_wrapper
-        )
+        self.project_memberships = ProjectMembershipsClient(client_wrapper=self._client_wrapper)
         self.environments = EnvironmentsClient(client_wrapper=self._client_wrapper)
         self.api_keys = ApiKeysClient(client_wrapper=self._client_wrapper)
         self.functions = FunctionsClient(client_wrapper=self._client_wrapper)
         self.annotations = AnnotationsClient(client_wrapper=self._client_wrapper)
-        self.claws = ClawsClient(client_wrapper=self._client_wrapper)
-        self.claw_memberships = ClawMembershipsClient(
-            client_wrapper=self._client_wrapper
-        )
         self.tags = TagsClient(client_wrapper=self._client_wrapper)
         self.token_cost = TokenCostClient(client_wrapper=self._client_wrapper)
 
@@ -163,19 +136,13 @@ class AsyncMirascope:
         httpx_client: typing.Optional[httpx.AsyncClient] = None,
     ):
         _defaulted_timeout = (
-            timeout
-            if timeout is not None
-            else 180
-            if httpx_client is None
-            else httpx_client.timeout.read
+            timeout if timeout is not None else 180 if httpx_client is None else httpx_client.timeout.read
         )
         self._client_wrapper = AsyncClientWrapper(
             base_url=_get_base_url(base_url=base_url, environment=environment),
             httpx_client=httpx_client
             if httpx_client is not None
-            else httpx.AsyncClient(
-                timeout=_defaulted_timeout, follow_redirects=follow_redirects
-            )
+            else httpx.AsyncClient(timeout=_defaulted_timeout, follow_redirects=follow_redirects)
             if follow_redirects is not None
             else httpx.AsyncClient(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
@@ -183,39 +150,23 @@ class AsyncMirascope:
         self.health = AsyncHealthClient(client_wrapper=self._client_wrapper)
         self.traces = AsyncTracesClient(client_wrapper=self._client_wrapper)
         self.docs = AsyncDocsClient(client_wrapper=self._client_wrapper)
-        self.organizations = AsyncOrganizationsClient(
-            client_wrapper=self._client_wrapper
-        )
-        self.organization_invitations = AsyncOrganizationInvitationsClient(
-            client_wrapper=self._client_wrapper
-        )
-        self.organization_memberships = AsyncOrganizationMembershipsClient(
-            client_wrapper=self._client_wrapper
-        )
+        self.organizations = AsyncOrganizationsClient(client_wrapper=self._client_wrapper)
+        self.organization_invitations = AsyncOrganizationInvitationsClient(client_wrapper=self._client_wrapper)
+        self.organization_memberships = AsyncOrganizationMembershipsClient(client_wrapper=self._client_wrapper)
         self.projects = AsyncProjectsClient(client_wrapper=self._client_wrapper)
-        self.project_memberships = AsyncProjectMembershipsClient(
-            client_wrapper=self._client_wrapper
-        )
+        self.project_memberships = AsyncProjectMembershipsClient(client_wrapper=self._client_wrapper)
         self.environments = AsyncEnvironmentsClient(client_wrapper=self._client_wrapper)
         self.api_keys = AsyncApiKeysClient(client_wrapper=self._client_wrapper)
         self.functions = AsyncFunctionsClient(client_wrapper=self._client_wrapper)
         self.annotations = AsyncAnnotationsClient(client_wrapper=self._client_wrapper)
-        self.claws = AsyncClawsClient(client_wrapper=self._client_wrapper)
-        self.claw_memberships = AsyncClawMembershipsClient(
-            client_wrapper=self._client_wrapper
-        )
         self.tags = AsyncTagsClient(client_wrapper=self._client_wrapper)
         self.token_cost = AsyncTokenCostClient(client_wrapper=self._client_wrapper)
 
 
-def _get_base_url(
-    *, base_url: typing.Optional[str] = None, environment: MirascopeEnvironment
-) -> str:
+def _get_base_url(*, base_url: typing.Optional[str] = None, environment: MirascopeEnvironment) -> str:
     if base_url is not None:
         return base_url
     elif environment is not None:
         return environment.value
     else:
-        raise Exception(
-            "Please pass in either base_url or environment to construct the client"
-        )
+        raise Exception("Please pass in either base_url or environment to construct the client")

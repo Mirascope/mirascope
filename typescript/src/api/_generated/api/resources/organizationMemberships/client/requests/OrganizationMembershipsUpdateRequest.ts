@@ -11,7 +11,7 @@ import type * as Mirascope from "../../../../index.js";
  *     }
  */
 export interface OrganizationMembershipsUpdateRequest {
-  organizationId: string;
-  memberId: string;
-  role: Mirascope.OrganizationMembershipsUpdateRequestRole;
+    organizationId: string;
+    memberId: string;
+    role: Mirascope.OrganizationMembershipsUpdateRequestRole;
 }

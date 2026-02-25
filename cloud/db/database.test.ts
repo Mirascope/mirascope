@@ -26,4 +26,25 @@ describe("Database", () => {
       expect(Layer.isLayer(layer)).toBe(true);
     });
   });
+
+  describe("Dev", () => {
+    it("creates a Dev layer without plan", () => {
+      const layer = Database.Dev({
+        database: { connectionString: "postgresql://test" },
+      });
+
+      expect(layer).toBeDefined();
+      expect(Layer.isLayer(layer)).toBe(true);
+    });
+
+    it("creates a Dev layer with specific plan", () => {
+      const layer = Database.Dev({
+        database: { connectionString: "postgresql://test" },
+        plan: "pro",
+      });
+
+      expect(layer).toBeDefined();
+      expect(Layer.isLayer(layer)).toBe(true);
+    });
+  });
 });

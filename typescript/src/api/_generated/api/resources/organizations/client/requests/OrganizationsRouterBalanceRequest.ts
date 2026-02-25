@@ -7,5 +7,5 @@
  *     }
  */
 export interface OrganizationsRouterBalanceRequest {
-  id: string;
+    id: string;
 }
