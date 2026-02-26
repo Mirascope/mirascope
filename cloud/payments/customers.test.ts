@@ -122,6 +122,134 @@ describe("customers", () => {
     );
   });
 
+  describe("ensureExists", () => {
+    it.effect("returns existing customer when found", () =>
+      Effect.gen(function* () {
+        const payments = yield* Payments;
+
+        const result = yield* payments.customers.ensureExists("cus_existing", {
+          organizationId: "org_123",
+          organizationName: "Test Org",
+          organizationSlug: "test-org",
+          email: "test@example.com",
+        });
+
+        expect(result.stripeCustomerId).toBe("cus_existing");
+        expect(result.changed).toBe(false);
+      }).pipe(Effect.provide(DefaultMockPayments)),
+    );
+
+    it.effect("creates new customer when not found (404)", () =>
+      Effect.gen(function* () {
+        const payments = yield* Payments;
+
+        const result = yield* payments.customers.ensureExists("cus_deleted", {
+          organizationId: "org_123",
+          organizationName: "Test Org",
+          organizationSlug: "test-org",
+          email: "test@example.com",
+        });
+
+        expect(result.stripeCustomerId).toMatch(/^cus_mock_/);
+        expect(result.changed).toBe(true);
+      }).pipe(
+        Effect.provide(
+          Payments.Default.pipe(
+            Layer.provide(
+              Layer.succeed(Stripe, {
+                customers: {
+                  create: (params: {
+                    email?: string;
+                    name?: string;
+                    metadata?: Record<string, string>;
+                  }) =>
+                    Effect.succeed({
+                      id: `cus_mock_${crypto.randomUUID()}`,
+                      object: "customer" as const,
+                      created: Date.now(),
+                      livemode: false,
+                      email: params.email || null,
+                      name: params.name || null,
+                      metadata: params.metadata || {},
+                    }),
+                  retrieve: () =>
+                    Effect.fail(
+                      new StripeError({
+                        message: "No such customer: cus_deleted",
+                        cause: { statusCode: 404 },
+                      }),
+                    ),
+                  del: () => Effect.void,
+                },
+                subscriptions: {
+                  create: () =>
+                    Effect.succeed({
+                      id: `sub_mock_${crypto.randomUUID()}`,
+                      object: "subscription" as const,
+                      status: "active" as const,
+                    }),
+                },
+                config: {
+                  apiKey: "sk_test_mock",
+                  routerPriceId: "price_test",
+                  routerMeterId: "meter_test",
+                  cloudFreePriceId: "price_cloud_free_test",
+                  cloudSpansPriceId: "price_cloud_spans_test",
+                },
+              } as unknown as Context.Tag.Service<typeof Stripe>),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    it.effect("propagates non-404 Stripe errors", () =>
+      Effect.gen(function* () {
+        const payments = yield* Payments;
+
+        const result = yield* payments.customers
+          .ensureExists("cus_123", {
+            organizationId: "org_123",
+            organizationName: "Test Org",
+            organizationSlug: "test-org",
+            email: "test@example.com",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(StripeError);
+        expect(result.message).toBe("Stripe API rate limit exceeded");
+      }).pipe(
+        Effect.provide(
+          Payments.Default.pipe(
+            Layer.provide(
+              Layer.succeed(Stripe, {
+                customers: {
+                  create: () => Effect.void,
+                  retrieve: () =>
+                    Effect.fail(
+                      new StripeError({
+                        message: "Stripe API rate limit exceeded",
+                        cause: { statusCode: 429 },
+                      }),
+                    ),
+                  del: () => Effect.void,
+                },
+                subscriptions: {
+                  create: () => Effect.void,
+                },
+                config: {
+                  apiKey: "sk_test_mock",
+                  routerPriceId: "price_test",
+                  routerMeterId: "meter_test",
+                },
+              } as unknown as Context.Tag.Service<typeof Stripe>),
+            ),
+          ),
+        ),
+      ),
+    );
+  });
+
   describe("delete", () => {
     it.effect("deletes customer successfully", () => {
       let deletedCustomerId: string | undefined;

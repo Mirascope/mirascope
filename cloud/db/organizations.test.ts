@@ -1,6 +1,9 @@
+import { eq } from "drizzle-orm";
 import { Effect, Layer } from "effect";
 
+import { DrizzleORM } from "@/db/client";
 import { Database } from "@/db/database";
+import { organizations } from "@/db/schema";
 import {
   type PublicOrganizationWithMembership,
   type PublicOrganizationMembershipAudit,
@@ -1190,6 +1193,175 @@ describe("Organizations", () => {
                 )
                 .build(),
             ),
+        ),
+      ),
+    );
+  });
+
+  // ===========================================================================
+  // ensureStripeCustomers
+  // ===========================================================================
+
+  describe("ensureStripeCustomers", () => {
+    it.effect("does nothing when all org Stripe customers exist", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        // Create user and org
+        const user = yield* db.users.create({
+          data: {
+            email: "ensure-existing@example.com",
+            name: "Ensure Test",
+          },
+        });
+
+        const org = yield* db.organizations.create({
+          userId: user.id,
+          data: { name: "Ensure Org", slug: "ensure-org" },
+        });
+
+        const originalCustomerId = org.stripeCustomerId;
+
+        // ensureStripeCustomers with mock that returns existing customer
+        yield* db.organizations.ensureStripeCustomers({
+          userId: user.id,
+          email: "ensure-existing@example.com",
+        });
+
+        // Verify stripeCustomerId unchanged
+        const found = yield* db.organizations.findById({
+          userId: user.id,
+          organizationId: org.id,
+        });
+        expect(found.stripeCustomerId).toBe(originalCustomerId);
+      }),
+    );
+
+    it.effect("recreates Stripe customer and updates DB when 404", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+        const client = yield* DrizzleORM;
+
+        // Create user and org
+        const user = yield* db.users.create({
+          data: {
+            email: "ensure-recreate@example.com",
+            name: "Recreate Test",
+          },
+        });
+
+        const org = yield* db.organizations.create({
+          userId: user.id,
+          data: { name: "Recreate Org", slug: "recreate-org" },
+        });
+
+        const originalCustomerId = org.stripeCustomerId;
+
+        // Now provide a mock that returns 404 for retrieve, but succeeds for create
+        yield* db.organizations.ensureStripeCustomers({
+          userId: user.id,
+          email: "ensure-recreate@example.com",
+        });
+
+        // Verify stripeCustomerId was updated
+        const [updated] = yield* client
+          .select({ stripeCustomerId: organizations.stripeCustomerId })
+          .from(organizations)
+          .where(eq(organizations.id, org.id))
+          .limit(1);
+
+        expect(updated.stripeCustomerId).not.toBe(originalCustomerId);
+        expect(updated.stripeCustomerId).toMatch(/^cus_mock_/);
+      }).pipe(
+        Effect.provide(
+          Database.Default.pipe(
+            Layer.provideMerge(TestDrizzleORM),
+            Layer.provide(
+              new MockPayments().customers
+                .create(() => ({
+                  id: `cus_mock_${crypto.randomUUID()}`,
+                }))
+                .customers.retrieve(() =>
+                  Effect.fail(
+                    new StripeError({
+                      message: "No such customer",
+                      cause: { statusCode: 404 },
+                    }),
+                  ),
+                )
+                .build(),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    it.effect("handles errors on individual orgs without blocking others", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        // Create user with two orgs
+        const user = yield* db.users.create({
+          data: {
+            email: "ensure-mixed@example.com",
+            name: "Mixed Test",
+          },
+        });
+
+        yield* db.organizations.create({
+          userId: user.id,
+          data: { name: "Good Org", slug: "good-org" },
+        });
+
+        yield* db.organizations.create({
+          userId: user.id,
+          data: { name: "Bad Org", slug: "bad-org" },
+        });
+
+        // Even with a Stripe error, should not throw
+        yield* db.organizations.ensureStripeCustomers({
+          userId: user.id,
+          email: "ensure-mixed@example.com",
+        });
+      }).pipe(
+        Effect.provide(
+          Database.Default.pipe(
+            Layer.provideMerge(TestDrizzleORM),
+            Layer.provide(
+              new MockPayments().customers
+                .create(() => ({
+                  id: `cus_mock_${crypto.randomUUID()}`,
+                }))
+                .customers.retrieve(() =>
+                  Effect.fail(
+                    new StripeError({
+                      message: "Stripe API error",
+                      cause: { statusCode: 500 },
+                    }),
+                  ),
+                )
+                .build(),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    it.effect("handles DB query failure gracefully", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        // Should not throw even when DB query fails
+        yield* db.organizations.ensureStripeCustomers({
+          userId: "nonexistent-user",
+          email: "test@example.com",
+        });
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // select orgs: fails
+            .select(new Error("Connection failed"))
+            .build(),
         ),
       ),
     );

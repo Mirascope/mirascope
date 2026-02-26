@@ -666,6 +666,73 @@ export class Organizations extends BaseAuthenticatedEffectService<
   }
 
   /**
+   * Ensures Stripe customers exist for all organizations a user belongs to.
+   *
+   * For each organization, verifies the Stripe customer still exists. If not
+   * (e.g. after a Stripe account migration), recreates the customer with a
+   * free subscription and updates the organization's stripeCustomerId.
+   *
+   * Errors are caught per-org so one failure doesn't block others.
+   *
+   * @param args.userId - The signing-in user's ID
+   * @param args.email - The signing-in user's email
+   */
+  ensureStripeCustomers({
+    userId,
+    email,
+  }: {
+    userId: string;
+    email: string;
+  }): Effect.Effect<void, never, DrizzleORM | Payments> {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+      const payments = yield* Payments;
+
+      const orgs = yield* client
+        .select({
+          id: organizations.id,
+          name: organizations.name,
+          slug: organizations.slug,
+          stripeCustomerId: organizations.stripeCustomerId,
+        })
+        .from(organizationMemberships)
+        .innerJoin(
+          organizations,
+          eq(organizationMemberships.organizationId, organizations.id),
+        )
+        .where(eq(organizationMemberships.memberId, userId))
+        .pipe(Effect.catchAll(() => Effect.succeed([])));
+
+      yield* Effect.all(
+        orgs.map((org) =>
+          Effect.gen(function* () {
+            const result = yield* payments.customers.ensureExists(
+              org.stripeCustomerId,
+              {
+                organizationId: org.id,
+                organizationName: org.name,
+                organizationSlug: org.slug,
+                email,
+              },
+            );
+
+            if (result.changed) {
+              yield* client
+                .update(organizations)
+                .set({
+                  stripeCustomerId: result.stripeCustomerId,
+                  updatedAt: new Date(),
+                })
+                .where(eq(organizations.id, org.id));
+            }
+          }).pipe(Effect.catchAll(() => Effect.void)),
+        ),
+        { concurrency: "unbounded" },
+      );
+    });
+  }
+
+  /**
    * Deletes an organization and all its memberships.
    *
    * Requires OWNER role. This is a destructive operation that:

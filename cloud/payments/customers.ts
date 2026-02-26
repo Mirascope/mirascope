@@ -37,6 +37,16 @@ export interface CreateCustomerResult {
 }
 
 /**
+ * Result of ensuring a Stripe customer exists.
+ */
+export interface EnsureExistsResult {
+  /** Stripe customer ID (may be new if recreated) */
+  stripeCustomerId: string;
+  /** Whether the customer was recreated */
+  changed: boolean;
+}
+
+/**
  * Parameters for updating a Stripe customer.
  */
 export interface UpdateCustomerParams {
@@ -142,6 +152,49 @@ export class Customers {
         stripeCustomerId: customer.id,
         subscriptionId: subscription.id,
       };
+    });
+  }
+
+  /**
+   * Ensures a Stripe customer exists, recreating if necessary.
+   *
+   * Attempts to retrieve the customer by ID. If the customer is not found (404),
+   * creates a new customer with a free subscription. Non-404 Stripe errors
+   * propagate as-is to avoid recreating on transient failures.
+   *
+   * @param stripeCustomerId - The existing Stripe customer ID to check
+   * @param params - Parameters to use if the customer needs to be recreated
+   * @returns The customer ID and whether it was recreated
+   * @throws StripeError - If a non-404 Stripe API call fails
+   */
+  ensureExists(
+    stripeCustomerId: string,
+    params: CreateCustomerParams,
+  ): Effect.Effect<EnsureExistsResult, StripeError, Stripe> {
+    return Effect.gen(this, function* () {
+      const stripe = yield* Stripe;
+
+      return yield* stripe.customers.retrieve(stripeCustomerId).pipe(
+        Effect.map(
+          () => ({ stripeCustomerId, changed: false }) as EnsureExistsResult,
+        ),
+        Effect.catchIf(
+          (e): e is StripeError =>
+            e instanceof StripeError &&
+            e.cause != null &&
+            typeof e.cause === "object" &&
+            "statusCode" in e.cause &&
+            (e.cause as { statusCode: number }).statusCode === 404,
+          () =>
+            Effect.gen(this, function* () {
+              const created = yield* this.create(params);
+              return {
+                stripeCustomerId: created.stripeCustomerId,
+                changed: true,
+              } as EnsureExistsResult;
+            }),
+        ),
+      );
     });
   }
 

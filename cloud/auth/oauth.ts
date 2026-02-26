@@ -696,6 +696,20 @@ function processAuthenticatedUser(
           data: { email: userInfo.email, name: userInfo.name },
         });
 
+    // Ensure Stripe customers exist for all user's orgs (background task)
+    if (existingUser) {
+      ctx.waitUntil(
+        Effect.runPromise(
+          db.organizations
+            .ensureStripeCustomers({
+              userId: user.id,
+              email: userInfo.email,
+            })
+            .pipe(Effect.catchAll(() => Effect.void)),
+        ),
+      );
+    }
+
     // Send welcome email for new users in the background
     if (!existingUser) {
       // Get services first so we can provide them to the background task
