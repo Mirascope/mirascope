@@ -127,4 +127,70 @@ interactions:
     status:
       code: 401
       message: Unauthorized
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Host:
+      - huggingface.co
+      X-Amzn-Trace-Id:
+      - c11a0b62-e769-4d03-93e9-1d0f5addbc2a
+      user-agent:
+      - unknown/None; hf_hub/1.3.4; python/3.12.12
+    method: GET
+    uri: https://huggingface.co/api/models/mlx-community/this-model-does-not-exist-12345/revision/main
+  response:
+    body:
+      string: '{"error":"Invalid username or password."}'
+    headers:
+      Access-Control-Allow-Origin:
+      - https://huggingface.co
+      Access-Control-Expose-Headers:
+      - X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      Access-Control-Max-Age:
+      - '86400'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '41'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Mon, 09 Feb 2026 22:13:07 GMT
+      ETag:
+      - W/"29-dEMcHWfJi78ZR1aqzb1ELAhp3Us"
+      RateLimit:
+      - '"api";r=497;t=243'
+      RateLimit-Policy:
+      - '"fixed window";"api";q=500;w=300'
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Vary:
+      - Origin
+      Via:
+      - 1.1 7e9b06f0eb97ea1897f375ba6acd2a88.cloudfront.net (CloudFront)
+      WWW-Authenticate:
+      - Bearer realm="Authentication required", charset="UTF-8"
+      X-Amz-Cf-Id:
+      - -RCZPwsSG1nnM4HhZrVQXJG26P_aTn1aAk4ELKQ0sBPbo-wSJVqUPw==
+      X-Amz-Cf-Pop:
+      - SEA900-P6
+      X-Cache:
+      - Error from cloudfront
+      X-Error-Message:
+      - Invalid username or password.
+      X-Powered-By:
+      - huggingface-moon
+      X-Request-Id:
+      - Root=1-698a5bf3-7a9702606e5ff07f096f9f2f;c11a0b62-e769-4d03-93e9-1d0f5addbc2a
+      cross-origin-opener-policy:
+      - same-origin
+    status:
+      code: 401
+      message: Unauthorized
 version: 1

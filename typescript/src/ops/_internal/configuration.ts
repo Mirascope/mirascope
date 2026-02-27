@@ -2,7 +2,8 @@
  * Configuration utilities for Mirascope ops module initialization and setup.
  */
 
-import { trace, type Tracer } from "@opentelemetry/api";
+import type { Tracer } from "@opentelemetry/api";
+
 import {
   NodeTracerProvider,
   BatchSpanProcessor,
@@ -26,7 +27,7 @@ export interface ConfigureOptions {
   /** Mirascope Cloud API key */
   apiKey?: string;
   /** Mirascope Cloud base URL */
-  baseUrl?: string;
+  baseURL?: string;
   /** Custom tracer provider (overrides automatic Mirascope Cloud setup) */
   tracerProvider?: NodeTracerProvider;
   /** Tracer name (default: "mirascope.llm") */
@@ -40,9 +41,9 @@ export interface ConfigureOptions {
  */
 function createMirascopeCloudProvider(
   apiKey?: string,
-  baseUrl?: string,
+  baseURL?: string,
 ): NodeTracerProvider {
-  const client = new MirascopeClient({ apiKey, baseUrl });
+  const client = new MirascopeClient({ apiKey, baseURL });
   const exporter = new MirascopeOTLPExporter(client);
   const provider = new NodeTracerProvider({
     spanProcessors: [new BatchSpanProcessor(exporter)],
@@ -86,25 +87,27 @@ function createMirascopeCloudProvider(
 export function configure(options: ConfigureOptions = {}): void {
   const {
     apiKey,
-    baseUrl,
+    baseURL,
     tracerProvider,
     tracerName = DEFAULT_TRACER_NAME,
     tracerVersion,
   } = options;
 
   // Update API settings if provided
-  if (apiKey !== undefined || baseUrl !== undefined) {
-    updateSettings({ apiKey, baseUrl });
+  if (apiKey !== undefined || baseURL !== undefined) {
+    updateSettings({ apiKey, baseURL });
   }
 
   // Use custom provider or create Mirascope Cloud provider
   if (tracerProvider) {
     _tracerProvider = tracerProvider;
   } else {
-    _tracerProvider = createMirascopeCloudProvider(apiKey, baseUrl);
+    _tracerProvider = createMirascopeCloudProvider(apiKey, baseURL);
   }
 
-  trace.setGlobalTracerProvider(_tracerProvider);
+  // Register the provider which sets up both tracer provider AND context manager
+  // This is critical for async context propagation (span nesting)
+  _tracerProvider.register();
 
   _tracerName = tracerName;
   _tracerVersion = tracerVersion;
@@ -161,6 +164,61 @@ export function tracerContext<T>(tracer: Tracer | null, fn: () => T): T {
     return fn();
   } finally {
     _tracer = previous;
+  }
+}
+
+/**
+ * Force flush all pending spans to be exported.
+ *
+ * Convenience wrapper around the standard OpenTelemetry
+ * {@link NodeTracerProvider.forceFlush} method. Delegates directly to the
+ * underlying provider; no-ops when {@link configure} has not been called.
+ *
+ * @returns A promise that resolves when all spans have been flushed.
+ *
+ * @example
+ * ```typescript
+ * import { ops } from 'mirascope';
+ *
+ * ops.configure();
+ * ops.instrumentLLM();
+ *
+ * // Run your traced operations
+ * await myTracedFunction();
+ *
+ * // Force flush before script exits
+ * await ops.forceFlush();
+ * ```
+ */
+export async function forceFlush(): Promise<void> {
+  if (_tracerProvider) {
+    await _tracerProvider.forceFlush();
+  }
+}
+
+/**
+ * Shutdown the tracer provider and flush all pending spans.
+ *
+ * Convenience wrapper around the standard OpenTelemetry
+ * {@link NodeTracerProvider.shutdown} method. Delegates directly to the
+ * underlying provider; no-ops when {@link configure} has not been called.
+ *
+ * @returns A promise that resolves when the provider has been shut down.
+ *
+ * @example
+ * ```typescript
+ * import { ops } from 'mirascope';
+ *
+ * // At application shutdown
+ * process.on('SIGTERM', async () => {
+ *   await ops.shutdown();
+ *   process.exit(0);
+ * });
+ * ```
+ */
+export async function shutdown(): Promise<void> {
+  if (_tracerProvider) {
+    await _tracerProvider.shutdown();
   }
 }
 

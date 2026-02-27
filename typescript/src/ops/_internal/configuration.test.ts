@@ -5,8 +5,10 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 
 import {
   configure,
+  forceFlush,
   getTracer,
   setTracer,
+  shutdown,
   tracerContext,
   resetConfiguration,
 } from "./configuration";
@@ -48,15 +50,15 @@ describe("configuration", () => {
       expect(getTracer()).not.toBeNull();
     });
 
-    it("should accept baseUrl option", () => {
-      configure({ baseUrl: "https://custom.example.com" });
+    it("should accept baseURL option", () => {
+      configure({ baseURL: "https://custom.example.com" });
       expect(getTracer()).not.toBeNull();
     });
 
     it("should accept multiple options", () => {
       configure({
         apiKey: "test-key",
-        baseUrl: "https://custom.example.com",
+        baseURL: "https://custom.example.com",
         tracerName: "my.tracer",
         tracerVersion: "2.0.0",
       });
@@ -162,6 +164,28 @@ describe("configuration", () => {
       });
 
       expect(getTracer()).toBe(tracer1);
+    });
+  });
+
+  describe("forceFlush", () => {
+    it("should no-op when not configured", async () => {
+      await expect(forceFlush()).resolves.toBeUndefined();
+    });
+
+    it("should delegate to provider forceFlush", async () => {
+      configure();
+      await expect(forceFlush()).resolves.toBeUndefined();
+    });
+  });
+
+  describe("shutdown", () => {
+    it("should no-op when not configured", async () => {
+      await expect(shutdown()).resolves.toBeUndefined();
+    });
+
+    it("should delegate to provider shutdown", async () => {
+      configure();
+      await expect(shutdown()).resolves.toBeUndefined();
     });
   });
 

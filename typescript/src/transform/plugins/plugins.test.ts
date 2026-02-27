@@ -3,9 +3,9 @@
  */
 
 import * as esbuild from "esbuild";
-import fs from "fs/promises";
-import os from "os";
-import path from "path";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 
 import { mirascope as esbuildPlugin } from "./esbuild";

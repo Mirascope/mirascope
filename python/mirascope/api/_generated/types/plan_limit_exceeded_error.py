@@ -13,17 +13,13 @@ class PlanLimitExceededError(UniversalBaseModel):
     message: str
     resource: str
     limit_type: typing_extensions.Annotated[str, FieldMetadata(alias="limitType")]
-    current_usage: typing_extensions.Annotated[
-        float, FieldMetadata(alias="currentUsage")
-    ]
+    current_usage: typing_extensions.Annotated[float, FieldMetadata(alias="currentUsage")]
     limit: float
     plan_tier: typing_extensions.Annotated[str, FieldMetadata(alias="planTier")]
     tag: PlanLimitExceededErrorTag
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

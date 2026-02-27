@@ -11,4 +11,5 @@ export interface OrganizationsCreatePaymentIntentRequest {
   id: string;
   /** a positive number */
   amount: number;
+  paymentMethodId?: string;
 }

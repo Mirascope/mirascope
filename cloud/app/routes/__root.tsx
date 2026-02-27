@@ -10,6 +10,7 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import { queryClient } from "@/app/api/client";
+import DevToolsButton from "@/app/components/blocks/dev/dev-tools-button";
 import Footer from "@/app/components/blocks/navigation/footer";
 import Header from "@/app/components/blocks/navigation/header";
 import {
@@ -94,6 +95,7 @@ function AppContent() {
       {!isCloudRoute && <Footer />}
       <Toaster />
       <TanStackRouterDevtools />
+      <DevToolsButton className="fixed bottom-10 left-2 z-50" />
       <Scripts />
     </div>
   );

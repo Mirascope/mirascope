@@ -3,7 +3,7 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface OrganizationsSubscriptionResponseScheduledChange {
-  targetPlan: Mirascope.OrganizationsSubscriptionResponseScheduledChangeTargetPlan;
-  effectiveDate: Mirascope.Date_;
-  scheduleId: string;
+    targetPlan: Mirascope.OrganizationsSubscriptionResponseScheduledChangeTargetPlan;
+    effectiveDate: Mirascope.Date_;
+    scheduleId: string;
 }

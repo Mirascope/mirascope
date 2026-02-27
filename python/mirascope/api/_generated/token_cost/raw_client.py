@@ -63,9 +63,7 @@ class RawTokenCostClient:
                 "provider": provider,
                 "model": model,
                 "usage": convert_and_respect_annotation_metadata(
-                    object_=usage,
-                    annotation=TokenCostCalculateRequestUsage,
-                    direction="write",
+                    object_=usage, annotation=TokenCostCalculateRequestUsage, direction="write"
                 ),
                 "viaRouter": via_router,
             },
@@ -131,16 +129,8 @@ class RawTokenCostClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
 class AsyncRawTokenCostClient:
@@ -184,9 +174,7 @@ class AsyncRawTokenCostClient:
                 "provider": provider,
                 "model": model,
                 "usage": convert_and_respect_annotation_metadata(
-                    object_=usage,
-                    annotation=TokenCostCalculateRequestUsage,
-                    direction="write",
+                    object_=usage, annotation=TokenCostCalculateRequestUsage, direction="write"
                 ),
                 "viaRouter": via_router,
             },
@@ -252,13 +240,5 @@ class AsyncRawTokenCostClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)

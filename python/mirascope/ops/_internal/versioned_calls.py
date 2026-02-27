@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import Concatenate, Generic
+from typing import Concatenate, Generic, cast, overload
 from typing_extensions import TypeIs
 
 from ...llm.calls import AsyncCall, AsyncContextCall, Call, ContextCall
@@ -238,23 +238,61 @@ class VersionedCall(_BaseVersionedCall, Generic[P, FormattableT]):
         )
         self._compute_closure(self._call, self.call, self.stream)
 
+    @overload
+    def __call__(
+        self: VersionedCall[P, None], *args: P.args, **kwargs: P.kwargs
+    ) -> Response: ...
+
+    @overload
+    def __call__(
+        self: VersionedCall[P, FormattableT], *args: P.args, **kwargs: P.kwargs
+    ) -> Response[FormattableT]: ...
+
     def __call__(
         self, *args: P.args, **kwargs: P.kwargs
     ) -> Response | Response[FormattableT]:
         """Call the versioned function and return Response directly."""
         return self.call(*args, **kwargs)
 
+    @overload
+    def wrapped(
+        self: VersionedCall[P, None], *args: P.args, **kwargs: P.kwargs
+    ) -> VersionedResult[Response]: ...
+
+    @overload
+    def wrapped(
+        self: VersionedCall[P, FormattableT], *args: P.args, **kwargs: P.kwargs
+    ) -> VersionedResult[Response[FormattableT]]: ...
+
     def wrapped(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> VersionedResult[Response | Response[FormattableT]]:
+    ) -> VersionedResult[Response] | VersionedResult[Response[FormattableT]]:
         """Call the versioned function and return a wrapped Response."""
-        return self.call.wrapped(*args, **kwargs)
+        return cast(
+            "VersionedResult[Response] | VersionedResult[Response[FormattableT]]",
+            self.call.wrapped(*args, **kwargs),
+        )
+
+    @overload
+    def wrapped_stream(
+        self: VersionedCall[P, None], *args: P.args, **kwargs: P.kwargs
+    ) -> VersionedResult[StreamResponse]: ...
+
+    @overload
+    def wrapped_stream(
+        self: VersionedCall[P, FormattableT], *args: P.args, **kwargs: P.kwargs
+    ) -> VersionedResult[StreamResponse[FormattableT]]: ...
 
     def wrapped_stream(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> VersionedResult[StreamResponse | StreamResponse[FormattableT]]:
+    ) -> (
+        VersionedResult[StreamResponse] | VersionedResult[StreamResponse[FormattableT]]
+    ):
         """Stream the versioned function and return a wrapped StreamResponse."""
-        return self.stream.wrapped(*args, **kwargs)
+        return cast(
+            "VersionedResult[StreamResponse] | VersionedResult[StreamResponse[FormattableT]]",
+            self.stream.wrapped(*args, **kwargs),
+        )
 
 
 @dataclass(kw_only=True)
@@ -308,23 +346,65 @@ class VersionedAsyncCall(_BaseVersionedCall, Generic[P, FormattableT]):
         )
         self._compute_closure(self._call, self.call, self.stream)
 
+    @overload
+    async def __call__(
+        self: VersionedAsyncCall[P, None], *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncResponse: ...
+
+    @overload
+    async def __call__(
+        self: VersionedAsyncCall[P, FormattableT], *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncResponse[FormattableT]: ...
+
     async def __call__(
         self, *args: P.args, **kwargs: P.kwargs
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Call the versioned function and return AsyncResponse directly."""
         return await self.call(*args, **kwargs)
 
+    @overload
+    async def wrapped(
+        self: VersionedAsyncCall[P, None], *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncVersionedResult[AsyncResponse]: ...
+
+    @overload
+    async def wrapped(
+        self: VersionedAsyncCall[P, FormattableT], *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncVersionedResult[AsyncResponse[FormattableT]]: ...
+
     async def wrapped(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncVersionedResult[AsyncResponse | AsyncResponse[FormattableT]]:
+    ) -> (
+        AsyncVersionedResult[AsyncResponse]
+        | AsyncVersionedResult[AsyncResponse[FormattableT]]
+    ):
         """Call the versioned function and return a wrapped Response."""
-        return await self.call.wrapped(*args, **kwargs)
+        return cast(
+            "AsyncVersionedResult[AsyncResponse] | AsyncVersionedResult[AsyncResponse[FormattableT]]",
+            await self.call.wrapped(*args, **kwargs),
+        )
+
+    @overload
+    async def wrapped_stream(
+        self: VersionedAsyncCall[P, None], *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncVersionedResult[AsyncStreamResponse]: ...
+
+    @overload
+    async def wrapped_stream(
+        self: VersionedAsyncCall[P, FormattableT], *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncVersionedResult[AsyncStreamResponse[FormattableT]]: ...
 
     async def wrapped_stream(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncVersionedResult[AsyncStreamResponse | AsyncStreamResponse[FormattableT]]:
+    ) -> (
+        AsyncVersionedResult[AsyncStreamResponse]
+        | AsyncVersionedResult[AsyncStreamResponse[FormattableT]]
+    ):
         """Stream the versioned function and return a wrapped StreamResponse."""
-        return await self.stream.wrapped(*args, **kwargs)
+        return cast(
+            "AsyncVersionedResult[AsyncStreamResponse] | AsyncVersionedResult[AsyncStreamResponse[FormattableT]]",
+            await self.stream.wrapped(*args, **kwargs),
+        )
 
 
 @dataclass(kw_only=True)
@@ -381,17 +461,65 @@ class VersionedContextCall(_BaseVersionedCall, Generic[P, DepsT, FormattableT]):
         )
         self._compute_closure(self._call, self._call_versioned, self._stream_versioned)
 
+    @overload
+    def call(
+        self: VersionedContextCall[P, DepsT, None],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> ContextResponse[DepsT, None]: ...
+
+    @overload
+    def call(
+        self: VersionedContextCall[P, DepsT, FormattableT],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> ContextResponse[DepsT, FormattableT]: ...
+
     def call(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Call the versioned function and return ContextResponse directly."""
         return self._call_versioned(ctx, *args, **kwargs)
 
+    @overload
+    def __call__(
+        self: VersionedContextCall[P, DepsT, None],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> ContextResponse[DepsT, None]: ...
+
+    @overload
+    def __call__(
+        self: VersionedContextCall[P, DepsT, FormattableT],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> ContextResponse[DepsT, FormattableT]: ...
+
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Call the versioned function and return ContextResponse directly."""
         return self.call(ctx, *args, **kwargs)
+
+    @overload
+    def stream(
+        self: VersionedContextCall[P, DepsT, None],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> ContextStreamResponse[DepsT, None]: ...
+
+    @overload
+    def stream(
+        self: VersionedContextCall[P, DepsT, FormattableT],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> ContextStreamResponse[DepsT, FormattableT]: ...
 
     def stream(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
@@ -401,6 +529,22 @@ class VersionedContextCall(_BaseVersionedCall, Generic[P, DepsT, FormattableT]):
         """Stream the versioned function and return a ContextStreamResponse."""
         return self._stream_versioned(ctx, *args, **kwargs)
 
+    @overload
+    def wrapped(
+        self: VersionedContextCall[P, DepsT, None],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> VersionedResult[ContextResponse[DepsT, None]]: ...
+
+    @overload
+    def wrapped(
+        self: VersionedContextCall[P, DepsT, FormattableT],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> VersionedResult[ContextResponse[DepsT, FormattableT]]: ...
+
     def wrapped(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> VersionedResult[
@@ -408,6 +552,22 @@ class VersionedContextCall(_BaseVersionedCall, Generic[P, DepsT, FormattableT]):
     ]:
         """Call the versioned function and return a wrapped Response."""
         return self._call_versioned.wrapped(ctx, *args, **kwargs)
+
+    @overload
+    def wrapped_stream(
+        self: VersionedContextCall[P, DepsT, None],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> VersionedResult[ContextStreamResponse[DepsT, None]]: ...
+
+    @overload
+    def wrapped_stream(
+        self: VersionedContextCall[P, DepsT, FormattableT],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> VersionedResult[ContextStreamResponse[DepsT, FormattableT]]: ...
 
     def wrapped_stream(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
@@ -473,17 +633,65 @@ class VersionedAsyncContextCall(_BaseVersionedCall, Generic[P, DepsT, Formattabl
         )
         self._compute_closure(self._call, self._call_versioned, self._stream_versioned)
 
+    @overload
+    async def call(
+        self: VersionedAsyncContextCall[P, DepsT, None],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> AsyncContextResponse[DepsT, None]: ...
+
+    @overload
+    async def call(
+        self: VersionedAsyncContextCall[P, DepsT, FormattableT],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> AsyncContextResponse[DepsT, FormattableT]: ...
+
     async def call(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Call the versioned function and return AsyncContextResponse directly."""
         return await self._call_versioned(ctx, *args, **kwargs)
 
+    @overload
+    async def __call__(
+        self: VersionedAsyncContextCall[P, DepsT, None],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> AsyncContextResponse[DepsT, None]: ...
+
+    @overload
+    async def __call__(
+        self: VersionedAsyncContextCall[P, DepsT, FormattableT],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> AsyncContextResponse[DepsT, FormattableT]: ...
+
     async def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Call the versioned function and return AsyncContextResponse directly."""
         return await self.call(ctx, *args, **kwargs)
+
+    @overload
+    async def stream(
+        self: VersionedAsyncContextCall[P, DepsT, None],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> AsyncContextStreamResponse[DepsT, None]: ...
+
+    @overload
+    async def stream(
+        self: VersionedAsyncContextCall[P, DepsT, FormattableT],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> AsyncContextStreamResponse[DepsT, FormattableT]: ...
 
     async def stream(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
@@ -494,6 +702,22 @@ class VersionedAsyncContextCall(_BaseVersionedCall, Generic[P, DepsT, Formattabl
         """Stream the versioned function and return an AsyncContextStreamResponse."""
         return await self._stream_versioned(ctx, *args, **kwargs)
 
+    @overload
+    async def wrapped(
+        self: VersionedAsyncContextCall[P, DepsT, None],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> AsyncVersionedResult[AsyncContextResponse[DepsT, None]]: ...
+
+    @overload
+    async def wrapped(
+        self: VersionedAsyncContextCall[P, DepsT, FormattableT],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> AsyncVersionedResult[AsyncContextResponse[DepsT, FormattableT]]: ...
+
     async def wrapped(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> AsyncVersionedResult[
@@ -501,6 +725,22 @@ class VersionedAsyncContextCall(_BaseVersionedCall, Generic[P, DepsT, Formattabl
     ]:
         """Call the versioned function and return a wrapped Response."""
         return await self._call_versioned.wrapped(ctx, *args, **kwargs)
+
+    @overload
+    async def wrapped_stream(
+        self: VersionedAsyncContextCall[P, DepsT, None],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> AsyncVersionedResult[AsyncContextStreamResponse[DepsT, None]]: ...
+
+    @overload
+    async def wrapped_stream(
+        self: VersionedAsyncContextCall[P, DepsT, FormattableT],
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> AsyncVersionedResult[AsyncContextStreamResponse[DepsT, FormattableT]]: ...
 
     async def wrapped_stream(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs

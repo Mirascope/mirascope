@@ -25,7 +25,13 @@
  * ```
  */
 
-import { createContext, useContext, useRef, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useRef,
+  type ReactNode,
+} from "react";
 
 import {
   collectBrowserContext,
@@ -86,6 +92,9 @@ async function sendToProxy(data: {
   distinctId?: string;
   browserContext?: BrowserContext;
 }) {
+  // Only track real users in browsers, not prerender builds
+  if (typeof document === "undefined") return;
+
   try {
     // Collect browser context for rich analytics data
     const browserContext = collectBrowserContext();
@@ -122,37 +131,42 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
    */
   const lastDistinctIdRef = useRef<string | undefined>(undefined);
 
-  const contextValue: AnalyticsContextType = {
-    trackEvent: (name, properties, distinctId) => {
-      // Fire and forget - don't block on analytics
-      if (typeof window === "undefined") return;
-      const id = distinctId || lastDistinctIdRef.current;
-      void sendToProxy({ type: "event", name, properties, distinctId: id });
-    },
+  const contextValue = useMemo<AnalyticsContextType>(
+    () => ({
+      trackEvent: (name, properties, distinctId) => {
+        // Only track real users in browsers, not prerender builds
+        if (typeof document === "undefined") return;
+        const id = distinctId || lastDistinctIdRef.current;
+        void sendToProxy({ type: "event", name, properties, distinctId: id });
+      },
 
-    trackPageView: (params, distinctId) => {
-      if (typeof window === "undefined") return;
-      const id = distinctId || lastDistinctIdRef.current;
-      void sendToProxy({
-        type: "pageview",
-        path: params?.path,
-        title: params?.title,
-        distinctId: id,
-      });
-    },
+      trackPageView: (params, distinctId) => {
+        // Only track real users in browsers, not prerender builds
+        if (typeof document === "undefined") return;
+        const id = distinctId || lastDistinctIdRef.current;
+        void sendToProxy({
+          type: "pageview",
+          path: params?.path,
+          title: params?.title,
+          distinctId: id,
+        });
+      },
 
-    identify: (userId, properties) => {
-      if (typeof window === "undefined") return;
-      // Remember this user ID for future events
-      lastDistinctIdRef.current = userId;
-      void sendToProxy({
-        type: "identify",
-        userId,
-        properties,
-        distinctId: userId,
-      });
-    },
-  };
+      identify: (userId, properties) => {
+        // Only track real users in browsers, not prerender builds
+        if (typeof document === "undefined") return;
+        // Remember this user ID for future events
+        lastDistinctIdRef.current = userId;
+        void sendToProxy({
+          type: "identify",
+          userId,
+          properties,
+          distinctId: userId,
+        });
+      },
+    }),
+    [], // Empty deps - these functions don't depend on any props or state
+  );
 
   return (
     <AnalyticsContext.Provider value={contextValue}>

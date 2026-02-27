@@ -9,6 +9,9 @@ from ...core.serialization import FieldMetadata
 from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_attributes_item_value_array_value import (
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueArrayValue,
 )
+from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_attributes_item_value_int_value import (
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueIntValue,
+)
 from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_attributes_item_value_kvlist_value import (
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValue,
 )
@@ -16,7 +19,10 @@ from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_attr
 
 class TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue(UniversalBaseModel):
     string_value: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="stringValue")] = None
-    int_value: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="intValue")] = None
+    int_value: typing_extensions.Annotated[
+        typing.Optional[TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueIntValue],
+        FieldMetadata(alias="intValue"),
+    ] = None
     double_value: typing_extensions.Annotated[typing.Optional[float], FieldMetadata(alias="doubleValue")] = None
     bool_value: typing_extensions.Annotated[typing.Optional[bool], FieldMetadata(alias="boolValue")] = None
     array_value: typing_extensions.Annotated[

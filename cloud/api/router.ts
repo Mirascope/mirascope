@@ -49,6 +49,7 @@ import {
 import {
   listOrganizationsHandler,
   createOrganizationHandler,
+  createOrgSetupIntentHandler,
   getOrganizationHandler,
   updateOrganizationHandler,
   deleteOrganizationHandler,
@@ -58,6 +59,11 @@ import {
   previewSubscriptionChangeHandler,
   updateSubscriptionHandler,
   cancelScheduledDowngradeHandler,
+  createSetupIntentHandler,
+  getPaymentMethodHandler,
+  removePaymentMethodHandler,
+  getAutoReloadSettingsHandler,
+  updateAutoReloadSettingsHandler,
 } from "@/api/organizations.handlers";
 import {
   listProjectMembersHandler,
@@ -106,6 +112,8 @@ const TracesHandlersLive = HttpApiBuilder.group(
   (handlers) =>
     handlers
       .handle("create", ({ payload }) => createTraceHandler(payload))
+      // OTEL-compatible endpoint at /api/v2/v1/traces
+      .handle("createOtel", ({ payload }) => createTraceHandler(payload))
       // API key route - extracts environmentId from apiKeyInfo
       .handle("search", ({ payload }) =>
         Effect.gen(function* () {
@@ -152,6 +160,7 @@ const OrganizationsHandlersLive = HttpApiBuilder.group(
     handlers
       .handle("list", () => listOrganizationsHandler)
       .handle("create", ({ payload }) => createOrganizationHandler(payload))
+      .handle("createOrgSetupIntent", () => createOrgSetupIntentHandler)
       .handle("get", ({ path }) => getOrganizationHandler(path.id))
       .handle("update", ({ path, payload }) =>
         updateOrganizationHandler(path.id, payload),
@@ -172,6 +181,21 @@ const OrganizationsHandlersLive = HttpApiBuilder.group(
       )
       .handle("cancelScheduledDowngrade", ({ path }) =>
         cancelScheduledDowngradeHandler(path.id),
+      )
+      .handle("createSetupIntent", ({ path }) =>
+        createSetupIntentHandler(path.id),
+      )
+      .handle("getPaymentMethod", ({ path }) =>
+        getPaymentMethodHandler(path.id),
+      )
+      .handle("removePaymentMethod", ({ path }) =>
+        removePaymentMethodHandler(path.id),
+      )
+      .handle("getAutoReloadSettings", ({ path }) =>
+        getAutoReloadSettingsHandler(path.id),
+      )
+      .handle("updateAutoReloadSettings", ({ path, payload }) =>
+        updateAutoReloadSettingsHandler(path.id, payload),
       ),
 );
 

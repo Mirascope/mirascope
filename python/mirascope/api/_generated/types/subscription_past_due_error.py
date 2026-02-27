@@ -11,18 +11,14 @@ from .subscription_past_due_error_tag import SubscriptionPastDueErrorTag
 
 class SubscriptionPastDueError(UniversalBaseModel):
     message: str
-    stripe_customer_id: typing_extensions.Annotated[
-        str, FieldMetadata(alias="stripeCustomerId")
-    ]
+    stripe_customer_id: typing_extensions.Annotated[str, FieldMetadata(alias="stripeCustomerId")]
     past_due_subscription_ids: typing_extensions.Annotated[
         typing.List[str], FieldMetadata(alias="pastDueSubscriptionIds")
     ]
     tag: SubscriptionPastDueErrorTag
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

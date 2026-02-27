@@ -149,6 +149,36 @@ The examples above use `@llm.call`. You can also pass tools to `@llm.prompt` or 
 
 All three approaches work the same way: you provide tools and handle tool calls identically regardless of how you make the call.
 
+## Error Handling
+
+When a tool throws an exception during execution, Mirascope captures the error in a `ToolOutput` and passes it back to the LLM. This lets the model adapt its approach—perhaps trying different arguments or using a different tool.
+
+```python
+@llm.tool
+def divide(a: float, b: float) -> float:
+    """Divide a by b."""
+    if b == 0:
+        raise ValueError("Cannot divide by zero")
+    return a / b
+```
+
+If the LLM calls `divide(10, 0)`, the error message is returned as the tool result. The model sees `"Cannot divide by zero"` and can respond appropriately—perhaps explaining the issue to the user or trying a different calculation.
+
+Each `ToolOutput` has an `error` property you can check:
+
+```python
+outputs = response.execute_tools()
+for output in outputs:
+    if output.error:
+        print(f"Tool {output.name} failed: {output.error}")
+```
+
+Mirascope uses two tool-related exceptions:
+- `llm.ToolExecutionError` — Wrapped around any exception thrown during tool execution
+- `llm.ToolNotFoundError` — Raised when the LLM requests a tool that doesn't exist in the toolkit
+
+See [Errors](/docs/learn/llm/errors) for the full exception hierarchy.
+
 ## Provider Native Tools
 
 Some providers offer native tool support, which are tools that the provider executes on your behalf, server-side. The classic example is a web search tool, which allows the LLM to search the web and retrieve up-to-date information on your behalf.

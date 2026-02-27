@@ -27,7 +27,7 @@ export default function ViewModeSwitcher() {
           type="button"
           onClick={() => setViewMode("human")}
           className={cn(
-            "font-handwriting text-sm transition-colors select-none cursor-pointer",
+            "font-display text-sm transition-colors select-none cursor-pointer",
             !isMachineMode
               ? "text-mirple font-semibold"
               : "text-muted-foreground hover:text-mirple/70",

@@ -3,9 +3,9 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface OrganizationMembershipsListResponseItem {
-  memberId: string;
-  email: string;
-  name: string | null;
-  role: Mirascope.OrganizationMembershipsListResponseItemRole;
-  createdAt: Mirascope.Date_ | null;
+    memberId: string;
+    email: string;
+    name: string | null;
+    role: Mirascope.OrganizationMembershipsListResponseItemRole;
+    createdAt: Mirascope.Date_ | null;
 }

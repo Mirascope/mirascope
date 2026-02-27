@@ -101,8 +101,8 @@ export const Route = createFileRoute("/router/v2/$provider/$")({
           // Step 3: Create pending router request
           const routerRequestId = yield* createPendingRouterRequest(validated);
 
-          // Step 4: Reserve funds
-          const reservationId = yield* reserveRouterFunds(
+          // Step 4: Reserve funds (also validates pricing availability)
+          const { reservationId, modelPricing } = yield* reserveRouterFunds(
             validated,
             routerRequestId,
             organization.stripeCustomerId,
@@ -120,6 +120,7 @@ export const Route = createFileRoute("/router/v2/$provider/$")({
               apiKeyId: validated.apiKeyInfo.apiKeyId,
               routerRequestId,
             },
+            modelPricing,
           };
 
           // Step 5: Proxy request to provider with error handling

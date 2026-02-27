@@ -3,5 +3,5 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface TracesCreateResponse {
-  partialSuccess?: Mirascope.TracesCreateResponsePartialSuccess;
+    partialSuccess?: Mirascope.TracesCreateResponsePartialSuccess;
 }

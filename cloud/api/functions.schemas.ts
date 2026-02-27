@@ -22,6 +22,7 @@ const CreateFunctionRequestSchema = Schema.Struct({
   signature: Schema.String,
   signatureHash: Schema.String,
   name: Schema.String,
+  language: Schema.String,
   description: Schema.optional(Schema.NullOr(Schema.String)),
   tags: Schema.optional(Schema.NullOr(Schema.Array(Schema.String))),
   metadata: Schema.optional(
@@ -49,6 +50,7 @@ const FunctionSchema = Schema.Struct({
   ),
   code: Schema.String,
   signature: Schema.String,
+  language: Schema.String,
   dependencies: Schema.NullOr(
     Schema.Record({ key: Schema.String, value: DependencyInfoSchema }),
   ),

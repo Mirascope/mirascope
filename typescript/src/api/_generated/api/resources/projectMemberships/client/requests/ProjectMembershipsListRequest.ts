@@ -8,6 +8,6 @@
  *     }
  */
 export interface ProjectMembershipsListRequest {
-  organizationId: string;
-  projectId: string;
+    organizationId: string;
+    projectId: string;
 }

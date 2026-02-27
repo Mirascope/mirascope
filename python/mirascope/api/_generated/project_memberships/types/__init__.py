@@ -4,20 +4,14 @@
 
 from .project_memberships_create_request_role import ProjectMembershipsCreateRequestRole
 from .project_memberships_create_response import ProjectMembershipsCreateResponse
-from .project_memberships_create_response_role import (
-    ProjectMembershipsCreateResponseRole,
-)
+from .project_memberships_create_response_role import ProjectMembershipsCreateResponseRole
 from .project_memberships_get_response import ProjectMembershipsGetResponse
 from .project_memberships_get_response_role import ProjectMembershipsGetResponseRole
 from .project_memberships_list_response_item import ProjectMembershipsListResponseItem
-from .project_memberships_list_response_item_role import (
-    ProjectMembershipsListResponseItemRole,
-)
+from .project_memberships_list_response_item_role import ProjectMembershipsListResponseItemRole
 from .project_memberships_update_request_role import ProjectMembershipsUpdateRequestRole
 from .project_memberships_update_response import ProjectMembershipsUpdateResponse
-from .project_memberships_update_response_role import (
-    ProjectMembershipsUpdateResponseRole,
-)
+from .project_memberships_update_response_role import ProjectMembershipsUpdateResponseRole
 
 __all__ = [
     "ProjectMembershipsCreateRequestRole",

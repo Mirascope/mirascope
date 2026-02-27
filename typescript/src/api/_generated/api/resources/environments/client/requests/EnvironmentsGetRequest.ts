@@ -9,7 +9,7 @@
  *     }
  */
 export interface EnvironmentsGetRequest {
-  organizationId: string;
-  projectId: string;
-  environmentId: string;
+    organizationId: string;
+    projectId: string;
+    environmentId: string;
 }

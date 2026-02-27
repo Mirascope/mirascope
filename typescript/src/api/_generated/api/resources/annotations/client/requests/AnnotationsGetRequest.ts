@@ -7,5 +7,5 @@
  *     }
  */
 export interface AnnotationsGetRequest {
-  id: string;
+    id: string;
 }

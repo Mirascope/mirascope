@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 
 import { cn } from "@/app/lib/utils";
 
@@ -28,7 +29,9 @@ const ImageModal: React.FC<ImageModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  return (
+  // Use a portal to render at document.body so the modal escapes any
+  // ancestor stacking contexts created by backdrop-filter, transform, etc.
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm md:p-8"
       onClick={onClose}
@@ -63,7 +66,8 @@ const ImageModal: React.FC<ImageModalProps> = ({
           X
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 

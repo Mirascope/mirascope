@@ -9,7 +9,7 @@
  *     }
  */
 export interface ApiKeysListRequest {
-  organizationId: string;
-  projectId: string;
-  environmentId: string;
+    organizationId: string;
+    projectId: string;
+    environmentId: string;
 }

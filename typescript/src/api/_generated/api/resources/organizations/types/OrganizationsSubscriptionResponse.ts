@@ -3,11 +3,11 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface OrganizationsSubscriptionResponse {
-  subscriptionId: string;
-  currentPlan: Mirascope.OrganizationsSubscriptionResponseCurrentPlan;
-  status: string;
-  currentPeriodEnd: Mirascope.Date_;
-  hasPaymentMethod: boolean;
-  paymentMethod?: Mirascope.OrganizationsSubscriptionResponsePaymentMethod;
-  scheduledChange?: Mirascope.OrganizationsSubscriptionResponseScheduledChange;
+    subscriptionId: string;
+    currentPlan: Mirascope.OrganizationsSubscriptionResponseCurrentPlan;
+    status: string;
+    currentPeriodEnd: Mirascope.Date_;
+    hasPaymentMethod: boolean;
+    paymentMethod?: Mirascope.OrganizationsSubscriptionResponsePaymentMethod;
+    scheduledChange?: Mirascope.OrganizationsSubscriptionResponseScheduledChange;
 }

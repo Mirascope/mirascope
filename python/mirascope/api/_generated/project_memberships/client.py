@@ -5,17 +5,11 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from .raw_client import AsyncRawProjectMembershipsClient, RawProjectMembershipsClient
-from .types.project_memberships_create_request_role import (
-    ProjectMembershipsCreateRequestRole,
-)
+from .types.project_memberships_create_request_role import ProjectMembershipsCreateRequestRole
 from .types.project_memberships_create_response import ProjectMembershipsCreateResponse
 from .types.project_memberships_get_response import ProjectMembershipsGetResponse
-from .types.project_memberships_list_response_item import (
-    ProjectMembershipsListResponseItem,
-)
-from .types.project_memberships_update_request_role import (
-    ProjectMembershipsUpdateRequestRole,
-)
+from .types.project_memberships_list_response_item import ProjectMembershipsListResponseItem
+from .types.project_memberships_update_request_role import ProjectMembershipsUpdateRequestRole
 from .types.project_memberships_update_response import ProjectMembershipsUpdateResponse
 
 # this is used as the default value for optional parameters
@@ -38,11 +32,7 @@ class ProjectMembershipsClient:
         return self._raw_client
 
     def list(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, project_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[ProjectMembershipsListResponseItem]:
         """
         Parameters
@@ -69,9 +59,7 @@ class ProjectMembershipsClient:
             project_id="projectId",
         )
         """
-        _response = self._raw_client.list(
-            organization_id, project_id, request_options=request_options
-        )
+        _response = self._raw_client.list(organization_id, project_id, request_options=request_options)
         return _response.data
 
     def create(
@@ -115,11 +103,7 @@ class ProjectMembershipsClient:
         )
         """
         _response = self._raw_client.create(
-            organization_id,
-            project_id,
-            member_id=member_id,
-            role=role,
-            request_options=request_options,
+            organization_id, project_id, member_id=member_id, role=role, request_options=request_options
         )
         return _response.data
 
@@ -159,9 +143,7 @@ class ProjectMembershipsClient:
             member_id="memberId",
         )
         """
-        _response = self._raw_client.get(
-            organization_id, project_id, member_id, request_options=request_options
-        )
+        _response = self._raw_client.get(organization_id, project_id, member_id, request_options=request_options)
         return _response.data
 
     def delete(
@@ -199,9 +181,7 @@ class ProjectMembershipsClient:
             member_id="memberId",
         )
         """
-        _response = self._raw_client.delete(
-            organization_id, project_id, member_id, request_options=request_options
-        )
+        _response = self._raw_client.delete(organization_id, project_id, member_id, request_options=request_options)
         return _response.data
 
     def update(
@@ -245,20 +225,14 @@ class ProjectMembershipsClient:
         )
         """
         _response = self._raw_client.update(
-            organization_id,
-            project_id,
-            member_id,
-            role=role,
-            request_options=request_options,
+            organization_id, project_id, member_id, role=role, request_options=request_options
         )
         return _response.data
 
 
 class AsyncProjectMembershipsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
-        self._raw_client = AsyncRawProjectMembershipsClient(
-            client_wrapper=client_wrapper
-        )
+        self._raw_client = AsyncRawProjectMembershipsClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> AsyncRawProjectMembershipsClient:
@@ -272,11 +246,7 @@ class AsyncProjectMembershipsClient:
         return self._raw_client
 
     async def list(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, project_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[ProjectMembershipsListResponseItem]:
         """
         Parameters
@@ -311,9 +281,7 @@ class AsyncProjectMembershipsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.list(
-            organization_id, project_id, request_options=request_options
-        )
+        _response = await self._raw_client.list(organization_id, project_id, request_options=request_options)
         return _response.data
 
     async def create(
@@ -365,11 +333,7 @@ class AsyncProjectMembershipsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            organization_id,
-            project_id,
-            member_id=member_id,
-            role=role,
-            request_options=request_options,
+            organization_id, project_id, member_id=member_id, role=role, request_options=request_options
         )
         return _response.data
 
@@ -417,9 +381,7 @@ class AsyncProjectMembershipsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get(
-            organization_id, project_id, member_id, request_options=request_options
-        )
+        _response = await self._raw_client.get(organization_id, project_id, member_id, request_options=request_options)
         return _response.data
 
     async def delete(
@@ -519,10 +481,6 @@ class AsyncProjectMembershipsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.update(
-            organization_id,
-            project_id,
-            member_id,
-            role=role,
-            request_options=request_options,
+            organization_id, project_id, member_id, role=role, request_options=request_options
         )
         return _response.data

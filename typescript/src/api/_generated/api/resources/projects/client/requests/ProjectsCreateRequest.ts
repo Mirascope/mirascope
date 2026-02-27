@@ -9,9 +9,9 @@
  *     }
  */
 export interface ProjectsCreateRequest {
-  organizationId: string;
-  /** a string at most 100 character(s) long */
-  name: string;
-  /** a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$ */
-  slug: string;
+    organizationId: string;
+    /** a string at most 100 character(s) long */
+    name: string;
+    /** a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$ */
+    slug: string;
 }

@@ -270,6 +270,7 @@ class VersionedFunction(_BaseVersionedFunction[P, R], BaseSyncTracedFunction[P, 
                 signature=self.closure.signature,
                 signature_hash=self.closure.signature_hash,
                 name=self.name or self.closure.name,
+                language="python",
                 description=self.closure.docstring,
                 tags=list(self.tags) if self.tags else None,
                 metadata=cast(dict[str, str | None], self.metadata)
@@ -344,6 +345,7 @@ class AsyncVersionedFunction(
                 signature=self.closure.signature,
                 signature_hash=self.closure.signature_hash,
                 name=self.name or self.closure.name,
+                language="python",
                 description=self.closure.docstring,
                 tags=list(self.tags) if self.tags else None,
                 metadata=cast(dict[str, str | None], self.metadata)

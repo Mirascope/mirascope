@@ -3,6 +3,10 @@
  */
 
 import {
+  featureInfoForOpenAIModel,
+  type CompletionsModelFeatureInfo,
+} from "@/llm/providers/openai/completions/_utils/feature-info";
+import {
   BaseOpenAICompletionsProvider,
   type BaseOpenAICompletionsProviderInit,
 } from "@/llm/providers/openai/completions/base-provider";
@@ -45,5 +49,17 @@ export class OpenAICompletionsProvider extends BaseOpenAICompletionsProvider {
    */
   protected override providerModelName(modelId: string): string {
     return modelName(modelId, "completions");
+  }
+
+  /**
+   * Get feature info for actual OpenAI models.
+   *
+   * Uses the auto-generated model capability sets to determine features.
+   */
+  protected override modelFeatureInfo(
+    modelId: string,
+  ): CompletionsModelFeatureInfo {
+    const baseName = modelName(modelId, null);
+    return featureInfoForOpenAIModel(baseName);
   }
 }

@@ -22,7 +22,7 @@ test_snapshot = snapshot(
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "provider_tool_usage": None,
-                "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=40, output_tokens=37, server_tool_use=None, service_tier='standard')",
+                "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=40, output_tokens=37, server_tool_use=None, service_tier='standard', inference_geo='not_available')",
                 "total_tokens": 77,
             },
             "messages": [

@@ -20,6 +20,7 @@ class FunctionsCreateResponse(UniversalBaseModel):
     metadata: typing.Optional[typing.Dict[str, typing.Optional[str]]] = None
     code: str
     signature: str
+    language: str
     dependencies: typing.Optional[typing.Dict[str, typing.Optional[FunctionsCreateResponseDependenciesValue]]] = None
     environment_id: typing_extensions.Annotated[str, FieldMetadata(alias="environmentId")]
     project_id: typing_extensions.Annotated[str, FieldMetadata(alias="projectId")]

@@ -8,7 +8,6 @@ import type {
 } from "@/app/components/blocks/navigation/sidebar";
 import type { DocSpec, SectionSpec, VersionSpec } from "@/app/lib/content/spec";
 
-import { docsSpec } from "@/../content/docs/_meta";
 import DocsProductSelector from "@/app/components/blocks/navigation/docs-product-selector";
 import Sidebar from "@/app/components/blocks/navigation/sidebar";
 import { type Provider } from "@/app/components/mdx/elements/model-provider-provider";
@@ -27,7 +26,9 @@ function detectActiveVersion(pathname: string): string | undefined {
   const match = pathname.match(/^\/docs\/([^/]+)/);
   if (match) {
     const segment = match[1];
-    const isVersion = docsSpec.some((v) => v.version === segment);
+    const isVersion = docRegistry
+      .getFullSpec()
+      .some((v) => v.version === segment);
     if (isVersion) {
       return segment;
     }
@@ -41,10 +42,11 @@ function detectActiveVersion(pathname: string): string | undefined {
 function getActiveVersionSpec(
   activeVersion: string | undefined,
 ): VersionSpec | undefined {
+  const fullSpec = docRegistry.getFullSpec();
   if (activeVersion) {
-    return docsSpec.find((v) => v.version === activeVersion);
+    return fullSpec.find((v) => v.version === activeVersion);
   }
-  return docsSpec.find((v) => !v.version);
+  return fullSpec.find((v) => !v.version);
 }
 
 /**

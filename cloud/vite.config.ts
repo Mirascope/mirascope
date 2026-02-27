@@ -2,6 +2,7 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
+import os from "os";
 import path from "path";
 import { defineConfig } from "vite";
 
@@ -25,9 +26,27 @@ await processor.processAllContent();
 // Filter pages to include in prerendering and robots.txt
 const filterPages = (page: { path: string }) => {
   return (
-    !page.path.startsWith("/cloud") && !page.path.startsWith("/discord-invite")
+    !page.path.startsWith("/cloud") &&
+    !page.path.startsWith("/dev") &&
+    !page.path.startsWith("/discord-invite")
   );
 };
+
+/**
+ * Prerender concurrency based on available CPU cores.
+ *
+ * Uses CPU count as a proxy for machine size since prerendering is I/O bound
+ * (Miniflare connection pool) rather than CPU bound. The 2x multiplier with
+ * cap of 20 balances throughput vs connection exhaustion:
+ *
+ * - CI (2 cores): 4 concurrent (safely under the ~14 threshold that caused failures)
+ * - Local (10 cores): 20 concurrent (capped, tested stable up to 100)
+ */
+const prerenderConcurrency = Math.min(
+  (os.availableParallelism?.() ?? os.cpus().length) * 2,
+  20,
+);
+console.log(`[prerender] Prerender concurrency: ${prerenderConcurrency}`);
 
 export default defineConfig(() => {
   return {
@@ -50,7 +69,7 @@ export default defineConfig(() => {
           crawlLinks: true,
           autoStaticPathsDiscovery: true,
           autoSubfolderIndex: false,
-          concurrency: 14,
+          concurrency: prerenderConcurrency,
           // NOTE: Bug in TanStack Start that explicit retries will let 404 errors slip through.
           retryCount: 0,
           retryDelay: 0,
@@ -60,7 +79,7 @@ export default defineConfig(() => {
           filter: filterPages,
           // Setting changefreq per-page is supported
           onSuccess: ({ page }: { page: { path: string } }) => {
-            console.log(`Rendered ${page.path}!`);
+            console.log(`[prerender] Rendered ${page.path}!`);
             let changefreq = "daily";
             if (page.path.startsWith("/blog/")) {
               changefreq = "weekly";

@@ -1,5 +1,6 @@
+import { describe, it, expect } from "@effect/vitest";
 import { Effect } from "effect";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { vi, beforeEach } from "vitest";
 
 import { PROVIDER_CONFIGS } from "@/api/router/providers";
 import { proxyToProvider, extractProviderPath } from "@/api/router/proxy";

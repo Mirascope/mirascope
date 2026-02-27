@@ -131,6 +131,9 @@ export type {
 import * as messages from "@/llm/messages";
 export { messages };
 
+import * as mcp from "@/llm/mcp";
+export { mcp };
+
 export {
   MirascopeError,
   ProviderError,
@@ -151,7 +154,10 @@ export {
   FeatureNotSupportedError,
   NoRegisteredProviderError,
   MissingAPIKeyError,
+  RetriesExhausted,
+  StreamRestarted,
 } from "@/llm/exceptions";
+export type { RetryFailure } from "@/llm/retries/utils";
 
 export type { Params, ThinkingConfig, ThinkingLevel } from "@/llm/models";
 
@@ -214,6 +220,13 @@ export {
   getProviderForModel,
   registerProvider,
   resetProviderRegistry,
+  MirascopeProvider,
+  AnthropicProvider,
+  GoogleProvider,
+  OllamaProvider,
+  OpenAIProvider,
+  OpenRouterProvider,
+  TogetherProvider,
 } from "@/llm/providers";
 
 export {
@@ -244,3 +257,31 @@ export type {
   StreamResponseChunk,
   AsyncChunkIterator,
 } from "@/llm/responses";
+
+// Retry module
+export {
+  RetryConfig,
+  RetryModel,
+  retryModel,
+  getRetryModelFromContext,
+  RetryResponse,
+  ContextRetryResponse,
+  RetryStreamResponse,
+  ContextRetryStreamResponse,
+  DEFAULT_RETRYABLE_ERRORS,
+  DEFAULT_MAX_RETRIES,
+  DEFAULT_INITIAL_DELAY,
+  DEFAULT_MAX_DELAY,
+  DEFAULT_BACKOFF_MULTIPLIER,
+  DEFAULT_JITTER,
+  calculateDelay,
+  isRetryableError,
+  sleep,
+} from "@/llm/retries";
+
+export type {
+  RetryArgs,
+  RetryModelParams,
+  ErrorConstructor,
+  RetryFailure as RetryFailureInfo,
+} from "@/llm/retries";

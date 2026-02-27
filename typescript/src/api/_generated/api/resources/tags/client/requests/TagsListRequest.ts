@@ -8,6 +8,6 @@
  *     }
  */
 export interface TagsListRequest {
-  organizationId: string;
-  projectId: string;
+    organizationId: string;
+    projectId: string;
 }

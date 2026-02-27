@@ -52,6 +52,8 @@ import { DrizzleORM } from "@/db/client";
 import { Stripe } from "@/payments/client";
 import { Customers } from "@/payments/customers";
 import { PaymentIntents } from "@/payments/payment-intents";
+import { PaymentMethods } from "@/payments/payment-methods";
+import { PLAN_LIMITS, type PlanTier } from "@/payments/plans";
 import { Router } from "@/payments/products/router";
 import { Spans } from "@/payments/products/spans";
 import { Subscriptions } from "@/payments/subscriptions";
@@ -93,6 +95,7 @@ export class Payments extends Context.Tag("Payments")<
       readonly spans: Ready<Spans>;
     };
     readonly paymentIntents: Ready<PaymentIntents>;
+    readonly paymentMethods: Ready<PaymentMethods>;
   }
 >() {
   /**
@@ -120,6 +123,7 @@ export class Payments extends Context.Tag("Payments")<
           spans: provideDependencies(new Spans(subscriptions)),
         },
         paymentIntents: provideDependencies(new PaymentIntents()),
+        paymentMethods: provideDependencies(new PaymentMethods()),
       };
     }),
   );
@@ -155,4 +159,64 @@ export class Payments extends Context.Tag("Payments")<
 
     return Payments.Default.pipe(Layer.provide(stripeLayer));
   };
+
+  /**
+   * Creates a dev Payments layer that simulates the given plan tier.
+   *
+   * Use via `MOCK_DEPLOYMENT=free|pro|team` env var.
+   */
+  static MockWithPlan = (plan: PlanTier) =>
+    Layer.succeed(Payments, {
+      customers: devProxyWith("Payments.customers", {
+        subscriptions: devProxyWith("Payments.customers.subscriptions", {
+          getPlan: () => Effect.succeed(plan),
+          getPlanLimits: (tier: PlanTier) => Effect.succeed(PLAN_LIMITS[tier]),
+        }),
+      }),
+      products: {
+        router: devProxy("Payments.products.router"),
+        spans: devProxy("Payments.products.spans"),
+      },
+      paymentIntents: devProxy("Payments.paymentIntents"),
+      paymentMethods: devProxy("Payments.paymentMethods"),
+    } as Context.Tag.Service<Payments>);
+
+  /** Default dev layer (free plan). Use MockWithPlan for other tiers. */
+  static Dev = Payments.MockWithPlan("free");
+}
+
+/** Returns a proxy where any property access returns the override if present, otherwise Effect.die. */
+function devProxyWith(
+  label: string,
+  overrides: Record<string, unknown>,
+): unknown {
+  return new Proxy(
+    {},
+    {
+      get: (_target, prop) => {
+        if (typeof prop === "string" && prop in overrides) {
+          return overrides[prop];
+        }
+        return (..._args: unknown[]) =>
+          Effect.die(
+            new Error(`${label}.${String(prop)} not available in dev mode`),
+          );
+      },
+    },
+  );
+}
+
+/** Returns a proxy where any method call returns Effect.die with a descriptive message. */
+function devProxy(label: string): unknown {
+  return new Proxy(
+    {},
+    {
+      get:
+        (_target, prop) =>
+        (..._args: unknown[]) =>
+          Effect.die(
+            new Error(`${label}.${String(prop)} not available in dev mode`),
+          ),
+    },
+  );
 }

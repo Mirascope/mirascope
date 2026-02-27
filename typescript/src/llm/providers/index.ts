@@ -27,6 +27,9 @@ export { OllamaProvider } from "@/llm/providers/ollama";
 // Together provider
 export { TogetherProvider } from "@/llm/providers/together";
 
+// OpenRouter provider
+export { OpenRouterProvider } from "@/llm/providers/openrouter";
+
 // OpenAI provider
 export {
   OpenAIProvider,

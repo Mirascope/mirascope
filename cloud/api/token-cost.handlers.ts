@@ -7,6 +7,7 @@ import type {
 } from "@/api/token-cost.schemas";
 
 import { centicentsToDollars } from "@/api/router/cost-utils";
+import { getModelPricing } from "@/api/router/pricing";
 import {
   getCostCalculator,
   isValidProvider,
@@ -39,6 +40,34 @@ export const tokenCostHandler = (
       );
     }
 
+    // Fetch pricing from models.dev
+    const modelPricing = yield* getModelPricing(
+      request.provider,
+      request.model,
+    ).pipe(
+      // Convert fetch errors to PricingUnavailableError
+      Effect.mapError(
+        () =>
+          new PricingUnavailableError({
+            message: `Failed to fetch pricing for ${request.provider}/${request.model}`,
+            provider: request.provider,
+            model: request.model,
+          }),
+      ),
+      // Handle null (model not found) case
+      Effect.flatMap((pricing) =>
+        pricing === null
+          ? Effect.fail(
+              new PricingUnavailableError({
+                message: `Pricing unavailable for ${request.provider}/${request.model}`,
+                provider: request.provider,
+                model: request.model,
+              }),
+            )
+          : Effect.succeed(pricing),
+      ),
+    );
+
     const calculator = getCostCalculator(request.provider);
 
     const usage: TokenUsage = {
@@ -49,17 +78,11 @@ export const tokenCostHandler = (
       cacheWriteBreakdown: request.usage.cacheWriteBreakdown,
     };
 
-    const costBreakdown = yield* calculator.calculate(request.model, usage);
-
-    if (!costBreakdown) {
-      return yield* Effect.fail(
-        new PricingUnavailableError({
-          message: `Pricing unavailable for ${request.provider}/${request.model}`,
-          provider: request.provider,
-          model: request.model,
-        }),
-      );
-    }
+    const costBreakdown = yield* calculator.calculate(
+      request.model,
+      usage,
+      modelPricing,
+    );
 
     // Apply 5% router fee if request is via Mirascope Router
     const routerMultiplier = request.viaRouter ? 1.05 : 1.0;

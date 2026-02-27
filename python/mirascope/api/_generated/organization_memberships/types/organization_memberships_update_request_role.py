@@ -2,6 +2,4 @@
 
 import typing
 
-OrganizationMembershipsUpdateRequestRole = typing.Union[
-    typing.Literal["ADMIN", "MEMBER"], typing.Any
-]
+OrganizationMembershipsUpdateRequestRole = typing.Union[typing.Literal["ADMIN", "MEMBER"], typing.Any]

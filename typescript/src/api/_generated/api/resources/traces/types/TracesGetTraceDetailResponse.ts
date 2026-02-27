@@ -3,8 +3,8 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface TracesGetTraceDetailResponse {
-  traceId: string;
-  spans: Mirascope.TracesGetTraceDetailResponseSpansItem[];
-  rootSpanId: string | null;
-  totalDurationMs: number | null;
+    traceId: string;
+    spans: Mirascope.TracesGetTraceDetailResponseSpansItem[];
+    rootSpanId: string | null;
+    totalDurationMs: number | null;
 }

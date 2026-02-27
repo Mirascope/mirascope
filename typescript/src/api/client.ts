@@ -7,7 +7,7 @@ import { getSettings } from "./settings.js";
 
 export interface MirascopeClientOptions {
   apiKey?: string;
-  baseUrl?: string;
+  baseURL?: string;
   timeoutInSeconds?: number;
   maxRetries?: number;
 }
@@ -16,10 +16,10 @@ export class MirascopeClient extends BaseMirascopeClient {
   constructor(options: MirascopeClientOptions = {}) {
     const settings = getSettings();
     const apiKey = options.apiKey ?? settings.apiKey;
-    const baseUrl = options.baseUrl ?? settings.baseUrl;
+    const baseURL = options.baseURL ?? settings.baseURL;
 
     super({
-      baseUrl,
+      baseUrl: baseURL,
       timeoutInSeconds: options.timeoutInSeconds ?? 180,
       maxRetries: options.maxRetries ?? 2,
       headers: apiKey

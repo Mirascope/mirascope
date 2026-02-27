@@ -18,14 +18,14 @@ sync_snapshot = snapshot(
             "params": {},
             "finish_reason": None,
             "usage": {
-                "input_tokens": 904,
-                "output_tokens": 304,
+                "input_tokens": 884,
+                "output_tokens": 231,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "provider_tool_usage": None,
-                "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=904, output_tokens=304, server_tool_use=None, service_tier='standard')",
-                "total_tokens": 1208,
+                "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=884, output_tokens=231, server_tool_use=None, service_tier='standard', inference_geo='not_available')",
+                "total_tokens": 1115,
             },
             "messages": [
                 SystemMessage(
@@ -72,14 +72,11 @@ Respond only with valid JSON that matches this exact schema:
                 ),
                 AssistantMessage(
                     content=[
-                        Text(
-                            text="I'll look up the book information for ISBN 0-7653-1178-X."
-                        ),
                         ToolCall(
-                            id="toolu_01CbrmhKDPwcB2ZvTVDhDE87",
+                            id="toolu_01F7Jn5SbxV7QB7Kgx9YDXHv",
                             name="get_book_info",
                             args='{"isbn": "0-7653-1178-X"}',
-                        ),
+                        )
                     ],
                     provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-5",
@@ -88,23 +85,18 @@ Respond only with valid JSON that matches this exact schema:
                         "role": "assistant",
                         "content": [
                             {
-                                "citations": None,
-                                "text": "I'll look up the book information for ISBN 0-7653-1178-X.",
-                                "type": "text",
-                            },
-                            {
-                                "id": "toolu_01CbrmhKDPwcB2ZvTVDhDE87",
+                                "id": "toolu_01F7Jn5SbxV7QB7Kgx9YDXHv",
                                 "input": {"isbn": "0-7653-1178-X"},
                                 "name": "get_book_info",
                                 "type": "tool_use",
-                            },
+                            }
                         ],
                     },
                 ),
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01CbrmhKDPwcB2ZvTVDhDE87",
+                            id="toolu_01F7Jn5SbxV7QB7Kgx9YDXHv",
                             name="get_book_info",
                             result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -114,6 +106,8 @@ Respond only with valid JSON that matches this exact schema:
                     content=[
                         Text(
                             text="""\
+Based on the book information retrieved, here is the response in the required format:
+
 ```json
 {
   "title": "Mistborn: The Final Empire",
@@ -123,22 +117,20 @@ Respond only with valid JSON that matches this exact schema:
 }
 ```
 
-**Detailed Information:**
+**Additional Information:**
 
-This is "Mistborn: The Final Empire" by Brandon Sanderson, the first book in the critically acclaimed Mistborn series. Published in 2006, this epic fantasy novel spans 544 pages and introduces readers to a unique magic system called Allomancy.
-
-The story is set in a world where the Dark Lord won and has ruled for a thousand years. It follows Vin, a street thief who discovers she has powerful magical abilities, and Kelsier, a charismatic rebel who recruits her into his crew to overthrow the immortal Lord Ruler.
+*Mistborn: The Final Empire* is the first book in Brandon Sanderson's acclaimed Mistborn trilogy. This epic fantasy novel features a unique magic system based on metals and follows a street urchin named Vin who joins a crew attempting to overthrow the immortal Lord Ruler.
 
 **Recommendation Score: 9/10**
 
 This book is highly recommended for fans of:
-- Fantasy with innovative magic systems
-- Heist stories with a twist
-- Complex worldbuilding
-- Character-driven narratives
-- Dark but hopeful themes
+- Complex, well-developed magic systems
+- Heist storylines mixed with epic fantasy
+- Strong character development
+- Political intrigue and rebellion themes
+- Brandon Sanderson's signature detailed world-building
 
-Brandon Sanderson's intricate Allomancy system (where characters "burn" metals to gain powers) is one of the most original magic systems in fantasy literature. The book expertly blends political intrigue, action, and character development, making it a modern classic in the genre.\
+The book has become a modern fantasy classic and is an excellent entry point into Sanderson's Cosmere universe.\
 """
                         )
                     ],
@@ -149,8 +141,9 @@ Brandon Sanderson's intricate Allomancy system (where characters "burn" metals t
                         "role": "assistant",
                         "content": [
                             {
-                                "citations": None,
                                 "text": """\
+Based on the book information retrieved, here is the response in the required format:
+
 ```json
 {
   "title": "Mistborn: The Final Empire",
@@ -160,22 +153,20 @@ Brandon Sanderson's intricate Allomancy system (where characters "burn" metals t
 }
 ```
 
-**Detailed Information:**
+**Additional Information:**
 
-This is "Mistborn: The Final Empire" by Brandon Sanderson, the first book in the critically acclaimed Mistborn series. Published in 2006, this epic fantasy novel spans 544 pages and introduces readers to a unique magic system called Allomancy.
-
-The story is set in a world where the Dark Lord won and has ruled for a thousand years. It follows Vin, a street thief who discovers she has powerful magical abilities, and Kelsier, a charismatic rebel who recruits her into his crew to overthrow the immortal Lord Ruler.
+*Mistborn: The Final Empire* is the first book in Brandon Sanderson's acclaimed Mistborn trilogy. This epic fantasy novel features a unique magic system based on metals and follows a street urchin named Vin who joins a crew attempting to overthrow the immortal Lord Ruler.
 
 **Recommendation Score: 9/10**
 
 This book is highly recommended for fans of:
-- Fantasy with innovative magic systems
-- Heist stories with a twist
-- Complex worldbuilding
-- Character-driven narratives
-- Dark but hopeful themes
+- Complex, well-developed magic systems
+- Heist storylines mixed with epic fantasy
+- Strong character development
+- Political intrigue and rebellion themes
+- Brandon Sanderson's signature detailed world-building
 
-Brandon Sanderson's intricate Allomancy system (where characters "burn" metals to gain powers) is one of the most original magic systems in fantasy literature. The book expertly blends political intrigue, action, and character development, making it a modern classic in the genre.\
+The book has become a modern fantasy classic and is an excellent entry point into Sanderson's Cosmere universe.\
 """,
                                 "type": "text",
                             }
@@ -268,13 +259,13 @@ async_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 884,
-                "output_tokens": 317,
+                "output_tokens": 293,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "provider_tool_usage": None,
-                "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=884, output_tokens=317, server_tool_use=None, service_tier='standard')",
-                "total_tokens": 1201,
+                "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=884, output_tokens=293, server_tool_use=None, service_tier='standard', inference_geo='not_available')",
+                "total_tokens": 1177,
             },
             "messages": [
                 SystemMessage(
@@ -322,7 +313,7 @@ Respond only with valid JSON that matches this exact schema:
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="toolu_012GBxYYYvfeoPKaNrFtAqLc",
+                            id="toolu_01NhysLThit4TbG1A8hqEZPW",
                             name="get_book_info",
                             args='{"isbn": "0-7653-1178-X"}',
                         )
@@ -334,7 +325,7 @@ Respond only with valid JSON that matches this exact schema:
                         "role": "assistant",
                         "content": [
                             {
-                                "id": "toolu_012GBxYYYvfeoPKaNrFtAqLc",
+                                "id": "toolu_01NhysLThit4TbG1A8hqEZPW",
                                 "input": {"isbn": "0-7653-1178-X"},
                                 "name": "get_book_info",
                                 "type": "tool_use",
@@ -345,7 +336,7 @@ Respond only with valid JSON that matches this exact schema:
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_012GBxYYYvfeoPKaNrFtAqLc",
+                            id="toolu_01NhysLThit4TbG1A8hqEZPW",
                             name="get_book_info",
                             result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -364,24 +355,19 @@ Respond only with valid JSON that matches this exact schema:
 }
 ```
 
-**Additional Information:**
+**Additional Details:**
 
-**Mistborn: The Final Empire** is the first book in Brandon Sanderson's critically acclaimed Mistborn trilogy. This epic fantasy novel is set in a dark world where ash falls from the sky, mists dominate the night, and the immortal Lord Ruler has reigned for a thousand years.
-
-The story follows Kelsier, a charismatic thief with extraordinary magical abilities, and Vin, a street urchin who discovers she has similar powers. Together with a crew of skilled rebels, they plan the impossible: to overthrow the Lord Ruler's oppressive empire.
-
-The magic system, called Allomancy, is one of the most innovative in fantasy literature—practitioners "burn" metals they've ingested to gain various supernatural abilities.
+"Mistborn: The Final Empire" is the first book in Brandon Sanderson's acclaimed Mistborn trilogy. This epic fantasy novel features a unique magic system based on "Allomancy" - the ability to ingest and "burn" metals to gain supernatural powers. The story follows Vin, a street thief who discovers she's a Mistborn (someone who can use all Allomantic metals), as she joins a crew of rebel skaa attempting to overthrow the immortal Lord Ruler who has oppressed the land for a thousand years.
 
 **Recommendation Score: 9/10**
 
-This book is highly recommended for fans of epic fantasy who appreciate:
-- Intricate, well-defined magic systems
-- Heist-style plotting combined with epic scope
-- Strong character development
-- Dark atmospheric settings with hope emerging from darkness
-- Complex world-building
+This book is highly recommended for:
+- Fantasy readers looking for innovative magic systems
+- Fans of heist stories with intricate plotting
+- Readers who enjoy complex world-building and character development
+- Those who appreciate darker, grittier fantasy settings
 
-Brandon Sanderson's masterful storytelling and unique magical system make this a must-read for fantasy enthusiasts.\
+Brandon Sanderson is known for his meticulous magic systems and satisfying plot resolutions, and this book showcases both strengths brilliantly. It's an excellent entry point into Sanderson's Cosmere universe.\
 """
                         )
                     ],
@@ -392,7 +378,6 @@ Brandon Sanderson's masterful storytelling and unique magical system make this a
                         "role": "assistant",
                         "content": [
                             {
-                                "citations": None,
                                 "text": """\
 ```json
 {
@@ -403,24 +388,19 @@ Brandon Sanderson's masterful storytelling and unique magical system make this a
 }
 ```
 
-**Additional Information:**
+**Additional Details:**
 
-**Mistborn: The Final Empire** is the first book in Brandon Sanderson's critically acclaimed Mistborn trilogy. This epic fantasy novel is set in a dark world where ash falls from the sky, mists dominate the night, and the immortal Lord Ruler has reigned for a thousand years.
-
-The story follows Kelsier, a charismatic thief with extraordinary magical abilities, and Vin, a street urchin who discovers she has similar powers. Together with a crew of skilled rebels, they plan the impossible: to overthrow the Lord Ruler's oppressive empire.
-
-The magic system, called Allomancy, is one of the most innovative in fantasy literature—practitioners "burn" metals they've ingested to gain various supernatural abilities.
+"Mistborn: The Final Empire" is the first book in Brandon Sanderson's acclaimed Mistborn trilogy. This epic fantasy novel features a unique magic system based on "Allomancy" - the ability to ingest and "burn" metals to gain supernatural powers. The story follows Vin, a street thief who discovers she's a Mistborn (someone who can use all Allomantic metals), as she joins a crew of rebel skaa attempting to overthrow the immortal Lord Ruler who has oppressed the land for a thousand years.
 
 **Recommendation Score: 9/10**
 
-This book is highly recommended for fans of epic fantasy who appreciate:
-- Intricate, well-defined magic systems
-- Heist-style plotting combined with epic scope
-- Strong character development
-- Dark atmospheric settings with hope emerging from darkness
-- Complex world-building
+This book is highly recommended for:
+- Fantasy readers looking for innovative magic systems
+- Fans of heist stories with intricate plotting
+- Readers who enjoy complex world-building and character development
+- Those who appreciate darker, grittier fantasy settings
 
-Brandon Sanderson's masterful storytelling and unique magical system make this a must-read for fantasy enthusiasts.\
+Brandon Sanderson is known for his meticulous magic systems and satisfying plot resolutions, and this book showcases both strengths brilliantly. It's an excellent entry point into Sanderson's Cosmere universe.\
 """,
                                 "type": "text",
                             }
@@ -555,11 +535,14 @@ Respond only with valid JSON that matches this exact schema:
                 ),
                 AssistantMessage(
                     content=[
+                        Text(
+                            text="I'll look up the book information for ISBN 0-7653-1178-X."
+                        ),
                         ToolCall(
-                            id="toolu_016Uezag7Kc66imaW9P3QzRP",
+                            id="toolu_01KmRWPDvdWdaL3Dm2NzGNnM",
                             name="get_book_info",
                             args='{"isbn": "0-7653-1178-X"}',
-                        )
+                        ),
                     ],
                     provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-5",
@@ -568,18 +551,22 @@ Respond only with valid JSON that matches this exact schema:
                         "role": "assistant",
                         "content": [
                             {
+                                "type": "text",
+                                "text": "I'll look up the book information for ISBN 0-7653-1178-X.",
+                            },
+                            {
                                 "type": "tool_use",
-                                "id": "toolu_016Uezag7Kc66imaW9P3QzRP",
+                                "id": "toolu_01KmRWPDvdWdaL3Dm2NzGNnM",
                                 "name": "get_book_info",
                                 "input": {"isbn": "0-7653-1178-X"},
-                            }
+                            },
                         ],
                     },
                 ),
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_016Uezag7Kc66imaW9P3QzRP",
+                            id="toolu_01KmRWPDvdWdaL3Dm2NzGNnM",
                             name="get_book_info",
                             result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -598,19 +585,22 @@ Respond only with valid JSON that matches this exact schema:
 }
 ```
 
-**Additional Details:**
+**Detailed Information:**
 
-"Mistborn: The Final Empire" is the first book in Brandon Sanderson's acclaimed Mistborn series. This epic fantasy novel is set in a world where ash falls from the sky, mist dominates the night, and the immortal Lord Ruler has reigned with absolute power for a thousand years. The story follows Vin, a street urchin who discovers she has the rare power of a Mistborn - someone who can "burn" multiple metals to gain supernatural abilities.
+**Mistborn: The Final Empire** by Brandon Sanderson is an epic fantasy novel and the first book in the Mistborn trilogy. Published in 2006, this 544-page novel is set in a dark, ash-covered world where the Lord Ruler has reigned for a thousand years and the skies are perpetually red.
+
+The story follows Vin, a young street thief who discovers she has powerful magical abilities called Allomancy - a system where practitioners can "burn" metals internally to gain various supernatural powers. She joins a crew of rebels led by Kelsier, a charismatic Mistborn (someone who can use all Allomantic metals), who plans to overthrow the seemingly immortal Lord Ruler.
 
 **Recommendation Score: 9/10**
 
-This book is highly recommended for:
-- Fantasy readers who enjoy intricate magic systems
-- Fans of heist stories with a fantasy twist
-- Readers who appreciate well-developed characters and plot twists
-- Those looking for a complete trilogy with a satisfying conclusion
+This book is highly recommended for readers who enjoy:
+- Intricate, well-defined magic systems
+- Heist/rebellion storylines with strategic planning
+- Strong character development
+- Dark fantasy settings
+- Political intrigue
 
-Brandon Sanderson is known for his detailed world-building and innovative magic systems, and Mistborn is considered one of his best works. The book has received critical acclaim and has a strong fanbase within the fantasy community.\
+Brandon Sanderson's signature meticulous worldbuilding and innovative magic system make this a standout in modern fantasy literature. It's an excellent entry point into Sanderson's work and the broader Cosmere universe.\
 """
                         )
                     ],
@@ -632,19 +622,22 @@ Brandon Sanderson is known for his detailed world-building and innovative magic 
 }
 ```
 
-**Additional Details:**
+**Detailed Information:**
 
-"Mistborn: The Final Empire" is the first book in Brandon Sanderson's acclaimed Mistborn series. This epic fantasy novel is set in a world where ash falls from the sky, mist dominates the night, and the immortal Lord Ruler has reigned with absolute power for a thousand years. The story follows Vin, a street urchin who discovers she has the rare power of a Mistborn - someone who can "burn" multiple metals to gain supernatural abilities.
+**Mistborn: The Final Empire** by Brandon Sanderson is an epic fantasy novel and the first book in the Mistborn trilogy. Published in 2006, this 544-page novel is set in a dark, ash-covered world where the Lord Ruler has reigned for a thousand years and the skies are perpetually red.
+
+The story follows Vin, a young street thief who discovers she has powerful magical abilities called Allomancy - a system where practitioners can "burn" metals internally to gain various supernatural powers. She joins a crew of rebels led by Kelsier, a charismatic Mistborn (someone who can use all Allomantic metals), who plans to overthrow the seemingly immortal Lord Ruler.
 
 **Recommendation Score: 9/10**
 
-This book is highly recommended for:
-- Fantasy readers who enjoy intricate magic systems
-- Fans of heist stories with a fantasy twist
-- Readers who appreciate well-developed characters and plot twists
-- Those looking for a complete trilogy with a satisfying conclusion
+This book is highly recommended for readers who enjoy:
+- Intricate, well-defined magic systems
+- Heist/rebellion storylines with strategic planning
+- Strong character development
+- Dark fantasy settings
+- Political intrigue
 
-Brandon Sanderson is known for his detailed world-building and innovative magic systems, and Mistborn is considered one of his best works. The book has received critical acclaim and has a strong fanbase within the fantasy community.\
+Brandon Sanderson's signature meticulous worldbuilding and innovative magic system make this a standout in modern fantasy literature. It's an excellent entry point into Sanderson's work and the broader Cosmere universe.\
 """,
                             }
                         ],
@@ -724,16 +717,16 @@ Respond only with valid JSON that matches this exact schema:
                 }
             ],
             "usage": {
-                "input_tokens": 884,
-                "output_tokens": 279,
+                "input_tokens": 904,
+                "output_tokens": 328,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 1163,
+                "total_tokens": 1232,
             },
-            "n_chunks": 88,
+            "n_chunks": 110,
         }
     }
 )
@@ -790,7 +783,7 @@ Respond only with valid JSON that matches this exact schema:
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="toolu_019tBapA33WAV3gc9x1NiwhC",
+                            id="toolu_018ZfveWtNE97MSDJXddwnsZ",
                             name="get_book_info",
                             args='{"isbn": "0-7653-1178-X"}',
                         )
@@ -803,7 +796,7 @@ Respond only with valid JSON that matches this exact schema:
                         "content": [
                             {
                                 "type": "tool_use",
-                                "id": "toolu_019tBapA33WAV3gc9x1NiwhC",
+                                "id": "toolu_018ZfveWtNE97MSDJXddwnsZ",
                                 "name": "get_book_info",
                                 "input": {"isbn": "0-7653-1178-X"},
                             }
@@ -813,7 +806,7 @@ Respond only with valid JSON that matches this exact schema:
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_019tBapA33WAV3gc9x1NiwhC",
+                            id="toolu_018ZfveWtNE97MSDJXddwnsZ",
                             name="get_book_info",
                             result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -832,19 +825,22 @@ Respond only with valid JSON that matches this exact schema:
 }
 ```
 
-**Additional Information:**
+**Additional Details:**
 
-**Mistborn: The Final Empire** is the first book in Brandon Sanderson's acclaimed Mistborn series. This epic fantasy novel is set in a world where ash falls from the sky, mists dominate the night, and the immortal Lord Ruler has reigned for a thousand years. The story follows Kelsier, a charismatic thief and Mistborn (someone who can use all Allomantic powers), and Vin, a street urchin who discovers her own Mistborn abilities, as they plan an impossible heist to overthrow the empire.
+*Mistborn: The Final Empire* is an epic fantasy novel by Brandon Sanderson and the first book in the Mistborn series. The story is set in a world where ash falls from the sky, mist dominates the night, and the immortal Lord Ruler has reigned with absolute power for a thousand years. The novel follows a street thief named Vin who discovers she has magical abilities and joins a crew planning to overthrow the empire.
+
+The magic system, called Allomancy, is one of the most innovative and well-crafted in fantasy literature, where users "burn" different metals to gain various powers.
 
 **Recommendation Score: 9/10**
 
-This book is highly recommended for fans of:
-- Epic fantasy with unique magic systems
-- Heist narratives with complex plotting
-- Well-developed characters and world-building
-- Action-packed stories with political intrigue
+This book is highly recommended for fans of fantasy literature, especially those who enjoy:
+- Unique, well-defined magic systems
+- Heist/rebellion storylines
+- Strong character development
+- Complex world-building
+- Fast-paced action mixed with political intrigue
 
-Sanderson's innovative Allomancy magic system (using metals to gain powers) is particularly praised, and this book serves as an excellent entry point to his Cosmere universe.\
+It's an excellent entry point into Brandon Sanderson's works and modern epic fantasy in general.\
 """
                         )
                     ],
@@ -866,19 +862,22 @@ Sanderson's innovative Allomancy magic system (using metals to gain powers) is p
 }
 ```
 
-**Additional Information:**
+**Additional Details:**
 
-**Mistborn: The Final Empire** is the first book in Brandon Sanderson's acclaimed Mistborn series. This epic fantasy novel is set in a world where ash falls from the sky, mists dominate the night, and the immortal Lord Ruler has reigned for a thousand years. The story follows Kelsier, a charismatic thief and Mistborn (someone who can use all Allomantic powers), and Vin, a street urchin who discovers her own Mistborn abilities, as they plan an impossible heist to overthrow the empire.
+*Mistborn: The Final Empire* is an epic fantasy novel by Brandon Sanderson and the first book in the Mistborn series. The story is set in a world where ash falls from the sky, mist dominates the night, and the immortal Lord Ruler has reigned with absolute power for a thousand years. The novel follows a street thief named Vin who discovers she has magical abilities and joins a crew planning to overthrow the empire.
+
+The magic system, called Allomancy, is one of the most innovative and well-crafted in fantasy literature, where users "burn" different metals to gain various powers.
 
 **Recommendation Score: 9/10**
 
-This book is highly recommended for fans of:
-- Epic fantasy with unique magic systems
-- Heist narratives with complex plotting
-- Well-developed characters and world-building
-- Action-packed stories with political intrigue
+This book is highly recommended for fans of fantasy literature, especially those who enjoy:
+- Unique, well-defined magic systems
+- Heist/rebellion storylines
+- Strong character development
+- Complex world-building
+- Fast-paced action mixed with political intrigue
 
-Sanderson's innovative Allomancy magic system (using metals to gain powers) is particularly praised, and this book serves as an excellent entry point to his Cosmere universe.\
+It's an excellent entry point into Brandon Sanderson's works and modern epic fantasy in general.\
 """,
                             }
                         ],
@@ -959,15 +958,15 @@ Respond only with valid JSON that matches this exact schema:
             ],
             "usage": {
                 "input_tokens": 884,
-                "output_tokens": 283,
+                "output_tokens": 286,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 1167,
+                "total_tokens": 1170,
             },
-            "n_chunks": 89,
+            "n_chunks": 92,
         }
     }
 )

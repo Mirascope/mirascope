@@ -1,6 +1,7 @@
 export * from "./AlreadyExistsError.js";
 export * from "./AlreadyExistsErrorTag.js";
 export * from "./BadRequestErrorBody.js";
+export * from "./BigInt.js";
 export * from "./ClickHouseError.js";
 export * from "./DatabaseError.js";
 export * from "./DatabaseErrorTag.js";
@@ -27,6 +28,7 @@ export * from "./RateLimitErrorTag.js";
 export * from "./ServiceUnavailableErrorBody.js";
 export * from "./ServiceUnavailableErrorTag.js";
 export * from "./StripeError.js";
+export * from "./StripeErrorTag.js";
 export * from "./SubscriptionPastDueError.js";
 export * from "./SubscriptionPastDueErrorTag.js";
 export * from "./UnauthorizedErrorBody.js";

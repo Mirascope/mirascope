@@ -3,7 +3,7 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface TracesSearchByEnvResponse {
-  spans: Mirascope.TracesSearchByEnvResponseSpansItem[];
-  total: number;
-  hasMore: boolean;
+    spans: Mirascope.TracesSearchByEnvResponseSpansItem[];
+    total: number;
+    hasMore: boolean;
 }

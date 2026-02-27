@@ -7,9 +7,9 @@ import type * as Mirascope from "../../../../index.js";
  *     {}
  */
 export interface AnnotationsListRequest {
-  otelTraceId?: string;
-  otelSpanId?: string;
-  label?: Mirascope.AnnotationsListRequestLabel;
-  limit?: Mirascope.NumberFromString;
-  offset?: Mirascope.NumberFromString;
+    otelTraceId?: string;
+    otelSpanId?: string;
+    label?: Mirascope.AnnotationsListRequestLabel;
+    limit?: Mirascope.NumberFromString;
+    offset?: Mirascope.NumberFromString;
 }

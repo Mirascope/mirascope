@@ -90,7 +90,7 @@ const defaultComponents = {
   },
   pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
     <pre
-      className="mb-4 overflow-x-auto rounded-lg bg-gray-900 p-4"
+      className="mb-4 overflow-x-auto rounded-lg bg-background p-4"
       {...props}
     />
   ),

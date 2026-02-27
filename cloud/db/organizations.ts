@@ -521,6 +521,218 @@ export class Organizations extends BaseAuthenticatedEffectService<
   }
 
   /**
+   * Retrieves auto-reload settings for an organization.
+   *
+   * Requires membership in the organization (any role).
+   *
+   * @param args.userId - The authenticated user
+   * @param args.organizationId - The organization to query
+   * @returns Auto-reload settings (enabled, thresholdCenticents, amountCenticents)
+   * @throws NotFoundError - If the organization doesn't exist or user isn't a member
+   * @throws PermissionDeniedError - If the user lacks read permission
+   * @throws DatabaseError - If the database query fails
+   */
+  getAutoReloadSettings({
+    userId,
+    organizationId,
+  }: {
+    userId: string;
+    organizationId: string;
+  }): Effect.Effect<
+    {
+      enabled: boolean;
+      thresholdCenticents: bigint;
+      amountCenticents: bigint;
+    },
+    NotFoundError | PermissionDeniedError | DatabaseError,
+    DrizzleORM
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+
+      yield* this.authorize({ userId, action: "read", organizationId });
+
+      const [org] = yield* client
+        .select({
+          enabled: organizations.autoReloadEnabled,
+          thresholdCenticents: organizations.autoReloadThresholdCenticents,
+          amountCenticents: organizations.autoReloadAmountCenticents,
+        })
+        .from(organizations)
+        .where(eq(organizations.id, organizationId))
+        .limit(1)
+        .pipe(
+          Effect.mapError(
+            /* v8 ignore next 4 -- Defensive: DB query failure */
+            (e) =>
+              new DatabaseError({
+                message: "Failed to get auto-reload settings",
+                cause: e,
+              }),
+          ),
+        );
+
+      /* v8 ignore start -- Defensive: org validated by authorize() above */
+      if (!org) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: `Organization with organizationId ${organizationId} not found`,
+            resource: this.getResourceName(),
+          }),
+        );
+      }
+      /* v8 ignore stop */
+
+      return org;
+    });
+  }
+
+  /**
+   * Updates auto-reload settings for an organization.
+   *
+   * Requires OWNER or ADMIN role.
+   *
+   * @param args.userId - The authenticated user
+   * @param args.organizationId - The organization to update
+   * @param args.data - New auto-reload settings
+   * @returns Updated auto-reload settings
+   * @throws NotFoundError - If the organization doesn't exist or user isn't a member
+   * @throws PermissionDeniedError - If the user lacks update permission
+   * @throws DatabaseError - If the database operation fails
+   */
+  updateAutoReloadSettings({
+    userId,
+    organizationId,
+    data,
+  }: {
+    userId: string;
+    organizationId: string;
+    data: {
+      enabled: boolean;
+      thresholdCenticents: bigint;
+      amountCenticents: bigint;
+    };
+  }): Effect.Effect<
+    {
+      enabled: boolean;
+      thresholdCenticents: bigint;
+      amountCenticents: bigint;
+    },
+    NotFoundError | PermissionDeniedError | DatabaseError,
+    DrizzleORM
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+
+      yield* this.authorize({ userId, action: "update", organizationId });
+
+      const [updated] = yield* client
+        .update(organizations)
+        .set({
+          autoReloadEnabled: data.enabled,
+          autoReloadThresholdCenticents: data.thresholdCenticents,
+          autoReloadAmountCenticents: data.amountCenticents,
+        })
+        .where(eq(organizations.id, organizationId))
+        .returning({
+          enabled: organizations.autoReloadEnabled,
+          thresholdCenticents: organizations.autoReloadThresholdCenticents,
+          amountCenticents: organizations.autoReloadAmountCenticents,
+        })
+        .pipe(
+          Effect.mapError(
+            /* v8 ignore next 4 -- Defensive: DB query failure */
+            (e) =>
+              new DatabaseError({
+                message: "Failed to update auto-reload settings",
+                cause: e,
+              }),
+          ),
+        );
+
+      /* v8 ignore start -- Defensive: org validated by authorize() above */
+      if (!updated) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: `Organization with organizationId ${organizationId} not found`,
+            resource: this.getResourceName(),
+          }),
+        );
+      }
+      /* v8 ignore stop */
+
+      return updated;
+    });
+  }
+
+  /**
+   * Ensures Stripe customers exist for all organizations a user belongs to.
+   *
+   * For each organization, verifies the Stripe customer still exists. If not
+   * (e.g. after a Stripe account migration), recreates the customer with a
+   * free subscription and updates the organization's stripeCustomerId.
+   *
+   * Errors are caught per-org so one failure doesn't block others.
+   *
+   * @param args.userId - The signing-in user's ID
+   * @param args.email - The signing-in user's email
+   */
+  ensureStripeCustomers({
+    userId,
+    email,
+  }: {
+    userId: string;
+    email: string;
+  }): Effect.Effect<void, never, DrizzleORM | Payments> {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+      const payments = yield* Payments;
+
+      const orgs = yield* client
+        .select({
+          id: organizations.id,
+          name: organizations.name,
+          slug: organizations.slug,
+          stripeCustomerId: organizations.stripeCustomerId,
+        })
+        .from(organizationMemberships)
+        .innerJoin(
+          organizations,
+          eq(organizationMemberships.organizationId, organizations.id),
+        )
+        .where(eq(organizationMemberships.memberId, userId))
+        .pipe(Effect.catchAll(() => Effect.succeed([])));
+
+      yield* Effect.all(
+        orgs.map((org) =>
+          Effect.gen(function* () {
+            const result = yield* payments.customers.ensureExists(
+              org.stripeCustomerId,
+              {
+                organizationId: org.id,
+                organizationName: org.name,
+                organizationSlug: org.slug,
+                email,
+              },
+            );
+
+            if (result.changed) {
+              yield* client
+                .update(organizations)
+                .set({
+                  stripeCustomerId: result.stripeCustomerId,
+                  updatedAt: new Date(),
+                })
+                .where(eq(organizations.id, org.id));
+            }
+          }).pipe(Effect.catchAll(() => Effect.void)),
+        ),
+        { concurrency: "unbounded" },
+      );
+    });
+  }
+
+  /**
    * Deletes an organization and all its memberships.
    *
    * Requires OWNER role. This is a destructive operation that:

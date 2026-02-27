@@ -3,19 +3,19 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface AnnotationsGetResponse {
-  id: string;
-  spanId: string;
-  traceId: string;
-  otelSpanId: string;
-  otelTraceId: string;
-  label: Mirascope.AnnotationsGetResponseLabel | null;
-  reasoning: string | null;
-  metadata: Record<string, unknown> | null;
-  tags: string[];
-  environmentId: string;
-  projectId: string;
-  organizationId: string;
-  createdBy: string | null;
-  createdAt: string | null;
-  updatedAt: string | null;
+    id: string;
+    spanId: string;
+    traceId: string;
+    otelSpanId: string;
+    otelTraceId: string;
+    label: Mirascope.AnnotationsGetResponseLabel | null;
+    reasoning: string | null;
+    metadata: Record<string, unknown> | null;
+    tags: string[];
+    environmentId: string;
+    projectId: string;
+    organizationId: string;
+    createdBy: string | null;
+    createdAt: string | null;
+    updatedAt: string | null;
 }

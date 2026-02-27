@@ -1,0 +1,190 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Choose a lucky
+      number between 1 and 10"}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Always
+      respond to the user''s query using the __mirascope_formatted_output_tool__ tool
+      for structured output.","cache_control":{"type":"ephemeral"}}],"tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in int format for a final response.","input_schema":{"properties":{"output":{"title":"Output","type":"integer"}},"required":["output"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '738'
+      Content-Type:
+      - application/json
+      Host:
+      - api.anthropic.com
+      User-Agent:
+      - Anthropic/Python 0.76.0
+      X-Api-Key:
+      - <filtered>
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.76.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.12.12
+      anthropic-version:
+      - '2023-06-01'
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WRW2vCQBCF/8s+R0gkQZtHoVBa65MKtZRhuzvR1L2kexGK5L93NhKLLX3bme/s
+        mT07Z6atRMVqJhSPEifeGoNhUk6m+bTKq6JkGWslce33kBfz1Wx7b5/WH+t5XN5J1/hN7BxpwleH
+        SYXe8z1Sw1mVGtz71gduArWENQHpVL+eR32wVkH0OE5JdaQ5m61ujuvH5mWJu8ViJYqHXfXckMpw
+        ne4B6NZxL2yH0FineQgowcbQxQCDKSRLQyWrz+wCWD3r+7eM+WA7cMgp6+0TBuDxM6IRNMVEpTIW
+        h0BkMriR+RGNZ3VZ5JSIiwOCIK/QWgO3iisnLP9j4900ALsDanRcQaX/6n9ocfhN+4xds19a05Li
+        oDu1AiG06ChoWoPkTg4f06BLIWGPlpCxAfiJt4q/09b6/htvou/0FwIAAA==
+    headers:
+      CF-RAY:
+      - 9cb6b1d57ce7a36c-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 09 Feb 2026 22:10:05 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-02-09T22:10:04Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-02-09T22:10:04Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-02-09T22:10:03Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-02-09T22:10:04Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CXyG2YDp5UHvoBR4L9p4e
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '1206'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Choose a lucky number between 1 and
+      10"}], "role": "user"}, {"parts": [{"text": "{\"output\": 7}"}], "role": "model"},
+      {"parts": [{"text": "Ok, now choose a different lucky number"}], "role": "user"}],
+      "systemInstruction": {"parts": [{"text": "Always respond to the user''s query
+      using the __mirascope_formatted_output_tool__ tool for structured output."}],
+      "role": "user"}, "tools": [{"functionDeclarations": [{"description": "Use this
+      tool to extract data in int format for a final response.", "name": "__mirascope_formatted_output_tool__",
+      "parameters": {"properties": {"output": {"title": "Output", "type": "INTEGER"}},
+      "required": ["output"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
+      {"allowedFunctionNames": ["__mirascope_formatted_output_tool__"], "mode": "ANY"}},
+      "generationConfig": {}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '851'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21TW3OaQBh991cwPLVjTEQNYmfyIKCNF5QAVZpOx9nAcgnLLrKLt0z+exeMiabh
+        gWG/c74LZ8/3UhME0QPYj33AIBV/CH94RBBeqneJEcwgZhw4hXgwAzn74B6fl7NvTgkK7LGYYA0g
+        dJH8hmOQQh4XV6s0zgH1SAZXAclTwBj0V6RgWcFWjBC0WolXn5NBHtIvinLkmMix9ifs9eL8ellS
+        ZBEpwojZcYgBK/JqMo0Zav+pU+9tqBd1e320HbiuGrZazJnGPxf0d3tuTP1Idep9e6POJ0CJwWgs
+        H9xN0Y72SfSoz9T9ram4rN3N7ESb2OoYbSJvdDhsI/ueNH/17F7R2um6vV7uNO+QPwd1i9F1cZD2
+        zPCl+Zjse1jXFNqPWDBwSLO+UYedmaLN1q0b/HSw8Ki/3VlsgdVASmXjIbFN/8buuqg9xR1oKCAH
+        /ppCy1kmaCTP9UBePsqpA0kku27eGlvDJd0u5Jkiyb6me2Yy7EJSl+61QXs7tI3n+yRNNwWBU0tZ
+        m84TnK/dYu497Gfp9u5OrH2l7t8PZcWcoErJlPgQnejv0otBjGMaWRBQgkua7czN97sWY+zDHQ83
+        P/ENSCkIq7pGWVcIIYY5N68vnDwneNx03+j362PPcrhqLLEoMw3IADc7eDeQmOUkzZhDEog1UlRm
+        l5rKse/ZclwQWtIbzggD6DK3K1/9V5jqvG2MzrfmbKG4QgDFbF/+lTNwnTPL8waXc510rJ3JfTLw
+        5Yydbu1N7+MVLGBO46PWIUy5mo3W9W0jQIBGVUMxhzQjmMKRX3JMVExAYO1wwzRp2HgobtVMrL3W
+        /gEo6IcINAQAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 09 Feb 2026 22:10:06 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=956
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

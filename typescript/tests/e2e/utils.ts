@@ -77,6 +77,14 @@ const SENSITIVE_HEADERS = [
 ];
 
 /**
+ * Converts a string to a filesystem-safe name by replacing colons with underscores.
+ * Colons are illegal in Windows (NTFS) filenames.
+ */
+function toFsSafeName(name: string): string {
+  return name.replace(/:/g, "_");
+}
+
+/**
  * Converts a test name to a valid recording name.
  * Replaces spaces and special characters with hyphens.
  */
@@ -211,7 +219,7 @@ function createRecordEachFn(
             const namespacedDir = join(
               cassettesDir,
               namespace,
-              provider.providerId,
+              toFsSafeName(provider.providerId),
             );
             const polly = createPolly(recordingName, namespacedDir);
             resetProviderRegistry();

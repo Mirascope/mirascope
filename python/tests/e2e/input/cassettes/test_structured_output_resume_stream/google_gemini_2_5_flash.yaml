@@ -1,0 +1,133 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Choose a lucky number between 1 and
+      10"}], "role": "user"}], "generationConfig": {"responseMimeType": "application/json",
+      "responseSchema": {"description": "Wrapper for primitive type int", "properties":
+      {"output": {"title": "Output", "type": "INTEGER"}}, "required": ["output"],
+      "title": "intOutput", "type": "OBJECT"}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '356'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\\"output\\\":
+        7}\"}],\"role\": \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\":
+        {\"promptTokenCount\": 12,\"candidatesTokenCount\": 6,\"totalTokenCount\":
+        100,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 12}],\"thoughtsTokenCount\":
+        82},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"FluKadDnNMmiqtsPmPLlWA\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Mon, 09 Feb 2026 22:09:27 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1100
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Choose a lucky number between 1 and
+      10"}], "role": "user"}, {"parts": [{"text": "{\"output\": 7}"}], "role": "model"},
+      {"parts": [{"text": "Ok, now choose a different lucky number"}], "role": "user"}],
+      "generationConfig": {"responseMimeType": "application/json", "responseSchema":
+      {"description": "Wrapper for primitive type int", "properties": {"output": {"title":
+      "Output", "type": "INTEGER"}}, "required": ["output"], "title": "intOutput",
+      "type": "OBJECT"}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '497'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\\"output\\\":\"}],\"role\":
+        \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 28,\"candidatesTokenCount\":
+        3,\"totalTokenCount\": 82,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        28}],\"thoughtsTokenCount\": 51},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"F1uKadSON--mmtkP9trS4A8\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"text\": \" 3}\"}],\"role\": \"model\"},\"finishReason\": \"STOP\",\"index\":
+        0}],\"usageMetadata\": {\"promptTokenCount\": 28,\"candidatesTokenCount\":
+        5,\"totalTokenCount\": 84,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        28}],\"thoughtsTokenCount\": 51},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"F1uKadSON--mmtkP9trS4A8\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Mon, 09 Feb 2026 22:09:28 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=826
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

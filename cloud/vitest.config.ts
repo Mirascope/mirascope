@@ -24,6 +24,10 @@ export default defineConfig({
         "app", // Currently manual testing only. We should cover this at some point
         "**.md",
         "**/index.ts",
+        "api/api.ts", // Barrel file - re-exports and HttpApi.make() class definition
+        "auth/errors.ts", // Data.TaggedError declarations - no executable code per v8
+        "auth/oauth.ts", // OAuth flow with external network requests - tested via integration tests
+        "workers/config.ts", // Type-only interfaces and type exports
         "db/migrations/**",
         "db/clickhouse/**",
         "db/schema/**",

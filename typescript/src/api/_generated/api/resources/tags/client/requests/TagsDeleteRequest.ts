@@ -9,7 +9,7 @@
  *     }
  */
 export interface TagsDeleteRequest {
-  organizationId: string;
-  projectId: string;
-  tagId: string;
+    organizationId: string;
+    projectId: string;
+    tagId: string;
 }

@@ -14,19 +14,29 @@ export type Jsonable =
   | { [key: string]: Jsonable };
 
 /**
- * Options for tracing a function.
+ * Base options shared by tracing and versioning.
  */
-export interface TraceOptions {
-  /** Tags to attach to the trace span */
+export interface BaseOpsOptions {
+  /** Tags to attach to the span */
   tags?: string[];
-  /** Key-value metadata to attach to the trace span */
+  /** Key-value metadata to attach to the span */
   metadata?: Record<string, string>;
 }
 
 /**
- * Options for versioning a function.
+ * Options for tracing a function.
+ * Name is required since arrow functions have no name.
  */
-export interface VersionOptions extends TraceOptions {
+export interface TraceOptions extends BaseOpsOptions {
+  /** Name for the traced function (required since arrow functions have no name) */
+  name: string;
+}
+
+/**
+ * Options for versioning a function.
+ * Name is optional since it can be inferred from the function/call.
+ */
+export interface VersionOptions extends BaseOpsOptions {
   /** Optional name override for the versioned function */
   name?: string;
 }

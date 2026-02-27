@@ -39,6 +39,7 @@
 
 import { Context, Layer, Effect } from "effect";
 
+import type { PlanTier } from "@/payments/plans";
 import type { StripeConfig } from "@/settings";
 
 import { Annotations } from "@/db/annotations";
@@ -254,6 +255,27 @@ export class Database extends Context.Tag("Database")<
     const paymentsLayer = Payments.Live(config.payments).pipe(
       Layer.provide(drizzleLayer),
     );
+
+    const databaseLayer = Database.Default.pipe(
+      Layer.provideMerge(Layer.mergeAll(drizzleLayer, paymentsLayer)),
+    );
+
+    return Layer.mergeAll(drizzleLayer, paymentsLayer, databaseLayer);
+  };
+
+  /**
+   * Development layer that uses mock Payments (no Stripe connection).
+   *
+   * Use this for local development where Stripe credentials are not available.
+   * All payment-related operations will fail at call time with descriptive errors,
+   * but the layer construction succeeds and non-payment handlers work normally.
+   */
+  static Dev = (config: { database: DrizzleORMConfig; plan?: PlanTier }) => {
+    const drizzleLayer = DrizzleORM.layer(config.database);
+
+    const paymentsLayer = config.plan
+      ? Payments.MockWithPlan(config.plan)
+      : Payments.Dev;
 
     const databaseLayer = Database.Default.pipe(
       Layer.provideMerge(Layer.mergeAll(drizzleLayer, paymentsLayer)),

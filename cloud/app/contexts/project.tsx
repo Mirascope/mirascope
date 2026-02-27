@@ -11,7 +11,9 @@ import type { PublicProject } from "@/db/schema";
 import { useProjects } from "@/app/api/projects";
 import { useOrganization } from "@/app/contexts/organization";
 
-const STORAGE_KEY = "mirascope:selectedProjectId";
+const STORAGE_KEY_PREFIX = "mirascope:selectedProjectId";
+const getStorageKey = (organizationId: string) =>
+  `${STORAGE_KEY_PREFIX}:${organizationId}`;
 
 type ProjectContextType = {
   projects: readonly PublicProject[];
@@ -32,35 +34,41 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
   const setSelectedProject = (project: PublicProject | null) => {
     setSelectedProjectState(project);
-    if (project) {
-      localStorage.setItem(STORAGE_KEY, project.id);
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
+    if (selectedOrganization) {
+      const storageKey = getStorageKey(selectedOrganization.id);
+      if (project) {
+        localStorage.setItem(storageKey, project.id);
+      } else {
+        localStorage.removeItem(storageKey);
+      }
     }
   };
 
-  // Load selected project from localStorage on mount or when projects change
+  // Load selected project from localStorage on mount or when projects/organization change
   useEffect(() => {
-    // Don't do anything while loading
-    if (isLoading) return;
+    // Don't do anything while loading or if no organization selected
+    if (isLoading || !selectedOrganization) return;
 
-    const storedId = localStorage.getItem(STORAGE_KEY);
+    const storageKey = getStorageKey(selectedOrganization.id);
+    const storedId = localStorage.getItem(storageKey);
     if (storedId && projects.length > 0) {
       const project = projects.find((p) => p.id === storedId);
       if (project) {
         setSelectedProjectState(project);
       } else {
         // If stored project doesn't exist in current org, select first one
-        setSelectedProject(projects[0]);
+        setSelectedProjectState(projects[0]);
+        localStorage.setItem(storageKey, projects[0].id);
       }
     } else if (projects.length > 0 && !selectedProject) {
       // Auto-select first project if none selected
-      setSelectedProject(projects[0]);
+      setSelectedProjectState(projects[0]);
+      localStorage.setItem(storageKey, projects[0].id);
     } else if (projects.length === 0) {
       // Clear selection if no projects (and not loading)
-      setSelectedProject(null);
+      setSelectedProjectState(null);
     }
-  }, [projects, selectedProject, isLoading]);
+  }, [projects, selectedProject, selectedOrganization, isLoading]);
 
   const value = {
     projects,

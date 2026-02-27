@@ -9,9 +9,9 @@ import type * as Mirascope from "../../../../index.js";
  *     }
  */
 export interface AnnotationsUpdateRequest {
-  id: string;
-  label?: Mirascope.AnnotationsUpdateRequestLabel | null;
-  reasoning?: string | null;
-  metadata?: Record<string, unknown> | null;
-  tags?: string[] | null;
+    id: string;
+    label?: Mirascope.AnnotationsUpdateRequestLabel | null;
+    reasoning?: string | null;
+    metadata?: Record<string, unknown> | null;
+    tags?: string[] | null;
 }

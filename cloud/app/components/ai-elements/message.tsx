@@ -9,9 +9,17 @@ import {
   PaperclipIcon,
   XIcon,
 } from "lucide-react";
-import { createContext, memo, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  memo,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import { Streamdown } from "streamdown";
 
+import { CodeBlock } from "@/app/components/blocks/code-block/code-block";
 import { Button } from "@/app/components/ui/button";
 import { ButtonGroup, ButtonGroupText } from "@/app/components/ui/button-group";
 import {
@@ -312,13 +320,51 @@ export const MessageBranchPage = ({
 
 export type MessageResponseProps = ComponentProps<typeof Streamdown>;
 
+// Custom pre component that extracts code and language for proper Shiki highlighting
+const MessageCodeBlock = ({
+  children,
+}: {
+  children?: ReactNode;
+} & React.HTMLAttributes<HTMLPreElement>) => {
+  // Extract code content and language from children
+  let code = "";
+  let language = "text";
+
+  if (children && typeof children === "object" && "props" in children) {
+    const codeElement = children as React.ReactElement<{
+      children?: string;
+      className?: string;
+    }>;
+    code = codeElement.props.children || "";
+    const className = codeElement.props.className || "";
+    const langMatch = className.match(/language-(\w+)/);
+    if (langMatch) {
+      language = langMatch[1];
+    }
+  }
+
+  return (
+    <CodeBlock
+      className="my-2"
+      code={code}
+      language={language}
+      showLineNumbers
+    />
+  );
+};
+
+const messageComponents = {
+  pre: MessageCodeBlock,
+};
+
 export const MessageResponse = memo(
-  ({ className, ...props }: MessageResponseProps) => (
+  ({ className, components, ...props }: MessageResponseProps) => (
     <Streamdown
       className={cn(
         "size-full font-sans [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
         className,
       )}
+      components={{ ...messageComponents, ...components }}
       {...props}
     />
   ),

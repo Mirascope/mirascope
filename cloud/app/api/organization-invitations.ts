@@ -113,9 +113,9 @@ export const useAcceptInvitation = () => {
           });
         }),
     }),
-    onSuccess: () => {
-      // Invalidate organizations list so the new membership appears
-      void queryClient.invalidateQueries({
+    onSuccess: async () => {
+      // Await invalidation so the organizations list is fresh before navigation
+      await queryClient.invalidateQueries({
         queryKey: ["organizations"],
       });
     },

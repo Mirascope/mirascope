@@ -10,8 +10,8 @@
  *     }
  */
 export interface ApiKeysDeleteRequest {
-  organizationId: string;
-  projectId: string;
-  environmentId: string;
-  apiKeyId: string;
+    organizationId: string;
+    projectId: string;
+    environmentId: string;
+    apiKeyId: string;
 }

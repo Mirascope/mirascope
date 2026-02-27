@@ -2,8 +2,9 @@
  * @fileoverview Tests for RealtimeSpansDurableObject realtime cache behavior.
  */
 
+import { describe, expect, it } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach } from "vitest";
 
 import type { SpansBatchRequest } from "@/db/clickhouse/types";
 

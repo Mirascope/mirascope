@@ -1,81 +1,81 @@
 interactions:
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
-      a book to me!"}],"model":"claude-sonnet-4-5","system":[{"type":"text","text":"Always
+      a book to me!"}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","title":"Book","properties":{"title":{"type":"string","title":"Title"},"author":{"type":"string","title":"Author"},"rating":{"type":"integer","title":"Rating"}},"additionalProperties":false,"required":["title","author","rating"]},"type":"json_schema"},"system":[{"type":"text","text":"Always
       recommend The Name of the Wind.\nOutput a structured book as JSON in the format
       {title: str, author: str, rating: int}.\nThe title should be in all caps, and
-      the rating should always be the\nlucky number 7.","cache_control":{"type":"ephemeral"}}],"tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
-      this tool to extract data in Book format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"rating":{"title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
+      the rating should always be the\nlucky number 7.","cache_control":{"type":"ephemeral"}}]}'
     headers:
-      accept:
+      Accept:
       - application/json
-      accept-encoding:
+      Accept-Encoding:
       - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '702'
+      Content-Type:
+      - application/json
+      Host:
+      - api.anthropic.com
+      User-Agent:
+      - Anthropic/Python 0.76.0
+      X-Api-Key:
+      - <filtered>
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Helper:
+      - beta.messages.parse
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.76.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.10.16
+      anthropic-beta:
+      - structured-outputs-2025-11-13
       anthropic-version:
       - '2023-06-01'
-      connection:
-      - keep-alive
-      content-length:
-      - '939'
-      content-type:
-      - application/json
-      host:
-      - api.anthropic.com
-      user-agent:
-      - Anthropic/Python 0.75.0
-      x-stainless-arch:
-      - arm64
-      x-stainless-async:
-      - 'false'
-      x-stainless-lang:
-      - python
-      x-stainless-os:
-      - MacOS
-      x-stainless-package-version:
-      - 0.75.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
       - '0'
-      x-stainless-runtime:
-      - CPython
-      x-stainless-runtime-version:
-      - 3.10.16
       x-stainless-timeout:
       - '600'
     method: POST
-    uri: https://api.anthropic.com/v1/messages
+    uri: https://api.anthropic.com/v1/messages?beta=true
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/3VRXU/CQBD8K+SeIaFI+XojfIgRkKCEqDGXS7u0J+1dvdszEtL/7l5NNWh8u92Z
-        3ZmdO7Ncx5CxEYsy4WJoWa0UYKvbCluddidsDztD1mQyJkZuE94OJsvteiweX7vhfNMLl9f9xd7h
-        njh4KsCzwFqRADWMznxDWCstCoXUirRCoNfo+VzzUeuMOwu1iq8d6QTHj90Eg/vd1T54moqr026Q
-        rG6JpUTu5zjPpRE20gXwgza5QISYa4eFQ14t5X6lopKNSE1i5eZhMWusx6tZ427e8O/9zXpKPOEw
-        1YbwjUAjo2NjqzE9OGv9HQKlStioX5YvTWZRF9yAoKAu3VeAhTcHKiIl5bKsyVyVBelXRsjXEZSl
-        VYMhhSGiFHhEu1BqxS8Z7RonOP4Pq2e9ABQp5GBExsP8L/8HDdLfaNlk37F9tXp9OgfMu4yAowSf
-        i//BWJiYleUnun0fKTQCAAA=
+        H4sIAAAAAAAA/3WRXU/CMBSG/8pyrrcEplPYHYn4FUUlJCY609TtwCqlhfYU0WX/3RYkfsWrNud5
+        Ttu3p4GFrlBCDqXkrsLEaqWQksMkS9JOmnX6aR9iEJU3FnbGOt3J+AUHV+tN7/Lo4X0wOrt7Hde9
+        lXfobYnBQmv5DH3BaBkK3FphiSvypVIrQr/LH5u9T7gJZLvk0BRAgiQWkEcFTM6H0WhwPYxuTqOw
+        v78YnRQQe8Id1drsrFtORpTzaKypnjprd4bhJNQsGMcttE8xWNJLZpD7hP4iVBUjZxR8Aosrh6r0
+        L1JOyhjcNkTegFBLR4z0HJWFPO1lPgUva2SlP4uEVuyn0dlzj6v/2L43XIDLGhdouGTZ4q//Rbv1
+        b9rGoB19Lx34DotmLUpkJND4oOHrK26qMEU1RRNCshlqj5QmxtdcSP7sJ9W2H5KXQKMNAgAA
     headers:
-      CF-Cache-Status:
-      - DYNAMIC
       CF-RAY:
-      - 9b0270ed5e96ebcb-SEA
+      - 9cb6db2cba0876d9-SEA
       Connection:
       - keep-alive
       Content-Encoding:
       - gzip
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'
       Content-Type:
       - application/json
       Date:
-      - Thu, 18 Dec 2025 23:29:16 GMT
+      - Mon, 09 Feb 2026 22:38:18 GMT
       Server:
       - cloudflare
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
       - chunked
-      Vary:
-      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -85,29 +85,33 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-18T23:29:15Z'
+      - '2026-02-09T22:38:18Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-18T23:29:16Z'
+      - '2026-02-09T22:38:18Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-18T23:29:13Z'
+      - '2026-02-09T22:38:17Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-18T23:29:15Z'
+      - '2026-02-09T22:38:18Z'
+      cf-cache-status:
+      - DYNAMIC
       request-id:
-      - req_011CWF2C9z7JsN94urbVv2HZ
+      - req_011CXyJBMqTfhRt3wKqWK6pt
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '2888'
+      - '1388'
     status:
       code: 200
       message: OK

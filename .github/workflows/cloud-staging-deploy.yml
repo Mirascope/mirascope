@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'cloud/**'
-      - '.github/workflows/cloud-staging-deploy.yml'
+      - "cloud/**"
+      - ".github/workflows/cloud-staging-deploy.yml"
 
 jobs:
   deploy-staging:

@@ -1,9 +1,7 @@
-import {
-  getDocsFromSpec,
-  type DocInfo,
-  type FullDocsSpec,
-  type SectionSpec,
-  type VersionSpec,
+import type {
+  FullDocsSpec,
+  SectionSpec,
+  VersionSpec,
 } from "../../cloud/app/lib/content/spec";
 import api from "./api/_meta";
 import guides from "./guides/_meta";
@@ -28,15 +26,3 @@ const docs: VersionSpec = {
 };
 
 export const docsSpec: FullDocsSpec = [docs];
-
-export const docInfos = getDocsFromSpec(docsSpec);
-
-const pathToDocInfo = new Map<string, DocInfo>();
-for (const docInfo of docInfos) {
-  pathToDocInfo.set(docInfo.path, docInfo);
-}
-
-export function getDocInfoByPath(path: string): DocInfo | undefined {
-  // DocInfo.path includes "docs/" prefix, but vite plugin passes subpath without prefix
-  return pathToDocInfo.get(`docs/${path}`) ?? pathToDocInfo.get(path);
-}

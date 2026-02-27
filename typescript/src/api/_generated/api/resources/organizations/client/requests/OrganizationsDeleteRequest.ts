@@ -7,5 +7,5 @@
  *     }
  */
 export interface OrganizationsDeleteRequest {
-  id: string;
+    id: string;
 }

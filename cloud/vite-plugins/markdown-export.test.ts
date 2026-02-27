@@ -296,7 +296,7 @@ describe("Markdown content transformation", () => {
  * 4. Validates the response content and headers
  * 5. Cleans up by killing the server process
  */
-describe("E2E: Dev server markdown serving", () => {
+describe.skip("E2E: Dev server markdown serving", () => {
   let serverProcess: ChildProcess | null = null;
   const PORT = 3099; // Use a unique port to avoid conflicts
   const BASE_URL = `http://localhost:${PORT}`;

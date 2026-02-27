@@ -10,23 +10,13 @@ from ...types.date import Date
 
 
 class OrganizationsUpdateSubscriptionResponse(UniversalBaseModel):
-    requires_payment: typing_extensions.Annotated[
-        bool, FieldMetadata(alias="requiresPayment")
-    ]
-    client_secret: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="clientSecret")
-    ] = None
-    scheduled_for: typing_extensions.Annotated[
-        typing.Optional[Date], FieldMetadata(alias="scheduledFor")
-    ] = None
-    schedule_id: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="scheduleId")
-    ] = None
+    requires_payment: typing_extensions.Annotated[bool, FieldMetadata(alias="requiresPayment")]
+    client_secret: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="clientSecret")] = None
+    scheduled_for: typing_extensions.Annotated[typing.Optional[Date], FieldMetadata(alias="scheduledFor")] = None
+    schedule_id: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="scheduleId")] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

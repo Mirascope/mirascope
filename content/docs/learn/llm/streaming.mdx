@@ -160,7 +160,11 @@ Errors may not surface until you iterate—the initial `.stream()` call returns 
 
 <CodeExample file="python/examples/streaming/error_handling.py" />
 
-For retry strategies and fallback patterns, see [Reliability](/docs/learn/llm/reliability).
+When using `@llm.retry` or `llm.retry_model()` with streaming, errors are handled automatically. If a retryable error occurs mid-stream, the response raises `llm.StreamRestarted` to signal that the stream has been reset—catch this and re-iterate to continue:
+
+<CodeExample file="python/examples/reliability/stream_restart.py" />
+
+See [Reliability](/docs/learn/llm/reliability) for more on retry strategies and fallback patterns.
 
 ## Response Variants
 

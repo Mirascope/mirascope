@@ -9,9 +9,9 @@
  *     }
  */
 export interface TagsUpdateRequest {
-  organizationId: string;
-  projectId: string;
-  tagId: string;
-  /** a string at most 100 character(s) long */
-  name?: string;
+    organizationId: string;
+    projectId: string;
+    tagId: string;
+    /** a string at most 100 character(s) long */
+    name?: string;
 }

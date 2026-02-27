@@ -2,6 +2,4 @@
 
 import typing
 
-OrganizationsUpdateSubscriptionRequestTargetPlan = typing.Union[
-    typing.Literal["free", "pro", "team"], typing.Any
-]
+OrganizationsUpdateSubscriptionRequestTargetPlan = typing.Union[typing.Literal["free", "pro", "team"], typing.Any]

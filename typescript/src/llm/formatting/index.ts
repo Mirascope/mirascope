@@ -34,7 +34,11 @@ export {
 } from "@/llm/formatting/output-parser";
 
 // Format
-export type { Format, DefineFormatOptions } from "@/llm/formatting/format";
+export type {
+  Format,
+  DefineFormatOptions,
+  ExtractedSchema,
+} from "@/llm/formatting/format";
 export {
   defineFormat,
   resolveFormat,

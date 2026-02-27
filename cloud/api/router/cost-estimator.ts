@@ -12,7 +12,7 @@ import { Effect } from "effect";
 import type { CostInCenticents } from "@/api/router/cost-utils";
 import type { ProviderName } from "@/api/router/providers";
 
-import { getModelPricing } from "@/api/router/pricing";
+import { getModelPricing, type ModelPricing } from "@/api/router/pricing";
 import { PricingUnavailableError } from "@/errors";
 
 /**
@@ -49,6 +49,8 @@ export interface EstimatedCost {
   inputTokens: number;
   /** Estimated output tokens */
   outputTokens: number;
+  /** Pricing data used for estimation (cached for later use in cost calculation) */
+  modelPricing: ModelPricing;
 }
 
 /**
@@ -249,6 +251,7 @@ export abstract class BaseCostEstimator {
         cost: totalCost,
         inputTokens,
         outputTokens,
+        modelPricing: pricing,
       };
     });
   }

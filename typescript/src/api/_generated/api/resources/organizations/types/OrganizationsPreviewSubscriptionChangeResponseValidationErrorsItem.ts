@@ -3,8 +3,8 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItem {
-  resource: Mirascope.OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItemResource;
-  currentUsage: number;
-  limit: number;
-  message: string;
+    resource: Mirascope.OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItemResource;
+    currentUsage: number;
+    limit: number;
+    message: string;
 }

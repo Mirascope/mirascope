@@ -22,6 +22,7 @@ from openai.types.responses import (
     response_create_params,
 )
 from openai.types.responses.easy_input_message_param import EasyInputMessageParam
+from openai.types.responses.response_input_file_param import ResponseInputFileParam
 from openai.types.responses.response_input_image_param import ResponseInputImageParam
 from openai.types.responses.response_input_param import (
     FunctionCallOutput,
@@ -33,6 +34,7 @@ from openai.types.shared_params.response_format_json_object import (
 )
 from openai.types.shared_params.responses_model import ResponsesModel
 
+from .....content import Document
 from .....exceptions import FeatureNotSupportedError
 from .....formatting import (
     Format,
@@ -86,6 +88,31 @@ class ResponseCreateKwargs(TypedDict, total=False):
     reasoning: Reasoning | Omit
 
 
+def _encode_document(doc: Document) -> ResponseInputFileParam:
+    """Encode a Document to the Responses API format."""
+    import base64 as _base64
+
+    source = doc.source
+    if source.type == "base64_document_source":
+        return ResponseInputFileParam(
+            type="input_file",
+            file_data=f"data:{source.media_type};base64,{source.data}",
+            filename="document.pdf",
+        )
+    elif source.type == "text_document_source":
+        encoded = _base64.b64encode(source.data.encode("utf-8")).decode("utf-8")
+        return ResponseInputFileParam(
+            type="input_file",
+            file_data=f"data:{source.media_type};base64,{encoded}",
+            filename="document.txt",
+        )
+    else:  # url_document_source
+        return ResponseInputFileParam(
+            type="input_file",
+            file_url=source.url,
+        )
+
+
 def _encode_user_message(
     message: UserMessage,
 ) -> ResponseInputParam:
@@ -122,6 +149,8 @@ def _encode_user_message(
                     image_url=image_url, detail="auto", type="input_image"
                 )
             )
+        elif part.type == "document":
+            current_content.append(_encode_document(part))
         elif part.type == "tool_output":
             flush_message_content()
             result.append(
@@ -144,6 +173,16 @@ def _encode_user_message(
     flush_message_content()
 
     return result
+
+
+def _raw_message_has_format_tool(raw_message: object) -> bool:
+    """Check if a raw OpenAI responses message contains a format tool call."""
+    return isinstance(raw_message, list) and any(
+        item.get("type") == "function_call"
+        and isinstance(name := item.get("name"), str)
+        and name.startswith(FORMAT_TOOL_NAME)
+        for item in cast(list[dict[str, object]], raw_message)
+    )
 
 
 def _encode_assistant_message(
@@ -211,6 +250,7 @@ def _encode_message(
         == model_name(model_id=model_id, api_mode="responses")
         and message.raw_message
         and not encode_thoughts
+        and not _raw_message_has_format_tool(message.raw_message)
     ):
         return cast(ResponseInputParam, message.raw_message)
 

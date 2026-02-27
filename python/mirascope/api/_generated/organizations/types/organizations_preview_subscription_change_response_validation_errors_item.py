@@ -11,20 +11,14 @@ from .organizations_preview_subscription_change_response_validation_errors_item_
 )
 
 
-class OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItem(
-    UniversalBaseModel
-):
+class OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItem(UniversalBaseModel):
     resource: OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItemResource
-    current_usage: typing_extensions.Annotated[
-        float, FieldMetadata(alias="currentUsage")
-    ]
+    current_usage: typing_extensions.Annotated[float, FieldMetadata(alias="currentUsage")]
     limit: float
     message: str
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

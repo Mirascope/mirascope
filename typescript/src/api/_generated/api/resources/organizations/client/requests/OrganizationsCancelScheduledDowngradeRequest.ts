@@ -7,5 +7,5 @@
  *     }
  */
 export interface OrganizationsCancelScheduledDowngradeRequest {
-  id: string;
+    id: string;
 }

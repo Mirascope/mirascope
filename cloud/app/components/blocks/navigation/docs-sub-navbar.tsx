@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 
 import type { SectionSpec } from "@/app/lib/content/spec";
 
-import { docsSpec } from "@/../content/docs/_meta";
+import { docRegistry } from "@/app/lib/content/doc-registry";
 import { cn } from "@/app/lib/utils";
 
 /**
@@ -60,7 +60,7 @@ export default function DocsSubNavbar({ className }: DocsSubNavbarProps) {
   const currentPath = router.location.pathname;
 
   // Get the single version's sections
-  const version = docsSpec[0];
+  const version = docRegistry.getFullSpec()[0];
   if (!version) return null;
 
   const sections = version.sections;

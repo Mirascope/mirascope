@@ -33,6 +33,7 @@ export const functions = pgTable(
     metadata: jsonb("metadata").$type<Record<string, string>>(),
     code: text("code").notNull(),
     signature: text("signature").notNull(),
+    language: text("language").notNull().default("python"),
     dependencies: jsonb("dependencies").$type<Record<string, DependencyInfo>>(),
 
     environmentId: uuid("environment_id")
@@ -101,6 +102,7 @@ export type PublicFunction = Pick<
   | "metadata"
   | "code"
   | "signature"
+  | "language"
   | "dependencies"
   | "environmentId"
   | "projectId"

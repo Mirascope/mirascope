@@ -67,14 +67,23 @@ export type Ready<T> = {
  */
 export const dependencyProvider = (providers: ServiceProvider[]) => {
   return <T extends object>(service: T): Ready<T> => {
-    const proto = Object.getPrototypeOf(service) as object;
-
-    // Collect all method names from prototype
-    const methodNames = Object.getOwnPropertyNames(proto).filter(
-      (key) =>
-        key !== "constructor" &&
-        typeof (service as Record<string, unknown>)[key] === "function",
-    );
+    // Collect all method names from the full prototype chain
+    const methodNames: string[] = [];
+    const seen = new Set<string>();
+    let proto = Object.getPrototypeOf(service) as object | null;
+    while (proto && proto !== Object.prototype) {
+      for (const key of Object.getOwnPropertyNames(proto)) {
+        if (
+          key !== "constructor" &&
+          !seen.has(key) &&
+          typeof (service as Record<string, unknown>)[key] === "function"
+        ) {
+          seen.add(key);
+          methodNames.push(key);
+        }
+      }
+      proto = Object.getPrototypeOf(proto) as object | null;
+    }
 
     type WrappedMethod = (
       ...args: unknown[]

@@ -3,7 +3,7 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface HealthCheckResponse {
-  status: Mirascope.HealthCheckResponseStatus;
-  timestamp: string;
-  environment: string;
+    status: Mirascope.HealthCheckResponseStatus;
+    timestamp: string;
+    environment: string;
 }

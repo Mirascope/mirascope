@@ -1,0 +1,175 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Choose a lucky number between 1 and
+      10"}], "role": "user"}], "generationConfig": {"responseMimeType": "application/json",
+      "responseSchema": {"description": "Wrapper for primitive type int", "properties":
+      {"output": {"title": "Output", "type": "INTEGER"}}, "required": ["output"],
+      "title": "intOutput", "type": "OBJECT"}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '356'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQ0UvDMBDG3/NXlHveZKvM4t5ERYYOh5YxcT6E9dYG06Q0F5iW/u+m7dqlmIcQ
+        7vtyd9+vYkEAB64SkXBCA8vg01WCoGrvRtOKUJET+pIrFryki7c7lfd2FsJT8wmqPWhLhaU9LKMa
+        PFM9vL8ml9alltj8y3WCsrfXvQGOQgmTvSE3WjW29/h1A4MqVIInV56xfkDbGqzhKa6RuAvJhyhQ
+        lDovKNbfqO61bUPOw66Zx2SkL84yaeJypNzOJv+6mgc3U0gflUfRReRS0E+TI37cxeBhoPFSPQfm
+        4QLKtE0zGi8YXbMzrw7hFksjOlYp5o7eNLxaTI+Sm6ydByWaQiuDq6TlubXP/KDWL/op+41WG3Oz
+        m4d3H8Bq9gepBoK8KwIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 09 Feb 2026 22:10:17 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=962
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"user","content":"Choose a lucky number between 1
+      and 10"},{"role":"assistant","content":"{\"output\":7}"},{"role":"user","content":"Ok,
+      now choose a different lucky number"}],"model":"gpt-4o","response_format":{"type":"json_schema","json_schema":{"name":"int","schema":{"description":"Wrapper
+      for primitive type int","properties":{"output":{"title":"Output","type":"integer"}},"required":["output"],"title":"intOutput","type":"object","additionalProperties":false},"strict":true}}}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '503'
+      Content-Type:
+      - application/json
+      Host:
+      - api.openai.com
+      User-Agent:
+      - OpenAI/Python 2.16.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.12.12
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/4xSy07DMBC89ysinxuUQtuk3BCPG0g8boAi196kpo5t2WsEqvrv2EnbBCgSF0ve
+        2VnPjHczShIiODlPCFtRZI2R6VX+tL73l7dP0xrePb95kNfN2UXu1nePUJFxZOjlGzDcs06YDjxA
+        oVUHMwsUIU6d5Hk2z2fZpGiBRnOQkVYbTKc6Pc1Op2lWpNl8R1xpwcCFjudwTZJNe0aJisNHKGfj
+        faUB52gNobZvCkWrZawQ6pxwSBWScQ8yrRBUq3rzQrRH4/GFnJ9th00WKu9o1Ki8lAOAKqWRRo+t
+        vNcdsj0Ikro2Vi/dDyqphBJuVYZIXMgnPO5QG9Ki23C+tsb9Ny8kDGoMlqjX0D5XzLtxpE+6B2c7
+        DIM+2ZcXk/GRYSUHpEK6QW6EUbYC3jP7kKnnQg+A0cDyby3HZne2har/M74HGAMTNqg0Frhg3/32
+        bRbiGv7Vdoi4FUwc2PewXCUKsPEbOFTUy25DiPt0CE0Z/qoGa6zo1qQyJeWLgk0Kmk3JaDv6AgAA
+        //8DAIuTnw4vAwAA
+    headers:
+      CF-RAY:
+      - 9cb6b22dadc1ebbe-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 09 Feb 2026 22:10:18 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '454'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      set-cookie:
+      - __cf_bm=SZEZ0oDNk6k1uZ_YHd1b67il3WV5XNfqEIg8VIBP2WY-1770675017.8631194-1.0.1.1-fD5N5yGP0r4gy3tP_sTBKPHS3zqPjaBU6Go_7cYJSPrroAFChmpLFF14flStNASY66_f1tZntkxZ2TqGRqs7hkYAKSYTGmy638IhMQ8asl4qR1HdOJRfnioSGlMrDe5t;
+        HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Mon, 09 Feb 2026
+        22:40:18 GMT
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799973'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 2ms
+      x-request-id:
+      - req_1d14247d614b4a4c87cd1c6d0dcec807
+    status:
+      code: 200
+      message: OK
+version: 1

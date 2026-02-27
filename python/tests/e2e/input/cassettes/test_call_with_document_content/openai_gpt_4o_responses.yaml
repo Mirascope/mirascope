@@ -1,0 +1,109 @@
+interactions:
+- request:
+    body: '{"input":[{"content":[{"text":"What text is in this PDF document? Reply
+      in one short sentence.","type":"input_text"},{"type":"input_file","file_data":"data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCgoyIDAgb2JqCjw8IC9UeXBlIC9QYWdlcyAvS2lkcyBbMyAwIFJdIC9Db3VudCAxID4+CmVuZG9iagoKMyAwIG9iago8PCAvVHlwZSAvUGFnZSAvUGFyZW50IDIgMCBSIC9NZWRpYUJveCBbMCAwIDYxMiA3OTJdCiAgIC9Db250ZW50cyA0IDAgUiAvUmVzb3VyY2VzIDw8IC9Gb250IDw8IC9GMSA1IDAgUiA+PiA+PiA+PgplbmRvYmoKCjQgMCBvYmoKPDwgL0xlbmd0aCA0NCA+PgpzdHJlYW0KQlQgL0YxIDI0IFRmIDEwMCA3MDAgVGQgKEhlbGxvLCB3b3JsZCEpIFRqIEVUCmVuZHN0cmVhbQplbmRvYmoKCjUgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhID4+CmVuZG9iagoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmCjAwMDAwMDAwMDkgMDAwMDAgbgowMDAwMDAwMDU4IDAwMDAwIG4KMDAwMDAwMDExNSAwMDAwMCBuCjAwMDAwMDAyNjYgMDAwMDAgbgowMDAwMDAwMzYwIDAwMDAwIG4KCnRyYWlsZXIKPDwgL1NpemUgNiAvUm9vdCAxIDAgUiA+PgpzdGFydHhyZWYKNDM0CiUlRU9G","filename":"document.pdf"}],"role":"user","type":"message"}],"model":"gpt-4o"}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - <filtered>
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1047'
+      Content-Type:
+      - application/json
+      Host:
+      - api.openai.com
+      User-Agent:
+      - OpenAI/Python 2.16.0
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 2.16.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.11.11
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3VUTY+bMBC9769wufSyqYCkBHquKvXW+6pCBg+JG2NTe5xutMp/72A+ArvJDc+b
+        efPxZnh7YiySIvrGIguuK+PtfltBypumiEHk2zjOijxrsqIWKcR5UtQ8E7s0ycgoxL7J0ui5pzDV
+        H6hxojHawWCvLXAEUfIeS/b7ePc1zbb7gDnk6F0fU5u2U0B+Q1DF69PBGq/7uhquHAxmqZTUB7K9
+        0ZMMHb+A7eMFnEGZjh4EXIfEE+W71HlAwVrTR2qvVDA0Fv560PWl7EBzhRcC4y9xwKSeyEoByKVy
+        y0ipHVpfo6Sml/aWv5bGY+exRHOCjyAao8qaqzVdawSovqdDh5ud2aRxutvE+SbOxkEHSnJ4CTMY
+        JjFr2LrDYwkhbUSQMN8CL/IkabZVDRlPAnNgwUsHgQec4we4AY+0CmBtNIK+FbUsbEU7zQNecY4O
+        DlxrQxnGGb78XoHKHDprqjtIICLen6zm+jMyB8DwCGwsyDHThPev7z+eWeWRBUd2BNWxfxKPzBBq
+        GSnvQm5mLEPuTu5TNKe5jl9z5sgaFbrhzkmaCzX+NDkGJ9pLS7KCWktMWzLscUcnQqsGd1aNoLM0
+        3pXTFZVB13k7aA5th0RZH6E8weUhZqEfAPW09KBbdEavTgiaxlhcOPVa+7blduKeL8rxBvBCBfXE
+        jYTV/TiwZ0ktoZwusuFeDSrT8hgLywkgtHSstFHBnIzNj2qOlVFdLb+9F1sU/IaRjxWfwVbGyTBK
+        2l0hfXv7EwwiHA2VF1TzaKIZuC0VPbtysWrxbOyWNVqvaz4ONhLS8UpNvy0fTmZuQOrV7afF80f7
+        4ocytxkEFLfAeNXq+19KGt8D7vHO6j+iRjpBdQN3xTxC79Zqt8QuOPKe/vp0/Q8/qID1RQYAAA==
+    headers:
+      CF-RAY:
+      - 9ca17cf0589ee9e0-LAX
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 07 Feb 2026 08:23:58 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1640'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      set-cookie:
+      - __cf_bm=USFSAIIjb.NH5lSx9f56mEcVMZHrpFifOM.FD8Y_cn8-1770452636.218157-1.0.1.1-1Tvzrd3Kd9AX.EuoTgvz9L0_zmdHJ6Ho87ixbZ3TOe6nfftCqYBFvk.3fFF3SrG.87CmnTGVfun583QyopxZsdyVToFi7xTK5QYpQwlPX.ZUh2mHOMJI0UI3ZICofrJS;
+        HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Sat, 07 Feb 2026
+        08:53:58 GMT
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799952'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 3ms
+      x-request-id:
+      - req_21ffee7f42444519b46e2dfedfcb801a
+    status:
+      code: 200
+      message: OK
+version: 1

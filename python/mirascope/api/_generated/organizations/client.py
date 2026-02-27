@@ -4,11 +4,27 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
+from ..types.big_int import BigInt
 from .raw_client import AsyncRawOrganizationsClient, RawOrganizationsClient
+from .types.organizations_create_org_setup_intent_response import (
+    OrganizationsCreateOrgSetupIntentResponse,
+)
 from .types.organizations_create_payment_intent_response import (
     OrganizationsCreatePaymentIntentResponse,
 )
+from .types.organizations_create_request_plan_tier import (
+    OrganizationsCreateRequestPlanTier,
+)
 from .types.organizations_create_response import OrganizationsCreateResponse
+from .types.organizations_create_setup_intent_response import (
+    OrganizationsCreateSetupIntentResponse,
+)
+from .types.organizations_get_auto_reload_settings_response import (
+    OrganizationsGetAutoReloadSettingsResponse,
+)
+from .types.organizations_get_payment_method_response import (
+    OrganizationsGetPaymentMethodResponse,
+)
 from .types.organizations_get_response import OrganizationsGetResponse
 from .types.organizations_list_response_item import OrganizationsListResponseItem
 from .types.organizations_preview_subscription_change_request_target_plan import (
@@ -21,6 +37,9 @@ from .types.organizations_router_balance_response import (
     OrganizationsRouterBalanceResponse,
 )
 from .types.organizations_subscription_response import OrganizationsSubscriptionResponse
+from .types.organizations_update_auto_reload_settings_response import (
+    OrganizationsUpdateAutoReloadSettingsResponse,
+)
 from .types.organizations_update_response import OrganizationsUpdateResponse
 from .types.organizations_update_subscription_request_target_plan import (
     OrganizationsUpdateSubscriptionRequestTargetPlan,
@@ -77,6 +96,8 @@ class OrganizationsClient:
         *,
         name: str,
         slug: str,
+        plan_tier: typing.Optional[OrganizationsCreateRequestPlanTier] = OMIT,
+        payment_method_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> OrganizationsCreateResponse:
         """
@@ -87,6 +108,10 @@ class OrganizationsClient:
 
         slug : str
             a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
+
+        plan_tier : typing.Optional[OrganizationsCreateRequestPlanTier]
+
+        payment_method_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -107,7 +132,37 @@ class OrganizationsClient:
         )
         """
         _response = self._raw_client.create(
-            name=name, slug=slug, request_options=request_options
+            name=name,
+            slug=slug,
+            plan_tier=plan_tier,
+            payment_method_id=payment_method_id,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def createorgsetupintent(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> OrganizationsCreateOrgSetupIntentResponse:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsCreateOrgSetupIntentResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.organizations.createorgsetupintent()
+        """
+        _response = self._raw_client.createorgsetupintent(
+            request_options=request_options
         )
         return _response.data
 
@@ -240,6 +295,7 @@ class OrganizationsClient:
         id: str,
         *,
         amount: float,
+        payment_method_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> OrganizationsCreatePaymentIntentResponse:
         """
@@ -249,6 +305,8 @@ class OrganizationsClient:
 
         amount : float
             a positive number
+
+        payment_method_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -269,7 +327,10 @@ class OrganizationsClient:
         )
         """
         _response = self._raw_client.createpaymentintent(
-            id, amount=amount, request_options=request_options
+            id,
+            amount=amount,
+            payment_method_id=payment_method_id,
+            request_options=request_options,
         )
         return _response.data
 
@@ -404,6 +465,174 @@ class OrganizationsClient:
         )
         return _response.data
 
+    def createsetupintent(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> OrganizationsCreateSetupIntentResponse:
+        """
+        Parameters
+        ----------
+        id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsCreateSetupIntentResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.organizations.createsetupintent(
+            id="id",
+        )
+        """
+        _response = self._raw_client.createsetupintent(
+            id, request_options=request_options
+        )
+        return _response.data
+
+    def getpaymentmethod(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.Optional[OrganizationsGetPaymentMethodResponse]:
+        """
+        Parameters
+        ----------
+        id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.Optional[OrganizationsGetPaymentMethodResponse]
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.organizations.getpaymentmethod(
+            id="id",
+        )
+        """
+        _response = self._raw_client.getpaymentmethod(
+            id, request_options=request_options
+        )
+        return _response.data
+
+    def removepaymentmethod(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> None:
+        """
+        Parameters
+        ----------
+        id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.organizations.removepaymentmethod(
+            id="id",
+        )
+        """
+        _response = self._raw_client.removepaymentmethod(
+            id, request_options=request_options
+        )
+        return _response.data
+
+    def getautoreloadsettings(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> OrganizationsGetAutoReloadSettingsResponse:
+        """
+        Parameters
+        ----------
+        id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsGetAutoReloadSettingsResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.organizations.getautoreloadsettings(
+            id="id",
+        )
+        """
+        _response = self._raw_client.getautoreloadsettings(
+            id, request_options=request_options
+        )
+        return _response.data
+
+    def updateautoreloadsettings(
+        self,
+        id: str,
+        *,
+        enabled: bool,
+        threshold_centicents: BigInt,
+        amount_centicents: BigInt,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> OrganizationsUpdateAutoReloadSettingsResponse:
+        """
+        Parameters
+        ----------
+        id : str
+
+        enabled : bool
+
+        threshold_centicents : BigInt
+
+        amount_centicents : BigInt
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsUpdateAutoReloadSettingsResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.organizations.updateautoreloadsettings(
+            id="id",
+            enabled=True,
+            threshold_centicents="thresholdCenticents",
+            amount_centicents="amountCenticents",
+        )
+        """
+        _response = self._raw_client.updateautoreloadsettings(
+            id,
+            enabled=enabled,
+            threshold_centicents=threshold_centicents,
+            amount_centicents=amount_centicents,
+            request_options=request_options,
+        )
+        return _response.data
+
 
 class AsyncOrganizationsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -457,6 +686,8 @@ class AsyncOrganizationsClient:
         *,
         name: str,
         slug: str,
+        plan_tier: typing.Optional[OrganizationsCreateRequestPlanTier] = OMIT,
+        payment_method_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> OrganizationsCreateResponse:
         """
@@ -467,6 +698,10 @@ class AsyncOrganizationsClient:
 
         slug : str
             a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
+
+        plan_tier : typing.Optional[OrganizationsCreateRequestPlanTier]
+
+        payment_method_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -495,7 +730,45 @@ class AsyncOrganizationsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            name=name, slug=slug, request_options=request_options
+            name=name,
+            slug=slug,
+            plan_tier=plan_tier,
+            payment_method_id=payment_method_id,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def createorgsetupintent(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> OrganizationsCreateOrgSetupIntentResponse:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsCreateOrgSetupIntentResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.organizations.createorgsetupintent()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.createorgsetupintent(
+            request_options=request_options
         )
         return _response.data
 
@@ -662,6 +935,7 @@ class AsyncOrganizationsClient:
         id: str,
         *,
         amount: float,
+        payment_method_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> OrganizationsCreatePaymentIntentResponse:
         """
@@ -671,6 +945,8 @@ class AsyncOrganizationsClient:
 
         amount : float
             a positive number
+
+        payment_method_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -699,7 +975,10 @@ class AsyncOrganizationsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.createpaymentintent(
-            id, amount=amount, request_options=request_options
+            id,
+            amount=amount,
+            payment_method_id=payment_method_id,
+            request_options=request_options,
         )
         return _response.data
 
@@ -865,5 +1144,213 @@ class AsyncOrganizationsClient:
         """
         _response = await self._raw_client.cancelscheduleddowngrade(
             id, request_options=request_options
+        )
+        return _response.data
+
+    async def createsetupintent(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> OrganizationsCreateSetupIntentResponse:
+        """
+        Parameters
+        ----------
+        id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsCreateSetupIntentResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.organizations.createsetupintent(
+                id="id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.createsetupintent(
+            id, request_options=request_options
+        )
+        return _response.data
+
+    async def getpaymentmethod(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.Optional[OrganizationsGetPaymentMethodResponse]:
+        """
+        Parameters
+        ----------
+        id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.Optional[OrganizationsGetPaymentMethodResponse]
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.organizations.getpaymentmethod(
+                id="id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.getpaymentmethod(
+            id, request_options=request_options
+        )
+        return _response.data
+
+    async def removepaymentmethod(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> None:
+        """
+        Parameters
+        ----------
+        id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.organizations.removepaymentmethod(
+                id="id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.removepaymentmethod(
+            id, request_options=request_options
+        )
+        return _response.data
+
+    async def getautoreloadsettings(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> OrganizationsGetAutoReloadSettingsResponse:
+        """
+        Parameters
+        ----------
+        id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsGetAutoReloadSettingsResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.organizations.getautoreloadsettings(
+                id="id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.getautoreloadsettings(
+            id, request_options=request_options
+        )
+        return _response.data
+
+    async def updateautoreloadsettings(
+        self,
+        id: str,
+        *,
+        enabled: bool,
+        threshold_centicents: BigInt,
+        amount_centicents: BigInt,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> OrganizationsUpdateAutoReloadSettingsResponse:
+        """
+        Parameters
+        ----------
+        id : str
+
+        enabled : bool
+
+        threshold_centicents : BigInt
+
+        amount_centicents : BigInt
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsUpdateAutoReloadSettingsResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.organizations.updateautoreloadsettings(
+                id="id",
+                enabled=True,
+                threshold_centicents="thresholdCenticents",
+                amount_centicents="amountCenticents",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.updateautoreloadsettings(
+            id,
+            enabled=enabled,
+            threshold_centicents=threshold_centicents,
+            amount_centicents=amount_centicents,
+            request_options=request_options,
         )
         return _response.data

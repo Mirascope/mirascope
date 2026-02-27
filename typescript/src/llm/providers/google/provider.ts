@@ -88,6 +88,7 @@ export class GoogleProvider extends BaseProvider {
       modelId,
       args.messages,
       args.tools,
+      args.format,
       args.params,
     );
 
@@ -140,6 +141,7 @@ export class GoogleProvider extends BaseProvider {
       modelId,
       args.messages,
       args.tools,
+      args.format,
       args.params,
     );
 
@@ -191,6 +193,7 @@ export class GoogleProvider extends BaseProvider {
       modelId,
       args.messages,
       args.tools,
+      args.format,
       args.params,
     );
 
@@ -249,6 +252,7 @@ export class GoogleProvider extends BaseProvider {
       modelId,
       args.messages,
       args.tools,
+      args.format,
       args.params,
     );
 

@@ -129,7 +129,12 @@ export function calculateToolCost(
 
   // Per-call pricing
   if (pricing.costPerCall && callCount > 0) {
-    cost = cost + pricing.costPerCall * BigInt(callCount);
+    // Handle decimal callCounts (e.g., 2.5 for Gemini 2.5 models)
+    // by doing the multiplication in floating point first
+    if (Number.isFinite(callCount)) {
+      const callCost = Number(pricing.costPerCall) * callCount;
+      cost = cost + BigInt(Math.floor(callCost));
+    }
   }
 
   // Time-based pricing

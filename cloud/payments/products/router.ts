@@ -16,6 +16,7 @@ import {
   type CostInCenticents,
   centicentsToDollars,
 } from "@/api/router/cost-utils";
+import { getModelPricing } from "@/api/router/pricing";
 import {
   getCostCalculator,
   isValidProvider,
@@ -614,17 +615,29 @@ export class Router {
         return;
       }
 
+      // Fetch pricing from models.dev
+      const modelPricing = yield* getModelPricing(provider, model).pipe(
+        Effect.catchAll((error) => {
+          console.warn("Failed to fetch pricing:", { provider, model, error });
+          return Effect.succeed(null);
+        }),
+      );
+
+      // If pricing unavailable, log warning and skip charging
+      if (!modelPricing) {
+        console.warn("Pricing unavailable for model:", { provider, model });
+        return;
+      }
+
       // Get cost calculator for the provider
       const calculator = getCostCalculator(provider);
 
       // Calculate cost from TokenUsage
-      const costBreakdown = yield* calculator.calculate(model, usageData);
-
-      // If pricing unavailable, log warning and skip charging
-      if (!costBreakdown) {
-        console.warn("Pricing unavailable for model:", { provider, model });
-        return;
-      }
+      const costBreakdown = yield* calculator.calculate(
+        model,
+        usageData,
+        modelPricing,
+      );
 
       // Charge the meter with retries (5% gas fee applied by chargeUsageMeter)
       // TODO: Replace with queue-based async metering for better reliability

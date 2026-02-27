@@ -12,3 +12,8 @@ export {
   decodeResponse,
   encodeMessages,
 } from "@/llm/providers/openai/completions/_utils";
+export {
+  EMPTY_FEATURE_INFO,
+  featureInfoForOpenAIModel,
+  type CompletionsModelFeatureInfo,
+} from "@/llm/providers/openai/completions/_utils/feature-info";

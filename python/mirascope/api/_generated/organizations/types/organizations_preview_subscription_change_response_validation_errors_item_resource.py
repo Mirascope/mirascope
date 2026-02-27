@@ -2,6 +2,6 @@
 
 import typing
 
-OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItemResource = (
-    typing.Union[typing.Literal["seats", "projects"], typing.Any]
-)
+OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItemResource = typing.Union[
+    typing.Literal["seats", "projects"], typing.Any
+]

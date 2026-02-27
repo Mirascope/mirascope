@@ -19,6 +19,7 @@ import {
   Success,
 } from "@/app/components/mdx/elements/callout";
 import ProviderCodeBlock from "@/app/components/mdx/elements/code-block-provider";
+import { devComponents } from "@/app/components/mdx/elements/dev-components";
 import Icon from "@/app/components/mdx/elements/icon-wrapper";
 // MDX components
 import { InstallSnippet } from "@/app/components/mdx/elements/install-snippet";
@@ -37,7 +38,6 @@ import {
   TabsTrigger,
   TabsContent,
 } from "@/app/components/ui/tabs";
-// import { devComponents } from "@/app/components/mdx/elements/DevComponents";
 import { idSlugFromChildren } from "@/app/lib/mdx/heading-utils";
 
 // -----------------------------------------------------------------------------
@@ -136,9 +136,8 @@ const customComponents = {
   ProductLogo,
   MirascopeLogo,
 
-  // todo(sebastian): consolidate with /docs/v1/placeholder for central styling
   // Dev components
-  // ...devComponents,
+  ...devComponents,
 };
 
 // -----------------------------------------------------------------------------

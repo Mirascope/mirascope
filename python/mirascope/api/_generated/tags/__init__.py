@@ -2,13 +2,7 @@
 
 # isort: skip_file
 
-from .types import (
-    TagsCreateResponse,
-    TagsGetResponse,
-    TagsListResponse,
-    TagsListResponseTagsItem,
-    TagsUpdateResponse,
-)
+from .types import TagsCreateResponse, TagsGetResponse, TagsListResponse, TagsListResponseTagsItem, TagsUpdateResponse
 
 __all__ = [
     "TagsCreateResponse",

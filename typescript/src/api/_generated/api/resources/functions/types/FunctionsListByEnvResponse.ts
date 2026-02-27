@@ -3,6 +3,6 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface FunctionsListByEnvResponse {
-  functions: Mirascope.FunctionsListByEnvResponseFunctionsItem[];
-  total: number;
+    functions: Mirascope.FunctionsListByEnvResponseFunctionsItem[];
+    total: number;
 }

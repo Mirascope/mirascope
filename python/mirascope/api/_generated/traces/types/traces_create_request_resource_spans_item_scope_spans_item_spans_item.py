@@ -9,6 +9,12 @@ from ...core.serialization import FieldMetadata
 from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_attributes_item import (
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem,
 )
+from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_end_time_unix_nano import (
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano,
+)
+from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_start_time_unix_nano import (
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano,
+)
 from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_status import (
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus,
 )
@@ -20,8 +26,14 @@ class TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem(UniversalBaseM
     parent_span_id: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="parentSpanId")] = None
     name: str
     kind: typing.Optional[float] = None
-    start_time_unix_nano: typing_extensions.Annotated[str, FieldMetadata(alias="startTimeUnixNano")]
-    end_time_unix_nano: typing_extensions.Annotated[str, FieldMetadata(alias="endTimeUnixNano")]
+    start_time_unix_nano: typing_extensions.Annotated[
+        TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStartTimeUnixNano,
+        FieldMetadata(alias="startTimeUnixNano"),
+    ]
+    end_time_unix_nano: typing_extensions.Annotated[
+        TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemEndTimeUnixNano,
+        FieldMetadata(alias="endTimeUnixNano"),
+    ]
     attributes: typing.Optional[
         typing.List[TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem]
     ] = None

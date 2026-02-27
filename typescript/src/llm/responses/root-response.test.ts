@@ -52,6 +52,7 @@ function createMockFormat(
     },
     mode,
     validator,
+    toolSchemaUnwrapKey: null,
     outputParser: wrappedOutputParser,
     formattingInstructions: null,
     createToolSchema: () => ({
@@ -338,6 +339,52 @@ describe("RootResponse", () => {
         format,
       );
       expect(() => response.parse()).toThrow(ParseError);
+    });
+
+    it("unwraps non-object schema with toolSchemaUnwrapKey", () => {
+      const ArraySchema = z.array(z.string());
+      const format = createMockFormat({ validator: ArraySchema });
+      // Override toolSchemaUnwrapKey to simulate a wrapped array
+      (format as { toolSchemaUnwrapKey: string | null }).toolSchemaUnwrapKey =
+        "output";
+
+      const response = new TestResponse(
+        [
+          {
+            type: "text",
+            text: '{"output": ["apple", "banana", "cherry"]}',
+          },
+        ],
+        format,
+      );
+
+      const result = response.parse();
+      expect(result).toEqual(["apple", "banana", "cherry"]);
+    });
+
+    it("partial parse unwraps non-object schema with toolSchemaUnwrapKey", () => {
+      const format = createMockFormat();
+      (format as { toolSchemaUnwrapKey: string | null }).toolSchemaUnwrapKey =
+        "output";
+
+      const response = new TestResponse(
+        [{ type: "text", text: '{"output": ["apple", "ban' }],
+        format,
+      );
+
+      const partial = response.parse({ partial: true });
+      expect(partial).toEqual(["apple", "ban"]);
+    });
+
+    it("partial parse returns null when unwrap key not yet present", () => {
+      const format = createMockFormat();
+      (format as { toolSchemaUnwrapKey: string | null }).toolSchemaUnwrapKey =
+        "output";
+
+      const response = new TestResponse([{ type: "text", text: "{" }], format);
+
+      const partial = response.parse({ partial: true });
+      expect(partial).toBeNull();
     });
   });
 });

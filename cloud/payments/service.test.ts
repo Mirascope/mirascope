@@ -1,5 +1,5 @@
+import { describe, it, expect } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { describe, it, expect } from "vitest";
 
 import { Payments } from "@/payments/service";
 import { MockDrizzleORMLayer } from "@/tests/mock-drizzle";
@@ -257,6 +257,123 @@ describe("Payments", () => {
             ),
           ),
         ),
+      );
+
+      expect(result).toBe(true);
+    });
+  });
+
+  describe("MockWithPlan", () => {
+    it("creates a mock Payments layer for a specific plan", async () => {
+      const result = await Effect.runPromise(
+        Effect.gen(function* () {
+          const payments = yield* Payments;
+
+          // getPlan should return the configured plan
+          const plan =
+            yield* payments.customers.subscriptions.getPlan("cus_mock");
+          expect(plan).toBe("pro");
+
+          // getPlanLimits should return the correct limits
+          const limits =
+            yield* payments.customers.subscriptions.getPlanLimits("pro");
+          expect(limits).toBeDefined();
+          expect(limits.seats).toBeGreaterThan(0);
+
+          return true;
+        }).pipe(Effect.provide(Payments.MockWithPlan("pro"))),
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it("devProxy methods die with descriptive message", async () => {
+      const result = await Effect.runPromise(
+        Effect.gen(function* () {
+          const payments = yield* Payments;
+
+          // Calling a non-overridden method on customers should die
+          const exit = yield* payments.customers
+            .create({} as never)
+            .pipe(Effect.exit);
+
+          expect(exit._tag).toBe("Failure");
+
+          return true;
+        }).pipe(Effect.provide(Payments.MockWithPlan("free"))),
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it("products.router proxy methods die with descriptive message", async () => {
+      const result = await Effect.runPromise(
+        Effect.gen(function* () {
+          const payments = yield* Payments;
+
+          // Calling any method on devProxy should die
+          const exit = yield* payments.products.router
+            .getBalanceInfo("cus_test")
+            .pipe(Effect.exit);
+
+          expect(exit._tag).toBe("Failure");
+
+          return true;
+        }).pipe(Effect.provide(Payments.MockWithPlan("free"))),
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it("paymentIntents proxy methods die with descriptive message", async () => {
+      const result = await Effect.runPromise(
+        Effect.gen(function* () {
+          const payments = yield* Payments;
+
+          const exit = yield* payments.paymentIntents
+            .createRouterCreditsPurchaseIntent({} as never)
+            .pipe(Effect.exit);
+
+          expect(exit._tag).toBe("Failure");
+
+          return true;
+        }).pipe(Effect.provide(Payments.MockWithPlan("free"))),
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it("paymentMethods proxy methods die with descriptive message", async () => {
+      const result = await Effect.runPromise(
+        Effect.gen(function* () {
+          const payments = yield* Payments;
+
+          const exit = yield* payments.paymentMethods
+            .createSetupIntent("cus_test")
+            .pipe(Effect.exit);
+
+          expect(exit._tag).toBe("Failure");
+
+          return true;
+        }).pipe(Effect.provide(Payments.MockWithPlan("free"))),
+      );
+
+      expect(result).toBe(true);
+    });
+  });
+
+  describe("Dev layer", () => {
+    it("defaults to free plan", async () => {
+      const result = await Effect.runPromise(
+        Effect.gen(function* () {
+          const payments = yield* Payments;
+
+          const plan =
+            yield* payments.customers.subscriptions.getPlan("cus_mock");
+          expect(plan).toBe("free");
+
+          return true;
+        }).pipe(Effect.provide(Payments.Dev)),
       );
 
       expect(result).toBe(true);

@@ -24,9 +24,11 @@ import { getErrorMessage } from "@/app/lib/errors";
 export function DeleteProjectModal({
   open,
   onOpenChange,
+  onDeleted,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onDeleted?: () => void;
 }) {
   const [confirmName, setConfirmName] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -82,6 +84,7 @@ export function DeleteProjectModal({
         setSelectedProject(null);
       }
 
+      onDeleted?.();
       setConfirmName("");
       onOpenChange(false);
     } catch (err: unknown) {
@@ -118,7 +121,7 @@ export function DeleteProjectModal({
               data.
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
+          <div className="px-6 py-4">
             <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 mb-4">
               <p className="text-sm text-destructive">
                 All prompts, generations, and associated data will be

@@ -3,10 +3,10 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface TracesCreateRequestResourceSpansItemResourceAttributesItemValue {
-  stringValue?: string;
-  intValue?: string;
-  doubleValue?: number;
-  boolValue?: boolean;
-  arrayValue?: Mirascope.TracesCreateRequestResourceSpansItemResourceAttributesItemValueArrayValue;
-  kvlistValue?: Mirascope.TracesCreateRequestResourceSpansItemResourceAttributesItemValueKvlistValue;
+    stringValue?: string;
+    intValue?: Mirascope.TracesCreateRequestResourceSpansItemResourceAttributesItemValueIntValue;
+    doubleValue?: number;
+    boolValue?: boolean;
+    arrayValue?: Mirascope.TracesCreateRequestResourceSpansItemResourceAttributesItemValueArrayValue;
+    kvlistValue?: Mirascope.TracesCreateRequestResourceSpansItemResourceAttributesItemValueKvlistValue;
 }

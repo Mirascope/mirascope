@@ -12,19 +12,13 @@ from .project_memberships_get_response_role import ProjectMembershipsGetResponse
 
 class ProjectMembershipsGetResponse(UniversalBaseModel):
     member_id: typing_extensions.Annotated[str, FieldMetadata(alias="memberId")]
-    organization_id: typing_extensions.Annotated[
-        str, FieldMetadata(alias="organizationId")
-    ]
+    organization_id: typing_extensions.Annotated[str, FieldMetadata(alias="organizationId")]
     project_id: typing_extensions.Annotated[str, FieldMetadata(alias="projectId")]
     role: ProjectMembershipsGetResponseRole
-    created_at: typing_extensions.Annotated[
-        typing.Optional[Date], FieldMetadata(alias="createdAt")
-    ] = None
+    created_at: typing_extensions.Annotated[typing.Optional[Date], FieldMetadata(alias="createdAt")] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

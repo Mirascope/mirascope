@@ -1,0 +1,183 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Choose a lucky
+      number between 1 and 10"}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Respond
+      only with valid JSON that matches this exact schema:\n{\n  \"description\":
+      \"Wrapper for primitive type int\",\n  \"properties\": {\n    \"output\": {\n      \"title\":
+      \"Output\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\": [\n    \"output\"\n  ],\n  \"title\":
+      \"intOutput\",\n  \"type\": \"object\"\n}","cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '530'
+      Content-Type:
+      - application/json
+      Host:
+      - api.anthropic.com
+      User-Agent:
+      - Anthropic/Python 0.76.0
+      X-Api-Key:
+      - <filtered>
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.76.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.12.12
+      anthropic-version:
+      - '2023-06-01'
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WRQU/DMAyF/8qUcye1Wyuk3hCcdgO0A6IoColZw1KnJM4EVP3vONOmCRCnRP5e
+        7PecSQzegBOt0E4lA8voEYGW9XJVrpqyqWpRCGuYD3Eny6ra3uzvHzf17fatudNfD+tB1/01a+hz
+        hKyCGNUOuBC8ywUVo42kkLikPRLwrX2aznqCj0yORyumDheLTvhEY6JOtIurDmcxPxcikh9lAMX2
+        WAdoJKWA4gQivCdAzQ0xOVeIdPTQTsIiN5Lk94BRtFW1YhNK9yA19yLrUf5UlGfO2PzHzm/zABh7
+        GCAoJ5vhr/5Cq/43nYtTzou9NceBcLAaJFkIHDRvzqhg8ifgK4QcUu7AM0JPUh2UdeqFFz3P374p
+        B5HKAQAA
+    headers:
+      CF-RAY:
+      - 9cb6b180f8ac680b-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 09 Feb 2026 22:09:51 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-02-09T22:09:51Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-02-09T22:09:51Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-02-09T22:09:50Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-02-09T22:09:51Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CXyG1YMiZBrfmicJ1W5Ah
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '1186'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Choose a lucky number between 1 and
+      10"}], "role": "user"}, {"parts": [{"text": "{\n  \"output\": 7\n}"}], "role":
+      "model"}, {"parts": [{"text": "Ok, now choose a different lucky number"}], "role":
+      "user"}], "systemInstruction": {"parts": [{"text": "Respond only with valid
+      JSON that matches this exact schema:\n{\n  \"description\": \"Wrapper for primitive
+      type int\",\n  \"properties\": {\n    \"output\": {\n      \"title\": \"Output\",\n      \"type\":
+      \"integer\"\n    }\n  },\n  \"required\": [\n    \"output\"\n  ],\n  \"title\":
+      \"intOutput\",\n  \"type\": \"object\"\n}"}], "role": "user"}, "generationConfig":
+      {"responseMimeType": "application/json"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '696'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQUUvDMBSF3/srwn1eZatugm/iJoiMDS0iW0WCvWuDbVKbW5mU/neTdu1S7UMJ
+        55zcm/PVHmPwwWUsYk6o4YbtjcJY3f6tpyShJGP0khELXtI52321czYRwqO9BHUkGYtAVVRUFBnl
+        MpINONlmOL9NzhtKlaG9nqsYsz7e9AE4CCl0+oRcK2ljz+FmC4MrZIxHI0+9fkE7GirNE1wjcdOV
+        D42gKFVeUKg+Ud6pqu06C+bdNIfNODA9+aSIZ2PrejH5N1gvzVqRudAcnqYlzwT92Crh6jUEhwT9
+        eVfPwnOQAaWqSlIav/Fq5p2YdRhfsNSi45Vgbgj6wcXcP2Rcp+1CKFEXSmp8iG1mfV898p2/WO2W
+        31+kt9P3YMNvwWu8XyiaPn41AgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 09 Feb 2026 22:09:52 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=748
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

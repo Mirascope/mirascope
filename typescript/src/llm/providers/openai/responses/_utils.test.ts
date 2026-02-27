@@ -11,7 +11,7 @@ import { describe, it, expect } from "vitest";
 
 import type { AssistantMessage } from "@/llm/messages";
 
-import { Audio, Image } from "@/llm/content";
+import { Audio, Document, Image } from "@/llm/content";
 import { FeatureNotSupportedError } from "@/llm/exceptions";
 import { user } from "@/llm/messages";
 import {
@@ -66,6 +66,7 @@ describe("buildRequestParams thinking config", () => {
       "openai/o4-mini:responses",
       messages,
       undefined,
+      undefined,
       {
         thinking: { level: "medium" },
       },
@@ -80,6 +81,7 @@ describe("buildRequestParams thinking config", () => {
     const params = buildRequestParams(
       "openai/o4-mini:responses",
       messages,
+      undefined,
       undefined,
       {
         thinking: { level: "high", includeThoughts: true },
@@ -98,6 +100,7 @@ describe("image encoding", () => {
     const params = buildRequestParams(
       "openai/gpt-4o:responses",
       messages,
+      undefined,
       undefined,
       {},
     );
@@ -139,8 +142,104 @@ describe("audio encoding", () => {
     const messages = [user(["Listen to this", wavAudio])];
 
     expect(() =>
-      buildRequestParams("openai/gpt-4o:responses", messages, undefined, {}),
+      buildRequestParams(
+        "openai/gpt-4o:responses",
+        messages,
+        undefined,
+        undefined,
+        {},
+      ),
     ).toThrow(FeatureNotSupportedError);
+  });
+});
+
+describe("document encoding", () => {
+  it("encodes base64 document source as input_file", () => {
+    const doc: Document = {
+      type: "document",
+      source: {
+        type: "base64_document_source",
+        data: "JVBERi0xLjQ=",
+        mediaType: "application/pdf",
+      },
+    };
+    const messages = [user(["Read this", doc])];
+
+    const params = buildRequestParams(
+      "openai/gpt-4o:responses",
+      messages,
+      undefined,
+      undefined,
+      {},
+    );
+
+    expect(params.input).toContainEqual({
+      role: "user",
+      content: [
+        { type: "input_text", text: "Read this" },
+        {
+          type: "input_file",
+          file_data: "data:application/pdf;base64,JVBERi0xLjQ=",
+          filename: "document.pdf",
+        },
+      ],
+    });
+  });
+
+  it("encodes text document source as input_file", () => {
+    const doc: Document = {
+      type: "document",
+      source: {
+        type: "text_document_source",
+        data: "Hello, world!",
+        mediaType: "text/plain",
+      },
+    };
+    const messages = [user(["Read this", doc])];
+
+    const params = buildRequestParams(
+      "openai/gpt-4o:responses",
+      messages,
+      undefined,
+      undefined,
+      {},
+    );
+
+    expect(params.input).toContainEqual({
+      role: "user",
+      content: [
+        { type: "input_text", text: "Read this" },
+        {
+          type: "input_file",
+          file_data: `data:text/plain;base64,${btoa("Hello, world!")}`,
+          filename: "document.txt",
+        },
+      ],
+    });
+  });
+
+  it("encodes URL document source as input_file with file_url", () => {
+    const doc = Document.fromUrl("https://example.com/doc.pdf");
+    const messages = [user(["Read this", doc])];
+
+    const params = buildRequestParams(
+      "openai/gpt-4o:responses",
+      messages,
+      undefined,
+      undefined,
+      {},
+    );
+
+    expect(params.input).toContainEqual({
+      role: "user",
+      content: [
+        { type: "input_text", text: "Read this" },
+        {
+          type: "input_file",
+          file_url: "https://example.com/doc.pdf",
+        },
+      ],
+    });
   });
 });
 

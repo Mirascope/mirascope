@@ -1,8 +1,10 @@
 /**
- * Tracing wrapper for functions.
+ * Tracing wrapper for functions and calls.
  *
- * Provides the trace() function for wrapping async functions with
- * OpenTelemetry tracing instrumentation.
+ * Provides the trace() function for wrapping async functions OR Call objects
+ * with OpenTelemetry tracing instrumentation.
+ *
+ * This unified API matches Python's @ops.trace decorator pattern.
  */
 
 import { context as otelContext, trace as otelTrace } from "@opentelemetry/api";
@@ -10,14 +12,22 @@ import { context as otelContext, trace as otelTrace } from "@opentelemetry/api";
 import type { TraceOptions } from "@/ops/_internal/types";
 
 import { Span } from "@/ops/_internal/spans";
+import {
+  traceCall,
+  isCallLike,
+  type TracedCall,
+  type CallLike,
+} from "@/ops/_internal/traced-calls";
 import { createTrace, type Trace } from "@/ops/_internal/traced-functions";
 import {
   jsonStringify,
-  getQualifiedName,
   extractArguments,
   toJsonable,
   type NamedCallable,
 } from "@/ops/_internal/utils";
+
+// Re-export types for convenience
+export type { TracedCall, CallLike } from "@/ops/_internal/traced-calls";
 
 /**
  * A traced function with access to the wrapped result.
@@ -35,20 +45,21 @@ export interface TracedFunction<Args extends unknown[], R> {
 /**
  * Create a span for a traced function invocation.
  */
-function createTracedSpan<Args extends unknown[]>(
+export function createTracedSpan<Args extends unknown[]>(
   fn: NamedCallable,
   options: TraceOptions,
   args: Args,
 ): Span {
-  const qualifiedName = getQualifiedName(fn);
   const { argTypes, argValues } = extractArguments(fn, args);
 
-  const span = new Span(qualifiedName);
+  const span = new Span(options.name);
   span.start();
 
   span.set({
     "mirascope.type": "trace",
-    "mirascope.fn.qualname": qualifiedName,
+    "mirascope.fn.qualname": options.name,
+    "mirascope.fn.module": "", // TypeScript doesn't have module metadata like Python (yet)
+    "mirascope.fn.is_async": true, // All traced functions in TypeScript are async
     "mirascope.trace.arg_types": jsonStringify(argTypes),
     "mirascope.trace.arg_values": jsonStringify(argValues),
   });
@@ -67,7 +78,7 @@ function createTracedSpan<Args extends unknown[]>(
 /**
  * Record the result of a traced function on its span.
  */
-function recordResult(span: Span, result: unknown): void {
+export function recordResult(span: Span, result: unknown): void {
   if (result === null || result === undefined) {
     return;
   }
@@ -90,20 +101,23 @@ function recordResult(span: Span, result: unknown): void {
  * Wrap a function with tracing instrumentation.
  *
  * @param fn - The async function to trace
- * @param options - Optional trace options (tags, metadata)
+ * @param options - Trace options including required name (since arrow functions have no name)
  * @returns A traced function that creates spans on each invocation
  *
  * @example Direct form
  * ```typescript
- * const tracedFn = trace(async (x: number) => x * 2);
+ * const tracedFn = trace(
+ *   async (x: number) => x * 2,
+ *   { name: 'double' }
+ * );
  * const result = await tracedFn(5);  // Returns 10
  * ```
  *
- * @example With options
+ * @example With tags and metadata
  * ```typescript
  * const tracedFn = trace(
  *   async (x: number) => x * 2,
- *   { tags: ['math'], metadata: { operation: 'double' } }
+ *   { name: 'double', tags: ['math'], metadata: { operation: 'double' } }
  * );
  * ```
  *
@@ -117,43 +131,98 @@ function recordResult(span: Span, result: unknown): void {
  */
 export function trace<Args extends unknown[], R>(
   fn: (...args: Args) => Promise<R>,
-  options?: TraceOptions,
+  options: TraceOptions,
 ): TracedFunction<Args, R>;
+
+/**
+ * Wrap a Call object with tracing instrumentation.
+ *
+ * This overload handles Call objects created with defineCall().
+ *
+ * @param call - The call to trace
+ * @param options - Trace options including required name
+ * @returns A traced call that creates spans on each invocation
+ *
+ * @example
+ * ```typescript
+ * const recommendBook = defineCall({
+ *   model: 'anthropic/claude-sonnet-4-20250514',
+ *   template: ({ genre }: { genre: string }) => `Recommend a ${genre} book`,
+ * });
+ *
+ * const tracedCall = trace(recommendBook, { name: 'recommend-book' });
+ * const response = await tracedCall({ genre: 'fantasy' });
+ * ```
+ */
+export function trace<CallT extends CallLike>(
+  call: CallT,
+  options: TraceOptions,
+): TracedCall<CallT>;
 
 /**
  * Create a tracing wrapper with options (curried form).
  *
- * @param options - Trace options (tags, metadata)
- * @returns A function that accepts the function to trace
+ * @param options - Trace options including required name
+ * @returns A function that accepts the function or call to trace
  *
  * @example
  * ```typescript
- * const withTracing = trace({ tags: ['api'] });
+ * const withTracing = trace({ name: 'myFn', tags: ['api'] });
  * const tracedFn = withTracing(async (x: number) => x * 2);
  * ```
  */
-export function trace(
-  options: TraceOptions,
-): <Args extends unknown[], R>(
-  fn: (...args: Args) => Promise<R>,
-) => TracedFunction<Args, R>;
+export function trace(options: TraceOptions): {
+  <Args extends unknown[], R>(
+    fn: (...args: Args) => Promise<R>,
+  ): TracedFunction<Args, R>;
+  <CallT extends CallLike>(call: CallT): TracedCall<CallT>;
+};
 
-export function trace<Args extends unknown[], R>(
-  fnOrOptions: ((...args: Args) => Promise<R>) | TraceOptions,
+export function trace<Args extends unknown[], R, CallT extends CallLike>(
+  fnOrCallOrOptions: ((...args: Args) => Promise<R>) | CallT | TraceOptions,
   maybeOptions?: TraceOptions,
 ):
   | TracedFunction<Args, R>
-  | (<A extends unknown[], T>(
-      fn: (...args: A) => Promise<T>,
-    ) => TracedFunction<A, T>) {
-  if (typeof fnOrOptions !== "function") {
-    const options = fnOrOptions;
-    return <A extends unknown[], T>(fn: (...args: A) => Promise<T>) =>
-      trace(fn, options);
+  | TracedCall<CallT>
+  | {
+      <A extends unknown[], T>(
+        fn: (...args: A) => Promise<T>,
+      ): TracedFunction<A, T>;
+      <C extends CallLike>(call: C): TracedCall<C>;
+    } {
+  // Curried form: trace(options)(fn or call)
+  if (typeof fnOrCallOrOptions !== "function") {
+    const options = fnOrCallOrOptions as TraceOptions;
+    // Return a function that handles both functions and calls
+    return (<T>(target: T) => {
+      if (isCallLike(target)) {
+        return traceCall(target, options);
+      }
+      return trace(target as (...args: unknown[]) => Promise<unknown>, options);
+    }) as {
+      <A extends unknown[], T>(
+        fn: (...args: A) => Promise<T>,
+      ): TracedFunction<A, T>;
+      <C extends CallLike>(call: C): TracedCall<C>;
+    };
   }
 
-  const fn = fnOrOptions;
-  const options = maybeOptions ?? {};
+  // Check if it's a Call object - delegate to traceCall
+  if (isCallLike(fnOrCallOrOptions)) {
+    if (!maybeOptions) {
+      throw new Error("trace() requires options with a name");
+    }
+    return traceCall(
+      fnOrCallOrOptions,
+      maybeOptions,
+    ) as unknown as TracedCall<CallT>;
+  }
+
+  const fn = fnOrCallOrOptions as (...args: Args) => Promise<R>;
+  if (!maybeOptions) {
+    throw new Error("trace() requires options with a name");
+  }
+  const options = maybeOptions;
 
   const traced = async (...args: Args): Promise<R> => {
     const span = createTracedSpan(fn, options, args);
@@ -177,7 +246,7 @@ export function trace<Args extends unknown[], R>(
         return result;
       } catch (error) {
         if (error instanceof Error) {
-          span.error(error.message);
+          span.recordException(error);
         } else {
           span.error(String(error));
         }
@@ -211,7 +280,7 @@ export function trace<Args extends unknown[], R>(
         return createTrace(result, span);
       } catch (error) {
         if (error instanceof Error) {
-          span.error(error.message);
+          span.recordException(error);
         } else {
           span.error(String(error));
         }

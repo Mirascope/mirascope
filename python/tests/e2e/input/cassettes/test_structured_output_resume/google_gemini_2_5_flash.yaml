@@ -1,0 +1,132 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Choose a lucky number between 1 and
+      10"}], "role": "user"}], "generationConfig": {"responseMimeType": "application/json",
+      "responseSchema": {"description": "Wrapper for primitive type int", "properties":
+      {"output": {"title": "Output", "type": "INTEGER"}}, "required": ["output"],
+      "title": "intOutput", "type": "OBJECT"}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '356'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQX0vDMBTF3/spyn3exBX2B99kDhkiDi0iOB+CuWuDaVKTW52WfneTdu1SzENI
+        7jm5N+dXR3EM70xxwRmhhav41VXiuG53r2lFqMgJfckVS2bo7O1WHZydhfDoH0G9B11RWdHe3ZYN
+        BK5mOL9Nzr2NlugfFpqj7O1Nb4CDUMLmj8isVt72lD7sYFCF4nh05cuoH9C2hsqyDO+RmEvJhixQ
+        Gl2UlOoPVGtdtSlnSdcsgDLSFyeZNDE5Ularyb+u9sbNFDJkFWB0EZkU9ONzpJuXFAIMNP5UzyEK
+        cAHluspyGn9w6bO3vDqEz2is6FhlWDh60+RiPj1IZvN2Hhi0pVYWt9x75rPPO4aC35r15ne53X0t
+        kkxcf0PURH+2l2jcLAIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 09 Feb 2026 22:08:39 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=929
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Choose a lucky number between 1 and
+      10"}], "role": "user"}, {"parts": [{"text": "{\"output\": 7}"}], "role": "model"},
+      {"parts": [{"text": "Ok, now choose a different lucky number"}], "role": "user"}],
+      "generationConfig": {"responseMimeType": "application/json", "responseSchema":
+      {"description": "Wrapper for primitive type int", "properties": {"output": {"title":
+      "Output", "type": "INTEGER"}}, "required": ["output"], "title": "intOutput",
+      "type": "OBJECT"}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '497'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQwU7DMBBE7/6KaM8tQim0lCsUVCGgQIRAlIPVbBMLx07jjRSI8u/YSdM64INl
+        74x3Pa9mQQAbrmIRc0IDl8GHrQRB3e5O04pQkRX6ki3mvKCjt1u1d7YWwso9gnoNuqS8pLW9TRrw
+        XM3h/Dk69i60RPcw0zHK3t70BtgKJUz6jNxo5Wwv0eMKDqpQMVa2fMr6AW1rKA1P8B6J25T8kAXy
+        Qmc5RfoL1ZUu25ThRdfMgzLQp3uZNHE5UOaz0b+u5trOFNJn5WG0EbkU9O1yRIu3CDwMNPxUz4F5
+        uIBSXSYp/fnghO15dQhfsTCiY5VgZumNw5Pz8VZyk7bzoECTa2VwGTvP9GZ3xze7h1sTLn5my1U1
+        R3X29A6sYb8XYxm9LAIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 09 Feb 2026 22:08:40 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=876
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

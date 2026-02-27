@@ -3,7 +3,7 @@
 import type * as Mirascope from "../index.js";
 
 export interface PermissionDeniedError {
-  message: string;
-  resource?: string;
-  tag: Mirascope.PermissionDeniedErrorTag;
+    message: string;
+    resource?: string;
+    tag: Mirascope.PermissionDeniedErrorTag;
 }

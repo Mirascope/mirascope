@@ -5,9 +5,7 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from .raw_client import AsyncRawFunctionsClient, RawFunctionsClient
-from .types.functions_create_request_dependencies_value import (
-    FunctionsCreateRequestDependenciesValue,
-)
+from .types.functions_create_request_dependencies_value import FunctionsCreateRequestDependenciesValue
 from .types.functions_create_response import FunctionsCreateResponse
 from .types.functions_find_by_hash_response import FunctionsFindByHashResponse
 from .types.functions_get_by_env_response import FunctionsGetByEnvResponse
@@ -34,9 +32,7 @@ class FunctionsClient:
         """
         return self._raw_client
 
-    def list(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> FunctionsListResponse:
+    def list(self, *, request_options: typing.Optional[RequestOptions] = None) -> FunctionsListResponse:
         """
         Parameters
         ----------
@@ -66,6 +62,7 @@ class FunctionsClient:
         signature: str,
         signature_hash: str,
         name: str,
+        language: str,
         description: typing.Optional[str] = OMIT,
         tags: typing.Optional[typing.Sequence[str]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[str]]] = OMIT,
@@ -86,6 +83,8 @@ class FunctionsClient:
         signature_hash : str
 
         name : str
+
+        language : str
 
         description : typing.Optional[str]
 
@@ -114,6 +113,7 @@ class FunctionsClient:
             signature="signature",
             signature_hash="signatureHash",
             name="name",
+            language="language",
         )
         """
         _response = self._raw_client.create(
@@ -122,6 +122,7 @@ class FunctionsClient:
             signature=signature,
             signature_hash=signature_hash,
             name=name,
+            language=language,
             description=description,
             tags=tags,
             metadata=metadata,
@@ -130,9 +131,7 @@ class FunctionsClient:
         )
         return _response.data
 
-    def get(
-        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> FunctionsGetResponse:
+    def get(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> FunctionsGetResponse:
         """
         Parameters
         ----------
@@ -158,9 +157,7 @@ class FunctionsClient:
         _response = self._raw_client.get(id, request_options=request_options)
         return _response.data
 
-    def delete(
-        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> None:
+    def delete(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
         Parameters
         ----------
@@ -254,11 +251,7 @@ class FunctionsClient:
         )
         """
         _response = self._raw_client.getbyenv(
-            organization_id,
-            project_id,
-            environment_id,
-            function_id,
-            request_options=request_options,
+            organization_id, project_id, environment_id, function_id, request_options=request_options
         )
         return _response.data
 
@@ -319,9 +312,7 @@ class AsyncFunctionsClient:
         """
         return self._raw_client
 
-    async def list(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> FunctionsListResponse:
+    async def list(self, *, request_options: typing.Optional[RequestOptions] = None) -> FunctionsListResponse:
         """
         Parameters
         ----------
@@ -359,6 +350,7 @@ class AsyncFunctionsClient:
         signature: str,
         signature_hash: str,
         name: str,
+        language: str,
         description: typing.Optional[str] = OMIT,
         tags: typing.Optional[typing.Sequence[str]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[str]]] = OMIT,
@@ -379,6 +371,8 @@ class AsyncFunctionsClient:
         signature_hash : str
 
         name : str
+
+        language : str
 
         description : typing.Optional[str]
 
@@ -412,6 +406,7 @@ class AsyncFunctionsClient:
                 signature="signature",
                 signature_hash="signatureHash",
                 name="name",
+                language="language",
             )
 
 
@@ -423,6 +418,7 @@ class AsyncFunctionsClient:
             signature=signature,
             signature_hash=signature_hash,
             name=name,
+            language=language,
             description=description,
             tags=tags,
             metadata=metadata,
@@ -431,9 +427,7 @@ class AsyncFunctionsClient:
         )
         return _response.data
 
-    async def get(
-        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> FunctionsGetResponse:
+    async def get(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> FunctionsGetResponse:
         """
         Parameters
         ----------
@@ -467,9 +461,7 @@ class AsyncFunctionsClient:
         _response = await self._raw_client.get(id, request_options=request_options)
         return _response.data
 
-    async def delete(
-        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> None:
+    async def delete(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
         Parameters
         ----------
@@ -535,9 +527,7 @@ class AsyncFunctionsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.findbyhash(
-            hash, request_options=request_options
-        )
+        _response = await self._raw_client.findbyhash(hash, request_options=request_options)
         return _response.data
 
     async def getbyenv(
@@ -589,11 +579,7 @@ class AsyncFunctionsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.getbyenv(
-            organization_id,
-            project_id,
-            environment_id,
-            function_id,
-            request_options=request_options,
+            organization_id, project_id, environment_id, function_id, request_options=request_options
         )
         return _response.data
 

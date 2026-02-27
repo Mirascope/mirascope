@@ -11,6 +11,7 @@ export const KNOWN_PROVIDER_IDS = [
   "mirascope",
   "ollama",
   "openai",
+  "openrouter",
   "together",
 ] as const;
 

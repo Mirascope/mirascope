@@ -6,6 +6,7 @@ import type { PublicOrganizationWithMembership } from "@/db/schema";
 import {
   CreateOrganizationRequestSchema,
   CreatePaymentIntentRequestSchema,
+  UpdateAutoReloadSettingsRequestSchema,
 } from "@/api/organizations.schemas";
 import { describe, it, expect, TestApiContext } from "@/tests/api";
 
@@ -211,6 +212,111 @@ describe.sequential("Organizations API", (it) => {
   );
 });
 
+describe.sequential("Organizations Payment Methods API", (it) => {
+  let org: PublicOrganizationWithMembership;
+
+  it.effect("Create test organization for payment method tests", () =>
+    Effect.gen(function* () {
+      const { client } = yield* TestApiContext;
+      org = yield* client.organizations.create({
+        payload: {
+          name: "Payment Methods Test Org",
+          slug: "payment-methods-test-org",
+        },
+      });
+      expect(org.id).toBeDefined();
+    }),
+  );
+
+  it.effect("POST /organizations/setup-intent - create org setup intent", () =>
+    Effect.gen(function* () {
+      const { client } = yield* TestApiContext;
+      const result = yield* client.organizations.createOrgSetupIntent();
+
+      expect(result.clientSecret).toBeDefined();
+      expect(typeof result.clientSecret).toBe("string");
+    }),
+  );
+
+  it.effect(
+    "POST /organizations/:id/payment-method/setup-intent - create setup intent",
+    () =>
+      Effect.gen(function* () {
+        const { client } = yield* TestApiContext;
+        const result = yield* client.organizations.createSetupIntent({
+          path: { id: org.id },
+        });
+
+        expect(result.clientSecret).toBeDefined();
+        expect(typeof result.clientSecret).toBe("string");
+      }),
+  );
+
+  it.effect("GET /organizations/:id/payment-method - get payment method", () =>
+    Effect.gen(function* () {
+      const { client } = yield* TestApiContext;
+      const result = yield* client.organizations.getPaymentMethod({
+        path: { id: org.id },
+      });
+
+      // Mock Stripe should return payment method details or null
+      // The mock may or may not have a payment method configured
+      if (result !== null) {
+        expect(result.id).toBeDefined();
+        expect(result.brand).toBeDefined();
+        expect(result.last4).toBeDefined();
+      }
+    }),
+  );
+
+  it.effect(
+    "DELETE /organizations/:id/payment-method - remove payment method",
+    () =>
+      Effect.gen(function* () {
+        const { client } = yield* TestApiContext;
+        yield* client.organizations.removePaymentMethod({
+          path: { id: org.id },
+        });
+      }),
+  );
+
+  it.effect("DELETE test organization", () =>
+    Effect.gen(function* () {
+      const { client } = yield* TestApiContext;
+      yield* client.organizations.delete({ path: { id: org.id } });
+    }),
+  );
+});
+
+describe.sequential("Organizations Paid Creation API", (it) => {
+  let org: PublicOrganizationWithMembership;
+
+  it.effect("POST /organizations - creates paid org with paymentMethodId", () =>
+    Effect.gen(function* () {
+      const { client } = yield* TestApiContext;
+
+      org = yield* client.organizations.create({
+        payload: {
+          name: "Paid Org",
+          slug: "paid-org",
+          planTier: "pro",
+          paymentMethodId: "pm_test_123",
+        },
+      });
+
+      expect(org.id).toBeDefined();
+      expect(org.name).toBe("Paid Org");
+    }),
+  );
+
+  it.effect("DELETE paid test organization", () =>
+    Effect.gen(function* () {
+      const { client } = yield* TestApiContext;
+      yield* client.organizations.delete({ path: { id: org.id } });
+    }),
+  );
+});
+
 describe.sequential("Organizations Subscription API", (it) => {
   let org: PublicOrganizationWithMembership;
 
@@ -306,6 +412,152 @@ describe.sequential("Organizations Subscription API", (it) => {
           expect(result.message).toBe("No scheduled changes found");
         }
       }),
+  );
+
+  it.effect("DELETE test organization", () =>
+    Effect.gen(function* () {
+      const { client } = yield* TestApiContext;
+      yield* client.organizations.delete({ path: { id: org.id } });
+    }),
+  );
+});
+
+describe("UpdateAutoReloadSettingsRequestSchema validation", () => {
+  it("rejects negative threshold", () => {
+    expect(() =>
+      Schema.decodeUnknownSync(UpdateAutoReloadSettingsRequestSchema)({
+        enabled: true,
+        thresholdCenticents: "-1",
+        amountCenticents: "500000",
+      }),
+    ).toThrow();
+  });
+
+  it("rejects zero amount", () => {
+    expect(() =>
+      Schema.decodeUnknownSync(UpdateAutoReloadSettingsRequestSchema)({
+        enabled: true,
+        thresholdCenticents: "0",
+        amountCenticents: "0",
+      }),
+    ).toThrow();
+  });
+
+  it("rejects negative amount", () => {
+    expect(() =>
+      Schema.decodeUnknownSync(UpdateAutoReloadSettingsRequestSchema)({
+        enabled: true,
+        thresholdCenticents: "0",
+        amountCenticents: "-100000",
+      }),
+    ).toThrow();
+  });
+
+  it("accepts valid settings", () => {
+    const result = Schema.decodeUnknownSync(
+      UpdateAutoReloadSettingsRequestSchema,
+    )({
+      enabled: true,
+      thresholdCenticents: "100000",
+      amountCenticents: "500000",
+    });
+    expect(result.enabled).toBe(true);
+    expect(result.thresholdCenticents).toBe(100000n);
+    expect(result.amountCenticents).toBe(500000n);
+  });
+
+  it("accepts zero threshold", () => {
+    const result = Schema.decodeUnknownSync(
+      UpdateAutoReloadSettingsRequestSchema,
+    )({
+      enabled: false,
+      thresholdCenticents: "0",
+      amountCenticents: "1",
+    });
+    expect(result.thresholdCenticents).toBe(0n);
+  });
+});
+
+describe.sequential("Organizations Auto-Reload API", (it) => {
+  let org: PublicOrganizationWithMembership;
+
+  it.effect("Create test organization for auto-reload tests", () =>
+    Effect.gen(function* () {
+      const { client } = yield* TestApiContext;
+      org = yield* client.organizations.create({
+        payload: {
+          name: "Auto-Reload Test Org",
+          slug: "auto-reload-test-org",
+        },
+      });
+      expect(org.id).toBeDefined();
+    }),
+  );
+
+  it.effect(
+    "GET /organizations/:id/auto-reload - get default auto-reload settings",
+    () =>
+      Effect.gen(function* () {
+        const { client } = yield* TestApiContext;
+        const settings = yield* client.organizations.getAutoReloadSettings({
+          path: { id: org.id },
+        });
+
+        expect(settings.enabled).toBe(false);
+        expect(settings.thresholdCenticents).toBe(0n);
+        expect(settings.amountCenticents).toBe(500000n);
+      }),
+  );
+
+  it.effect(
+    "PUT /organizations/:id/auto-reload - update auto-reload settings",
+    () =>
+      Effect.gen(function* () {
+        const { client } = yield* TestApiContext;
+        const updated = yield* client.organizations.updateAutoReloadSettings({
+          path: { id: org.id },
+          payload: {
+            enabled: true,
+            thresholdCenticents: 100000n,
+            amountCenticents: 250000n,
+          },
+        });
+
+        expect(updated.enabled).toBe(true);
+        expect(updated.thresholdCenticents).toBe(100000n);
+        expect(updated.amountCenticents).toBe(250000n);
+      }),
+  );
+
+  it.effect(
+    "GET /organizations/:id/auto-reload - verify updated settings persist",
+    () =>
+      Effect.gen(function* () {
+        const { client } = yield* TestApiContext;
+        const settings = yield* client.organizations.getAutoReloadSettings({
+          path: { id: org.id },
+        });
+
+        expect(settings.enabled).toBe(true);
+        expect(settings.thresholdCenticents).toBe(100000n);
+        expect(settings.amountCenticents).toBe(250000n);
+      }),
+  );
+
+  it.effect("PUT /organizations/:id/auto-reload - disable auto-reload", () =>
+    Effect.gen(function* () {
+      const { client } = yield* TestApiContext;
+      const updated = yield* client.organizations.updateAutoReloadSettings({
+        path: { id: org.id },
+        payload: {
+          enabled: false,
+          thresholdCenticents: 100000n,
+          amountCenticents: 250000n,
+        },
+      });
+
+      expect(updated.enabled).toBe(false);
+    }),
   );
 
   it.effect("DELETE test organization", () =>

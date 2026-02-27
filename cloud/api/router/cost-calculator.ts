@@ -13,10 +13,10 @@ import type { CostInCenticents } from "@/api/router/cost-utils";
 import type { ProviderName } from "@/api/router/providers";
 
 import {
-  getModelPricing,
   type TokenUsage,
   type CostBreakdown,
   type NativeToolUsage,
+  type ModelPricing,
 } from "@/api/router/pricing";
 import { calculateToolCost, type ToolType } from "@/api/router/tool-pricing";
 
@@ -113,97 +113,97 @@ export abstract class BaseCostCalculator {
   }
 
   /**
-   * Calculates cost from TokenUsage using models.dev pricing data.
+   * Calculates cost from TokenUsage using pre-fetched pricing data.
    *
-   * @param modelId - The model ID
+   * The pricing data is required and must be provided from the estimation phase.
+   * This ensures we never need to make an HTTP call to models.dev during cost
+   * calculation, eliminating the possibility of transient fetch failures causing
+   * metering to be silently skipped.
+   *
+   * @param modelId - The model ID (for tool pricing lookups)
    * @param usage - Token usage data from the provider response
-   * @returns Effect with cost breakdown (in centi-cents), or null if pricing unavailable
+   * @param modelPricing - Pricing data from the estimation phase (required)
+   * @returns Effect with cost breakdown (in centi-cents)
    */
   public calculate(
     modelId: string,
     usage: TokenUsage,
-  ): Effect.Effect<CostBreakdown | null, never> {
-    return Effect.gen(this, function* () {
-      // Get pricing data (null if unavailable)
-      const pricing = yield* getModelPricing(this.provider, modelId).pipe(
-        Effect.catchAll(() => Effect.succeed(null)),
+    modelPricing: ModelPricing,
+  ): Effect.Effect<CostBreakdown, never> {
+    return Effect.sync(() => {
+      // Helper to safely convert tokens to BigInt (handles decimals and non-finite values)
+      const tokensToBigInt = (tokens: number): bigint => {
+        if (!Number.isFinite(tokens) || tokens < 0) return 0n;
+        return BigInt(Math.floor(tokens));
+      };
+
+      const inputCost =
+        (tokensToBigInt(usage.inputTokens) * modelPricing.input) / 1_000_000n;
+      const outputCost =
+        (tokensToBigInt(usage.outputTokens) * modelPricing.output) / 1_000_000n;
+
+      const cacheReadCost =
+        usage.cacheReadTokens && modelPricing.cache_read
+          ? (tokensToBigInt(usage.cacheReadTokens) * modelPricing.cache_read) /
+            1_000_000n
+          : undefined;
+
+      // Use provider-specific cache write cost calculation
+      const cacheWriteCost = this.calculateCacheWriteCost(
+        usage.cacheWriteTokens,
+        usage.cacheWriteBreakdown,
+        modelPricing.cache_write || 0n,
       );
 
-      if (!pricing) {
-        return null;
-      }
+      // Calculate tool costs
+      let toolCost: CostInCenticents | undefined;
+      let toolCostBreakdown: Record<string, CostInCenticents> | undefined;
 
-      return yield* Effect.try(() => {
-        const inputCost =
-          (BigInt(usage.inputTokens) * pricing.input) / 1_000_000n;
-        const outputCost =
-          (BigInt(usage.outputTokens) * pricing.output) / 1_000_000n;
-
-        const cacheReadCost =
-          usage.cacheReadTokens && pricing.cache_read
-            ? (BigInt(usage.cacheReadTokens) * pricing.cache_read) / 1_000_000n
-            : undefined;
-
-        // Use provider-specific cache write cost calculation
-        const cacheWriteCost = this.calculateCacheWriteCost(
-          usage.cacheWriteTokens,
-          usage.cacheWriteBreakdown,
-          pricing.cache_write || 0n,
+      if (usage.toolUsage && usage.toolUsage.length > 0) {
+        // Apply model-specific adjustments to tool usage
+        const adjustedToolUsage = this.adjustToolUsageForModel(
+          modelId,
+          usage.toolUsage,
         );
 
-        // Calculate tool costs
-        let toolCost: CostInCenticents | undefined;
-        let toolCostBreakdown: Record<string, CostInCenticents> | undefined;
+        toolCostBreakdown = {};
+        let totalToolCost = 0n;
 
-        if (usage.toolUsage && usage.toolUsage.length > 0) {
-          // Apply model-specific adjustments to tool usage
-          const adjustedToolUsage = this.adjustToolUsageForModel(
-            modelId,
-            usage.toolUsage,
+        for (const tool of adjustedToolUsage) {
+          const cost = calculateToolCost(
+            tool.toolType as ToolType,
+            tool.callCount,
+            tool.durationSeconds,
           );
-
-          toolCostBreakdown = {};
-          let totalToolCost = 0n;
-
-          for (const tool of adjustedToolUsage) {
-            const cost = calculateToolCost(
-              tool.toolType as ToolType,
-              tool.callCount,
-              tool.durationSeconds,
-            );
-            if (cost && cost > 0n) {
-              toolCostBreakdown[tool.toolType] = cost;
-              totalToolCost += cost;
-            }
-          }
-
-          if (totalToolCost > 0n) {
-            toolCost = totalToolCost;
-          } else {
-            toolCostBreakdown = undefined;
+          if (cost && cost > 0n) {
+            toolCostBreakdown[tool.toolType] = cost;
+            totalToolCost += cost;
           }
         }
 
-        // Token cost is sum of input, output, and cache costs (excludes tool costs)
-        const tokenCost =
-          inputCost +
-          outputCost +
-          (cacheReadCost || 0n) +
-          (cacheWriteCost || 0n);
+        if (totalToolCost > 0n) {
+          toolCost = totalToolCost;
+        } else {
+          toolCostBreakdown = undefined;
+        }
+      }
 
-        const totalCost = tokenCost + (toolCost || 0n);
+      // Token cost is sum of input, output, and cache costs (excludes tool costs)
+      const tokenCost =
+        inputCost + outputCost + (cacheReadCost || 0n) + (cacheWriteCost || 0n);
 
-        return {
-          inputCost,
-          outputCost,
-          cacheReadCost,
-          cacheWriteCost,
-          tokenCost,
-          toolCost,
-          toolCostBreakdown,
-          totalCost,
-        };
-      }).pipe(Effect.orElseSucceed(() => null));
+      const totalCost = tokenCost + (toolCost || 0n);
+
+      return {
+        inputCost,
+        outputCost,
+        cacheReadCost,
+        cacheWriteCost,
+        tokenCost,
+        toolCost,
+        toolCostBreakdown,
+        totalCost,
+      };
     });
   }
 }

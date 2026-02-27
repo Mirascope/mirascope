@@ -1,84 +1,83 @@
 interactions:
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
-      the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-5","system":[{"type":"text","text":"Always
-      respond to the user''s query using the __mirascope_formatted_output_tool__ tool
-      for structured output.","cache_control":{"type":"ephemeral"}}],"tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
-      this tool to extract data in Book format for a final response.\nA book with
-      a rating. The title should be in all caps!","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
-      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
-      author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
-      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object"}},"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
+      the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-5","output_format":{"schema":{"$defs":{"Author":{"type":"object","description":"The
+      author of a book.","title":"Author","properties":{"first_name":{"type":"string","title":"First
+      Name"},"last_name":{"type":"string","title":"Last Name"}},"additionalProperties":false,"required":["first_name","last_name"]}},"type":"object","description":"A
+      book with a rating. The title should be in all caps!","title":"Book","properties":{"title":{"type":"string","title":"Title"},"author":{"$ref":"#/$defs/Author"},"rating":{"type":"integer","description":"For
+      testing purposes, the rating should be 7","title":"Rating"}},"additionalProperties":false,"required":["title","author","rating"]},"type":"json_schema"}}'
     headers:
-      accept:
+      Accept:
       - application/json
-      accept-encoding:
+      Accept-Encoding:
       - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '842'
+      Content-Type:
+      - application/json
+      Host:
+      - api.anthropic.com
+      User-Agent:
+      - Anthropic/Python 0.76.0
+      X-Api-Key:
+      - <filtered>
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Helper:
+      - beta.messages.parse
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.76.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.10.16
+      anthropic-beta:
+      - structured-outputs-2025-11-13
       anthropic-version:
       - '2023-06-01'
-      connection:
-      - keep-alive
-      content-length:
-      - '1217'
-      content-type:
-      - application/json
-      host:
-      - api.anthropic.com
-      user-agent:
-      - Anthropic/Python 0.75.0
-      x-stainless-arch:
-      - arm64
-      x-stainless-async:
-      - 'false'
-      x-stainless-lang:
-      - python
-      x-stainless-os:
-      - MacOS
-      x-stainless-package-version:
-      - 0.75.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
       - '0'
-      x-stainless-runtime:
-      - CPython
-      x-stainless-runtime-version:
-      - 3.10.16
       x-stainless-timeout:
       - '600'
     method: POST
-    uri: https://api.anthropic.com/v1/messages
+    uri: https://api.anthropic.com/v1/messages?beta=true
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/3WR3U4CMRCFX4X0GhJ2BcG9Q8V/0BiVqDFN6Q5sw267tFOikn13pxt+gsa7ds7X
-        OTOna1aYFHKWMJkLn0LLGa0BW51WtxW34277JD5hTaZSIgo35+0ompyid73Lt2ERHY2/9c1q8jyw
-        xOBXCYEC58QcqGBNHgrCOeVQaKSSNBqBTsn7esujMTn3DrYu4e7J50Xfxjhavvbv5HQ6Pev0Bsvj
-        zw5RWhThHeeFssJJUwKfGVsIREi58Vh65HVTHlpqurKE3BTW0zxdDRvjwWjYuL9ohPPkenxOnPCY
-        GRvAmbIO+cbkQaBVckFALvbVR4PZzDvHKlpSoNJzlvSq6qPJHJqSWxCU4uFqteBg6UFLaqF9njeZ
-        r4Miz3pKGnoB2rGk329TUkJmwCX1QmU0PyR2Osnpf9r2bTCAMoMCrMh5t/jL79Uo+63SirtMN+NF
-        tA7YlZLAUQGFxsL3psKmrKp+AB0d/vVRAgAA
+        H4sIAAAAAAAA/3WR207DMAyGX2XydSdtY+PQuyHGURyEOIqiyLTeGpEmI3E4aOq748AmNBBXifx9
+        Tv3XC2hcRQZyKA3GirrBWUvcHXZH3UFvMOrtDHYgA12J0YSZ6vXvd8t6sz64fgvj462b8eH23ckt
+        ozj8MadkUQg4Iyl4Z1IBQ9CB0bKUSmeZ5JY/LFY+03siX0cOiwJYs6EC8k4BV4eTztn4dNI53++k
+        ++3R2V4BmRCMXDufLOmYah9YWWyWbRfIXpfP36bBNXbpuJ7GEApoE/XI2s4S2mqhfcwgsJsrTyj/
+        QcYhWymO3sISBHqJZEuZ20ZjMohfUfMFaDuPrNg9kw2QD/tDyYplTaqUt1g7q9aN3ooLrv5jq970
+        AZrX1JBHo0bNX/+H9uvftM3ARV4bb0PikH/VJSnW5CVoWlCFvkq7tlPyKaSakRNkHSt8RW3wSfbZ
+        tp9FJogJMwIAAA==
     headers:
-      CF-Cache-Status:
-      - DYNAMIC
       CF-RAY:
-      - 9b027803dfd38e8e-SEA
+      - 9cb6aaded8860bdf-SEA
       Connection:
       - keep-alive
       Content-Encoding:
       - gzip
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'
       Content-Type:
       - application/json
       Date:
-      - Thu, 18 Dec 2025 23:34:07 GMT
+      - Mon, 09 Feb 2026 22:05:22 GMT
       Server:
       - cloudflare
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
       - chunked
-      Vary:
-      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -88,29 +87,33 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-18T23:34:06Z'
+      - '2026-02-09T22:05:22Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-18T23:34:07Z'
+      - '2026-02-09T22:05:22Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-18T23:34:04Z'
+      - '2026-02-09T22:05:18Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-18T23:34:06Z'
+      - '2026-02-09T22:05:22Z'
+      cf-cache-status:
+      - DYNAMIC
       request-id:
-      - req_011CWF2ZZDC4i9Nr4dGshCM8
+      - req_011CXyFfWivywZdVYcqCKVYq
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '2877'
+      - '4292'
     status:
       code: 200
       message: OK

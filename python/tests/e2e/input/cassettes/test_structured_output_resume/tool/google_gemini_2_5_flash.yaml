@@ -1,0 +1,155 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Choose a lucky number between 1 and
+      10"}], "role": "user"}], "systemInstruction": {"parts": [{"text": "Always respond
+      to the user''s query using the __mirascope_formatted_output_tool__ tool for
+      structured output."}], "role": "user"}, "tools": [{"functionDeclarations": [{"description":
+      "Use this tool to extract data in int format for a final response.", "name":
+      "__mirascope_formatted_output_tool__", "parameters": {"properties": {"output":
+      {"title": "Output", "type": "INTEGER"}}, "required": ["output"], "type": "OBJECT"}}]}],
+      "toolConfig": {"functionCallingConfig": {"allowedFunctionNames": ["__mirascope_formatted_output_tool__"],
+      "mode": "ANY"}}, "generationConfig": {}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '710'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21U246qSBR99ysMTzPx9BEQRSeZB0RpGxVR8cZkYgoooRSqkCpA6fS/D2rbR3sO
+        DwT2WvvCYq96r1SrnAuwhzzAIOX+qv5TRqrV9+v9ghHMIGYlcA+VwRgk7Bf3dr0/PJeUXYpdhghW
+        QRg+JX/iGESwjHPbbYQSQF0Sw+2OJBFgDHpbkrI4ZVtGSLjdcj++J4PEp78pWiK3xBKTv2EfT+8f
+        zyU5FpDUD9gc+RiwNLlOphK/pzhSrZOl89lJFwFWlM5BEKJ9jbJBLKRmqMz1dtL2xWPyGk7FXuu1
+        Ddez/V7Tx3MKDu5UciRzrCI1s/Rcaa98RY/2IZms42Hub5Y0yVWr3pcdcbzgi263gB3NnY3PxJA3
+        UOatbF9oiA8KNgB+Pg+SXuL0z4LVDFxdPboY2vOs6yNJ961II+dU5oNsczi04qPj50HDiFNbc7Jc
+        S6xp7Cyg1a5joxFAqGSL+nAYhIa07zEvoUCSRnus+8FGtnvjo7OvMzduEroJop4vHFY06K6XQLSR
+        3GxR6ts4jW3Uj9WlcNwI+8FJWAW7uD5soGGHgLbQMjai1aAO655HxwINXPstN1ZduQYsdzKwDWDP
+        XmNzWBtlmgGbesrvlq9zaTMJ1YI2xEPQKvJm4dYMNehIfEtfMt7GuH7qJkaszHLtLdzk4ippnBYj
+        UezKUo1FaV0li9PSot68tiv4uniUfNFdarzq9lHxpp/Y3m15ptSTLIO2FVzQ83hkHjR9GJvhhF9J
+        U6GJYqQJq45tO/FMaJOonRGgrqeQHPmM8W/GhPzNVX63Tf/+2iQuIeF1cyLiwfBO/1o1bocwosEM
+        AkrwhTa3JubXbnMIe/BUhvlv/DGkFPjXuuNL3aoPMUxKs3rVu8eqbmmyP+ifP289L8Ndx+LSS+YY
+        MlCaG3wZhosTEsXMIgeIVZJezd0Rb20fzoInXBQ+cUYYCJ8hvvHjf3Vpr+yKwsdD4uH8KAUCIWLn
+        y0dZ/bX14PCywdNYdxUrD2Lf7fo8YoevfKp9+wFLmFB0U9qHUanli/iz+bILAQ2u/bgE0phgCt+8
+        C0cUxSFwzU5XnrwcGTVP5llrKVOu8lH5D9vbmdIlBQAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 09 Feb 2026 23:29:31 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=936
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Choose a lucky number between 1 and
+      10"}], "role": "user"}, {"parts": [{"text": "{\"output\": 7}"}], "role": "model"},
+      {"parts": [{"text": "Ok, now choose a different lucky number"}], "role": "user"}],
+      "systemInstruction": {"parts": [{"text": "Always respond to the user''s query
+      using the __mirascope_formatted_output_tool__ tool for structured output."}],
+      "role": "user"}, "tools": [{"functionDeclarations": [{"description": "Use this
+      tool to extract data in int format for a final response.", "name": "__mirascope_formatted_output_tool__",
+      "parameters": {"properties": {"output": {"title": "Output", "type": "INTEGER"}},
+      "required": ["output"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
+      {"allowedFunctionNames": ["__mirascope_formatted_output_tool__"], "mode": "ANY"}},
+      "generationConfig": {}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '851'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21TW2+iQBh991cQnnZjW+8Cm/TBRWHRVbyAl242ZJQBCTCDM4NIm/73HbC22i0P
+        hPnO+S6cOd9LRRDEHUBu4AIGqfhD+MMjgvBSvgsMIwYR48AlxIMJIOyDe35err45xUvRjgUYqSCK
+        bpLfcARiyOOi48QBAXSHE+h4mMSAMeg6OGVJyhyGceQ44t3nZEB8+kVRjpwTOdb6hL3enF9vS4ps
+        j1N/zxaBjwBLSTmZyjY/e9t2VTkec5pLPcW0yPTpFAZDStf2GufmUTGllXww4TwzdtIpzWBo/GJ+
+        a0AQOzZXw1Y/TPMOgClF20nce5IMxah6UnjQjJO2sJT5crg+zFWQSIuFSaWJKgNj1repnU07NdgM
+        jK09RWQrs9XQ/N2RnxGun9iiRtnezLpLTzMtc2UMD7WdlOWKP3luwJza24221rpVe5lMWbBndX8Y
+        WqRH47C28tpjfWRm2mG+0EeTwaS7wZvjuJOos0Sz+u2qDnQ91kNPazc2JHLbALqDatqx81CZuKrE
+        6NKj8kpvGF23vYS17PFRrHyl8N8PdUWCo1LNGLswutDf5Re9AAV0P4eAYlTQFpY5fb9vMUAuPPFw
+        /RN/DCkFfll3XNQVfIgg4QZ2hYvvhB033jf6/eHcsxiuHEtMi8wxZIAbHrybSEwIjhNm4RAiFael
+        4Rt1+dz3akFuCM3GG84wA9FtrtS9+68w7fO2QXS9OVdLxRUCUcDy4q+swdq6sj1vcDvXRcfKldwX
+        E9/O2JYqb3qfr2AJCQ3OWvsw5mreNx86914E6L5sKBJIE4woNNyC09KbI7ALRj131DkwOm1s+lt5
+        NhMrr5V/sY1tmTsEAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 09 Feb 2026 23:29:32 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=853
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

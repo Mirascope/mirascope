@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 
 import type {
   Jsonable,
+  BaseOpsOptions,
   TraceOptions,
   VersionOptions,
   PropagatorFormat,
@@ -62,27 +63,47 @@ describe("types", () => {
   });
 
   describe("TraceOptions", () => {
-    it("should accept empty options", () => {
-      const opts: TraceOptions = {};
-      expect(opts).toEqual({});
+    it("should require name", () => {
+      const opts: TraceOptions = { name: "myFn" };
+      expect(opts.name).toBe("myFn");
     });
 
-    it("should accept tags", () => {
+    it("should accept tags with name", () => {
       const opts: TraceOptions = {
+        name: "myFn",
         tags: ["production", "v1"],
       };
       expect(opts.tags).toHaveLength(2);
     });
 
-    it("should accept metadata", () => {
+    it("should accept metadata with name", () => {
       const opts: TraceOptions = {
+        name: "myFn",
         metadata: { version: "1.0.0", environment: "prod" },
       };
       expect(opts.metadata?.version).toBe("1.0.0");
     });
 
-    it("should accept both tags and metadata", () => {
+    it("should accept name, tags, and metadata together", () => {
       const opts: TraceOptions = {
+        name: "myFn",
+        tags: ["v1"],
+        metadata: { key: "value" },
+      };
+      expect(opts.name).toBe("myFn");
+      expect(opts.tags).toBeDefined();
+      expect(opts.metadata).toBeDefined();
+    });
+  });
+
+  describe("BaseOpsOptions", () => {
+    it("should accept empty options", () => {
+      const opts: BaseOpsOptions = {};
+      expect(opts).toEqual({});
+    });
+
+    it("should accept tags and metadata", () => {
+      const opts: BaseOpsOptions = {
         tags: ["v1"],
         metadata: { key: "value" },
       };
@@ -92,16 +113,17 @@ describe("types", () => {
   });
 
   describe("VersionOptions", () => {
-    it("should extend TraceOptions", () => {
+    it("should extend BaseOpsOptions with optional name", () => {
       const opts: VersionOptions = {
         tags: ["v1"],
         metadata: { key: "value" },
       };
       expect(opts.tags).toBeDefined();
       expect(opts.metadata).toBeDefined();
+      expect(opts.name).toBeUndefined();
     });
 
-    it("should accept name property", () => {
+    it("should accept optional name property", () => {
       const opts: VersionOptions = {
         name: "my-function",
       };

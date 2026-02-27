@@ -4,18 +4,21 @@ import type * as Mirascope from "../../../../api/index.js";
 import type * as serializers from "../../../index.js";
 
 import * as core from "../../../../core/index.js";
+import { OrganizationsCreatePaymentIntentResponseStatus } from "./OrganizationsCreatePaymentIntentResponseStatus.js";
 
 export const OrganizationsCreatePaymentIntentResponse: core.serialization.ObjectSchema<
   serializers.OrganizationsCreatePaymentIntentResponse.Raw,
   Mirascope.OrganizationsCreatePaymentIntentResponse
 > = core.serialization.object({
-  clientSecret: core.serialization.string(),
+  clientSecret: core.serialization.string().nullable(),
   amount: core.serialization.number(),
+  status: OrganizationsCreatePaymentIntentResponseStatus,
 });
 
 export declare namespace OrganizationsCreatePaymentIntentResponse {
   export interface Raw {
-    clientSecret: string;
+    clientSecret?: string | null;
     amount: number;
+    status: OrganizationsCreatePaymentIntentResponseStatus.Raw;
   }
 }

@@ -4,19 +4,10 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from .raw_client import (
-    AsyncRawOrganizationMembershipsClient,
-    RawOrganizationMembershipsClient,
-)
-from .types.organization_memberships_list_response_item import (
-    OrganizationMembershipsListResponseItem,
-)
-from .types.organization_memberships_update_request_role import (
-    OrganizationMembershipsUpdateRequestRole,
-)
-from .types.organization_memberships_update_response import (
-    OrganizationMembershipsUpdateResponse,
-)
+from .raw_client import AsyncRawOrganizationMembershipsClient, RawOrganizationMembershipsClient
+from .types.organization_memberships_list_response_item import OrganizationMembershipsListResponseItem
+from .types.organization_memberships_update_request_role import OrganizationMembershipsUpdateRequestRole
+from .types.organization_memberships_update_response import OrganizationMembershipsUpdateResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -24,9 +15,7 @@ OMIT = typing.cast(typing.Any, ...)
 
 class OrganizationMembershipsClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
-        self._raw_client = RawOrganizationMembershipsClient(
-            client_wrapper=client_wrapper
-        )
+        self._raw_client = RawOrganizationMembershipsClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> RawOrganizationMembershipsClient:
@@ -40,10 +29,7 @@ class OrganizationMembershipsClient:
         return self._raw_client
 
     def list(
-        self,
-        organization_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[OrganizationMembershipsListResponseItem]:
         """
         Parameters
@@ -67,17 +53,11 @@ class OrganizationMembershipsClient:
             organization_id="organizationId",
         )
         """
-        _response = self._raw_client.list(
-            organization_id, request_options=request_options
-        )
+        _response = self._raw_client.list(organization_id, request_options=request_options)
         return _response.data
 
     def delete(
-        self,
-        organization_id: str,
-        member_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, member_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> None:
         """
         Parameters
@@ -103,9 +83,7 @@ class OrganizationMembershipsClient:
             member_id="memberId",
         )
         """
-        _response = self._raw_client.delete(
-            organization_id, member_id, request_options=request_options
-        )
+        _response = self._raw_client.delete(organization_id, member_id, request_options=request_options)
         return _response.data
 
     def update(
@@ -144,17 +122,13 @@ class OrganizationMembershipsClient:
             role="ADMIN",
         )
         """
-        _response = self._raw_client.update(
-            organization_id, member_id, role=role, request_options=request_options
-        )
+        _response = self._raw_client.update(organization_id, member_id, role=role, request_options=request_options)
         return _response.data
 
 
 class AsyncOrganizationMembershipsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
-        self._raw_client = AsyncRawOrganizationMembershipsClient(
-            client_wrapper=client_wrapper
-        )
+        self._raw_client = AsyncRawOrganizationMembershipsClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> AsyncRawOrganizationMembershipsClient:
@@ -168,10 +142,7 @@ class AsyncOrganizationMembershipsClient:
         return self._raw_client
 
     async def list(
-        self,
-        organization_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[OrganizationMembershipsListResponseItem]:
         """
         Parameters
@@ -203,17 +174,11 @@ class AsyncOrganizationMembershipsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.list(
-            organization_id, request_options=request_options
-        )
+        _response = await self._raw_client.list(organization_id, request_options=request_options)
         return _response.data
 
     async def delete(
-        self,
-        organization_id: str,
-        member_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, member_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> None:
         """
         Parameters
@@ -247,9 +212,7 @@ class AsyncOrganizationMembershipsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.delete(
-            organization_id, member_id, request_options=request_options
-        )
+        _response = await self._raw_client.delete(organization_id, member_id, request_options=request_options)
         return _response.data
 
     async def update(

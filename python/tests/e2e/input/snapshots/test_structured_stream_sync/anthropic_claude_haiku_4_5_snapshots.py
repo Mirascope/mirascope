@@ -2,7 +2,6 @@ from inline_snapshot import snapshot
 
 from mirascope.llm import (
     AssistantMessage,
-    SystemMessage,
     Text,
     UserMessage,
 )
@@ -15,16 +14,11 @@ test_snapshot = snapshot(
             "provider_model_name": "claude-haiku-4-5",
             "finish_reason": None,
             "messages": [
-                SystemMessage(
-                    content=Text(
-                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                    )
-                ),
                 UserMessage(content=[Text(text="Please recommend a book to me!")]),
                 AssistantMessage(
                     content=[
                         Text(
-                            text='{"title": "The Midnight Library", "author": "Matt Haig", "themes": ["parallel universes","life choices","second chances","self-discovery","hope"], "rating": 5}'
+                            text='{"title": "The Midnight Library", "author": "Matt Haig", "themes": ["parallel lives", "second chances", "self-discovery", "regret", "hope"], "rating": 9}'
                         )
                     ],
                     provider_id="anthropic",
@@ -34,21 +28,8 @@ test_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "type": "tool_use",
-                                "id": "toolu_01VtJVjJct4grKZJd5pkzDYF",
-                                "name": "__mirascope_formatted_output_tool__",
-                                "input": {
-                                    "title": "The Midnight Library",
-                                    "author": "Matt Haig",
-                                    "themes": [
-                                        "parallel universes",
-                                        "life choices",
-                                        "second chances",
-                                        "self-discovery",
-                                        "hope",
-                                    ],
-                                    "rating": 5,
-                                },
+                                "type": "text",
+                                "text": '{"title": "The Midnight Library", "author": "Matt Haig", "themes": ["parallel lives", "second chances", "self-discovery", "regret", "hope"], "rating": 9}',
                             }
                         ],
                     },
@@ -72,123 +53,81 @@ test_snapshot = snapshot(
                     "title": "BookReview",
                     "type": "object",
                 },
-                "mode": "tool",
-                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
             "tools": [],
             "usage": {
-                "input_tokens": 793,
-                "output_tokens": 101,
+                "input_tokens": 281,
+                "output_tokens": 50,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 894,
+                "total_tokens": 331,
             },
-            "n_chunks": 27,
+            "n_chunks": 16,
         },
         "structured_stream": [
-            {"title": "T", "author": None, "themes": None, "rating": None},
-            {"title": "The Midnight", "author": None, "themes": None, "rating": None},
-            {
-                "title": "The Midnight Li",
-                "author": None,
-                "themes": None,
-                "rating": None,
-            },
+            {"title": None, "author": None, "themes": None, "rating": None},
+            {"title": "The", "author": None, "themes": None, "rating": None},
             {
                 "title": "The Midnight Library",
-                "author": None,
-                "themes": None,
-                "rating": None,
-            },
-            {
-                "title": "The Midnight Library",
-                "author": None,
-                "themes": None,
-                "rating": None,
-            },
-            {
-                "title": "The Midnight Library",
-                "author": "Matt H",
-                "themes": None,
-                "rating": None,
-            },
-            {
-                "title": "The Midnight Library",
-                "author": "Matt Hai",
+                "author": "Matt",
                 "themes": None,
                 "rating": None,
             },
             {
                 "title": "The Midnight Library",
                 "author": "Matt Haig",
-                "themes": None,
+                "themes": [""],
                 "rating": None,
             },
             {
                 "title": "The Midnight Library",
                 "author": "Matt Haig",
-                "themes": None,
+                "themes": ["parallel"],
                 "rating": None,
             },
             {
                 "title": "The Midnight Library",
                 "author": "Matt Haig",
-                "themes": None,
+                "themes": ["parallel lives"],
                 "rating": None,
             },
             {
                 "title": "The Midnight Library",
                 "author": "Matt Haig",
-                "themes": ["para"],
+                "themes": ["parallel lives", "secon"],
                 "rating": None,
             },
             {
                 "title": "The Midnight Library",
                 "author": "Matt Haig",
-                "themes": ["parallel uni"],
+                "themes": ["parallel lives", "second chances", "self"],
                 "rating": None,
             },
             {
                 "title": "The Midnight Library",
                 "author": "Matt Haig",
-                "themes": ["parallel unive"],
+                "themes": ["parallel lives", "second chances", "self-discovery"],
                 "rating": None,
             },
             {
                 "title": "The Midnight Library",
                 "author": "Matt Haig",
-                "themes": ["parallel universes", "li"],
-                "rating": None,
-            },
-            {
-                "title": "The Midnight Library",
-                "author": "Matt Haig",
-                "themes": ["parallel universes", "life choices"],
-                "rating": None,
-            },
-            {
-                "title": "The Midnight Library",
-                "author": "Matt Haig",
-                "themes": ["parallel universes", "life choices", "second ch"],
-                "rating": None,
-            },
-            {
-                "title": "The Midnight Library",
-                "author": "Matt Haig",
-                "themes": ["parallel universes", "life choices", "second chances"],
+                "themes": ["parallel lives", "second chances", "self-discovery", "reg"],
                 "rating": None,
             },
             {
                 "title": "The Midnight Library",
                 "author": "Matt Haig",
                 "themes": [
-                    "parallel universes",
-                    "life choices",
+                    "parallel lives",
                     "second chances",
-                    "self-dis",
+                    "self-discovery",
+                    "regret",
                 ],
                 "rating": None,
             },
@@ -196,22 +135,10 @@ test_snapshot = snapshot(
                 "title": "The Midnight Library",
                 "author": "Matt Haig",
                 "themes": [
-                    "parallel universes",
-                    "life choices",
+                    "parallel lives",
                     "second chances",
                     "self-discovery",
-                    "",
-                ],
-                "rating": None,
-            },
-            {
-                "title": "The Midnight Library",
-                "author": "Matt Haig",
-                "themes": [
-                    "parallel universes",
-                    "life choices",
-                    "second chances",
-                    "self-discovery",
+                    "regret",
                     "hope",
                 ],
                 "rating": None,
@@ -220,49 +147,25 @@ test_snapshot = snapshot(
                 "title": "The Midnight Library",
                 "author": "Matt Haig",
                 "themes": [
-                    "parallel universes",
-                    "life choices",
+                    "parallel lives",
                     "second chances",
                     "self-discovery",
+                    "regret",
                     "hope",
                 ],
-                "rating": None,
+                "rating": 9,
             },
             {
                 "title": "The Midnight Library",
                 "author": "Matt Haig",
                 "themes": [
-                    "parallel universes",
-                    "life choices",
+                    "parallel lives",
                     "second chances",
                     "self-discovery",
+                    "regret",
                     "hope",
                 ],
-                "rating": None,
-            },
-            {
-                "title": "The Midnight Library",
-                "author": "Matt Haig",
-                "themes": [
-                    "parallel universes",
-                    "life choices",
-                    "second chances",
-                    "self-discovery",
-                    "hope",
-                ],
-                "rating": None,
-            },
-            {
-                "title": "The Midnight Library",
-                "author": "Matt Haig",
-                "themes": [
-                    "parallel universes",
-                    "life choices",
-                    "second chances",
-                    "self-discovery",
-                    "hope",
-                ],
-                "rating": 5,
+                "rating": 9,
             },
         ],
     }

@@ -199,6 +199,14 @@ export function createMockEnv(
     VITE_POSTHOG_API_KEY: "phc_test",
     VITE_POSTHOG_HOST: "https://app.posthog.com",
     VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID: "G-TEST",
+    CLOUDFLARE_ACCOUNT_ID: "test-cf-account-id",
+    CLOUDFLARE_API_TOKEN: "test-cf-api-token",
+    CF_R2_READ_PERMISSION_GROUP_ID: "test-r2-read-perm",
+    CF_R2_WRITE_PERMISSION_GROUP_ID: "test-r2-write-perm",
+    CF_DO_NAMESPACE_ID: "test-do-namespace-id",
+    CF_DISPATCH_WORKER_BASE_URL: "https://dispatch.test.workers.dev",
+    CLAW_SECRETS_ENCRYPTION_KEY_V1:
+      "S0YrcgEScoOL1ALp/w+xI90P9O8h4s3OzEXtzlhBbHQ=",
   };
 
   // Filter out undefined values from overrides

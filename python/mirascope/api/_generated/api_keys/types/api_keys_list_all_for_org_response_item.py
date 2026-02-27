@@ -12,26 +12,16 @@ class ApiKeysListAllForOrgResponseItem(UniversalBaseModel):
     id: str
     name: str
     key_prefix: typing_extensions.Annotated[str, FieldMetadata(alias="keyPrefix")]
-    environment_id: typing_extensions.Annotated[
-        str, FieldMetadata(alias="environmentId")
-    ]
+    environment_id: typing_extensions.Annotated[str, FieldMetadata(alias="environmentId")]
     owner_id: typing_extensions.Annotated[str, FieldMetadata(alias="ownerId")]
-    created_at: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="createdAt")
-    ] = None
-    last_used_at: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="lastUsedAt")
-    ] = None
+    created_at: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="createdAt")] = None
+    last_used_at: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="lastUsedAt")] = None
     project_id: typing_extensions.Annotated[str, FieldMetadata(alias="projectId")]
     project_name: typing_extensions.Annotated[str, FieldMetadata(alias="projectName")]
-    environment_name: typing_extensions.Annotated[
-        str, FieldMetadata(alias="environmentName")
-    ]
+    environment_name: typing_extensions.Annotated[str, FieldMetadata(alias="environmentName")]
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

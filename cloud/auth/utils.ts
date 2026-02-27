@@ -8,6 +8,23 @@ import { getApiKeyFromRequest } from "@/auth/api-key";
 import { Database } from "@/db/database";
 import { UnauthorizedError } from "@/errors";
 
+export function getCookieDomain(settings: SettingsConfig): string | null {
+  try {
+    const url = new URL(settings.siteUrl);
+    const hostname = url.hostname;
+    // localhost or IP addresses don't get a domain attribute
+    if (hostname === "localhost" || /^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
+      return null;
+    }
+    // Prefix with dot for subdomain coverage
+    // e.g., staging.mirascope.com → .staging.mirascope.com
+    // e.g., mirascope.com → .mirascope.com
+    return `.${hostname}`;
+  } catch {
+    return null;
+  }
+}
+
 export function isSecure(settings: SettingsConfig): boolean {
   return (
     settings.env === "production" || settings.siteUrl.startsWith("https://")
@@ -42,6 +59,7 @@ export function setSessionCookie(
 ): string {
   const maxAge = 7 * 24 * 60 * 60; // 7 days in seconds
 
+  const domain = getCookieDomain(settings);
   const cookieParts = [
     `session=${sessionId}`,
     "HttpOnly",
@@ -49,12 +67,14 @@ export function setSessionCookie(
     "SameSite=Lax",
     `Max-Age=${maxAge}`,
     "Path=/",
+    ...(domain ? [`Domain=${domain}`] : []),
   ];
 
   return cookieParts.join("; ");
 }
 
 export function clearSessionCookie(settings: SettingsConfig): string {
+  const domain = getCookieDomain(settings);
   const cookieParts = [
     "session=;",
     "Expires=Thu, 01 Jan 1970 00:00:00 GMT",
@@ -62,6 +82,7 @@ export function clearSessionCookie(settings: SettingsConfig): string {
     ...(isSecure(settings) ? ["Secure"] : []),
     "SameSite=Lax",
     "Path=/",
+    ...(domain ? [`Domain=${domain}`] : []),
   ];
 
   return cookieParts.join("; ");

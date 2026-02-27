@@ -383,16 +383,16 @@ interactions:
       connection:
       - keep-alive
       host:
-      - localhost:3000
+      - localhost:8000
       user-agent:
       - python-httpx/0.28.1
       x-fern-language:
       - Python
     method: GET
-    uri: http://example.com/functions/hash/040ba4bb8fbe484b0fec96048fc27c7f1b8c8f3ed36a2ed94e92e8cc13407517
+    uri: http://localhost:8000/functions/hash/040ba4bb8fbe484b0fec96048fc27c7f1b8c8f3ed36a2ed94e92e8cc13407517
   response:
     body:
-      string: '{"id":"cd413ec2-9f30-4be7-bfb4-a0f6e1f3bb49","hash":"040ba4bb8fbe484b0fec96048fc27c7f1b8c8f3ed36a2ed94e92e8cc13407517","signatureHash":"3d98c672f65730494cad6b8cc3410c69067bbaa986d745e26f416e99b9db9373","name":"recommend","description":null,"version":"3.0","tags":null,"metadata":null,"code":"from
+      string: '{"id":"cd413ec2-9f30-4be7-bfb4-a0f6e1f3bb49","hash":"040ba4bb8fbe484b0fec96048fc27c7f1b8c8f3ed36a2ed94e92e8cc13407517","language":"python","signatureHash":"3d98c672f65730494cad6b8cc3410c69067bbaa986d745e26f416e99b9db9373","name":"recommend","description":null,"version":"3.0","tags":null,"metadata":null,"code":"from
         mirascope import llm\n\n\n@llm.call(\"openai/gpt-4o-mini\")\ndef recommend(ctx:
         llm.Context[str], genre: str) -> str:\n    return f\"{ctx.deps} Recommend
         a {genre} book.\"\n","signature":"@llm.call(\"openai/gpt-4o-mini\")\ndef recommend(ctx:
@@ -701,16 +701,16 @@ interactions:
       connection:
       - keep-alive
       host:
-      - localhost:3000
+      - localhost:8000
       user-agent:
       - python-httpx/0.28.1
       x-fern-language:
       - Python
     method: GET
-    uri: http://example.com/functions/hash/040ba4bb8fbe484b0fec96048fc27c7f1b8c8f3ed36a2ed94e92e8cc13407517
+    uri: http://localhost:8000/functions/hash/040ba4bb8fbe484b0fec96048fc27c7f1b8c8f3ed36a2ed94e92e8cc13407517
   response:
     body:
-      string: '{"id":"cd413ec2-9f30-4be7-bfb4-a0f6e1f3bb49","hash":"040ba4bb8fbe484b0fec96048fc27c7f1b8c8f3ed36a2ed94e92e8cc13407517","signatureHash":"3d98c672f65730494cad6b8cc3410c69067bbaa986d745e26f416e99b9db9373","name":"recommend","description":null,"version":"3.0","tags":null,"metadata":null,"code":"from
+      string: '{"id":"cd413ec2-9f30-4be7-bfb4-a0f6e1f3bb49","hash":"040ba4bb8fbe484b0fec96048fc27c7f1b8c8f3ed36a2ed94e92e8cc13407517","language":"python","signatureHash":"3d98c672f65730494cad6b8cc3410c69067bbaa986d745e26f416e99b9db9373","name":"recommend","description":null,"version":"3.0","tags":null,"metadata":null,"code":"from
         mirascope import llm\n\n\n@llm.call(\"openai/gpt-4o-mini\")\ndef recommend(ctx:
         llm.Context[str], genre: str) -> str:\n    return f\"{ctx.deps} Recommend
         a {genre} book.\"\n","signature":"@llm.call(\"openai/gpt-4o-mini\")\ndef recommend(ctx:

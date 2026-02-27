@@ -9,6 +9,7 @@ from .bad_request_error_body import (
     BadRequestErrorBody_HttpApiDecodeError,
     BadRequestErrorBody_ImmutableResourceError,
 )
+from .big_int import BigInt
 from .click_house_error import ClickHouseError
 from .database_error import DatabaseError
 from .database_error_tag import DatabaseErrorTag
@@ -39,6 +40,7 @@ from .rate_limit_error_tag import RateLimitErrorTag
 from .service_unavailable_error_body import ServiceUnavailableErrorBody
 from .service_unavailable_error_tag import ServiceUnavailableErrorTag
 from .stripe_error import StripeError
+from .stripe_error_tag import StripeErrorTag
 from .subscription_past_due_error import SubscriptionPastDueError
 from .subscription_past_due_error_tag import SubscriptionPastDueErrorTag
 from .unauthorized_error_body import UnauthorizedErrorBody
@@ -50,6 +52,7 @@ __all__ = [
     "BadRequestErrorBody",
     "BadRequestErrorBody_HttpApiDecodeError",
     "BadRequestErrorBody_ImmutableResourceError",
+    "BigInt",
     "ClickHouseError",
     "DatabaseError",
     "DatabaseErrorTag",
@@ -78,6 +81,7 @@ __all__ = [
     "ServiceUnavailableErrorBody",
     "ServiceUnavailableErrorTag",
     "StripeError",
+    "StripeErrorTag",
     "SubscriptionPastDueError",
     "SubscriptionPastDueErrorTag",
     "UnauthorizedErrorBody",

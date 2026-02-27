@@ -9,8 +9,9 @@ declare module "@opentelemetry/instrumentation-openai" {
   import type { TracerProvider } from "@opentelemetry/api";
 
   export class OpenAIInstrumentation {
-    instrument(config?: { tracerProvider?: TracerProvider }): void;
+    enable(): void;
     disable(): void;
+    setTracerProvider(tracerProvider: TracerProvider): void;
   }
 }
 
@@ -18,8 +19,9 @@ declare module "@traceloop/instrumentation-anthropic" {
   import type { TracerProvider } from "@opentelemetry/api";
 
   export class AnthropicInstrumentation {
-    instrument(config?: { tracerProvider?: TracerProvider }): void;
+    enable(): void;
     disable(): void;
+    setTracerProvider(tracerProvider: TracerProvider): void;
   }
 }
 
@@ -27,7 +29,8 @@ declare module "@traceloop/instrumentation-google-generativeai" {
   import type { TracerProvider } from "@opentelemetry/api";
 
   export class GoogleGenerativeAIInstrumentation {
-    instrument(config?: { tracerProvider?: TracerProvider }): void;
+    enable(): void;
     disable(): void;
+    setTracerProvider(tracerProvider: TracerProvider): void;
   }
 }

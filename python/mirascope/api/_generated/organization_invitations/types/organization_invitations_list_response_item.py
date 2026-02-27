@@ -7,39 +7,25 @@ import typing_extensions
 from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ...core.serialization import FieldMetadata
 from ...types.date import Date
-from .organization_invitations_list_response_item_role import (
-    OrganizationInvitationsListResponseItemRole,
-)
-from .organization_invitations_list_response_item_status import (
-    OrganizationInvitationsListResponseItemStatus,
-)
+from .organization_invitations_list_response_item_role import OrganizationInvitationsListResponseItemRole
+from .organization_invitations_list_response_item_status import OrganizationInvitationsListResponseItemStatus
 
 
 class OrganizationInvitationsListResponseItem(UniversalBaseModel):
     id: str
-    organization_id: typing_extensions.Annotated[
-        str, FieldMetadata(alias="organizationId")
-    ]
+    organization_id: typing_extensions.Annotated[str, FieldMetadata(alias="organizationId")]
     sender_id: typing_extensions.Annotated[str, FieldMetadata(alias="senderId")]
-    recipient_email: typing_extensions.Annotated[
-        str, FieldMetadata(alias="recipientEmail")
-    ]
+    recipient_email: typing_extensions.Annotated[str, FieldMetadata(alias="recipientEmail")]
     role: OrganizationInvitationsListResponseItemRole
     status: OrganizationInvitationsListResponseItemStatus
     expires_at: typing_extensions.Annotated[Date, FieldMetadata(alias="expiresAt")]
     created_at: typing_extensions.Annotated[Date, FieldMetadata(alias="createdAt")]
     updated_at: typing_extensions.Annotated[Date, FieldMetadata(alias="updatedAt")]
-    accepted_at: typing_extensions.Annotated[
-        typing.Optional[Date], FieldMetadata(alias="acceptedAt")
-    ] = None
-    revoked_at: typing_extensions.Annotated[
-        typing.Optional[Date], FieldMetadata(alias="revokedAt")
-    ] = None
+    accepted_at: typing_extensions.Annotated[typing.Optional[Date], FieldMetadata(alias="acceptedAt")] = None
+    revoked_at: typing_extensions.Annotated[typing.Optional[Date], FieldMetadata(alias="revokedAt")] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

@@ -19,7 +19,7 @@ describe("MirascopeClient", () => {
   it("creates a client with custom options", () => {
     const client = new MirascopeClient({
       apiKey: "custom-key",
-      baseUrl: "https://custom.example.com",
+      baseURL: "https://custom.example.com",
       timeoutInSeconds: 60,
       maxRetries: 5,
     });
@@ -30,7 +30,7 @@ describe("MirascopeClient", () => {
   it("uses settings when no options provided", () => {
     updateSettings({
       apiKey: "settings-key",
-      baseUrl: "https://settings.example.com",
+      baseURL: "https://settings.example.com",
     });
 
     const client = new MirascopeClient();
@@ -41,7 +41,7 @@ describe("MirascopeClient", () => {
   it("options override settings", () => {
     updateSettings({
       apiKey: "settings-key",
-      baseUrl: "https://settings.example.com",
+      baseURL: "https://settings.example.com",
     });
 
     const client = new MirascopeClient({

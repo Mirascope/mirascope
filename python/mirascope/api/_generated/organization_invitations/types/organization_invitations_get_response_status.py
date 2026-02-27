@@ -2,6 +2,4 @@
 
 import typing
 
-OrganizationInvitationsGetResponseStatus = typing.Union[
-    typing.Literal["pending", "accepted", "revoked"], typing.Any
-]
+OrganizationInvitationsGetResponseStatus = typing.Union[typing.Literal["pending", "accepted", "revoked"], typing.Any]

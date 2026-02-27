@@ -13,7 +13,7 @@ const buttonVariants = cva(
     "[&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0",
     "outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
     "aria-invalid:ring-destructive/20 aria-invalid:border-destructive",
-    "font-handwriting",
+    "font-display",
   ].join(" "),
   {
     variants: {

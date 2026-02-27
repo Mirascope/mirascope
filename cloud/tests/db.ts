@@ -14,6 +14,7 @@ import { Settings } from "@/settings";
 import { createTestClickHouseSettings } from "@/tests/clickhouse";
 import { CONNECTION_FILE } from "@/tests/global-setup";
 import { MockStripe } from "@/tests/payments";
+import { MockSettingsLayer } from "@/tests/settings";
 import { createCustomIt, withRollback } from "@/tests/shared";
 import {
   MockRealtimeSpansLayer,
@@ -157,6 +158,7 @@ export const TestDatabase: Layer.Layer<
   | ClickHouseSearch
   | SpansIngestQueue
   | RealtimeSpans
+  | Settings
 > = Effect.gen(function* () {
   // Lazy import to avoid circular dependency
   const { MockStripe } = yield* Effect.promise(
@@ -184,6 +186,7 @@ export const TestDatabase: Layer.Layer<
     TestSpansIngestQueue,
     MockRealtimeSpansLayer,
     clickHouseSearchLayer,
+    MockSettingsLayer(),
   );
 }).pipe(Layer.unwrapEffect);
 
@@ -200,7 +203,8 @@ export type TestServices =
   | SqlClient.SqlClient
   | ClickHouseSearch
   | SpansIngestQueue
-  | RealtimeSpans;
+  | RealtimeSpans
+  | Settings;
 
 /**
  * Wraps a test function to automatically provide TestDatabase

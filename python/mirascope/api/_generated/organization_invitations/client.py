@@ -4,25 +4,12 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from .raw_client import (
-    AsyncRawOrganizationInvitationsClient,
-    RawOrganizationInvitationsClient,
-)
-from .types.organization_invitations_accept_response import (
-    OrganizationInvitationsAcceptResponse,
-)
-from .types.organization_invitations_create_request_role import (
-    OrganizationInvitationsCreateRequestRole,
-)
-from .types.organization_invitations_create_response import (
-    OrganizationInvitationsCreateResponse,
-)
-from .types.organization_invitations_get_response import (
-    OrganizationInvitationsGetResponse,
-)
-from .types.organization_invitations_list_response_item import (
-    OrganizationInvitationsListResponseItem,
-)
+from .raw_client import AsyncRawOrganizationInvitationsClient, RawOrganizationInvitationsClient
+from .types.organization_invitations_accept_response import OrganizationInvitationsAcceptResponse
+from .types.organization_invitations_create_request_role import OrganizationInvitationsCreateRequestRole
+from .types.organization_invitations_create_response import OrganizationInvitationsCreateResponse
+from .types.organization_invitations_get_response import OrganizationInvitationsGetResponse
+from .types.organization_invitations_list_response_item import OrganizationInvitationsListResponseItem
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -30,9 +17,7 @@ OMIT = typing.cast(typing.Any, ...)
 
 class OrganizationInvitationsClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
-        self._raw_client = RawOrganizationInvitationsClient(
-            client_wrapper=client_wrapper
-        )
+        self._raw_client = RawOrganizationInvitationsClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> RawOrganizationInvitationsClient:
@@ -46,10 +31,7 @@ class OrganizationInvitationsClient:
         return self._raw_client
 
     def list(
-        self,
-        organization_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[OrganizationInvitationsListResponseItem]:
         """
         Parameters
@@ -73,9 +55,7 @@ class OrganizationInvitationsClient:
             organization_id="organizationId",
         )
         """
-        _response = self._raw_client.list(
-            organization_id, request_options=request_options
-        )
+        _response = self._raw_client.list(organization_id, request_options=request_options)
         return _response.data
 
     def create(
@@ -116,19 +96,12 @@ class OrganizationInvitationsClient:
         )
         """
         _response = self._raw_client.create(
-            organization_id,
-            recipient_email=recipient_email,
-            role=role,
-            request_options=request_options,
+            organization_id, recipient_email=recipient_email, role=role, request_options=request_options
         )
         return _response.data
 
     def get(
-        self,
-        organization_id: str,
-        invitation_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, invitation_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> OrganizationInvitationsGetResponse:
         """
         Parameters
@@ -155,17 +128,11 @@ class OrganizationInvitationsClient:
             invitation_id="invitationId",
         )
         """
-        _response = self._raw_client.get(
-            organization_id, invitation_id, request_options=request_options
-        )
+        _response = self._raw_client.get(organization_id, invitation_id, request_options=request_options)
         return _response.data
 
     def resend(
-        self,
-        organization_id: str,
-        invitation_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, invitation_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> None:
         """
         Parameters
@@ -191,17 +158,11 @@ class OrganizationInvitationsClient:
             invitation_id="invitationId",
         )
         """
-        _response = self._raw_client.resend(
-            organization_id, invitation_id, request_options=request_options
-        )
+        _response = self._raw_client.resend(organization_id, invitation_id, request_options=request_options)
         return _response.data
 
     def revoke(
-        self,
-        organization_id: str,
-        invitation_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, invitation_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> None:
         """
         Parameters
@@ -227,9 +188,7 @@ class OrganizationInvitationsClient:
             invitation_id="invitationId",
         )
         """
-        _response = self._raw_client.revoke(
-            organization_id, invitation_id, request_options=request_options
-        )
+        _response = self._raw_client.revoke(organization_id, invitation_id, request_options=request_options)
         return _response.data
 
     def accept(
@@ -257,17 +216,13 @@ class OrganizationInvitationsClient:
             token="token",
         )
         """
-        _response = self._raw_client.accept(
-            token=token, request_options=request_options
-        )
+        _response = self._raw_client.accept(token=token, request_options=request_options)
         return _response.data
 
 
 class AsyncOrganizationInvitationsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
-        self._raw_client = AsyncRawOrganizationInvitationsClient(
-            client_wrapper=client_wrapper
-        )
+        self._raw_client = AsyncRawOrganizationInvitationsClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> AsyncRawOrganizationInvitationsClient:
@@ -281,10 +236,7 @@ class AsyncOrganizationInvitationsClient:
         return self._raw_client
 
     async def list(
-        self,
-        organization_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[OrganizationInvitationsListResponseItem]:
         """
         Parameters
@@ -316,9 +268,7 @@ class AsyncOrganizationInvitationsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.list(
-            organization_id, request_options=request_options
-        )
+        _response = await self._raw_client.list(organization_id, request_options=request_options)
         return _response.data
 
     async def create(
@@ -367,19 +317,12 @@ class AsyncOrganizationInvitationsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            organization_id,
-            recipient_email=recipient_email,
-            role=role,
-            request_options=request_options,
+            organization_id, recipient_email=recipient_email, role=role, request_options=request_options
         )
         return _response.data
 
     async def get(
-        self,
-        organization_id: str,
-        invitation_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, invitation_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> OrganizationInvitationsGetResponse:
         """
         Parameters
@@ -414,17 +357,11 @@ class AsyncOrganizationInvitationsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get(
-            organization_id, invitation_id, request_options=request_options
-        )
+        _response = await self._raw_client.get(organization_id, invitation_id, request_options=request_options)
         return _response.data
 
     async def resend(
-        self,
-        organization_id: str,
-        invitation_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, invitation_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> None:
         """
         Parameters
@@ -458,17 +395,11 @@ class AsyncOrganizationInvitationsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.resend(
-            organization_id, invitation_id, request_options=request_options
-        )
+        _response = await self._raw_client.resend(organization_id, invitation_id, request_options=request_options)
         return _response.data
 
     async def revoke(
-        self,
-        organization_id: str,
-        invitation_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, invitation_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> None:
         """
         Parameters
@@ -502,9 +433,7 @@ class AsyncOrganizationInvitationsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.revoke(
-            organization_id, invitation_id, request_options=request_options
-        )
+        _response = await self._raw_client.revoke(organization_id, invitation_id, request_options=request_options)
         return _response.data
 
     async def accept(
@@ -540,7 +469,5 @@ class AsyncOrganizationInvitationsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.accept(
-            token=token, request_options=request_options
-        )
+        _response = await self._raw_client.accept(token=token, request_options=request_options)
         return _response.data

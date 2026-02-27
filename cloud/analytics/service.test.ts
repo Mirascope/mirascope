@@ -2,8 +2,9 @@
  * @fileoverview Tests for Analytics aggregator service.
  */
 
+import { describe, it, expect } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { describe, it, expect, vi } from "vitest";
+import { vi } from "vitest";
 
 import { GoogleAnalytics } from "@/analytics/google-client";
 import { PostHog } from "@/analytics/posthog-client";

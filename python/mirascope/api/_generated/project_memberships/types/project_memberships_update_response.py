@@ -7,26 +7,18 @@ import typing_extensions
 from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ...core.serialization import FieldMetadata
 from ...types.date import Date
-from .project_memberships_update_response_role import (
-    ProjectMembershipsUpdateResponseRole,
-)
+from .project_memberships_update_response_role import ProjectMembershipsUpdateResponseRole
 
 
 class ProjectMembershipsUpdateResponse(UniversalBaseModel):
     member_id: typing_extensions.Annotated[str, FieldMetadata(alias="memberId")]
-    organization_id: typing_extensions.Annotated[
-        str, FieldMetadata(alias="organizationId")
-    ]
+    organization_id: typing_extensions.Annotated[str, FieldMetadata(alias="organizationId")]
     project_id: typing_extensions.Annotated[str, FieldMetadata(alias="projectId")]
     role: ProjectMembershipsUpdateResponseRole
-    created_at: typing_extensions.Annotated[
-        typing.Optional[Date], FieldMetadata(alias="createdAt")
-    ] = None
+    created_at: typing_extensions.Annotated[typing.Optional[Date], FieldMetadata(alias="createdAt")] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

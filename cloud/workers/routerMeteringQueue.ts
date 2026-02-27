@@ -172,7 +172,7 @@ export function updateAndSettleRouterRequest(
       },
     );
 
-    // Settle funds (release reservation and charge meter)
+    // Non-claw request — settle normally
     yield* payments.products.router.settleFunds(
       data.reservationId,
       costs.totalCost,

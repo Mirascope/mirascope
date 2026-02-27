@@ -63,9 +63,11 @@ describe("Model", () => {
     it("throws MissingAPIKeyError when API key not set", () => {
       // Reset to ensure no provider is registered
       resetProviderRegistry();
-      // Clear the env var if set
+      // Clear the env vars if set
       const originalKey = process.env.ANTHROPIC_API_KEY;
+      const originalMirascopeKey = process.env.MIRASCOPE_API_KEY;
       delete process.env.ANTHROPIC_API_KEY;
+      delete process.env.MIRASCOPE_API_KEY;
 
       try {
         const m = new Model("anthropic/claude-sonnet-4-20250514");
@@ -74,6 +76,9 @@ describe("Model", () => {
         // Restore
         if (originalKey !== undefined) {
           process.env.ANTHROPIC_API_KEY = originalKey;
+        }
+        if (originalMirascopeKey !== undefined) {
+          process.env.MIRASCOPE_API_KEY = originalMirascopeKey;
         }
       }
     });

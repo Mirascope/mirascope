@@ -5,6 +5,7 @@
 import type {
   ChatCompletion,
   ChatCompletionAssistantMessageParam,
+  ChatCompletionContentPart,
   ChatCompletionContentPartImage,
   ChatCompletionContentPartInputAudio,
   ChatCompletionContentPartText,
@@ -17,12 +18,15 @@ import type {
   AssistantContentPart,
   Audio,
   AudioMimeType,
+  Document,
   Image,
   Text,
   ToolCall,
 } from "@/llm/content";
+import type { Format } from "@/llm/formatting";
 import type { AssistantMessage, Message } from "@/llm/messages";
 import type { Params } from "@/llm/models";
+import type { CompletionsModelFeatureInfo } from "@/llm/providers/openai/completions/_utils/feature-info";
 import type { OpenAIModelId } from "@/llm/providers/openai/model-id";
 import type { Usage } from "@/llm/responses/usage";
 import type { ToolSchema, Tools } from "@/llm/tools";
@@ -30,7 +34,6 @@ import type { ToolSchema, Tools } from "@/llm/tools";
 import { FeatureNotSupportedError } from "@/llm/exceptions";
 import { ParamHandler } from "@/llm/providers/base";
 import { modelName } from "@/llm/providers/openai/model-id";
-import { MODELS_WITHOUT_AUDIO_SUPPORT } from "@/llm/providers/openai/model-info";
 import { FinishReason } from "@/llm/responses/finish-reason";
 import { createUsage } from "@/llm/responses/usage";
 import { isProviderTool } from "@/llm/tools";
@@ -45,7 +48,8 @@ import { isProviderTool } from "@/llm/tools";
 type UserContentPartOpenAI =
   | ChatCompletionContentPartText
   | ChatCompletionContentPartImage
-  | ChatCompletionContentPartInputAudio;
+  | ChatCompletionContentPartInputAudio
+  | ChatCompletionContentPart.File;
 
 /**
  * Encode an Image content part to OpenAI's format.
@@ -95,18 +99,16 @@ function toOpenAIAudioFormat(mimeType: AudioMimeType): OpenAIAudioFormat {
 function encodeAudio(
   audio: Audio,
   modelId: OpenAIModelId | undefined,
+  featureInfo?: CompletionsModelFeatureInfo,
 ): ChatCompletionContentPartInputAudio {
-  // Check if model supports audio
-  if (modelId) {
-    const baseModelName = modelName(modelId, null);
-    if (MODELS_WITHOUT_AUDIO_SUPPORT.has(baseModelName)) {
-      throw new FeatureNotSupportedError(
-        "audio input",
-        "openai",
-        modelId,
-        `Model '${modelId}' does not support audio inputs.`,
-      );
-    }
+  // Check if model supports audio using feature info
+  if (featureInfo?.audioSupport === false) {
+    throw new FeatureNotSupportedError(
+      "audio input",
+      "openai",
+      modelId ?? null,
+      `Model '${modelId}' does not support audio inputs.`,
+    );
   }
 
   const format = toOpenAIAudioFormat(audio.source.mimeType);
@@ -117,6 +119,40 @@ function encodeAudio(
       format,
     },
   };
+}
+
+/**
+ * Encode a Document content part to OpenAI Completions API format.
+ *
+ * @throws FeatureNotSupportedError if the document uses a URL source
+ */
+function encodeDocument(doc: Document): ChatCompletionContentPart.File {
+  const { source } = doc;
+  switch (source.type) {
+    case "base64_document_source":
+      return {
+        type: "file",
+        file: {
+          file_data: `data:${source.mediaType};base64,${source.data}`,
+          filename: "document.pdf",
+        },
+      };
+    case "text_document_source":
+      return {
+        type: "file",
+        file: {
+          file_data: `data:${source.mediaType};base64,${btoa(source.data)}`,
+          filename: "document.txt",
+        },
+      };
+    case "url_document_source":
+      throw new FeatureNotSupportedError(
+        "url_document_source",
+        "openai:completions",
+        null,
+        "OpenAI Completions API does not support URL-referenced documents. Use `Document.fromFile(...)` or `Document.fromBytes(...)` instead.",
+      );
+  }
 }
 
 // ============================================================================
@@ -169,11 +205,13 @@ export function encodeTools(
  * @param messages - The messages to encode
  * @param encodeThoughtsAsText - Whether to encode thoughts as text in assistant messages
  * @param modelId - The model ID (used for checking audio support and raw message reuse)
+ * @param featureInfo - Feature info for the model (used for capability checks)
  */
 export function encodeMessages(
   messages: readonly Message[],
   encodeThoughtsAsText: boolean = false,
   modelId?: OpenAIModelId,
+  featureInfo?: CompletionsModelFeatureInfo,
 ): ChatCompletionMessageParam[] {
   const openaiMessages: ChatCompletionMessageParam[] = [];
   const expectedProviderModelName = modelId
@@ -194,7 +232,7 @@ export function encodeMessages(
       /* v8 ignore stop */
 
       // Then add the user message if it has non-tool content
-      const userMessage = encodeUserMessage(message, modelId);
+      const userMessage = encodeUserMessage(message, modelId, featureInfo);
       if (userMessage) {
         openaiMessages.push(userMessage);
       }
@@ -235,6 +273,7 @@ export function encodeMessages(
 function encodeUserMessage(
   message: Extract<Message, { role: "user" }>,
   modelId?: OpenAIModelId,
+  featureInfo?: CompletionsModelFeatureInfo,
 ): ChatCompletionMessageParam | null {
   const contentParts: UserContentPartOpenAI[] = [];
 
@@ -249,18 +288,12 @@ function encodeUserMessage(
         break;
 
       case "audio":
-        contentParts.push(encodeAudio(part, modelId));
+        contentParts.push(encodeAudio(part, modelId, featureInfo));
         break;
 
-      /* v8 ignore start - content types not yet implemented */
       case "document":
-        throw new FeatureNotSupportedError(
-          "document content encoding",
-          "openai",
-          null,
-          "Document content is not yet implemented",
-        );
-      /* v8 ignore stop */
+        contentParts.push(encodeDocument(part));
+        break;
 
       /* v8 ignore start - tool encoding will be tested via e2e */
       case "tool_output":
@@ -396,28 +429,39 @@ function encodeAssistantMessage(
  * @param modelId - The model ID to use
  * @param messages - The messages to send
  * @param tools - Optional tools to make available to the model
+ * @param format - Optional format for structured output
  * @param params - Optional parameters (temperature, maxTokens, etc.)
+ * @param featureInfo - Optional feature info for model capability detection
  */
 export function buildRequestParams(
   modelId: OpenAIModelId,
   messages: readonly Message[],
   tools?: Tools,
+  format?: Format | null,
   params: Params = {},
+  featureInfo?: CompletionsModelFeatureInfo,
 ): ChatCompletionCreateParamsNonStreaming {
   return ParamHandler.with(params, "openai", modelId, (p) => {
     const thinkingConfig = p.get("thinking");
     const encodeThoughtsAsText = thinkingConfig?.encodeThoughtsAsText ?? false;
 
+    // Determine if this is a reasoning model (skip temperature/topP/stop)
+    const isReasoningModel = featureInfo?.isReasoningModel === true;
+
     const openaiMessages = encodeMessages(
       messages,
       encodeThoughtsAsText,
       modelId,
+      featureInfo,
     );
 
     const requestParams: ChatCompletionCreateParamsNonStreaming = {
       model: modelName(modelId, null),
       messages: openaiMessages,
     };
+
+    // Collect all tools (explicit tools + format tool)
+    const allEncodedTools: ChatCompletionCreateParamsNonStreaming["tools"] = [];
 
     /* v8 ignore start - tool encoding will be tested via e2e */
     if (tools !== undefined && tools.length > 0) {
@@ -435,8 +479,40 @@ export function buildRequestParams(
         regularTools.push(tool);
       }
       if (regularTools.length > 0) {
-        requestParams.tools = encodeTools(regularTools);
+        allEncodedTools.push(...encodeTools(regularTools));
       }
+    }
+
+    // Handle format-based tool and instructions
+    if (format) {
+      if (format.mode === "tool") {
+        const formatToolSchema = format.createToolSchema();
+        allEncodedTools.push(encodeToolSchema(formatToolSchema));
+
+        // Set tool_choice to force the format tool
+        if (tools && tools.length > 0) {
+          // When we have other tools, use 'required' to require a tool call
+          requestParams.tool_choice = "required";
+        } else {
+          // When only format tool, force that specific tool
+          requestParams.tool_choice = {
+            type: "function",
+            function: { name: formatToolSchema.name },
+          };
+        }
+      }
+
+      // Add formatting instructions as a system message
+      if (format.formattingInstructions) {
+        openaiMessages.unshift({
+          role: "system",
+          content: format.formattingInstructions,
+        });
+      }
+    }
+
+    if (allEncodedTools.length > 0) {
+      requestParams.tools = allEncodedTools;
     }
     /* v8 ignore stop */
 
@@ -448,12 +524,26 @@ export function buildRequestParams(
 
     const temperature = p.get("temperature");
     if (temperature !== undefined) {
-      requestParams.temperature = temperature;
+      if (isReasoningModel) {
+        p.warnUnsupported(
+          "temperature",
+          "Reasoning models do not support the temperature parameter",
+        );
+      } else {
+        requestParams.temperature = temperature;
+      }
     }
 
     const topP = p.get("topP");
     if (topP !== undefined) {
-      requestParams.top_p = topP;
+      if (isReasoningModel) {
+        p.warnUnsupported(
+          "topP",
+          "Reasoning models do not support the top_p parameter",
+        );
+      } else {
+        requestParams.top_p = topP;
+      }
     }
 
     const seed = p.get("seed");
@@ -463,7 +553,14 @@ export function buildRequestParams(
 
     const stopSequences = p.get("stopSequences");
     if (stopSequences !== undefined) {
-      requestParams.stop = stopSequences;
+      if (isReasoningModel) {
+        p.warnUnsupported(
+          "stopSequences",
+          "Reasoning models do not support stop sequences",
+        );
+      } else {
+        requestParams.stop = stopSequences;
+      }
     }
 
     // OpenAI doesn't support topK

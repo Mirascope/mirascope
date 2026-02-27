@@ -9,6 +9,7 @@ import type {
   FunctionTool,
   ResponseFunctionToolCall,
   ResponseInputContent,
+  ResponseInputFile,
   ResponseInputImage,
   ResponseInputItem,
   ResponseOutputItem,
@@ -17,11 +18,13 @@ import type { Reasoning, ReasoningEffort } from "openai/resources/shared";
 
 import type {
   AssistantContentPart,
+  Document,
   Image,
   Text,
   Thought,
   ToolCall,
 } from "@/llm/content";
+import type { Format } from "@/llm/formatting";
 import type { AssistantMessage, Message } from "@/llm/messages";
 import type { Params } from "@/llm/models";
 import type { ThinkingLevel } from "@/llm/models/thinking-config";
@@ -92,6 +95,32 @@ function encodeImage(image: Image): ResponseInputImage {
     imageUrl = `data:${image.source.mimeType};base64,${image.source.data}`;
   }
   return { type: "input_image", image_url: imageUrl, detail: "auto" };
+}
+
+/**
+ * Encode a Document to the Responses API format.
+ */
+function encodeDocument(doc: Document): ResponseInputFile {
+  const { source } = doc;
+  switch (source.type) {
+    case "base64_document_source":
+      return {
+        type: "input_file",
+        file_data: `data:${source.mediaType};base64,${source.data}`,
+        filename: "document.pdf",
+      };
+    case "text_document_source":
+      return {
+        type: "input_file",
+        file_data: `data:${source.mediaType};base64,${btoa(source.data)}`,
+        filename: "document.txt",
+      };
+    case "url_document_source":
+      return {
+        type: "input_file",
+        file_url: source.url,
+      };
+  }
 }
 
 // ============================================================================
@@ -252,15 +281,11 @@ function encodeUserMessage(
           'OpenAI Responses API does not support audio inputs. Try appending ":completions" to your model ID instead.',
         );
 
-      /* v8 ignore start - content types not yet fully implemented */
       case "document":
-        throw new FeatureNotSupportedError(
-          "document content encoding",
-          "openai",
-          null,
-          "Document content is not yet implemented",
-        );
+        contentItems.push(encodeDocument(part));
+        break;
 
+      /* v8 ignore start - tool encoding will be tested via e2e */
       case "tool_output":
         // Tool outputs in Responses API are handled separately as function_call_output items
         // Skip here - they're processed in encodeMessages
@@ -351,12 +376,14 @@ function encodeAssistantMessage(
  * @param modelId - The model ID to use
  * @param messages - The messages to send
  * @param tools - Optional tools to make available to the model
+ * @param format - Optional format for structured output
  * @param params - Optional parameters (temperature, maxTokens, etc.)
  */
 export function buildRequestParams(
   modelId: OpenAIModelId,
   messages: readonly Message[],
   tools?: Tools,
+  format?: Format | null,
   params: Params = {},
 ): ResponseCreateParamsNonStreaming {
   return ParamHandler.with(params, "openai", modelId, (p) => {
@@ -370,11 +397,13 @@ export function buildRequestParams(
       input: inputItems,
     };
 
+    // Collect all tools (explicit tools + format tool)
+    const allTools: ResponseCreateParamsNonStreaming["tools"] = [];
+
     /* v8 ignore start - tool encoding will be tested via e2e */
     if (tools && tools.length > 0) {
       // Separate regular tools from provider tools
       const regularTools: ToolSchema[] = [];
-      const allTools: ResponseCreateParamsNonStreaming["tools"] = [];
 
       for (const tool of tools) {
         // Check for provider tools first (WebSearchTool extends ProviderTool)
@@ -401,10 +430,38 @@ export function buildRequestParams(
       if (regularTools.length > 0) {
         allTools.push(...encodeTools(regularTools));
       }
+    }
 
-      if (allTools.length > 0) {
-        requestParams.tools = allTools;
+    // Handle format-based tool and instructions
+    if (format) {
+      if (format.mode === "tool") {
+        const formatToolSchema = format.createToolSchema();
+        allTools.push(encodeToolSchema(formatToolSchema));
+
+        // Set tool_choice to force the format tool
+        if (tools && tools.length > 0) {
+          // When we have other tools, use 'required' to require a tool call
+          requestParams.tool_choice = "required";
+        } else {
+          // When only format tool, force that specific tool
+          requestParams.tool_choice = {
+            type: "function",
+            name: formatToolSchema.name,
+          };
+        }
       }
+
+      // Add formatting instructions as a developer (system) message
+      if (format.formattingInstructions) {
+        inputItems.unshift({
+          role: "developer",
+          content: format.formattingInstructions,
+        });
+      }
+    }
+
+    if (allTools.length > 0) {
+      requestParams.tools = allTools;
     }
     /* v8 ignore stop */
 
@@ -608,7 +665,7 @@ function decodeUsage(usage: NonNullable<OpenAIResponse["usage"]>): Usage {
  * The serialized items can be sent directly back as input items when
  * resuming a conversation.
  */
-function serializeOutputItem(
+export function serializeOutputItem(
   item: ResponseOutputItem,
 ): Record<string, unknown> {
   // Copy all non-undefined properties from the item

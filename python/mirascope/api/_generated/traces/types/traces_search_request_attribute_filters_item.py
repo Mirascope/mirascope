@@ -4,9 +4,7 @@ import typing
 
 import pydantic
 from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .traces_search_request_attribute_filters_item_operator import (
-    TracesSearchRequestAttributeFiltersItemOperator,
-)
+from .traces_search_request_attribute_filters_item_operator import TracesSearchRequestAttributeFiltersItemOperator
 
 
 class TracesSearchRequestAttributeFiltersItem(UniversalBaseModel):
@@ -15,9 +13,7 @@ class TracesSearchRequestAttributeFiltersItem(UniversalBaseModel):
     value: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

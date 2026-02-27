@@ -3,11 +3,11 @@
 import type * as Mirascope from "../index.js";
 
 export interface PlanLimitExceededError {
-  message: string;
-  resource: string;
-  limitType: string;
-  currentUsage: number;
-  limit: number;
-  planTier: string;
-  tag: Mirascope.PlanLimitExceededErrorTag;
+    message: string;
+    resource: string;
+    limitType: string;
+    currentUsage: number;
+    limit: number;
+    planTier: string;
+    tag: Mirascope.PlanLimitExceededErrorTag;
 }

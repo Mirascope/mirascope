@@ -10,8 +10,8 @@
  *     }
  */
 export interface TracesGetTraceDetailByEnvRequest {
-  organizationId: string;
-  projectId: string;
-  environmentId: string;
-  traceId: string;
+    organizationId: string;
+    projectId: string;
+    environmentId: string;
+    traceId: string;
 }

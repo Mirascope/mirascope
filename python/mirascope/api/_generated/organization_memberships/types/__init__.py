@@ -2,21 +2,11 @@
 
 # isort: skip_file
 
-from .organization_memberships_list_response_item import (
-    OrganizationMembershipsListResponseItem,
-)
-from .organization_memberships_list_response_item_role import (
-    OrganizationMembershipsListResponseItemRole,
-)
-from .organization_memberships_update_request_role import (
-    OrganizationMembershipsUpdateRequestRole,
-)
-from .organization_memberships_update_response import (
-    OrganizationMembershipsUpdateResponse,
-)
-from .organization_memberships_update_response_role import (
-    OrganizationMembershipsUpdateResponseRole,
-)
+from .organization_memberships_list_response_item import OrganizationMembershipsListResponseItem
+from .organization_memberships_list_response_item_role import OrganizationMembershipsListResponseItemRole
+from .organization_memberships_update_request_role import OrganizationMembershipsUpdateRequestRole
+from .organization_memberships_update_response import OrganizationMembershipsUpdateResponse
+from .organization_memberships_update_response_role import OrganizationMembershipsUpdateResponseRole
 
 __all__ = [
     "OrganizationMembershipsListResponseItem",

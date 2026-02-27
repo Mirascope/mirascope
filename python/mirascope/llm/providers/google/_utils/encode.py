@@ -11,7 +11,7 @@ from typing_extensions import Required
 
 from google.genai import types as genai_types
 
-from ....content import ContentPart
+from ....content import ContentPart, Document
 from ....exceptions import FeatureNotSupportedError
 from ....formatting import (
     Format,
@@ -154,6 +154,37 @@ def _resolve_refs(
         return schema
 
 
+def _encode_document(doc: Document) -> genai_types.PartDict:
+    """Convert a Document content part to Google's Part format.
+
+    Google requires inline data (base64), not URL references.
+
+    Raises:
+        FeatureNotSupportedError: If the document uses a URL source.
+    """
+    source = doc.source
+    if source.type == "base64_document_source":
+        return genai_types.PartDict(
+            inline_data=genai_types.BlobDict(
+                data=base64.b64decode(source.data),
+                mime_type=source.media_type,
+            )
+        )
+    elif source.type == "text_document_source":
+        return genai_types.PartDict(
+            inline_data=genai_types.BlobDict(
+                data=base64.b64encode(source.data.encode("utf-8")),
+                mime_type=source.media_type,
+            )
+        )
+    else:  # url_document_source
+        raise FeatureNotSupportedError(
+            "url_document_source",
+            "google",
+            message="Google does not support URL-referenced documents. Use `Document.from_file(...)` or `Document.from_bytes(...)` instead.",
+        )
+
+
 def _encode_content(
     content: Sequence[ContentPart], encode_thoughts: bool
 ) -> list[genai_types.PartDict]:
@@ -189,6 +220,8 @@ def _encode_content(
                         )
                     )
                 )
+        elif part.type == "document":
+            result.append(_encode_document(part))
         elif part.type == "tool_call":
             result.append(
                 genai_types.PartDict(
@@ -219,6 +252,19 @@ def _encode_content(
     return result
 
 
+def _raw_message_has_format_tool(raw_message: object) -> bool:
+    """Check if a raw Google message contains a format tool call."""
+    if not isinstance(raw_message, dict):
+        return False
+    parts = cast(dict[str, object], raw_message).get("parts")
+    return isinstance(parts, list) and any(
+        isinstance(fc := part.get("function_call"), dict)
+        and isinstance(name := cast(dict[str, object], fc).get("name"), str)
+        and name.startswith(FORMAT_TOOL_NAME)
+        for part in cast(list[dict[str, object]], parts)
+    )
+
+
 def _encode_message(
     message: UserMessage | AssistantMessage,
     model_id: GoogleModelId,
@@ -231,6 +277,7 @@ def _encode_message(
         and message.model_id == model_id
         and message.raw_message
         and not encode_thoughts
+        and not _raw_message_has_format_tool(message.raw_message)
     ):
         return cast(genai_types.ContentDict, message.raw_message)
     return genai_types.ContentDict(

@@ -7,9 +7,7 @@ from ..core.request_options import RequestOptions
 from .raw_client import AsyncRawApiKeysClient, RawApiKeysClient
 from .types.api_keys_create_response import ApiKeysCreateResponse
 from .types.api_keys_get_response import ApiKeysGetResponse
-from .types.api_keys_list_all_for_org_response_item import (
-    ApiKeysListAllForOrgResponseItem,
-)
+from .types.api_keys_list_all_for_org_response_item import ApiKeysListAllForOrgResponseItem
 from .types.api_keys_list_response_item import ApiKeysListResponseItem
 
 # this is used as the default value for optional parameters
@@ -32,10 +30,7 @@ class ApiKeysClient:
         return self._raw_client
 
     def api_keys_list_all_for_org(
-        self,
-        organization_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[ApiKeysListAllForOrgResponseItem]:
         """
         Parameters
@@ -59,9 +54,7 @@ class ApiKeysClient:
             organization_id="organizationId",
         )
         """
-        _response = self._raw_client.api_keys_list_all_for_org(
-            organization_id, request_options=request_options
-        )
+        _response = self._raw_client.api_keys_list_all_for_org(organization_id, request_options=request_options)
         return _response.data
 
     def api_keys_list(
@@ -147,11 +140,7 @@ class ApiKeysClient:
         )
         """
         _response = self._raw_client.api_keys_create(
-            organization_id,
-            project_id,
-            environment_id,
-            name=name,
-            request_options=request_options,
+            organization_id, project_id, environment_id, name=name, request_options=request_options
         )
         return _response.data
 
@@ -196,11 +185,7 @@ class ApiKeysClient:
         )
         """
         _response = self._raw_client.api_keys_get(
-            organization_id,
-            project_id,
-            environment_id,
-            api_key_id,
-            request_options=request_options,
+            organization_id, project_id, environment_id, api_key_id, request_options=request_options
         )
         return _response.data
 
@@ -244,11 +229,7 @@ class ApiKeysClient:
         )
         """
         _response = self._raw_client.api_keys_delete(
-            organization_id,
-            project_id,
-            environment_id,
-            api_key_id,
-            request_options=request_options,
+            organization_id, project_id, environment_id, api_key_id, request_options=request_options
         )
         return _response.data
 
@@ -269,10 +250,7 @@ class AsyncApiKeysClient:
         return self._raw_client
 
     async def api_keys_list_all_for_org(
-        self,
-        organization_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[ApiKeysListAllForOrgResponseItem]:
         """
         Parameters
@@ -304,9 +282,7 @@ class AsyncApiKeysClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.api_keys_list_all_for_org(
-            organization_id, request_options=request_options
-        )
+        _response = await self._raw_client.api_keys_list_all_for_org(organization_id, request_options=request_options)
         return _response.data
 
     async def api_keys_list(
@@ -408,11 +384,7 @@ class AsyncApiKeysClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.api_keys_create(
-            organization_id,
-            project_id,
-            environment_id,
-            name=name,
-            request_options=request_options,
+            organization_id, project_id, environment_id, name=name, request_options=request_options
         )
         return _response.data
 
@@ -465,11 +437,7 @@ class AsyncApiKeysClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.api_keys_get(
-            organization_id,
-            project_id,
-            environment_id,
-            api_key_id,
-            request_options=request_options,
+            organization_id, project_id, environment_id, api_key_id, request_options=request_options
         )
         return _response.data
 
@@ -521,10 +489,6 @@ class AsyncApiKeysClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.api_keys_delete(
-            organization_id,
-            project_id,
-            environment_id,
-            api_key_id,
-            request_options=request_options,
+            organization_id, project_id, environment_id, api_key_id, request_options=request_options
         )
         return _response.data

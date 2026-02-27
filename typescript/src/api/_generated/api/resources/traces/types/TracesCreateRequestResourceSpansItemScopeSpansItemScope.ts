@@ -3,8 +3,8 @@
 import type * as Mirascope from "../../../index.js";
 
 export interface TracesCreateRequestResourceSpansItemScopeSpansItemScope {
-  name: string;
-  version?: string;
-  attributes?: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItem[];
-  droppedAttributesCount?: number;
+    name: string;
+    version?: string;
+    attributes?: Mirascope.TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItem[];
+    droppedAttributesCount?: number;
 }

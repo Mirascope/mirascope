@@ -7,13 +7,13 @@
 
 import type { ChatCompletion } from "openai/resources/chat/completions";
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 import type { Thought } from "@/llm/content";
 import type { AudioMimeType } from "@/llm/content";
 import type { AssistantMessage } from "@/llm/messages";
 
-import { Audio } from "@/llm/content";
+import { Audio, Document } from "@/llm/content";
 import { FeatureNotSupportedError } from "@/llm/exceptions";
 import { assistant, user } from "@/llm/messages";
 import {
@@ -21,6 +21,7 @@ import {
   decodeResponse,
   buildRequestParams,
 } from "@/llm/providers/openai/completions/_utils";
+import { featureInfoForOpenAIModel } from "@/llm/providers/openai/completions/_utils/feature-info";
 import { FinishReason } from "@/llm/responses/finish-reason";
 
 describe("encodeMessages edge cases", () => {
@@ -72,6 +73,7 @@ describe("buildRequestParams thinking config", () => {
       "openai/gpt-4o:completions",
       messages,
       undefined,
+      undefined,
       {
         thinking: { level: "medium", encodeThoughtsAsText: true },
       },
@@ -102,6 +104,7 @@ describe("buildRequestParams thinking config", () => {
       "openai/gpt-4o:completions",
       messages,
       undefined,
+      undefined,
       {
         thinking: { level: "medium" },
       },
@@ -125,47 +128,142 @@ describe("buildRequestParams", () => {
 
   it("includes maxTokens when provided", () => {
     const messages = [user("Hello")];
-    const params = buildRequestParams("openai/gpt-4o", messages, undefined, {
-      maxTokens: 100,
-    });
+    const params = buildRequestParams(
+      "openai/gpt-4o",
+      messages,
+      undefined,
+      undefined,
+      {
+        maxTokens: 100,
+      },
+    );
 
     expect(params.max_completion_tokens).toBe(100);
   });
 
   it("includes temperature when provided", () => {
     const messages = [user("Hello")];
-    const params = buildRequestParams("openai/gpt-4o", messages, undefined, {
-      temperature: 0.7,
-    });
+    const params = buildRequestParams(
+      "openai/gpt-4o",
+      messages,
+      undefined,
+      undefined,
+      {
+        temperature: 0.7,
+      },
+    );
 
     expect(params.temperature).toBe(0.7);
   });
 
   it("includes topP when provided", () => {
     const messages = [user("Hello")];
-    const params = buildRequestParams("openai/gpt-4o", messages, undefined, {
-      topP: 0.9,
-    });
+    const params = buildRequestParams(
+      "openai/gpt-4o",
+      messages,
+      undefined,
+      undefined,
+      {
+        topP: 0.9,
+      },
+    );
 
     expect(params.top_p).toBe(0.9);
   });
 
   it("includes seed when provided", () => {
     const messages = [user("Hello")];
-    const params = buildRequestParams("openai/gpt-4o", messages, undefined, {
-      seed: 42,
-    });
+    const params = buildRequestParams(
+      "openai/gpt-4o",
+      messages,
+      undefined,
+      undefined,
+      {
+        seed: 42,
+      },
+    );
 
     expect(params.seed).toBe(42);
   });
 
   it("includes stopSequences when provided", () => {
     const messages = [user("Hello")];
-    const params = buildRequestParams("openai/gpt-4o", messages, undefined, {
-      stopSequences: ["END", "STOP"],
-    });
+    const params = buildRequestParams(
+      "openai/gpt-4o",
+      messages,
+      undefined,
+      undefined,
+      {
+        stopSequences: ["END", "STOP"],
+      },
+    );
 
     expect(params.stop).toEqual(["END", "STOP"]);
+  });
+});
+
+describe("buildRequestParams with reasoning models", () => {
+  const reasoningModelFeatureInfo = { isReasoningModel: true };
+
+  it("omits temperature for reasoning models and warns", () => {
+    const messages = [user("Hello")];
+    const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const params = buildRequestParams(
+      "openai/o1",
+      messages,
+      undefined,
+      undefined,
+      { temperature: 0.7 },
+      reasoningModelFeatureInfo,
+    );
+
+    expect(params.temperature).toBeUndefined();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("temperature"),
+    );
+
+    consoleSpy.mockRestore();
+  });
+
+  it("omits topP for reasoning models and warns", () => {
+    const messages = [user("Hello")];
+    const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const params = buildRequestParams(
+      "openai/o1",
+      messages,
+      undefined,
+      undefined,
+      { topP: 0.9 },
+      reasoningModelFeatureInfo,
+    );
+
+    expect(params.top_p).toBeUndefined();
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("topP"));
+
+    consoleSpy.mockRestore();
+  });
+
+  it("omits stopSequences for reasoning models and warns", () => {
+    const messages = [user("Hello")];
+    const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const params = buildRequestParams(
+      "openai/o1",
+      messages,
+      undefined,
+      undefined,
+      { stopSequences: ["END"] },
+      reasoningModelFeatureInfo,
+    );
+
+    expect(params.stop).toBeUndefined();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("stopSequences"),
+    );
+
+    consoleSpy.mockRestore();
   });
 });
 
@@ -467,9 +565,103 @@ describe("audio encoding", () => {
     );
     const messages = [user(["Listen to this", wavAudio])];
 
-    // gpt-4o-mini doesn't support audio
+    // gpt-4o-mini doesn't support audio - need to pass feature info to enable check
+    const featureInfo = featureInfoForOpenAIModel("gpt-4o-mini");
     expect(() =>
-      buildRequestParams("openai/gpt-4o-mini:completions", messages),
+      buildRequestParams(
+        "openai/gpt-4o-mini:completions",
+        messages,
+        undefined,
+        undefined,
+        {},
+        featureInfo,
+      ),
+    ).toThrow(FeatureNotSupportedError);
+  });
+
+  it("throws FeatureNotSupportedError with null modelId when modelId is undefined", () => {
+    // Create valid WAV audio with proper magic bytes (RIFF....WAVE)
+    const wavAudio = Audio.fromBytes(
+      new Uint8Array([
+        0x52,
+        0x49,
+        0x46,
+        0x46, // 'RIFF'
+        0x00,
+        0x00,
+        0x00,
+        0x00, // file size (placeholder)
+        0x57,
+        0x41,
+        0x56,
+        0x45, // 'WAVE'
+      ]),
+    );
+    const messages = [user(["Listen to this", wavAudio])];
+
+    // Call encodeMessages directly without modelId but with feature info that disables audio
+    const featureInfo = { audioSupport: false };
+    expect(() =>
+      encodeMessages(messages, false, undefined, featureInfo),
+    ).toThrow(FeatureNotSupportedError);
+  });
+});
+
+describe("document encoding", () => {
+  it("encodes base64 document source as file", () => {
+    const doc: Document = {
+      type: "document",
+      source: {
+        type: "base64_document_source",
+        data: "JVBERi0xLjQ=",
+        mediaType: "application/pdf",
+      },
+    };
+    const messages = [user(["Read this", doc])];
+
+    const params = buildRequestParams("openai/gpt-4o:completions", messages);
+
+    const content = (params.messages[0] as { content: unknown[] }).content;
+    expect(content).toHaveLength(2);
+    expect(content[1]).toEqual({
+      type: "file",
+      file: {
+        file_data: "data:application/pdf;base64,JVBERi0xLjQ=",
+        filename: "document.pdf",
+      },
+    });
+  });
+
+  it("encodes text document source as file", () => {
+    const doc: Document = {
+      type: "document",
+      source: {
+        type: "text_document_source",
+        data: "Hello, world!",
+        mediaType: "text/plain",
+      },
+    };
+    const messages = [user(["Read this", doc])];
+
+    const params = buildRequestParams("openai/gpt-4o:completions", messages);
+
+    const content = (params.messages[0] as { content: unknown[] }).content;
+    expect(content).toHaveLength(2);
+    expect(content[1]).toEqual({
+      type: "file",
+      file: {
+        file_data: `data:text/plain;base64,${btoa("Hello, world!")}`,
+        filename: "document.txt",
+      },
+    });
+  });
+
+  it("throws FeatureNotSupportedError for URL document source", () => {
+    const doc = Document.fromUrl("https://example.com/doc.pdf");
+    const messages = [user(["Read this", doc])];
+
+    expect(() =>
+      buildRequestParams("openai/gpt-4o:completions", messages),
     ).toThrow(FeatureNotSupportedError);
   });
 });

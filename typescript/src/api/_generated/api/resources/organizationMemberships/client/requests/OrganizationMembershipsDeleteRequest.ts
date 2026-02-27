@@ -8,6 +8,6 @@
  *     }
  */
 export interface OrganizationMembershipsDeleteRequest {
-  organizationId: string;
-  memberId: string;
+    organizationId: string;
+    memberId: string;
 }

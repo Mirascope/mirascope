@@ -7,6 +7,7 @@ import {
 import { useState, type FormEvent } from "react";
 
 import { Button } from "@/app/components/ui/button";
+import { DialogBody, DialogFooter } from "@/app/components/ui/dialog";
 import { getStripe, stripeAppearance } from "@/app/lib/stripe";
 
 interface PaymentFormProps {
@@ -14,6 +15,8 @@ interface PaymentFormProps {
   amount: number;
   onSuccess: () => void;
   onError: (error: string) => void;
+  onBack?: () => void;
+  children?: React.ReactNode;
 }
 
 /**
@@ -21,7 +24,13 @@ interface PaymentFormProps {
  *
  * Handles payment confirmation and manages loading/error states.
  */
-function PaymentForm({ amount, onSuccess, onError }: PaymentFormProps) {
+function PaymentForm({
+  amount,
+  onSuccess,
+  onError,
+  onBack,
+  children,
+}: PaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -64,31 +73,42 @@ function PaymentForm({ amount, onSuccess, onError }: PaymentFormProps) {
   };
 
   return (
-    <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
-      <div className="space-y-2">
-        <PaymentElement />
-      </div>
-
-      {errorMessage && (
-        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
-          {errorMessage}
+    <form onSubmit={(e) => void handleSubmit(e)} className="contents">
+      <DialogBody className="space-y-4">
+        <div className="space-y-2">
+          <PaymentElement />
         </div>
-      )}
 
-      <div className="rounded-lg border border-border bg-muted/50 p-3 text-sm">
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Amount to pay:</span>
-          <span className="font-semibold">${amount.toFixed(2)}</span>
+        {errorMessage && (
+          <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+            {errorMessage}
+          </div>
+        )}
+
+        <div className="rounded-lg border border-border bg-muted/50 p-3 text-sm">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Amount to pay:</span>
+            <span className="font-semibold">${amount.toFixed(2)}</span>
+          </div>
         </div>
-      </div>
 
-      <Button
-        type="submit"
-        disabled={!stripe || isProcessing}
-        className="w-full"
-      >
-        {isProcessing ? "Processing..." : `Pay $${amount.toFixed(2)}`}
-      </Button>
+        {children}
+      </DialogBody>
+
+      <DialogFooter>
+        {onBack && (
+          <Button type="button" variant="outline" onClick={onBack}>
+            Back
+          </Button>
+        )}
+        <Button
+          type="submit"
+          disabled={!stripe || isProcessing}
+          className={onBack ? "" : "w-full"}
+        >
+          {isProcessing ? "Processing..." : `Pay $${amount.toFixed(2)}`}
+        </Button>
+      </DialogFooter>
     </form>
   );
 }
@@ -104,6 +124,8 @@ export function RouterCreditsPaymentForm({
   amount,
   onSuccess,
   onError,
+  onBack,
+  children,
 }: PaymentFormProps) {
   const stripePromise = getStripe();
 
@@ -120,7 +142,10 @@ export function RouterCreditsPaymentForm({
         amount={amount}
         onSuccess={onSuccess}
         onError={onError}
-      />
+        onBack={onBack}
+      >
+        {children}
+      </PaymentForm>
     </Elements>
   );
 }

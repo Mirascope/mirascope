@@ -1,0 +1,136 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Choose a lucky number between 1 and
+      10"}], "role": "user"}], "systemInstruction": {"parts": [{"text": "Respond only
+      with valid JSON that matches this exact schema:\n{\n  \"description\": \"Wrapper
+      for primitive type int\",\n  \"properties\": {\n    \"output\": {\n      \"title\":
+      \"Output\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\": [\n    \"output\"\n  ],\n  \"title\":
+      \"intOutput\",\n  \"type\": \"object\"\n}"}], "role": "user"}, "generationConfig":
+      {"responseMimeType": "application/json"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '549'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQX0+DMBTF3/spmvu8mbnIML4Z/2Ux6uKI04gxjVygEVpGL8mU8N0tMLZu8kCa
+        c07v7fnVjHP4EiqSkSA0cMHfrcJ53f1bTytCRdYYJCsWoqR9tv9q52wjhJv2EtSh4jwEXVFRUWgV
+        P1QNONlmd/4Y7TeUOsP2eq4jzIZ4MwQglkqa9BmF0aqNLYOnBexcqSLcWHnChgXdaKiMSPABSdiu
+        YtcIilLnBQX6G9WVrrqupxOvn+awOQpsfdIkskPr3B/9G2yu7VqZudAcnralyCT9tFWCm9cAHBJ0
+        9K6BBXOQAaW6SlI6fKM/ZVtmPcYXLI3seSWYW4Lj6Yk3jjNh0m4hlGgKrQzOozbze7u+F/HybD5b
+        fa7JLGaPd97bJbCG/QH1Xnw6NQIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 09 Feb 2026 22:08:12 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=957
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Choose a lucky number between 1 and
+      10"}], "role": "user"}, {"parts": [{"text": "{\n  \"output\": 7\n}"}], "role":
+      "model"}, {"parts": [{"text": "Ok, now choose a different lucky number"}], "role":
+      "user"}], "systemInstruction": {"parts": [{"text": "Respond only with valid
+      JSON that matches this exact schema:\n{\n  \"description\": \"Wrapper for primitive
+      type int\",\n  \"properties\": {\n    \"output\": {\n      \"title\": \"Output\",\n      \"type\":
+      \"integer\"\n    }\n  },\n  \"required\": [\n    \"output\"\n  ],\n  \"title\":
+      \"intOutput\",\n  \"type\": \"object\"\n}"}], "role": "user"}, "generationConfig":
+      {"responseMimeType": "application/json"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '696'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQUU+DMBSF3/kVzX3ezGRBF9+MGjONcVEyNeJDIxdohJbRSzIl/HdbGKwoD6Q5
+        5/Tenq/xGINPLmMRc0INF+zdKIw13d96ShJKMsYgGbHkFR2z/dc4ZxMh3NtL0ESSsQhUTWVNkVGW
+        kWzBybbj+WN23FCpHO31QsWYD/F2CEAipNDZE3KtpI09h48bGF0hY9wbeeENC7rRUGue4gMSN135
+        2AjKShUlheoL5ZWqu66nftBPc9hMA4uDT4p4PrXOzmf/Butrs1bkLjSHp2nJc0Hftkp48xqCQ4L+
+        vGtg4TnIgDJVpxlN37j0vQOzHuMWKy16XikWhuDcPwnmSc511i2ECnWppMZ1bDM/290952J9+/Zy
+        tyO9CRIMV5cr8FrvF7csv+02AgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 09 Feb 2026 22:08:13 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=779
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

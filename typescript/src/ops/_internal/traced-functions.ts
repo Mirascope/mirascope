@@ -33,6 +33,20 @@ export interface Trace<R> {
    * @param options.metadata - Optional additional metadata
    */
   annotate(options: AnnotateOptions): Promise<void>;
+  /**
+   * Add tags to this trace.
+   *
+   * @param tags - Tags to add to the trace
+   * @throws NotImplementedError - This feature is not yet implemented
+   */
+  tag(...tags: string[]): Promise<void>;
+  /**
+   * Assign this trace to users by email.
+   *
+   * @param emails - Email addresses to assign the trace to
+   * @throws NotImplementedError - This feature is not yet implemented
+   */
+  assign(...emails: string[]): Promise<void>;
 }
 
 /**
@@ -80,6 +94,16 @@ export function createTrace<R>(result: R, span: Span): Trace<R> {
         reasoning: reasoning ?? null,
         metadata: metadata ?? null,
       });
+    },
+    async tag(..._tags: string[]): Promise<void> {
+      throw new Error(
+        "tag() is not yet implemented. Tagging will be available in a future release.",
+      );
+    },
+    async assign(..._emails: string[]): Promise<void> {
+      throw new Error(
+        "assign() is not yet implemented. Assignment will be available in a future release.",
+      );
     },
   };
 }

@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach } from "@effect/vitest";
 import { Effect } from "effect";
 import assert from "node:assert";
 
+import type { ModelPricing } from "@/api/router/pricing";
+
 import {
   OpenAICostCalculator,
   AnthropicCostCalculator,
@@ -9,6 +11,26 @@ import {
 } from "@/api/router/cost-calculator";
 import { clearPricingCache } from "@/api/router/pricing";
 import { getCostCalculator } from "@/api/router/providers";
+
+// Mock pricing data for tests (values in centi-cents per million tokens)
+const mockOpenAIPricing: ModelPricing = {
+  input: 1500n, // $0.15 per million tokens
+  output: 6000n, // $0.60 per million tokens
+  cache_read: 750n, // $0.075 per million tokens
+  cache_write: 1875n, // $0.1875 per million tokens
+};
+
+const mockAnthropicPricing: ModelPricing = {
+  input: 10000n, // $1.00 per million tokens
+  output: 50000n, // $5.00 per million tokens
+  cache_read: 1000n, // $0.10 per million tokens
+  cache_write: 12500n, // $1.25 per million tokens
+};
+
+const mockGooglePricing: ModelPricing = {
+  input: 0n,
+  output: 0n,
+};
 
 describe("CostCalculator", () => {
   beforeEach(() => {
@@ -101,7 +123,7 @@ describe("CostCalculator", () => {
 
         // Then calculate cost
         const result = usage
-          ? yield* calculator.calculate("gpt-4o-mini", usage)
+          ? yield* calculator.calculate("gpt-4o-mini", usage, mockOpenAIPricing)
           : null;
 
         expect(result).toBeDefined();
@@ -242,7 +264,11 @@ describe("CostCalculator", () => {
         expect(usage.outputTokens).toBe(5000);
         expect(usage.cacheReadTokens).toBeUndefined();
 
-        const result = yield* calculator.calculate("gpt-4o-mini", usage);
+        const result = yield* calculator.calculate(
+          "gpt-4o-mini",
+          usage,
+          mockOpenAIPricing,
+        );
         assert(result !== null);
         expect(result.totalCost).toBeGreaterThan(0n);
       }),
@@ -268,7 +294,11 @@ describe("CostCalculator", () => {
           assert(usage !== null);
           expect(usage.cacheReadTokens).toBe(3000);
 
-          const result = yield* calculator.calculate("gpt-4o-mini", usage);
+          const result = yield* calculator.calculate(
+            "gpt-4o-mini",
+            usage,
+            mockOpenAIPricing,
+          );
           assert(result !== null);
           expect(result.totalCost).toBeGreaterThan(0n);
         }),
@@ -294,7 +324,11 @@ describe("CostCalculator", () => {
           assert(usage !== null);
           expect(usage.cacheReadTokens).toBe(3000);
 
-          const result = yield* calculator.calculate("gpt-4o-mini", usage);
+          const result = yield* calculator.calculate(
+            "gpt-4o-mini",
+            usage,
+            mockOpenAIPricing,
+          );
           assert(result !== null);
           expect(result.totalCost).toBeGreaterThan(0n);
         }),
@@ -335,7 +369,11 @@ describe("CostCalculator", () => {
         const usage = calculator.extractUsage(responseBody);
         assert(usage !== null);
 
-        const result = yield* calculator.calculate("gpt-4o-mini", usage);
+        const result = yield* calculator.calculate(
+          "gpt-4o-mini",
+          usage,
+          mockOpenAIPricing,
+        );
         assert(result !== null);
         expect(result.inputCost).toBe(1n); // 1000 / 1M * 1500cc = 1.5cc -> 1cc (BIGINT truncation)
         expect(result.outputCost).toBe(3n); // 500 / 1M * 6000cc = 3cc
@@ -475,6 +513,7 @@ describe("CostCalculator", () => {
         const result = yield* calculator.calculate(
           "claude-3-5-haiku-20241022",
           usage,
+          mockAnthropicPricing,
         );
         assert(result !== null);
         expect(result.totalCost).toBeGreaterThan(0n);
@@ -573,6 +612,7 @@ describe("CostCalculator", () => {
         const result = yield* calculator.calculate(
           "claude-3-5-haiku-20241022",
           usage,
+          mockAnthropicPricing,
         );
         assert(result !== null);
         expect(result.totalCost).toBeGreaterThan(0n);
@@ -598,6 +638,7 @@ describe("CostCalculator", () => {
         const result = yield* calculator.calculate(
           "claude-3-5-haiku-20241022",
           usage,
+          mockAnthropicPricing,
         );
         assert(result !== null);
         expect(result.totalCost).toBeGreaterThan(0n);
@@ -628,6 +669,7 @@ describe("CostCalculator", () => {
         const result = yield* calculator.calculate(
           "claude-3-5-haiku-20241022",
           usage,
+          mockAnthropicPricing,
         );
         assert(result !== null);
         // Cost: 1000 tokens / 1M * 12500cc = 12cc
@@ -659,6 +701,7 @@ describe("CostCalculator", () => {
         const result = yield* calculator.calculate(
           "claude-3-5-haiku-20241022",
           usage,
+          mockAnthropicPricing,
         );
         assert(result !== null);
         // Cost: 1600 tokens / 1M * 12500cc = 20cc
@@ -692,8 +735,8 @@ describe("CostCalculator", () => {
           const result = yield* calculator.calculate(
             "claude-3-5-haiku-20241022",
             usage,
+            mockAnthropicPricing,
           );
-          assert(result !== null);
           // Cost: 2100 tokens / 1M * 12500cc = 26cc
           expect(result.cacheWriteCost).toBe(26n);
         }),
@@ -843,6 +886,7 @@ describe("CostCalculator", () => {
         const result = yield* calculator.calculate(
           "gemini-2.0-flash-exp",
           usage,
+          mockGooglePricing,
         );
         assert(result !== null);
         expect(result.totalCost).toBe(0n); // Free model
@@ -982,6 +1026,7 @@ describe("CostCalculator", () => {
         const result = yield* calculator.calculate(
           "gemini-2.0-flash-exp",
           usage,
+          mockGooglePricing,
         );
         assert(result !== null);
         expect(result.totalCost).toBe(0n); // Free model
@@ -1069,6 +1114,7 @@ describe("CostCalculator", () => {
         const result = yield* calculator.calculate(
           "gemini-2.5-flash-preview",
           usage,
+          mockGooglePricing,
         );
         // Model pricing is 0 for tokens, so total should equal tool cost
         // 2.5 "calls" at $0.014 each = 350 centi-cents
@@ -1097,6 +1143,7 @@ describe("CostCalculator", () => {
           const result = yield* calculator.calculate(
             "gemini-2.0-flash-exp",
             usage,
+            mockGooglePricing,
           );
           expect(result).toBeDefined();
           // 3 queries at $0.014 each = 420 centi-cents
@@ -1164,7 +1211,11 @@ describe("CostCalculator", () => {
           toolUsage: [{ toolType: "openai_web_search", callCount: 2 }],
         };
 
-        const result = yield* calculator.calculate("gpt-4o-mini", usage);
+        const result = yield* calculator.calculate(
+          "gpt-4o-mini",
+          usage,
+          mockOpenAIPricing,
+        );
         expect(result).toBeDefined();
         expect(result?.toolCost).toBeDefined();
         // 2 web searches at $0.01 each = 200 centi-cents
@@ -1186,7 +1237,11 @@ describe("CostCalculator", () => {
           ],
         };
 
-        const result = yield* calculator.calculate("gpt-4o-mini", usage);
+        const result = yield* calculator.calculate(
+          "gpt-4o-mini",
+          usage,
+          mockOpenAIPricing,
+        );
         expect(result).toBeDefined();
         expect(result?.toolCostBreakdown).toBeDefined();
         // 2 web searches at $0.01 each = 200 centi-cents
@@ -1209,7 +1264,11 @@ describe("CostCalculator", () => {
           ],
         };
 
-        const result = yield* calculator.calculate("gpt-4o-mini", usage);
+        const result = yield* calculator.calculate(
+          "gpt-4o-mini",
+          usage,
+          mockOpenAIPricing,
+        );
         expect(result).toBeDefined();
         expect(result?.toolCostBreakdown).toBeDefined();
         expect(
@@ -1230,7 +1289,11 @@ describe("CostCalculator", () => {
           toolUsage: [{ toolType: "unknown_tool", callCount: 5 }],
         };
 
-        const result = yield* calculator.calculate("gpt-4o-mini", usage);
+        const result = yield* calculator.calculate(
+          "gpt-4o-mini",
+          usage,
+          mockOpenAIPricing,
+        );
         expect(result).toBeDefined();
         // Unknown tool should not contribute to cost
         expect(result?.toolCost).toBeUndefined();
@@ -1253,7 +1316,11 @@ describe("CostCalculator", () => {
           ],
         };
 
-        const result = yield* calculator.calculate("gpt-4o-mini", usage);
+        const result = yield* calculator.calculate(
+          "gpt-4o-mini",
+          usage,
+          mockOpenAIPricing,
+        );
         expect(result).toBeDefined();
         // 2 hours at $0.03/hour = 600 centi-cents
         expect(result?.toolCost).toBe(600n);
@@ -1269,7 +1336,11 @@ describe("CostCalculator", () => {
           toolUsage: [],
         };
 
-        const result = yield* calculator.calculate("gpt-4o-mini", usage);
+        const result = yield* calculator.calculate(
+          "gpt-4o-mini",
+          usage,
+          mockOpenAIPricing,
+        );
         expect(result).toBeDefined();
         expect(result?.toolCost).toBeUndefined();
         expect(result?.toolCostBreakdown).toBeUndefined();
@@ -1289,6 +1360,7 @@ describe("CostCalculator", () => {
         const result = yield* calculator.calculate(
           "claude-3-5-haiku-20241022",
           usage,
+          mockAnthropicPricing,
         );
         expect(result).toBeDefined();
         // 3 web searches at $0.01 each = 300 centi-cents
@@ -1308,6 +1380,7 @@ describe("CostCalculator", () => {
         const result = yield* calculator.calculate(
           "gemini-2.0-flash-exp",
           usage,
+          mockGooglePricing,
         );
         expect(result).toBeDefined();
         // 2 queries at $0.014 each = 280 centi-cents
@@ -1318,91 +1391,89 @@ describe("CostCalculator", () => {
     );
   });
 
-  describe("BaseCostCalculator - error handling", () => {
-    it.effect("should handle missing pricing data gracefully", () =>
-      Effect.gen(function* () {
-        global.fetch = vi.fn().mockResolvedValue({
-          ok: true,
-          json: () => Promise.resolve({}), // Empty pricing data
-        }) as unknown as typeof fetch;
-
-        const calculator = new OpenAICostCalculator();
-        const responseBody = {
-          usage: {
-            prompt_tokens: 1000,
-            completion_tokens: 500,
-            total_tokens: 1500,
-          },
-        };
-
-        // Extract usage first
-        const usage = calculator.extractUsage(responseBody);
-        assert(usage !== null);
-        expect(usage.inputTokens).toBe(1000);
-        expect(usage.outputTokens).toBe(500);
-
-        // Calculate returns null when pricing data is missing
-        const result = yield* calculator.calculate("unknown-model", usage);
-        expect(result).toBeNull();
-      }),
-    );
-
-    it.effect("should handle fetch errors gracefully", () =>
-      Effect.gen(function* () {
-        global.fetch = vi
-          .fn()
-          .mockRejectedValue(
-            new Error("Network error"),
-          ) as unknown as typeof fetch;
-
-        const calculator = new OpenAICostCalculator();
-        const responseBody = {
-          usage: {
-            prompt_tokens: 1000,
-            completion_tokens: 500,
-            total_tokens: 1500,
-          },
-        };
-
-        // Extract usage first
-        const usage = calculator.extractUsage(responseBody);
-        assert(usage !== null);
-        expect(usage.inputTokens).toBe(1000);
-        expect(usage.outputTokens).toBe(500);
-
-        // Calculate returns null when fetch errors occur
-        const result = yield* calculator.calculate("gpt-4o-mini", usage);
-        expect(result).toBeNull();
-      }),
-    );
-
-    it.effect("should handle decimal token values gracefully", () =>
+  describe("BaseCostCalculator - edge cases", () => {
+    it.effect("should handle decimal token values by rounding down", () =>
       Effect.gen(function* () {
         const calculator = new OpenAICostCalculator();
 
-        // Test with decimal tokens (BigInt constructor throws on decimals)
-        const invalidUsage = {
+        // Test with decimal tokens - should be rounded down to integers
+        const usage = {
           inputTokens: 100.5,
-          outputTokens: 500,
+          outputTokens: 500.9,
         };
 
-        const result = yield* calculator.calculate("gpt-4o-mini", invalidUsage);
-        expect(result).toBeNull();
+        const result = yield* calculator.calculate(
+          "gpt-4o-mini",
+          usage,
+          mockOpenAIPricing,
+        );
+        expect(result).toBeDefined();
+        // 100 input tokens, 500 output tokens (rounded down from 100.5 and 500.9)
+        expect(result.inputCost).toBe(0n); // 100 * 1500 / 1_000_000 = 0 (integer division)
+        expect(result.outputCost).toBe(3n); // 500 * 6000 / 1_000_000 = 3
       }),
     );
 
-    it.effect("should handle Infinity token values gracefully", () =>
+    it.effect("should handle Infinity token values as zero", () =>
       Effect.gen(function* () {
         const calculator = new OpenAICostCalculator();
 
-        // Test with Infinity tokens (BigInt constructor throws on Infinity)
-        const invalidUsage = {
+        // Test with Infinity tokens - should be treated as 0
+        const usage = {
           inputTokens: Infinity,
           outputTokens: 500,
         };
 
-        const result = yield* calculator.calculate("gpt-4o-mini", invalidUsage);
-        expect(result).toBeNull();
+        const result = yield* calculator.calculate(
+          "gpt-4o-mini",
+          usage,
+          mockOpenAIPricing,
+        );
+        expect(result).toBeDefined();
+        expect(result.inputCost).toBe(0n); // Infinity treated as 0
+        expect(result.outputCost).toBe(3n); // 500 * 6000 / 1_000_000 = 3
+      }),
+    );
+
+    it.effect("should handle negative token values as zero", () =>
+      Effect.gen(function* () {
+        const calculator = new OpenAICostCalculator();
+
+        // Test with negative tokens - should be treated as 0
+        const usage = {
+          inputTokens: -100,
+          outputTokens: 500,
+        };
+
+        const result = yield* calculator.calculate(
+          "gpt-4o-mini",
+          usage,
+          mockOpenAIPricing,
+        );
+        expect(result).toBeDefined();
+        expect(result.inputCost).toBe(0n); // Negative treated as 0
+        expect(result.outputCost).toBe(3n); // 500 * 6000 / 1_000_000 = 3
+      }),
+    );
+
+    it.effect("should handle NaN token values as zero", () =>
+      Effect.gen(function* () {
+        const calculator = new OpenAICostCalculator();
+
+        // Test with NaN tokens - should be treated as 0
+        const usage = {
+          inputTokens: NaN,
+          outputTokens: 500,
+        };
+
+        const result = yield* calculator.calculate(
+          "gpt-4o-mini",
+          usage,
+          mockOpenAIPricing,
+        );
+        expect(result).toBeDefined();
+        expect(result.inputCost).toBe(0n); // NaN treated as 0
+        expect(result.outputCost).toBe(3n); // 500 * 6000 / 1_000_000 = 3
       }),
     );
   });

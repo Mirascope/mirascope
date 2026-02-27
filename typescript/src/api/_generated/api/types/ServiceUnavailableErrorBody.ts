@@ -3,7 +3,7 @@
 import type * as Mirascope from "../index.js";
 
 export interface ServiceUnavailableErrorBody {
-  message: string;
-  service?: string;
-  tag: Mirascope.ServiceUnavailableErrorTag;
+    message: string;
+    service?: string;
+    tag: Mirascope.ServiceUnavailableErrorTag;
 }

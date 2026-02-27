@@ -1,65 +1,65 @@
 interactions:
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
-      a book to me!"}],"model":"claude-haiku-4-5","system":[{"type":"text","text":"Always
-      respond to the user''s query using the __mirascope_formatted_output_tool__ tool
-      for structured output.","cache_control":{"type":"ephemeral"}}],"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
-      this tool to extract data in BookReview format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"themes":{"items":{"type":"string"},"title":"Themes","type":"array"},"rating":{"title":"Rating","type":"integer"}},"required":["title","author","themes","rating"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}],"tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"stream":true}'
+      a book to me!"}],"model":"claude-haiku-4-5","output_format":{"schema":{"type":"object","title":"BookReview","properties":{"title":{"type":"string","title":"Title"},"author":{"type":"string","title":"Author"},"themes":{"type":"array","title":"Themes","items":{"type":"string"}},"rating":{"type":"integer","title":"Rating"}},"additionalProperties":false,"required":["title","author","themes","rating"]},"type":"json_schema"},"stream":true}'
     headers:
-      accept:
+      Accept:
       - application/json
-      accept-encoding:
+      Accept-Encoding:
       - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '512'
+      Content-Type:
+      - application/json
+      Host:
+      - api.anthropic.com
+      User-Agent:
+      - Anthropic/Python 0.76.0
+      X-Api-Key:
+      - <filtered>
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Helper-Method:
+      - stream
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.76.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.10.16
+      X-Stainless-Stream-Helper:
+      - beta.messages
+      anthropic-beta:
+      - structured-outputs-2025-11-13
       anthropic-version:
       - '2023-06-01'
-      connection:
-      - keep-alive
-      content-length:
-      - '931'
-      content-type:
-      - application/json
-      host:
-      - api.anthropic.com
-      user-agent:
-      - Anthropic/Python 0.75.0
-      x-api-key:
-      - <filtered>
-      x-stainless-arch:
-      - arm64
-      x-stainless-async:
-      - 'false'
-      x-stainless-helper-method:
-      - stream
-      x-stainless-lang:
-      - python
-      x-stainless-os:
-      - MacOS
-      x-stainless-package-version:
-      - 0.75.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
       - '0'
-      x-stainless-runtime:
-      - CPython
-      x-stainless-runtime-version:
-      - 3.10.16
-      x-stainless-stream-helper:
-      - messages
       x-stainless-timeout:
       - NOT_GIVEN
     method: POST
-    uri: https://api.anthropic.com/v1/messages
+    uri: https://api.anthropic.com/v1/messages?beta=true
   response:
     body:
       string: 'event: message_start
 
-        data: {"type":"message_start","message":{"model":"claude-haiku-4-5-20251001","id":"msg_01D4CDUhvZwqoXqAfr3R1imc","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":793,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":11,"service_tier":"standard"}}       }
+        data: {"type":"message_start","message":{"model":"claude-haiku-4-5-20251001","id":"msg_01C1mBJUgFqbB6HbuBpeJ3Lq","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":281,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard","inference_geo":"not_available"}}
+        }
 
 
         event: content_block_start
 
-        data: {"type":"content_block_start","index":0,"content_block":{"type":"tool_use","id":"toolu_01VtJVjJct4grKZJd5pkzDYF","name":"__mirascope_formatted_output_tool__","input":{}}    }
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}    }
 
 
         event: ping
@@ -69,168 +69,112 @@ interactions:
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":""}              }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"{\""}         }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"{\"title\":
-        \"T"}              }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"title\":
+        \"The"}   }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"he
-        Midnight"}        }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        Midnight Library\", \"author\": \"Matt"}   }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"
-        Li"}  }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        Haig\", \"themes\": [\""}             }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"brary\""}   }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"parallel"}      }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":",
-        \"author\": "}       }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        lives"}   }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"\"Matt
-        H"}}
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\",
+        \"secon"}    }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"ai"}              }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"d
+        chances\", \"self"}     }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"g\""}       }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"-discovery\","}          }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":",
-        "}    }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        \"reg"}              }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"\"themes\""}               }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"ret\","}         }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":":
-        [\"para"}}
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        \"hope"}       }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"llel
-        uni"}  }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\"],
+        \"rating\": 9"}            }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"ve"}        }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"rses\",\"li"}   }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"fe
-        choices\","}              }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"\"second
-        ch"}             }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"ances\""}              }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":",\"self-dis"}        }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"covery\",\""}    }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"hope\"]"}    }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":",
-        \""}              }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"rating\""}      }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":":
-        "}      }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"5}"}             }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"}"}           }
 
 
         event: content_block_stop
 
-        data: {"type":"content_block_stop","index":0  }
+        data: {"type":"content_block_stop","index":0          }
 
 
         event: message_delta
 
-        data: {"type":"message_delta","delta":{"stop_reason":"tool_use","stop_sequence":null},"usage":{"input_tokens":793,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":101}        }
+        data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":281,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":50}            }
 
 
         event: message_stop
 
-        data: {"type":"message_stop"       }
+        data: {"type":"message_stop"      }
 
 
         '
     headers:
       CF-RAY:
-      - 9bd87b464e15df86-SEA
+      - 9cb6aaaaeb26a379-SEA
       Cache-Control:
       - no-cache
       Connection:
       - keep-alive
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'
       Content-Type:
       - text/event-stream; charset=utf-8
       Date:
-      - Tue, 13 Jan 2026 22:55:30 GMT
+      - Mon, 09 Feb 2026 22:05:13 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -244,33 +188,33 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '4000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2026-01-13T22:55:30Z'
+      - '2026-02-09T22:05:10Z'
       anthropic-ratelimit-output-tokens-limit:
       - '800000'
       anthropic-ratelimit-output-tokens-remaining:
       - '800000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2026-01-13T22:55:30Z'
+      - '2026-02-09T22:05:10Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2026-01-13T22:55:30Z'
+      - '2026-02-09T22:05:10Z'
       anthropic-ratelimit-tokens-limit:
       - '4800000'
       anthropic-ratelimit-tokens-remaining:
       - '4800000'
       anthropic-ratelimit-tokens-reset:
-      - '2026-01-13T22:55:30Z'
+      - '2026-02-09T22:05:10Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CX6CeoKVsfefGq3FPKqqo
+      - req_011CXyFeuCkmm6qYTTVDE2cy
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '345'
+      - '3387'
     status:
       code: 200
       message: OK

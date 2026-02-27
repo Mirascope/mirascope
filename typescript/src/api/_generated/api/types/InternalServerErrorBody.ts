@@ -3,15 +3,15 @@
 import type * as Mirascope from "../index.js";
 
 export type InternalServerErrorBody =
-  | Mirascope.InternalServerErrorBody.ClickHouseError
-  | Mirascope.InternalServerErrorBody.DatabaseError;
+    | Mirascope.InternalServerErrorBody.ClickHouseError
+    | Mirascope.InternalServerErrorBody.DatabaseError;
 
 export namespace InternalServerErrorBody {
-  export interface ClickHouseError extends Mirascope.ClickHouseError {
-    tag: "ClickHouseError";
-  }
+    export interface ClickHouseError extends Mirascope.ClickHouseError {
+        tag: "ClickHouseError";
+    }
 
-  export interface DatabaseError extends Mirascope.DatabaseError {
-    tag: "DatabaseError";
-  }
+    export interface DatabaseError extends Mirascope.DatabaseError {
+        tag: "DatabaseError";
+    }
 }

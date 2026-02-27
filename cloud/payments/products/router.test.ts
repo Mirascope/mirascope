@@ -1485,6 +1485,55 @@ describe("Router Product", () => {
         ),
       );
     });
+
+    it.effect(
+      "silently returns when pricing fetch fails (covers catchAll branch)",
+      () => {
+        // Mock fetch to throw an error
+        global.fetch = vi
+          .fn()
+          .mockRejectedValue(
+            new Error("Network error"),
+          ) as unknown as typeof fetch;
+        clearPricingCache();
+
+        return Effect.gen(function* () {
+          const payments = yield* Payments;
+
+          // Should not throw, just return silently after catching the error
+          yield* payments.products.router.chargeForUsage({
+            provider: "anthropic",
+            model: "claude-3-5-haiku-20241022",
+            usageData: {
+              inputTokens: 100,
+              outputTokens: 50,
+            },
+            stripeCustomerId: "cus_123",
+          });
+        }).pipe(
+          Effect.provide(
+            Payments.Default.pipe(
+              Layer.provide(MockDrizzleORMLayer),
+              Layer.provide(
+                Layer.succeed(Stripe, {
+                  config: {
+                    apiKey: "sk_test_mock",
+                    routerPriceId: "price_test",
+                    routerMeterId: "meter_test",
+                  },
+                  billing: {
+                    meterEvents: {
+                      create: () => Effect.succeed({ id: "evt_test" }),
+                    },
+                  },
+                } as unknown as Context.Tag.Service<typeof Stripe>),
+              ),
+              Layer.provide(MockDrizzleORMLayer),
+            ),
+          ),
+        );
+      },
+    );
   });
 
   describe("createCreditGrant", () => {

@@ -162,5 +162,21 @@ describe("tool-pricing", () => {
         expect(cost).toBeNull();
       });
     });
+
+    describe("edge cases", () => {
+      it("should handle Infinity callCount gracefully (return 0 cost)", () => {
+        const cost = calculateToolCost("openai_web_search", Infinity);
+        expect(cost).toBeDefined();
+        // Infinity is not finite, so per-call cost is skipped
+        expect(cost).toBe(0n);
+      });
+
+      it("should handle NaN callCount gracefully (return 0 cost)", () => {
+        const cost = calculateToolCost("openai_web_search", NaN);
+        expect(cost).toBeDefined();
+        // NaN is not finite, so per-call cost is skipped
+        expect(cost).toBe(0n);
+      });
+    });
   });
 });

@@ -4,12 +4,14 @@
 
 import {
   trace,
+  trace as otelTrace,
   context as otelContext,
   SpanStatusCode,
   type Span as OtelSpan,
   type SpanContext,
 } from "@opentelemetry/api";
 
+import { getTracer } from "@/ops/_internal/configuration";
 import { currentSession } from "@/ops/_internal/session";
 import { jsonStringify } from "@/ops/_internal/utils";
 
@@ -61,7 +63,8 @@ export class Span {
    * @returns This span instance for chaining.
    */
   start(): this {
-    const tracer = trace.getTracer("mirascope.ops");
+    // Use configured tracer if available, otherwise fall back to global tracer
+    const tracer = getTracer() ?? trace.getTracer("mirascope.ops");
     this._span = tracer.startSpan(this._name, undefined, otelContext.active());
 
     // Check if this is a noop span (no tracer configured)
@@ -150,7 +153,7 @@ export class Span {
    * @param attributes - Optional additional attributes.
    */
   debug(message: string, attributes?: Record<string, unknown>): void {
-    this.event("log", { level: "debug", message, ...attributes });
+    this.event("debug", { level: "debug", message, ...attributes });
   }
 
   /**
@@ -160,7 +163,7 @@ export class Span {
    * @param attributes - Optional additional attributes.
    */
   info(message: string, attributes?: Record<string, unknown>): void {
-    this.event("log", { level: "info", message, ...attributes });
+    this.event("info", { level: "info", message, ...attributes });
   }
 
   /**
@@ -170,7 +173,7 @@ export class Span {
    * @param attributes - Optional additional attributes.
    */
   warning(message: string, attributes?: Record<string, unknown>): void {
-    this.event("log", { level: "warning", message, ...attributes });
+    this.event("warning", { level: "warning", message, ...attributes });
   }
 
   /**
@@ -180,7 +183,7 @@ export class Span {
    * @param attributes - Optional additional attributes.
    */
   error(message: string, attributes?: Record<string, unknown>): void {
-    this.event("log", { level: "error", message, ...attributes });
+    this.event("error", { level: "error", message, ...attributes });
     if (this._span && !this._finished) {
       this._span.setStatus({ code: SpanStatusCode.ERROR, message });
     }
@@ -193,9 +196,27 @@ export class Span {
    * @param attributes - Optional additional attributes.
    */
   critical(message: string, attributes?: Record<string, unknown>): void {
-    this.event("log", { level: "critical", message, ...attributes });
+    this.event("critical", { level: "critical", message, ...attributes });
     if (this._span && !this._finished) {
       this._span.setStatus({ code: SpanStatusCode.ERROR, message });
+    }
+  }
+
+  /**
+   * Record an exception on the span.
+   *
+   * This uses the OpenTelemetry recordException API to properly record
+   * exception information including stack traces.
+   *
+   * @param error - The error to record.
+   */
+  recordException(error: Error): void {
+    if (this._span && !this._finished) {
+      this._span.recordException(error);
+      this._span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: error.message,
+      });
     }
   }
 
@@ -287,18 +308,32 @@ export async function span<T>(
   attributes?: Record<string, unknown>,
 ): Promise<T> {
   const s = new Span(name, attributes).start();
-  try {
-    return await fn(s);
-  } catch (error) {
-    if (error instanceof Error) {
-      s.error(error.message);
-    } else {
-      s.error(String(error));
+  const otelSpan = s.otelSpan;
+
+  async function execute(): Promise<T> {
+    try {
+      return await fn(s);
+    } catch (error) {
+      if (error instanceof Error) {
+        s.recordException(error);
+      } else {
+        s.error(String(error));
+      }
+      throw error;
+      /* v8 ignore start - finally is always executed, v8 branch tracking artifact */
+    } finally {
+      /* v8 ignore end */
+      s.finish();
     }
-    throw error;
-    /* v8 ignore start - finally is always executed, v8 branch tracking artifact */
-  } finally {
-    /* v8 ignore end */
-    s.finish();
   }
+
+  // Run within the span's context so child spans are properly linked
+  /* v8 ignore start - ternary branch with no-tracer case difficult to test */
+  return otelSpan
+    ? otelContext.with(
+        otelTrace.setSpan(otelContext.active(), otelSpan),
+        execute,
+      )
+    : execute();
+  /* v8 ignore end */
 }

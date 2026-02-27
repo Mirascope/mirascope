@@ -1,0 +1,66 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Choose a lucky number between 1 and
+      10"}], "role": "user"}], "generationConfig": {"responseMimeType": "application/json",
+      "responseSchema": {"description": "Wrapper for primitive type int", "properties":
+      {"output": {"title": "Output", "type": "INTEGER"}}, "required": ["output"],
+      "title": "intOutput", "type": "OBJECT"}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '356'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-client:
+      - google-genai-sdk/1.60.0 gl-python/3.12.12
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQUU+DMBSF3/kV5D5vxi1Rom8GjVnM4oK4Ldl8qPYOqtASeptMCf/dAoMV7UPT
+        3nN6b89Xeb4PH0xywRmhhlt/Zyu+X7V7oylJKMkKfckWC1bS2dutyjlbC+GxeQTVHpShwtDe3oIa
+        HFc9nN8m596lyrB5mCuOWW+vewMchBQ6jZBpJRvbS/y8gkEVkuPRli+9fkDbGoxmCS6RmE3JhixQ
+        lCovKFZfKENl2pSzedfMgTLSr08yKWLZSAluJv+66ns7U2QuKwejjcgyQd9NjvhhG4ODgcaf6jl4
+        Di6gVJkkpT8fnHknXh3CNZZadKwSzC296fzianrImE7beVCiLpTUuOCNJ1qbJ/a+CR+X2+gnWKw+
+        +SZUd6/g1d4vHkjvQCwCAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 09 Feb 2026 22:10:13 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=892
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

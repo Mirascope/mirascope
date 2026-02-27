@@ -1,4 +1,3 @@
-/* v8 ignore start -- OAuth flows require network requests to external providers */
 /**
  * @fileoverview OAuth authentication flow implementation.
  *
@@ -51,6 +50,8 @@ import { Settings, type SettingsConfig } from "@/settings";
 // =============================================================================
 // User Data Mappers
 // =============================================================================
+
+/* v8 ignore start -- OAuth flow functions involve external network requests and are tested via integration tests */
 
 /**
  * Maps GitHub API user data to our internal user info format.
@@ -695,6 +696,20 @@ function processAuthenticatedUser(
           data: { email: userInfo.email, name: userInfo.name },
         });
 
+    // Ensure Stripe customers exist for all user's orgs (background task)
+    if (existingUser) {
+      ctx.waitUntil(
+        Effect.runPromise(
+          db.organizations
+            .ensureStripeCustomers({
+              userId: user.id,
+              email: userInfo.email,
+            })
+            .pipe(Effect.catchAll(() => Effect.void)),
+        ),
+      );
+    }
+
     // Send welcome email for new users in the background
     if (!existingUser) {
       // Get services first so we can provide them to the background task
@@ -750,7 +765,8 @@ const validatePreviewUrl = (
       const parsedUrl = new URL(url);
       const isValid =
         !!parsedUrl.hostname.match(/^.*-pr-\d+\.mirascope\.workers\.dev$/) ||
-        parsedUrl.hostname === "staging.mirascope.com";
+        parsedUrl.hostname === "staging.mirascope.com" ||
+        parsedUrl.hostname === "dev.mirascope.com";
 
       if (!isValid) {
         throw new Error("Invalid preview URL");
@@ -944,3 +960,5 @@ export function handleOAuthProxyCallback(
     );
   });
 }
+
+/* v8 ignore stop */

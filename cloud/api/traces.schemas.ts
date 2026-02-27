@@ -19,11 +19,20 @@ import {
   StripeError,
 } from "@/errors";
 
+const StringOrNumberToString = Schema.transform(
+  Schema.Union(Schema.String, Schema.Number),
+  Schema.String,
+  {
+    decode: (input) => String(input),
+    encode: (s) => s,
+  },
+);
+
 export const KeyValueSchema = Schema.Struct({
   key: Schema.String,
   value: Schema.Struct({
     stringValue: Schema.optional(Schema.String),
-    intValue: Schema.optional(Schema.String),
+    intValue: Schema.optional(StringOrNumberToString),
     doubleValue: Schema.optional(Schema.Number),
     boolValue: Schema.optional(Schema.Boolean),
     arrayValue: Schema.optional(
@@ -66,8 +75,8 @@ export const SpanSchema = Schema.Struct({
   parentSpanId: Schema.optional(Schema.NullOr(Schema.String)),
   name: Schema.String,
   kind: Schema.optional(Schema.Number),
-  startTimeUnixNano: Schema.String,
-  endTimeUnixNano: Schema.String,
+  startTimeUnixNano: StringOrNumberToString,
+  endTimeUnixNano: StringOrNumberToString,
   attributes: Schema.optional(Schema.Array(KeyValueSchema)),
   droppedAttributesCount: Schema.optional(Schema.Number),
   events: Schema.optional(Schema.Array(Schema.Unknown)),
@@ -148,6 +157,23 @@ export type ListByFunctionHashResponse =
 export class TracesApi extends HttpApiGroup.make("traces")
   .add(
     HttpApiEndpoint.post("create", "/traces")
+      .setPayload(CreateTraceRequestSchema)
+      .addSuccess(CreateTraceResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      })
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(AlreadyExistsError, { status: AlreadyExistsError.status })
+      .addError(PlanLimitExceededError, {
+        status: PlanLimitExceededError.status,
+      })
+      .addError(StripeError, { status: StripeError.status }),
+  )
+  .add(
+    // OTEL-compatible endpoint at /v1/traces (results in /api/v2/v1/traces)
+    HttpApiEndpoint.post("createOtel", "/v1/traces")
       .setPayload(CreateTraceRequestSchema)
       .addSuccess(CreateTraceResponseSchema)
       .addError(UnauthorizedError, { status: UnauthorizedError.status })

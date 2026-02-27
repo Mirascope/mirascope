@@ -7,7 +7,7 @@
 
 import { Effect, Stream, pipe, Ref } from "effect";
 
-import type { TokenUsage } from "@/api/router/pricing";
+import type { TokenUsage, ModelPricing } from "@/api/router/pricing";
 import type { ProxyResult } from "@/api/router/proxy";
 
 import { getCostCalculator, type ProviderName } from "@/api/router/providers";
@@ -60,6 +60,8 @@ export interface StreamMeteringContext {
   request: RouterRequestIdentifiers;
   /** Original response metadata */
   response: ResponseMetadata;
+  /** Cached pricing from estimation phase for cost calculation */
+  modelPricing: ModelPricing;
 }
 
 /**
@@ -155,16 +157,17 @@ export function settleMeteringForStream(
       return;
     }
 
-    // Calculate cost
+    // Calculate cost using cached pricing from estimation phase
     const costCalculator = getCostCalculator(meteringContext.provider);
     const costResult = yield* costCalculator.calculate(
       meteringContext.modelId,
       usage,
+      meteringContext.modelPricing,
     );
 
-    if (!costResult || costResult.totalCost <= 0) {
+    if (costResult.totalCost <= 0) {
       console.warn(
-        `[settleMeteringForStream] Cost calculation failed for request ${meteringContext.request.routerRequestId}`,
+        `[settleMeteringForStream] Zero cost calculated for request ${meteringContext.request.routerRequestId}`,
       );
       return;
     }
@@ -343,6 +346,7 @@ export function handleStreamingResponse(
       reservationId: context.reservationId,
       request: context.request,
       response: responseMetadata,
+      modelPricing: context.modelPricing,
     };
 
     const streamParseResult = yield* parseStreamingResponse(

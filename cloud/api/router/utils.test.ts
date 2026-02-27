@@ -1,8 +1,15 @@
 import { Effect, Layer } from "effect";
 import { vi } from "vitest";
 
+import type { ModelPricing } from "@/api/router/pricing";
 import type { ProxyResult } from "@/api/router/proxy";
 import type { ResponseMetadata } from "@/api/router/streaming";
+
+// Mock pricing data for tests (values in centi-cents per million tokens)
+const mockPricing: ModelPricing = {
+  input: 1500n, // $0.15 per million tokens
+  output: 6000n, // $0.60 per million tokens
+};
 
 import { handleNonStreamingResponse } from "@/api/router/non-streaming";
 import { handleStreamingResponse } from "@/api/router/streaming";
@@ -251,14 +258,17 @@ describe("Route Handlers", () => {
           parsedRequestBody: { model: "gpt-4", messages: [] },
         };
 
-        const reservationId = yield* reserveRouterFunds(
+        const result = yield* reserveRouterFunds(
           validated,
           "req_123",
           org.stripeCustomerId,
         );
 
-        expect(reservationId).toBeDefined();
-        expect(typeof reservationId).toBe("string");
+        expect(result.reservationId).toBeDefined();
+        expect(typeof result.reservationId).toBe("string");
+        expect(result.modelPricing).toBeDefined();
+        expect(typeof result.modelPricing.input).toBe("bigint");
+        expect(typeof result.modelPricing.output).toBe("bigint");
       }).pipe(Effect.provide(DefaultMockPayments)),
     );
   });
@@ -407,6 +417,7 @@ describe("Route Handlers", () => {
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
           },
+          modelPricing: mockPricing,
         };
 
         const responseMetadata: ResponseMetadata = {
@@ -509,6 +520,7 @@ describe("Route Handlers", () => {
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
           },
+          modelPricing: mockPricing,
         };
 
         // Mock queue service
@@ -598,6 +610,7 @@ describe("Route Handlers", () => {
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
           },
+          modelPricing: mockPricing,
         };
 
         // Mock queue service
@@ -682,6 +695,7 @@ describe("Route Handlers", () => {
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
           },
+          modelPricing: mockPricing,
         };
 
         // Mock queue service
@@ -774,6 +788,7 @@ describe("Route Handlers", () => {
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
           },
+          modelPricing: mockPricing,
         };
 
         // Mock queue service
@@ -863,6 +878,7 @@ describe("Route Handlers", () => {
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
           },
+          modelPricing: mockPricing,
         };
 
         // Mock queue service
@@ -952,6 +968,7 @@ describe("Route Handlers", () => {
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
           },
+          modelPricing: mockPricing,
         };
 
         // Mock queue service
@@ -1047,6 +1064,7 @@ describe("Route Handlers", () => {
               apiKeyId: apiKey.id,
               routerRequestId: routerRequest.id,
             },
+            modelPricing: mockPricing,
           };
 
           // Mock queue service
@@ -1140,6 +1158,7 @@ describe("Route Handlers", () => {
             apiKeyId: apiKey.id,
             routerRequestId: routerRequest.id,
           },
+          modelPricing: mockPricing,
         };
 
         // Mock queue service

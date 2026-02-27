@@ -6,10 +6,10 @@ import type * as Mirascope from "../index.js";
  * Represents an error encountered while parsing a value to match the schema
  */
 export interface Issue {
-  /** The tag identifying the type of parse issue */
-  tag: Mirascope.IssueTag;
-  /** The path to the property where the issue occurred */
-  path: Mirascope.PropertyKey[];
-  /** A descriptive message explaining the issue */
-  message: string;
+    /** The tag identifying the type of parse issue */
+    tag: Mirascope.IssueTag;
+    /** The path to the property where the issue occurred */
+    path: Mirascope.PropertyKey[];
+    /** A descriptive message explaining the issue */
+    message: string;
 }

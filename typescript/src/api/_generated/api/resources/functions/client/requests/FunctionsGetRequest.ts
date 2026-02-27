@@ -7,5 +7,5 @@
  *     }
  */
 export interface FunctionsGetRequest {
-  id: string;
+    id: string;
 }

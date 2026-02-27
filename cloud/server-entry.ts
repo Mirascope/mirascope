@@ -16,6 +16,7 @@ import {
   validateSettingsFromEnvironment,
   type CloudflareEnvironment,
 } from "@/settings";
+import { wrapWithStagingMiddleware } from "@/staging";
 import billingReconciliationCron from "@/workers/billingReconciliationCron";
 import { type WorkerEnv } from "@/workers/config";
 import dataRetentionCron from "@/workers/dataRetentionCron";
@@ -245,43 +246,16 @@ const scheduled = async (
   }
 };
 
-const fetch: ExportedHandlerFetchHandler<WorkerEnv> = async (
-  request,
-  environment,
-  context,
-) => {
-  // Basic Auth for staging (skipped during prerendering)
-  const url = new URL(request.url);
-  if (url.hostname === "staging.mirascope.com") {
-    const authHeader = request.headers.get("Authorization");
-    if (!authHeader || !authHeader.startsWith("Basic ")) {
-      return new Response("Unauthorized", {
-        status: 401,
-        headers: { "WWW-Authenticate": 'Basic realm="Staging"' },
-      });
-    }
-
-    try {
-      const base64Credentials = authHeader.slice(6);
-      const credentials = atob(base64Credentials);
-      const [username, password] = credentials.split(":");
-
-      // This isn't for confidentiality so keep user/pwd simple
-      if (username !== "mirascope" || password !== "mirascope") {
-        return new Response("Unauthorized", {
-          status: 401,
-          headers: { "WWW-Authenticate": 'Basic realm="Staging"' },
-        });
-      }
-    } catch {
-      // Invalid base64 encoding
-      return new Response("Unauthorized", {
-        status: 401,
-        headers: { "WWW-Authenticate": 'Basic realm="Staging"' },
-      });
-    }
-  }
-
+/**
+ * Core request handling - baseline logic only.
+ * Staging-specific behavior is handled by the middleware wrapper.
+ */
+const coreHandler = async (
+  request: Request,
+  environment: WorkerEnv,
+  context: globalThis.ExecutionContext,
+  url: URL,
+): Promise<Response | null> => {
   // Set execution context layer for route handlers
   executionContextLayer = Layer.succeed(ExecutionContext, context);
 
@@ -325,7 +299,7 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = async (
   }
 
   if (environment.ENVIRONMENT === "local") {
-    const { pathname } = new URL(request.url);
+    const { pathname } = url;
     if (pathname === "/__scheduled") {
       const event: ScheduledEvent = {
         cron: "local",
@@ -369,26 +343,12 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = async (
     // Fall through to normal handler if no .md file exists
   }
 
-  // Try serving from static assets first (only needed when run_worker_first is enabled)
-  // In staging, all requests go through the worker including assets
-  if (url.hostname === "staging.mirascope.com") {
-    // Strip credentials from URL - ASSETS binding can't handle URLs with embedded credentials
-    const cleanUrl = new URL(url);
-    cleanUrl.username = "";
-    cleanUrl.password = "";
-    const assetRequest = new Request(cleanUrl.toString(), {
-      method: request.method,
-      headers: request.headers,
-    });
-    const assetResponse = await environment.ASSETS.fetch(assetRequest);
-    if (assetResponse.ok) {
-      return assetResponse;
-    }
-  }
-
-  // Fall back to SSR handler for routes
-  return fetchHandler(request);
+  // Continue to next phase (staging assets then SSR)
+  return null;
 };
+
+// Compose: staging middleware wraps core logic
+const fetch = wrapWithStagingMiddleware(coreHandler, fetchHandler);
 
 const queue = async (
   batch: MessageBatch,

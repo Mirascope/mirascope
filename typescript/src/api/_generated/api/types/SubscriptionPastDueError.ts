@@ -3,8 +3,8 @@
 import type * as Mirascope from "../index.js";
 
 export interface SubscriptionPastDueError {
-  message: string;
-  stripeCustomerId: string;
-  pastDueSubscriptionIds: string[];
-  tag: Mirascope.SubscriptionPastDueErrorTag;
+    message: string;
+    stripeCustomerId: string;
+    pastDueSubscriptionIds: string[];
+    tag: Mirascope.SubscriptionPastDueErrorTag;
 }

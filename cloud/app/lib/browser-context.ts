@@ -333,8 +333,10 @@ function getOrInitializeAnonymousId(): string {
  * Should only be called in browser environment.
  */
 export function collectBrowserContext(): BrowserContext {
-  if (typeof window === "undefined") {
-    // Return empty context for SSR
+  // Only track real users in browsers, not prerender builds.
+  // Use document (not window) since Workers have window-like globals.
+  if (typeof document === "undefined") {
+    // Empty context prevents build crashes, replaced client-side
     return {
       currentUrl: "",
       pathname: "",
