@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Generator
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pytest
 from inline_snapshot import snapshot
@@ -774,7 +774,6 @@ def test_versioned_call_sync(span_exporter: InMemorySpanExporter) -> None:
 @pytest.mark.vcr()
 def test_versioned_call_wrapped_method(
     span_exporter: InMemorySpanExporter,
-    mirascope_api_key: None,
 ) -> None:
     """Test VersionedCall.wrapped() returns VersionedResult."""
 
@@ -808,7 +807,6 @@ def test_versioned_call_wrapped_method(
                 "mirascope.trace.arg_values": '{"genre":"mystery"}',
                 "mirascope.version.hash": "2820850484af684cd70ef2b89cc09bd16dffd6003b2e8bb3ed0907232e44144e",
                 "mirascope.version.signature_hash": "d3afa65513fc5a9d79bcfdadd5775889dc259dc949c76d2c476ef916b4f234c2",
-                "mirascope.version.uuid": "f90e3dcd-5907-4822-aa74-f051a60e37de",
                 "mirascope.version.version": "1.0",
                 "mirascope.response.provider_id": "openai",
                 "mirascope.response.model_id": "openai/gpt-4o-mini",
@@ -826,7 +824,6 @@ def test_versioned_call_wrapped_method(
 @pytest.mark.vcr()
 def test_versioned_call_call_method(
     span_exporter: InMemorySpanExporter,
-    mirascope_api_key: None,
 ) -> None:
     """Test VersionedCall.call() returns Response directly and creates span."""
 
@@ -859,7 +856,6 @@ def test_versioned_call_call_method(
                 "mirascope.trace.arg_values": '{"genre":"fantasy"}',
                 "mirascope.version.hash": "2820850484af684cd70ef2b89cc09bd16dffd6003b2e8bb3ed0907232e44144e",
                 "mirascope.version.signature_hash": "d3afa65513fc5a9d79bcfdadd5775889dc259dc949c76d2c476ef916b4f234c2",
-                "mirascope.version.uuid": "f90e3dcd-5907-4822-aa74-f051a60e37de",
                 "mirascope.version.version": "1.0",
                 "mirascope.response.provider_id": "openai",
                 "mirascope.response.model_id": "openai/gpt-4o-mini",
@@ -891,7 +887,6 @@ def test_versioned_call_stream_method(span_exporter: InMemorySpanExporter) -> No
 @pytest.mark.vcr()
 def test_versioned_call_wrapped_stream(
     span_exporter: InMemorySpanExporter,
-    mirascope_api_key: None,
 ) -> None:
     """Test VersionedCall.wrapped_stream() returns VersionedResult[StreamResponse]."""
 
@@ -926,7 +921,6 @@ def test_versioned_call_wrapped_stream(
                 "mirascope.trace.arg_values": '{"genre":"adventure"}',
                 "mirascope.version.hash": "2820850484af684cd70ef2b89cc09bd16dffd6003b2e8bb3ed0907232e44144e",
                 "mirascope.version.signature_hash": "d3afa65513fc5a9d79bcfdadd5775889dc259dc949c76d2c476ef916b4f234c2",
-                "mirascope.version.uuid": "f90e3dcd-5907-4822-aa74-f051a60e37de",
                 "mirascope.version.version": "1.0",
                 "mirascope.response.provider_id": "openai",
                 "mirascope.response.model_id": "openai/gpt-4o-mini",
@@ -994,7 +988,6 @@ async def test_versioned_async_call(span_exporter: InMemorySpanExporter) -> None
 @pytest.mark.asyncio
 async def test_versioned_async_call_call_method(
     span_exporter: InMemorySpanExporter,
-    mirascope_api_key: None,
 ) -> None:
     """Test VersionedAsyncCall.call() returns AsyncResponse directly."""
 
@@ -1027,7 +1020,6 @@ async def test_versioned_async_call_call_method(
                 "mirascope.trace.arg_values": '{"genre":"horror"}',
                 "mirascope.version.hash": "0391c2bfd9cae644a1b467679c5d6b8a03a8df17c733c4309e36838127bc6d85",
                 "mirascope.version.signature_hash": "b9cd3d0dbb1c669832bb9bec2c556281f7587625908d698c7152a510b516ec26",
-                "mirascope.version.uuid": "1c6495c3-f5b4-4795-b99c-221ff3273156",
                 "mirascope.version.version": "1.0",
                 "mirascope.response.provider_id": "openai",
                 "mirascope.response.model_id": "openai/gpt-4o-mini",
@@ -1233,7 +1225,6 @@ async def test_versioned_async_context_call_stream_method(
 @pytest.mark.vcr()
 def test_versioned_call_with_tags(
     span_exporter: InMemorySpanExporter,
-    mirascope_api_key: None,
 ) -> None:
     """Test @ops.version(tags=[...]) passes tags to VersionedCall."""
 
@@ -1267,7 +1258,6 @@ def test_versioned_call_with_tags(
                 "mirascope.trace.tags": ("production", "recommendations"),
                 "mirascope.version.hash": "2820850484af684cd70ef2b89cc09bd16dffd6003b2e8bb3ed0907232e44144e",
                 "mirascope.version.signature_hash": "d3afa65513fc5a9d79bcfdadd5775889dc259dc949c76d2c476ef916b4f234c2",
-                "mirascope.version.uuid": "f90e3dcd-5907-4822-aa74-f051a60e37de",
                 "mirascope.version.version": "1.0",
                 "mirascope.version.tags": ("production", "recommendations"),
                 "mirascope.response.provider_id": "openai",
@@ -1473,7 +1463,6 @@ def test_compute_closure_from_call_fallback() -> None:
 @pytest.mark.vcr()
 def test_version_registers_new_function(
     span_exporter: InMemorySpanExporter,
-    mirascope_api_key: None,
 ) -> None:
     """Test that versioned function registers new function via API."""
 
@@ -1501,7 +1490,6 @@ def test_version_registers_new_function(
                 "mirascope.trace.tags": ("test",),
                 "mirascope.version.hash": "2b5f697ef9a0d908b6b6674005c6e0e5d19581834dafd9c41771ca6994b263d9",
                 "mirascope.version.signature_hash": "3779bb3e22ca9b1dd5379cda31c2cdce8f3b5d27528c328270e7e196b67cc58a",
-                "mirascope.version.uuid": "0b49be1b-0d15-4009-819f-16b4a4fcfb83",
                 "mirascope.version.version": "1.0",
                 "mirascope.version.name": "test_register_new_fn",
                 "mirascope.version.tags": ("test",),
@@ -1516,7 +1504,6 @@ def test_version_registers_new_function(
 @pytest.mark.vcr()
 def test_version_uses_existing_function(
     span_exporter: InMemorySpanExporter,
-    mirascope_api_key: None,
 ) -> None:
     """Test that versioned function uses existing function from API."""
 
@@ -1543,7 +1530,6 @@ def test_version_uses_existing_function(
                 "mirascope.trace.arg_values": '{"x":5}',
                 "mirascope.version.hash": "b8be4f8989ddbe687f19b8b96f29094884a1e903728de2cea7b17a37c22c285e",
                 "mirascope.version.signature_hash": "10c4ac91cbe5db326143343357a94d550db16f3242b05d6533ca504ed9e8dd43",
-                "mirascope.version.uuid": "94b35c14-88fd-4930-9884-7c8b8a269135",
                 "mirascope.version.version": "1.0",
                 "mirascope.version.name": "test_existing_fn",
                 "mirascope.trace.output": 15,
@@ -1558,7 +1544,6 @@ def test_version_uses_existing_function(
 @pytest.mark.asyncio
 async def test_async_version_registers_new_function(
     span_exporter: InMemorySpanExporter,
-    mirascope_api_key: None,
 ) -> None:
     """Test that async versioned function registers new function via API."""
 
@@ -1586,7 +1571,6 @@ async def test_async_version_registers_new_function(
                 "mirascope.trace.tags": ("async-test",),
                 "mirascope.version.hash": "e29e925666db867702c08edf6cda0d34414d5284b34779efb6def7cddf39d450",
                 "mirascope.version.signature_hash": "e895135474979165e8f95c8c3616326d740ad66821238ab65f8b0506645fce3e",
-                "mirascope.version.uuid": "8373d50e-b7bf-440d-beaf-743681eb5ea1",
                 "mirascope.version.version": "1.0",
                 "mirascope.version.name": "test_async_register_fn",
                 "mirascope.version.tags": ("async-test",),
@@ -1602,7 +1586,6 @@ async def test_async_version_registers_new_function(
 @pytest.mark.asyncio
 async def test_async_version_uses_existing_function(
     span_exporter: InMemorySpanExporter,
-    mirascope_api_key: None,
 ) -> None:
     """Test that async versioned function uses existing function from API."""
 
@@ -1629,7 +1612,6 @@ async def test_async_version_uses_existing_function(
                 "mirascope.trace.arg_values": '{"x":5}',
                 "mirascope.version.hash": "7355652ef8883faeddcc7b95410e50e70559db4c7cee553e9e42047dcf7eda6d",
                 "mirascope.version.signature_hash": "0abeec0082e47278ee7e07ee22dc13c14bd30d43d41e9da4a092a0f8f89dc9cb",
-                "mirascope.version.uuid": "d7264ea1-9e52-4ecf-89bf-85b886a854e9",
                 "mirascope.version.version": "1.0",
                 "mirascope.version.name": "test_async_existing_fn",
                 "mirascope.trace.output": 15,
@@ -1638,184 +1620,6 @@ async def test_async_version_uses_existing_function(
             "events": [],
         }
     )
-
-
-def test_version_continues_when_get_client_fails(
-    span_exporter: InMemorySpanExporter,
-) -> None:
-    """Test that versioned function continues when get_sync_client fails."""
-
-    @version
-    def compute(x: int) -> int:
-        return x * 2
-
-    with patch(
-        "mirascope.ops._internal.versioned_functions.get_sync_client",
-        side_effect=Exception("Connection error"),
-    ):
-        result = compute(5)
-        assert result == 10
-
-        spans = span_exporter.get_finished_spans()
-        assert len(spans) == 1
-
-        span_data = extract_span_data(spans[0])
-        assert span_data == snapshot(
-            {
-                "name": "compute",
-                "attributes": {
-                    "mirascope.type": "trace",
-                    "mirascope.fn.qualname": "compute",
-                    "mirascope.fn.module": "ops._internal.test_versioning",
-                    "mirascope.fn.is_async": False,
-                    "mirascope.trace.arg_types": '{"x":"int"}',
-                    "mirascope.trace.arg_values": '{"x":5}',
-                    "mirascope.version.hash": "adfd8e5dfc41d8e936b1847d42c54894c0e8553bc1462e1b14775852b9adfdc9",
-                    "mirascope.version.signature_hash": "d12d2f1b52019811ac6fc845a48b6e419ee4e9e8b00b20241d5fe4617aeab35c",
-                    "mirascope.version.version": "1.0",
-                    "mirascope.trace.output": 10,
-                },
-                "status": {"status_code": "UNSET", "description": None},
-                "events": [],
-            }
-        )
-
-
-def test_version_continues_when_api_fails(
-    span_exporter: InMemorySpanExporter,
-) -> None:
-    """Test that versioned function continues when API call raises non-NotFoundError."""
-
-    @version
-    def compute(x: int) -> int:
-        return x * 2
-
-    mock_client = patch(
-        "mirascope.ops._internal.versioned_functions.get_sync_client"
-    ).start()
-    mock_client.return_value.functions.findbyhash.side_effect = Exception(
-        "Connection error"
-    )
-
-    try:
-        result = compute(5)
-        assert result == 10
-
-        spans = span_exporter.get_finished_spans()
-        assert len(spans) == 1
-
-        span_data = extract_span_data(spans[0])
-        assert span_data == snapshot(
-            {
-                "name": "compute",
-                "attributes": {
-                    "mirascope.type": "trace",
-                    "mirascope.fn.qualname": "compute",
-                    "mirascope.fn.module": "ops._internal.test_versioning",
-                    "mirascope.fn.is_async": False,
-                    "mirascope.trace.arg_types": '{"x":"int"}',
-                    "mirascope.trace.arg_values": '{"x":5}',
-                    "mirascope.version.hash": "adfd8e5dfc41d8e936b1847d42c54894c0e8553bc1462e1b14775852b9adfdc9",
-                    "mirascope.version.signature_hash": "d12d2f1b52019811ac6fc845a48b6e419ee4e9e8b00b20241d5fe4617aeab35c",
-                    "mirascope.version.version": "1.0",
-                    "mirascope.trace.output": 10,
-                },
-                "status": {"status_code": "UNSET", "description": None},
-                "events": [],
-            }
-        )
-    finally:
-        patch.stopall()
-
-
-@pytest.mark.asyncio
-async def test_async_version_continues_when_get_client_fails(
-    span_exporter: InMemorySpanExporter,
-) -> None:
-    """Test that async versioned function continues when get_async_client fails."""
-
-    @version
-    async def compute(x: int) -> int:
-        return x * 2
-
-    with patch(
-        "mirascope.ops._internal.versioned_functions.get_async_client",
-        side_effect=Exception("Connection error"),
-    ):
-        result = await compute(5)
-        assert result == 10
-
-        spans = span_exporter.get_finished_spans()
-        assert len(spans) == 1
-
-        span_data = extract_span_data(spans[0])
-        assert span_data == snapshot(
-            {
-                "name": "compute",
-                "attributes": {
-                    "mirascope.type": "trace",
-                    "mirascope.fn.qualname": "compute",
-                    "mirascope.fn.module": "ops._internal.test_versioning",
-                    "mirascope.fn.is_async": True,
-                    "mirascope.trace.arg_types": '{"x":"int"}',
-                    "mirascope.trace.arg_values": '{"x":5}',
-                    "mirascope.version.hash": "d891aa4c5746080deef063db11ea258137822c4914f85ba96c8426686af26530",
-                    "mirascope.version.signature_hash": "0ba4723a5c88759f34c34ca38fc3f47709888c1555c96b74556709b11e413ea3",
-                    "mirascope.version.version": "1.0",
-                    "mirascope.trace.output": 10,
-                },
-                "status": {"status_code": "UNSET", "description": None},
-                "events": [],
-            }
-        )
-
-
-@pytest.mark.asyncio
-async def test_async_version_continues_when_api_fails(
-    span_exporter: InMemorySpanExporter,
-) -> None:
-    """Test that async versioned function continues when API call raises non-NotFoundError."""
-
-    @version
-    async def compute(x: int) -> int:
-        return x * 2
-
-    mock_client = patch(
-        "mirascope.ops._internal.versioned_functions.get_async_client"
-    ).start()
-    mock_client.return_value.functions.findbyhash = AsyncMock(
-        side_effect=Exception("Connection error")
-    )
-
-    try:
-        result = await compute(5)
-        assert result == 10
-
-        spans = span_exporter.get_finished_spans()
-        assert len(spans) == 1
-
-        span_data = extract_span_data(spans[0])
-        assert span_data == snapshot(
-            {
-                "name": "compute",
-                "attributes": {
-                    "mirascope.type": "trace",
-                    "mirascope.fn.qualname": "compute",
-                    "mirascope.fn.module": "ops._internal.test_versioning",
-                    "mirascope.fn.is_async": True,
-                    "mirascope.trace.arg_types": '{"x":"int"}',
-                    "mirascope.trace.arg_values": '{"x":5}',
-                    "mirascope.version.hash": "d891aa4c5746080deef063db11ea258137822c4914f85ba96c8426686af26530",
-                    "mirascope.version.signature_hash": "0ba4723a5c88759f34c34ca38fc3f47709888c1555c96b74556709b11e413ea3",
-                    "mirascope.version.version": "1.0",
-                    "mirascope.trace.output": 10,
-                },
-                "status": {"status_code": "UNSET", "description": None},
-                "events": [],
-            }
-        )
-    finally:
-        patch.stopall()
 
 
 @pytest.mark.asyncio

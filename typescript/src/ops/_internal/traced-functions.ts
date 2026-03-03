@@ -5,8 +5,6 @@
 import type { Span } from "@/ops/_internal/spans";
 import type { Jsonable } from "@/ops/_internal/types";
 
-import { getClient } from "@/api/client";
-
 /**
  * Result of a traced function execution.
  *
@@ -25,14 +23,14 @@ export interface Trace<R> {
   /**
    * Annotate this trace with a pass/fail label.
    *
-   * Sends the annotation to Mirascope Cloud for evaluation tracking.
+   * Sets annotation attributes on the span.
    *
    * @param options - Annotation options
    * @param options.label - 'pass' or 'fail' label
    * @param options.reasoning - Optional reasoning for the label
    * @param options.metadata - Optional additional metadata
    */
-  annotate(options: AnnotateOptions): Promise<void>;
+  annotate(options: AnnotateOptions): void;
   /**
    * Add tags to this trace.
    *
@@ -78,7 +76,7 @@ export function createTrace<R>(result: R, span: Span): Trace<R> {
     get traceId() {
       return span.traceId;
     },
-    async annotate({ label, reasoning, metadata }) {
+    annotate({ label, reasoning, metadata }) {
       const spanId = span.spanId;
       const traceId = span.traceId;
 
@@ -86,14 +84,17 @@ export function createTrace<R>(result: R, span: Span): Trace<R> {
         return;
       }
 
-      const client = getClient();
-      await client.annotations.create({
-        otelSpanId: spanId,
-        otelTraceId: traceId,
-        label,
-        reasoning: reasoning ?? null,
-        metadata: metadata ?? null,
-      });
+      span.set({ "mirascope.annotation.label": label });
+
+      if (reasoning) {
+        span.set({ "mirascope.annotation.reasoning": reasoning });
+      }
+
+      if (metadata) {
+        span.set({
+          "mirascope.annotation.metadata": JSON.stringify(metadata),
+        });
+      }
     },
     async tag(..._tags: string[]): Promise<void> {
       throw new Error(

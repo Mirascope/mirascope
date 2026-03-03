@@ -1,0 +1,46 @@
+{
+  "name": "mirascope-cloud",
+  "compatibility_date": "2025-06-17",
+  "compatibility_flags": ["nodejs_compat", "enable_nodejs_http_modules"],
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": "server-entry.ts",
+  "assets": {
+    "directory": "./dist/client",
+    "binding": "ASSETS",
+  },
+  "observability": {
+    "enabled": true,
+  },
+  "env": {
+    "local": {},
+    "staging": {
+      "name": "staging",
+      "assets": {
+        "directory": "./dist/client",
+        "binding": "ASSETS",
+        "run_worker_first": true,
+      },
+      "route": {
+        "pattern": "staging.mirascope.com",
+        "zone_name": "mirascope.com",
+        "custom_domain": true,
+      },
+      "vars": {
+        "ENVIRONMENT": "staging",
+        "SITE_URL": "https://staging.mirascope.com",
+      },
+    },
+    "production": {
+      "name": "production",
+      "route": {
+        "pattern": "mirascope.com",
+        "zone_name": "mirascope.com",
+        "custom_domain": true,
+      },
+      "vars": {
+        "ENVIRONMENT": "production",
+        "SITE_URL": "https://mirascope.com",
+      },
+    },
+  },
+}

@@ -20,7 +20,7 @@ jobs:
     outputs:
       python: ${{ steps.changes.outputs.python }}
       typescript: ${{ steps.changes.outputs.typescript }}
-      cloud: ${{ steps.changes.outputs.cloud }}
+      website: ${{ steps.changes.outputs.website }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
@@ -33,8 +33,8 @@ jobs:
             typescript:
               - 'typescript/**'
               - '.github/workflows/ci.yml'
-            cloud:
-              - 'cloud/**'
+            website:
+              - 'website/**'
               - '.github/workflows/ci.yml'
 
   codespell:
@@ -215,15 +215,15 @@ jobs:
       - name: Test Deno compatibility
         run: deno run --allow-read --allow-env --allow-net --node-modules-dir tests/runtimes/deno-test.ts
 
-  cloud-lint:
-    name: Cloud Lint & Type Check
+  website-lint:
+    name: Website Lint & Type Check
     needs: changes
-    if: needs.changes.outputs.cloud == 'true'
+    if: needs.changes.outputs.website == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
       run:
-        working-directory: cloud
+        working-directory: website
     steps:
       - uses: actions/checkout@v4
 
@@ -236,37 +236,15 @@ jobs:
       - name: Run lint checks
         run: bun run lint
 
-  cloud-tests:
-    name: Cloud Tests
+  website-tests:
+    name: Website Tests
     needs: changes
-    if: needs.changes.outputs.cloud == 'true'
+    if: needs.changes.outputs.website == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
       run:
-        working-directory: cloud
-    services:
-      clickhouse:
-        image: clickhouse/clickhouse-server:24.10
-        ports:
-          - 8123:8123
-          - 9000:9000
-        env:
-          CLICKHOUSE_DB: mirascope_analytics
-          CLICKHOUSE_USER: ci
-          CLICKHOUSE_PASSWORD: ci_pass
-          CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
-        options: >-
-          --health-cmd "wget --spider -q http://localhost:8123/ping"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-    env:
-      CLICKHOUSE_URL: http://localhost:8123
-      CLICKHOUSE_USER: ci
-      CLICKHOUSE_PASSWORD: ci_pass
-      CLICKHOUSE_DATABASE: mirascope_analytics
-      CLICKHOUSE_MIGRATE_NATIVE_PORT: "9000"
+        working-directory: website
     steps:
       - uses: actions/checkout@v4
 
@@ -276,19 +254,8 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Initialize ClickHouse
-        run: bun run clickhouse:migrate
-
       - name: Run `vitest` with code coverage
         run: bun run test:coverage
-
-      - name: Upload test timing data
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cloud-test-results
-          path: cloud/test-results.json
-          retention-days: 30
 
   ci-success:
     name: CI Success
@@ -300,8 +267,8 @@ jobs:
         typescript-lint,
         typescript-tests,
         typescript-runtime-tests,
-        cloud-lint,
-        cloud-tests,
+        website-lint,
+        website-tests,
       ]
     runs-on: ubuntu-latest
     if: always()

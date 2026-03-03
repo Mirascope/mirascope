@@ -9,13 +9,20 @@ The `@ops.trace` decorator wraps functions to create OpenTelemetry spans for eac
 
 ## Basic Setup
 
-First, configure ops to connect to Mirascope Cloud:
+First, configure ops with a `TracerProvider`:
 
 ```python
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
+
 from mirascope import ops
 
-ops.configure()  # Uses MIRASCOPE_API_KEY env var
+provider = TracerProvider()
+provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
+ops.configure(tracer_provider=provider)
 ```
+
+See [Configuration](/docs/ops/configuration) for setting up other backends like Langfuse, Jaeger, or Datadog.
 
 ## Tracing Functions
 
@@ -41,8 +48,8 @@ The `@ops.trace` decorator integrates with Mirascope's LLM abstractions:
 ```python
 from mirascope import llm, ops
 
-ops.configure()
-ops.instrument_llm()  # Enable automatic LLM instrumentation
+ops.configure(tracer_provider=provider)  # See Configuration docs
+ops.instrument_llm()
 
 @ops.trace
 @llm.call("openai/gpt-5-mini")
@@ -59,8 +66,8 @@ print(response.text())
 ```python
 from mirascope import llm, ops
 
-ops.configure()
-ops.instrument_llm()  # Enable automatic LLM instrumentation
+ops.configure(tracer_provider=provider)  # See Configuration docs
+ops.instrument_llm()
 
 @ops.trace
 @llm.prompt
@@ -78,8 +85,8 @@ print(response.text())
 ```python
 from mirascope import llm, ops
 
-ops.configure()
-ops.instrument_llm()  # Enable automatic LLM instrumentation
+ops.configure(tracer_provider=provider)  # See Configuration docs
+ops.instrument_llm()
 
 @ops.trace
 def recommend_book(genre: str):
@@ -104,8 +111,8 @@ For detailed LLM telemetry following [OpenTelemetry Gen AI semantic conventions]
 ```python
 from mirascope import llm, ops
 
-ops.configure()
-ops.instrument_llm()  # Enables Gen AI spans
+ops.configure(tracer_provider=provider)  # See Configuration docs
+ops.instrument_llm()
 
 @ops.trace
 @llm.call("openai/gpt-4o-mini")
@@ -162,7 +169,7 @@ Traces automatically form parent-child relationships:
 ```python
 from mirascope import ops
 
-ops.configure()
+ops.configure(tracer_provider=provider)  # See Configuration docs
 
 @ops.trace
 def outer():
@@ -182,7 +189,7 @@ Errors are automatically captured in spans:
 ```python
 from mirascope import ops
 
-ops.configure()
+ops.configure(tracer_provider=provider)  # See Configuration docs
 
 @ops.trace
 def might_fail():
@@ -202,7 +209,7 @@ The `@ops.trace` decorator works with async functions:
 ```python
 from mirascope import ops
 
-ops.configure()
+ops.configure(tracer_provider=provider)  # See Configuration docs
 
 @ops.trace
 async def fetch_data(url: str) -> dict:

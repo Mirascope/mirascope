@@ -1560,7 +1560,7 @@ wheels = [
 
 [[package]]
 name = "mirascope"
-version = "2.3.0"
+version = "2.4.0"
 source = { editable = "." }
 dependencies = [
     { name = "docstring-parser" },
@@ -1591,13 +1591,9 @@ all = [
     { name = "packaging" },
     { name = "pillow" },
     { name = "proto-plus" },
-    { name = "pydantic-settings" },
 ]
 anthropic = [
     { name = "anthropic" },
-]
-api = [
-    { name = "pydantic-settings" },
 ]
 google = [
     { name = "google-genai" },
@@ -1655,7 +1651,7 @@ requires-dist = [
     { name = "jiter", specifier = ">=0.7.0" },
     { name = "libcst", marker = "extra == 'ops'", specifier = ">=1.8.6" },
     { name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.25.0,<2" },
-    { name = "mirascope", extras = ["anthropic", "api", "google", "openai", "mcp", "ops", "mlx"], marker = "extra == 'all'" },
+    { name = "mirascope", extras = ["anthropic", "google", "openai", "mcp", "ops", "mlx"], marker = "extra == 'all'" },
     { name = "mlx-lm", marker = "extra == 'mlx'", specifier = ">=0.28.4,<1" },
     { name = "openai", marker = "extra == 'openai'", specifier = ">=2.15.0,<3" },
     { name = "opentelemetry-api", marker = "extra == 'ops'", specifier = ">=1.38.0,<2" },
@@ -1673,10 +1669,9 @@ requires-dist = [
     { name = "pillow", marker = "extra == 'google'", specifier = ">=10.4.0,<11" },
     { name = "proto-plus", marker = "extra == 'google'", specifier = ">=1.24.0" },
     { name = "pydantic", specifier = ">=2.0.0" },
-    { name = "pydantic-settings", marker = "extra == 'api'", specifier = ">=2.12.0" },
     { name = "typing-extensions", specifier = ">=4.10.0" },
 ]
-provides-extras = ["anthropic", "api", "google", "openai", "mcp", "ops", "mlx", "all"]
+provides-extras = ["anthropic", "google", "openai", "mcp", "ops", "mlx", "all"]
 
 [package.metadata.requires-dev]
 dev = [

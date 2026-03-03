@@ -4,19 +4,10 @@ import {
   SimpleSpanProcessor,
   InMemorySpanExporter,
 } from "@opentelemetry/sdk-trace-node";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 
 import { Span } from "./spans";
 import { createTrace, type Trace } from "./traced-functions";
-
-// Mock the API client
-vi.mock("@/api/client", () => ({
-  getClient: vi.fn(() => ({
-    annotations: {
-      create: vi.fn().mockResolvedValue({ id: "annotation-123" }),
-    },
-  })),
-}));
 
 describe("traced-functions", () => {
   let provider: NodeTracerProvider;
@@ -33,7 +24,6 @@ describe("traced-functions", () => {
   afterEach(async () => {
     await provider.shutdown();
     trace.disable();
-    vi.clearAllMocks();
   });
 
   describe("createTrace()", () => {
@@ -96,102 +86,81 @@ describe("traced-functions", () => {
   });
 
   describe("Trace.annotate()", () => {
-    it("should call client.annotations.create with correct parameters", async () => {
-      const { getClient } = await import("@/api/client");
-      const mockCreate = vi.fn().mockResolvedValue({ id: "annotation-123" });
-      vi.mocked(getClient).mockReturnValue({
-        annotations: { create: mockCreate },
-      } as unknown as ReturnType<typeof getClient>);
-
+    it("should set annotation attributes on the span", () => {
       const span = new Span("test-span");
       span.start();
 
       const traced = createTrace("result", span);
 
-      await traced.annotate({
+      traced.annotate({
         label: "pass",
         reasoning: "Looks good",
         metadata: { score: 0.95 },
       });
 
-      expect(mockCreate).toHaveBeenCalledWith({
-        otelSpanId: traced.spanId,
-        otelTraceId: traced.traceId,
-        label: "pass",
-        reasoning: "Looks good",
-        metadata: { score: 0.95 },
-      });
-
+      // Verify span attributes were set by checking the exported span
       span.finish();
+
+      const spans = exporter.getFinishedSpans();
+      expect(spans[0]!.attributes["mirascope.annotation.label"]).toBe("pass");
+      expect(spans[0]!.attributes["mirascope.annotation.reasoning"]).toBe(
+        "Looks good",
+      );
+      expect(spans[0]!.attributes["mirascope.annotation.metadata"]).toBe(
+        '{"score":0.95}',
+      );
     });
 
-    it("should handle fail label", async () => {
-      const { getClient } = await import("@/api/client");
-      const mockCreate = vi.fn().mockResolvedValue({ id: "annotation-123" });
-      vi.mocked(getClient).mockReturnValue({
-        annotations: { create: mockCreate },
-      } as unknown as ReturnType<typeof getClient>);
-
+    it("should handle fail label", () => {
       const span = new Span("test-span");
       span.start();
 
       const traced = createTrace("result", span);
 
-      await traced.annotate({
+      traced.annotate({
         label: "fail",
-      });
-
-      expect(mockCreate).toHaveBeenCalledWith({
-        otelSpanId: traced.spanId,
-        otelTraceId: traced.traceId,
-        label: "fail",
-        reasoning: null,
-        metadata: null,
       });
 
       span.finish();
+
+      const spans = exporter.getFinishedSpans();
+      expect(spans[0]!.attributes["mirascope.annotation.label"]).toBe("fail");
+      expect(
+        spans[0]!.attributes["mirascope.annotation.reasoning"],
+      ).toBeUndefined();
+      expect(
+        spans[0]!.attributes["mirascope.annotation.metadata"],
+      ).toBeUndefined();
     });
 
-    it("should not call API when spanId is null", async () => {
-      const { getClient } = await import("@/api/client");
-      const mockCreate = vi.fn().mockResolvedValue({ id: "annotation-123" });
-      vi.mocked(getClient).mockReturnValue({
-        annotations: { create: mockCreate },
-      } as unknown as ReturnType<typeof getClient>);
-
+    it("should not set attributes when spanId is null", () => {
       const span = new Span("test-span");
       // Don't start the span - no spanId
 
       const traced = createTrace("result", span);
 
-      await traced.annotate({ label: "pass" });
-
-      expect(mockCreate).not.toHaveBeenCalled();
+      // Should not throw
+      traced.annotate({ label: "pass" });
     });
 
-    it("should handle undefined reasoning and metadata", async () => {
-      const { getClient } = await import("@/api/client");
-      const mockCreate = vi.fn().mockResolvedValue({ id: "annotation-123" });
-      vi.mocked(getClient).mockReturnValue({
-        annotations: { create: mockCreate },
-      } as unknown as ReturnType<typeof getClient>);
-
+    it("should handle undefined reasoning and metadata", () => {
       const span = new Span("test-span");
       span.start();
 
       const traced = createTrace("result", span);
 
-      await traced.annotate({ label: "pass" });
-
-      expect(mockCreate).toHaveBeenCalledWith({
-        otelSpanId: traced.spanId,
-        otelTraceId: traced.traceId,
-        label: "pass",
-        reasoning: null,
-        metadata: null,
-      });
+      traced.annotate({ label: "pass" });
 
       span.finish();
+
+      const spans = exporter.getFinishedSpans();
+      expect(spans[0]!.attributes["mirascope.annotation.label"]).toBe("pass");
+      expect(
+        spans[0]!.attributes["mirascope.annotation.reasoning"],
+      ).toBeUndefined();
+      expect(
+        spans[0]!.attributes["mirascope.annotation.metadata"],
+      ).toBeUndefined();
     });
   });
 

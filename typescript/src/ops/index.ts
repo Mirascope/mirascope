@@ -88,9 +88,6 @@ export type {
  */
 export { versionCall } from "@/ops/_internal/versioned-calls";
 
-// Exporters
-export { MirascopeOTLPExporter } from "@/ops/_internal/exporters";
-
 // LLM Instrumentation (Mirascope Model class)
 export {
   instrumentLLM,

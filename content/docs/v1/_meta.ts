@@ -1,7 +1,7 @@
 // NOTE: Must use relative path instead of @/app alias because this file
 // is imported by vite.config.ts during Vite's config processing phase, before
 // the alias resolution is set up. Using the alias would cause module resolution errors.
-import type { DocSpec, SectionSpec } from "../../../cloud/app/lib/content/spec";
+import type { DocSpec, SectionSpec } from "../../../website/app/lib/content/spec";
 import api from "./api/_meta";
 import guides from "./guides/_meta";
 

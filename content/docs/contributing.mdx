@@ -7,7 +7,7 @@ description: How to contribute to Mirascope
 
 Thank you for your interest in contributing to Mirascope! We welcome contributions from the community and are excited to have you join us.
 
-Mirascope is a monorepo with two main areas for contribution: the **Python SDK** and the **Cloud Application**. See [STRUCTURE.md](https://github.com/Mirascope/mirascope/blob/main/STRUCTURE.md) for a detailed breakdown of the codebase organization.
+Mirascope is a monorepo with two main areas for contribution: the **Python SDK** and the **Website**. See [STRUCTURE.md](https://github.com/Mirascope/mirascope/blob/main/STRUCTURE.md) for a detailed breakdown of the codebase organization.
 
 ## Development Workflow
 
@@ -45,7 +45,7 @@ git checkout -b feat/my-feature-name
 
 ```bash
 git commit -m "feat(llm): add Document content type tests"
-git commit -m "fix(cloud): resolve session expiration bug"
+git commit -m "fix(website): resolve layout issue"
 git commit -m "docs: update contributing guide"
 ```
 
@@ -128,15 +128,14 @@ uv run pyright .        # Type check
 
 ---
 
-## Cloud Application
+## Website
 
-The cloud application is a full-stack TypeScript application using Effect, React, and Cloudflare Workers.
+The website is a React application using TanStack Router and Cloudflare Workers, serving the documentation, blog, and landing page.
 
 ### Prerequisites
 
 - Node.js 18+
 - [Bun](https://bun.sh/) runtime
-- Docker (for local database)
 
 ### Install Bun
 
@@ -156,16 +155,10 @@ powershell -c "irm bun.sh/install.ps1 | iex"
 ### Setup
 
 ```bash
-cd cloud
+cd website
 
 # Install dependencies
 bun install
-
-# Start local database (requires Docker)
-docker compose up -d
-
-# Run database migrations
-bun run db:migrate
 
 # Start dev server
 bun run dev
@@ -179,8 +172,7 @@ Always use `bun run test` (not `bun test`) to run tests through vitest with prop
 
 ```bash
 bun run test                    # Run all tests
-bun run test db/users.test.ts   # Run specific file
-bun run test:coverage           # With coverage (required: 100%)
+bun run test:coverage           # With coverage
 ```
 
 ### Type Checking and Linting
@@ -190,42 +182,9 @@ bun run typecheck      # TypeScript type checking
 bun run lint:oxlint    # oxlint
 ```
 
-### Key Technologies
-
-- **[Effect](https://effect.website/)**: Functional programming with type-safe error handling
-- **TanStack Router**: File-based routing for React
-- **TanStack Query + Effect Query**: Data fetching with React Query
-- **Drizzle ORM**: Type-safe database access
-
-### Testing Patterns
-
-The cloud application uses Effect-native testing:
-
-```typescript
-import { describe, it, expect, TestProjectFixture } from "@/tests/db";
-
-describe("MyService", () => {
-  it.effect("should create a resource", () =>
-    Effect.gen(function* () {
-      const { org, owner } = yield* TestProjectFixture;
-      const db = yield* Database;
-
-      const result = yield* db.organizations.projects.create({
-        userId: owner.id,
-        organizationId: org.id,
-        data: { name: "New Project" },
-      });
-
-      expect(result.name).toBe("New Project");
-    }),
-  );
-});
-```
-
 ### PR Checklist
 
 - [ ] Tests pass: `bun run test`
-- [ ] 100% coverage for new code
 - [ ] Type check passes: `bun run typecheck`
 - [ ] Linting passes: `bun run lint:oxlint`
 - [ ] Conventional commit messages

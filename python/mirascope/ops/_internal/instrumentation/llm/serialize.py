@@ -191,9 +191,9 @@ def serialize_tools(tools: Sequence[AnyToolSchema | ProviderTool]) -> str | None
 
 
 def serialize_mirascope_cost(
-    input_cost: float,
-    output_cost: float,
-    total_cost: float,
+    input_cost: float | None,
+    output_cost: float | None,
+    total_cost: float | None,
     cache_read_cost: float | None = None,
     cache_write_cost: float | None = None,
 ) -> str:

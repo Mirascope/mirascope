@@ -1,9 +1,15 @@
 from typing import Literal
 
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
+
 from mirascope import llm, ops
 
-# Connect to Mirascope Cloud for tracing and analytics
-ops.configure()
+# Set up OpenTelemetry tracing with a console exporter
+provider = TracerProvider()
+provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
+
+ops.configure(tracer_provider=provider)
 ops.instrument_llm()
 
 

@@ -1,3 +1,10 @@
+import {
+  SimpleSpanProcessor,
+  ConsoleSpanExporter,
+} from "@opentelemetry/sdk-trace-base";
+// Configure tracing with a TracerProvider (see Configuration docs for backend options)
+// Example: use ConsoleSpanExporter for development
+import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
 /**
  * Basic ops tracing example.
  *
@@ -6,10 +13,9 @@
  */
 import { llm, ops } from "mirascope";
 
-// Configure tracing with Mirascope Cloud (or use a custom tracer provider)
-ops.configure({
-  apiKey: process.env.MIRASCOPE_API_KEY,
-});
+const provider = new NodeTracerProvider();
+provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
+ops.configure({ tracerProvider: provider });
 
 // Define a simple call
 const recommendBook = llm.defineCall<{ genre: string }>({

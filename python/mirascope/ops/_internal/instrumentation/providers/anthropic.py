@@ -46,7 +46,7 @@ def instrument_anthropic(
 
     Example:
 
-        Enable instrumentation with Mirascope Cloud:
+        Enable instrumentation:
         ```python
         from mirascope import ops
 

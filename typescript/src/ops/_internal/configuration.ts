@@ -3,15 +3,7 @@
  */
 
 import type { Tracer } from "@opentelemetry/api";
-
-import {
-  NodeTracerProvider,
-  BatchSpanProcessor,
-} from "@opentelemetry/sdk-trace-node";
-
-import { MirascopeClient } from "@/api/client";
-import { updateSettings } from "@/api/settings";
-import { MirascopeOTLPExporter } from "@/ops/_internal/exporters";
+import type { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
 
 const DEFAULT_TRACER_NAME = "mirascope.llm";
 
@@ -24,12 +16,8 @@ let _tracer: Tracer | null = null;
  * Options for configuring the ops module.
  */
 export interface ConfigureOptions {
-  /** Mirascope Cloud API key */
-  apiKey?: string;
-  /** Mirascope Cloud base URL */
-  baseURL?: string;
-  /** Custom tracer provider (overrides automatic Mirascope Cloud setup) */
-  tracerProvider?: NodeTracerProvider;
+  /** Custom tracer provider */
+  tracerProvider: NodeTracerProvider;
   /** Tracer name (default: "mirascope.llm") */
   tracerName?: string;
   /** Tracer version */
@@ -37,42 +25,9 @@ export interface ConfigureOptions {
 }
 
 /**
- * Create a TracerProvider configured for Mirascope Cloud.
- */
-function createMirascopeCloudProvider(
-  apiKey?: string,
-  baseURL?: string,
-): NodeTracerProvider {
-  const client = new MirascopeClient({ apiKey, baseURL });
-  const exporter = new MirascopeOTLPExporter(client);
-  const provider = new NodeTracerProvider({
-    spanProcessors: [new BatchSpanProcessor(exporter)],
-  });
-  return provider;
-}
-
-/**
  * Configure the ops module for tracing.
  *
- * When called without arguments, automatically configures Mirascope Cloud
- * using the MIRASCOPE_API_KEY environment variable.
- *
- * @example
- * Simple Mirascope Cloud configuration (recommended):
- * ```typescript
- * import { ops } from 'mirascope';
- *
- * // Assumes MIRASCOPE_API_KEY is set in environment
- * ops.configure();
- * ```
- *
- * @example
- * With explicit API key:
- * ```typescript
- * import { ops } from 'mirascope';
- *
- * ops.configure({ apiKey: 'your-api-key' });
- * ```
+ * Requires a tracer provider to be passed in.
  *
  * @example
  * With custom tracer provider:
@@ -84,26 +39,14 @@ function createMirascopeCloudProvider(
  * ops.configure({ tracerProvider: provider });
  * ```
  */
-export function configure(options: ConfigureOptions = {}): void {
+export function configure(options: ConfigureOptions): void {
   const {
-    apiKey,
-    baseURL,
     tracerProvider,
     tracerName = DEFAULT_TRACER_NAME,
     tracerVersion,
   } = options;
 
-  // Update API settings if provided
-  if (apiKey !== undefined || baseURL !== undefined) {
-    updateSettings({ apiKey, baseURL });
-  }
-
-  // Use custom provider or create Mirascope Cloud provider
-  if (tracerProvider) {
-    _tracerProvider = tracerProvider;
-  } else {
-    _tracerProvider = createMirascopeCloudProvider(apiKey, baseURL);
-  }
+  _tracerProvider = tracerProvider;
 
   // Register the provider which sets up both tracer provider AND context manager
   // This is critical for async context propagation (span nesting)
@@ -179,8 +122,10 @@ export function tracerContext<T>(tracer: Tracer | null, fn: () => T): T {
  * @example
  * ```typescript
  * import { ops } from 'mirascope';
+ * import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
  *
- * ops.configure();
+ * const provider = new NodeTracerProvider();
+ * ops.configure({ tracerProvider: provider });
  * ops.instrumentLLM();
  *
  * // Run your traced operations

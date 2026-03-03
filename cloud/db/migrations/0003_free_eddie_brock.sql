@@ -1,1 +1,0 @@
-ALTER TABLE "functions" ADD COLUMN "language" text DEFAULT 'python' NOT NULL;

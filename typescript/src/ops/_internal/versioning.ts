@@ -32,7 +32,6 @@ import {
 // Re-export types for convenience
 export type { VersionedFunction } from "@/ops/_internal/versioned-functions";
 export type { VersionedCall, CallLike } from "@/ops/_internal/versioned-calls";
-import { getClient } from "@/api/client";
 import { jsonStringify, type NamedCallable } from "@/ops/_internal/utils";
 
 /**
@@ -66,7 +65,6 @@ function createVersionedSpan<Args extends unknown[]>(
   fn: NamedCallable,
   options: VersionOptions,
   closure: ClosureMetadata,
-  functionUuid: string | undefined,
   args: Args,
 ): Span {
   /* v8 ignore next - name fallback chain branches */
@@ -79,10 +77,6 @@ function createVersionedSpan<Args extends unknown[]>(
     "mirascope.version.hash": closure.hash,
     "mirascope.version.signature_hash": closure.signatureHash,
   });
-
-  if (functionUuid) {
-    span.set({ "mirascope.version.uuid": functionUuid });
-  }
 
   if (options.name) {
     span.set({ "mirascope.version.name": options.name });
@@ -130,8 +124,8 @@ function createVersionedSpan<Args extends unknown[]>(
  * @example Accessing wrapped result
  * ```typescript
  * const result = await computeEmbedding.wrapped("hello");
- * console.log(result.functionUuid); // UUID from Mirascope Cloud
- * await result.annotate({ label: 'pass' });
+ * console.log(result.spanId); // The span ID
+ * result.annotate({ label: 'pass' });
  * ```
  */
 export function version<Args extends unknown[], R>(
@@ -249,7 +243,6 @@ export function version<Args extends unknown[], R, CallT extends CallLike>(
   }
 
   const versionInfo: VersionInfo = {
-    uuid: undefined,
     hash: closure.hash,
     signatureHash: closure.signatureHash,
     /* v8 ignore next - name fallback chain branches */
@@ -260,65 +253,8 @@ export function version<Args extends unknown[], R, CallT extends CallLike>(
     metadata,
   };
 
-  let registeredUuid: string | undefined;
-  let registrationAttempted = false;
-
-  /**
-   * Attempt to register the function with Mirascope Cloud.
-   * Returns the function UUID if successful, undefined otherwise.
-   */
-  async function ensureRegistration(): Promise<string | undefined> {
-    /* v8 ignore start - caching branches for multiple invocations */
-    if (registeredUuid) return registeredUuid;
-    if (registrationAttempted) return undefined;
-    /* v8 ignore end */
-
-    registrationAttempted = true;
-
-    try {
-      const client = getClient();
-
-      // Try to find existing function by hash
-      try {
-        const existing = await client.functions.findbyhash({
-          hash: closure.hash,
-        });
-        // Only reuse if the language matches - otherwise we need a new record
-        if (existing.language === "typescript") {
-          registeredUuid = existing.id;
-          return registeredUuid;
-        }
-        // Language mismatch - fall through to create new function
-        // This can happen when the same code exists in both Python and TypeScript
-      } catch {
-        // Not found, create new
-      }
-
-      // Register new function
-      const response = await client.functions.create({
-        code: closure.code,
-        hash: closure.hash,
-        signature: closure.signature,
-        signatureHash: closure.signatureHash,
-        /* v8 ignore next - name fallback chain branches */
-        name: options.name || fn.name || "anonymous",
-        language: "typescript",
-        tags: tags.length > 0 ? tags : undefined,
-        metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
-      });
-
-      registeredUuid = response.id;
-      return registeredUuid;
-    } catch {
-      // Registration failed - continue without UUID
-      // This is expected when running without API key or offline
-      return undefined;
-    }
-  }
-
   const versioned = async (...args: Args): Promise<R> => {
-    const functionUuid = await ensureRegistration();
-    const span = createVersionedSpan(fn, options, closure, functionUuid, args);
+    const span = createVersionedSpan(fn, options, closure, args);
 
     const otelSpan = span.otelSpan;
     /* v8 ignore start - ternary branch with no-tracer case difficult to test */
@@ -352,8 +288,7 @@ export function version<Args extends unknown[], R, CallT extends CallLike>(
   };
 
   versioned.wrapped = async (...args: Args): Promise<VersionedResult<R>> => {
-    const functionUuid = await ensureRegistration();
-    const span = createVersionedSpan(fn, options, closure, functionUuid, args);
+    const span = createVersionedSpan(fn, options, closure, args);
 
     const otelSpan = span.otelSpan;
     /* v8 ignore start - ternary branch with no-tracer case difficult to test */
@@ -370,7 +305,7 @@ export function version<Args extends unknown[], R, CallT extends CallLike>(
       try {
         const result = await fn(...args);
         recordResult(span, result);
-        return createVersionedResult(result, span, functionUuid);
+        return createVersionedResult(result, span);
       } catch (error) {
         if (error instanceof Error) {
           span.recordException(error);

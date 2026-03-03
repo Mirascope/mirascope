@@ -373,22 +373,18 @@ try {
 
 ## Ops: Instrumentation, Tracing & Versioning
 
-The `ops` module provides observability and versioning for your LLM applications, with automatic integration to Mirascope Cloud or any OpenTelemetry-compatible backend.
+The `ops` module provides observability and versioning for your LLM applications, built on OpenTelemetry so you can use any OTEL-compatible backend.
 
 ### Configuration
 
 ```typescript
 import { ops } from "mirascope";
-
-// Uses MIRASCOPE_API_KEY environment variable
-ops.configure();
-
-// Or explicit API key
-ops.configure({ apiKey: "your-api-key" });
-
-// Or custom OpenTelemetry provider
 import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
-ops.configure({ tracerProvider: new NodeTracerProvider() });
+import { SimpleSpanProcessor, ConsoleSpanExporter } from "@opentelemetry/sdk-trace-base";
+
+const provider = new NodeTracerProvider();
+provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
+ops.configure({ tracerProvider: provider });
 ```
 
 ### Tracing

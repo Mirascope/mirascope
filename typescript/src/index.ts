@@ -6,7 +6,7 @@
  * import { llm, ops } from 'mirascope';
  *
  * // Configure tracing
- * ops.configure({ apiKey: process.env.MIRASCOPE_API_KEY });
+ * ops.configure({ tracerProvider: provider });
  *
  * // Enable LLM instrumentation
  * ops.instrumentLLM();

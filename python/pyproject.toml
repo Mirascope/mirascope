@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "2.3.0"
+version = "2.4.0"
 description = "Every frontier LLM. One unified interface."
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -60,7 +60,6 @@ Changelog = "https://github.com/Mirascope/mirascope/releases"
 # The mapping translates PyPI package names to their Python import names.
 [project.optional-dependencies]
 anthropic = ["anthropic>=0.76.0,<1.0"]
-api = ["pydantic-settings>=2.12.0"]
 google = ["google-genai>=1.58.0,<2", "pillow>=10.4.0,<11", "proto-plus>=1.24.0"]
 openai = ["openai>=2.15.0,<3"]
 mcp = ["mcp>=1.25.0,<2"]
@@ -80,7 +79,7 @@ ops = [
     "opentelemetry-instrumentation-google-genai>=0.3b0,<1",
 ]
 mlx = ["mlx-lm>=0.28.4,<1"]
-all = ["mirascope[anthropic,api,google,openai,mcp,ops,mlx]"]
+all = ["mirascope[anthropic,google,openai,mcp,ops,mlx]"]
 
 [dependency-groups]
 dev = [
@@ -129,7 +128,6 @@ exclude = [
     "build",
     "venv",
     ".coveragerc",
-    "mirascope/api/_generated",
 ]
 line-length = 88
 target-version = "py310"
@@ -139,7 +137,6 @@ target-version = "py310"
 "examples/*.{py}" = ["T201", "ANN"]
 "scripts/*.{py}" = ["T201"]
 "typechecking/*.{py}" = ["T201", "ANN"]
-"mirascope/api/_generated/**" = ["ALL"]
 "tests/ops/_internal/closure_test_functions/**" = ["ANN"]
 "tests/ops/_internal/test_closure.py" = ["ANN"]
 
@@ -178,7 +175,7 @@ combine-as-imports = true
 
 [tool.pyright]
 include = ["mirascope", "tests", "examples"]
-exclude = [".venv", "mirascope/api/_generated", "mirascope/llm/mcp"]
+exclude = [".venv", "mirascope/llm/mcp"]
 venvPath = "."
 venv = ".venv"
 stubPath = "typings"

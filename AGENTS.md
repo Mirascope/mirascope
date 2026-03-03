@@ -11,13 +11,13 @@ When working on this codebase, start by reviewing these documents for high-level
 2. **[STRUCTURE.md](STRUCTURE.md)**: Comprehensive documentation of the codebase structure, including:
 
 - Monorepo organization and benefits
-- Detailed file structure for each package (Python SDK, TypeScript SDK, Cloud, Docs)
+- Detailed file structure for each package (Python SDK, TypeScript SDK, Website, Docs)
 - Tooling choices and rationale
 - Key design decisions and architectural patterns
 
 3. **Directory-specific AGENTS.md files**: Some directories have their own AGENTS.md files:
 
-- `cloud/AGENTS.md`
+- `website/AGENTS.md`
 - `python/AGENTS.md`
 
 Be sure to read these files when they are in scope for project-specific context.
@@ -28,7 +28,7 @@ Mirascope is a monorepo containing:
 
 - **Python SDK** (`python/`): The main Python implementation with LLM abstractions
 - **TypeScript SDK** (`typescript/`): TypeScript implementation (development paused)
-- **Cloud Application** (`cloud/`): Full-stack React application with Cloudflare Workers. If working on `cloud/`, then you MUST read `cloud/AGENTS.md`.
+- **Website** (`website/`): Marketing website with docs, blog, and landing page
 - **Documentation** (`docs/`): Unified cross-language documentation site
 
 ## Key Principles
@@ -43,7 +43,7 @@ When making changes to the codebase:
    - Type safety across languages
    - Test organization
 
-3. **Respect Monorepo Structure**: Each package (`python/`, `typescript/`, `cloud/`, `docs/`) has its own tooling and dependencies. Use the root-level passthrough scripts when possible.
+3. **Respect Monorepo Structure**: Each package (`python/`, `typescript/`, `website/`, `docs/`) has its own tooling and dependencies. Use the root-level passthrough scripts when possible.
 
 4. **Maintain Type Safety**: We place a very high value on type safety. Do not circumvent the type system (e.g. by adding type ignores) except with specific human approval.
 
@@ -73,9 +73,8 @@ gt submit                            # Push all PRs in the stack
 Before submitting changes, ensure:
 
 1. `bun run typecheck` passes
-2. `bun run lint:oxlint` passes  
+2. `bun run lint:oxlint` passes
 3. `bun run test:coverage` shows 100% coverage
-4. OpenAPI spec regenerated if API changed
 
 ## Getting Help
 
@@ -84,4 +83,4 @@ If you need more context about:
 - **Specific modules or features**: Check the relevant package's README or documentation
 - **Architecture decisions**: See `STRUCTURE.md` "Key Design Decisions" section
 - **Development workflow**: See `README.md` for CI, testing, and build instructions
-- **Cloud Development Instructions**: See `cloud/AGENTS.md` if working on the `cloud/` directory.
+- **Website Development**: See `website/AGENTS.md` if working on the `website/` directory.

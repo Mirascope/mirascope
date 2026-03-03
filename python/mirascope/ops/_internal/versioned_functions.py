@@ -7,13 +7,8 @@ from collections.abc import Generator, Mapping
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from functools import cached_property, lru_cache
-from typing import Any, NewType, cast
+from typing import Any, NewType
 
-from ...api._generated.errors.not_found_error import NotFoundError
-from ...api._generated.functions.types.functions_create_request_dependencies_value import (
-    FunctionsCreateRequestDependenciesValue,
-)
-from ...api.client import get_async_client, get_sync_client
 from ..exceptions import ClosureComputationError
 from .closure import Closure
 from .spans import Span
@@ -244,44 +239,8 @@ class VersionedFunction(_BaseVersionedFunction[P, R], BaseSyncTracedFunction[P, 
         raise NotImplementedError("VersionedFunction.get_version not yet implemented")
 
     def _ensure_registration(self) -> str | None:
-        """Returns function UUID after ensuring registration with API."""
-        if self.closure is None:
-            return None
-        try:
-            client = get_sync_client()
-        except Exception as e:
-            logger.warning("Failed to get client for function registration: %s", e)
-            return None
-
-        try:
-            existing = client.functions.findbyhash(self.closure.hash)
-            return existing.id
-        except NotFoundError:
-            dependencies: dict[str, FunctionsCreateRequestDependenciesValue | None] = {
-                name: FunctionsCreateRequestDependenciesValue(
-                    version=dep_info["version"],
-                    extras=dep_info.get("extras"),
-                )
-                for name, dep_info in self.closure.dependencies.items()
-            }
-            response = client.functions.create(
-                code=self.closure.code,
-                hash=self.closure.hash,
-                signature=self.closure.signature,
-                signature_hash=self.closure.signature_hash,
-                name=self.name or self.closure.name,
-                language="python",
-                description=self.closure.docstring,
-                tags=list(self.tags) if self.tags else None,
-                metadata=cast(dict[str, str | None], self.metadata)
-                if self.metadata
-                else None,
-                dependencies=dependencies if dependencies else None,
-            )
-            return response.id
-        except Exception as e:
-            logger.warning("Failed to register function: %s", e)
-            return None
+        """Returns function UUID (currently always None without cloud)."""
+        return None
 
 
 @dataclass(kw_only=True)
@@ -319,41 +278,5 @@ class AsyncVersionedFunction(
         )
 
     async def _ensure_registration(self) -> str | None:
-        """Returns function UUID after ensuring registration with API."""
-        if self.closure is None:
-            return None
-        try:
-            client = get_async_client()
-        except Exception as e:
-            logger.warning("Failed to get client for function registration: %s", e)
-            return None
-
-        try:
-            existing = await client.functions.findbyhash(self.closure.hash)
-            return existing.id
-        except NotFoundError:
-            dependencies: dict[str, FunctionsCreateRequestDependenciesValue | None] = {
-                name: FunctionsCreateRequestDependenciesValue(
-                    version=dep_info["version"],
-                    extras=dep_info.get("extras"),
-                )
-                for name, dep_info in self.closure.dependencies.items()
-            }
-            response = await client.functions.create(
-                code=self.closure.code,
-                hash=self.closure.hash,
-                signature=self.closure.signature,
-                signature_hash=self.closure.signature_hash,
-                name=self.name or self.closure.name,
-                language="python",
-                description=self.closure.docstring,
-                tags=list(self.tags) if self.tags else None,
-                metadata=cast(dict[str, str | None], self.metadata)
-                if self.metadata
-                else None,
-                dependencies=dependencies if dependencies else None,
-            )
-            return response.id
-        except Exception as e:
-            logger.warning("Failed to register function: %s", e)
-            return None
+        """Returns function UUID (currently always None without cloud)."""
+        return None

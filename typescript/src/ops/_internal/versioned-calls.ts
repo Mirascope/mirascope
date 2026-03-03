@@ -10,7 +10,6 @@ import { createHash } from "node:crypto";
 
 import type { VersionOptions } from "@/ops/_internal/types";
 
-import { getClient } from "@/api/client";
 import { Span } from "@/ops/_internal/spans";
 import { createTracedCallSpan } from "@/ops/_internal/traced-calls";
 import { jsonStringify } from "@/ops/_internal/utils";
@@ -131,7 +130,6 @@ function createVersionedCallSpan(
   callName: string,
   options: VersionOptions,
   closure: ClosureMetadata,
-  functionUuid: string | undefined,
   vars: unknown,
 ): Span {
   // Create span with all trace attributes
@@ -141,10 +139,6 @@ function createVersionedCallSpan(
     "mirascope.version.hash": closure.hash,
     "mirascope.version.signature_hash": closure.signatureHash,
   });
-
-  if (functionUuid) {
-    span.set({ "mirascope.version.uuid": functionUuid });
-  }
 
   if (options.name) {
     span.set({ "mirascope.version.name": options.name });
@@ -233,7 +227,6 @@ export function versionCall<CallT extends CallLike>(
   }
 
   const versionInfo: VersionInfo = {
-    uuid: undefined,
     hash: closure.hash,
     signatureHash: closure.signatureHash,
     name: callName,
@@ -243,61 +236,9 @@ export function versionCall<CallT extends CallLike>(
     metadata,
   };
 
-  let registeredUuid: string | undefined;
-  let registrationAttempted = false;
-
-  /**
-   * Attempt to register the function with Mirascope Cloud.
-   */
-  async function ensureRegistration(): Promise<string | undefined> {
-    /* v8 ignore start - caching branches for multiple invocations */
-    if (registeredUuid) return registeredUuid;
-    if (registrationAttempted) return undefined;
-    /* v8 ignore end */
-
-    registrationAttempted = true;
-
-    try {
-      const client = getClient();
-
-      try {
-        const existing = await client.functions.findbyhash({
-          hash: closure.hash,
-        });
-        registeredUuid = existing.id;
-        return registeredUuid;
-      } catch {
-        // Not found, create new
-      }
-
-      const response = await client.functions.create({
-        code: closure.code,
-        hash: closure.hash,
-        signature: closure.signature,
-        signatureHash: closure.signatureHash,
-        name: callName,
-        language: "typescript",
-        tags: tags.length > 0 ? tags : undefined,
-        metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
-      });
-
-      registeredUuid = response.id;
-      return registeredUuid;
-    } catch {
-      return undefined;
-    }
-  }
-
   const versioned = async (...args: unknown[]): Promise<unknown> => {
     const vars = args[0];
-    const functionUuid = await ensureRegistration();
-    const span = createVersionedCallSpan(
-      callName,
-      options,
-      closure,
-      functionUuid,
-      vars,
-    );
+    const span = createVersionedCallSpan(callName, options, closure, vars);
 
     const otelSpan = span.otelSpan;
     /* v8 ignore start */
@@ -333,14 +274,7 @@ export function versionCall<CallT extends CallLike>(
     ...args: unknown[]
   ): Promise<VersionedResult<unknown>> => {
     const vars = args[0];
-    const functionUuid = await ensureRegistration();
-    const span = createVersionedCallSpan(
-      callName,
-      options,
-      closure,
-      functionUuid,
-      vars,
-    );
+    const span = createVersionedCallSpan(callName, options, closure, vars);
 
     const otelSpan = span.otelSpan;
     /* v8 ignore start */
@@ -356,7 +290,7 @@ export function versionCall<CallT extends CallLike>(
     async function execute(): Promise<VersionedResult<unknown>> {
       try {
         const response = await call.call(...args);
-        return createVersionedResult(response, span, functionUuid);
+        return createVersionedResult(response, span);
       } catch (error) {
         if (error instanceof Error) {
           span.recordException(error);
@@ -374,14 +308,7 @@ export function versionCall<CallT extends CallLike>(
 
   versioned.stream = async (...args: unknown[]): Promise<unknown> => {
     const vars = args[0];
-    const functionUuid = await ensureRegistration();
-    const span = createVersionedCallSpan(
-      callName,
-      options,
-      closure,
-      functionUuid,
-      vars,
-    );
+    const span = createVersionedCallSpan(callName, options, closure, vars);
 
     const otelSpan = span.otelSpan;
     /* v8 ignore start */
@@ -417,14 +344,7 @@ export function versionCall<CallT extends CallLike>(
     ...args: unknown[]
   ): Promise<VersionedResult<unknown>> => {
     const vars = args[0];
-    const functionUuid = await ensureRegistration();
-    const span = createVersionedCallSpan(
-      callName,
-      options,
-      closure,
-      functionUuid,
-      vars,
-    );
+    const span = createVersionedCallSpan(callName, options, closure, vars);
 
     const otelSpan = span.otelSpan;
     /* v8 ignore start */
@@ -440,7 +360,7 @@ export function versionCall<CallT extends CallLike>(
     async function execute(): Promise<VersionedResult<unknown>> {
       try {
         const response = await call.stream(...args);
-        return createVersionedResult(response, span, functionUuid);
+        return createVersionedResult(response, span);
       } catch (error) {
         if (error instanceof Error) {
           span.recordException(error);

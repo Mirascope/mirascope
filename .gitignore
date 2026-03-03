@@ -179,6 +179,6 @@ database.db
 node_modules
 
 # Generated responsive images
-cloud/public/assets/**/*-medium.webp
-cloud/public/assets/**/*-small.webp
+website/public/assets/**/*-medium.webp
+website/public/assets/**/*-small.webp
 Williams-Handwriting-Original-29648.ttf

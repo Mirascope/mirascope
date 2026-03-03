@@ -4,19 +4,10 @@ import {
   SimpleSpanProcessor,
   InMemorySpanExporter,
 } from "@opentelemetry/sdk-trace-node";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 
 import { Span } from "./spans";
 import { createVersionedResult } from "./versioned-functions";
-
-// Mock the API client
-vi.mock("@/api/client", () => ({
-  getClient: vi.fn(() => ({
-    annotations: {
-      create: vi.fn().mockResolvedValue({ id: "annotation-123" }),
-    },
-  })),
-}));
 
 describe("versioned-functions", () => {
   let provider: NodeTracerProvider;
@@ -33,7 +24,6 @@ describe("versioned-functions", () => {
   afterEach(async () => {
     await provider.shutdown();
     otelTrace.disable();
-    vi.clearAllMocks();
   });
 
   describe("createVersionedResult", () => {
@@ -62,89 +52,50 @@ describe("versioned-functions", () => {
       span.finish();
     });
 
-    it("should include functionUuid when provided", () => {
-      const span = new Span("test").start();
-      const result = createVersionedResult("test-result", span, "uuid-123");
-
-      expect(result.functionUuid).toBe("uuid-123");
-      span.finish();
-    });
-
-    it("should have undefined functionUuid when not provided", () => {
-      const span = new Span("test").start();
-      const result = createVersionedResult("test-result", span);
-
-      expect(result.functionUuid).toBeUndefined();
-      span.finish();
-    });
-
     describe("annotate", () => {
-      it("should call API client with correct parameters", async () => {
-        const { getClient } = await import("@/api/client");
-        const mockCreate = vi.fn().mockResolvedValue({ id: "annotation-123" });
-        vi.mocked(getClient).mockReturnValue({
-          annotations: { create: mockCreate },
-        } as unknown as ReturnType<typeof getClient>);
-
+      it("should set annotation attributes on the span", () => {
         const span = new Span("test").start();
         const result = createVersionedResult("test-result", span);
 
-        await result.annotate({ label: "pass", reasoning: "Good result" });
-
-        expect(mockCreate).toHaveBeenCalledWith({
-          otelSpanId: span.spanId,
-          otelTraceId: span.traceId,
-          label: "pass",
-          reasoning: "Good result",
-          metadata: null,
-        });
+        result.annotate({ label: "pass", reasoning: "Good result" });
 
         span.finish();
+
+        const spans = exporter.getFinishedSpans();
+        expect(spans[0]!.attributes["mirascope.annotation.label"]).toBe("pass");
+        expect(spans[0]!.attributes["mirascope.annotation.reasoning"]).toBe(
+          "Good result",
+        );
       });
 
-      it("should include metadata when provided", async () => {
-        const { getClient } = await import("@/api/client");
-        const mockCreate = vi.fn().mockResolvedValue({ id: "annotation-123" });
-        vi.mocked(getClient).mockReturnValue({
-          annotations: { create: mockCreate },
-        } as unknown as ReturnType<typeof getClient>);
-
+      it("should include metadata when provided", () => {
         const span = new Span("test").start();
         const result = createVersionedResult("test-result", span);
 
-        await result.annotate({
+        result.annotate({
           label: "fail",
           metadata: { key: "value" },
         });
 
-        expect(mockCreate).toHaveBeenCalledWith({
-          otelSpanId: span.spanId,
-          otelTraceId: span.traceId,
-          label: "fail",
-          reasoning: null,
-          metadata: { key: "value" },
-        });
-
         span.finish();
+
+        const spans = exporter.getFinishedSpans();
+        expect(spans[0]!.attributes["mirascope.annotation.label"]).toBe("fail");
+        expect(spans[0]!.attributes["mirascope.annotation.metadata"]).toBe(
+          '{"key":"value"}',
+        );
       });
 
-      it("should not call API when spanId is null", async () => {
-        const { getClient } = await import("@/api/client");
-        const mockCreate = vi.fn().mockResolvedValue({ id: "annotation-123" });
-        vi.mocked(getClient).mockReturnValue({
-          annotations: { create: mockCreate },
-        } as unknown as ReturnType<typeof getClient>);
-
+      it("should not set attributes when spanId is null", () => {
         // Shutdown tracer to get null spanId
-        await provider.shutdown();
+        provider.shutdown();
         otelTrace.disable();
 
         const span = new Span("test").start();
         const result = createVersionedResult("test-result", span);
 
-        await result.annotate({ label: "pass" });
-
-        expect(mockCreate).not.toHaveBeenCalled();
+        // Should not throw
+        result.annotate({ label: "pass" });
 
         span.finish();
       });

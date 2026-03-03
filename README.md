@@ -100,14 +100,14 @@ This project is structured as a monorepo, that conceptually divides into four pa
 
 - `python/` contains the Python implementation, and examples (in `python/examples`)
 - `typescript/` contains the Typescript implementation, and examples (in `typescript/examples`)
-- `cloud/` contains the full-stack cloud application (React frontend + Cloudflare Workers backend)
+- `website/` contains the marketing website (docs, blog, landing page)
 - `docs/` contains the unified cross-language documentation (in `docs/content`), as well as configuration needed to build the docs
 
 For detailed information about the codebase structure, architecture, and design decisions, see [`STRUCTURE.md`](STRUCTURE.md).
 
 ## Developing the site
 
-Use `bun run cloud:dev` to launch the dev server.
+Use `bun run website:dev` to launch the dev server.
 
 Note that [Bun](http://bun.sh/) must be installed.
 
@@ -127,9 +127,4 @@ Mirascope uses [Semantic Versioning](https://semver.org/).
 
 ## License
 
-This repository uses a multi-license structure:
-
-- **Default**: All code is licensed under the [MIT License](https://github.com/Mirascope/mirascope/tree/main/LICENSE) unless otherwise specified.
-- **Cloud Directory**: The `cloud/` directory is licensed under a proprietary license. See [`cloud/LICENSE`](cloud/LICENSE) for details.
-
-Subdirectories may contain their own LICENSE files that take precedence for files within those directories.
+This project is licensed under the [MIT License](https://github.com/Mirascope/mirascope/tree/main/LICENSE).

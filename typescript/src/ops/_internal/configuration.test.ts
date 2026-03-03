@@ -23,11 +23,6 @@ describe("configuration", () => {
   });
 
   describe("configure", () => {
-    it("should create tracer when called with defaults", () => {
-      configure();
-      expect(getTracer()).not.toBeNull();
-    });
-
     it("should use custom tracer provider when provided", () => {
       const customProvider = new NodeTracerProvider();
       configure({ tracerProvider: customProvider });
@@ -35,32 +30,21 @@ describe("configuration", () => {
     });
 
     it("should use custom tracer name", () => {
-      configure({ tracerName: "custom.tracer" });
+      const customProvider = new NodeTracerProvider();
+      configure({
+        tracerProvider: customProvider,
+        tracerName: "custom.tracer",
+      });
       const tracer = getTracer();
       expect(tracer).not.toBeNull();
     });
 
     it("should use custom tracer version", () => {
-      configure({ tracerName: "test", tracerVersion: "1.0.0" });
-      expect(getTracer()).not.toBeNull();
-    });
-
-    it("should accept apiKey option", () => {
-      configure({ apiKey: "test-key" });
-      expect(getTracer()).not.toBeNull();
-    });
-
-    it("should accept baseURL option", () => {
-      configure({ baseURL: "https://custom.example.com" });
-      expect(getTracer()).not.toBeNull();
-    });
-
-    it("should accept multiple options", () => {
+      const customProvider = new NodeTracerProvider();
       configure({
-        apiKey: "test-key",
-        baseURL: "https://custom.example.com",
-        tracerName: "my.tracer",
-        tracerVersion: "2.0.0",
+        tracerProvider: customProvider,
+        tracerName: "test",
+        tracerVersion: "1.0.0",
       });
       expect(getTracer()).not.toBeNull();
     });
@@ -72,7 +56,8 @@ describe("configuration", () => {
     });
 
     it("should return tracer after configure", () => {
-      configure();
+      const customProvider = new NodeTracerProvider();
+      configure({ tracerProvider: customProvider });
       expect(getTracer()).not.toBeNull();
     });
   });
@@ -85,7 +70,8 @@ describe("configuration", () => {
     });
 
     it("should allow clearing tracer with null", () => {
-      configure();
+      const customProvider = new NodeTracerProvider();
+      configure({ tracerProvider: customProvider });
       expect(getTracer()).not.toBeNull();
 
       setTracer(null);
@@ -137,7 +123,8 @@ describe("configuration", () => {
     });
 
     it("should work with null tracer", () => {
-      configure();
+      const customProvider = new NodeTracerProvider();
+      configure({ tracerProvider: customProvider });
       const originalTracer = getTracer();
 
       tracerContext(null, () => {
@@ -173,7 +160,8 @@ describe("configuration", () => {
     });
 
     it("should delegate to provider forceFlush", async () => {
-      configure();
+      const customProvider = new NodeTracerProvider();
+      configure({ tracerProvider: customProvider });
       await expect(forceFlush()).resolves.toBeUndefined();
     });
   });
@@ -184,14 +172,16 @@ describe("configuration", () => {
     });
 
     it("should delegate to provider shutdown", async () => {
-      configure();
+      const customProvider = new NodeTracerProvider();
+      configure({ tracerProvider: customProvider });
       await expect(shutdown()).resolves.toBeUndefined();
     });
   });
 
   describe("resetConfiguration", () => {
     it("should reset tracer to null", () => {
-      configure();
+      const customProvider = new NodeTracerProvider();
+      configure({ tracerProvider: customProvider });
       expect(getTracer()).not.toBeNull();
 
       resetConfiguration();
@@ -199,9 +189,11 @@ describe("configuration", () => {
     });
 
     it("should allow reconfiguring after reset", () => {
-      configure({ tracerName: "first" });
+      const customProvider1 = new NodeTracerProvider();
+      configure({ tracerProvider: customProvider1, tracerName: "first" });
       resetConfiguration();
-      configure({ tracerName: "second" });
+      const customProvider2 = new NodeTracerProvider();
+      configure({ tracerProvider: customProvider2, tracerName: "second" });
 
       expect(getTracer()).not.toBeNull();
     });

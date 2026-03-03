@@ -1,3 +1,9 @@
+import {
+  SimpleSpanProcessor,
+  ConsoleSpanExporter,
+} from "@opentelemetry/sdk-trace-base";
+// Configure tracing with a TracerProvider
+import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
 /**
  * Function versioning example.
  *
@@ -7,10 +13,9 @@
  */
 import { ops } from "mirascope";
 
-// Configure with Mirascope Cloud for function registration
-ops.configure({
-  apiKey: process.env.MIRASCOPE_API_KEY,
-});
+const provider = new NodeTracerProvider();
+provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
+ops.configure({ tracerProvider: provider });
 
 // Version a function - the compile-time transform captures the source
 // and computes a hash for tracking changes

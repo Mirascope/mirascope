@@ -2,7 +2,7 @@ import type {
   FullDocsSpec,
   SectionSpec,
   VersionSpec,
-} from "../../cloud/app/lib/content/spec";
+} from "../../website/app/lib/content/spec";
 import api from "./api/_meta";
 import guides from "./guides/_meta";
 import learn from "./learn/_meta";

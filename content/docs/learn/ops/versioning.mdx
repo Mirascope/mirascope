@@ -85,13 +85,13 @@ Version numbers are auto-computed in `X.Y` format:
 - Same signature but different implementation → increment `Y` (e.g., `1.0` → `1.1`)
 - Different signature → increment `X` (e.g., `1.1` → `2.0`)
 
-### Registration
+### Version Tracking
 
-When connected to Mirascope Cloud or a compatible API, versions are automatically registered on first call. This enables:
+Version information is recorded as span attributes, enabling:
 
-- Central tracking of all function versions
+- Central tracking of all function versions via your observability backend
 - Historical analysis of version performance
-- Retrieval of specific versions
+- Comparison across different versions
 
 ## Combining with @ops.trace
 

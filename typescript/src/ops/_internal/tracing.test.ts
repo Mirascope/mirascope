@@ -8,15 +8,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import { trace, type TracedFunction } from "./tracing";
 
-// Mock the API client
-vi.mock("@/api/client", () => ({
-  getClient: vi.fn(() => ({
-    annotations: {
-      create: vi.fn().mockResolvedValue({ id: "annotation-123" }),
-    },
-  })),
-}));
-
 describe("tracing", () => {
   let provider: NodeTracerProvider;
   let exporter: InMemorySpanExporter;

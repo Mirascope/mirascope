@@ -15,7 +15,6 @@ from typing import Any
 # BEGIN GENERATED - DO NOT EDIT MANUALLY
 EXTRA_IMPORTS: dict[str, list[str]] = {
     "anthropic": ["anthropic"],
-    "api": ["pydantic_settings"],
     "google": [
         "google.genai",
         "PIL",
