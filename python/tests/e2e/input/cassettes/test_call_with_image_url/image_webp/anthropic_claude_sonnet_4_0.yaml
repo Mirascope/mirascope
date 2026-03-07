@@ -1,0 +1,113 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":[{"type":"text","text":"Describe
+      the following image in one sentence","cache_control":null},{"type":"image","source":{"type":"url","url":"https://www.gstatic.com/webp/gallery/1.webp"},"cache_control":null}]}],"model":"claude-sonnet-4-0"}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '294'
+      Content-Type:
+      - application/json
+      Host:
+      - api.anthropic.com
+      User-Agent:
+      - Anthropic/Python 0.76.0
+      X-Api-Key:
+      - <filtered>
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.76.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.12.12
+      anthropic-version:
+      - '2023-06-01'
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3VSXa/TMAz9K1aeO7RNq4C+X/GCkLi6AiGEIjfx2tylTknclWraf8cdTHyJpyY+
+        xzk+p76YIXmKpjEu4uRpUxIzyeaw2W/39bbeHUxlgld8KJ3d7t4c6ofhaf/4PHQfH/Dtp0d8Lx9e
+        KkeWkVYWlYIdaSGnuBawlFAEWbTkEgvpqfl8ufOFvq3I7dOYpz4UaDOh9IKnwB0g5YARzoFmcDjK
+        lKkAgs84oAQH71KeqQvIcHxO2UNE9kWJBHOQHooQjRWcKXsdAYY0sWBgKDGN+pCn4oj9KhRYkj48
+        hx/XHLQHzhgjLdBSTHMFRxUlD+0CObnTAmkSl9NYtBekJzimTF1WCQ86BbTqQukKtjl0vQCjjq9m
+        4u2mNFVAGDFLXMDFNPkFyml5Ya5fKlMkjVaT0P+hweiQVpvZ/AQKfZ2InSbIU4yVmW6hNxcTeJzE
+        SjoRF9PsX7/S1NH1ZN2aakhs/2Rs77jC/n/YvXcVoLGngdSGrYd/+b/QXf83eq2MJvZ7qdbpCuVz
+        cGQlUFaj66p4zH7dOj5SXk3ajpJCnMTiGUPEVjfrev0OUeXGi7sCAAA=
+    headers:
+      CF-RAY:
+      - 9cbb9d766825b091-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 10 Feb 2026 12:30:02 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-02-10T12:29:59Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-02-10T12:30:01Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-02-10T12:29:58Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-02-10T12:29:59Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CXzPbnNbZvdweRRftzkKV
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '3974'
+    status:
+      code: 200
+      message: OK
+version: 1

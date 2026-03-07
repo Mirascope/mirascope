@@ -37,19 +37,31 @@ def _extract_scenario_from_test_name(test_name: str) -> str:
     return name
 
 
+def _get_extra_segments(request: FixtureRequest) -> list[str]:
+    """Get additional path segments from optional parametrized fixtures.
+
+    Returns path segments for formatting_mode and mime_type if present.
+    """
+    segments: list[str] = []
+    for name in ("formatting_mode", "mime_type"):
+        if name in request.fixturenames:
+            value = request.getfixturevalue(name)
+            if value is not None:
+                segment = value.replace("/", "_") if "/" in value else value
+                segments.append(segment)
+    return segments
+
+
 @pytest.fixture
 def vcr_cassette_name(
     request: FixtureRequest,
     model_id: llm.ModelId,
-    formatting_mode: llm.FormattingMode | None,
 ) -> str:
-    """Generate VCR cassette name based on test name, provider, model, and formatting_mode.
+    """Generate VCR cassette name based on test name, provider, model, and extra params.
 
     Input tests use a single cassette per test (no call type variants).
 
-    Structure:
-    - Without formatting_mode: {scenario}/{provider}_{model_id}
-    - With formatting_mode: {scenario}/{formatting_mode}/{provider}_{model_id}
+    Structure: {scenario}[/{extra_segment}...]/{model_id}
     """
     test_name = request.node.name
     scenario = _extract_scenario_from_test_name(test_name)
@@ -58,25 +70,20 @@ def vcr_cassette_name(
         model_id.replace("-", "_").replace(".", "_").replace(":", "_").replace("/", "_")
     )
 
-    if formatting_mode is None:
-        return f"{scenario}/{model_id_str}"
-    else:
-        return f"{scenario}/{formatting_mode}/{model_id_str}"
+    segments = [scenario, *_get_extra_segments(request), model_id_str]
+    return "/".join(segments)
 
 
 @pytest.fixture
 def snapshot(
     request: FixtureRequest,
     model_id: llm.ModelId,
-    formatting_mode: llm.FormattingMode | None,
 ) -> Snapshot:
     """Get snapshot for current test configuration.
 
     Creates snapshot files with a single 'test_snapshot' variable.
 
-    Structure:
-    - Without formatting_mode: snapshots/{scenario}/{model_id}_snapshots.py
-    - With formatting_mode: snapshots/{scenario}/{formatting_mode}/{model_id}_snapshots.py
+    Structure: snapshots/{scenario}[/{extra_segment}...]/{model_id}_snapshots.py
     """
     test_name = request.node.name
     scenario = _extract_scenario_from_test_name(test_name)
@@ -85,19 +92,23 @@ def snapshot(
     )
     file_name = f"{model_id_str}_snapshots"
 
-    if formatting_mode is None:
-        module_path = f"e2e.input.snapshots.{scenario}.{file_name}"
-        snapshot_file = (
-            Path(__file__).parent / "snapshots" / scenario / f"{file_name}.py"
-        )
-    else:
-        module_path = f"e2e.input.snapshots.{scenario}.{formatting_mode}.{file_name}"
+    extra_segments = _get_extra_segments(request)
+
+    if extra_segments:
+        extra_path = "/".join(extra_segments)
+        extra_dotpath = ".".join(extra_segments)
+        module_path = f"e2e.input.snapshots.{scenario}.{extra_dotpath}.{file_name}"
         snapshot_file = (
             Path(__file__).parent
             / "snapshots"
             / scenario
-            / formatting_mode
+            / extra_path
             / f"{file_name}.py"
+        )
+    else:
+        module_path = f"e2e.input.snapshots.{scenario}.{file_name}"
+        snapshot_file = (
+            Path(__file__).parent / "snapshots" / scenario / f"{file_name}.py"
         )
 
     if not snapshot_file.exists():
