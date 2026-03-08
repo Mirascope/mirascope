@@ -1,5 +1,5 @@
 {
-  "name": "mirascope-cloud",
+  "name": "mirascope-website",
   "compatibility_date": "2025-06-17",
   "compatibility_flags": ["nodejs_compat", "enable_nodejs_http_modules"],
   "$schema": "node_modules/wrangler/config-schema.json",
