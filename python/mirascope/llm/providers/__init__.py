@@ -9,6 +9,7 @@ from ..._stubs import stub_module_if_missing
 stub_module_if_missing("mirascope.llm.providers.anthropic", "anthropic")
 stub_module_if_missing("mirascope.llm.providers.google", "google")
 stub_module_if_missing("mirascope.llm.providers.mlx", "mlx")
+stub_module_if_missing("mirascope.llm.providers.minimax", "openai")
 stub_module_if_missing("mirascope.llm.providers.openai", "openai")
 stub_module_if_missing("mirascope.llm.providers.openrouter", "openai")
 stub_module_if_missing("mirascope.llm.providers.together", "openai")
@@ -22,6 +23,7 @@ from .anthropic import (
 )
 from .base import BaseProvider, Provider
 from .google import GoogleModelId, GoogleProvider
+from .minimax import MiniMaxProvider
 from .mirascope import MirascopeProvider
 from .mlx import MLXModelId, MLXProvider
 from .model_id import ModelId
@@ -50,6 +52,7 @@ __all__ = [
     "GoogleProvider",
     "MLXModelId",
     "MLXProvider",
+    "MiniMaxProvider",
     "MirascopeProvider",
     "ModelId",
     "OllamaProvider",
