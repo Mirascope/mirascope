@@ -1661,3 +1661,47 @@ async def test_async_version_continues_when_closure_is_none(
                 "events": [],
             }
         )
+
+def test_versioned_call_exposes_qualname_for_trace() -> None:
+    """VersionedCall must expose __qualname__ and __name__ so @ops.trace can introspect it.
+
+    Regression test for https://github.com/Mirascope/mirascope/issues/2784:
+    combining @ops.trace + @ops.version + @llm.call raised
+        AttributeError: 'VersionedCall' object has no attribute '__qualname__'
+    because VersionedCall.__post_init__ did not call copy_function_metadata.
+    """
+
+    @ops.version
+    @llm.call("openai/gpt-4o-mini")
+    def my_function(text: str) -> str:
+        return f"Echo: {text}"
+
+    # The VersionedCall must carry __qualname__ and __name__ from the original fn.
+    assert hasattr(my_function, "__qualname__"), (
+        "VersionedCall must expose __qualname__ for @ops.trace to work"
+    )
+    assert hasattr(my_function, "__name__"), (
+        "VersionedCall must expose __name__ for @ops.trace to work"
+    )
+    assert "my_function" in my_function.__qualname__
+
+    # Applying @ops.trace must not raise AttributeError.
+    traced = ops.trace(tags=["test"])(my_function)
+    assert traced is not None
+
+
+@pytest.mark.asyncio
+async def test_versioned_async_call_exposes_qualname_for_trace() -> None:
+    """AsyncVersionedCall must also expose __qualname__ for @ops.trace compatibility."""
+
+    @ops.version
+    @llm.call("openai/gpt-4o-mini")
+    async def my_async_function(text: str) -> str:
+        return f"Echo: {text}"
+
+    assert hasattr(my_async_function, "__qualname__")
+    assert hasattr(my_async_function, "__name__")
+    assert "my_async_function" in my_async_function.__qualname__
+
+    traced = ops.trace(tags=["test"])(my_async_function)
+    assert traced is not None
