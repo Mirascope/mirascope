@@ -6,6 +6,7 @@ KnownProviderId: TypeAlias = Literal[
     "anthropic",  # Anthropic provider via AnthropicProvider
     "anthropic-beta",  # Anthropic beta provider via AnthropicBetaProvider
     "google",  # Google provider via GoogleProvider
+    "minimax",  # MiniMax provider via MiniMaxProvider
     "mirascope",  # Mirascope Router provider via MirascopeProvider
     "mlx",  # Local inference powered by `mlx-lm`, via MLXProvider
     "ollama",  # Ollama provider via OllamaProvider
@@ -18,6 +19,7 @@ KNOWN_PROVIDER_IDS = get_args(KnownProviderId)
 ProviderId = KnownProviderId | str
 
 OpenAICompletionsCompatibleProviderId: TypeAlias = Literal[
+    "minimax",  # MiniMax (OpenAI-compatible)
     "ollama",  # Ollama (OpenAI-compatible)
     "openai",  # OpenAI via OpenAIProvider (routes to completions)
     "openai:completions",  # OpenAI Completions API directly

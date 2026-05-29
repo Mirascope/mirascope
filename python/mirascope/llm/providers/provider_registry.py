@@ -10,6 +10,7 @@ from ..exceptions import MissingAPIKeyError, NoRegisteredProviderError
 from .anthropic import AnthropicProvider
 from .base import Provider
 from .google import GoogleProvider
+from .minimax import MiniMaxProvider
 from .mirascope import MirascopeProvider
 from .mlx import MLXProvider
 from .ollama import OllamaProvider
@@ -72,6 +73,9 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, Sequence[ProviderDefault]] = {
     "mlx-community/": [
         ProviderDefault("mlx", None),  # No API key required
     ],
+    "minimax/": [
+        ProviderDefault("minimax", "MINIMAX_API_KEY"),
+    ],
     "openrouter/": [
         ProviderDefault("openrouter", "OPENROUTER_API_KEY"),
     ],
@@ -114,6 +118,8 @@ def provider_singleton(
             return AnthropicProvider(api_key=api_key, base_url=base_url)
         case "google":
             return GoogleProvider(api_key=api_key, base_url=base_url)
+        case "minimax":
+            return MiniMaxProvider(api_key=api_key, base_url=base_url)
         case "mirascope":
             return MirascopeProvider(api_key=api_key, base_url=base_url)
         case "mlx":  # pragma: no cover (MLX is only available on macOS)
