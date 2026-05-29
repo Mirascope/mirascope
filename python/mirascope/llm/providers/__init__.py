@@ -40,7 +40,7 @@ from .provider_registry import (
     reset_provider_registry,
 )
 from .together import TogetherProvider
-from .xai import XAIProvider
+from .xai import XAIModelId, XAIProvider
 
 __all__ = [
     "KNOWN_PROVIDER_IDS",
@@ -61,6 +61,7 @@ __all__ = [
     "Provider",
     "ProviderId",
     "TogetherProvider",
+    "XAIModelId",
     "XAIProvider",
     "get_provider_for_model",
     "register_provider",

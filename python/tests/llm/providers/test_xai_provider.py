@@ -4,7 +4,8 @@ import os
 
 import pytest
 
-from mirascope.llm.providers.xai.provider import XAIProvider
+from mirascope.llm.providers.xai import XAIModelId, XAIProvider
+from mirascope.llm.providers.xai.model_id import XAI_KNOWN_MODELS
 
 
 def test_xai_provider_initialization_with_api_key() -> None:
@@ -56,3 +57,12 @@ def test_xai_provider_custom_base_url() -> None:
     provider = XAIProvider(api_key="test-key", base_url="https://custom.x.ai/v2")
     assert str(provider.client.base_url) == "https://custom.x.ai/v2/"
     assert str(provider.async_client.base_url) == "https://custom.x.ai/v2/"
+
+
+def test_xai_known_models_surface() -> None:
+    """`XAIModelId` should accept known Grok models and the well-known set
+    should be non-empty and properly `xai/`-scoped, so editors can autocomplete."""
+    sample: XAIModelId = "xai/grok-4-latest"
+    assert sample in XAI_KNOWN_MODELS
+    assert len(XAI_KNOWN_MODELS) > 0
+    assert all(m.startswith("xai/") for m in XAI_KNOWN_MODELS)
