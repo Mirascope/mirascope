@@ -23,7 +23,7 @@ from .anthropic import (
 )
 from .base import BaseProvider, Provider
 from .google import GoogleModelId, GoogleProvider
-from .minimax import MiniMaxProvider
+from .minimax import MiniMaxModelId, MiniMaxProvider
 from .mirascope import MirascopeProvider
 from .mlx import MLXModelId, MLXProvider
 from .model_id import ModelId
@@ -52,6 +52,7 @@ __all__ = [
     "GoogleProvider",
     "MLXModelId",
     "MLXProvider",
+    "MiniMaxModelId",
     "MiniMaxProvider",
     "MirascopeProvider",
     "ModelId",

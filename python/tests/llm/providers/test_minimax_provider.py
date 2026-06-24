@@ -4,7 +4,11 @@ import os
 
 import pytest
 
-from mirascope.llm.providers.minimax.provider import MiniMaxProvider
+from mirascope.llm.providers.minimax import MiniMaxModelId, MiniMaxProvider
+from mirascope.llm.providers.minimax.model_id import (
+    MINIMAX_KNOWN_MODELS,
+    model_name,
+)
 
 
 def test_minimax_provider_initialization() -> None:
@@ -83,3 +87,27 @@ def test_minimax_provider_api_key_env_var() -> None:
 def test_minimax_provider_name() -> None:
     """Test that provider_name is 'MiniMax'."""
     assert MiniMaxProvider.provider_name == "MiniMax"
+
+
+def test_minimax_known_models_includes_flagship() -> None:
+    """Test that MINIMAX_KNOWN_MODELS exposes the registered model strings."""
+    assert "minimax/MiniMax-M3" in MINIMAX_KNOWN_MODELS
+    assert "minimax/MiniMax-M2.7" in MINIMAX_KNOWN_MODELS
+    assert "minimax/MiniMax-M2.7-highspeed" in MINIMAX_KNOWN_MODELS
+
+
+def test_minimax_model_name_helper_strips_prefix() -> None:
+    """Test that model_name helper strips the 'minimax/' prefix."""
+    assert model_name("minimax/MiniMax-M3") == "MiniMax-M3"
+    assert model_name("minimax/MiniMax-M2.7") == "MiniMax-M2.7"
+
+
+def test_minimax_model_name_helper_no_prefix() -> None:
+    """Test that model_name helper passes through IDs without the prefix."""
+    assert model_name("MiniMax-M3") == "MiniMax-M3"
+
+
+def test_minimax_model_id_accepts_arbitrary_string() -> None:
+    """Test that MiniMaxModelId accepts arbitrary strings (as `str` fallback)."""
+    custom: MiniMaxModelId = "minimax/custom-future-model"
+    assert custom == "minimax/custom-future-model"

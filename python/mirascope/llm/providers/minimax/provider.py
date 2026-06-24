@@ -3,6 +3,7 @@
 from typing import ClassVar
 
 from ..openai.completions.base_provider import BaseOpenAICompletionsProvider
+from .model_id import model_name
 
 
 class MiniMaxProvider(BaseOpenAICompletionsProvider):
@@ -13,14 +14,15 @@ class MiniMaxProvider(BaseOpenAICompletionsProvider):
     - Requires MINIMAX_API_KEY
 
     Available models:
-    - MiniMax-M2.7: Latest flagship model with 1M context
-    - MiniMax-M2.7-highspeed: High-speed variant optimized for throughput
+    - MiniMax-M3 (default, flagship): 512K context window
+    - MiniMax-M2.7: 192K context window
+    - MiniMax-M2.7-highspeed: high-throughput variant
 
     Usage:
         ```python
         from mirascope import llm
 
-        @llm.call("minimax/MiniMax-M2.7")
+        @llm.call("minimax/MiniMax-M3")
         def my_prompt():
             return [llm.messages.user("Hello!")]
         ```
@@ -35,4 +37,4 @@ class MiniMaxProvider(BaseOpenAICompletionsProvider):
 
     def _model_name(self, model_id: str) -> str:
         """Strip 'minimax/' prefix from model ID for MiniMax API."""
-        return model_id.removeprefix("minimax/")
+        return model_name(model_id)
