@@ -13,6 +13,7 @@ KnownProviderId: TypeAlias = Literal[
     "openai",  # OpenAI provider via OpenAIProvider (prefers Responses routing when available)
     "openrouter",  # OpenRouter provider via OpenRouterProvider
     "together",  # Together AI provider via TogetherProvider
+    "xai",  # xAI provider for Grok models via XAIProvider (Responses API)
 ]
 KNOWN_PROVIDER_IDS = get_args(KnownProviderId)
 

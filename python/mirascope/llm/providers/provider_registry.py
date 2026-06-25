@@ -20,6 +20,7 @@ from .openai.responses.provider import OpenAIResponsesProvider
 from .openrouter import OpenRouterProvider
 from .provider_id import ProviderId
 from .together import TogetherProvider
+from .xai import XAIProvider
 
 # Global registry mapping scopes to providers
 # Scopes are matched by prefix (longest match wins)
@@ -79,6 +80,9 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, Sequence[ProviderDefault]] = {
     "openrouter/": [
         ProviderDefault("openrouter", "OPENROUTER_API_KEY"),
     ],
+    "xai/": [
+        ProviderDefault("xai", "XAI_API_KEY"),
+    ],
 }
 
 
@@ -136,6 +140,8 @@ def provider_singleton(
             return OpenRouterProvider(api_key=api_key, base_url=base_url)
         case "together":
             return TogetherProvider(api_key=api_key, base_url=base_url)
+        case "xai":
+            return XAIProvider(api_key=api_key, base_url=base_url)
         case _:  # pragma: no cover
             raise ValueError(f"Unknown provider: '{provider_id}'")
 
