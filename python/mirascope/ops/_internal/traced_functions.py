@@ -39,6 +39,38 @@ FunctionT = TypeVar(
 )
 
 
+def _conventional_trace_attributes(
+    tags: tuple[str, ...],
+    metadata: dict[str, str],
+) -> dict[str, AttributeValue]:
+    """Emit OTel/Langfuse-conventional span attributes for trace tags and metadata.
+
+    Backends like Langfuse map first-class fields from conventional attribute keys,
+    so we emit those alongside the existing ``mirascope.trace.*`` keys (which are
+    kept for backward compatibility).
+    """
+    attributes: dict[str, AttributeValue] = {}
+    if tags:
+        attributes["langfuse.trace.tags"] = list(tags)
+    if metadata:
+        # Promote well-known fields to their conventional keys.
+        session_id = metadata.get("session_id")
+        if session_id is not None:
+            attributes["langfuse.session.id"] = session_id
+        user_id = metadata.get("user_id")
+        if user_id is not None:
+            attributes["langfuse.user.id"] = user_id
+        # Flatten remaining metadata entries under the Langfuse-conventional
+        # ``langfuse.trace.metadata.<key>`` prefix so backends surface each as a
+        # first-class, filterable field instead of only exposing the single JSON
+        # blob under ``mirascope.trace.metadata``.
+        for key, value in metadata.items():
+            if key in ("session_id", "user_id"):
+                continue
+            attributes[f"langfuse.trace.metadata.{key}"] = value
+    return attributes
+
+
 def record_result_to_span(span: Span, result: object) -> None:
     """Records the function result in the given span.
 
@@ -205,6 +237,7 @@ class _BaseTracedFunction(_BaseFunction[P, R, FunctionT]):
                 attributes["mirascope.trace.tags"] = list(self.tags)
             if self.metadata:
                 attributes["mirascope.trace.metadata"] = json_dumps(self.metadata)
+            attributes.update(_conventional_trace_attributes(self.tags, self.metadata))
             span.set(**attributes)
             yield span
 
@@ -319,6 +352,7 @@ class _BaseTracedContextFunction(
                 attributes["mirascope.trace.tags"] = list(self.tags)
             if self.metadata:
                 attributes["mirascope.trace.metadata"] = json_dumps(self.metadata)
+            attributes.update(_conventional_trace_attributes(self.tags, self.metadata))
             span.set(**attributes)
             yield span
 
