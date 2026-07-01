@@ -722,6 +722,69 @@ def recommend(genre: str) -> str:
     )
 
 
+def test_versioned_call_preserves_function_metadata() -> None:
+    """Test that VersionedCall copies __qualname__, __name__, __module__ from original fn.
+
+    Regression test for https://github.com/Mirascope/mirascope/issues/2784.
+    Without metadata forwarding, stacking @ops.trace on @ops.version raises
+    AttributeError: 'VersionedCall' object has no attribute '__qualname__'
+    on Python 3.14+.
+    """
+
+    @ops.version
+    @llm.call("openai/gpt-4o-mini")
+    def recommend_book(genre: str) -> str:
+        """Recommends books based on genre."""
+        return f"Recommend a {genre} book."
+
+    assert isinstance(recommend_book, ops.VersionedCall)
+
+    # These attributes must be present for decorator stacking to work
+    assert hasattr(recommend_book, "__qualname__")
+    assert hasattr(recommend_book, "__name__")
+    assert hasattr(recommend_book, "__module__")
+    assert recommend_book.__name__ == "recommend_book"
+    assert "recommend_book" in recommend_book.__qualname__
+
+
+def test_trace_on_versioned_call_does_not_crash() -> None:
+    """Test that @ops.trace can be stacked on @ops.version on @llm.call.
+
+    Regression test for https://github.com/Mirascope/mirascope/issues/2784.
+    Previously, this raised AttributeError because VersionedCall lacked __qualname__.
+    """
+
+    # This decorator application itself was crashing before the fix
+    @ops.trace(tags=["test"])
+    @ops.version
+    @llm.call("openai/gpt-4o-mini")
+    def recommend_book(genre: str) -> str:
+        """Recommends books based on genre."""
+        return f"Recommend a {genre} book."
+
+    # Verify the outer decorator created a TracedFunction wrapping the VersionedCall
+    assert hasattr(recommend_book, "_qualified_name")
+    assert "recommend_book" in recommend_book._qualified_name
+
+
+@pytest.mark.asyncio
+async def test_trace_on_versioned_async_call_does_not_crash() -> None:
+    """Test that @ops.trace can be stacked on @ops.version on async @llm.call.
+
+    Regression test for https://github.com/Mirascope/mirascope/issues/2784 (async variant).
+    """
+
+    @ops.trace(tags=["test"])
+    @ops.version
+    @llm.call("openai/gpt-4o-mini")
+    async def recommend_book(genre: str) -> str:
+        """Recommends books based on genre."""
+        return f"Recommend a {genre} book."
+
+    assert hasattr(recommend_book, "_qualified_name")
+    assert "recommend_book" in recommend_book._qualified_name
+
+
 @pytest.mark.vcr()
 def test_versioned_call_sync(span_exporter: InMemorySpanExporter) -> None:
     """Test @ops.version on @llm.call creates VersionedCall and returns Response directly."""
