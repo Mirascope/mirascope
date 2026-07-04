@@ -162,10 +162,10 @@ async def test_async_trace_no_return_with_tags(
     assert span_data["attributes"]["mirascope.trace.tags"] == ("async",)
 
 
-def test_trace_emits_conventional_attributes(
+def test_trace_emits_otel_attributes(
     span_exporter: InMemorySpanExporter,
 ) -> None:
-    """Tests that trace tags and metadata emit conventional backend attributes."""
+    """Tests that trace tags and metadata emit plain OTel attributes."""
 
     @ops.trace(
         tags=["a", "b"],
@@ -181,14 +181,16 @@ def test_trace_emits_conventional_attributes(
 
     attributes = extract_span_data(spans[0])["attributes"]
     assert attributes["mirascope.trace.tags"] == ("a", "b")
-    assert attributes["langfuse.trace.tags"] == ("a", "b")
-    assert attributes["langfuse.session.id"] == "sess-1"
-    assert attributes["langfuse.user.id"] == "user-9"
-    assert attributes["langfuse.trace.metadata.foo"] == "bar"
+    assert attributes["tags"] == ("a", "b")
+    assert attributes["session.id"] == "sess-1"
+    assert attributes["user.id"] == "user-9"
+    assert attributes["metadata.foo"] == "bar"
     assert attributes["mirascope.trace.metadata"] == (
         '{"session_id":"sess-1","user_id":"user-9","foo":"bar"}'
     )
-    assert "langfuse.trace.metadata.session_id" not in attributes
+    assert "metadata.session_id" not in attributes
+    assert "metadata.user_id" not in attributes
+    assert not any(key.startswith("langfuse.") for key in attributes)
 
 
 def test_trace_tags_only_no_metadata(
@@ -205,10 +207,11 @@ def test_trace_tags_only_no_metadata(
     assert len(spans) == 1
 
     attributes = extract_span_data(spans[0])["attributes"]
-    assert attributes["langfuse.trace.tags"] == ("only-tag",)
-    assert "langfuse.session.id" not in attributes
-    assert "langfuse.user.id" not in attributes
-    assert not any(key.startswith("langfuse.trace.metadata.") for key in attributes)
+    assert attributes["tags"] == ("only-tag",)
+    assert "session.id" not in attributes
+    assert "user.id" not in attributes
+    assert not any(key.startswith("metadata.") for key in attributes)
+    assert not any(key.startswith("langfuse.") for key in attributes)
 
 
 def test_trace_metadata_without_session_user(
@@ -225,19 +228,23 @@ def test_trace_metadata_without_session_user(
     assert len(spans) == 1
 
     attributes = extract_span_data(spans[0])["attributes"]
-    assert "langfuse.session.id" not in attributes
-    assert "langfuse.user.id" not in attributes
-    assert attributes["langfuse.trace.metadata.foo"] == "bar"
-    assert attributes["langfuse.trace.metadata.baz"] == "qux"
+    assert "session.id" not in attributes
+    assert "user.id" not in attributes
+    assert attributes["metadata.foo"] == "bar"
+    assert attributes["metadata.baz"] == "qux"
     assert attributes["mirascope.trace.metadata"] == '{"foo":"bar","baz":"qux"}'
+    assert not any(key.startswith("langfuse.") for key in attributes)
 
 
-def test_context_trace_emits_conventional_attributes(
+def test_context_trace_emits_otel_attributes(
     span_exporter: InMemorySpanExporter,
 ) -> None:
-    """Tests that context trace functions emit conventional attributes."""
+    """Tests that context trace functions emit plain OTel attributes."""
 
-    @ops.trace(tags=["ctx-tag"], metadata={"session_id": "ctx-sess"})
+    @ops.trace(
+        tags=["ctx-tag"],
+        metadata={"session_id": "ctx-sess", "user_id": "ctx-user", "foo": "bar"},
+    )
     def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -248,8 +255,11 @@ def test_context_trace_emits_conventional_attributes(
     assert len(spans) == 1
 
     attributes = extract_span_data(spans[0])["attributes"]
-    assert attributes["langfuse.trace.tags"] == ("ctx-tag",)
-    assert attributes["langfuse.session.id"] == "ctx-sess"
+    assert attributes["tags"] == ("ctx-tag",)
+    assert attributes["session.id"] == "ctx-sess"
+    assert attributes["user.id"] == "ctx-user"
+    assert attributes["metadata.foo"] == "bar"
+    assert not any(key.startswith("langfuse.") for key in attributes)
 
 
 def test_trace_complex_serialization(
@@ -1150,7 +1160,7 @@ def test_traced_call_with_tags(span_exporter: InMemorySpanExporter) -> None:
                 "mirascope.trace.arg_types": '{"genre":"str"}',
                 "mirascope.trace.arg_values": '{"genre":"romance"}',
                 "mirascope.trace.tags": ("production", "recommendations"),
-                "langfuse.trace.tags": ("production", "recommendations"),
+                "tags": ("production", "recommendations"),
                 "mirascope.response.provider_id": "openai",
                 "mirascope.response.model_id": "openai/gpt-4o-mini",
                 "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"Recommend a romance book."}],"name":null}]',
@@ -1393,7 +1403,7 @@ def test_traced_context_call_with_tags(span_exporter: InMemorySpanExporter) -> N
                 "mirascope.trace.arg_types": '{"ctx":"llm.Context[str]","genre":"str"}',
                 "mirascope.trace.arg_values": '{"ctx":{"deps":"As a librarian,"},"genre":"science fiction"}',
                 "mirascope.trace.tags": ("context-tag",),
-                "langfuse.trace.tags": ("context-tag",),
+                "tags": ("context-tag",),
                 "mirascope.response.provider_id": "openai",
                 "mirascope.response.model_id": "openai/gpt-4o-mini",
                 "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"As a librarian, Recommend a science fiction book."}],"name":null}]',
@@ -1445,7 +1455,7 @@ async def test_traced_async_context_call_with_tags(
                 "mirascope.trace.arg_types": '{"ctx":"llm.Context[str]","genre":"str"}',
                 "mirascope.trace.arg_values": '{"ctx":{"deps":"As a librarian,"},"genre":"dystopian"}',
                 "mirascope.trace.tags": ("async-context-tag",),
-                "langfuse.trace.tags": ("async-context-tag",),
+                "tags": ("async-context-tag",),
                 "mirascope.response.provider_id": "openai",
                 "mirascope.response.model_id": "openai/gpt-4o-mini",
                 "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"As a librarian, Recommend a dystopian book."}],"name":null}]',
