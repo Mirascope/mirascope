@@ -278,6 +278,19 @@ def encode_content(
                 )
             )
         elif part.type == "tool_call":
+            # Skip the internal FORMAT_TOOL call when re-encoding history.
+            # Anthropic's structured-output tool (FORMAT_TOOL_NAME) is a Mirascope
+            # implementation detail injected to force JSON-shaped responses.  When
+            # the assistant message is re-used in a `resume()` call the raw
+            # message is NOT sent back verbatim (because raw_message_has_format_tool
+            # is True), so we fall through to encode from content parts.  Without
+            # this guard the format-tool ToolCall part is re-emitted as a
+            # `tool_use` block, but there is no corresponding `tool_result` in
+            # the next user message — Anthropic rejects the request with 400:
+            #   "tool_use ids were found without tool_result blocks immediately after"
+            # See https://github.com/Mirascope/mirascope/issues/2503
+            if part.name.startswith(FORMAT_TOOL_NAME):
+                continue
             blocks.append(
                 anthropic_types.ToolUseBlockParam(
                     type="tool_use",
