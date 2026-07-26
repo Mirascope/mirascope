@@ -1662,6 +1662,7 @@ async def test_async_version_continues_when_closure_is_none(
             }
         )
 
+
 def test_versioned_call_exposes_qualname_for_trace() -> None:
     """VersionedCall must expose __qualname__ and __name__ so @ops.trace can introspect it.
 
