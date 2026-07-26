@@ -192,13 +192,15 @@ def test_raw_message_has_format_tool_non_dict() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_encode_content_skips_format_tool_call() -> None:
-    """FORMAT_TOOL ToolCall parts must be stripped when re-encoding history.
+def test_encode_content_reencodes_format_tool_call_as_text() -> None:
+    """FORMAT_TOOL ToolCall parts must be re-encoded as text when re-using history.
 
     When Anthropic structured-output mode is used, the model returns a FORMAT_TOOL
     tool_use block.  When that assistant message is later re-used in a resume() call,
     encode_content must NOT emit that tool_use block — Anthropic rejects the request
     with HTTP 400 because there is no corresponding tool_result in the next user turn.
+    But the tool's arguments are the assistant's actual structured response, so they
+    must be preserved as a text block rather than dropped.
 
     See https://github.com/Mirascope/mirascope/issues/2503
     """
@@ -223,9 +225,10 @@ def test_encode_content_skips_format_tool_call() -> None:
         "Anthropic rejects requests where tool_use has no subsequent tool_result"
     )
 
-    # The text block must still be present
-    text_blocks = [b for b in blocks if isinstance(b, dict) and b.get("type") == "text"]  # type: ignore[attr-defined]
-    assert len(text_blocks) == 1
+    # The format tool's arguments must be preserved as text, not dropped, alongside
+    # the original text part.
+    text_values = [b.get("text") for b in blocks if isinstance(b, dict) and b.get("type") == "text"]  # type: ignore[attr-defined]
+    assert text_values == ["Here is the result.", '{"value": 7}']
 
 
 def test_encode_content_keeps_real_tool_calls() -> None:
