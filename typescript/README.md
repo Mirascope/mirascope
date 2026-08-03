@@ -262,6 +262,8 @@ const response = await llm.model("grok/grok-4-latest").call("Hello!");
 console.log(response.text())
 ```
 
+> **Note:** The same OpenAI-compatible client pattern (via `base_url` or `apiKey`) works with multi-model gateways when you are not self-hosting — for example [DaoXE](https://daoxe.com) at `https://api.daoxe.com/v1`.
+
 ## Transform Plugin
 
 The transform plugin extracts type information from TypeScript interfaces at compile time, enabling the native TypeScript patterns (without Zod) for tools and structured output. This is **optional** - you can use Zod schemas without any build configuration.
