@@ -21,6 +21,7 @@ from ...llm.responses import (
     StreamResponse,
 )
 from ...llm.types import P
+from ..._utils import copy_function_metadata
 from ..exceptions import ClosureComputationError
 from .closure import Closure
 from .protocols import (
@@ -137,7 +138,7 @@ class _BaseVersionedCall:
     closure: Closure | None = field(init=False, default=None)
     """Cached closure for the original function."""
 
-    def _compute_closure(
+    def _init_from_call(
         self,
         wrapped_call: (
             ContextCall[P, DepsT, FormattableT]
@@ -148,7 +149,19 @@ class _BaseVersionedCall:
         versioned_call: _BaseVersionedFunction[..., object],
         versioned_stream: _BaseVersionedFunction[..., object],
     ) -> None:
-        """Initialize closure from wrapped call and assign to versioned wrappers."""
+        """Copy function metadata and initialize closure from wrapped call.
+
+        Copies __qualname__, __name__, __module__, __doc__, and __annotations__
+        from the original function to this VersionedCall, enabling decorator
+        stacking (e.g. @ops.trace on top of @ops.version).
+
+        Also computes and assigns the closure for version tracking.
+        """
+        # Preserve standard function attributes for decorator stacking
+        original_fn = wrapped_call.prompt.fn
+        copy_function_metadata(self, original_fn)
+
+        # Compute and assign closure for version tracking
         self.closure = _compute_closure_from_call(wrapped_call)
         if self.closure is not None:
             versioned_call.closure = self.closure
@@ -236,7 +249,7 @@ class VersionedCall(_BaseVersionedCall, Generic[P, FormattableT]):
             name=self.name,
             metadata=self.metadata,
         )
-        self._compute_closure(self._call, self.call, self.stream)
+        self._init_from_call(self._call, self.call, self.stream)
 
     @overload
     def __call__(
@@ -344,7 +357,7 @@ class VersionedAsyncCall(_BaseVersionedCall, Generic[P, FormattableT]):
             name=self.name,
             metadata=self.metadata,
         )
-        self._compute_closure(self._call, self.call, self.stream)
+        self._init_from_call(self._call, self.call, self.stream)
 
     @overload
     async def __call__(
@@ -459,7 +472,7 @@ class VersionedContextCall(_BaseVersionedCall, Generic[P, DepsT, FormattableT]):
             name=self.name,
             metadata=self.metadata,
         )
-        self._compute_closure(self._call, self._call_versioned, self._stream_versioned)
+        self._init_from_call(self._call, self._call_versioned, self._stream_versioned)
 
     @overload
     def call(
@@ -631,7 +644,7 @@ class VersionedAsyncContextCall(_BaseVersionedCall, Generic[P, DepsT, Formattabl
             name=self.name,
             metadata=self.metadata,
         )
-        self._compute_closure(self._call, self._call_versioned, self._stream_versioned)
+        self._init_from_call(self._call, self._call_versioned, self._stream_versioned)
 
     @overload
     async def call(
