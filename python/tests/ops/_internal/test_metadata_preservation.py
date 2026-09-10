@@ -1,7 +1,15 @@
 """Tests for function metadata preservation across decorators."""
 
+import inspect
+
 from mirascope import llm, ops
 from mirascope._utils import copy_function_metadata
+from mirascope.ops._internal.versioned_calls import (
+    VersionedAsyncCall,
+    VersionedAsyncContextCall,
+    VersionedCall,
+    VersionedContextCall,
+)
 
 
 def test_trace_preserves_function_metadata() -> None:
@@ -244,3 +252,66 @@ def test_trace_on_async_context_llm_call_preserves_metadata() -> None:
     assert async_context_recommend.__name__ == "async_context_recommend"
     assert async_context_recommend.__doc__ == "Async context recommend docstring."
     assert hasattr(async_context_recommend, "__wrapped__")
+
+
+def test_versioned_call_wrappers_preserve_metadata_for_trace_application() -> None:
+    """Versioned call wrappers keep function metadata for decorator stacking."""
+
+    @ops.version
+    @llm.call("openai/gpt-4o-mini")
+    def sync_call(topic: str) -> str:
+        """Sync versioned call."""
+        return topic
+
+    @ops.version
+    @llm.call("openai/gpt-4o-mini")
+    async def async_call(topic: str) -> str:
+        """Async versioned call."""
+        return topic
+
+    @ops.version
+    @llm.call("openai/gpt-4o-mini")
+    def context_call(ctx: llm.Context[str], topic: str) -> str:
+        """Context versioned call."""
+        return f"{ctx.deps}:{topic}"
+
+    @ops.version
+    @llm.call("openai/gpt-4o-mini")
+    async def async_context_call(ctx: llm.Context[str], topic: str) -> str:
+        """Async context versioned call."""
+        return f"{ctx.deps}:{topic}"
+
+    cases = (
+        (sync_call, VersionedCall, "sync_call", "Sync versioned call."),
+        (async_call, VersionedAsyncCall, "async_call", "Async versioned call."),
+        (
+            context_call,
+            VersionedContextCall,
+            "context_call",
+            "Context versioned call.",
+        ),
+        (
+            async_context_call,
+            VersionedAsyncContextCall,
+            "async_context_call",
+            "Async context versioned call.",
+        ),
+    )
+    for wrapped, expected_type, expected_name, expected_doc in cases:
+        assert isinstance(wrapped, expected_type)
+        attributes = vars(wrapped)
+        assert attributes["__name__"] == expected_name
+        assert attributes["__module__"] == __name__
+        assert attributes["__qualname__"] == (
+            "test_versioned_call_wrappers_preserve_metadata_for_trace_application"
+            f".<locals>.{expected_name}"
+        )
+        assert attributes["__doc__"] == expected_doc
+        original = attributes["__wrapped__"]
+        assert inspect.isfunction(original)
+        assert original.__name__ == expected_name
+        # `inspect.signature` follows `__wrapped__`, so it now reports the prompt
+        # function's signature rather than the wrapper's `(*args, **kwargs)`.
+        assert inspect.signature(wrapped) == inspect.signature(original)
+        traced = ops.trace(wrapped)
+        assert vars(traced)["__name__"] == expected_name

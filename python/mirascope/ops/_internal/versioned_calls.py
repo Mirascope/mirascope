@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from typing import Concatenate, Generic, cast, overload
 from typing_extensions import TypeIs
 
+from ..._utils import copy_function_metadata
 from ...llm.calls import AsyncCall, AsyncContextCall, Call, ContextCall
 from ...llm.context import Context, DepsT
 from ...llm.formatting import FormattableT
@@ -224,6 +225,7 @@ class VersionedCall(_BaseVersionedCall, Generic[P, FormattableT]):
 
     def __post_init__(self) -> None:
         """Initialize VersionedFunction wrappers for call and stream methods."""
+        copy_function_metadata(self, self._call.prompt.fn)
         self.call = VersionedFunction(
             fn=self._call.call,
             tags=self.tags,
@@ -332,6 +334,7 @@ class VersionedAsyncCall(_BaseVersionedCall, Generic[P, FormattableT]):
 
     def __post_init__(self) -> None:
         """Initialize AsyncVersionedFunction wrappers for call and stream methods."""
+        copy_function_metadata(self, self._call.prompt.fn)
         self.call = AsyncVersionedFunction(
             fn=self._call.call,
             tags=self.tags,
@@ -447,6 +450,7 @@ class VersionedContextCall(_BaseVersionedCall, Generic[P, DepsT, FormattableT]):
 
     def __post_init__(self) -> None:
         """Initialize VersionedFunction wrappers for call and stream methods."""
+        copy_function_metadata(self, self._call.prompt.fn)
         self._call_versioned = VersionedFunction(
             fn=self._call.call,
             tags=self.tags,
@@ -619,6 +623,7 @@ class VersionedAsyncContextCall(_BaseVersionedCall, Generic[P, DepsT, Formattabl
 
     def __post_init__(self) -> None:
         """Initialize AsyncVersionedFunction wrappers for call and stream methods."""
+        copy_function_metadata(self, self._call.prompt.fn)
         self._call_versioned = AsyncVersionedFunction(
             fn=self._call.call,
             tags=self.tags,
