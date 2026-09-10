@@ -205,6 +205,7 @@ class _BaseTracedFunction(_BaseFunction[P, R, FunctionT]):
                 attributes["mirascope.trace.tags"] = list(self.tags)
             if self.metadata:
                 attributes["mirascope.trace.metadata"] = json_dumps(self.metadata)
+            attributes.update(_langfuse_trace_attributes(self.tags, self.metadata))
             span.set(**attributes)
             yield span
 
@@ -319,6 +320,7 @@ class _BaseTracedContextFunction(
                 attributes["mirascope.trace.tags"] = list(self.tags)
             if self.metadata:
                 attributes["mirascope.trace.metadata"] = json_dumps(self.metadata)
+            attributes.update(_langfuse_trace_attributes(self.tags, self.metadata))
             span.set(**attributes)
             yield span
 
@@ -523,3 +525,50 @@ class AsyncTracedSpanFunction(BaseAsyncTracedSpanFunction[P, R]):
             result = await self.fn(span, *args, **kwargs)
             record_result_to_span(span, result)
             return AsyncTrace(result=result, span=span)
+
+
+_LANGFUSE_IDENTITY_KEYS: tuple[tuple[str, tuple[str, str]], ...] = (
+    ("langfuse.user.id", ("user_id", "userId")),
+    ("langfuse.session.id", ("session_id", "sessionId")),
+)
+
+
+def _langfuse_attribute_value(value: object) -> AttributeValue | None:
+    """Coerce a metadata value into a type OpenTelemetry accepts as an attribute.
+
+    `metadata` is annotated `dict[str, str]` but nothing enforces that at runtime.
+    OpenTelemetry accepts only bool/str/bytes/int/float (or sequences of those); for
+    anything else it drops the attribute and logs a warning on every span. `None` is
+    omitted, and any other non-primitive is serialized the same way the existing
+    `mirascope.trace.metadata` attribute already serializes it.
+    """
+    if value is None:
+        return None
+    if isinstance(value, bool | str | bytes | int | float):
+        return value
+    return json_dumps(value)
+
+
+def _langfuse_trace_attributes(
+    tags: tuple[str, ...], metadata: dict[str, str]
+) -> dict[str, AttributeValue]:
+    """Return Langfuse-compatible trace attributes without changing legacy metadata."""
+    attributes: dict[str, AttributeValue] = {}
+    if tags:
+        attributes["langfuse.trace.tags"] = list(tags)
+    promoted: set[str] = set()
+    for langfuse_key, candidates in _LANGFUSE_IDENTITY_KEYS:
+        for candidate in candidates:
+            if candidate in metadata:
+                promoted.add(candidate)
+                if (
+                    value := _langfuse_attribute_value(metadata[candidate])
+                ) is not None:
+                    attributes[langfuse_key] = value
+                break
+    for key, raw_value in metadata.items():
+        if key in promoted:
+            continue
+        if (value := _langfuse_attribute_value(raw_value)) is not None:
+            attributes[f"langfuse.trace.metadata.{key}"] = value
+    return attributes

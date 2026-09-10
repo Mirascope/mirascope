@@ -41,6 +41,17 @@ provider.add_span_processor(BatchSpanProcessor(exporter))
 ops.configure(tracer_provider=provider)
 ```
 
+Tags and metadata passed to [`@ops.trace`](/docs/ops/tracing) are additionally emitted under the attribute keys Langfuse reads, so they show up as first-class, filterable fields:
+
+| `@ops.trace` argument | Langfuse span attribute |
+| --- | --- |
+| `tags=[...]` | `langfuse.trace.tags` |
+| `metadata={"user_id": ...}` (or `"userId"`) | `langfuse.user.id` |
+| `metadata={"session_id": ...}` (or `"sessionId"`) | `langfuse.session.id` |
+| any other `metadata` key | `langfuse.trace.metadata.<key>` |
+
+If both spellings of an identity key are present, the snake_case one is promoted and the camelCase one is kept under `langfuse.trace.metadata.<key>`. Metadata values that are not one of the OpenTelemetry attribute types (`bool`, `str`, `bytes`, `int`, `float`) are JSON-serialized, and `None` values are omitted. The `mirascope.*` attributes are always emitted unchanged, so other backends are unaffected.
+
 ### OTLP Exporter
 
 Export to any OpenTelemetry collector (Jaeger, Zipkin, Grafana Tempo, Datadog, etc.):

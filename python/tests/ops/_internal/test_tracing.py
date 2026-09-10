@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Generator
 from typing import Any, TypeVar
 from unittest.mock import patch
@@ -13,6 +14,7 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanE
 from opentelemetry.trace import format_span_id, format_trace_id
 
 from mirascope import llm, ops
+from mirascope.ops._internal.traced_functions import TracedContextFunction
 
 from ..utils import extract_span_data
 
@@ -73,6 +75,112 @@ def test_sync_trace(
     call_span = spans[1]
     call_span_data = extract_span_data(call_span)
     assert call_span_data == span_data
+
+
+def test_trace_emits_langfuse_attributes_without_changing_legacy_metadata(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Trace metadata preserves Mirascope JSON and adds Langfuse mappings."""
+
+    @ops.trace(tags=["tag"], metadata={"user_id": "u", "session_id": "s", "team": "ml"})
+    def traced() -> str:
+        return "ok"
+
+    traced()
+    attributes = span_exporter.get_finished_spans()[0].attributes
+    assert attributes is not None
+    assert (
+        attributes["mirascope.trace.metadata"]
+        == '{"user_id":"u","session_id":"s","team":"ml"}'
+    )
+    assert attributes["langfuse.trace.tags"] == ("tag",)
+    assert attributes["langfuse.user.id"] == "u"
+    assert attributes["langfuse.session.id"] == "s"
+    assert attributes["langfuse.trace.metadata.team"] == "ml"
+
+
+def test_context_trace_emits_camel_case_langfuse_identity_attributes(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """The context span builder promotes camelCase IDs and keeps legacy metadata.
+
+    `TracedContextFunction` is constructed directly because `ops.trace` only ever
+    reaches the context span builder via `TracedContextCall`, which requires a
+    provider request.
+    """
+
+    def echo(ctx: llm.Context[str]) -> str:
+        return ctx.deps
+
+    traced = TracedContextFunction(
+        fn=echo,
+        tags=("tag",),
+        metadata={"userId": "u", "sessionId": "s", "region": "eu"},
+    )
+
+    assert traced(llm.Context(deps="ok")) == "ok"
+    attributes = span_exporter.get_finished_spans()[0].attributes
+    assert attributes is not None
+    assert (
+        attributes["mirascope.trace.metadata"]
+        == '{"userId":"u","sessionId":"s","region":"eu"}'
+    )
+    assert attributes["mirascope.trace.tags"] == ("tag",)
+    assert attributes["langfuse.trace.tags"] == ("tag",)
+    assert attributes["langfuse.user.id"] == "u"
+    assert attributes["langfuse.session.id"] == "s"
+    assert attributes["langfuse.trace.metadata.region"] == "eu"
+
+
+def test_trace_langfuse_attributes_keep_both_identity_key_spellings(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Only the promoted spelling is consumed; the other still reaches Langfuse."""
+
+    @ops.trace(metadata={"user_id": "snake", "userId": "camel"})
+    def traced() -> str:
+        return "ok"
+
+    traced()
+    attributes = span_exporter.get_finished_spans()[0].attributes
+    assert attributes is not None
+    assert attributes["langfuse.user.id"] == "snake"
+    assert attributes["langfuse.trace.metadata.userId"] == "camel"
+    assert "langfuse.trace.metadata.user_id" not in attributes
+    assert "langfuse.session.id" not in attributes
+
+
+def test_trace_langfuse_attributes_coerce_non_primitive_metadata_values(
+    span_exporter: InMemorySpanExporter,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Non-primitive metadata values are coerced instead of dropped with a warning."""
+
+    @ops.trace(
+        metadata={  # pyright: ignore[reportArgumentType]
+            "user_id": None,
+            "nested": {"a": 1},
+            "count": 5,
+            "note": "anon",
+        }
+    )
+    def traced() -> str:
+        return "ok"
+
+    with caplog.at_level(logging.WARNING, logger="opentelemetry.attributes"):
+        traced()
+
+    assert caplog.records == []
+    attributes = span_exporter.get_finished_spans()[0].attributes
+    assert attributes is not None
+    assert (
+        attributes["mirascope.trace.metadata"]
+        == '{"user_id":null,"nested":{"a":1},"count":5,"note":"anon"}'
+    )
+    assert "langfuse.user.id" not in attributes
+    assert attributes["langfuse.trace.metadata.nested"] == '{"a":1}'
+    assert attributes["langfuse.trace.metadata.count"] == 5
+    assert attributes["langfuse.trace.metadata.note"] == "anon"
 
 
 @pytest.mark.asyncio
