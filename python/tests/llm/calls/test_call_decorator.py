@@ -1,5 +1,8 @@
 """Simple smoke tests for the call decorator."""
 
+from collections.abc import Callable
+from typing import cast
+
 import pytest
 
 from mirascope import llm
@@ -51,3 +54,21 @@ class TestCallDecoratorSmokeTests:
             return f"Context: {ctx.deps}. Question: {question}"
 
         assert isinstance(my_async_context_call, llm.AsyncContextCall)
+
+    @pytest.mark.parametrize(
+        "unknown_param", ["nonsense_kwarg", "temperatur", "provider"]
+    )
+    def test_unknown_params_are_rejected(self, unknown_param: str) -> None:
+        """Reject misspelled and removed call parameters at decoration time."""
+        call = cast(Callable[..., object], llm.call)
+        with pytest.raises(
+            TypeError,
+            match=rf"llm\.call\(\) got unexpected keyword argument.*'{unknown_param}'",
+        ):
+            call("openai/gpt-4o-mini", **{unknown_param: 123})
+
+    def test_known_params_are_preserved(self) -> None:
+        """Keep supported model parameters on the decorated call."""
+        decorated = llm.call("openai/gpt-4o-mini", temperature=0.7)
+
+        assert decorated.model.params == {"temperature": 0.7}

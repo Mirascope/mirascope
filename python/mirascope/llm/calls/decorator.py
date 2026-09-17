@@ -10,6 +10,7 @@ from typing_extensions import Unpack
 from ..context import DepsT
 from ..formatting import FormatSpec, FormattableT
 from ..models import Model
+from ..models.params import validate_params
 from ..prompts import (
     AsyncContextMessageTemplate,
     AsyncContextPrompt,
@@ -263,6 +264,7 @@ def call(
         print(response.pretty())
         ```
     """
+    validate_params(params, caller="llm.call")
     if isinstance(model, str):
         model = Model(model, **params)
     return CallDecorator(model=model, tools=tools, format=format)
