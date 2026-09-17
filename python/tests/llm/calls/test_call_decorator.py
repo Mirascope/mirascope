@@ -67,8 +67,31 @@ class TestCallDecoratorSmokeTests:
         ):
             call("openai/gpt-4o-mini", **{unknown_param: 123})
 
+    def test_removed_provider_param_explains_migration(self) -> None:
+        """Explain provider selection even with an old, unprefixed model ID."""
+        call = cast(Callable[..., object], llm.call)
+        with pytest.raises(
+            TypeError, match="Provider selection is part of the model ID"
+        ):
+            call("gpt-4o-mini", provider="openai")
+
+    def test_multiple_unknown_params_are_reported(self) -> None:
+        """Report all invalid keys so users can fix them together."""
+        call = cast(Callable[..., object], llm.call)
+        with pytest.raises(
+            TypeError,
+            match="unexpected keyword arguments: 'nonsense_kwarg', 'temperatur'",
+        ):
+            call("openai/gpt-4o-mini", temperatur=0.7, nonsense_kwarg=123)
+
     def test_known_params_are_preserved(self) -> None:
         """Keep supported model parameters on the decorated call."""
         decorated = llm.call("openai/gpt-4o-mini", temperature=0.7)
 
         assert decorated.model.params == {"temperature": 0.7}
+
+    def test_model_instance_is_preserved(self) -> None:
+        """Keep accepting an existing model with its configured parameters."""
+        model = llm.Model("openai/gpt-4o-mini", temperature=0.7)
+
+        assert llm.call(model).model is model
