@@ -48,6 +48,10 @@ The `@llm.call` decorator requires a model ID and accepts additional arguments:
 
 <CodeExample file="python/examples/calls/with_params.py" />
 
+Unknown keyword arguments raise `TypeError` at decoration time. This includes
+misspelled parameters and the removed `provider` argument. Select the provider
+through the model ID instead, for example `"openai/gpt-4o-mini"`.
+
 ## Accessing the Underlying Prompt
 
 A `Call` is just a `Prompt` with a bundled model. You can access the underlying prompt and model via properties:
