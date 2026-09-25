@@ -18,6 +18,7 @@ from .openai.completions.provider import OpenAICompletionsProvider
 from .openai.responses.provider import OpenAIResponsesProvider
 from .openrouter import OpenRouterProvider
 from .provider_id import ProviderId
+from .requesty import RequestyProvider
 from .together import TogetherProvider
 from .xai import XAIProvider
 
@@ -76,6 +77,9 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, Sequence[ProviderDefault]] = {
     "openrouter/": [
         ProviderDefault("openrouter", "OPENROUTER_API_KEY"),
     ],
+    "requesty/": [
+        ProviderDefault("requesty", "REQUESTY_API_KEY"),
+    ],
     "xai/": [
         ProviderDefault("xai", "XAI_API_KEY"),
     ],
@@ -132,6 +136,8 @@ def provider_singleton(
             return OpenAIResponsesProvider(api_key=api_key, base_url=base_url)
         case "openrouter":
             return OpenRouterProvider(api_key=api_key, base_url=base_url)
+        case "requesty":
+            return RequestyProvider(api_key=api_key, base_url=base_url)
         case "together":
             return TogetherProvider(api_key=api_key, base_url=base_url)
         case "xai":
