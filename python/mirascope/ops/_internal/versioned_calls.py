@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from typing import Concatenate, Generic, cast, overload
 from typing_extensions import TypeIs
 
+from ..._utils import copy_function_metadata
 from ...llm.calls import AsyncCall, AsyncContextCall, Call, ContextCall
 from ...llm.context import Context, DepsT
 from ...llm.formatting import FormattableT
@@ -237,6 +238,9 @@ class VersionedCall(_BaseVersionedCall, Generic[P, FormattableT]):
             metadata=self.metadata,
         )
         self._compute_closure(self._call, self.call, self.stream)
+        # Forward __qualname__, __name__, __module__, etc. so that downstream
+        # decorators such as @ops.trace can introspect the original function.
+        copy_function_metadata(self, self._call)
 
     @overload
     def __call__(
@@ -345,6 +349,7 @@ class VersionedAsyncCall(_BaseVersionedCall, Generic[P, FormattableT]):
             metadata=self.metadata,
         )
         self._compute_closure(self._call, self.call, self.stream)
+        copy_function_metadata(self, self._call)
 
     @overload
     async def __call__(
@@ -460,6 +465,7 @@ class VersionedContextCall(_BaseVersionedCall, Generic[P, DepsT, FormattableT]):
             metadata=self.metadata,
         )
         self._compute_closure(self._call, self._call_versioned, self._stream_versioned)
+        copy_function_metadata(self, self._call)
 
     @overload
     def call(
@@ -632,6 +638,7 @@ class VersionedAsyncContextCall(_BaseVersionedCall, Generic[P, DepsT, Formattabl
             metadata=self.metadata,
         )
         self._compute_closure(self._call, self._call_versioned, self._stream_versioned)
+        copy_function_metadata(self, self._call)
 
     @overload
     async def call(
