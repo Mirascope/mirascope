@@ -185,3 +185,71 @@ def test_raw_message_has_format_tool_non_dict() -> None:
     """Test that raw_message_has_format_tool returns False for non-dict input."""
     assert raw_message_has_format_tool(None) is False
     assert raw_message_has_format_tool("not a dict") is False
+
+
+def test_encode_tool_output_json_serialization() -> None:
+    """Test that tool output results (dict, list, string) are serialized properly for Anthropic."""
+    messages = [
+        llm.UserMessage(
+            content=[
+                llm.ToolOutput(
+                    id="call_dict",
+                    name="search",
+                    result={"hits": [1, 2], "ok": True, "q": "café"},
+                ),
+                llm.ToolOutput(
+                    id="call_list",
+                    name="list_items",
+                    result=["alpha", "beta"],
+                ),
+                llm.ToolOutput(
+                    id="call_str",
+                    name="get_name",
+                    result="Alice",
+                ),
+                llm.ToolOutput(
+                    id="call_int",
+                    name="count",
+                    result=42,
+                ),
+            ]
+        )
+    ]
+    _, _, kwargs = encode_request(
+        model_id="anthropic/claude-3-5-sonnet",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+    )
+    encoded_messages = kwargs.get("messages")
+    assert isinstance(encoded_messages, list)
+    first_msg = encoded_messages[0]
+    assert isinstance(first_msg, dict)
+    encoded_content = first_msg.get("content")
+    assert encoded_content == [
+        {
+            "type": "tool_result",
+            "tool_use_id": "call_dict",
+            "content": '{"hits": [1, 2], "ok": true, "q": "caf\\u00e9"}',
+            "cache_control": None,
+        },
+        {
+            "type": "tool_result",
+            "tool_use_id": "call_list",
+            "content": '["alpha", "beta"]',
+            "cache_control": None,
+        },
+        {
+            "type": "tool_result",
+            "tool_use_id": "call_str",
+            "content": "Alice",
+            "cache_control": None,
+        },
+        {
+            "type": "tool_result",
+            "tool_use_id": "call_int",
+            "content": "42",
+            "cache_control": None,
+        },
+    ]
