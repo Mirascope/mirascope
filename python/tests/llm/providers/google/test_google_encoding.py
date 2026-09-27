@@ -6,12 +6,14 @@ import pytest
 from inline_snapshot import snapshot
 
 from mirascope import llm
+from mirascope.llm.content import ToolOutput
 from mirascope.llm.content.document import (
     Base64DocumentSource,
     Document,
     TextDocumentSource,
 )
 from mirascope.llm.exceptions import FeatureNotSupportedError
+from mirascope.llm.messages import UserMessage
 from mirascope.llm.providers.google._utils import encode_request
 from mirascope.llm.providers.google._utils.encode import (
     _raw_message_has_format_tool,  # pyright: ignore[reportPrivateUsage]
@@ -116,3 +118,45 @@ def test_raw_message_has_format_tool_non_dict() -> None:
     """Test that _raw_message_has_format_tool returns False for non-dict input."""
     assert _raw_message_has_format_tool(None) is False
     assert _raw_message_has_format_tool("not a dict") is False
+
+
+def test_tool_output_dict_result_passed_directly_as_response() -> None:
+    """A dict tool result becomes the structured `response`, not a stringified value
+
+    wrapped in `{"output": ...}`.
+    """
+    messages = [
+        UserMessage(
+            content=[ToolOutput(id="t1", name="search", result={"ok": True, "n": 1})]
+        )
+    ]
+    _, _, kwargs = encode_request(
+        model_id="google/gemini-2.5-flash",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+    )
+    response = kwargs["contents"][0]["parts"][0]["function_response"]["response"]
+    assert response == {"ok": True, "n": 1}
+
+
+def test_tool_output_non_mapping_result_is_wrapped_in_output_key() -> None:
+    """A non-dict result (e.g. a list) is still wrapped under an "output" key,
+
+    but as its native JSON value, not str()'s Python repr.
+    """
+    messages = [
+        UserMessage(
+            content=[ToolOutput(id="t1", name="search", result=["alpha", "beta"])]
+        )
+    ]
+    _, _, kwargs = encode_request(
+        model_id="google/gemini-2.5-flash",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+    )
+    response = kwargs["contents"][0]["parts"][0]["function_response"]["response"]
+    assert response == {"output": ["alpha", "beta"]}

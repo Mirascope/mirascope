@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import base64
 import json
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, TypedDict, cast
 from typing_extensions import Required
@@ -233,12 +233,18 @@ def _encode_content(
                 )
             )
         elif part.type == "tool_output":
+            jsonable_result = _base_utils.to_jsonable(part.result)
+            response = (
+                cast("dict[str, Any]", jsonable_result)
+                if isinstance(jsonable_result, Mapping)
+                else {"output": jsonable_result}
+            )
             result.append(
                 genai_types.PartDict(
                     function_response=genai_types.FunctionResponseDict(
                         id=part.id if part.id != UNKNOWN_TOOL_ID else None,
                         name=part.name,
-                        response={"output": str(part.result)},
+                        response=response,
                     )
                 )
             )

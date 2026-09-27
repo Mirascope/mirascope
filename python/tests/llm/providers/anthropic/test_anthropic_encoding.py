@@ -3,11 +3,13 @@
 from inline_snapshot import snapshot
 
 from mirascope import llm
+from mirascope.llm.content import ToolOutput
 from mirascope.llm.content.document import (
     Base64DocumentSource,
     Document,
     TextDocumentSource,
 )
+from mirascope.llm.messages import UserMessage
 from mirascope.llm.providers.anthropic._utils import encode_request
 from mirascope.llm.providers.anthropic._utils.encode import raw_message_has_format_tool
 from mirascope.llm.tools import Toolkit
@@ -185,3 +187,37 @@ def test_raw_message_has_format_tool_non_dict() -> None:
     """Test that raw_message_has_format_tool returns False for non-dict input."""
     assert raw_message_has_format_tool(None) is False
     assert raw_message_has_format_tool("not a dict") is False
+
+
+def test_tool_output_dict_result_encodes_as_json_not_python_repr() -> None:
+    """A dict tool result must reach Anthropic as JSON, not str()'s Python repr."""
+    messages = [
+        UserMessage(
+            content=[ToolOutput(id="t1", name="search", result={"ok": True, "n": 1})]
+        )
+    ]
+    _, _, kwargs = encode_request(
+        model_id="anthropic/claude-haiku-4-5",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+    )
+    tool_result = kwargs["messages"][0]["content"][0]
+    assert tool_result["content"] == '{"ok": true, "n": 1}'
+
+
+def test_tool_output_string_result_is_not_requoted() -> None:
+    """A string tool result (e.g. an error message) must pass through unchanged."""
+    messages = [
+        UserMessage(content=[ToolOutput(id="t1", name="search", result="not found")])
+    ]
+    _, _, kwargs = encode_request(
+        model_id="anthropic/claude-haiku-4-5",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+    )
+    tool_result = kwargs["messages"][0]["content"][0]
+    assert tool_result["content"] == "not found"

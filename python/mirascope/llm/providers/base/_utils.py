@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 from collections.abc import Generator, Sequence
 from contextlib import contextmanager
@@ -38,6 +39,46 @@ def has_strict_tools(tools: Sequence[AnyToolSchema | ProviderTool]) -> bool:
         True if any tool has strict=True, False otherwise
     """
     return any(isinstance(tool, ToolSchema) and tool.strict is True for tool in tools)
+
+
+def to_jsonable(result: object) -> object:
+    """Resolve a `Jsonable | str` tool result to a plain JSON-compatible value.
+
+    A `JsonableObject` (something with its own `.json() -> str` method) is
+    parsed back into a plain value via `json.loads`. Everything else
+    (`None`, `str`, `bool`, `int`, `float`, a `Sequence`, or a `Mapping`) is
+    already JSON-compatible and is returned unchanged.
+
+    Args:
+        result: A tool output's result, expected to be `Jsonable | str`.
+
+    Returns:
+        A plain value made only of JSON-native types.
+    """
+    to_json = getattr(result, "json", None)
+    if callable(to_json):
+        return json.loads(cast(str, to_json()))
+    return result
+
+
+def encode_tool_result_text(result: object) -> str:
+    """Serialize a tool call's result as text, for providers that want a string.
+
+    A plain string result is passed through unchanged (e.g. an
+    already-formatted error message). Everything else is serialized with
+    `json.dumps`, not `str()`: a `dict`/`list` result used to reach the
+    provider as `str()`'s Python repr (single-quoted, `True`/`None`), which
+    is not valid JSON.
+
+    Args:
+        result: A tool output's result, expected to be `Jsonable | str`.
+
+    Returns:
+        The result as JSON text, or verbatim if it was already a string.
+    """
+    if isinstance(result, str):
+        return result
+    return json.dumps(to_jsonable(result))
 
 
 def ensure_additional_properties_false(obj: object) -> None:

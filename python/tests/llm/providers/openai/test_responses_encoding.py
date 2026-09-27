@@ -5,11 +5,13 @@ import base64
 from inline_snapshot import snapshot
 
 from mirascope import llm
+from mirascope.llm.content import ToolOutput
 from mirascope.llm.content.document import (
     Base64DocumentSource,
     Document,
     TextDocumentSource,
 )
+from mirascope.llm.messages import UserMessage
 from mirascope.llm.providers.openai.responses._utils import encode_request
 from mirascope.llm.tools import Toolkit
 
@@ -110,6 +112,38 @@ def test_encode_base64_document() -> None:
             ],
         }
     )
+
+
+def test_tool_output_dict_result_encodes_as_json_not_python_repr() -> None:
+    """A dict tool result must reach OpenAI Responses as JSON, not str()'s repr."""
+    messages = [
+        UserMessage(
+            content=[ToolOutput(id="t1", name="search", result={"ok": True, "n": 1})]
+        )
+    ]
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-4o",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+    )
+    assert kwargs["input"][0]["output"] == '{"ok": true, "n": 1}'
+
+
+def test_tool_output_string_result_is_not_requoted() -> None:
+    """A string tool result (e.g. an error message) must pass through unchanged."""
+    messages = [
+        UserMessage(content=[ToolOutput(id="t1", name="search", result="not found")])
+    ]
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-4o",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+    )
+    assert kwargs["input"][0]["output"] == "not found"
 
 
 def test_encode_text_document() -> None:

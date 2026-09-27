@@ -273,3 +273,40 @@ def test_ensure_all_properties_required_no_properties_key() -> None:
 def test_has_strict_tools_with_empty_list() -> None:
     """Test that has_strict_tools returns False when tools is an empty list."""
     assert _utils.has_strict_tools([]) is False
+
+
+class _CustomJsonable:
+    """A minimal JsonableObject: something with its own `.json()` method."""
+
+    def json(self) -> str:
+        return '{"custom": true}'
+
+
+def test_to_jsonable_passes_through_json_native_values() -> None:
+    """None, str, bool, int, float, list, and dict are already JSON-compatible."""
+    for value in (None, "text", True, 1, 1.5, ["a", 1], {"k": "v"}):
+        assert _utils.to_jsonable(value) is value
+
+
+def test_to_jsonable_parses_a_jsonable_object() -> None:
+    """A JsonableObject's own .json() is parsed back into a plain value."""
+    assert _utils.to_jsonable(_CustomJsonable()) == {"custom": True}
+
+
+def test_encode_tool_result_text_passes_strings_through_unchanged() -> None:
+    """A string result (e.g. an error message) must not be re-quoted."""
+    assert _utils.encode_tool_result_text("plain text result") == "plain text result"
+
+
+def test_encode_tool_result_text_uses_json_not_python_repr() -> None:
+    """A dict/list result must serialize as JSON, not str()'s Python repr."""
+    assert (
+        _utils.encode_tool_result_text({"ok": True, "items": [1, 2]})
+        == '{"ok": true, "items": [1, 2]}'
+    )
+    assert _utils.encode_tool_result_text(["alpha", "beta"]) == '["alpha", "beta"]'
+
+
+def test_encode_tool_result_text_handles_a_jsonable_object() -> None:
+    """A JsonableObject result round-trips through its own .json() method."""
+    assert _utils.encode_tool_result_text(_CustomJsonable()) == '{"custom": true}'

@@ -7,12 +7,14 @@ from inline_snapshot import snapshot
 from pydantic import BaseModel
 
 from mirascope import llm
+from mirascope.llm.content import ToolOutput
 from mirascope.llm.content.document import (
     Base64DocumentSource,
     Document,
     TextDocumentSource,
 )
 from mirascope.llm.exceptions import FeatureNotSupportedError
+from mirascope.llm.messages import UserMessage
 from mirascope.llm.providers.openai.completions._utils import (
     CompletionsModelFeatureInfo,
     encode_request,
@@ -325,3 +327,39 @@ def test_raw_message_has_format_tool_non_dict() -> None:
     """Test that _raw_message_has_format_tool returns False for non-dict input."""
     assert _raw_message_has_format_tool(None) is False
     assert _raw_message_has_format_tool("not a dict") is False
+
+
+def test_tool_output_dict_result_encodes_as_json_not_python_repr() -> None:
+    """A dict tool result must reach OpenAI as JSON, not str()'s Python repr."""
+    messages = [
+        UserMessage(
+            content=[ToolOutput(id="t1", name="search", result={"ok": True, "n": 1})]
+        )
+    ]
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-4o",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+        feature_info=feature_info_for_openai_model("gpt-4o"),
+        provider_id="openai:completions",
+    )
+    assert kwargs["messages"][0]["content"] == '{"ok": true, "n": 1}'
+
+
+def test_tool_output_string_result_is_not_requoted() -> None:
+    """A string tool result (e.g. an error message) must pass through unchanged."""
+    messages = [
+        UserMessage(content=[ToolOutput(id="t1", name="search", result="not found")])
+    ]
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-4o",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+        feature_info=feature_info_for_openai_model("gpt-4o"),
+        provider_id="openai:completions",
+    )
+    assert kwargs["messages"][0]["content"] == "not found"
