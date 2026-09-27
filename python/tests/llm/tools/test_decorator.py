@@ -618,3 +618,63 @@ class TestToolExecutionError:
         assert isinstance(output.error, llm.ToolExecutionError)
         assert isinstance(output.result, str)
         assert "Expecting value" in output.result
+
+    @pytest.mark.parametrize("empty_args", ["", "   ", "\t\n"])
+    def test_sync_tool_empty_args(self, empty_args: str) -> None:
+        """Test that sync tools handle empty/whitespace tool_call.args as empty dict."""
+
+        @llm.tool
+        def ping() -> str:
+            """No-arg tool."""
+            return "pong"
+
+        tool_call = llm.ToolCall(id="call_ping", name="ping", args=empty_args)
+        output = ping.execute(tool_call)
+        assert output.error is None
+        assert output.result == "pong"
+
+    @pytest.mark.parametrize("empty_args", ["", "   ", "\t\n"])
+    @pytest.mark.asyncio
+    async def test_async_tool_empty_args(self, empty_args: str) -> None:
+        """Test that async tools handle empty/whitespace tool_call.args as empty dict."""
+
+        @llm.tool
+        async def async_ping() -> str:
+            """Async no-arg tool."""
+            return "async_pong"
+
+        tool_call = llm.ToolCall(id="call_ping", name="async_ping", args=empty_args)
+        output = await async_ping.execute(tool_call)
+        assert output.error is None
+        assert output.result == "async_pong"
+
+    @pytest.mark.parametrize("empty_args", ["", "   ", "\t\n"])
+    def test_sync_context_tool_empty_args(self, empty_args: str) -> None:
+        """Test that sync context tools handle empty/whitespace tool_call.args."""
+
+        @llm.tool
+        def ctx_ping(ctx: llm.Context[str]) -> str:
+            """Context tool."""
+            return f"ctx_{ctx.deps}"
+
+        context = llm.Context[str](deps="ok")
+        tool_call = llm.ToolCall(id="call_ctx", name="ctx_ping", args=empty_args)
+        output = ctx_ping.execute(context, tool_call)
+        assert output.error is None
+        assert output.result == "ctx_ok"
+
+    @pytest.mark.parametrize("empty_args", ["", "   ", "\t\n"])
+    @pytest.mark.asyncio
+    async def test_async_context_tool_empty_args(self, empty_args: str) -> None:
+        """Test that async context tools handle empty/whitespace tool_call.args."""
+
+        @llm.tool
+        async def async_ctx_ping(ctx: llm.Context[str]) -> str:
+            """Async context tool."""
+            return f"async_ctx_{ctx.deps}"
+
+        context = llm.Context[str](deps="ok")
+        tool_call = llm.ToolCall(id="call_actx", name="async_ctx_ping", args=empty_args)
+        output = await async_ctx_ping.execute(context, tool_call)
+        assert output.error is None
+        assert output.result == "async_ctx_ok"

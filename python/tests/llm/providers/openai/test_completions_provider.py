@@ -5,9 +5,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from openai import RateLimitError as OpenAIRateLimitError
-from openai.types.chat import ChatCompletionChunk
+from openai.types.chat import ChatCompletion, ChatCompletionChunk
 
 from mirascope import llm
+from mirascope.llm.providers.openai.completions._utils.decode import decode_response
 from mirascope.llm.providers.openai.provider import OpenAIProvider
 
 
@@ -128,3 +129,58 @@ async def test_async_call_rate_limit_error() -> None:
         # Verify it's wrapped as mirascope RateLimitError and has proper chaining
         assert isinstance(exc_info.value, llm.RateLimitError)
         assert isinstance(exc_info.value.__cause__, OpenAIRateLimitError)
+
+
+def test_decode_response_empty_tool_arguments() -> None:
+    """Test that empty or whitespace tool arguments decode to '{}' in completions."""
+    comp = ChatCompletion.model_validate(
+        {
+            "id": "comp_1",
+            "created": 1234567890,
+            "model": "gpt-4o",
+            "object": "chat.completion",
+            "choices": [
+                {
+                    "index": 0,
+                    "finish_reason": "tool_calls",
+                    "message": {
+                        "role": "assistant",
+                        "tool_calls": [
+                            {
+                                "id": "call_1",
+                                "type": "function",
+                                "function": {
+                                    "name": "no_args_tool",
+                                    "arguments": "",
+                                },
+                            },
+                            {
+                                "id": "call_2",
+                                "type": "function",
+                                "function": {
+                                    "name": "whitespace_args_tool",
+                                    "arguments": "   ",
+                                },
+                            },
+                            {
+                                "id": "call_3",
+                                "type": "function",
+                                "function": {
+                                    "name": "normal_args_tool",
+                                    "arguments": '{"x": 1}',
+                                },
+                            },
+                        ],
+                    },
+                }
+            ],
+        }
+    )
+    assistant_message, _, _ = decode_response(
+        comp, "openai/gpt-4o", "openai:completions"
+    )
+    assert assistant_message.content == [
+        llm.ToolCall(id="call_1", name="no_args_tool", args="{}"),
+        llm.ToolCall(id="call_2", name="whitespace_args_tool", args="{}"),
+        llm.ToolCall(id="call_3", name="normal_args_tool", args='{"x": 1}'),
+    ]
