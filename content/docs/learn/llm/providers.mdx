@@ -25,6 +25,7 @@ Mirascope includes several built-in providers:
 | --- | --- | --- | --- |
 | Anthropic | `llm.providers.AnthropicProvider` | `anthropic/` | `ANTHROPIC_API_KEY` |
 | Google | `llm.providers.GoogleProvider` | `google/` | `GOOGLE_API_KEY` |
+| MiniMax | `llm.providers.MiniMaxProvider` | `minimax/` | `MINIMAX_API_KEY` |
 | Mirascope | `llm.providers.MirascopeProvider` | `anthropic/`, `google/`, `openai/` | `MIRASCOPE_API_KEY` |
 | MLX | `llm.providers.MLXProvider` | `mlx-community/` | — |
 | Ollama | `llm.providers.OllamaProvider` | `ollama/` | `OLLAMA_BASE_URL` |
@@ -99,6 +100,7 @@ These provider IDs are available:
 | --- | --- |
 | `"anthropic"` | Anthropic API |
 | `"google"` | Google Generative AI API |
+| `"minimax"` | MiniMax API |
 | `"mirascope"` | Use the Mirascope Router to access many providers seamlessly |
 | `"mlx"` | MLX models on Apple Silicon |
 | `"ollama"` | Ollama local server |
