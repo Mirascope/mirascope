@@ -39,6 +39,28 @@ FunctionT = TypeVar(
 )
 
 
+def _otel_trace_attributes(
+    tags: tuple[str, ...],
+    metadata: dict[str, str],
+) -> dict[str, AttributeValue]:
+    """Emit plain OTel span attributes for trace tags and metadata."""
+    attributes: dict[str, AttributeValue] = {}
+    if tags:
+        attributes["tags"] = list(tags)
+    if metadata:
+        session_id = metadata.get("session_id")
+        if session_id is not None:
+            attributes["session.id"] = session_id
+        user_id = metadata.get("user_id")
+        if user_id is not None:
+            attributes["user.id"] = user_id
+        for key, value in metadata.items():
+            if key in ("session_id", "user_id"):
+                continue
+            attributes[f"metadata.{key}"] = value
+    return attributes
+
+
 def record_result_to_span(span: Span, result: object) -> None:
     """Records the function result in the given span.
 
@@ -205,6 +227,7 @@ class _BaseTracedFunction(_BaseFunction[P, R, FunctionT]):
                 attributes["mirascope.trace.tags"] = list(self.tags)
             if self.metadata:
                 attributes["mirascope.trace.metadata"] = json_dumps(self.metadata)
+            attributes.update(_otel_trace_attributes(self.tags, self.metadata))
             span.set(**attributes)
             yield span
 
@@ -319,6 +342,7 @@ class _BaseTracedContextFunction(
                 attributes["mirascope.trace.tags"] = list(self.tags)
             if self.metadata:
                 attributes["mirascope.trace.metadata"] = json_dumps(self.metadata)
+            attributes.update(_otel_trace_attributes(self.tags, self.metadata))
             span.set(**attributes)
             yield span
 
