@@ -116,3 +116,75 @@ def test_raw_message_has_format_tool_non_dict() -> None:
     """Test that _raw_message_has_format_tool returns False for non-dict input."""
     assert _raw_message_has_format_tool(None) is False
     assert _raw_message_has_format_tool("not a dict") is False
+
+
+def test_encode_tool_output_json_serialization() -> None:
+    """Test that tool output results (dict, list, string, primitive) are encoded properly for Google."""
+    messages = [
+        llm.UserMessage(
+            content=[
+                llm.ToolOutput(
+                    id="call_dict",
+                    name="search",
+                    result={"hits": [1, 2], "ok": True},
+                ),
+                llm.ToolOutput(
+                    id="call_list",
+                    name="list_items",
+                    result=["alpha", "beta"],
+                ),
+                llm.ToolOutput(
+                    id="call_str",
+                    name="get_name",
+                    result="Alice",
+                ),
+                llm.ToolOutput(
+                    id="call_int",
+                    name="count",
+                    result=42,
+                ),
+            ]
+        )
+    ]
+    _, _, kwargs = encode_request(
+        model_id="google/gemini-2.5-flash",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+    )
+    contents = kwargs.get("contents")
+    assert isinstance(contents, list)
+    first_content = contents[0]
+    assert isinstance(first_content, dict)
+    parts = first_content.get("parts")
+    assert parts == [
+        {
+            "function_response": {
+                "id": "call_dict",
+                "name": "search",
+                "response": {"hits": [1, 2], "ok": True},
+            }
+        },
+        {
+            "function_response": {
+                "id": "call_list",
+                "name": "list_items",
+                "response": {"output": ["alpha", "beta"]},
+            }
+        },
+        {
+            "function_response": {
+                "id": "call_str",
+                "name": "get_name",
+                "response": {"output": "Alice"},
+            }
+        },
+        {
+            "function_response": {
+                "id": "call_int",
+                "name": "count",
+                "response": {"output": 42},
+            }
+        },
+    ]

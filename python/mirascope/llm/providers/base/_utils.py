@@ -1,9 +1,17 @@
 from __future__ import annotations
 
+import json
 import logging
 from collections.abc import Generator, Sequence
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, TypeAlias, cast, get_type_hints
+from typing import (
+    TYPE_CHECKING,
+    Protocol,
+    TypeAlias,
+    cast,
+    get_type_hints,
+    runtime_checkable,
+)
 
 from ...content import Text
 from ...messages import AssistantMessage, Message, SystemMessage, UserMessage
@@ -246,3 +254,56 @@ def ensure_all_params_accessed(
         yield accessor
     finally:
         accessor.check_access_integrity(unsupported_params=unsupported_params)
+
+
+@runtime_checkable
+class _SupportsModelDump(Protocol):
+    def model_dump(self) -> object: ...
+
+
+@runtime_checkable
+class _SupportsModelDumpJson(Protocol):
+    def model_dump_json(self) -> str: ...
+
+
+@runtime_checkable
+class _SupportsJson(Protocol):
+    def json(self) -> str: ...
+
+
+def _json_default(obj: object) -> object:
+    if isinstance(obj, _SupportsModelDump):
+        return obj.model_dump()
+    if isinstance(obj, _SupportsJson):
+        return json.loads(obj.json())
+    raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
+
+
+def encode_tool_output_content(result: object) -> str:
+    """Encode a tool output result as a string for providers requiring text content.
+
+    If the result is already a string (such as an error message or string output),
+    it is returned as-is. Otherwise, it is serialized to a JSON string.
+    """
+    if isinstance(result, str):
+        return result
+    if isinstance(result, _SupportsModelDumpJson):
+        return result.model_dump_json()
+    if isinstance(result, _SupportsJson):
+        return result.json()
+    return json.dumps(result, default=_json_default)
+
+
+def encode_tool_output_response(result: object) -> dict[str, object]:
+    """Encode a tool output result for Google GenAI's FunctionResponse.
+
+    If the result is a Mapping (or Pydantic model / JsonableObject that serializes
+    to a Mapping), it is passed directly as the response dict. Otherwise, it is
+    wrapped under the "output" key.
+    """
+    if isinstance(result, str):
+        return {"output": result}
+    converted: object = json.loads(json.dumps(result, default=_json_default))
+    if isinstance(converted, dict):
+        return cast(dict[str, object], converted)
+    return {"output": converted}
