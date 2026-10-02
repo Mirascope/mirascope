@@ -73,7 +73,9 @@ class Tool(
         kwargs_callable = cast(KwargsCallable[JsonableCovariantT], self.fn)
         error: ToolError | None = None
         try:
-            kwargs_from_json = json.loads(tool_call.args)
+            kwargs_from_json = json.loads(
+                tool_call.args if tool_call.args and tool_call.args.strip() else "{}"
+            )
             result = kwargs_callable(**kwargs_from_json)
         except Exception as e:
             result = str(e)
@@ -127,7 +129,9 @@ class AsyncTool(
         kwargs_callable = cast(AsyncKwargsCallable[JsonableCovariantT], self.fn)
         error: ToolError | None = None
         try:
-            kwargs_from_json = json.loads(tool_call.args)
+            kwargs_from_json = json.loads(
+                tool_call.args if tool_call.args and tool_call.args.strip() else "{}"
+            )
             result = await kwargs_callable(**kwargs_from_json)
         except Exception as e:
             result = str(e)
@@ -191,7 +195,9 @@ class ContextTool(
         )
         error: ToolError | None = None
         try:
-            kwargs_from_json = json.loads(tool_call.args)
+            kwargs_from_json = json.loads(
+                tool_call.args if tool_call.args and tool_call.args.strip() else "{}"
+            )
             result = kwargs_callable(ctx, **kwargs_from_json)
         except Exception as e:
             result = str(e)
@@ -255,7 +261,9 @@ class AsyncContextTool(
         )
         error: ToolError | None = None
         try:
-            kwargs_from_json = json.loads(tool_call.args)
+            kwargs_from_json = json.loads(
+                tool_call.args if tool_call.args and tool_call.args.strip() else "{}"
+            )
             result = await kwargs_callable(ctx, **kwargs_from_json)
         except Exception as e:
             result = str(e)

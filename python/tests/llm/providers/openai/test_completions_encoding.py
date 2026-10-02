@@ -325,3 +325,52 @@ def test_raw_message_has_format_tool_non_dict() -> None:
     """Test that _raw_message_has_format_tool returns False for non-dict input."""
     assert _raw_message_has_format_tool(None) is False
     assert _raw_message_has_format_tool("not a dict") is False
+
+
+def test_encode_assistant_message_with_empty_tool_call_args() -> None:
+    """Test encoding an assistant message with empty/whitespace tool call args."""
+    messages = [
+        llm.messages.assistant(
+            [
+                llm.ToolCall(id="call_1", name="no_args_tool", args=""),
+                llm.ToolCall(id="call_2", name="whitespace_args_tool", args="   "),
+            ],
+            model_id="openai/gpt-4o",
+            provider_id="openai:completions",
+        ),
+    ]
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-4o",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+        feature_info=feature_info_for_openai_model("gpt-4o"),
+        provider_id="openai:completions",
+    )
+    assert kwargs.get("messages") == snapshot(
+        [
+            {
+                "role": "assistant",
+                "content": None,
+                "tool_calls": [
+                    {
+                        "id": "call_1",
+                        "type": "function",
+                        "function": {
+                            "name": "no_args_tool",
+                            "arguments": "{}",
+                        },
+                    },
+                    {
+                        "id": "call_2",
+                        "type": "function",
+                        "function": {
+                            "name": "whitespace_args_tool",
+                            "arguments": "{}",
+                        },
+                    },
+                ],
+            }
+        ]
+    )
