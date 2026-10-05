@@ -180,3 +180,40 @@ def test_encode_url_document() -> None:
             ],
         }
     )
+
+
+def test_encode_assistant_message_with_empty_tool_call_args() -> None:
+    """Test encoding an assistant message with empty/whitespace tool call args."""
+    messages = [
+        llm.messages.assistant(
+            [
+                llm.ToolCall(id="call_1", name="no_args_tool", args=""),
+                llm.ToolCall(id="call_2", name="whitespace_args_tool", args="   "),
+            ],
+            model_id="openai/gpt-4o",
+            provider_id="openai:responses",
+        ),
+    ]
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-4o",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+    )
+    assert kwargs.get("input") == snapshot(
+        [
+            {
+                "call_id": "call_1",
+                "name": "no_args_tool",
+                "arguments": "{}",
+                "type": "function_call",
+            },
+            {
+                "call_id": "call_2",
+                "name": "whitespace_args_tool",
+                "arguments": "{}",
+                "type": "function_call",
+            },
+        ]
+    )

@@ -110,11 +110,16 @@ def decode_response(
                     parts.append(Text(text=content.refusal))
                     refused = True
         elif output_item.type == "function_call":
+            args = (
+                output_item.arguments
+                if output_item.arguments and output_item.arguments.strip()
+                else "{}"
+            )
             parts.append(
                 ToolCall(
                     id=output_item.call_id,
                     name=output_item.name,
-                    args=output_item.arguments,
+                    args=args,
                 )
             )
         elif output_item.type == "reasoning":

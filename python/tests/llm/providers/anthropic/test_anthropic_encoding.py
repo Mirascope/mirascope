@@ -185,3 +185,47 @@ def test_raw_message_has_format_tool_non_dict() -> None:
     """Test that raw_message_has_format_tool returns False for non-dict input."""
     assert raw_message_has_format_tool(None) is False
     assert raw_message_has_format_tool("not a dict") is False
+
+
+def test_encode_assistant_message_with_empty_tool_call_args() -> None:
+    """Test encoding an assistant message with empty/whitespace tool call args."""
+    messages = [
+        llm.messages.assistant(
+            [
+                llm.ToolCall(id="call_1", name="no_args_tool", args=""),
+                llm.ToolCall(id="call_2", name="whitespace_args_tool", args="   "),
+            ],
+            model_id="anthropic/claude-haiku-4-5",
+            provider_id="anthropic",
+        ),
+    ]
+    _, _, kwargs = encode_request(
+        model_id="anthropic/claude-haiku-4-5",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+    )
+    assert kwargs.get("messages") == snapshot(
+        [
+            {
+                "role": "assistant",
+                "content": [
+                    {
+                        "type": "tool_use",
+                        "id": "call_1",
+                        "name": "no_args_tool",
+                        "input": {},
+                        "cache_control": None,
+                    },
+                    {
+                        "type": "tool_use",
+                        "id": "call_2",
+                        "name": "whitespace_args_tool",
+                        "input": {},
+                        "cache_control": {"type": "ephemeral"},
+                    },
+                ],
+            }
+        ]
+    )
