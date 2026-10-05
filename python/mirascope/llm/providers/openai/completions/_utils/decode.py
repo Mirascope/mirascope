@@ -116,8 +116,7 @@ class _OpenAIChunkProcessor:
 
     def __init__(self) -> None:
         self.current_content_type: Literal["text", "tool_call"] | None = None
-        self.current_tool_index: int | None = None
-        self.current_tool_id: str | None = None
+        self.current_tools: dict[int, tuple[str, str]] = {}
         self.refusal_encountered = False
 
     def process_chunk(self, chunk: openai_types.ChatCompletionChunk) -> ChunkIterator:
@@ -169,24 +168,7 @@ class _OpenAIChunkProcessor:
             for tool_call_delta in delta.tool_calls:
                 index = tool_call_delta.index
 
-                if (
-                    self.current_tool_index is not None
-                    and self.current_tool_index > index
-                ):
-                    raise RuntimeError(
-                        f"Received tool data for already-finished tool at index {index}"
-                    )  # pragma: no cover
-
-                if (
-                    self.current_tool_index is not None
-                    and self.current_tool_index < index
-                ):
-                    if self.current_tool_id is None:  # pragma: no cover
-                        raise RuntimeError("No current_tool_id for ToolCallChunk")
-                    yield ToolCallEndChunk(id=self.current_tool_id)
-                    self.current_tool_index = None
-
-                if self.current_tool_index is None:
+                if index not in self.current_tools:
                     if not tool_call_delta.function or not (
                         name := tool_call_delta.function.name
                     ):
@@ -194,23 +176,19 @@ class _OpenAIChunkProcessor:
                             f"Missing name for tool call at index {index}"
                         )  # pragma: no cover
 
-                    self.current_tool_index = index
                     if not (tool_id := tool_call_delta.id):
                         raise RuntimeError(
                             f"Missing id for tool call at index {index}"
                         )  # pragma: no cover
 
+                    self.current_tools[index] = (tool_id, name)
                     yield ToolCallStartChunk(
                         id=tool_id,
                         name=name,
                     )
-                    self.current_tool_id = tool_id
-
                 if tool_call_delta.function and tool_call_delta.function.arguments:
-                    if self.current_tool_id is None:  # pragma: no cover
-                        raise RuntimeError("No current_tool_id for ToolCallChunk")
                     yield ToolCallChunk(
-                        id=self.current_tool_id,
+                        id=self.current_tools[index][0],
                         delta=tool_call_delta.function.arguments,
                     )
 
@@ -218,9 +196,9 @@ class _OpenAIChunkProcessor:
             if self.current_content_type == "text":
                 yield TextEndChunk()
             elif self.current_content_type == "tool_call":
-                if self.current_tool_id is None:  # pragma: no cover
-                    raise RuntimeError("No current_tool_id for ToolCallChunk")
-                yield ToolCallEndChunk(id=self.current_tool_id)
+                for tool_id, _tool_name in self.current_tools.values():
+                    yield ToolCallEndChunk(id=tool_id)
+                self.current_tools.clear()
             elif self.current_content_type is not None:  # pragma: no cover
                 raise NotImplementedError()
 
