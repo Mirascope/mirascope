@@ -180,3 +180,63 @@ def test_encode_url_document() -> None:
             ],
         }
     )
+
+
+def test_encode_tool_output_json_serialization() -> None:
+    """Test that tool output results (dict, list, string) are serialized properly for responses."""
+    messages = [
+        llm.UserMessage(
+            content=[
+                llm.ToolOutput(
+                    id="call_dict",
+                    name="search",
+                    result={"hits": [1, 2], "ok": True, "q": "café"},
+                ),
+                llm.ToolOutput(
+                    id="call_list",
+                    name="list_items",
+                    result=["alpha", "beta"],
+                ),
+                llm.ToolOutput(
+                    id="call_str",
+                    name="get_name",
+                    result="Alice",
+                ),
+                llm.ToolOutput(
+                    id="call_int",
+                    name="count",
+                    result=42,
+                ),
+            ]
+        )
+    ]
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-4o",
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+    )
+    encoded_input = kwargs.get("input")
+    assert encoded_input == [
+        {
+            "call_id": "call_dict",
+            "output": '{"hits": [1, 2], "ok": true, "q": "caf\\u00e9"}',
+            "type": "function_call_output",
+        },
+        {
+            "call_id": "call_list",
+            "output": '["alpha", "beta"]',
+            "type": "function_call_output",
+        },
+        {
+            "call_id": "call_str",
+            "output": "Alice",
+            "type": "function_call_output",
+        },
+        {
+            "call_id": "call_int",
+            "output": "42",
+            "type": "function_call_output",
+        },
+    ]

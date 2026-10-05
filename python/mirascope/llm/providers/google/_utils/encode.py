@@ -238,7 +238,7 @@ def _encode_content(
                     function_response=genai_types.FunctionResponseDict(
                         id=part.id if part.id != UNKNOWN_TOOL_ID else None,
                         name=part.name,
-                        response={"output": str(part.result)},
+                        response=_base_utils.encode_tool_output_response(part.result),
                     )
                 )
             )
