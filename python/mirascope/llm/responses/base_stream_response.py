@@ -19,6 +19,7 @@ from ..content import (
     ToolCallChunk,
     ToolCallEndChunk,
     ToolCallStartChunk,
+    normalize_tool_call_args,
 )
 from ..formatting import (
     Format,
@@ -360,8 +361,7 @@ class BaseStreamResponse(
                 raise RuntimeError(
                     f"Received tool_call_end_chunk for unknown tool call ID: {chunk.id}"
                 )
-            if not tool_call.args:
-                tool_call.args = "{}"
+            tool_call.args = normalize_tool_call_args(tool_call.args)
             self._content.append(tool_call)
             self._tool_calls.append(tool_call)
             del self._current_tool_calls[chunk.id]

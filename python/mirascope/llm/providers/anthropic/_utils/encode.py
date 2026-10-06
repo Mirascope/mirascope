@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from collections.abc import Sequence
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Literal, TypedDict, cast
@@ -10,7 +9,7 @@ from typing_extensions import Required
 
 from anthropic import Omit, types as anthropic_types
 
-from ....content import ContentPart, Document, ImageMimeType
+from ....content import ContentPart, Document, ImageMimeType, parse_tool_call_args
 from ....exceptions import FeatureNotSupportedError
 from ....formatting import (
     Format,
@@ -283,7 +282,7 @@ def encode_content(
                     type="tool_use",
                     id=part.id,
                     name=part.name,
-                    input=json.loads(part.args),
+                    input=parse_tool_call_args(part.args),
                     cache_control={"type": "ephemeral"} if should_add_cache else None,
                 )
             )
