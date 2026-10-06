@@ -13,7 +13,14 @@ from .document import (
 from .image import Base64ImageSource, Image, ImageMimeType, URLImageSource
 from .text import Text, TextChunk, TextEndChunk, TextStartChunk
 from .thought import Thought, ThoughtChunk, ThoughtEndChunk, ThoughtStartChunk
-from .tool_call import ToolCall, ToolCallChunk, ToolCallEndChunk, ToolCallStartChunk
+from .tool_call import (
+    ToolCall,
+    ToolCallChunk,
+    ToolCallEndChunk,
+    ToolCallStartChunk,
+    normalize_tool_call_args,
+    parse_tool_call_args,
+)
 from .tool_output import ToolOutput
 
 ContentPart: TypeAlias = (
@@ -68,4 +75,6 @@ __all__ = [
     "URLDocumentSource",
     "URLImageSource",
     "UserContentPart",
+    "normalize_tool_call_args",
+    "parse_tool_call_args",
 ]

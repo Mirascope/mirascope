@@ -16,6 +16,7 @@ from .....content import (
     ToolCallChunk,
     ToolCallEndChunk,
     ToolCallStartChunk,
+    normalize_tool_call_args,
 )
 from .....messages import AssistantMessage
 from .....responses import (
@@ -89,7 +90,7 @@ def decode_response(
                 ToolCall(
                     id=tool_call.id,
                     name=tool_call.function.name,
-                    args=tool_call.function.arguments,
+                    args=normalize_tool_call_args(tool_call.function.arguments),
                 )
             )
 

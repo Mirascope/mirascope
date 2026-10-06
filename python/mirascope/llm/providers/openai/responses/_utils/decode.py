@@ -20,6 +20,7 @@ from .....content import (
     ToolCallChunk,
     ToolCallEndChunk,
     ToolCallStartChunk,
+    normalize_tool_call_args,
 )
 from .....messages import AssistantMessage
 from .....responses import (
@@ -114,7 +115,7 @@ def decode_response(
                 ToolCall(
                     id=output_item.call_id,
                     name=output_item.name,
-                    args=output_item.arguments,
+                    args=normalize_tool_call_args(output_item.arguments),
                 )
             )
         elif output_item.type == "reasoning":

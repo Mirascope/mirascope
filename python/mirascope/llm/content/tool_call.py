@@ -1,7 +1,33 @@
 """The `ToolCall` content class."""
 
+from __future__ import annotations
+
+import json
 from dataclasses import dataclass
 from typing import Literal
+
+
+def normalize_tool_call_args(args: str | None) -> str:
+    """Normalize LLM tool-call argument JSON.
+
+    OpenAI Completions/Responses often emit ``arguments=""`` (or whitespace) for
+    zero-parameter tools. Treat that as an empty object so downstream
+    ``json.loads`` / encode paths match the streaming assembly behavior.
+    """
+    if args is None or not str(args).strip():
+        return "{}"
+    return args
+
+
+def parse_tool_call_args(args: str | None) -> dict[str, object]:
+    """Parse tool-call argument JSON, treating empty/whitespace as ``{}``."""
+    normalized = normalize_tool_call_args(args)
+    parsed = json.loads(normalized)
+    if not isinstance(parsed, dict):
+        raise TypeError(
+            f"Tool call args must be a JSON object, got {type(parsed).__name__}"
+        )
+    return parsed
 
 
 @dataclass(kw_only=True)

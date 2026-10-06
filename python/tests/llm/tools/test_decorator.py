@@ -618,3 +618,31 @@ class TestToolExecutionError:
         assert isinstance(output.error, llm.ToolExecutionError)
         assert isinstance(output.result, str)
         assert "Expecting value" in output.result
+
+    def test_sync_tool_empty_args(self) -> None:
+        """Empty/whitespace tool args should execute as {} (OpenAI zero-arg tools)."""
+
+        @llm.tool
+        def ping() -> str:
+            """No-arg health check."""
+            return "pong"
+
+        for args in ("", "   "):
+            tool_call = llm.ToolCall(id="call_empty", name="ping", args=args)
+            output = ping.execute(tool_call)
+            assert output.error is None, f"args={args!r} -> {output.error}"
+            assert output.result == "pong"
+
+    @pytest.mark.asyncio
+    async def test_async_tool_empty_args(self) -> None:
+        """Empty tool args should execute as {} for async tools."""
+
+        @llm.tool
+        async def ping() -> str:
+            """No-arg health check."""
+            return "pong"
+
+        tool_call = llm.ToolCall(id="call_empty", name="ping", args="")
+        output = await ping.execute(tool_call)
+        assert output.error is None
+        assert output.result == "pong"

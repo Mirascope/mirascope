@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import base64
-import json
 from collections.abc import Sequence
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, TypedDict, cast
@@ -11,7 +10,7 @@ from typing_extensions import Required
 
 from google.genai import types as genai_types
 
-from ....content import ContentPart, Document
+from ....content import ContentPart, Document, parse_tool_call_args
 from ....exceptions import FeatureNotSupportedError
 from ....formatting import (
     Format,
@@ -227,7 +226,7 @@ def _encode_content(
                 genai_types.PartDict(
                     function_call=genai_types.FunctionCallDict(
                         name=part.name,
-                        args=json.loads(part.args),
+                        args=parse_tool_call_args(part.args),
                         id=part.id if part.id != UNKNOWN_TOOL_ID else None,
                     )
                 )
