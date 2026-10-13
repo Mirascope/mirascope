@@ -1,6 +1,7 @@
 """End-to-end tests for a LLM call with an image input."""
 
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -41,7 +42,6 @@ UNSUPPORTED_CONTENT: dict[str, set[ImageMimeType]] = {
 UNSUPPORTED_URL: dict[str, set[ImageMimeType]] = {
     "google/": {"image/gif"},
     "openai/": {
-        "image/png",
         "image/jpeg",
         "image/webp",
         "image/gif",
@@ -75,8 +75,8 @@ def _generate_supported_combinations(
     model_ids: list[llm.ModelId],
     mime_types: tuple[ImageMimeType, ...],
     unsupported: dict[str, set[ImageMimeType]],
-) -> list[pytest.ParameterSet]:
-    """Generate only supported model_id/mime_type combinations as pytest params."""
+) -> list[Any]:
+    """Generate combinations not excluded by the provider's MIME support rules."""
     params = []
     for model_id in model_ids:
         for mime_type in mime_types:
