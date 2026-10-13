@@ -13,6 +13,7 @@ stub_module_if_missing("mirascope.llm.providers.openai", "openai")
 stub_module_if_missing("mirascope.llm.providers.openrouter", "openai")
 stub_module_if_missing("mirascope.llm.providers.together", "openai")
 stub_module_if_missing("mirascope.llm.providers.ollama", "openai")
+stub_module_if_missing("mirascope.llm.providers.xai", "openai")
 
 # Now imports work regardless of which packages are installed
 # ruff: noqa: E402
@@ -39,6 +40,7 @@ from .provider_registry import (
     reset_provider_registry,
 )
 from .together import TogetherProvider
+from .xai import XAIModelId, XAIProvider
 
 __all__ = [
     "KNOWN_PROVIDER_IDS",
@@ -59,6 +61,8 @@ __all__ = [
     "Provider",
     "ProviderId",
     "TogetherProvider",
+    "XAIModelId",
+    "XAIProvider",
     "get_provider_for_model",
     "register_provider",
     "reset_provider_registry",
