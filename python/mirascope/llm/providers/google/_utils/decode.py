@@ -296,9 +296,11 @@ class _GoogleChunkProcessor:
         if chunk.usage_metadata:
             usage_metadata = chunk.usage_metadata
             current_input = usage_metadata.prompt_token_count or 0
-            current_output = usage_metadata.candidates_token_count or 0
-            current_cache_read = usage_metadata.cached_content_token_count or 0
             current_reasoning = usage_metadata.thoughts_token_count or 0
+            current_output = (
+                usage_metadata.candidates_token_count or 0
+            ) + current_reasoning
+            current_cache_read = usage_metadata.cached_content_token_count or 0
 
             # Include provider_tool_usage on the final usage chunk (when finish_reason is present)
             provider_tool_usage = (

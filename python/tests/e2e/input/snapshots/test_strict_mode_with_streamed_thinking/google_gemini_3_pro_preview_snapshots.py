@@ -75,13 +75,13 @@ test_snapshot = snapshot(
             "tools": [],
             "usage": {
                 "input_tokens": 13,
-                "output_tokens": 17,
+                "output_tokens": 344,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 327,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 30,
+                "total_tokens": 357,
             },
             "n_chunks": 3,
         }

@@ -79,13 +79,13 @@ So, 4200 + 4\
             "tools": [],
             "usage": {
                 "input_tokens": 13,
-                "output_tokens": 57,
+                "output_tokens": 80,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 23,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 70,
+                "total_tokens": 93,
             },
             "n_chunks": 4,
         }

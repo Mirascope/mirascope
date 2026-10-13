@@ -5,6 +5,7 @@ from typing import get_args
 from unittest.mock import MagicMock, patch
 
 import pytest
+from google.genai import types as genai_types
 from google.genai.errors import (
     ClientError as GoogleClientError,
     ServerError as GoogleServerError,
@@ -13,9 +14,15 @@ from google.genai.types import GenerateContentResponse, ThinkingLevel
 from inline_snapshot import snapshot
 
 from mirascope import llm
+from mirascope.llm.providers.google._utils.decode import (
+    _decode_usage,  # pyright: ignore[reportPrivateUsage]
+    decode_async_stream,
+    decode_stream,
+)
 from mirascope.llm.providers.google._utils.encode import google_thinking_config
 from mirascope.llm.providers.google._utils.errors import map_google_error
 from mirascope.llm.providers.google.provider import GoogleProvider
+from mirascope.llm.responses import Usage, UsageDeltaChunk
 
 
 def test_custom_base_url() -> None:
@@ -276,3 +283,141 @@ def test_google_thinking_config_unknown_model() -> None:
         {"level": "low"}, max_tokens=1000, model_id="google/gemini-unknown-model"
     )
     assert result.get("thinking_budget") == 200  # 20% of 1000
+
+
+def test_decode_usage_with_thinking_tokens() -> None:
+    """Test that non-streaming _decode_usage folds thoughts_token_count into output_tokens."""
+    usage_metadata = genai_types.GenerateContentResponseUsageMetadata(
+        prompt_token_count=100,
+        candidates_token_count=50,
+        thoughts_token_count=30,
+        cached_content_token_count=10,
+    )
+    usage = _decode_usage(usage_metadata)
+    assert usage is not None
+    assert usage.input_tokens == 100
+    assert usage.output_tokens == 80  # candidates (50) + thoughts (30)
+    assert usage.reasoning_tokens == 30
+    assert usage.cache_read_tokens == 10
+    assert usage.total_tokens == 180
+
+
+def test_decode_stream_usage_with_thinking_tokens() -> None:
+    """Test that streaming decode_stream folds thoughts_token_count into output_tokens."""
+    usage_metadata = genai_types.GenerateContentResponseUsageMetadata(
+        prompt_token_count=100,
+        candidates_token_count=50,
+        thoughts_token_count=30,
+        cached_content_token_count=10,
+    )
+    chunk = genai_types.GenerateContentResponse(
+        candidates=[
+            genai_types.Candidate(
+                content=genai_types.Content(parts=[genai_types.Part(text="hello")]),
+                finish_reason=genai_types.FinishReason.STOP,
+            )
+        ],
+        usage_metadata=usage_metadata,
+    )
+    chunks = list(decode_stream(iter([chunk]), include_thoughts=True))
+    usage_chunks = [c for c in chunks if isinstance(c, UsageDeltaChunk)]
+    assert len(usage_chunks) == 1
+    delta = usage_chunks[0]
+    assert delta.input_tokens == 100
+    assert delta.output_tokens == 80  # candidates (50) + thoughts (30)
+    assert delta.reasoning_tokens == 30
+    assert delta.cache_read_tokens == 10
+
+
+def test_decode_stream_multi_chunk_progressive_usage() -> None:
+    """Test multi-chunk stream accumulating progressive thought and candidate tokens."""
+    u1 = genai_types.GenerateContentResponseUsageMetadata(
+        prompt_token_count=100,
+        candidates_token_count=0,
+        thoughts_token_count=25,
+    )
+    c1 = genai_types.GenerateContentResponse(
+        candidates=[
+            genai_types.Candidate(
+                content=genai_types.Content(
+                    parts=[genai_types.Part(thought=True, text="thinking...")]
+                )
+            )
+        ],
+        usage_metadata=u1,
+    )
+
+    u2 = genai_types.GenerateContentResponseUsageMetadata(
+        prompt_token_count=100,
+        candidates_token_count=50,
+        thoughts_token_count=35,
+    )
+    c2 = genai_types.GenerateContentResponse(
+        candidates=[
+            genai_types.Candidate(
+                content=genai_types.Content(parts=[genai_types.Part(text="done")]),
+                finish_reason=genai_types.FinishReason.STOP,
+            )
+        ],
+        usage_metadata=u2,
+    )
+
+    accumulated_usage = Usage()
+    for item in decode_stream(iter([c1, c2]), include_thoughts=True):
+        if isinstance(item, UsageDeltaChunk):
+            accumulated_usage.input_tokens += item.input_tokens
+            accumulated_usage.output_tokens += item.output_tokens
+            accumulated_usage.reasoning_tokens += item.reasoning_tokens
+
+    assert accumulated_usage.input_tokens == 100
+    assert accumulated_usage.output_tokens == 85  # candidates (50) + thoughts (35)
+    assert accumulated_usage.reasoning_tokens == 35
+    assert accumulated_usage.total_tokens == 185
+
+
+@pytest.mark.asyncio
+async def test_decode_async_stream_usage_with_thinking_tokens() -> None:
+    """Test that async streaming folds thoughts_token_count into output_tokens."""
+
+    async def async_chunks() -> AsyncIterator[genai_types.GenerateContentResponse]:
+        u1 = genai_types.GenerateContentResponseUsageMetadata(
+            prompt_token_count=100,
+            candidates_token_count=0,
+            thoughts_token_count=20,
+        )
+        yield genai_types.GenerateContentResponse(
+            candidates=[
+                genai_types.Candidate(
+                    content=genai_types.Content(
+                        parts=[genai_types.Part(thought=True, text="thinking...")]
+                    )
+                )
+            ],
+            usage_metadata=u1,
+        )
+        u2 = genai_types.GenerateContentResponseUsageMetadata(
+            prompt_token_count=100,
+            candidates_token_count=40,
+            thoughts_token_count=30,
+        )
+        yield genai_types.GenerateContentResponse(
+            candidates=[
+                genai_types.Candidate(
+                    content=genai_types.Content(parts=[genai_types.Part(text="done")]),
+                    finish_reason=genai_types.FinishReason.STOP,
+                )
+            ],
+            usage_metadata=u2,
+        )
+
+    accumulated_usage = Usage()
+    async for item in decode_async_stream(async_chunks(), include_thoughts=True):
+        if isinstance(item, UsageDeltaChunk):
+            accumulated_usage.input_tokens += item.input_tokens
+            accumulated_usage.output_tokens += item.output_tokens
+            accumulated_usage.reasoning_tokens += item.reasoning_tokens
+
+    assert accumulated_usage.input_tokens == 100
+    assert accumulated_usage.output_tokens == 70  # candidates (40) + thoughts (30)
+    assert accumulated_usage.reasoning_tokens == 30
+    assert accumulated_usage.total_tokens == 170

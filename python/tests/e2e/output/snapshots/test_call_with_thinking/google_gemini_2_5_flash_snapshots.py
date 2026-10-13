@@ -558,13 +558,13 @@ I've meticulously reviewed the approach, and have completed the prime number lis
             "tools": [],
             "usage": {
                 "input_tokens": 365,
-                "output_tokens": 6,
+                "output_tokens": 83,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 77,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 371,
+                "total_tokens": 448,
             },
             "n_chunks": 3,
         }
@@ -1194,13 +1194,13 @@ The final answer is $\\boxed{3}$.\
             "tools": [],
             "usage": {
                 "input_tokens": 1581,
-                "output_tokens": 18,
+                "output_tokens": 56,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 38,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 1599,
+                "total_tokens": 1637,
             },
             "n_chunks": 3,
         }
