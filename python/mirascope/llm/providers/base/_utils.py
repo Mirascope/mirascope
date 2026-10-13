@@ -280,14 +280,14 @@ def _json_default(obj: object) -> object:
         return obj.model_dump()
     if isinstance(obj, _SupportsJson):
         return json.loads(obj.json())
-    raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
+    return str(obj)
 
 
 def encode_tool_output_content(result: object) -> str:
     """Encode a tool output result as a string for providers requiring text content.
 
-    If the result is already a string (such as an error message or string output),
-    it is returned as-is. Otherwise, it is serialized to a JSON string.
+    Strings and values outside the Jsonable contract retain their text encoding.
+    Other supported values are serialized to JSON.
     """
     if isinstance(result, str):
         return result
@@ -295,6 +295,11 @@ def encode_tool_output_content(result: object) -> str:
         return result.model_dump_json()
     if isinstance(result, _SupportsJson):
         return result.json()
+    if isinstance(result, (bytes, bytearray)) or (
+        result is not None
+        and not isinstance(result, (Mapping, Sequence, int, float, bool))
+    ):
+        return str(result)
     return json.dumps(result, default=_json_default)
 
 

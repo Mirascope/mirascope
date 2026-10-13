@@ -3,7 +3,6 @@
 from collections import UserDict, UserList
 from unittest.mock import patch
 
-import pytest
 from pydantic import BaseModel
 
 from mirascope import llm
@@ -336,14 +335,19 @@ def test_encode_tool_output_content_models_and_protocols() -> None:
     )
 
 
-def test_encode_tool_output_content_unserializable_raises() -> None:
-    """Test that non-serializable objects raise TypeError."""
+def test_encode_tool_output_content_unserializable_falls_back_to_text() -> None:
+    """Keep the old text fallback for values outside the Jsonable contract."""
 
     class _Unserializable:
-        pass
+        def __str__(self) -> str:
+            return "custom value"
 
-    with pytest.raises(TypeError, match="is not JSON serializable"):
-        _utils.encode_tool_output_content(_Unserializable())
+    result = _Unserializable()
+    assert _utils.encode_tool_output_content(result) == "custom value"
+    assert _utils.encode_tool_output_response(result) == {"output": "custom value"}
+    assert _utils.encode_tool_output_content({"item": result}) == (
+        '{"item": "custom value"}'
+    )
 
 
 def test_encode_tool_output_response_string() -> None:
