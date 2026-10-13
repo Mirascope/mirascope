@@ -10,111 +10,20 @@ description: API documentation for configuration
 
 Configure the ops module for tracing.
 
-When called without arguments, automatically configures Mirascope Cloud
-using the MIRASCOPE_API_KEY environment variable.
+Requires a `TracerProvider` to export traces to your preferred backend.
 
 <ParametersTable
   parameters={[
   {
-    "name": "api_key",
-    "type_info": {
-      "type_str": "str | None",
-      "description": null,
-      "kind": "union",
-      "base_type": {
-        "type_str": "Union",
-        "description": null,
-        "kind": "simple",
-        "symbol_name": "Union",
-        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
-      },
-      "parameters": [
-        {
-          "type_str": "str",
-          "description": null,
-          "kind": "simple",
-          "symbol_name": "str",
-          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
-        },
-        {
-          "type_str": "None",
-          "description": null,
-          "kind": "simple",
-          "symbol_name": "None",
-          "doc_url": "https://docs.python.org/3/library/constants.html#None"
-        }
-      ],
-      "doc_url": null
-    },
-    "default": "None",
-    "description": "Optional Mirascope Cloud API key. If not provided, uses\nMIRASCOPE_API_KEY environment variable."
-  },
-  {
-    "name": "base_url",
-    "type_info": {
-      "type_str": "str | None",
-      "description": null,
-      "kind": "union",
-      "base_type": {
-        "type_str": "Union",
-        "description": null,
-        "kind": "simple",
-        "symbol_name": "Union",
-        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
-      },
-      "parameters": [
-        {
-          "type_str": "str",
-          "description": null,
-          "kind": "simple",
-          "symbol_name": "str",
-          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
-        },
-        {
-          "type_str": "None",
-          "description": null,
-          "kind": "simple",
-          "symbol_name": "None",
-          "doc_url": "https://docs.python.org/3/library/constants.html#None"
-        }
-      ],
-      "doc_url": null
-    },
-    "default": "None"
-  },
-  {
     "name": "tracer_provider",
     "type_info": {
-      "type_str": "TracerProvider | None",
+      "type_str": "TracerProvider",
       "description": null,
-      "kind": "union",
-      "base_type": {
-        "type_str": "Union",
-        "description": null,
-        "kind": "simple",
-        "symbol_name": "Union",
-        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
-      },
-      "parameters": [
-        {
-          "type_str": "TracerProvider",
-          "description": null,
-          "kind": "simple",
-          "symbol_name": "TracerProvider",
-          "doc_url": null
-        },
-        {
-          "type_str": "None",
-          "description": null,
-          "kind": "simple",
-          "symbol_name": "None",
-          "doc_url": "https://docs.python.org/3/library/constants.html#None"
-        }
-      ],
+      "kind": "simple",
+      "symbol_name": "TracerProvider",
       "doc_url": null
     },
-    "default": "None",
-    "description": "Optional custom TracerProvider. If provided, this takes\nprecedence over automatic Mirascope Cloud configuration."
+    "description": "The TracerProvider to use for tracing."
   },
   {
     "name": "tracer_name",

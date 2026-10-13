@@ -12,15 +12,6 @@ import type { Response } from "@/llm/responses";
 
 import { traceCall } from "./traced-calls";
 
-// Mock the API client
-vi.mock("@/api/client", () => ({
-  getClient: vi.fn(() => ({
-    annotations: {
-      create: vi.fn().mockResolvedValue({ id: "annotation-123" }),
-    },
-  })),
-}));
-
 describe("traced-calls", () => {
   let provider: NodeTracerProvider;
   let exporter: InMemorySpanExporter;

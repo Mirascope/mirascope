@@ -50,7 +50,7 @@ def instrument_openai(
 
     Example:
 
-        Enable instrumentation with Mirascope Cloud:
+        Enable instrumentation:
         ```python
         from mirascope import ops
 

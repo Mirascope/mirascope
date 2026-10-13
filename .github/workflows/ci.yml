@@ -20,8 +20,7 @@ jobs:
     outputs:
       python: ${{ steps.changes.outputs.python }}
       typescript: ${{ steps.changes.outputs.typescript }}
-      cloud: ${{ steps.changes.outputs.cloud }}
-      dispatch-worker: ${{ steps.changes.outputs.dispatch-worker }}
+      website: ${{ steps.changes.outputs.website }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
@@ -34,12 +33,8 @@ jobs:
             typescript:
               - 'typescript/**'
               - '.github/workflows/ci.yml'
-            cloud:
-              - 'cloud/**'
-              - '!cloud/claws/dispatch-worker/**'
-              - '.github/workflows/ci.yml'
-            dispatch-worker:
-              - 'cloud/claws/dispatch-worker/**'
+            website:
+              - 'website/**'
               - '.github/workflows/ci.yml'
 
   codespell:
@@ -180,15 +175,55 @@ jobs:
       - name: Run `vitest` with code coverage
         run: bun run test:coverage
 
-  cloud-lint:
-    name: Cloud Lint & Type Check
+  typescript-runtime-tests:
+    name: TypeScript Runtime Tests
     needs: changes
-    if: needs.changes.outputs.cloud == 'true'
+    if: needs.changes.outputs.typescript == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
       run:
-        working-directory: cloud
+        working-directory: typescript
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup `bun`
+        uses: oven-sh/setup-bun@v2
+
+      - name: Setup `node`
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Setup `deno`
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build package
+        run: bun run build
+
+      - name: Test Node.js loader
+        run: node --import mirascope/loader tests/runtimes/transformer-test.ts
+
+      - name: Test Bun plugin
+        run: bun tests/runtimes/transformer-test.ts
+
+      - name: Test Deno compatibility
+        run: deno run --allow-read --allow-env --allow-net --node-modules-dir tests/runtimes/deno-test.ts
+
+  website-lint:
+    name: Website Lint & Type Check
+    needs: changes
+    if: needs.changes.outputs.website == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: website
     steps:
       - uses: actions/checkout@v4
 
@@ -201,37 +236,15 @@ jobs:
       - name: Run lint checks
         run: bun run lint
 
-  cloud-tests:
-    name: Cloud Tests
+  website-tests:
+    name: Website Tests
     needs: changes
-    if: needs.changes.outputs.cloud == 'true'
+    if: needs.changes.outputs.website == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
       run:
-        working-directory: cloud
-    services:
-      clickhouse:
-        image: clickhouse/clickhouse-server:24.10
-        ports:
-          - 8123:8123
-          - 9000:9000
-        env:
-          CLICKHOUSE_DB: mirascope_analytics
-          CLICKHOUSE_USER: ci
-          CLICKHOUSE_PASSWORD: ci_pass
-          CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
-        options: >-
-          --health-cmd "wget --spider -q http://localhost:8123/ping"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-    env:
-      CLICKHOUSE_URL: http://localhost:8123
-      CLICKHOUSE_USER: ci
-      CLICKHOUSE_PASSWORD: ci_pass
-      CLICKHOUSE_DATABASE: mirascope_analytics
-      CLICKHOUSE_MIGRATE_NATIVE_PORT: "9000"
+        working-directory: website
     steps:
       - uses: actions/checkout@v4
 
@@ -240,54 +253,9 @@ jobs:
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
-
-      - name: Initialize ClickHouse
-        run: bun run clickhouse:migrate
 
       - name: Run `vitest` with code coverage
         run: bun run test:coverage
-
-  dispatch-worker-lint:
-    name: Dispatch Worker Lint & Type Check
-    needs: changes
-    if: needs.changes.outputs.dispatch-worker == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: cloud/claws/dispatch-worker
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup `bun`
-        uses: oven-sh/setup-bun@v2
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Run lint checks
-        run: bun run lint
-
-  dispatch-worker-tests:
-    name: Dispatch Worker Tests
-    needs: changes
-    if: needs.changes.outputs.dispatch-worker == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    defaults:
-      run:
-        working-directory: cloud/claws/dispatch-worker
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup `bun`
-        uses: oven-sh/setup-bun@v2
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Run tests
-        run: bun run test
 
   ci-success:
     name: CI Success
@@ -298,10 +266,9 @@ jobs:
         python-tests,
         typescript-lint,
         typescript-tests,
-        cloud-lint,
-        cloud-tests,
-        dispatch-worker-lint,
-        dispatch-worker-tests,
+        typescript-runtime-tests,
+        website-lint,
+        website-tests,
       ]
     runs-on: ubuntu-latest
     if: always()

@@ -12,19 +12,6 @@ import type { Response } from "@/llm/responses";
 
 import { versionCall, extractSignatureFromString } from "./versioned-calls";
 
-// Mock the API client
-vi.mock("@/api/client", () => ({
-  getClient: vi.fn(() => ({
-    annotations: {
-      create: vi.fn().mockResolvedValue({ id: "annotation-123" }),
-    },
-    functions: {
-      findbyhash: vi.fn().mockRejectedValue(new Error("Not found")),
-      create: vi.fn().mockResolvedValue({ id: "function-uuid-123" }),
-    },
-  })),
-}));
-
 describe("versioned-calls", () => {
   let provider: NodeTracerProvider;
   let exporter: InMemorySpanExporter;
@@ -375,18 +362,6 @@ describe("versioned-calls", () => {
       expect(result.traceId).toBeTruthy();
     });
 
-    it("should return functionUuid when registered", async () => {
-      const mockResponse = createMockResponse("Hello!");
-      const mockCall = createMockCall<Record<string, never>, undefined>(
-        vi.fn().mockResolvedValue(mockResponse),
-      );
-
-      const versioned = versionCall(mockCall);
-      const result = await versioned.wrapped();
-
-      expect(result.functionUuid).toBe("function-uuid-123");
-    });
-
     it("should record error and rethrow in wrapped mode", async () => {
       const mockCall = createMockCall<Record<string, never>, undefined>(
         vi.fn().mockRejectedValue(new Error("Wrapped error")),
@@ -573,75 +548,6 @@ describe("versioned-calls", () => {
       const versioned = versionCall(mockCall);
 
       expect(versioned.versionInfo.signatureHash).toBeTruthy();
-    });
-  });
-
-  describe("function registration", () => {
-    it("should use existing function when found by hash", async () => {
-      const { getClient } = await import("@/api/client");
-      const mockFindbyhash = vi.fn().mockResolvedValue({ id: "existing-uuid" });
-      const mockCreate = vi.fn().mockResolvedValue({ id: "new-uuid" });
-      vi.mocked(getClient).mockReturnValue({
-        annotations: { create: vi.fn() },
-        functions: {
-          findbyhash: mockFindbyhash,
-          create: mockCreate,
-        },
-      } as unknown as ReturnType<typeof getClient>);
-
-      const mockCall = createMockCall<Record<string, never>, undefined>(
-        vi.fn().mockResolvedValue(createMockResponse("test")),
-      );
-
-      const versioned = versionCall(mockCall);
-      const result = await versioned.wrapped();
-
-      expect(mockFindbyhash).toHaveBeenCalled();
-      expect(mockCreate).not.toHaveBeenCalled();
-      expect(result.functionUuid).toBe("existing-uuid");
-    });
-
-    it("should handle registration failure gracefully", async () => {
-      const { getClient } = await import("@/api/client");
-      vi.mocked(getClient).mockReturnValue({
-        annotations: { create: vi.fn() },
-        functions: {
-          findbyhash: vi.fn().mockRejectedValue(new Error("Not found")),
-          create: vi.fn().mockRejectedValue(new Error("API error")),
-        },
-      } as unknown as ReturnType<typeof getClient>);
-
-      const mockResponse = createMockResponse("Hello!");
-      const mockCall = createMockCall<Record<string, never>, undefined>(
-        vi.fn().mockResolvedValue(mockResponse),
-      );
-
-      const versioned = versionCall(mockCall);
-      const result = await versioned();
-
-      expect(result).toBe(mockResponse);
-    });
-
-    it("should handle registration failure in wrapped mode", async () => {
-      const { getClient } = await import("@/api/client");
-      vi.mocked(getClient).mockReturnValue({
-        annotations: { create: vi.fn() },
-        functions: {
-          findbyhash: vi.fn().mockRejectedValue(new Error("Not found")),
-          create: vi.fn().mockRejectedValue(new Error("API error")),
-        },
-      } as unknown as ReturnType<typeof getClient>);
-
-      const mockResponse = createMockResponse("Hello!");
-      const mockCall = createMockCall<Record<string, never>, undefined>(
-        vi.fn().mockResolvedValue(mockResponse),
-      );
-
-      const versioned = versionCall(mockCall);
-      const result = await versioned.wrapped();
-
-      expect(result.result).toBe(mockResponse);
-      expect(result.functionUuid).toBeUndefined();
     });
   });
 });

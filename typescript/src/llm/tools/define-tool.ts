@@ -284,7 +284,7 @@ export function defineTool<
   ) {
     // Zod-native path
     const { validator, tool } = args as ZodToolArgs<Z>;
-    const parameters = extractSchemaFromZod(validator);
+    const { schema: parameters } = extractSchemaFromZod(validator);
 
     const callable = async (toolArgs: InferZod<Z>): Promise<Jsonable> => {
       const validatedArgs = validateWithZod(toolArgs, validator);
@@ -445,7 +445,7 @@ export function defineContextTool<
   ) {
     // Zod-native path
     const { validator, tool } = args as ZodContextToolArgs<Z, DepsT>;
-    const parameters = extractSchemaFromZod(validator);
+    const { schema: parameters } = extractSchemaFromZod(validator);
 
     const callable = async (
       ctx: Context<DepsT>,

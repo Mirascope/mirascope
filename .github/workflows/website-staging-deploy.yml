@@ -1,0 +1,41 @@
+name: Deploy Website to Staging
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "website/**"
+      - "content/**"
+      - ".github/workflows/website-staging-deploy.yml"
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build for staging
+        run: bun run build:staging
+        env:
+          CLOUDFLARE_ENV: staging
+
+      - name: Deploy to Cloudflare Workers (Staging)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: website
+          command: deploy --env staging
+
+      - name: Deployment complete
+        run: echo "Successfully deployed to staging at https://staging.mirascope.com"

@@ -1,7 +1,14 @@
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
+
 from mirascope import llm, ops
 
-# Configure Mirascope Cloud
-ops.configure()
+# Set up OpenTelemetry tracing with a console exporter
+provider = TracerProvider()
+provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
+
+# Configure tracing with the provider
+ops.configure(tracer_provider=provider)
 
 # Enable automatic LLM instrumentation for Gen AI spans
 ops.instrument_llm()

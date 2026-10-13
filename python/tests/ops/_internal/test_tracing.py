@@ -4,15 +4,15 @@ from __future__ import annotations
 
 from collections.abc import Generator
 from typing import Any, TypeVar
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 from inline_snapshot import snapshot
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
+from opentelemetry.trace import format_span_id, format_trace_id
 
 from mirascope import llm, ops
-from mirascope.ops._internal.exporters.utils import format_span_id, format_trace_id
 
 from ..utils import extract_span_data
 
@@ -1398,92 +1398,57 @@ def test_traced_context_call_with_metadata(span_exporter: InMemorySpanExporter) 
 def test_sync_trace_annotate(
     span_exporter: InMemorySpanExporter,
 ) -> None:
-    """Test Trace.annotate sends annotation to API."""
-    mock_client = MagicMock()
+    """Test Trace.annotate is a no-op after span finishes (cloud service removed)."""
 
-    with patch(
-        "mirascope.ops._internal.traced_functions.get_sync_client",
-        return_value=mock_client,
-    ):
+    @ops.trace
+    def process(x: int) -> int:
+        return x * 2
 
-        @ops.trace
-        def process(x: int) -> int:
-            return x * 2
-
-        trace = process.wrapped(5)
-        trace.annotate(
-            label="pass", reasoning="correct output", metadata={"score": 100}
-        )
-
-        mock_client.annotations.create.assert_called_once_with(
-            otel_span_id=trace.span_id,
-            otel_trace_id=trace.trace_id,
-            label="pass",
-            reasoning="correct output",
-            metadata={"score": 100},
-        )
+    trace = process.wrapped(5)
+    # annotate is called after the span finishes; it silently does nothing
+    trace.annotate(label="pass", reasoning="correct output", metadata={"score": 100})
+    assert trace.result == 10
 
 
 @pytest.mark.asyncio
 async def test_async_trace_annotate(
     span_exporter: InMemorySpanExporter,
 ) -> None:
-    """Test AsyncTrace.annotate sends annotation to API."""
-    mock_client = MagicMock()
-    mock_client.annotations.create = AsyncMock()
+    """Test AsyncTrace.annotate is a no-op after span finishes (cloud service removed)."""
 
-    with patch(
-        "mirascope.ops._internal.traced_functions.get_async_client",
-        return_value=mock_client,
-    ):
+    @ops.trace
+    async def process(x: int) -> int:
+        return x * 2
 
-        @ops.trace
-        async def process(x: int) -> int:
-            return x * 2
-
-        trace = await process.wrapped(5)
-        await trace.annotate(
-            label="fail", reasoning="wrong output", metadata={"expected": 10}
-        )
-
-        mock_client.annotations.create.assert_called_once_with(
-            otel_span_id=trace.span_id,
-            otel_trace_id=trace.trace_id,
-            label="fail",
-            reasoning="wrong output",
-            metadata={"expected": 10},
-        )
+    trace = await process.wrapped(5)
+    # annotate is called after the span finishes; it silently does nothing
+    await trace.annotate(
+        label="fail", reasoning="wrong output", metadata={"expected": 10}
+    )
+    assert trace.result == 10
 
 
 def test_sync_trace_annotate_noop_span() -> None:
     """Test Trace.annotate does nothing for no-op spans."""
-    with patch(
-        "mirascope.ops._internal.traced_functions.get_sync_client",
-    ) as mock_get_client:
-        from mirascope.ops._internal.spans import Span
-        from mirascope.ops._internal.traced_functions import Trace
+    from mirascope.ops._internal.spans import Span
+    from mirascope.ops._internal.traced_functions import Trace
 
-        noop_span = Span("test")
-        trace = Trace(result=42, span=noop_span)
-        trace.annotate(label="pass")
-
-        mock_get_client.assert_not_called()
+    noop_span = Span("test")
+    trace = Trace(result=42, span=noop_span)
+    # Should not raise - just silently returns
+    trace.annotate(label="pass")
 
 
 @pytest.mark.asyncio
 async def test_async_trace_annotate_noop_span() -> None:
     """Test AsyncTrace.annotate does nothing for no-op spans."""
-    with patch(
-        "mirascope.ops._internal.traced_functions.get_async_client",
-    ) as mock_get_client:
-        from mirascope.ops._internal.spans import Span
-        from mirascope.ops._internal.traced_functions import AsyncTrace
+    from mirascope.ops._internal.spans import Span
+    from mirascope.ops._internal.traced_functions import AsyncTrace
 
-        noop_span = Span("test")
-        trace = AsyncTrace(result=42, span=noop_span)
-        await trace.annotate(label="pass")
-
-        mock_get_client.assert_not_called()
+    noop_span = Span("test")
+    trace = AsyncTrace(result=42, span=noop_span)
+    # Should not raise - just silently returns
+    await trace.annotate(label="pass")
 
 
 def test_sync_trace_with_span_injection(

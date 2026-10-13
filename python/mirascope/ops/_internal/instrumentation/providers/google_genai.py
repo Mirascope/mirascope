@@ -53,7 +53,7 @@ def instrument_google_genai(
 
     Example:
 
-        Enable instrumentation with Mirascope Cloud:
+        Enable instrumentation:
         ```python
         from mirascope import ops
 

@@ -14,7 +14,7 @@ await llm.mcp.using(
     const tools = await client.listTools();
 
     const learnMcp = llm.defineCall({
-      model: "google/gemini-2.0-flash",
+      model: "google/gemini-2.5-flash",
       thinking: { level: "medium", includeThoughts: true },
       tools,
       template: () =>

@@ -1,0 +1,106 @@
+import {
+  Outlet,
+  createRootRoute,
+  HeadContent,
+  Scripts,
+  useRouterState,
+} from "@tanstack/react-router";
+/// <reference types="vite/client" />
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+
+import DevToolsButton from "@/app/components/blocks/dev/dev-tools-button";
+import Footer from "@/app/components/blocks/navigation/footer";
+import Header from "@/app/components/blocks/navigation/header";
+import {
+  ThemeProvider,
+  useIsLandingPage,
+} from "@/app/components/blocks/theme-provider";
+import { Toaster } from "@/app/components/ui/sonner";
+import globalsCss from "@/app/styles/globals.css?url";
+
+export const Route = createRootRoute({
+  head: () => ({
+    meta: [
+      {
+        charSet: "utf-8",
+      },
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1",
+      },
+      {
+        title: "Mirascope",
+      },
+    ],
+    links: [
+      { rel: "stylesheet", href: globalsCss },
+      {
+        rel: "apple-touch-icon",
+        sizes: "180x180",
+        href: "/icons/apple-touch-icon.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "32x32",
+        href: "/icons/favicon-32x32.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "16x16",
+        href: "/icons/favicon-16x16.png",
+      },
+      { rel: "manifest", href: "/manifest.json", color: "#fffff" },
+      { rel: "icon", href: "/icons/favicon.ico" },
+    ],
+  }),
+  component: RootComponent,
+});
+
+function AppContent() {
+  const router = useRouterState();
+  const currentPath = router.location.pathname;
+  const isDocsRoute =
+    currentPath === "/docs" || currentPath.startsWith("/docs/");
+  const isLandingPage = useIsLandingPage();
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      <Header />
+      <div
+        className={
+          isLandingPage
+            ? "w-full pt-(--header-height)"
+            : isDocsRoute
+              ? "mx-auto w-full max-w-7xl grow pt-(--header-height-with-selector)"
+              : "mx-auto w-full max-w-7xl grow pt-(--header-height)"
+        }
+      >
+        <main className="grow">
+          <Outlet />
+        </main>
+      </div>
+      <Footer />
+      <Toaster />
+      <TanStackRouterDevtools />
+      <DevToolsButton className="fixed bottom-10 left-2 z-50" />
+      <Scripts />
+    </div>
+  );
+}
+
+function RootComponent() {
+  return (
+    <html>
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        <ThemeProvider>
+          <AppContent />
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}

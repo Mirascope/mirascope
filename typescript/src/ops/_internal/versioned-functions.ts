@@ -8,8 +8,6 @@
 import type { Span } from "@/ops/_internal/spans";
 import type { Jsonable } from "@/ops/_internal/types";
 
-import { getClient } from "@/api/client";
-
 /**
  * Metadata injected by compile-time transform.
  * This captures the original TypeScript source before compilation.
@@ -29,8 +27,6 @@ export interface ClosureMetadata {
  * Information about a versioned function.
  */
 export interface VersionInfo {
-  /** UUID assigned by Mirascope Cloud (available after registration) */
-  readonly uuid?: string;
   /** SHA256 hash of the function's code */
   readonly hash: string;
   /** SHA256 hash of the function's signature */
@@ -52,16 +48,10 @@ export interface VersionInfo {
  *
  * For new functions without server history, returns "1.0" as the initial version.
  *
- * TODO: When API client is available, query the server for existing versions:
- * 1. Check if a function with matching hash exists -> use its version
- * 2. If no matches, return "1.0" as initial version
- *
- * @param _hash - SHA256 hash of the complete closure code (unused until server query)
+ * @param _hash - SHA256 hash of the complete closure code (unused)
  * @returns Version string in X.Y format
  */
 export function computeVersion(_hash: string): string {
-  // For now, always return "1.0" as initial version
-  // Server queries will be implemented when API is available
   return "1.0";
 }
 
@@ -79,14 +69,12 @@ export interface VersionedResult<R> {
   readonly spanId: string | null;
   /** The OTEL trace ID, if available */
   readonly traceId: string | null;
-  /** UUID of the registered function, if available */
-  readonly functionUuid?: string;
   /**
    * Annotate this trace with a pass/fail label.
    *
-   * Sends the annotation to Mirascope Cloud for evaluation tracking.
+   * Sets annotation attributes on the span.
    */
-  annotate(options: AnnotateOptions): Promise<void>;
+  annotate(options: AnnotateOptions): void;
   /**
    * Add tags to this trace.
    *
@@ -144,25 +132,22 @@ export interface VersionedFunction<Args extends unknown[], R> {
  *
  * @param result - The result returned by the versioned function
  * @param span - The span associated with this execution
- * @param functionUuid - Optional UUID of the registered function
  * @returns A VersionedResult object with the result and metadata
  */
 export function createVersionedResult<R>(
   result: R,
   span: Span,
-  functionUuid?: string,
 ): VersionedResult<R> {
   return {
     result,
     span,
-    functionUuid,
     get spanId() {
       return span.spanId;
     },
     get traceId() {
       return span.traceId;
     },
-    async annotate({ label, reasoning, metadata }) {
+    annotate({ label, reasoning, metadata }) {
       const spanId = span.spanId;
       const traceId = span.traceId;
 
@@ -170,14 +155,17 @@ export function createVersionedResult<R>(
         return;
       }
 
-      const client = getClient();
-      await client.annotations.create({
-        otelSpanId: spanId,
-        otelTraceId: traceId,
-        label,
-        reasoning: reasoning ?? null,
-        metadata: metadata ?? null,
-      });
+      span.set({ "mirascope.annotation.label": label });
+
+      if (reasoning) {
+        span.set({ "mirascope.annotation.reasoning": reasoning });
+      }
+
+      if (metadata) {
+        span.set({
+          "mirascope.annotation.metadata": JSON.stringify(metadata),
+        });
+      }
     },
     async tag(..._tags: string[]): Promise<void> {
       throw new Error(

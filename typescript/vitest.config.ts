@@ -23,6 +23,7 @@ export default defineConfig({
         "src/**/__fixtures__/**",
         "src/**/index.ts",
         "src/bun.ts",
+        "src/loader.ts",
         "src/ops/_internal/types.ts",
         // generated Fern code
         "src/api/_generated",

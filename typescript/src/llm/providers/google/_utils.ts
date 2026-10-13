@@ -30,6 +30,7 @@ import type {
   ToolCall,
   UserContentPart,
 } from "@/llm/content";
+import type { Format } from "@/llm/formatting";
 import type { AssistantMessage, Message } from "@/llm/messages";
 import type { Params } from "@/llm/models";
 import type {
@@ -197,6 +198,7 @@ function processContentParts(
       case "tool_call":
         parts.push({
           functionCall: {
+            id: part.id !== UNKNOWN_TOOL_ID ? part.id : undefined,
             name: part.name,
             args: JSON.parse(part.args) as Record<string, unknown>,
           },
@@ -204,13 +206,17 @@ function processContentParts(
         break;
 
       case "tool_output": {
-        // Google expects the result to be an object
-        const response =
-          typeof part.result === "string"
-            ? { result: part.result }
-            : (part.result as Record<string, unknown>);
+        // Google expects response to be a plain object.
+        // Match Python SDK: response={"output": str(part.result)}
+        const response = {
+          output:
+            typeof part.result === "string"
+              ? part.result
+              : JSON.stringify(part.result),
+        };
         parts.push({
           functionResponse: {
+            id: part.id !== UNKNOWN_TOOL_ID ? part.id : undefined,
             name: part.name,
             response,
           },
@@ -448,6 +454,7 @@ export function buildRequestParams(
   modelId: GoogleModelId,
   messages: readonly Message[],
   tools?: Tools,
+  format?: Format | null,
   params: Params = {},
 ): GenerateContentParameters {
   return ParamHandler.with(params, "google", modelId, (p) => {
@@ -465,16 +472,16 @@ export function buildRequestParams(
       maxOutputTokens: maxTokens,
     };
 
-    if (systemInstruction) {
-      config.systemInstruction = systemInstruction;
-    }
+    // Start with system instruction from messages
+    let systemPrompt = systemInstruction;
 
     /* v8 ignore start - tool encoding will be tested via e2e */
+    // Collect all tools (explicit + format tool)
+    const regularTools: ToolSchema[] = [];
+    let hasWebSearch = false;
+
     if (tools !== undefined && tools.length > 0) {
       // Separate regular tools from provider tools
-      const regularTools: ToolSchema[] = [];
-      let hasWebSearch = false;
-
       for (const tool of tools) {
         // Check for provider tools first (WebSearchTool extends ProviderTool)
         if (isProviderTool(tool)) {
@@ -495,22 +502,39 @@ export function buildRequestParams(
           regularTools.push(tool as ToolSchema);
         }
       }
+    }
 
-      const googleTools: NonNullable<GenerateContentConfig["tools"]> = [];
-
-      if (regularTools.length > 0) {
-        googleTools.push(...encodeTools(regularTools));
+    // Add format tool if mode is 'tool'
+    if (format) {
+      if (format.mode === "tool") {
+        const formatToolSchema = format.createToolSchema();
+        regularTools.push(formatToolSchema);
       }
-
-      if (hasWebSearch) {
-        googleTools.push({ googleSearch: {} });
-      }
-
-      if (googleTools.length > 0) {
-        config.tools = googleTools;
+      if (format.formattingInstructions) {
+        systemPrompt = systemPrompt
+          ? `${format.formattingInstructions}\n\n${systemPrompt}`
+          : format.formattingInstructions;
       }
     }
+
+    const googleTools: NonNullable<GenerateContentConfig["tools"]> = [];
+
+    if (regularTools.length > 0) {
+      googleTools.push(...encodeTools(regularTools));
+    }
+
+    if (hasWebSearch) {
+      googleTools.push({ googleSearch: {} });
+    }
+
+    if (googleTools.length > 0) {
+      config.tools = googleTools;
+    }
     /* v8 ignore stop */
+
+    if (systemPrompt) {
+      config.systemInstruction = systemPrompt;
+    }
 
     const temperature = p.get("temperature");
     if (temperature !== undefined) {

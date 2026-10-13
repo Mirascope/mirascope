@@ -2,7 +2,7 @@
  * Session context helpers for grouping traces.
  */
 
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 
 import type { Jsonable } from "@/ops/_internal/types";
 

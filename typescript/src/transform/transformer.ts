@@ -9,7 +9,7 @@
  * - `versionCall()`, `ops.versionCall()` - injects `__closure` property for calls
  */
 
-import { createHash } from "crypto";
+import { createHash } from "node:crypto";
 import ts from "typescript";
 
 import { ClosureCollector } from "../ops/_internal/closure-collector";

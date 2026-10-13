@@ -8,19 +8,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import { version, type VersionedFunction } from "./versioning";
 
-// Mock the API client
-vi.mock("@/api/client", () => ({
-  getClient: vi.fn(() => ({
-    annotations: {
-      create: vi.fn().mockResolvedValue({ id: "annotation-123" }),
-    },
-    functions: {
-      findbyhash: vi.fn().mockRejectedValue(new Error("Not found")),
-      create: vi.fn().mockResolvedValue({ id: "function-uuid-123" }),
-    },
-  })),
-}));
-
 describe("versioning", () => {
   let provider: NodeTracerProvider;
   let exporter: InMemorySpanExporter;
@@ -73,14 +60,11 @@ describe("versioning", () => {
     });
 
     it("should use anonymous for unnamed functions at runtime", async () => {
-      // At runtime (without transform), anonymous functions get "anonymous" as name
-      // The transform would infer the variable name, but tests run without transform
       const versioned = version(async () => 42);
 
       await versioned();
 
       const spans = exporter.getFinishedSpans();
-      // Runtime fallback uses "anonymous" for unnamed arrow functions
       expect(spans[0]!.name).toBe("anonymous");
     });
 
@@ -129,10 +113,8 @@ describe("versioning", () => {
       const attrs = spans[0]!.attributes;
       expect(attrs["mirascope.trace.arg_types"]).toBeTruthy();
       expect(attrs["mirascope.trace.arg_values"]).toBeTruthy();
-      // arg_types should contain parameter type info
       const argTypes = JSON.parse(attrs["mirascope.trace.arg_types"] as string);
       expect(argTypes).toHaveProperty("x");
-      // arg_values should contain the actual values
       const argValues = JSON.parse(
         attrs["mirascope.trace.arg_values"] as string,
       );
@@ -398,15 +380,6 @@ describe("versioning", () => {
       expect(result.traceId).toBeTruthy();
     });
 
-    it("should return functionUuid when registered", async () => {
-      const fn = async (x: number) => x * 2;
-      const versioned = version(fn);
-
-      const result = await versioned.wrapped(5);
-
-      expect(result.functionUuid).toBe("function-uuid-123");
-    });
-
     it("should provide annotate method", async () => {
       const fn = async (x: number) => x * 2;
       const versioned = version(fn);
@@ -514,8 +487,6 @@ describe("versioning", () => {
       const versioned1 = version(fn1);
       const versioned2 = version(fn2);
 
-      // Note: At runtime, identical arrow functions are still different objects
-      // so their toString() may differ. This test verifies hash computation works.
       expect(versioned1.versionInfo.hash).toBeTruthy();
       expect(versioned2.versionInfo.hash).toBeTruthy();
     });
@@ -579,7 +550,6 @@ describe("versioning", () => {
   describe("version() - unified API with Call objects", () => {
     // Create a mock Call-like object
     function createMockCall() {
-      // Use a named function for the template to avoid readonly name issue
       function mockTemplate({ query }: { query: string }) {
         return `Hello ${query}`;
       }
@@ -618,70 +588,6 @@ describe("versioning", () => {
       const result = await versioned(5);
       expect(result).toBe(10);
       expect(versioned.versionInfo.name).toBe("curried-fn");
-    });
-  });
-
-  describe("function registration", () => {
-    it("should use existing function when found by hash", async () => {
-      const { getClient } = await import("@/api/client");
-      const mockFindbyhash = vi
-        .fn()
-        .mockResolvedValue({ id: "existing-uuid", language: "typescript" });
-      const mockCreate = vi.fn().mockResolvedValue({ id: "new-uuid" });
-      vi.mocked(getClient).mockReturnValue({
-        annotations: { create: vi.fn() },
-        functions: {
-          findbyhash: mockFindbyhash,
-          create: mockCreate,
-        },
-      } as unknown as ReturnType<typeof getClient>);
-
-      const fn = async (x: number) => x * 2;
-      const versioned = version(fn);
-
-      const result = await versioned.wrapped(5);
-
-      expect(mockFindbyhash).toHaveBeenCalled();
-      expect(mockCreate).not.toHaveBeenCalled();
-      expect(result.functionUuid).toBe("existing-uuid");
-    });
-
-    it("should handle registration failure gracefully", async () => {
-      const { getClient } = await import("@/api/client");
-      vi.mocked(getClient).mockReturnValue({
-        annotations: { create: vi.fn() },
-        functions: {
-          findbyhash: vi.fn().mockRejectedValue(new Error("Not found")),
-          create: vi.fn().mockRejectedValue(new Error("API error")),
-        },
-      } as unknown as ReturnType<typeof getClient>);
-
-      const fn = async (x: number) => x * 2;
-      const versioned = version(fn);
-
-      // Should still execute without error
-      const result = await versioned(5);
-
-      expect(result).toBe(10);
-    });
-
-    it("should handle registration failure in wrapped mode", async () => {
-      const { getClient } = await import("@/api/client");
-      vi.mocked(getClient).mockReturnValue({
-        annotations: { create: vi.fn() },
-        functions: {
-          findbyhash: vi.fn().mockRejectedValue(new Error("Not found")),
-          create: vi.fn().mockRejectedValue(new Error("API error")),
-        },
-      } as unknown as ReturnType<typeof getClient>);
-
-      const fn = async (x: number) => x * 2;
-      const versioned = version(fn);
-
-      const result = await versioned.wrapped(5);
-
-      expect(result.result).toBe(10);
-      expect(result.functionUuid).toBeUndefined();
     });
   });
 });

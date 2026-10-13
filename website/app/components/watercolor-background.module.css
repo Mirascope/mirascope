@@ -1,0 +1,80 @@
+/* Watercolor background - iOS Safari compatible fixed version */
+.base {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* Fallback */
+  height: 100dvh;
+  /* Dynamic viewport height for iOS */
+  min-height: 100vh;
+  /* Ensures it's at least as tall as viewport */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  z-index: -1;
+  pointer-events: none;
+  transition: background-image 0.2s ease-in-out;
+  -webkit-transition: background-image 0.2s ease-in-out;
+  /* Add extra space to ensure coverage when scrolling */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.landing {
+  background-image: url("/assets/backgrounds/light.webp");
+}
+
+@media (max-width: 1200px) {
+  .landing {
+    background-image: url("/assets/backgrounds/light-medium.webp");
+    height: 100dvh;
+  }
+}
+
+@media (max-width: 800px) {
+  .landing {
+    background-image: url("/assets/backgrounds/light-small.webp");
+    height: 100dvh;
+  }
+}
+
+:global(.dark) .landing {
+  background-image: url("/assets/backgrounds/dark.webp");
+  transition: background-image 0.3s ease;
+  -webkit-transition: background-image 0.3s ease;
+}
+
+@media (max-width: 1200px) {
+  :global(.dark) .landing {
+    background-image: url("/assets/backgrounds/dark-medium.webp");
+    height: 100dvh;
+  }
+}
+
+@media (max-width: 800px) {
+  :global(.dark) .landing {
+    background-image: url("/assets/backgrounds/dark-small.webp");
+    height: 100dvh;
+  }
+}
+
+:global(.sunset-time) .landing {
+  background-image: url("/assets/backgrounds/sunset.webp");
+  transition: background-image 0.3s ease;
+  -webkit-transition: background-image 0.3s ease;
+}
+
+@media (max-width: 1200px) {
+  :global(.sunset-time) .landing {
+    background-image: url("/assets/backgrounds/sunset-medium.webp");
+    height: 100dvh;
+  }
+}
+
+@media (max-width: 800px) {
+  :global(.sunset-time) .landing {
+    background-image: url("/assets/backgrounds/sunset-small.webp");
+    height: 100dvh;
+  }
+}

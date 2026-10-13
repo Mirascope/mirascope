@@ -3,7 +3,12 @@
  */
 
 // Configuration
-export { configure, tracerContext } from "@/ops/_internal/configuration";
+export {
+  configure,
+  tracerContext,
+  forceFlush,
+  shutdown,
+} from "@/ops/_internal/configuration";
 export type { ConfigureOptions } from "@/ops/_internal/configuration";
 
 // Exceptions
@@ -82,9 +87,6 @@ export type {
  * const versionedCall = version(myCall, options);
  */
 export { versionCall } from "@/ops/_internal/versioned-calls";
-
-// Exporters
-export { MirascopeOTLPExporter } from "@/ops/_internal/exporters";
 
 // LLM Instrumentation (Mirascope Model class)
 export {

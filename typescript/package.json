@@ -1,6 +1,6 @@
 {
   "name": "mirascope",
-  "version": "2.3.0-alpha.5",
+  "version": "2.5.0-alpha.0",
   "private": false,
   "license": "MIT",
   "workspaces": [
@@ -42,11 +42,20 @@
       "import": "./dist/bun.js",
       "require": "./dist/bun.cjs"
     },
+    "./node-loader": {
+      "types": "./dist/node-loader.d.ts",
+      "import": "./dist/node-loader.js",
+      "require": "./dist/node-loader.cjs"
+    },
+    "./loader": {
+      "import": "./dist/loader.js",
+      "require": "./dist/loader.cjs"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
     "clean": "rm -rf dist .packs .tmp-install-test",
-    "build": "bun run clean && tsup src/index.ts src/transform/index.ts src/transform/plugins/vite.ts src/transform/plugins/esbuild.ts src/bun.ts --format esm,cjs --dts --sourcemap --out-dir dist --treeshake --external bun --external typescript",
+    "build": "bun run clean && tsup src/index.ts src/transform/index.ts src/transform/plugins/vite.ts src/transform/plugins/esbuild.ts src/bun.ts src/node-loader.ts src/loader.ts --format esm,cjs --dts --sourcemap --out-dir dist --treeshake --external bun --external typescript",
     "typecheck": "bunx tsc --noEmit",
     "lint": "bun run typecheck && bun run lint:oxlint && bun run format:check",
     "lint:oxlint": "oxlint .",
@@ -57,8 +66,8 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
+    "test:runtimes": "node --import mirascope/loader tests/runtimes/transformer-test.ts && bun tests/runtimes/transformer-test.ts && deno run --allow-read --allow-env --allow-net --node-modules-dir tests/runtimes/deno-test.ts",
     "codegen": "bun run scripts/codegen/run.ts",
-    "example": "bun run scripts/run-example.ts",
     "prepublishOnly": "bun run build",
     "pack:dry": "npm pack --dry-run",
     "verify": "bun run build && bun run pack:dry",
@@ -79,6 +88,7 @@
     "@pollyjs/adapter-fetch": "^6.0.7",
     "@pollyjs/core": "^6.0.6",
     "@pollyjs/persister": "^6.0.6",
+    "@rollup/plugin-typescript": "^12.3.0",
     "@types/bun": "^1.3.8",
     "@types/node": "^25.2.2",
     "@vitest/coverage-v8": "^3.0.0",
@@ -167,5 +177,8 @@
     "vite": {
       "optional": true
     }
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

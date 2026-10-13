@@ -11,7 +11,6 @@ from typing import Any, Generic, Literal, TypeVar
 from opentelemetry.util.types import AttributeValue
 
 from ..._utils import copy_function_metadata
-from ...api.client import get_async_client, get_sync_client
 from ...llm.context import Context, DepsT
 from ...llm.responses.root_response import RootResponse
 from .instrumentation.llm.serialize import attach_mirascope_response
@@ -101,13 +100,12 @@ class Trace(_BaseTrace[R]):
         if self.span.span_id is None or self.span.trace_id is None:
             return
 
-        get_sync_client().annotations.create(
-            otel_span_id=self.span.span_id,
-            otel_trace_id=self.span.trace_id,
-            label=label,
-            reasoning=reasoning,
-            metadata=metadata,
-        )
+        annotation_attrs: dict[str, AttributeValue] = {
+            "mirascope.annotation.label": label,
+        }
+        if reasoning is not None:
+            annotation_attrs["mirascope.annotation.reasoning"] = reasoning
+        self.span.set(**annotation_attrs)
 
     def tag(self, *tags: str) -> None:
         """Adds given tags to the current trace span."""
@@ -137,13 +135,12 @@ class AsyncTrace(_BaseTrace[R]):
         if self.span.span_id is None or self.span.trace_id is None:
             return
 
-        await get_async_client().annotations.create(
-            otel_span_id=self.span.span_id,
-            otel_trace_id=self.span.trace_id,
-            label=label,
-            reasoning=reasoning,
-            metadata=metadata,
-        )
+        annotation_attrs: dict[str, AttributeValue] = {
+            "mirascope.annotation.label": label,
+        }
+        if reasoning is not None:
+            annotation_attrs["mirascope.annotation.reasoning"] = reasoning
+        self.span.set(**annotation_attrs)
 
     async def tag(self, *tags: str) -> None:
         """Adds given tags to the current trace span."""

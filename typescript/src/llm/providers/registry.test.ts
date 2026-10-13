@@ -216,16 +216,21 @@ describe("provider registry", () => {
     it("throws MissingAPIKeyError when no API key available", () => {
       // Remove the API key from env
       const originalKey = process.env["ANTHROPIC_API_KEY"];
+      const originalMirascopeKey = process.env["MIRASCOPE_API_KEY"];
       delete process.env["ANTHROPIC_API_KEY"];
+      delete process.env["MIRASCOPE_API_KEY"];
 
       try {
         expect(() =>
           getProviderForModel("anthropic/claude-sonnet-4-20250514"),
         ).toThrow(MissingAPIKeyError);
       } finally {
-        // Restore the key
+        // Restore the keys
         if (originalKey !== undefined) {
           process.env["ANTHROPIC_API_KEY"] = originalKey;
+        }
+        if (originalMirascopeKey !== undefined) {
+          process.env["MIRASCOPE_API_KEY"] = originalMirascopeKey;
         }
       }
     });
