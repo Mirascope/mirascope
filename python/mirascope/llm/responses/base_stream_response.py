@@ -360,7 +360,7 @@ class BaseStreamResponse(
                 raise RuntimeError(
                     f"Received tool_call_end_chunk for unknown tool call ID: {chunk.id}"
                 )
-            if not tool_call.args:
+            if not tool_call.args or not tool_call.args.strip():
                 tool_call.args = "{}"
             self._content.append(tool_call)
             self._tool_calls.append(tool_call)
