@@ -227,7 +227,11 @@ def _encode_content(
                 genai_types.PartDict(
                     function_call=genai_types.FunctionCallDict(
                         name=part.name,
-                        args=json.loads(part.args),
+                        args=(
+                            json.loads(part.args)
+                            if part.args and part.args.strip()
+                            else {}
+                        ),
                         id=part.id if part.id != UNKNOWN_TOOL_ID else None,
                     )
                 )
