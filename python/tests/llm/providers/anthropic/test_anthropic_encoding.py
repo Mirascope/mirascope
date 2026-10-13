@@ -195,7 +195,7 @@ def test_encode_tool_output_json_serialization() -> None:
                 llm.ToolOutput(
                     id="call_dict",
                     name="search",
-                    result={"hits": [1, 2], "ok": True, "q": "café"},
+                    result={"hits": [1, 2], "ok": True, "q": "東京"},
                 ),
                 llm.ToolOutput(
                     id="call_list",
@@ -231,7 +231,7 @@ def test_encode_tool_output_json_serialization() -> None:
         {
             "type": "tool_result",
             "tool_use_id": "call_dict",
-            "content": '{"hits": [1, 2], "ok": true, "q": "caf\\u00e9"}',
+            "content": '{"hits": [1, 2], "ok": true, "q": "\\u6771\\u4eac"}',
             "cache_control": None,
         },
         {

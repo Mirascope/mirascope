@@ -299,9 +299,9 @@ def test_encode_tool_output_content_string() -> None:
 
 def test_encode_tool_output_content_dict_and_list() -> None:
     """Test that dicts and lists are serialized to valid JSON."""
-    result = {"hits": [1, 2], "ok": True, "q": "café"}
+    result = {"hits": [1, 2], "ok": True, "q": "東京"}
     encoded = _utils.encode_tool_output_content(result)
-    assert encoded == '{"hits": [1, 2], "ok": true, "q": "caf\\u00e9"}'
+    assert encoded == '{"hits": [1, 2], "ok": true, "q": "\\u6771\\u4eac"}'
 
     list_result = ["alpha", "beta"]
     assert _utils.encode_tool_output_content(list_result) == '["alpha", "beta"]'
@@ -357,11 +357,11 @@ def test_encode_tool_output_response_string() -> None:
 
 def test_encode_tool_output_response_dict() -> None:
     """Test that dicts are passed as structured responses directly for Google."""
-    result = {"hits": [1, 2], "ok": True, "q": "café"}
+    result = {"hits": [1, 2], "ok": True, "q": "東京"}
     assert _utils.encode_tool_output_response(result) == {
         "hits": [1, 2],
         "ok": True,
-        "q": "café",
+        "q": "東京",
     }
 
 

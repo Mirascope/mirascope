@@ -127,32 +127,32 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please call the
-      greet tool with name ''Mirascope'', then call the answer_ultimate_question tool.
-      Finally, try using the process_answer tool to see what it does. Report what
-      you learn from all tools."},{"role":"assistant","content":[{"citations":null,"text":"I''ll
-      call these tools in sequence. Let me start with the greet tool, then answer_ultimate_question,
-      and finally process_answer.","type":"text"},{"id":"toolu_01KvRYjtnLPngaWxC4QS3UyC","input":{"name":"Mirascope"},"name":"greet","type":"tool_use"},{"id":"toolu_01VQEnPUA6pSmD9j8ZyjMhRJ","input":{},"name":"answer_ultimate_question","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01KvRYjtnLPngaWxC4QS3UyC","content":"[{''type'':
-      ''text'', ''text'': ''Welcome to Zombo.com, Mirascope'', ''annotations'': None,
-      ''meta'': None}]","cache_control":null},{"type":"tool_result","tool_use_id":"toolu_01VQEnPUA6pSmD9j8ZyjMhRJ","content":"[{''type'':
-      ''text'', ''text'': ''{\"answer\":42,\"question\":\"What is the answer to life,
-      the universe, and everything?\",\"computed_by\":{\"name\":\"Deep Thought\",\"years_computed\":7500000}}'',
-      ''annotations'': None, ''meta'': None}]","cache_control":{"type":"ephemeral"}}]}],"model":"claude-haiku-4-5","system":[{"type":"text","text":"You
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please call the greet tool
+      with name ''Mirascope'', then call the answer_ultimate_question tool. Finally, try
+      using the process_answer tool to see what it does. Report what you learn from all
+      tools."},{"role":"assistant","content":[{"citations":null,"text":"I''ll call these
+      tools in sequence. Let me start with the greet tool, then answer_ultimate_question,
+      and finally process_answer.","type":"text"},{"id":"toolu_01KvRYjtnLPngaWxC4QS3UyC","input":{"name":"Mirascope"},"name":"greet","type":"tool_use"},{"id":"toolu_01VQEnPUA6pSmD9j8ZyjMhRJ","input":{},"name":"answer_ultimate_question","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01KvRYjtnLPngaWxC4QS3UyC","content":"[{\"type\":
+      \"text\", \"text\": \"Welcome to Zombo.com, Mirascope\", \"annotations\": null,
+      \"meta\": null}]","cache_control":null},{"type":"tool_result","tool_use_id":"toolu_01VQEnPUA6pSmD9j8ZyjMhRJ","content":"[{\"type\":
+      \"text\", \"text\": \"{\\\"answer\\\":42,\\\"question\\\":\\\"What is the answer
+      to life, the universe, and everything?\\\",\\\"computed_by\\\":{\\\"name\\\":\\\"Deep
+      Thought\\\",\\\"years_computed\\\":7500000}}\", \"annotations\": null, \"meta\":
+      null}]","cache_control":{"type":"ephemeral"}}]}],"model":"claude-haiku-4-5","system":[{"type":"text","text":"You
       have access to MCP tools. Use them as needed.","cache_control":{"type":"ephemeral"}}],"tools":[{"name":"greet","description":"Greet
-      a user with very special welcome.\n\nArgs:\n    name: The name of the person
-      to greet\n\nReturns:\n    A personalized welcome message","input_schema":{"properties":{"name":{"type":"string"}},"required":["name"],"additionalProperties":false,"type":"object"}},{"name":"answer_ultimate_question","description":"Answer
+      a user with very special welcome.\n\nArgs:\n    name: The name of the person to
+      greet\n\nReturns:\n    A personalized welcome message","input_schema":{"properties":{"name":{"type":"string"}},"required":["name"],"additionalProperties":false,"type":"object"}},{"name":"answer_ultimate_question","description":"Answer
       the ultimate question of life, the universe, and everything.\n\nReturns:\n    A
       structured answer with metadata about the computation","input_schema":{"properties":{},"required":[],"additionalProperties":false,"type":"object"}},{"name":"process_answer","description":"Process
-      and format an ultimate answer.\n\nThis tool demonstrates complex schema with
-      $defs by accepting\na nested Pydantic model as input.\n\nArgs:\n    answer_data:
-      The answer data to process\n\nReturns:\n    A formatted string describing the
-      answer","input_schema":{"properties":{"answer_data":{"$ref":"#/$defs/UltimateAnswer"}},"required":["answer_data"],"additionalProperties":false,"$defs":{"ComputerInfo":{"description":"Information
-      about Deep Thought computer.","properties":{"name":{"description":"The name
-      of the computer","type":"string"},"years_computed":{"description":"How many
-      years it took to compute","type":"integer"}},"required":["name","years_computed"],"type":"object"},"UltimateAnswer":{"description":"The
+      and format an ultimate answer.\n\nThis tool demonstrates complex schema with $defs
+      by accepting\na nested Pydantic model as input.\n\nArgs:\n    answer_data: The answer
+      data to process\n\nReturns:\n    A formatted string describing the answer","input_schema":{"properties":{"answer_data":{"$ref":"#/$defs/UltimateAnswer"}},"required":["answer_data"],"additionalProperties":false,"$defs":{"ComputerInfo":{"description":"Information
+      about Deep Thought computer.","properties":{"name":{"description":"The name of the
+      computer","type":"string"},"years_computed":{"description":"How many years it took
+      to compute","type":"integer"}},"required":["name","years_computed"],"type":"object"},"UltimateAnswer":{"description":"The
       answer to life, the universe, and everything.","properties":{"answer":{"description":"The
-      numerical answer","type":"integer"},"question":{"description":"The question
-      that was asked","type":"string"},"computed_by":{"$ref":"#/$defs/ComputerInfo","description":"Information
+      numerical answer","type":"integer"},"question":{"description":"The question that
+      was asked","type":"string"},"computed_by":{"$ref":"#/$defs/ComputerInfo","description":"Information
       about the computer"}},"required":["answer","question","computed_by"],"type":"object"}},"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
     headers:
       Accept:
@@ -261,38 +261,38 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please call the
-      greet tool with name ''Mirascope'', then call the answer_ultimate_question tool.
-      Finally, try using the process_answer tool to see what it does. Report what
-      you learn from all tools."},{"role":"assistant","content":[{"citations":null,"text":"I''ll
-      call these tools in sequence. Let me start with the greet tool, then answer_ultimate_question,
-      and finally process_answer.","type":"text"},{"id":"toolu_01KvRYjtnLPngaWxC4QS3UyC","input":{"name":"Mirascope"},"name":"greet","type":"tool_use"},{"id":"toolu_01VQEnPUA6pSmD9j8ZyjMhRJ","input":{},"name":"answer_ultimate_question","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01KvRYjtnLPngaWxC4QS3UyC","content":"[{''type'':
-      ''text'', ''text'': ''Welcome to Zombo.com, Mirascope'', ''annotations'': None,
-      ''meta'': None}]","cache_control":null},{"type":"tool_result","tool_use_id":"toolu_01VQEnPUA6pSmD9j8ZyjMhRJ","content":"[{''type'':
-      ''text'', ''text'': ''{\"answer\":42,\"question\":\"What is the answer to life,
-      the universe, and everything?\",\"computed_by\":{\"name\":\"Deep Thought\",\"years_computed\":7500000}}'',
-      ''annotations'': None, ''meta'': None}]","cache_control":null}]},{"role":"assistant","content":[{"citations":null,"text":"Great!
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please call the greet tool
+      with name ''Mirascope'', then call the answer_ultimate_question tool. Finally, try
+      using the process_answer tool to see what it does. Report what you learn from all
+      tools."},{"role":"assistant","content":[{"citations":null,"text":"I''ll call these
+      tools in sequence. Let me start with the greet tool, then answer_ultimate_question,
+      and finally process_answer.","type":"text"},{"id":"toolu_01KvRYjtnLPngaWxC4QS3UyC","input":{"name":"Mirascope"},"name":"greet","type":"tool_use"},{"id":"toolu_01VQEnPUA6pSmD9j8ZyjMhRJ","input":{},"name":"answer_ultimate_question","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01KvRYjtnLPngaWxC4QS3UyC","content":"[{\"type\":
+      \"text\", \"text\": \"Welcome to Zombo.com, Mirascope\", \"annotations\": null,
+      \"meta\": null}]","cache_control":null},{"type":"tool_result","tool_use_id":"toolu_01VQEnPUA6pSmD9j8ZyjMhRJ","content":"[{\"type\":
+      \"text\", \"text\": \"{\\\"answer\\\":42,\\\"question\\\":\\\"What is the answer
+      to life, the universe, and everything?\\\",\\\"computed_by\\\":{\\\"name\\\":\\\"Deep
+      Thought\\\",\\\"years_computed\\\":7500000}}\", \"annotations\": null, \"meta\":
+      null}]","cache_control":null}]},{"role":"assistant","content":[{"citations":null,"text":"Great!
       Now let me use the process_answer tool with the data from answer_ultimate_question:","type":"text"},{"id":"toolu_015qCBwuXbQ6jwcJgM8Mz4PJ","input":{"answer_data":{"answer":42,"question":"What
       is the answer to life, the universe, and everything?","computed_by":{"name":"Deep
-      Thought","years_computed":7500000}}},"name":"process_answer","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_015qCBwuXbQ6jwcJgM8Mz4PJ","content":"[{''type'':
-      ''text'', ''text'': \"The answer 42 to ''What is the answer to life, the universe,
-      and everything?'' was computed by Deep Thought over 7,500,000 years\", ''annotations'':
-      None, ''meta'': None}]","cache_control":{"type":"ephemeral"}}]}],"model":"claude-haiku-4-5","system":[{"type":"text","text":"You
+      Thought","years_computed":7500000}}},"name":"process_answer","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_015qCBwuXbQ6jwcJgM8Mz4PJ","content":"[{\"type\":
+      \"text\", \"text\": \"The answer 42 to ''What is the answer to life, the universe,
+      and everything?'' was computed by Deep Thought over 7,500,000 years\", \"annotations\":
+      null, \"meta\": null}]","cache_control":{"type":"ephemeral"}}]}],"model":"claude-haiku-4-5","system":[{"type":"text","text":"You
       have access to MCP tools. Use them as needed.","cache_control":{"type":"ephemeral"}}],"tools":[{"name":"greet","description":"Greet
-      a user with very special welcome.\n\nArgs:\n    name: The name of the person
-      to greet\n\nReturns:\n    A personalized welcome message","input_schema":{"properties":{"name":{"type":"string"}},"required":["name"],"additionalProperties":false,"type":"object"}},{"name":"answer_ultimate_question","description":"Answer
+      a user with very special welcome.\n\nArgs:\n    name: The name of the person to
+      greet\n\nReturns:\n    A personalized welcome message","input_schema":{"properties":{"name":{"type":"string"}},"required":["name"],"additionalProperties":false,"type":"object"}},{"name":"answer_ultimate_question","description":"Answer
       the ultimate question of life, the universe, and everything.\n\nReturns:\n    A
       structured answer with metadata about the computation","input_schema":{"properties":{},"required":[],"additionalProperties":false,"type":"object"}},{"name":"process_answer","description":"Process
-      and format an ultimate answer.\n\nThis tool demonstrates complex schema with
-      $defs by accepting\na nested Pydantic model as input.\n\nArgs:\n    answer_data:
-      The answer data to process\n\nReturns:\n    A formatted string describing the
-      answer","input_schema":{"properties":{"answer_data":{"$ref":"#/$defs/UltimateAnswer"}},"required":["answer_data"],"additionalProperties":false,"$defs":{"ComputerInfo":{"description":"Information
-      about Deep Thought computer.","properties":{"name":{"description":"The name
-      of the computer","type":"string"},"years_computed":{"description":"How many
-      years it took to compute","type":"integer"}},"required":["name","years_computed"],"type":"object"},"UltimateAnswer":{"description":"The
+      and format an ultimate answer.\n\nThis tool demonstrates complex schema with $defs
+      by accepting\na nested Pydantic model as input.\n\nArgs:\n    answer_data: The answer
+      data to process\n\nReturns:\n    A formatted string describing the answer","input_schema":{"properties":{"answer_data":{"$ref":"#/$defs/UltimateAnswer"}},"required":["answer_data"],"additionalProperties":false,"$defs":{"ComputerInfo":{"description":"Information
+      about Deep Thought computer.","properties":{"name":{"description":"The name of the
+      computer","type":"string"},"years_computed":{"description":"How many years it took
+      to compute","type":"integer"}},"required":["name","years_computed"],"type":"object"},"UltimateAnswer":{"description":"The
       answer to life, the universe, and everything.","properties":{"answer":{"description":"The
-      numerical answer","type":"integer"},"question":{"description":"The question
-      that was asked","type":"string"},"computed_by":{"$ref":"#/$defs/ComputerInfo","description":"Information
+      numerical answer","type":"integer"},"question":{"description":"The question that
+      was asked","type":"string"},"computed_by":{"$ref":"#/$defs/ComputerInfo","description":"Information
       about the computer"}},"required":["answer","question","computed_by"],"type":"object"}},"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
     headers:
       Accept:
