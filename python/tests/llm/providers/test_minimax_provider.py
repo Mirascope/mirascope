@@ -1,9 +1,11 @@
 """Tests for MiniMaxProvider."""
 
 import os
+from unittest.mock import patch
 
 import pytest
 
+from mirascope import llm
 from mirascope.llm.providers.minimax import MiniMaxModelId, MiniMaxProvider
 from mirascope.llm.providers.minimax.model_id import (
     MINIMAX_KNOWN_MODELS,
@@ -58,20 +60,23 @@ def test_minimax_provider_default_base_url() -> None:
     assert MiniMaxProvider.default_base_url == "https://api.minimax.io/v1"
 
 
-def test_minimax_provider_model_name_strips_prefix() -> None:
-    """Test _model_name strips 'minimax/' prefix."""
+def test_minimax_provider_call_strips_model_prefix() -> None:
+    """The public call path passes the provider-specific model name to the SDK."""
     provider = MiniMaxProvider(api_key="test-key")
-    assert provider._model_name("minimax/MiniMax-M2.7") == "MiniMax-M2.7"
-    assert (
-        provider._model_name("minimax/MiniMax-M2.7-highspeed")
-        == "MiniMax-M2.7-highspeed"
-    )
-
-
-def test_minimax_provider_model_name_no_prefix() -> None:
-    """Test _model_name handles model IDs without prefix."""
-    provider = MiniMaxProvider(api_key="test-key")
-    assert provider._model_name("MiniMax-M2.7") == "MiniMax-M2.7"
+    with (
+        patch.object(
+            provider.client.chat.completions,
+            "create",
+            side_effect=RuntimeError("request captured"),
+        ) as create,
+        pytest.raises(RuntimeError, match="request captured"),
+    ):
+        provider.call(
+            model_id="minimax/MiniMax-M2.7",
+            messages=[llm.messages.user("Hello")],
+            toolkit=llm.Toolkit([]),
+        )
+    assert create.call_args.kwargs["model"] == "MiniMax-M2.7"
 
 
 def test_minimax_provider_api_key_required() -> None:
