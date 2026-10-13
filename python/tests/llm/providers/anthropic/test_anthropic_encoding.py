@@ -196,10 +196,10 @@ def test_raw_message_has_format_tool_non_dict() -> None:
 
 
 def test_encode_content_reencodes_format_tool_call_as_text() -> None:
-    """FORMAT_TOOL ToolCall parts must be re-encoded as text when re-using history.
+    """FORMAT_TOOL ToolCall parts must be re-encoded as text when reusing history.
 
     When Anthropic structured-output mode is used, the model returns a FORMAT_TOOL
-    tool_use block.  When that assistant message is later re-used in a resume() call,
+    tool_use block.  When that assistant message is later reused in a resume() call,
     encode_content must NOT emit that tool_use block — Anthropic rejects the request
     with HTTP 400 because there is no corresponding tool_result in the next user turn.
     But the tool's arguments are the assistant's actual structured response, so they
@@ -218,7 +218,9 @@ def test_encode_content_reencodes_format_tool_call_as_text() -> None:
     # The FORMAT_TOOL tool_use block must be absent
     assert isinstance(blocks, list)
     tool_use_ids = [
-        b.get("id") for b in blocks if isinstance(b, dict) and b.get("type") == "tool_use"
+        b.get("id")
+        for b in blocks
+        if isinstance(b, dict) and b.get("type") == "tool_use"
     ]
     assert format_tool_id not in tool_use_ids, (
         "FORMAT_TOOL tool_use block must not appear in re-encoded history; "
@@ -243,7 +245,9 @@ def test_encode_content_keeps_real_tool_calls() -> None:
 
     assert isinstance(blocks, list)
     tool_use_ids = [
-        b.get("id") for b in blocks if isinstance(b, dict) and b.get("type") == "tool_use"
+        b.get("id")
+        for b in blocks
+        if isinstance(b, dict) and b.get("type") == "tool_use"
     ]
     assert real_tool_id in tool_use_ids, (
         "Real tool calls must still appear as tool_use blocks in encoded history"

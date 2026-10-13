@@ -278,10 +278,10 @@ def encode_content(
                 )
             )
         elif part.type == "tool_call":
-            # Re-encode the internal FORMAT_TOOL call as text when re-using history.
+            # Re-encode the internal FORMAT_TOOL call as text when reusing history.
             # Anthropic's structured-output tool (FORMAT_TOOL_NAME) is a Mirascope
             # implementation detail injected to force JSON-shaped responses.  When
-            # the assistant message is re-used in a `resume()` call the raw
+            # the assistant message is reused in a `resume()` call the raw
             # message is NOT sent back verbatim (because raw_message_has_format_tool
             # is True), so we fall through to encode from content parts.  Emitting
             # the format-tool ToolCall as a `tool_use` block would 400, since there
