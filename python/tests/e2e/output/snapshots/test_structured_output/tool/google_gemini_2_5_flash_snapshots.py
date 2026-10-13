@@ -335,13 +335,13 @@ stream_snapshot = snapshot(
             "tools": [],
             "usage": {
                 "input_tokens": 217,
-                "output_tokens": 49,
+                "output_tokens": 253,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 204,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 266,
+                "total_tokens": 470,
             },
             "n_chunks": 3,
         }
@@ -445,13 +445,13 @@ async_stream_snapshot = snapshot(
             "tools": [],
             "usage": {
                 "input_tokens": 217,
-                "output_tokens": 49,
+                "output_tokens": 280,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 231,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 266,
+                "total_tokens": 497,
             },
             "n_chunks": 3,
         }

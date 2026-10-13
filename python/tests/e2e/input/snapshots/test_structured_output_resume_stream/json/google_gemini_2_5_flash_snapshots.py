@@ -147,13 +147,13 @@ Respond only with valid JSON that matches this exact schema:
             "tools": [],
             "usage": {
                 "input_tokens": 125,
-                "output_tokens": 10,
+                "output_tokens": 48,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 38,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 135,
+                "total_tokens": 173,
             },
             "n_chunks": 3,
         }

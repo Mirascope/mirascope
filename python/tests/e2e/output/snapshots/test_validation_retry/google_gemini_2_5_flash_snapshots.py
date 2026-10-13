@@ -512,13 +512,13 @@ Respond only with valid JSON that matches this exact schema:
             "tools": [],
             "usage": {
                 "input_tokens": 215,
-                "output_tokens": 12,
+                "output_tokens": 96,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 84,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 227,
+                "total_tokens": 311,
             },
             "n_chunks": 3,
         }
@@ -691,13 +691,13 @@ Respond only with valid JSON that matches this exact schema:
             "tools": [],
             "usage": {
                 "input_tokens": 215,
-                "output_tokens": 12,
+                "output_tokens": 85,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 73,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 227,
+                "total_tokens": 300,
             },
             "n_chunks": 3,
         }
