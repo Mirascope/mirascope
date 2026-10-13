@@ -283,7 +283,9 @@ def encode_content(
                     type="tool_use",
                     id=part.id,
                     name=part.name,
-                    input=json.loads(part.args),
+                    input=(
+                        json.loads(part.args) if part.args and part.args.strip() else {}
+                    ),
                     cache_control={"type": "ephemeral"} if should_add_cache else None,
                 )
             )

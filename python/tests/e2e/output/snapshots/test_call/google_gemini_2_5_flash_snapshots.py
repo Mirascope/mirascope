@@ -241,13 +241,13 @@ So, 42\
             "tools": [],
             "usage": {
                 "input_tokens": 13,
-                "output_tokens": 63,
+                "output_tokens": 138,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 75,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 76,
+                "total_tokens": 151,
             },
             "n_chunks": 4,
         }
@@ -291,13 +291,13 @@ async_stream_snapshot = snapshot(
             "tools": [],
             "usage": {
                 "input_tokens": 13,
-                "output_tokens": 15,
+                "output_tokens": 55,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 40,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 28,
+                "total_tokens": 68,
             },
             "n_chunks": 3,
         }

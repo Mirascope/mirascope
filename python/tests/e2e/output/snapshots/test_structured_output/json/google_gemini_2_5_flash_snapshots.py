@@ -647,13 +647,13 @@ Respond only with valid JSON that matches this exact schema:
             "tools": [],
             "usage": {
                 "input_tokens": 317,
-                "output_tokens": 52,
+                "output_tokens": 254,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 202,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 369,
+                "total_tokens": 571,
             },
             "n_chunks": 4,
         }
@@ -871,13 +871,13 @@ Respond only with valid JSON that matches this exact schema:
             "tools": [],
             "usage": {
                 "input_tokens": 317,
-                "output_tokens": 52,
+                "output_tokens": 219,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 167,
                 "provider_tool_usage": None,
                 "raw": "None",
-                "total_tokens": 369,
+                "total_tokens": 536,
             },
             "n_chunks": 4,
         }

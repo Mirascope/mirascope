@@ -216,7 +216,7 @@ def _encode_assistant_message(
                 ResponseFunctionToolCallParam(
                     call_id=part.id,
                     name=part.name,
-                    arguments=part.args,
+                    arguments=(part.args if part.args and part.args.strip() else "{}"),
                     type="function_call",
                 )
             )
