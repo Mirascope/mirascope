@@ -1,0 +1,113 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":[{"type":"text","text":"Describe
+      the following image in one sentence","cache_control":null},{"type":"image","source":{"type":"url","url":"https://upload.wikimedia.org/wikipedia/commons/2/2c/Rotating_earth_%28large%29.gif"},"cache_control":null}]}],"model":"claude-sonnet-4-0"}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '333'
+      Content-Type:
+      - application/json
+      Host:
+      - api.anthropic.com
+      User-Agent:
+      - Anthropic/Python 0.76.0
+      X-Api-Key:
+      - <filtered>
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.76.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.12.12
+      anthropic-version:
+      - '2023-06-01'
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WSTY/TQAyG/4o15xS13Rah3FaoFyRugAQIjdwZN7F24snOR9pS9b/jFCpgEac4
+        fl7b83rmYoboKZjWuIDV0yJHESqLzWK9XG+X29XGNIa98iF3drl685p2n58f33/8IuOn0+md//62
+        8oNqynmkWUU5Y0eaSDHMCcyZc0EpmnJRCmnUfr3c9YVOM7l9WvOhJ+BB6yH38ZgBIREGrWcHE9MR
+        4gF2mEoPhxQHyCM6asBzHgOeWTp4PCR2CCgedjXFkWBUIYtODWdggaITnP5RgiNrn4kn9rAPlSA6
+        QskNdIlIbi32KR4FgoaD2iBlcxZB/aR01ip0Tz8PAXsNuxSr+Ffm+q0xucTR6uF1neqLxNtSk5hf
+        INNzJXG6AKkhNKbedtZeDMtYiy3xiSSbdr150KWh68k67VU4iv1bsbxzxf5/7F47D6Cxp4ESBrsd
+        /tX/pqv+Jb02JtbyZ2qzVTuUJnZkC1NSo/NNe0x+fjRyoDSbtB1FRRKLxQk54F4fxvX6A/JfWHZ6
+        AgAA
+    headers:
+      CF-RAY:
+      - 9cbb9d908b18df0f-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 10 Feb 2026 12:30:04 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-02-10T12:30:03Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-02-10T12:30:04Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-02-10T12:30:02Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-02-10T12:30:03Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CXzPc6CuDwFXuqX2VbjS6
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '2340'
+    status:
+      code: 200
+      message: OK
+version: 1
