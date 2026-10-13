@@ -96,6 +96,9 @@ def test_version_with_all_decorator_arguments(
                 "mirascope.trace.arg_values": '{"genre":"fantasy"}',
                 "mirascope.trace.tags": ("ml", "production"),
                 "mirascope.trace.metadata": '{"owner":"team-ml","ticket":"ENG-1234"}',
+                "tags": ("ml", "production"),
+                "metadata.owner": "team-ml",
+                "metadata.ticket": "ENG-1234",
                 "mirascope.version.hash": "fca936cf3f2fd455ba48dd450212ab85555fa359a1af67b837c1908d81adae58",
                 "mirascope.version.signature_hash": "ba60803eef650bab7ae9b30bbb0b3421e416eb9b5b2571c4e5b36bf8fc6c2d2f",
                 "mirascope.version.version": "1.0",
@@ -152,6 +155,8 @@ async def test_async_version_with_all_decorator_arguments(
                 "mirascope.trace.arg_values": '{"genre":"mystery"}',
                 "mirascope.trace.tags": ("staging",),
                 "mirascope.trace.metadata": '{"env":"staging"}',
+                "tags": ("staging",),
+                "metadata.env": "staging",
                 "mirascope.version.hash": "d6a313c1ec5544d61441c21947e3e64dd25fcc9571b644c9d21dd86a8eb3b398",
                 "mirascope.version.signature_hash": "37f223943863bd6a446e5fac93fcdabc7b1c7c5654e7053943cc6e9c8aa8e353",
                 "mirascope.version.version": "1.0",
@@ -722,6 +727,67 @@ def recommend(genre: str) -> str:
     )
 
 
+def test_versioned_call_preserves_function_metadata() -> None:
+    """Test that VersionedCall copies __qualname__, __name__, __module__ from original fn.
+
+    Regression test for https://github.com/Mirascope/mirascope/issues/2784.
+    Without metadata forwarding, stacking @ops.trace on @ops.version raises
+    AttributeError: 'VersionedCall' object has no attribute '__qualname__'
+    on Python 3.14+.
+    """
+
+    @ops.version
+    @llm.call("openai/gpt-4o-mini")
+    def recommend_book(genre: str) -> str:
+        """Recommends books based on genre."""
+        return f"Recommend a {genre} book."
+
+    assert isinstance(recommend_book, ops.VersionedCall)
+
+    # These attributes must be present for decorator stacking to work
+    assert hasattr(recommend_book, "__qualname__")
+    assert hasattr(recommend_book, "__name__")
+    assert hasattr(recommend_book, "__module__")
+    assert recommend_book.__name__ == "recommend_book"
+    assert "recommend_book" in recommend_book.__qualname__
+
+
+def test_trace_on_versioned_call_does_not_crash() -> None:
+    """Test that @ops.trace can be stacked on @ops.version on @llm.call.
+
+    Regression test for https://github.com/Mirascope/mirascope/issues/2784.
+    Previously, this raised AttributeError because VersionedCall lacked __qualname__.
+    """
+
+    # This decorator application itself was crashing before the fix
+    @ops.trace(tags=["test"])
+    @ops.version
+    @llm.call("openai/gpt-4o-mini")
+    def recommend_book(genre: str) -> str:
+        """Recommends books based on genre."""
+        return f"Recommend a {genre} book."
+
+    # Verify the outer decorator preserves the original function name.
+    assert recommend_book.__name__ == "recommend_book"
+
+
+@pytest.mark.asyncio
+async def test_trace_on_versioned_async_call_does_not_crash() -> None:
+    """Test that @ops.trace can be stacked on @ops.version on async @llm.call.
+
+    Regression test for https://github.com/Mirascope/mirascope/issues/2784 (async variant).
+    """
+
+    @ops.trace(tags=["test"])
+    @ops.version
+    @llm.call("openai/gpt-4o-mini")
+    async def recommend_book(genre: str) -> str:
+        """Recommends books based on genre."""
+        return f"Recommend a {genre} book."
+
+    assert recommend_book.__name__ == "recommend_book"
+
+
 @pytest.mark.vcr()
 def test_versioned_call_sync(span_exporter: InMemorySpanExporter) -> None:
     """Test @ops.version on @llm.call creates VersionedCall and returns Response directly."""
@@ -1256,6 +1322,7 @@ def test_versioned_call_with_tags(
                 "mirascope.trace.arg_types": '{"genre":"str"}',
                 "mirascope.trace.arg_values": '{"genre":"romance"}',
                 "mirascope.trace.tags": ("production", "recommendations"),
+                "tags": ("production", "recommendations"),
                 "mirascope.version.hash": "2820850484af684cd70ef2b89cc09bd16dffd6003b2e8bb3ed0907232e44144e",
                 "mirascope.version.signature_hash": "d3afa65513fc5a9d79bcfdadd5775889dc259dc949c76d2c476ef916b4f234c2",
                 "mirascope.version.version": "1.0",
@@ -1488,6 +1555,7 @@ def test_version_registers_new_function(
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":5}',
                 "mirascope.trace.tags": ("test",),
+                "tags": ("test",),
                 "mirascope.version.hash": "2b5f697ef9a0d908b6b6674005c6e0e5d19581834dafd9c41771ca6994b263d9",
                 "mirascope.version.signature_hash": "3779bb3e22ca9b1dd5379cda31c2cdce8f3b5d27528c328270e7e196b67cc58a",
                 "mirascope.version.version": "1.0",
@@ -1569,6 +1637,7 @@ async def test_async_version_registers_new_function(
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":5}',
                 "mirascope.trace.tags": ("async-test",),
+                "tags": ("async-test",),
                 "mirascope.version.hash": "e29e925666db867702c08edf6cda0d34414d5284b34779efb6def7cddf39d450",
                 "mirascope.version.signature_hash": "e895135474979165e8f95c8c3616326d740ad66821238ab65f8b0506645fce3e",
                 "mirascope.version.version": "1.0",

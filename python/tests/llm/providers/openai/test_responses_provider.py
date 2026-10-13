@@ -5,10 +5,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from openai import RateLimitError as OpenAIRateLimitError
+from openai.types.responses import Response
 from openai.types.responses.response_stream_event import ResponseStreamEvent
 
 from mirascope import llm
 from mirascope.llm.providers.openai.provider import OpenAIProvider
+from mirascope.llm.providers.openai.responses._utils.decode import decode_response
 
 
 def test_stream_rate_limit_error() -> None:
@@ -128,3 +130,47 @@ async def test_async_call_rate_limit_error() -> None:
         # Verify it's wrapped as mirascope RateLimitError and has proper chaining
         assert isinstance(exc_info.value, llm.RateLimitError)
         assert isinstance(exc_info.value.__cause__, OpenAIRateLimitError)
+
+
+def test_decode_response_empty_tool_arguments() -> None:
+    """Test that empty or whitespace tool arguments decode to '{}' in responses."""
+    resp = Response.model_validate(
+        {
+            "id": "resp_1",
+            "created_at": 1234567890,
+            "model": "gpt-4o",
+            "object": "response",
+            "output": [
+                {
+                    "type": "function_call",
+                    "call_id": "call_1",
+                    "name": "no_args_tool",
+                    "arguments": "",
+                },
+                {
+                    "type": "function_call",
+                    "call_id": "call_2",
+                    "name": "whitespace_args_tool",
+                    "arguments": "   ",
+                },
+                {
+                    "type": "function_call",
+                    "call_id": "call_3",
+                    "name": "normal_args_tool",
+                    "arguments": '{"x": 1}',
+                },
+            ],
+            "status": "completed",
+            "parallel_tool_calls": True,
+            "tools": [],
+            "tool_choice": "auto",
+        }
+    )
+    assistant_message, _, _ = decode_response(
+        resp, "openai/gpt-4o", "openai:responses", include_thoughts=False
+    )
+    assert assistant_message.content == [
+        llm.ToolCall(id="call_1", name="no_args_tool", args="{}"),
+        llm.ToolCall(id="call_2", name="whitespace_args_tool", args="{}"),
+        llm.ToolCall(id="call_3", name="normal_args_tool", args='{"x": 1}'),
+    ]

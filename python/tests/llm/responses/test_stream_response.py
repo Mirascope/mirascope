@@ -454,6 +454,21 @@ CHUNK_PROCESSING_TEST_CASES: dict[str, ChunkProcessingTestCase] = {
             [llm.ToolCall(id="tool_123", name="empty_function", args="{}")],
         ],
     ),
+    "whitespace_tool_call": ChunkProcessingTestCase(
+        chunks=[
+            llm.ToolCallStartChunk(
+                id="tool_ws",
+                name="empty_function",
+            ),
+            llm.ToolCallChunk(type="tool_call_chunk", id="tool_ws", delta="   "),
+            llm.ToolCallEndChunk(id="tool_ws"),
+        ],
+        expected_contents=[
+            [],
+            [],
+            [llm.ToolCall(id="tool_ws", name="empty_function", args="{}")],
+        ],
+    ),
     "tool_call_with_args": ChunkProcessingTestCase(
         chunks=[
             llm.ToolCallStartChunk(
