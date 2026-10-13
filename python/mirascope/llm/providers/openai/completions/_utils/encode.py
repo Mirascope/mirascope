@@ -226,7 +226,12 @@ def _encode_assistant_message(
                 openai_types.ChatCompletionMessageToolCallParam(
                     id=part.id,
                     type="function",
-                    function={"name": part.name, "arguments": part.args},
+                    function={
+                        "name": part.name,
+                        "arguments": (
+                            part.args if part.args and part.args.strip() else "{}"
+                        ),
+                    },
                 )
             )
         elif part.type == "thought":

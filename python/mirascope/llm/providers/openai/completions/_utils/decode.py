@@ -85,11 +85,16 @@ def decode_response(
                 # This should never happen, because we never create "custom" tools
                 # https://platform.openai.com/docs/guides/function-calling#custom-tools
                 raise NotImplementedError("OpenAI custom tools are not supported.")
+            args = (
+                tool_call.function.arguments
+                if tool_call.function.arguments and tool_call.function.arguments.strip()
+                else "{}"
+            )
             parts.append(
                 ToolCall(
                     id=tool_call.id,
                     name=tool_call.function.name,
-                    args=tool_call.function.arguments,
+                    args=args,
                 )
             )
 
