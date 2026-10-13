@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from typing import Concatenate, Generic, cast, overload
 from typing_extensions import TypeIs
 
+from ..._utils import copy_function_metadata
 from ...llm.calls import AsyncCall, AsyncContextCall, Call, ContextCall
 from ...llm.context import Context, DepsT
 from ...llm.formatting import FormattableT
@@ -21,7 +22,6 @@ from ...llm.responses import (
     StreamResponse,
 )
 from ...llm.types import P
-from ..._utils import copy_function_metadata
 from ..exceptions import ClosureComputationError
 from .closure import Closure
 from .protocols import (
@@ -137,6 +137,9 @@ class _BaseVersionedCall:
 
     closure: Closure | None = field(init=False, default=None)
     """Cached closure for the original function."""
+
+    __name__: str = field(init=False, repr=False, default="")
+    """The wrapped function's name, populated by `copy_function_metadata`."""
 
     def _init_from_call(
         self,

@@ -762,9 +762,8 @@ def test_trace_on_versioned_call_does_not_crash() -> None:
         """Recommends books based on genre."""
         return f"Recommend a {genre} book."
 
-    # Verify the outer decorator created a TracedFunction wrapping the VersionedCall
-    assert hasattr(recommend_book, "_qualified_name")
-    assert "recommend_book" in recommend_book._qualified_name
+    # Verify the outer decorator preserves the original function name.
+    assert recommend_book.__name__ == "recommend_book"
 
 
 @pytest.mark.asyncio
@@ -781,8 +780,7 @@ async def test_trace_on_versioned_async_call_does_not_crash() -> None:
         """Recommends books based on genre."""
         return f"Recommend a {genre} book."
 
-    assert hasattr(recommend_book, "_qualified_name")
-    assert "recommend_book" in recommend_book._qualified_name
+    assert recommend_book.__name__ == "recommend_book"
 
 
 @pytest.mark.vcr()
