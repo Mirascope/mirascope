@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
-from collections.abc import Generator, Sequence
+from collections.abc import Generator, Mapping, Sequence
 from contextlib import contextmanager
 from typing import (
     TYPE_CHECKING,
@@ -272,6 +272,10 @@ class _SupportsJson(Protocol):
 
 
 def _json_default(obj: object) -> object:
+    if isinstance(obj, Mapping):
+        return dict(cast(Mapping[str, object], obj))
+    if isinstance(obj, Sequence) and not isinstance(obj, (str, bytes, bytearray)):
+        return list(cast(Sequence[object], obj))
     if isinstance(obj, _SupportsModelDump):
         return obj.model_dump()
     if isinstance(obj, _SupportsJson):

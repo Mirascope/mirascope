@@ -1,5 +1,6 @@
 """Tests for base converter."""
 
+from collections import UserDict, UserList
 from unittest.mock import patch
 
 import pytest
@@ -305,6 +306,13 @@ def test_encode_tool_output_content_dict_and_list() -> None:
 
     list_result = ["alpha", "beta"]
     assert _utils.encode_tool_output_content(list_result) == '["alpha", "beta"]'
+
+
+def test_encode_tool_output_content_mapping_and_sequence() -> None:
+    """Declared Jsonable mapping and sequence types also serialize."""
+    result = UserDict({"items": UserList([1, 2])})
+    assert _utils.encode_tool_output_content(result) == '{"items": [1, 2]}'
+    assert _utils.encode_tool_output_response(result) == {"items": [1, 2]}
 
 
 def test_encode_tool_output_content_primitives() -> None:
