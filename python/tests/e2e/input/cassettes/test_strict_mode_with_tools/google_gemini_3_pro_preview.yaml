@@ -85,7 +85,7 @@ interactions:
       {"args": {"b": 3, "a": 2}, "name": "customAdditionImplementation"}, "thoughtSignature":
       "EpAECo0EAXLI2nxafy_f5aSBkF3ABJUyfNNi406B5TX3MuuZMW_CBTbeELVvqP4QjysHCkOJivxO8110uqNIeMxCcw201cVJ4ww7-apqg4G0XrLwlrLqvOhdvEjUU3Pscob5sKnAraMZRnbG08qWnbLfBcUoo6pb0yFrwqLwvDh0d5NdU-qbApuQ8P_Ol-rI5lHOcCKVUZpuuzUeeVSEL8IsuNxVNPSk33TIvlifvZFqLcGWdxhWVN-FyoEWmTiib5x08hMzzFVwDjsaMxl4lPjjWleBYNyoZE87H67vgX5-H0yW8m9b0GBgZ9vSfz5SKd3zmVrQ9I_LDQWyLC_EgbH5lYULDFWRp0F3WeURuLTLi-Ho6RgntY_VCOE94Dp9Ms3T_NPfzkcyYgmNHpqDlTMX1r8ZApr-mq7RX5_i6ILT3CA2_Sv9pvyedMJncM2-Dec6LTs1NoNNN0dkCg8oyOUN6I1UusJ9R5VIF2qbD5mMqHd-Sd-xRCSjkc48F3rJJDcuQErCZIPMX5T_Jyjz7AJeLx0A6IM-IxozRrVTX2O-JFZeQNhtuSBafFPUbuxUNwoeejHwrLokCOyPOioXqwLCLEdSsGjKG12HHPjPrHKpprtiJTdrWCL6EdOnNVFAeSrhJbnkNRZrhYDx1z4UKKjPoWHuxJ9qnFu0cjM7AlsJT91AmveDanTLvnfguCSsH_z9"}],
       "role": "model"}, {"parts": [{"functionResponse": {"name": "customAdditionImplementation",
-      "response": {"output": "13"}}}], "role": "user"}], "tools": [{"functionDeclarations":
+      "response": {"output": 13}}}], "role": "user"}], "tools": [{"functionDeclarations":
       [{"description": "Perform computation on integers.", "name": "customAdditionImplementation",
       "parameters": {"properties": {"a": {"title": "A", "type": "INTEGER"}, "b": {"title":
       "B", "type": "INTEGER"}}, "required": ["a", "b"], "type": "OBJECT"}}]}], "generationConfig":

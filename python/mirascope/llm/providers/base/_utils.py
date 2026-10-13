@@ -1,9 +1,17 @@
 from __future__ import annotations
 
+import json
 import logging
-from collections.abc import Generator, Sequence
+from collections.abc import Generator, Mapping, Sequence
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, TypeAlias, cast, get_type_hints
+from typing import (
+    TYPE_CHECKING,
+    Protocol,
+    TypeAlias,
+    cast,
+    get_type_hints,
+    runtime_checkable,
+)
 
 from ...content import Text
 from ...messages import AssistantMessage, Message, SystemMessage, UserMessage
@@ -246,3 +254,65 @@ def ensure_all_params_accessed(
         yield accessor
     finally:
         accessor.check_access_integrity(unsupported_params=unsupported_params)
+
+
+@runtime_checkable
+class _SupportsModelDump(Protocol):
+    def model_dump(self) -> object: ...
+
+
+@runtime_checkable
+class _SupportsModelDumpJson(Protocol):
+    def model_dump_json(self) -> str: ...
+
+
+@runtime_checkable
+class _SupportsJson(Protocol):
+    def json(self) -> str: ...
+
+
+def _json_default(obj: object) -> object:
+    if isinstance(obj, Mapping):
+        return dict(cast(Mapping[str, object], obj))
+    if isinstance(obj, Sequence) and not isinstance(obj, (str, bytes, bytearray)):
+        return list(cast(Sequence[object], obj))
+    if isinstance(obj, _SupportsModelDump):
+        return obj.model_dump()
+    if isinstance(obj, _SupportsJson):
+        return json.loads(obj.json())
+    return str(obj)
+
+
+def encode_tool_output_content(result: object) -> str:
+    """Encode a tool output result as a string for providers requiring text content.
+
+    Strings and values outside the Jsonable contract retain their text encoding.
+    Other supported values are serialized to JSON.
+    """
+    if isinstance(result, str):
+        return result
+    if isinstance(result, _SupportsModelDumpJson):
+        return result.model_dump_json()
+    if isinstance(result, _SupportsJson):
+        return result.json()
+    if isinstance(result, (bytes, bytearray)) or (
+        result is not None
+        and not isinstance(result, (Mapping, Sequence, int, float, bool))
+    ):
+        return str(result)
+    return json.dumps(result, default=_json_default)
+
+
+def encode_tool_output_response(result: object) -> dict[str, object]:
+    """Encode a tool output result for Google GenAI's FunctionResponse.
+
+    If the result is a Mapping (or Pydantic model / JsonableObject that serializes
+    to a Mapping), it is passed directly as the response dict. Otherwise, it is
+    wrapped under the "output" key.
+    """
+    if isinstance(result, str):
+        return {"output": result}
+    converted: object = json.loads(json.dumps(result, default=_json_default))
+    if isinstance(converted, dict):
+        return cast(dict[str, object], converted)
+    return {"output": converted}

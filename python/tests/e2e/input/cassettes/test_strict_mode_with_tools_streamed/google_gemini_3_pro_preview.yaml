@@ -78,7 +78,7 @@ interactions:
       {"args": {"a": 2, "b": 3}, "name": "customAdditionImplementation"}, "thoughtSignature":
       "Et4FCtsFAXLI2nwD01SyPgNpwr2yFCVPwyFdqcjQrmMwpNVq7jd0u6LK6XClUYGMQxLNq7ssEY5zJRAN5E1xGgDQ1o9RIWOsmQur0HKmAJGPq-NxJo9kruDCQi8pL682O9hmWsKVAwzWBrq8g-Zo_GNOlneeweOl8ubjj8PISjl_LBbNKsZjouF1gHS_y1gSNyDySlc2738utX73Rq_dvcI_hfNzlgTMoa7qg3apYey7hV9I_1tfqYpFjUMLmmfg-IsRqktdvMDbe_XvM07yggdHIMaSKxvZK-LZrxR3A94LvPmB_GPMvR3M3D8YYlQtlp2PcI6GZI0bnsky7et4CWV_HRxnkwqxtR5ZF6pmOVx9oo43rb8mE6yrDnn6s776RwV-4V46aNwn7MckzUPKW0F8QXuGAl1_7pFjtbHs33ltyzrn3vOeFh21YlUQZxWeiTW3G72OIuD2Bu1TLUQSlgXpHYp5cp1Mv6Gfn5p9y5SwwYb6uc6y20sq1nxEIIKCiOW2KvJmuZ0ocsTi3wnzC-pMeXGpTCIF7FoyCxGasJ3G551MmotfWDhhYyfZHTCO0UpepHHo_AToBMx7oaMDjONkQKehbuMrpDUJFoyeZEDlrihVXbVhGfgvAt1ij-XeqCAFnBvMzeqCnilJ-mxFT47rM87EC8zZXc0uxNi5HM262COwmBaSQDU0pOdkCk5BcFPp7Ccu-q0mXREJOEZHv7dq6CAyxKmPFkzAfAukYYf1WZuLyY7AEKprEClmvoehNaJi5kIY0k0sUJtpEIruH0BbtkifULDPh30POjdjLXEjuzaj8Af63DOtKO2SpZDe8kt2yxNH-JGY7jnu8vaN_3IWn133dlDbn7OeHuRPPT7JkBQd5w-69eCoMzAjYDeR111yju5-JkjQ5BMnlhpBitygzVHyfGt287ditQLlExSwenJlwzjE4KE6b85BUH2fsPWceiF-fGGwtiNs9eZEHCw="},
       {"text": ""}], "role": "model"}, {"parts": [{"functionResponse": {"name": "customAdditionImplementation",
-      "response": {"output": "13"}}}], "role": "user"}], "tools": [{"functionDeclarations":
+      "response": {"output": 13}}}], "role": "user"}], "tools": [{"functionDeclarations":
       [{"description": "Perform computation on integers.", "name": "customAdditionImplementation",
       "parameters": {"properties": {"a": {"title": "A", "type": "INTEGER"}, "b": {"title":
       "B", "type": "INTEGER"}}, "required": ["a", "b"], "type": "OBJECT"}}]}], "generationConfig":

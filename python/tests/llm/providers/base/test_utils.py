@@ -1,6 +1,9 @@
 """Tests for base converter."""
 
+from collections import UserDict, UserList
 from unittest.mock import patch
+
+from pydantic import BaseModel
 
 from mirascope import llm
 from mirascope.llm.providers.base import _utils
@@ -273,3 +276,112 @@ def test_ensure_all_properties_required_no_properties_key() -> None:
 def test_has_strict_tools_with_empty_list() -> None:
     """Test that has_strict_tools returns False when tools is an empty list."""
     assert _utils.has_strict_tools([]) is False
+
+
+class _DummyJsonable:
+    def json(self) -> str:
+        return '{"dummy": true}'
+
+
+class _DummyModel(BaseModel):
+    name: str
+    count: int
+
+
+def test_encode_tool_output_content_string() -> None:
+    """Test that strings are returned as-is."""
+    assert _utils.encode_tool_output_content("hello") == "hello"
+    assert (
+        _utils.encode_tool_output_content("Tool error: not found")
+        == "Tool error: not found"
+    )
+
+
+def test_encode_tool_output_content_dict_and_list() -> None:
+    """Test that dicts and lists are serialized to valid JSON."""
+    result = {"hits": [1, 2], "ok": True, "q": "東京"}
+    encoded = _utils.encode_tool_output_content(result)
+    assert encoded == '{"hits": [1, 2], "ok": true, "q": "\\u6771\\u4eac"}'
+
+    list_result = ["alpha", "beta"]
+    assert _utils.encode_tool_output_content(list_result) == '["alpha", "beta"]'
+
+
+def test_encode_tool_output_content_mapping_and_sequence() -> None:
+    """Declared Jsonable mapping and sequence types also serialize."""
+    result = UserDict({"items": UserList([1, 2])})
+    assert _utils.encode_tool_output_content(result) == '{"items": [1, 2]}'
+    assert _utils.encode_tool_output_response(result) == {"items": [1, 2]}
+
+
+def test_encode_tool_output_content_primitives() -> None:
+    """Test that primitives are serialized to JSON."""
+    assert _utils.encode_tool_output_content(42) == "42"
+    assert _utils.encode_tool_output_content(3.14) == "3.14"
+    assert _utils.encode_tool_output_content(True) == "true"
+    assert _utils.encode_tool_output_content(None) == "null"
+
+
+def test_encode_tool_output_content_models_and_protocols() -> None:
+    """Test that Pydantic models and Jsonable objects are serialized to JSON."""
+    model = _DummyModel(name="test", count=3)
+    assert _utils.encode_tool_output_content(model) == '{"name":"test","count":3}'
+    assert _utils.encode_tool_output_content(_DummyJsonable()) == '{"dummy": true}'
+
+    nested = {"model": model}
+    assert (
+        _utils.encode_tool_output_content(nested)
+        == '{"model": {"name": "test", "count": 3}}'
+    )
+
+
+def test_encode_tool_output_content_unserializable_falls_back_to_text() -> None:
+    """Keep the old text fallback for values outside the Jsonable contract."""
+
+    class _Unserializable:
+        def __str__(self) -> str:
+            return "custom value"
+
+    result = _Unserializable()
+    assert _utils.encode_tool_output_content(result) == "custom value"
+    assert _utils.encode_tool_output_response(result) == {"output": "custom value"}
+    assert _utils.encode_tool_output_content({"item": result}) == (
+        '{"item": "custom value"}'
+    )
+
+
+def test_encode_tool_output_response_string() -> None:
+    """Test that strings are wrapped under 'output' for Google."""
+    assert _utils.encode_tool_output_response("hello") == {"output": "hello"}
+
+
+def test_encode_tool_output_response_dict() -> None:
+    """Test that dicts are passed as structured responses directly for Google."""
+    result = {"hits": [1, 2], "ok": True, "q": "東京"}
+    assert _utils.encode_tool_output_response(result) == {
+        "hits": [1, 2],
+        "ok": True,
+        "q": "東京",
+    }
+
+
+def test_encode_tool_output_response_list_and_primitives() -> None:
+    """Test that non-mapping values are wrapped under 'output' for Google."""
+    assert _utils.encode_tool_output_response(["alpha", "beta"]) == {
+        "output": ["alpha", "beta"]
+    }
+    assert _utils.encode_tool_output_response(42) == {"output": 42}
+    assert _utils.encode_tool_output_response(True) == {"output": True}
+    assert _utils.encode_tool_output_response(None) == {"output": None}
+
+
+def test_encode_tool_output_response_models_and_protocols() -> None:
+    """Test that Pydantic models and Jsonable objects serializing to dicts are passed directly."""
+    model = _DummyModel(name="test", count=3)
+    assert _utils.encode_tool_output_response(model) == {"name": "test", "count": 3}
+    assert _utils.encode_tool_output_response(_DummyJsonable()) == {"dummy": True}
+
+    nested = {"model": model}
+    assert _utils.encode_tool_output_response(nested) == {
+        "model": {"name": "test", "count": 3}
+    }
