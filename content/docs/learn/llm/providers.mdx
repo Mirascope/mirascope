@@ -30,6 +30,7 @@ Mirascope includes several built-in providers:
 | MLX | `llm.providers.MLXProvider` | `mlx-community/` | — |
 | Ollama | `llm.providers.OllamaProvider` | `ollama/` | `OLLAMA_BASE_URL` |
 | OpenAI | `llm.providers.OpenAIProvider` | `openai/` | `OPENAI_API_KEY` |
+| Requesty | `llm.providers.RequestyProvider` | `requesty/` | `REQUESTY_API_KEY` |
 | Together | `llm.providers.TogetherProvider` | `together/` | `TOGETHER_API_KEY` |
 
 <Note title="Mirascope Provider">
@@ -50,6 +51,8 @@ You can register these using the provider IDs `"openai:completions"` or `"openai
 </Note>
 
 With the appropriate environment variable set, you can use any of these providers immediately—no registration required.
+
+For Requesty, use a model ID with the `requesty/` prefix, such as `requesty/openai/gpt-4o-mini`. Mirascope sends the remaining model ID to Requesty's OpenAI-compatible router. You can also register Requesty for another scope with `llm.register_provider("requesty", scope="openai/")`.
 
 ## Registering Providers
 
@@ -107,6 +110,7 @@ These provider IDs are available:
 | `"openai:completions"` | Force OpenAI Completions API |
 | `"openai:responses"` | Force OpenAI Responses API |
 | `"openai"` | OpenAI API (auto-selects Responses or Completions API based on features used) |
+| `"requesty"` | Requesty router API |
 | `"together"` | Together AI API |
 
 ## Resetting the Registry

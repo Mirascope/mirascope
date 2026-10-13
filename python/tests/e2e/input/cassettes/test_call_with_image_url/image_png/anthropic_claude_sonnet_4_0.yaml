@@ -1,0 +1,112 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":[{"type":"text","text":"Describe
+      the following image in one sentence","cache_control":null},{"type":"image","source":{"type":"url","url":"https://en.wikipedia.org/static/images/icons/wikipedia.png"},"cache_control":null}]}],"model":"claude-sonnet-4-0"}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '309'
+      Content-Type:
+      - application/json
+      Host:
+      - api.anthropic.com
+      User-Agent:
+      - Anthropic/Python 0.76.0
+      X-Api-Key:
+      - <filtered>
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Async:
+      - 'false'
+      X-Stainless-Lang:
+      - python
+      X-Stainless-OS:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.76.0
+      X-Stainless-Runtime:
+      - CPython
+      X-Stainless-Runtime-Version:
+      - 3.12.12
+      anthropic-version:
+      - '2023-06-01'
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WSwY4TMQyGX8XKeYrabnuZ6144ISHQrgChyEzcGbMZZ4iTQlv13XFWVGhBK0VK
+        5O+389vJxc0pUHS9GyLWQCtNIlRWu9V2vd2v95ud6xwH47OOfr3ZDI/5/PnT8e2Hh/fnw4nv323v
+        5btpymmhpiJVHMkCOcUWQFXWglIsNCQpZKf+y+WmL/Srkeetdx8nVrBVJgI2NQ/wyE+8UGCEmMbU
+        wYGw1MwyAposE60CzyTKSTCCLhNlghkDQV0gHWCp53MkWJgGUmgOkKWltyuBBY6YOVWFiDJWs66A
+        EuBn5tJUetJCs75x16+d05IWnwltRmaWJHizIu4PUPpRSQbrSmqMnavPg+gvjmWpxZf0ZDZdf7ez
+        QeAwkR+sVDHf/qVgfeOGw2vsltvqkzU9U8bo9/P/+r90M/1Lr51LtbxwZxlK+cgD+cKUrc/2egFz
+        aB9BDjZe69GPlAxJKh6PyBG/2WNfr78BnjA5704CAAA=
+    headers:
+      CF-RAY:
+      - 9cbb9d590c6c7582-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 10 Feb 2026 12:29:55 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-02-10T12:29:54Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-02-10T12:29:55Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-02-10T12:29:53Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-02-10T12:29:54Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CXzPbSGsJNFDhVbmm1UsL
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '2301'
+    status:
+      code: 200
+      message: OK
+version: 1

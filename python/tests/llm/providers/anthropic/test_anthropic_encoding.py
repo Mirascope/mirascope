@@ -9,8 +9,11 @@ from mirascope.llm.content.document import (
     TextDocumentSource,
 )
 from mirascope.llm.providers.anthropic._utils import encode_request
-from mirascope.llm.providers.anthropic._utils.encode import raw_message_has_format_tool
-from mirascope.llm.tools import Toolkit
+from mirascope.llm.providers.anthropic._utils.encode import (
+    encode_content,
+    raw_message_has_format_tool,
+)
+from mirascope.llm.tools import FORMAT_TOOL_NAME, Toolkit
 
 
 def test_encode_base64_document() -> None:
@@ -185,6 +188,70 @@ def test_raw_message_has_format_tool_non_dict() -> None:
     """Test that raw_message_has_format_tool returns False for non-dict input."""
     assert raw_message_has_format_tool(None) is False
     assert raw_message_has_format_tool("not a dict") is False
+
+
+# ---------------------------------------------------------------------------
+# Regression tests for https://github.com/Mirascope/mirascope/issues/2503
+# ---------------------------------------------------------------------------
+
+
+def test_encode_content_reencodes_format_tool_call_as_text() -> None:
+    """FORMAT_TOOL ToolCall parts must be re-encoded as text when reusing history.
+
+    When Anthropic structured-output mode is used, the model returns a FORMAT_TOOL
+    tool_use block.  When that assistant message is later reused in a resume() call,
+    encode_content must NOT emit that tool_use block — Anthropic rejects the request
+    with HTTP 400 because there is no corresponding tool_result in the next user turn.
+    But the tool's arguments are the assistant's actual structured response, so they
+    must be preserved as a text block rather than dropped.
+
+    See https://github.com/Mirascope/mirascope/issues/2503
+    """
+    format_tool_id = "toolu_abc123"
+    content = [
+        llm.Text(text="Here is the result."),
+        # This is the internal FORMAT_TOOL call injected by Mirascope
+        llm.ToolCall(id=format_tool_id, name=FORMAT_TOOL_NAME, args='{"value": 7}'),
+    ]
+    blocks = encode_content(content, encode_thoughts=False, add_cache_control=False)
+
+    # The FORMAT_TOOL tool_use block must be absent
+    assert isinstance(blocks, list)
+    tool_use_ids = [
+        b.get("id")
+        for b in blocks
+        if isinstance(b, dict) and b.get("type") == "tool_use"
+    ]
+    assert format_tool_id not in tool_use_ids, (
+        "FORMAT_TOOL tool_use block must not appear in re-encoded history; "
+        "Anthropic rejects requests where tool_use has no subsequent tool_result"
+    )
+
+    # The format tool's arguments must be preserved as text, not dropped, alongside
+    # the original text part.
+    text_values = [
+        b.get("text") for b in blocks if isinstance(b, dict) and b.get("type") == "text"
+    ]
+    assert text_values == ["Here is the result.", '{"value": 7}']
+
+
+def test_encode_content_keeps_real_tool_calls() -> None:
+    """Non-FORMAT_TOOL tool_call parts must still be emitted as tool_use blocks."""
+    real_tool_id = "toolu_realfunc"
+    content = [
+        llm.ToolCall(id=real_tool_id, name="get_weather", args='{"city": "Paris"}'),
+    ]
+    blocks = encode_content(content, encode_thoughts=False, add_cache_control=False)
+
+    assert isinstance(blocks, list)
+    tool_use_ids = [
+        b.get("id")
+        for b in blocks
+        if isinstance(b, dict) and b.get("type") == "tool_use"
+    ]
+    assert real_tool_id in tool_use_ids, (
+        "Real tool calls must still appear as tool_use blocks in encoded history"
+    )
 
 
 def test_encode_assistant_message_with_empty_tool_call_args() -> None:
