@@ -67,6 +67,16 @@ def test_register_provider_requesty() -> None:
     assert provider.client.api_key == os.getenv("REQUESTY_API_KEY")
 
 
+def test_register_provider_minimax() -> None:
+    """Test that register_provider('minimax') returns same instance on multiple calls."""
+    provider = llm.register_provider("minimax")
+    provider2 = llm.register_provider("minimax")
+
+    assert isinstance(provider, llm.providers.MiniMaxProvider)
+    assert provider is provider2
+    assert provider.client.api_key == os.getenv("MINIMAX_API_KEY")
+
+
 def test_register_provider_unknown_provider() -> None:
     """Test that register_provider raises ValueError for unknown providers."""
     with pytest.raises(ValueError, match="Unknown provider: 'unknown'"):
