@@ -10,6 +10,7 @@ from typing_extensions import Unpack
 from ..context import DepsT
 from ..formatting import FormatSpec, FormattableT
 from ..models import Model
+from ..models.params import validate_params
 from ..prompts import (
     AsyncContextMessageTemplate,
     AsyncContextPrompt,
@@ -263,6 +264,13 @@ def call(
         print(response.pretty())
         ```
     """
-    if isinstance(model, str):
+    if isinstance(model, Model):
+        if params:
+            raise TypeError(
+                f"llm.call() got unexpected keyword argument(s): {', '.join(sorted(params.keys()))}. "
+                "Parameters cannot be passed when providing a Model instance."
+            )
+    elif isinstance(model, str):
+        validate_params("llm.call()", params)
         model = Model(model, **params)
     return CallDecorator(model=model, tools=tools, format=format)

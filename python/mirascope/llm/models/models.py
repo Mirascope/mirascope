@@ -73,7 +73,7 @@ class Model:
         response = recommend_book("fantasy")
 
         # Override with different model
-        with llm.model(provider="anthropic", model_id="anthropic/claude-sonnet-4-5"):
+        with llm.model("anthropic/claude-sonnet-4-5"):
             response = recommend_book("fantasy")  # Uses Claude
         ```
 
@@ -101,6 +101,12 @@ class Model:
         **params: Unpack[Params],
     ) -> None:
         """Initialize the Model with model_id and optional params."""
+        if "provider" in params:
+            raise TypeError(
+                "Model() got unexpected keyword argument: provider. "
+                "Note that 'provider' is no longer a parameter — "
+                "specify the provider as a prefix in the model ID (e.g. 'openai/gpt-4o')."
+            )
         if "/" not in model_id:
             raise ValueError(
                 "Invalid model_id format. Expected format: 'provider/model-name' "
@@ -1263,6 +1269,12 @@ def model(
             response = recommend_book("fantasy")
         ```
     """
+    if "provider" in params:
+        raise TypeError(
+            "model() got unexpected keyword argument: provider. "
+            "Note that 'provider' is no longer a parameter — "
+            "specify the provider as a prefix in the model ID (e.g. 'openai/gpt-4o')."
+        )
     return Model(model_id, **params)
 
 
@@ -1327,13 +1339,28 @@ def use_model(
         response = recommend_book("fantasy")
 
         # Override with a different model
-        with llm.model(provider="anthropic", model_id="anthropic/claude-sonnet-4-5"):
+        with llm.model("anthropic/claude-sonnet-4-5"):
             response = recommend_book("fantasy")  # Uses Claude instead
         ```
     """
+    if not isinstance(model, str):
+        if params:
+            raise TypeError(
+                f"use_model() got unexpected keyword argument(s): {', '.join(sorted(params.keys()))}. "
+                "Parameters cannot be passed when providing a Model instance."
+            )
+        context_model = model_from_context()
+        if context_model is not None:
+            return context_model
+        return model
+
+    if "provider" in params:
+        raise TypeError(
+            "use_model() got unexpected keyword argument: provider. "
+            "Note that 'provider' is no longer a parameter — "
+            "specify the provider as a prefix in the model ID (e.g. 'openai/gpt-4o')."
+        )
     context_model = model_from_context()
     if context_model is not None:
         return context_model
-    if isinstance(model, str):
-        return Model(model, **params)
-    return model
+    return Model(model, **params)

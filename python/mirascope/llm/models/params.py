@@ -1,6 +1,7 @@
 """Base parameters for LLM providers."""
 
-from typing import TypedDict
+from collections.abc import Mapping
+from typing import Any, TypedDict, get_type_hints
 
 from .thinking_config import ThinkingConfig
 
@@ -70,3 +71,21 @@ class Params(TypedDict, total=False):
     primarily useful for making thoughts transferable when passing a conversation
     to a different model or provider than the one that generated the thinking.
     """
+
+
+def validate_params(caller_name: str, params: Mapping[str, Any]) -> None:
+    """Validate that all keys in params are recognized by Params.
+
+    Raises:
+        TypeError: If any unexpected keyword argument is found in params.
+    """
+    valid_params = set(get_type_hints(Params).keys())
+    unknown_params = set(params.keys()) - valid_params
+    if unknown_params:
+        msg = f"{caller_name} got unexpected keyword argument(s): {', '.join(sorted(unknown_params))}."
+        if "provider" in unknown_params:
+            msg += (
+                " Note that 'provider' is no longer a parameter — "
+                "specify the provider as a prefix in the model ID (e.g. 'openai/gpt-4o')."
+            )
+        raise TypeError(msg)
