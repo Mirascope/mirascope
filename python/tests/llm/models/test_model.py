@@ -118,3 +118,46 @@ def test_provider_resolution_is_dynamic() -> None:
     other_model = llm.Model("openai/gpt-3.5-turbo")
     assert other_model.provider is custom_provider
     assert other_model.provider.id == "anthropic"
+
+
+def test_model_rejects_provider_argument() -> None:
+    """Test that Model rejects the removed provider argument."""
+    with pytest.raises(
+        TypeError,
+        match=r"Model\(\) got unexpected keyword argument: provider\.",
+    ) as exc_info:
+        llm.Model("openai/gpt-4o-mini", provider="openai")  # pyright: ignore[reportCallIssue]
+    assert "Note that 'provider' is no longer a parameter" in str(exc_info.value)
+
+
+def test_model_allows_extra_parameters() -> None:
+    """Test that Model allows provider-specific extra parameters."""
+    m = llm.Model("openai/gpt-4o-mini", frequency_penalty=0.2)  # pyright: ignore[reportCallIssue]
+    assert m.params == {"frequency_penalty": 0.2}
+
+
+def test_model_helper_rejects_provider_argument() -> None:
+    """Test that llm.model() helper rejects the removed provider argument."""
+    with pytest.raises(
+        TypeError,
+        match=r"model\(\) got unexpected keyword argument: provider\.",
+    ) as exc_info:
+        llm.model("openai/gpt-4o-mini", provider="openai")  # pyright: ignore[reportCallIssue]
+    assert "Note that 'provider' is no longer a parameter" in str(exc_info.value)
+
+
+def test_use_model_rejects_provider_and_instance_params() -> None:
+    """Test that llm.use_model() rejects provider and Model instance params."""
+    with pytest.raises(
+        TypeError,
+        match=r"use_model\(\) got unexpected keyword argument: provider\.",
+    ) as exc_info:
+        llm.use_model("openai/gpt-4o-mini", provider="openai")  # pyright: ignore[reportCallIssue]
+    assert "Note that 'provider' is no longer a parameter" in str(exc_info.value)
+
+    m = llm.Model("openai/gpt-4o-mini")
+    with pytest.raises(
+        TypeError,
+        match="Parameters cannot be passed when providing a Model instance",
+    ):
+        llm.use_model(m, temperature=0.7)  # pyright: ignore[reportArgumentType]
