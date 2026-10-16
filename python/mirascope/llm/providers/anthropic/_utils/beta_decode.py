@@ -69,6 +69,8 @@ def _decode_beta_assistant_content(
         return Thought(thought=content.thinking)
     elif content.type in ("server_tool_use", "web_search_tool_result"):
         return None  # Skip server-side tool content, preserved in raw_message
+    elif content.type == "redacted_thinking":
+        return None  # No readable text, preserved in raw_message
     else:
         raise NotImplementedError(
             f"Support for beta content type `{content.type}` is not yet implemented."
@@ -162,7 +164,7 @@ class _BetaChunkProcessor:
                 }
                 if self.include_thoughts:
                     yield ThoughtStartChunk()
-            elif content_block.type == "redacted_thinking":  # pragma: no cover
+            elif content_block.type == "redacted_thinking":
                 self.current_block_param = {
                     "type": "redacted_thinking",
                     "data": content_block.data,
@@ -239,6 +241,8 @@ class _BetaChunkProcessor:
             elif block_type == "thinking":
                 if self.include_thoughts:
                     yield ThoughtEndChunk()
+            elif block_type == "redacted_thinking":
+                pass  # No readable text, preserved in raw_message
             else:
                 raise NotImplementedError
 
