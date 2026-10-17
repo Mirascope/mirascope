@@ -1,9 +1,10 @@
 """Unit tests for Partial model generation."""
 
-from typing import cast
+from typing import Union, cast
 
 from pydantic import BaseModel
 
+from mirascope import llm
 from mirascope.llm.formatting import Partial
 
 
@@ -194,3 +195,39 @@ def test_partial_deeply_nested() -> None:
     address = author.address
     assert address.city == "Madison"
     assert address.street is None
+
+
+def test_partial_nested_model_unions() -> None:
+    """Partial nested models support native and typing unions without losing members."""
+
+    class Author(BaseModel):
+        name: str
+        year: int
+
+    class Book(BaseModel):
+        author: Author | None
+        attribution: Author | str
+        legacy_author: Union[Author, None]  # noqa: UP007 - exercise typing.Union
+
+    PartialBook = cast(type[Book], llm.Partial[Book])
+    assert PartialBook.model_validate(
+        {
+            "author": {"name": "Patrick"},
+            "attribution": {"name": "Patrick"},
+            "legacy_author": {"name": "Patrick"},
+        }
+    ).model_dump() == {
+        "author": {"name": "Patrick", "year": None},
+        "attribution": {"name": "Patrick", "year": None},
+        "legacy_author": {"name": "Patrick", "year": None},
+    }
+    assert PartialBook.model_validate({"attribution": "anonymous"}).model_dump() == {
+        "author": None,
+        "attribution": "anonymous",
+        "legacy_author": None,
+    }
+    assert PartialBook.model_validate({"author": None}).model_dump() == {
+        "author": None,
+        "attribution": None,
+        "legacy_author": None,
+    }
