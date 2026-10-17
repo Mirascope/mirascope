@@ -180,10 +180,10 @@ If you're struggling with substance use or addiction, I encourage you to reach o
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
       "inputTokens": 726,
-      "outputTokens": 261,
+      "outputTokens": 250,
       "raw": "null",
       "reasoningTokens": 0,
-      "totalTokens": 987,
+      "totalTokens": 976,
     },
   },
 }
