@@ -104,10 +104,10 @@ exports[`prompt output > [anthropic] streams model with string model id 1`] = `
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
       "inputTokens": 17,
-      "outputTokens": 16,
+      "outputTokens": 15,
       "raw": "null",
       "reasoningTokens": 0,
-      "totalTokens": 33,
+      "totalTokens": 32,
     },
   },
 }

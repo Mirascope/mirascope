@@ -104,10 +104,10 @@ exports[`context call output > [anthropic] streams response with context 1`] = `
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
       "inputTokens": 16,
-      "outputTokens": 21,
+      "outputTokens": 13,
       "raw": "null",
       "reasoningTokens": 0,
-      "totalTokens": 37,
+      "totalTokens": 29,
     },
   },
 }

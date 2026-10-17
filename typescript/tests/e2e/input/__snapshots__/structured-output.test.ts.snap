@@ -100,10 +100,10 @@ exports[`structured output streaming > [anthropic] streams partial objects 1`] =
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
       "inputTokens": 820,
-      "outputTokens": 123,
+      "outputTokens": 108,
       "raw": "null",
       "reasoningTokens": 0,
-      "totalTokens": 943,
+      "totalTokens": 928,
     },
   },
 }
