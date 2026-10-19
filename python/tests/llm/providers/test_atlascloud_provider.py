@@ -14,9 +14,17 @@ from mirascope.llm.providers.openai.completions._utils import (
 from mirascope.llm.tools import Toolkit
 
 
+class _InspectableAtlasCloudProvider(AtlasCloudProvider):
+    def model_name(self, model_id: str) -> str:
+        return self._model_name(model_id)
+
+    def model_feature_info(self, model_id: str) -> CompletionsModelFeatureInfo:
+        return self._model_feature_info(model_id)
+
+
 def test_atlascloud_provider_initialization() -> None:
     """Test AtlasCloudProvider initialization with api_key."""
-    provider = AtlasCloudProvider(api_key="test-api-key")
+    provider = _InspectableAtlasCloudProvider(api_key="test-api-key")
     assert provider.id == "atlascloud"
     assert provider.default_scope == []
 
@@ -39,7 +47,7 @@ def test_atlascloud_provider_uses_env_var() -> None:
     original_key = os.environ.get("ATLASCLOUD_API_KEY")
     os.environ["ATLASCLOUD_API_KEY"] = "env-test-key"
     try:
-        provider = AtlasCloudProvider()
+        provider = _InspectableAtlasCloudProvider()
         assert provider.id == "atlascloud"
     finally:
         if original_key is not None:
@@ -50,38 +58,39 @@ def test_atlascloud_provider_uses_env_var() -> None:
 
 def test_atlascloud_provider_default_base_url() -> None:
     """Test AtlasCloudProvider uses the Atlas Cloud API by default."""
-    provider = AtlasCloudProvider(api_key="test-key")
+    provider = _InspectableAtlasCloudProvider(api_key="test-key")
     assert str(provider.client.base_url) == "https://api.atlascloud.ai/v1/"
     assert str(provider.async_client.base_url) == "https://api.atlascloud.ai/v1/"
 
 
 def test_atlascloud_provider_custom_base_url() -> None:
     """Test AtlasCloudProvider with custom base_url."""
-    provider = AtlasCloudProvider(api_key="test-key", base_url="https://example.com/v1")
+    provider = _InspectableAtlasCloudProvider(
+        api_key="test-key", base_url="https://example.com/v1"
+    )
     assert provider.id == "atlascloud"
     assert str(provider.client.base_url) == "https://example.com/v1/"
 
 
 def test_atlascloud_provider_model_name() -> None:
     """Test AtlasCloudProvider strips 'atlascloud/' prefix from model_id."""
-    provider = AtlasCloudProvider(api_key="test-key")
+    provider = _InspectableAtlasCloudProvider(api_key="test-key")
     assert (
-        provider._model_name("atlascloud/openai/gpt-4.1-mini")  # pyright: ignore[reportPrivateUsage]
-        == "openai/gpt-4.1-mini"
+        provider.model_name("atlascloud/openai/gpt-4.1-mini") == "openai/gpt-4.1-mini"
     )
-    assert provider._model_name("openai/gpt-4.1-mini") == "openai/gpt-4.1-mini"  # pyright: ignore[reportPrivateUsage]
+    assert provider.model_name("openai/gpt-4.1-mini") == "openai/gpt-4.1-mini"
     assert (
-        provider._model_name("anthropic/claude-sonnet-4.6")  # pyright: ignore[reportPrivateUsage]
+        provider.model_name("anthropic/claude-sonnet-4.6")
         == "anthropic/claude-sonnet-4.6"
     )
-    assert provider._model_name("atlascloud/claude-sonnet-4.6") == "claude-sonnet-4.6"  # pyright: ignore[reportPrivateUsage]
+    assert provider.model_name("atlascloud/claude-sonnet-4.6") == "claude-sonnet-4.6"
 
 
 def test_atlascloud_provider_model_feature_info_openai_models() -> None:
     """Test _model_feature_info returns OpenAI feature info for openai/ models."""
-    provider = AtlasCloudProvider(api_key="test-key")
+    provider = _InspectableAtlasCloudProvider(api_key="test-key")
     # gpt-4o-2024-05-13 doesn't support strict
-    info = provider._model_feature_info("openai/gpt-4o-2024-05-13")  # pyright: ignore[reportPrivateUsage]
+    info = provider.model_feature_info("openai/gpt-4o-2024-05-13")
     assert (
         info.strict_support is False
     )  # gpt-4o-2024-05-13 is in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
@@ -90,25 +99,25 @@ def test_atlascloud_provider_model_feature_info_openai_models() -> None:
     )  # gpt-4o-2024-05-13 is in NON_REASONING_MODELS
 
     # gpt-4o supports strict
-    info = provider._model_feature_info("atlascloud/openai/gpt-4o")  # pyright: ignore[reportPrivateUsage]
+    info = provider.model_feature_info("atlascloud/openai/gpt-4o")
     assert info.strict_support is True
     assert info.is_reasoning_model is False
 
     # o1 is a reasoning model
-    info = provider._model_feature_info("openai/o1")  # pyright: ignore[reportPrivateUsage]
+    info = provider.model_feature_info("openai/o1")
     assert info.is_reasoning_model is True
 
 
 def test_atlascloud_provider_model_feature_info_non_openai_models() -> None:
     """Test _model_feature_info returns empty info for non-openai/ models."""
-    provider = AtlasCloudProvider(api_key="test-key")
-    info = provider._model_feature_info("anthropic/claude-sonnet-4.6")  # pyright: ignore[reportPrivateUsage]
+    provider = _InspectableAtlasCloudProvider(api_key="test-key")
+    info = provider.model_feature_info("anthropic/claude-sonnet-4.6")
     assert info == CompletionsModelFeatureInfo()
 
-    info = provider._model_feature_info("atlascloud/anthropic/claude-sonnet-4.6")  # pyright: ignore[reportPrivateUsage]
+    info = provider.model_feature_info("atlascloud/anthropic/claude-sonnet-4.6")
     assert info == CompletionsModelFeatureInfo()
 
-    info = provider._model_feature_info("claude-sonnet-4.6")  # pyright: ignore[reportPrivateUsage]
+    info = provider.model_feature_info("claude-sonnet-4.6")
     assert info == CompletionsModelFeatureInfo()
 
 
@@ -123,11 +132,11 @@ def test_atlascloud_reasoning_model_temperature_warning(
 
     This is a unit test that calls encode_request directly to avoid network calls.
     """
-    provider = AtlasCloudProvider(api_key="test-key")
+    provider = _InspectableAtlasCloudProvider(api_key="test-key")
     model_id = "atlascloud/openai/o1"
 
     # Get the feature_info that would be used
-    feature_info = provider._model_feature_info(model_id)  # pyright: ignore[reportPrivateUsage]
+    feature_info = provider.model_feature_info(model_id)
     assert (
         feature_info.is_reasoning_model is True
     )  # Verify it's detected as reasoning model
@@ -156,10 +165,10 @@ def test_atlascloud_non_reasoning_model_accepts_temperature(
 
     gpt-4o is in NON_REASONING_MODELS, so temperature should be accepted without warning.
     """
-    provider = AtlasCloudProvider(api_key="test-key")
+    provider = _InspectableAtlasCloudProvider(api_key="test-key")
     model_id = "atlascloud/openai/gpt-4o"
 
-    feature_info = provider._model_feature_info(model_id)  # pyright: ignore[reportPrivateUsage]
+    feature_info = provider.model_feature_info(model_id)
     assert feature_info.is_reasoning_model is False
 
     messages = [llm.messages.user("Say hello")]
@@ -188,10 +197,10 @@ def test_atlascloud_anthropic_model_accepts_temperature(
     is_reasoning_model=None (treated as False), so temperature should be
     accepted without warning.
     """
-    provider = AtlasCloudProvider(api_key="test-key")
+    provider = _InspectableAtlasCloudProvider(api_key="test-key")
     model_id = "atlascloud/anthropic/claude-sonnet-4.6"
 
-    feature_info = provider._model_feature_info(model_id)  # pyright: ignore[reportPrivateUsage]
+    feature_info = provider.model_feature_info(model_id)
     assert feature_info == CompletionsModelFeatureInfo()
 
     messages = [llm.messages.user("Say hello")]
