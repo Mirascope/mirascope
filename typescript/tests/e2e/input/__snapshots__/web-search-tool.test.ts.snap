@@ -473,12 +473,12 @@ exports[`WebSearchTool > [anthropic] streams with web search tool 1`] = `
     ],
     "usage": {
       "cacheReadTokens": 0,
-      "cacheWriteTokens": 0,
-      "inputTokens": 2285,
-      "outputTokens": 175,
+      "cacheWriteTokens": 12032,
+      "inputTokens": 2292,
+      "outputTokens": 150,
       "raw": "null",
       "reasoningTokens": 0,
-      "totalTokens": 2460,
+      "totalTokens": 2442,
     },
   },
 }

@@ -150,10 +150,10 @@ exports[`max tokens > [anthropic] returns MAX_TOKENS finish reason for stream 1`
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
       "inputTokens": 15,
-      "outputTokens": 51,
+      "outputTokens": 50,
       "raw": "null",
       "reasoningTokens": 0,
-      "totalTokens": 66,
+      "totalTokens": 65,
     },
   },
 }

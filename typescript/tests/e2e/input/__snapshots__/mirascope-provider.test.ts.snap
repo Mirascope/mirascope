@@ -104,10 +104,10 @@ exports[`mirascope provider > [mirascope:anthropic] streams from underlying prov
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
       "inputTokens": 23,
-      "outputTokens": 9,
+      "outputTokens": 6,
       "raw": "null",
       "reasoningTokens": 0,
-      "totalTokens": 32,
+      "totalTokens": 29,
     },
   },
 }
