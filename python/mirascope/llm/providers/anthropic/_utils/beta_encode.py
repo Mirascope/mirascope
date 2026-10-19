@@ -155,6 +155,31 @@ def _beta_encode_messages(
     return encoded_messages
 
 
+def _has_unsupported_pattern(pattern: str) -> bool:
+    """Recognize unsupported assertions and backreferences, not escaped literals."""
+    escaped = False
+    in_character_class = False
+    character_class_start = 0
+    for index, character in enumerate(pattern):
+        if escaped:
+            if not in_character_class and character in "bB123456789":
+                return True
+            escaped = False
+        elif character == "\\":
+            escaped = True
+        elif character == "[" and not in_character_class:
+            in_character_class = True
+            character_class_start = index + (
+                2 if pattern.startswith("^", index + 1) else 1
+            )
+        elif in_character_class:
+            if character == "]" and index > character_class_start:
+                in_character_class = False
+        elif pattern.startswith(("(?=", "(?!", "(?<=", "(?<!", "(?P="), index):
+            return True
+    return False
+
+
 def _adapt_strict_tool_schema(schema: dict[str, Any]) -> dict[str, Any]:
     """Describe unsupported constraints without weakening supported strict fields."""
     result = dict(schema)
@@ -171,6 +196,8 @@ def _adapt_strict_tool_schema(schema: dict[str, Any]) -> dict[str, Any]:
     constraints = [f"{key}: {result.pop(key)}" for key in unsupported if key in result]
     if result.get("minItems", 0) > 1:
         constraints.append(f"minItems: {result.pop('minItems')}")
+    if "pattern" in result and _has_unsupported_pattern(result["pattern"]):
+        constraints.append(f"pattern: {result.pop('pattern')}")
     if constraints:
         description = result.get("description", "")
         note = "{" + ", ".join(constraints) + "}"

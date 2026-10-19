@@ -1,5 +1,7 @@
 """Tests for llm.providers.AnthropicProvider with beta features."""
 
+import json
+import re
 from enum import Enum
 from typing import Annotated, Any, Literal, NoReturn, cast
 from unittest.mock import MagicMock, patch
@@ -157,6 +159,94 @@ def test_strict_tool_adapts_optional_constraints() -> None:
         llm.ToolCall(id="invalid", name=optional.name, args='{"values": [0]}')
     )
     assert isinstance(output.error, llm.ToolExecutionError)
+
+
+@pytest.mark.parametrize("strict", [None, True, False])
+@pytest.mark.parametrize(
+    ("pattern", "valid", "invalid", "supported"),
+    [
+        (r"\bword\b", "a word!", "sword", False),
+        (r"word\B", "words", "word", False),
+        (r"\\\bword", "\\word", "\\sword", False),
+        (re.compile(r"word(?=!)"), "word!", "word?", False),
+        (re.compile(r"word(?!s)"), "word!", "words", False),
+        (re.compile(r"(?<=!)word"), "!word", "?word", False),
+        (re.compile(r"(?<!!)word"), "?word", "!word", False),
+        (re.compile(r"(word)\1"), "wordword", "word", False),
+        (re.compile(r"(?P<term>word)(?P=term)"), "wordword", "word", False),
+        (r"^[a-z]+$", "word", "123", True),
+        (r"\\bword\\b", "\\bword\\b", "word", True),
+        (r"[\\b]+", "bbb", "word", True),
+        (r"[(?=)]+", "(?=)", "word", True),
+        (re.compile(r"[\b]+"), "\b", "word", True),
+        (re.compile(r"[]\b]+"), "]", "word", True),
+        (re.compile(r"[^]\b]+"), "word", "]", True),
+        (r"\(\?=word\)", "(?=word)", "word", True),
+        (r"[^^]\bword", "a word", "^word", False),
+        (re.compile(r"[^^](?=x)"), "ax", "^x", False),
+        (re.compile(r"[^^](a)\1"), "xaa", "^aa", False),
+        (r"[^^]+", "word", "^^", True),
+    ],
+)
+def test_strict_tool_adapts_unsupported_patterns(
+    strict: bool | None,
+    pattern: str | re.Pattern[str],
+    valid: str,
+    invalid: str,
+    supported: bool,
+) -> None:
+    class Details(BaseModel):
+        value: Annotated[str, Field(pattern=pattern, description="A matching value.")]
+
+    @llm.tool(strict=strict)
+    def matching(
+        value: Annotated[str, Field(pattern=pattern, description="A matching value.")],
+        details: Details,
+    ) -> str:
+        return value
+
+    original = matching.parameters.model_dump(by_alias=True, exclude_none=True)
+    _, _, kwargs = beta_encode.beta_encode_request(
+        model_id="anthropic-beta/claude-sonnet-4-5",
+        messages=[llm.messages.user("Use the tool")],
+        tools=llm.tools.Toolkit([matching]),
+        format=None,
+        params={},
+    )
+    tools = kwargs.get("tools")
+    assert isinstance(tools, list)
+    schema = cast(dict[str, Any], tools[0])["input_schema"]
+    expected_pattern = pattern if isinstance(pattern, str) else pattern.pattern
+    for field in (
+        schema["properties"]["value"],
+        schema["$defs"]["Details"]["properties"]["value"],
+    ):
+        if strict is False or supported:
+            assert field["pattern"] == expected_pattern
+            assert field["description"] == "A matching value."
+        else:
+            assert "pattern" not in field
+            assert field["description"] == (
+                f"A matching value.\n\n{{pattern: {expected_pattern}}}"
+            )
+    assert matching.parameters.model_dump(by_alias=True, exclude_none=True) == original
+    args = {"value": valid, "details": {"value": valid}}
+    output = matching.execute(
+        llm.ToolCall(id="valid", name=matching.name, args=json.dumps(args))
+    )
+    assert output.error is None
+    assert output.result == valid
+    for invalid_args in (
+        {"value": invalid, "details": {"value": valid}},
+        {"value": valid, "details": {"value": invalid}},
+    ):
+        output = matching.execute(
+            llm.ToolCall(
+                id="invalid", name=matching.name, args=json.dumps(invalid_args)
+            )
+        )
+        assert isinstance(output.error, llm.ToolExecutionError)
+        assert "String should match pattern" in str(output.error)
 
 
 def test_beta_stream_rate_limit_error() -> None:
