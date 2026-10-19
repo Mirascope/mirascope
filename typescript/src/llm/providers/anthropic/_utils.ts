@@ -506,6 +506,7 @@ export function buildRequestParams(
   tools?: Tools,
   format?: Format | null,
   params: Params = {},
+  allowStrictTools: boolean = false,
 ): MessageCreateParamsNonStreaming {
   return ParamHandler.with(params, "anthropic", modelId, (p) => {
     const thinkingConfig = p.get("thinking");
@@ -529,6 +530,18 @@ export function buildRequestParams(
 
     // Collect tools from both explicit tools and format tool
     const allTools: Anthropic.Messages.ToolUnion[] = [];
+
+    if (
+      !allowStrictTools &&
+      tools?.some((tool) => "parameters" in tool && tool.strict === true)
+    ) {
+      throw new FeatureNotSupportedError(
+        "strict tools",
+        "anthropic",
+        modelId,
+        "Strict tools require a model that supports structured outputs.",
+      );
+    }
 
     /* v8 ignore start - tool encoding will be tested via e2e */
     if (tools !== undefined && tools.length > 0) {

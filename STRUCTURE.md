@@ -72,7 +72,7 @@ python/
 
 ## TypeScript Implementation (`typescript/`)
 
-The TypeScript SDK's development is currently paused. We plan to resume development once we further finalize the Python `llm` interfaces.
+The TypeScript SDK is in active alpha development. Its API follows the Python `llm` interfaces, with prerelease versions published under the npm `alpha` tag.
 
 ## Website (`website/`)
 

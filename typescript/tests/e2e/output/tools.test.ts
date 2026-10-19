@@ -29,14 +29,16 @@ const PASSWORD_MAP: Record<string, string> = {
 /**
  * A simple tool for testing that retrieves secrets based on passwords.
  */
-const secretRetrievalTool = defineTool<{ password: string }>({
-  name: "secret_retrieval_tool",
-  description:
-    "A tool that requires a password to retrieve a secret. Takes a 'password' field.",
-  tool: ({ password }) => {
-    return PASSWORD_MAP[password] ?? "Invalid password!";
-  },
-});
+const secretRetrievalTool = (strict?: boolean) =>
+  defineTool<{ password: string }>({
+    name: "secret_retrieval_tool",
+    strict,
+    description:
+      "A tool that requires a password to retrieve a secret. Takes a 'password' field.",
+    tool: ({ password }) => {
+      return PASSWORD_MAP[password] ?? "Invalid password!";
+    },
+  });
 
 describe("tool usage", () => {
   it.record.each(PROVIDERS_FOR_TOOLS_TESTS)(
@@ -45,7 +47,11 @@ describe("tool usage", () => {
       const retrieveSecrets = defineCall<{ passwords: string[] }>({
         model,
         maxTokens: 1000,
-        tools: [secretRetrievalTool],
+        tools: [
+          secretRetrievalTool(
+            model.startsWith("anthropic/") ? false : undefined,
+          ),
+        ],
         template: ({ passwords }) =>
           `Please retrieve the secrets for these passwords: ${passwords.map((p) => `"${p}"`).join(" and ")}. ` +
           "Use the secret_retrieval_tool for each password.",
@@ -99,7 +105,11 @@ describe("tool usage with streaming", () => {
       const retrieveSecrets = defineCall<{ passwords: string[] }>({
         model,
         maxTokens: 1000,
-        tools: [secretRetrievalTool],
+        tools: [
+          secretRetrievalTool(
+            model.startsWith("anthropic/") ? false : undefined,
+          ),
+        ],
         template: ({ passwords }) =>
           `Please retrieve the secrets for these passwords: ${passwords.map((p) => `"${p}"`).join(" and ")}. ` +
           "Use the secret_retrieval_tool for each password.",

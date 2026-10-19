@@ -12,12 +12,20 @@ import {
   NoRegisteredProviderError,
 } from "@/llm/exceptions";
 import { AnthropicProvider } from "@/llm/providers/anthropic";
+import { AnthropicBetaProvider } from "@/llm/providers/anthropic/beta-provider";
 import { GoogleProvider } from "@/llm/providers/google";
 import { MirascopeProvider } from "@/llm/providers/mirascope";
 import { OllamaProvider } from "@/llm/providers/ollama";
+import {
+  AtlasCloudProvider,
+  CheaperInferenceProvider,
+  MiniMaxProvider,
+  RequestyProvider,
+} from "@/llm/providers/openai-compatible";
 import { OpenAIProvider } from "@/llm/providers/openai/provider";
 import { OpenRouterProvider } from "@/llm/providers/openrouter";
 import { TogetherProvider } from "@/llm/providers/together";
+import { XAIProvider } from "@/llm/providers/xai";
 
 /**
  * Global registry mapping scopes to providers.
@@ -46,9 +54,21 @@ interface ProviderDefault {
  * Default auto-registration scopes with fallback chains.
  */
 const DEFAULT_AUTO_REGISTER_SCOPES: Record<string, ProviderDefault[]> = {
+  "anthropic-beta/": [
+    { providerId: "anthropic-beta", apiKeyEnvVar: "ANTHROPIC_API_KEY" },
+  ],
   "anthropic/": [
     { providerId: "anthropic", apiKeyEnvVar: "ANTHROPIC_API_KEY" },
     { providerId: "mirascope", apiKeyEnvVar: "MIRASCOPE_API_KEY" },
+  ],
+  "atlascloud/": [
+    { providerId: "atlascloud", apiKeyEnvVar: "ATLASCLOUD_API_KEY" },
+  ],
+  "cheaperinference/": [
+    {
+      providerId: "cheaperinference",
+      apiKeyEnvVar: "CHEAPER_INFERENCE_API_KEY",
+    },
   ],
   "google/": [
     { providerId: "google", apiKeyEnvVar: "GOOGLE_API_KEY" },
@@ -57,6 +77,7 @@ const DEFAULT_AUTO_REGISTER_SCOPES: Record<string, ProviderDefault[]> = {
   "mirascope/": [
     { providerId: "mirascope", apiKeyEnvVar: "MIRASCOPE_API_KEY" },
   ],
+  "minimax/": [{ providerId: "minimax", apiKeyEnvVar: "MINIMAX_API_KEY" }],
   "ollama/": [{ providerId: "ollama", apiKeyEnvVar: null }],
   "openai/": [
     { providerId: "openai", apiKeyEnvVar: "OPENAI_API_KEY" },
@@ -65,7 +86,9 @@ const DEFAULT_AUTO_REGISTER_SCOPES: Record<string, ProviderDefault[]> = {
   "openrouter/": [
     { providerId: "openrouter", apiKeyEnvVar: "OPENROUTER_API_KEY" },
   ],
+  "requesty/": [{ providerId: "requesty", apiKeyEnvVar: "REQUESTY_API_KEY" }],
   "together/": [{ providerId: "together", apiKeyEnvVar: "TOGETHER_API_KEY" }],
+  "xai/": [{ providerId: "xai", apiKeyEnvVar: "XAI_API_KEY" }],
 };
 
 /**
@@ -107,6 +130,15 @@ export function getProviderSingleton(
         baseURL: options?.baseURL,
       });
       break;
+    case "anthropic-beta":
+      provider = new AnthropicBetaProvider(options);
+      break;
+    case "atlascloud":
+      provider = new AtlasCloudProvider(options);
+      break;
+    case "cheaperinference":
+      provider = new CheaperInferenceProvider(options);
+      break;
     case "google":
       provider = new GoogleProvider({
         apiKey: options?.apiKey,
@@ -118,6 +150,9 @@ export function getProviderSingleton(
         apiKey: options?.apiKey,
         baseURL: options?.baseURL,
       });
+      break;
+    case "minimax":
+      provider = new MiniMaxProvider(options);
       break;
     case "ollama":
       provider = new OllamaProvider({
@@ -137,11 +172,17 @@ export function getProviderSingleton(
         baseURL: options?.baseURL,
       });
       break;
+    case "requesty":
+      provider = new RequestyProvider(options);
+      break;
     case "together":
       provider = new TogetherProvider({
         apiKey: options?.apiKey,
         baseURL: options?.baseURL,
       });
+      break;
+    case "xai":
+      provider = new XAIProvider(options);
       break;
     default:
       throw new Error(`Unknown provider: '${providerId}'`);

@@ -152,7 +152,7 @@ exports[`structured output with tools (default mode) > [anthropic] calls tool th
   ],
   "additionalProperties": false
 }",
-        "strict": undefined,
+        "strict": false,
       },
     ],
     "usage": {
@@ -320,7 +320,7 @@ exports[`structured output with tools (default mode) > [anthropic] calls tool wi
   ],
   "additionalProperties": false
 }",
-        "strict": undefined,
+        "strict": false,
       },
     ],
     "usage": {
@@ -545,7 +545,7 @@ This is the first book in Brandon Sanderson's acclaimed Mistborn series, publish
   ],
   "additionalProperties": false
 }",
-        "strict": undefined,
+        "strict": false,
       },
     ],
     "usage": {
@@ -772,7 +772,7 @@ This is the first book in Brandon Sanderson's Mistborn trilogy. It's an epic fan
   ],
   "additionalProperties": false
 }",
-        "strict": undefined,
+        "strict": false,
       },
     ],
     "usage": {
@@ -940,7 +940,7 @@ exports[`structured output with tools (tool mode) > [anthropic] calls tool then 
   ],
   "additionalProperties": false
 }",
-        "strict": undefined,
+        "strict": false,
       },
     ],
     "usage": {
@@ -1108,7 +1108,7 @@ exports[`structured output with tools (tool mode) > [anthropic] calls tool with 
   ],
   "additionalProperties": false
 }",
-        "strict": undefined,
+        "strict": false,
       },
     ],
     "usage": {
@@ -1275,7 +1275,7 @@ exports[`structured output with tools streaming (default mode) > [anthropic] str
   ],
   "additionalProperties": false
 }",
-        "strict": undefined,
+        "strict": false,
       },
     ],
     "usage": {
@@ -1442,7 +1442,7 @@ exports[`structured output with tools streaming (default mode) > [anthropic] str
   ],
   "additionalProperties": false
 }",
-        "strict": undefined,
+        "strict": false,
       },
     ],
     "usage": {
@@ -1609,7 +1609,7 @@ exports[`structured output with tools streaming (tool mode) > [anthropic] stream
   ],
   "additionalProperties": false
 }",
-        "strict": undefined,
+        "strict": false,
       },
     ],
     "usage": {
@@ -1776,7 +1776,7 @@ exports[`structured output with tools streaming (tool mode) > [anthropic] stream
   ],
   "additionalProperties": false
 }",
-        "strict": undefined,
+        "strict": false,
       },
     ],
     "usage": {

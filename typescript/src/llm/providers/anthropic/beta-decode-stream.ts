@@ -4,12 +4,10 @@
  * Converts Anthropic Beta MessageStreamEvent to Mirascope StreamResponseChunk.
  * The Beta API supports thinking blocks which are decoded as thought chunks.
  *
- * Note: This module is only used when shouldUseBeta() returns true, which requires
- * strict mode features that are not yet implemented. The code is marked with v8 ignore
- * to avoid coverage requirements for feature-gated code.
+ * Used for strict tools and structured outputs routed through the beta API.
  */
 
-/* v8 ignore start - beta streaming is feature-gated behind shouldUseBeta() */
+/* v8 ignore start - beta SSE paths require live recordings; tool decoding has a focused test */
 
 import type { BetaRawMessageStreamEvent } from "@anthropic-ai/sdk/resources/beta/messages/messages";
 
@@ -23,6 +21,9 @@ import {
   thoughtStart,
   thoughtChunk,
   thoughtEnd,
+  toolCallStart,
+  toolCallChunk,
+  toolCallEnd,
 } from "@/llm/content";
 import {
   finishReasonChunk,
@@ -38,7 +39,13 @@ import { FinishReason } from "@/llm/responses/finish-reason";
 type AccumulatedBlock =
   | { type: "text"; text: string }
   | { type: "thinking"; thinking: string; signature: string }
-  | { type: "redacted_thinking"; data: string };
+  | { type: "redacted_thinking"; data: string }
+  | {
+      type: "tool_use";
+      id: string;
+      name: string;
+      input: Record<string, unknown>;
+    };
 
 /**
  * State tracking for stream decoding.
@@ -47,11 +54,17 @@ interface DecodeState {
   /** Index of current content block being streamed */
   currentBlockIndex: number;
   /** Type of current content block */
-  currentBlockType: "text" | "thinking" | "redacted_thinking" | null;
+  currentBlockType:
+    | "text"
+    | "thinking"
+    | "redacted_thinking"
+    | "tool_use"
+    | null;
   /** Whether to include thoughts in output */
   includeThoughts: boolean;
   /** Current block being accumulated */
   currentBlock: AccumulatedBlock | null;
+  accumulatedToolJson: string;
   /** All accumulated blocks for raw message */
   accumulatedBlocks: AccumulatedBlock[];
   /** Usage reported by message_start, which message_delta's usage includes */
@@ -72,6 +85,7 @@ export function createBetaDecodeState(includeThoughts: boolean): DecodeState {
     currentBlockType: null,
     includeThoughts,
     currentBlock: null,
+    accumulatedToolJson: "",
     accumulatedBlocks: [],
     startUsage: {
       inputTokens: 0,
@@ -140,8 +154,19 @@ export function decodeBetaStreamEvent(
           type: "redacted_thinking",
           data: event.content_block.data,
         };
+      } else if (event.content_block.type === "tool_use") {
+        state.currentBlockType = "tool_use";
+        state.currentBlock = {
+          type: "tool_use",
+          id: event.content_block.id,
+          name: event.content_block.name,
+          input: {},
+        };
+        state.accumulatedToolJson = "";
+        chunks.push(
+          toolCallStart(event.content_block.id, event.content_block.name),
+        );
       }
-      // Note: tool_use blocks not yet fully supported
       break;
 
     case "content_block_delta":
@@ -163,13 +188,31 @@ export function decodeBetaStreamEvent(
         if (state.currentBlock?.type === "thinking") {
           state.currentBlock.signature += event.delta.signature;
         }
+      } else if (event.delta.type === "input_json_delta") {
+        state.accumulatedToolJson += event.delta.partial_json;
+        if (state.currentBlock?.type === "tool_use") {
+          chunks.push(
+            toolCallChunk(state.currentBlock.id, event.delta.partial_json),
+          );
+        }
       }
-      // Note: input_json_delta for tools not yet supported
       break;
 
     case "content_block_stop":
       if (state.currentBlockType === "text") {
         chunks.push(textEnd());
+      } else if (
+        state.currentBlockType === "tool_use" &&
+        state.currentBlock?.type === "tool_use"
+      ) {
+        try {
+          state.currentBlock.input = state.accumulatedToolJson
+            ? (JSON.parse(state.accumulatedToolJson) as Record<string, unknown>)
+            : {};
+        } catch {
+          state.currentBlock.input = {};
+        }
+        chunks.push(toolCallEnd(state.currentBlock.id));
       } else if (
         state.currentBlockType === "thinking" &&
         state.includeThoughts
@@ -238,8 +281,9 @@ function decodeBetaStopReason(
 ): FinishReason | null {
   switch (stopReason) {
     case "max_tokens":
-    case "model_context_window_exceeded":
       return FinishReason.MAX_TOKENS;
+    case "model_context_window_exceeded":
+      return FinishReason.CONTEXT_LENGTH_EXCEEDED;
     case "refusal":
       return FinishReason.REFUSAL;
     case "end_turn":

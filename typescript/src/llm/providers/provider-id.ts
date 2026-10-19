@@ -7,12 +7,18 @@
  */
 export const KNOWN_PROVIDER_IDS = [
   "anthropic",
+  "anthropic-beta",
+  "atlascloud",
+  "cheaperinference",
   "google",
+  "minimax",
   "mirascope",
   "ollama",
   "openai",
   "openrouter",
+  "requesty",
   "together",
+  "xai",
 ] as const;
 
 /**

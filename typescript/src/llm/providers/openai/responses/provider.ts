@@ -42,7 +42,7 @@ import { StreamResponse } from "@/llm/responses/stream-response";
  * ```
  */
 export class OpenAIResponsesProvider extends BaseProvider {
-  readonly id = "openai" as const;
+  readonly id: string = "openai";
   protected readonly errorMap = OPENAI_ERROR_MAP;
 
   private readonly client: OpenAI;
@@ -60,6 +60,11 @@ export class OpenAIResponsesProvider extends BaseProvider {
       apiKey: init.apiKey,
       baseURL: init.baseURL,
     });
+  }
+
+  /** Map a provider model ID to the OpenAI-compatible request model ID. */
+  protected requestModelId(modelId: string): OpenAIModelId {
+    return modelId;
   }
 
   /**
@@ -80,7 +85,7 @@ export class OpenAIResponsesProvider extends BaseProvider {
     format?: Format | null;
     params?: Params;
   }): Promise<Response> {
-    const modelIdTyped = args.modelId as OpenAIModelId;
+    const modelIdTyped = this.requestModelId(args.modelId);
     const requestParams = buildRequestParams(
       modelIdTyped,
       args.messages,
@@ -101,8 +106,8 @@ export class OpenAIResponsesProvider extends BaseProvider {
 
     return new Response({
       raw: openaiResponse,
-      providerId: "openai",
-      modelId: modelIdTyped,
+      providerId: this.id,
+      modelId: args.modelId,
       providerModelName: modelName(modelIdTyped, "responses"),
       params: args.params ?? /* v8 ignore next 1 */ {},
       tools: args.tools,
@@ -132,7 +137,7 @@ export class OpenAIResponsesProvider extends BaseProvider {
     format?: Format | null;
     params?: Params;
   }): Promise<StreamResponse> {
-    const modelIdTyped = args.modelId as OpenAIModelId;
+    const modelIdTyped = this.requestModelId(args.modelId);
     const requestParams = buildRequestParams(
       modelIdTyped,
       args.messages,
@@ -151,8 +156,8 @@ export class OpenAIResponsesProvider extends BaseProvider {
     const chunkIterator = decodeStream(stream, includeThoughts);
 
     return new StreamResponse({
-      providerId: "openai",
-      modelId: modelIdTyped,
+      providerId: this.id,
+      modelId: args.modelId,
       providerModelName: modelName(modelIdTyped, "responses"),
       params: args.params ?? /* v8 ignore next 1 */ {},
       tools: args.tools,
@@ -186,7 +191,7 @@ export class OpenAIResponsesProvider extends BaseProvider {
     format?: Format | null;
     params?: Params;
   }): Promise<ContextResponse<DepsT>> {
-    const modelIdTyped = args.modelId as OpenAIModelId;
+    const modelIdTyped = this.requestModelId(args.modelId);
     const requestParams = buildRequestParams(
       modelIdTyped,
       args.messages,
@@ -207,8 +212,8 @@ export class OpenAIResponsesProvider extends BaseProvider {
 
     return new ContextResponse({
       raw: openaiResponse,
-      providerId: "openai",
-      modelId: modelIdTyped,
+      providerId: this.id,
+      modelId: args.modelId,
       providerModelName: modelName(modelIdTyped, "responses"),
       params: args.params ?? /* v8 ignore next 1 */ {},
       tools: args.tools,
@@ -244,7 +249,7 @@ export class OpenAIResponsesProvider extends BaseProvider {
     format?: Format | null;
     params?: Params;
   }): Promise<ContextStreamResponse<DepsT>> {
-    const modelIdTyped = args.modelId as OpenAIModelId;
+    const modelIdTyped = this.requestModelId(args.modelId);
     const requestParams = buildRequestParams(
       modelIdTyped,
       args.messages,
@@ -263,8 +268,8 @@ export class OpenAIResponsesProvider extends BaseProvider {
     const chunkIterator = decodeStream(stream, includeThoughts);
 
     return new ContextStreamResponse({
-      providerId: "openai",
-      modelId: modelIdTyped,
+      providerId: this.id,
+      modelId: args.modelId,
       providerModelName: modelName(modelIdTyped, "responses"),
       params: args.params ?? /* v8 ignore next 1 */ {},
       tools: args.tools,

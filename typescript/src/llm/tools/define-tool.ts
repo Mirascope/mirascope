@@ -9,6 +9,9 @@
  * 2. **Transformer-based**: Use generic type parameter (requires transformer for schema injection)
  */
 
+import Ajv from "ajv";
+import addFormats from "ajv-formats";
+
 import type { ToolCall } from "@/llm/content/tool-call";
 import type { Context } from "@/llm/context";
 import type { ToolParameterSchema } from "@/llm/tools/tool-schema";
@@ -25,6 +28,13 @@ import {
   type Tool,
   type ContextTool,
 } from "@/llm/tools/tools";
+
+/** Validate LLM-generated JSON for transformer-based TypeScript tools. */
+function compileArgumentValidator(schema: ToolParameterSchema) {
+  const ajv = new Ajv({ strict: false, allErrors: true });
+  addFormats(ajv);
+  return ajv.compile(schema);
+}
 
 /**
  * Check if a value is a Zod-like schema.
@@ -335,6 +345,7 @@ export function defineTool<
     );
   }
   /* v8 ignore end */
+  const validateArguments = compileArgumentValidator(__schema);
 
   const callable = async (toolArgs: T): Promise<Jsonable> => {
     const result = tool(toolArgs);
@@ -343,8 +354,13 @@ export function defineTool<
 
   const execute = async (toolCall: ToolCall): Promise<ToolOutput<Jsonable>> => {
     try {
-      const parsedArgs = JSON.parse(toolCall.args) as T;
-      const result = await callable(parsedArgs);
+      const parsedArgs: unknown = JSON.parse(toolCall.args);
+      if (!validateArguments(parsedArgs)) {
+        throw new Error(
+          "Invalid tool arguments: " + JSON.stringify(validateArguments.errors),
+        );
+      }
+      const result = await callable(parsedArgs as T);
       return ToolOutput.success(toolCall.id, name, result);
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -500,6 +516,7 @@ export function defineContextTool<
     );
   }
   /* v8 ignore end */
+  const validateArguments = compileArgumentValidator(__schema);
 
   const callable = async (
     ctx: Context<DepsT>,
@@ -514,8 +531,13 @@ export function defineContextTool<
     toolCall: ToolCall,
   ): Promise<ToolOutput<Jsonable>> => {
     try {
-      const parsedArgs = JSON.parse(toolCall.args) as T;
-      const result = await callable(ctx, parsedArgs);
+      const parsedArgs: unknown = JSON.parse(toolCall.args);
+      if (!validateArguments(parsedArgs)) {
+        throw new Error(
+          "Invalid tool arguments: " + JSON.stringify(validateArguments.errors),
+        );
+      }
+      const result = await callable(ctx, parsedArgs as T);
       return ToolOutput.success(toolCall.id, name, result);
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));

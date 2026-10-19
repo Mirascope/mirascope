@@ -27,7 +27,7 @@ Be sure to read these files when they are in scope for project-specific context.
 Mirascope is a monorepo containing:
 
 - **Python SDK** (`python/`): The main Python implementation with LLM abstractions
-- **TypeScript SDK** (`typescript/`): TypeScript implementation (development paused)
+- **TypeScript SDK** (`typescript/`): Active alpha TypeScript implementation
 - **Website** (`website/`): Marketing website with docs, blog, and landing page
 - **Documentation** (`docs/`): Unified cross-language documentation site
 

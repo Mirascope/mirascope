@@ -12,7 +12,12 @@ import type {
   BetaUsage,
 } from "@anthropic-ai/sdk/resources/beta/messages/messages";
 
-import type { AssistantContentPart, Text, Thought } from "@/llm/content";
+import type {
+  AssistantContentPart,
+  Text,
+  Thought,
+  ToolCall,
+} from "@/llm/content";
 import type { AssistantMessage } from "@/llm/messages";
 import type { AnthropicModelId } from "@/llm/providers/anthropic/model-id";
 import type { Usage } from "@/llm/responses/usage";
@@ -50,7 +55,10 @@ export function betaDecodeResponse(
     providerId: "anthropic",
     modelId,
     providerModelName: response.model,
-    rawMessage: response as unknown as AssistantMessage["rawMessage"],
+    rawMessage: {
+      role: response.role,
+      content: response.content,
+    } as unknown as AssistantMessage["rawMessage"],
   };
 
   const finishReason = betaDecodeStopReason(response.stop_reason);
@@ -84,14 +92,20 @@ function betaDecodeContent(
       // Skip redacted thinking blocks - they contain encrypted thinking
       // that cannot be decoded
       continue;
-      /* v8 ignore start - content types not yet implemented */
     } else if (block.type === "tool_use") {
-      throw new FeatureNotSupportedError(
-        "tool use decoding",
-        "anthropic",
-        null,
-        "Tool use blocks in responses are not yet implemented",
-      );
+      const toolCall: ToolCall = {
+        type: "tool_call",
+        id: block.id,
+        name: block.name,
+        args: JSON.stringify(block.input),
+      };
+      parts.push(toolCall);
+    } else if (
+      block.type === "server_tool_use" ||
+      block.type === "web_search_tool_result"
+    ) {
+      continue;
+      /* v8 ignore start - unknown beta content */
     } else {
       // Unknown block type - be strict so we know what we're missing
       throw new FeatureNotSupportedError(
@@ -113,7 +127,7 @@ function betaDecodeContent(
  * Beta API has additional stop reasons compared to standard:
  * - 'refusal': Model refused to generate content
  * - 'pause_turn': Conversation paused (not yet supported)
- * - 'model_context_window_exceeded': Context too long (not yet supported)
+ * - 'model_context_window_exceeded': Context window exceeded
  */
 function betaDecodeStopReason(
   stopReason: BetaStopReason | null,
@@ -121,6 +135,8 @@ function betaDecodeStopReason(
   switch (stopReason) {
     case "max_tokens":
       return FinishReason.MAX_TOKENS;
+    case "model_context_window_exceeded":
+      return FinishReason.CONTEXT_LENGTH_EXCEEDED;
     case "refusal":
       return FinishReason.REFUSAL;
     case "end_turn":

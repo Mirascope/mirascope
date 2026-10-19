@@ -4,7 +4,7 @@
  * Tests verify that invalid API keys result in AuthenticationError.
  */
 
-import { it as vitestIt, beforeEach, afterEach } from "vitest";
+import { it as vitestIt, beforeEach, afterEach, vi } from "vitest";
 
 import { defineCall } from "@/llm/calls";
 import { AuthenticationError } from "@/llm/exceptions";
@@ -17,6 +17,34 @@ import { describe, expect } from "@/tests/e2e/utils";
 describe("authentication error handling", () => {
   beforeEach(() => {
     resetProviderRegistry();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((input: RequestInfo | URL) => {
+        const anthropic = String(input).includes("anthropic.com");
+        return Promise.resolve(
+          new globalThis.Response(
+            JSON.stringify(
+              anthropic
+                ? {
+                    type: "error",
+                    error: {
+                      type: "authentication_error",
+                      message: "Invalid API key",
+                    },
+                  }
+                : {
+                    error: {
+                      message: "Invalid API key",
+                      type: "invalid_request_error",
+                      code: "invalid_api_key",
+                    },
+                  },
+            ),
+            { status: 401, headers: { "content-type": "application/json" } },
+          ),
+        );
+      }),
+    );
     // Register providers with invalid API keys
     registerProvider("anthropic", { apiKey: "invalid-key-12345" });
     registerProvider("openai", { apiKey: "invalid-key-12345" });
@@ -24,6 +52,7 @@ describe("authentication error handling", () => {
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     resetProviderRegistry();
   });
 

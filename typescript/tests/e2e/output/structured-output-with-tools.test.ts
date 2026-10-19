@@ -53,6 +53,7 @@ const BookLookupSchema = z.object({
  */
 const getBookInfo = defineTool({
   name: "get_book_info",
+  strict: false,
   description: "Look up book information by ISBN.",
   validator: BookLookupSchema,
   tool: ({ isbn }) => {
@@ -66,6 +67,7 @@ const getBookInfo = defineTool({
  */
 const getBookInfoWithContext = defineContextTool({
   name: "get_book_info",
+  strict: false,
   description: "Look up book information by ISBN.",
   validator: BookLookupSchema,
   tool: (ctx: Context<Record<string, string>>, { isbn }) => {

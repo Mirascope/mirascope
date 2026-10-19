@@ -41,6 +41,16 @@ describe("provider registry", () => {
       expect(result).toBe(provider);
     });
 
+    it("registers the explicit Anthropic beta provider", () => {
+      const provider = registerProvider("anthropic-beta", {
+        apiKey: "test-key",
+      });
+      expect(provider.id).toBe("anthropic-beta");
+      expect(getProviderForModel("anthropic-beta/claude-sonnet-4-5")).toBe(
+        provider,
+      );
+    });
+
     it("registers a provider with custom scope", () => {
       const provider = new AnthropicProvider({ apiKey: "test" });
       registerProvider(provider, { scope: "anthropic/claude-sonnet-4" });
