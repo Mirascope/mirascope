@@ -5,13 +5,43 @@ is redacted. It carries no readable text, so it is left out of the decoded conte
 and kept in `raw_message`, which is what gets sent back on the next turn.
 """
 
-from anthropic import types as anthropic_types
-from anthropic.types import beta as beta_types
+import json
+
+import httpx
+from anthropic import Anthropic, types as anthropic_types
 from anthropic.types.beta.parsed_beta_message import ParsedBetaMessage
 
+from mirascope import llm
 from mirascope.llm.providers.anthropic._utils import beta_decode, decode
 
 REDACTED_DATA = "RW5jcnlwdGVkIHRoaW5raW5n"
+
+
+def _stream_response(request: httpx.Request) -> httpx.Response:
+    events = [
+        {
+            "type": "content_block_start",
+            "index": 0,
+            "content_block": {"type": "redacted_thinking", "data": REDACTED_DATA},
+        },
+        {"type": "content_block_stop", "index": 0},
+    ]
+    body = "".join(
+        f"event: {event['type']}\ndata: {json.dumps(event)}\n\n" for event in events
+    )
+    return httpx.Response(
+        200,
+        request=request,
+        headers={"content-type": "text/event-stream"},
+        content=body,
+    )
+
+
+def _client() -> Anthropic:
+    return Anthropic(
+        api_key="test",
+        http_client=httpx.Client(transport=httpx.MockTransport(_stream_response)),
+    )
 
 
 def _message() -> anthropic_types.Message:
@@ -41,24 +71,17 @@ def test_decode_response_skips_redacted_thinking() -> None:
 
 
 def test_decode_stream_keeps_redacted_thinking_in_raw_message() -> None:
-    processor = decode._AnthropicChunkProcessor(include_thoughts=True)  # pyright: ignore[reportPrivateUsage]
-    events = [
-        anthropic_types.RawContentBlockStartEvent(
-            type="content_block_start",
-            index=0,
-            content_block=anthropic_types.RedactedThinkingBlock(
-                type="redacted_thinking", data=REDACTED_DATA
-            ),
-        ),
-        anthropic_types.RawContentBlockStopEvent(type="content_block_stop", index=0),
-    ]
-
-    for event in events:
-        list(processor.process_event(event))
-
-    assert processor.accumulated_blocks == [
-        {"type": "redacted_thinking", "data": REDACTED_DATA}
-    ]
+    with _client() as client:
+        stream = client.messages.stream(
+            model="claude-sonnet-4-5", max_tokens=10, messages=[]
+        )
+        chunks = list(decode.decode_stream(stream, include_thoughts=True))
+    assert chunks[-1] == llm.RawMessageChunk(
+        raw_message={
+            "role": "assistant",
+            "content": [{"type": "redacted_thinking", "data": REDACTED_DATA}],
+        }
+    )
 
 
 def test_beta_decode_response_skips_redacted_thinking() -> None:
@@ -72,21 +95,14 @@ def test_beta_decode_response_skips_redacted_thinking() -> None:
 
 
 def test_beta_decode_stream_keeps_redacted_thinking_in_raw_message() -> None:
-    processor = beta_decode._BetaChunkProcessor(include_thoughts=True)  # pyright: ignore[reportPrivateUsage]
-    events = [
-        beta_types.BetaRawContentBlockStartEvent(
-            type="content_block_start",
-            index=0,
-            content_block=beta_types.BetaRedactedThinkingBlock(
-                type="redacted_thinking", data=REDACTED_DATA
-            ),
-        ),
-        beta_types.BetaRawContentBlockStopEvent(type="content_block_stop", index=0),
-    ]
-
-    for event in events:
-        list(processor.process_event(event))
-
-    assert processor.accumulated_blocks == [
-        {"type": "redacted_thinking", "data": REDACTED_DATA}
-    ]
+    with _client() as client:
+        stream = client.beta.messages.stream(
+            model="claude-sonnet-4-5", max_tokens=10, messages=[]
+        )
+        chunks = list(beta_decode.beta_decode_stream(stream, include_thoughts=True))
+    assert chunks[-1] == llm.RawMessageChunk(
+        raw_message={
+            "role": "assistant",
+            "content": [{"type": "redacted_thinking", "data": REDACTED_DATA}],
+        }
+    )
