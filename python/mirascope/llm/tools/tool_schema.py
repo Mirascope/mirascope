@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import inspect
+import json
 from dataclasses import dataclass
+from functools import cached_property
 from typing import (
     Annotated,
     Any,
@@ -19,7 +21,7 @@ from typing import (
 )
 
 from docstring_parser import parse
-from pydantic import BaseModel, Field, create_model
+from pydantic import BaseModel, Field, TypeAdapter, create_model
 from pydantic.fields import FieldInfo
 
 from ..._utils import copy_function_metadata
@@ -316,6 +318,28 @@ class ToolSchema(Generic[ToolFnT]):
         is performed.
         """
         return tool_call.name == self.name
+
+    @cached_property
+    def _argument_adapters(self) -> dict[str, TypeAdapter[Any]]:
+        """Cache converters for annotated, LLM-provided parameters."""
+        return {
+            name: TypeAdapter(annotation)
+            for name, annotation in get_type_hints(self.fn, include_extras=True).items()
+            if name in self.parameters.properties
+        }
+
+    def _parse_args(self, tool_call: ToolCall) -> dict[str, Any]:
+        """Decode tool arguments while retaining their annotated Python types."""
+        kwargs = json.loads(
+            tool_call.args if tool_call.args and tool_call.args.strip() else "{}"
+        )
+        if isinstance(kwargs, dict):
+            for name, adapter in self._argument_adapters.items():
+                if name in kwargs:
+                    # JSON mode also supports dates and tuples in strict models.
+                    kwargs[name] = adapter.validate_json(json.dumps(kwargs[name]))
+        # Leave omitted defaults and unexpected arguments to the callable.
+        return cast(dict[str, Any], kwargs)
 
 
 AnyToolSchema: TypeAlias = ToolSchema[AnyToolFn]
