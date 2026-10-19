@@ -163,37 +163,37 @@ def test_strict_tool_adapts_optional_constraints() -> None:
 
 @pytest.mark.parametrize("strict", [None, True, False])
 @pytest.mark.parametrize(
-    ("pattern", "valid", "invalid", "supported"),
+    ("pattern", "valid", "invalid"),
     [
-        (r"\bword\b", "a word!", "sword", False),
-        (r"word\B", "words", "word", False),
-        (r"\\\bword", "\\word", "\\sword", False),
-        (re.compile(r"word(?=!)"), "word!", "word?", False),
-        (re.compile(r"word(?!s)"), "word!", "words", False),
-        (re.compile(r"(?<=!)word"), "!word", "?word", False),
-        (re.compile(r"(?<!!)word"), "?word", "!word", False),
-        (re.compile(r"(word)\1"), "wordword", "word", False),
-        (re.compile(r"(?P<term>word)(?P=term)"), "wordword", "word", False),
-        (r"^[a-z]+$", "word", "123", True),
-        (r"\\bword\\b", "\\bword\\b", "word", True),
-        (r"[\\b]+", "bbb", "word", True),
-        (r"[(?=)]+", "(?=)", "word", True),
-        (re.compile(r"[\b]+"), "\b", "word", True),
-        (re.compile(r"[]\b]+"), "]", "word", True),
-        (re.compile(r"[^]\b]+"), "word", "]", True),
-        (r"\(\?=word\)", "(?=word)", "word", True),
-        (r"[^^]\bword", "a word", "^word", False),
-        (re.compile(r"[^^](?=x)"), "ax", "^x", False),
-        (re.compile(r"[^^](a)\1"), "xaa", "^aa", False),
-        (r"[^^]+", "word", "^^", True),
+        (r"\bword\b", "a word!", "sword"),
+        (r"word\B", "words", "word"),
+        (r"\\\bword", "\\word", "\\sword"),
+        (re.compile(r"word(?=!)"), "word!", "word?"),
+        (re.compile(r"word(?!s)"), "word!", "words"),
+        (re.compile(r"(?<=!)word"), "!word", "?word"),
+        (re.compile(r"(?<!!)word"), "?word", "!word"),
+        (re.compile(r"(word)\1"), "wordword", "word"),
+        (re.compile(r"(?P<term>word)(?P=term)"), "wordword", "word"),
+        (r"^[a-z]+$", "word", "123"),
+        (r"^a{1,10000}$", "a", "b"),
+        (r"\\bword\\b", "\\bword\\b", "word"),
+        (r"[\\b]+", "bbb", "word"),
+        (r"[(?=)]+", "(?=)", "word"),
+        (re.compile(r"[\b]+"), "\b", "word"),
+        (re.compile(r"[]\b]+"), "]", "word"),
+        (re.compile(r"[^]\b]+"), "word", "]"),
+        (r"\(\?=word\)", "(?=word)", "word"),
+        (r"[^^]\bword", "a word", "^word"),
+        (re.compile(r"[^^](?=x)"), "ax", "^x"),
+        (re.compile(r"[^^](a)\1"), "xaa", "^aa"),
+        (r"[^^]+", "word", "^^"),
     ],
 )
-def test_strict_tool_adapts_unsupported_patterns(
+def test_strict_tool_describes_patterns(
     strict: bool | None,
     pattern: str | re.Pattern[str],
     valid: str,
     invalid: str,
-    supported: bool,
 ) -> None:
     class Details(BaseModel):
         value: Annotated[str, Field(pattern=pattern, description="A matching value.")]
@@ -221,7 +221,7 @@ def test_strict_tool_adapts_unsupported_patterns(
         schema["properties"]["value"],
         schema["$defs"]["Details"]["properties"]["value"],
     ):
-        if strict is False or supported:
+        if strict is False:
             assert field["pattern"] == expected_pattern
             assert field["description"] == "A matching value."
         else:
