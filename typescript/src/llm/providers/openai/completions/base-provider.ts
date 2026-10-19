@@ -89,6 +89,11 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
     return modelId;
   }
 
+  /** Preserve vendor prefixes for routed OpenAI-compatible APIs. */
+  protected requestModelName(apiModelName: string): string | undefined {
+    return this.id === "openai" ? undefined : apiModelName;
+  }
+
   /**
    * Get the model name for tracking in Response.
    * Override in subclasses for custom tracking names.
@@ -130,6 +135,7 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
       args.format,
       args.params,
       featureInfo,
+      this.requestModelName(apiModelName),
     );
 
     const openaiResponse =
@@ -174,6 +180,7 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
       args.format,
       args.params,
       featureInfo,
+      this.requestModelName(apiModelName),
     );
 
     const stream = await this.client.chat.completions.create({
@@ -216,6 +223,7 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
       args.format,
       args.params,
       featureInfo,
+      this.requestModelName(apiModelName),
     );
 
     const openaiResponse =
@@ -261,6 +269,7 @@ export abstract class BaseOpenAICompletionsProvider extends BaseProvider {
       args.format,
       args.params,
       featureInfo,
+      this.requestModelName(apiModelName),
     );
 
     const stream = await this.client.chat.completions.create({

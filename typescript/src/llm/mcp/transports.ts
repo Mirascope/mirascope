@@ -70,12 +70,13 @@ interface MCPClientClass {
   ): {
     connect(transport: unknown): Promise<void>;
     close(): Promise<void>;
-    listTools(): Promise<{
+    listTools(params?: { cursor?: string }): Promise<{
       tools: readonly {
         name: string;
         description?: string;
         inputSchema: Record<string, unknown>;
       }[];
+      nextCursor?: string;
     }>;
     callTool(request: {
       name: string;
@@ -170,9 +171,10 @@ export async function stdioClient(
       initialize: async () => {
         // Connection already initialized in connect()
       },
-      listTools: async () => {
-        const result = await mcpClient.listTools();
+      listTools: async (params) => {
+        const result = await mcpClient.listTools(params);
         return {
+          nextCursor: result.nextCursor,
           tools: result.tools.map((t) => ({
             name: t.name,
             description: t.description,
@@ -283,9 +285,10 @@ export async function sseClient(
       initialize: async () => {
         // Connection already initialized in connect()
       },
-      listTools: async () => {
-        const result = await mcpClient.listTools();
+      listTools: async (params) => {
+        const result = await mcpClient.listTools(params);
         return {
+          nextCursor: result.nextCursor,
           tools: result.tools.map((t) => ({
             name: t.name,
             description: t.description,
@@ -395,9 +398,10 @@ export async function streamableHttpClient(url: string): Promise<MCPResource> {
       initialize: async () => {
         // Connection already initialized in connect()
       },
-      listTools: async () => {
-        const result = await mcpClient.listTools();
+      listTools: async (params) => {
+        const result = await mcpClient.listTools(params);
         return {
+          nextCursor: result.nextCursor,
           tools: result.tools.map((t) => ({
             name: t.name,
             description: t.description,

@@ -1,6 +1,6 @@
 {
   "name": "mirascope",
-  "version": "2.6.0-alpha.0",
+  "version": "2.7.0-alpha.0",
   "private": false,
   "license": "MIT",
   "workspaces": [
@@ -74,6 +74,8 @@
     "release:alpha": "bun run verify && npm publish --tag alpha"
   },
   "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
     "partial-json": "^0.1.7"
   },
   "devDependencies": {

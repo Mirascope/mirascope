@@ -50,7 +50,10 @@ export interface MCPContentBlock {
  */
 export interface MCPClientSession {
   initialize(): Promise<unknown>;
-  listTools(): Promise<{ tools: readonly MCPTool[] }>;
+  listTools(params?: { cursor?: string }): Promise<{
+    tools: readonly MCPTool[];
+    nextCursor?: string;
+  }>;
   callTool(
     name: string,
     args: Record<string, unknown>,

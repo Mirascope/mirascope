@@ -15,12 +15,10 @@ import type { AnthropicModelId } from "@/llm/providers/anthropic/model-id";
 import type { Tools, ContextTools } from "@/llm/tools";
 
 import { getIncludeThoughts } from "@/llm/providers/_utils";
-import {
-  ANTHROPIC_ERROR_MAP,
-  buildRequestParams,
-} from "@/llm/providers/anthropic/_utils";
+import { ANTHROPIC_ERROR_MAP } from "@/llm/providers/anthropic/_utils";
 import { betaDecodeResponse } from "@/llm/providers/anthropic/beta-decode";
 import { decodeBetaStream } from "@/llm/providers/anthropic/beta-decode-stream";
+import { buildBetaRequestParams } from "@/llm/providers/anthropic/beta-encode";
 import { modelName } from "@/llm/providers/anthropic/model-id";
 import { BaseProvider } from "@/llm/providers/base";
 import { Response } from "@/llm/responses";
@@ -32,8 +30,8 @@ import { StreamResponse } from "@/llm/responses/stream-response";
  * Provider for the Anthropic Beta API.
  *
  * This provider uses the beta messages API which supports additional features
- * like extended thinking and structured outputs. Users opt-in by using the
- * `anthropic-beta/` prefix in their model ID.
+ * like extended thinking and structured outputs. It is selected automatically
+ * for supported strict requests, or explicitly with the `anthropic-beta/` prefix.
  *
  * @example
  * ```typescript
@@ -85,7 +83,7 @@ export class AnthropicBetaProvider extends BaseProvider {
     params?: Params;
   }): Promise<Response> {
     const modelId = args.modelId as AnthropicModelId;
-    const requestParams = buildRequestParams(
+    const requestParams = buildBetaRequestParams(
       modelId,
       args.messages,
       args.tools,
@@ -111,6 +109,7 @@ export class AnthropicBetaProvider extends BaseProvider {
       modelId,
       providerModelName: modelName(modelId),
       params: args.params ?? /* v8 ignore next 1 */ {},
+      tools: args.tools,
       format: args.format ?? null,
       inputMessages: args.messages,
       assistantMessage,
@@ -130,7 +129,7 @@ export class AnthropicBetaProvider extends BaseProvider {
    * @param args.params - Optional additional parameters
    * @returns StreamResponse object for streaming consumption
    */
-  /* v8 ignore start - beta streaming is feature-gated behind shouldUseBeta() */
+  /* v8 ignore start - beta SDK stream lifecycle requires live recordings */
   protected _stream(args: {
     modelId: string;
     messages: readonly Message[];
@@ -139,7 +138,7 @@ export class AnthropicBetaProvider extends BaseProvider {
     params?: Params;
   }): Promise<StreamResponse> {
     const modelId = args.modelId as AnthropicModelId;
-    const requestParams = buildRequestParams(
+    const requestParams = buildBetaRequestParams(
       modelId,
       args.messages,
       args.tools,
@@ -185,7 +184,7 @@ export class AnthropicBetaProvider extends BaseProvider {
    * @param args.params - Optional additional parameters
    * @returns ContextResponse object containing the API response
    */
-  /* v8 ignore start - beta context call is feature-gated behind shouldUseBeta() */
+  /* v8 ignore start - beta context calls require live recordings */
   protected async _contextCall<DepsT>(args: {
     ctx: Context<DepsT>;
     modelId: string;
@@ -195,7 +194,7 @@ export class AnthropicBetaProvider extends BaseProvider {
     params?: Params;
   }): Promise<ContextResponse<DepsT>> {
     const modelId = args.modelId as AnthropicModelId;
-    const requestParams = buildRequestParams(
+    const requestParams = buildBetaRequestParams(
       modelId,
       args.messages,
       args.tools,
@@ -246,7 +245,7 @@ export class AnthropicBetaProvider extends BaseProvider {
    * @param args.params - Optional additional parameters
    * @returns ContextStreamResponse object for streaming consumption
    */
-  /* v8 ignore start - beta context stream is feature-gated behind shouldUseBeta() */
+  /* v8 ignore start - beta context streams require live recordings */
   protected _contextStream<DepsT>(args: {
     ctx: Context<DepsT>;
     modelId: string;
@@ -256,7 +255,7 @@ export class AnthropicBetaProvider extends BaseProvider {
     params?: Params;
   }): Promise<ContextStreamResponse<DepsT>> {
     const modelId = args.modelId as AnthropicModelId;
-    const requestParams = buildRequestParams(
+    const requestParams = buildBetaRequestParams(
       modelId,
       args.messages,
       args.tools,

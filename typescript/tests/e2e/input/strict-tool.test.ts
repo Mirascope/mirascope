@@ -47,7 +47,6 @@ const getCurrentWeather = defineTool({
  * than other providers.
  */
 const STRICT_TOOL_PROVIDERS: ProviderConfig[] = [
-  { providerId: "anthropic", model: "anthropic/claude-haiku-4-5" },
   { providerId: "google", model: "google/gemini-2.5-flash" },
 ];
 

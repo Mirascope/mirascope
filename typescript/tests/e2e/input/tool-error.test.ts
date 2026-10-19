@@ -16,18 +16,20 @@ const it = createIt(resolve(__dirname, "cassettes"), "tool-error");
 /**
  * A tool that validates a passphrase and throws if incorrect.
  */
-const passphraseTestTool = defineTool<{ passphrase: string }>({
-  name: "passphrase_test_tool",
-  description: "A tool that must be called with the correct passphrase.",
-  tool: ({ passphrase }) => {
-    if (passphrase !== "cake") {
-      throw new Error(
-        "Incorrect passphrase: The correct passphrase is 'cake'. Try again.",
-      );
-    }
-    return "The cake is a lie.";
-  },
-});
+const passphraseTestTool = (strict?: boolean) =>
+  defineTool<{ passphrase: string }>({
+    name: "passphrase_test_tool",
+    strict,
+    description: "A tool that must be called with the correct passphrase.",
+    tool: ({ passphrase }) => {
+      if (passphrase !== "cake") {
+        throw new Error(
+          "Incorrect passphrase: The correct passphrase is 'cake'. Try again.",
+        );
+      }
+      return "The cake is a lie.";
+    },
+  });
 
 describe("tool error handling", () => {
   it.record.each(PROVIDERS_FOR_TOOLS_TESTS)(
@@ -36,7 +38,11 @@ describe("tool error handling", () => {
       const useTestTool = defineCall({
         model,
         maxTokens: 1000,
-        tools: [passphraseTestTool],
+        tools: [
+          passphraseTestTool(
+            model.startsWith("anthropic/") ? false : undefined,
+          ),
+        ],
         template: () =>
           "Use the test tool to retrieve the secret phrase. The passphrase is 'portal'",
       });

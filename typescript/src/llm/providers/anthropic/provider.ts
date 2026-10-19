@@ -20,6 +20,7 @@ import {
 import { AnthropicBetaProvider } from "@/llm/providers/anthropic/beta-provider";
 import { decodeStream } from "@/llm/providers/anthropic/decode-stream";
 import { modelName } from "@/llm/providers/anthropic/model-id";
+import { MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS } from "@/llm/providers/anthropic/model-info";
 import { BaseProvider } from "@/llm/providers/base";
 import { Response } from "@/llm/responses";
 import { ContextResponse } from "@/llm/responses/context-response";
@@ -29,21 +30,26 @@ import { StreamResponse } from "@/llm/responses/stream-response";
 /**
  * Determine whether to use the beta API based on format mode or strict tools.
  *
- * Routes to beta when:
- * - Format mode is "strict" (TODO: not yet supported in TypeScript SDK)
- * - Any tools have strict=True (TODO: not yet supported in TypeScript SDK)
+ * Routes to beta for strict formatting or eligible tools on supported models.
  *
- * @param _modelId - The model identifier (unused until strict mode is implemented)
- * @param _params - The request parameters (unused until strict mode is implemented)
+ * @param modelId - The model identifier
+ * @param format - Resolved response format
+ * @param tools - Tools available to the model
  * @returns Whether to use the beta API
  */
-function shouldUseBeta(_modelId: AnthropicModelId, _params?: Params): boolean {
-  // TODO: Implement when strict mode format and tools are supported
-  // Will check:
-  // 1. If format resolves to strict mode
-  // 2. If any tools have strict=true
-  // 3. If model supports strict structured outputs (not in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS)
-  return false;
+function shouldUseBeta(
+  modelId: AnthropicModelId,
+  format?: Format | null,
+  tools?: Tools,
+): boolean {
+  if (MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS.has(modelName(modelId))) {
+    return false;
+  }
+  return (
+    format?.mode === "strict" ||
+    (tools?.some((tool) => "parameters" in tool && tool.strict !== false) ??
+      false)
+  );
 }
 
 /**
@@ -52,9 +58,6 @@ function shouldUseBeta(_modelId: AnthropicModelId, _params?: Params): boolean {
  * This provider automatically selects the appropriate API based on the request:
  * - Standard API (`client.messages.create()`) for regular requests
  * - Beta API (`client.beta.messages.create()`) for requests requiring strict mode
- *
- * Currently, routing always uses the standard API. Beta API routing will be enabled
- * when strict mode format and tools support is added to the TypeScript SDK.
  *
  * @example
  * ```typescript
@@ -110,8 +113,8 @@ export class AnthropicProvider extends BaseProvider {
     const modelId = args.modelId as AnthropicModelId;
 
     // Route to beta provider for strict mode
-    /* v8 ignore start - beta routing not yet implemented */
-    if (shouldUseBeta(modelId, args.params)) {
+    /* v8 ignore start - beta SDK routing is covered by focused request tests */
+    if (shouldUseBeta(modelId, args.format, args.tools)) {
       return this.betaProvider.call({
         modelId: args.modelId,
         messages: args.messages,
@@ -176,8 +179,8 @@ export class AnthropicProvider extends BaseProvider {
     const modelId = args.modelId as AnthropicModelId;
 
     // Route to beta provider for strict mode
-    /* v8 ignore start - beta routing not yet implemented */
-    if (shouldUseBeta(modelId, args.params)) {
+    /* v8 ignore start - beta SDK streaming requires live recordings */
+    if (shouldUseBeta(modelId, args.format, args.tools)) {
       return this.betaProvider.stream({
         modelId: args.modelId,
         messages: args.messages,
@@ -241,8 +244,8 @@ export class AnthropicProvider extends BaseProvider {
     const modelId = args.modelId as AnthropicModelId;
 
     // Route to beta provider for strict mode
-    /* v8 ignore start - beta routing not yet implemented */
-    if (shouldUseBeta(modelId, args.params)) {
+    /* v8 ignore start - beta context calls require live recordings */
+    if (shouldUseBeta(modelId, args.format, args.tools)) {
       return this.betaProvider.contextCall({
         ctx: args.ctx,
         modelId: args.modelId,
@@ -314,8 +317,8 @@ export class AnthropicProvider extends BaseProvider {
     const modelId = args.modelId as AnthropicModelId;
 
     // Route to beta provider for strict mode
-    /* v8 ignore start - beta routing not yet implemented */
-    if (shouldUseBeta(modelId, args.params)) {
+    /* v8 ignore start - beta context streams require live recordings */
+    if (shouldUseBeta(modelId, args.format, args.tools)) {
       return this.betaProvider.contextStream({
         ctx: args.ctx,
         modelId: args.modelId,

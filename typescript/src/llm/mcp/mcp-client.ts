@@ -91,8 +91,24 @@ export class MCPClient {
    * @returns A list of dynamically created Mirascope tools.
    */
   async listTools(): Promise<BaseTool[]> {
-    const result = await this._session.listTools();
-    return result.tools.map((tool) => this.convertMCPToolToBaseTool(tool));
+    const tools: MCPTool[] = [];
+    const seenCursors = new Set<string>();
+    let cursor: string | undefined;
+
+    while (true) {
+      const result = await this._session.listTools(
+        cursor === undefined ? undefined : { cursor },
+      );
+      tools.push(...result.tools);
+      cursor = result.nextCursor;
+      if (cursor === undefined || cursor === null) {
+        return tools.map((tool) => this.convertMCPToolToBaseTool(tool));
+      }
+      if (seenCursors.has(cursor)) {
+        throw new Error("MCP tools/list returned a repeated pagination cursor");
+      }
+      seenCursors.add(cursor);
+    }
   }
 
   /**

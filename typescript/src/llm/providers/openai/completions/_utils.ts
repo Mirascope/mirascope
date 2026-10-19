@@ -440,6 +440,7 @@ export function buildRequestParams(
   format?: Format | null,
   params: Params = {},
   featureInfo?: CompletionsModelFeatureInfo,
+  apiModelName?: string,
 ): ChatCompletionCreateParamsNonStreaming {
   return ParamHandler.with(params, "openai", modelId, (p) => {
     const thinkingConfig = p.get("thinking");
@@ -456,7 +457,7 @@ export function buildRequestParams(
     );
 
     const requestParams: ChatCompletionCreateParamsNonStreaming = {
-      model: modelName(modelId, null),
+      model: apiModelName ?? modelName(modelId, null),
       messages: openaiMessages,
     };
 

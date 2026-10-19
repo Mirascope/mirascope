@@ -14,6 +14,13 @@ export { BaseProvider } from "@/llm/providers/base";
 export type { Provider, ProviderErrorMap } from "@/llm/providers/base";
 
 export { AnthropicProvider } from "@/llm/providers/anthropic";
+export { AnthropicBetaProvider } from "@/llm/providers/anthropic/beta-provider";
+export {
+  AtlasCloudProvider,
+  CheaperInferenceProvider,
+  MiniMaxProvider,
+  RequestyProvider,
+} from "@/llm/providers/openai-compatible";
 
 // Google provider
 export { GoogleProvider } from "@/llm/providers/google";
@@ -29,6 +36,7 @@ export { TogetherProvider } from "@/llm/providers/together";
 
 // OpenRouter provider
 export { OpenRouterProvider } from "@/llm/providers/openrouter";
+export { XAIProvider } from "@/llm/providers/xai";
 
 // OpenAI provider
 export {

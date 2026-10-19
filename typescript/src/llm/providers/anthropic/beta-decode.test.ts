@@ -42,6 +42,15 @@ function createMockBetaMessage(
 
 describe("betaDecodeResponse", () => {
   describe("stop reason handling", () => {
+    it("maps context window exhaustion", () => {
+      const response = createMockBetaMessage({
+        stop_reason: "model_context_window_exceeded",
+      });
+      expect(
+        betaDecodeResponse(response, "anthropic/claude-sonnet-4-5")
+          .finishReason,
+      ).toBe(FinishReason.CONTEXT_LENGTH_EXCEEDED);
+    });
     it("maps refusal stop reason to REFUSAL", () => {
       const response = createMockBetaMessage({ stop_reason: "refusal" });
 
@@ -88,6 +97,37 @@ describe("betaDecodeResponse", () => {
   });
 
   describe("content handling", () => {
+    it("decodes tool calls and keeps server tool content in the raw message", () => {
+      const blocks = [
+        {
+          type: "tool_use",
+          id: "tool_1",
+          name: "lookup",
+          input: { city: "Paris" },
+        },
+        { type: "server_tool_use", id: "srv_1", name: "web_search", input: {} },
+        { type: "web_search_tool_result", tool_use_id: "srv_1", content: [] },
+      ] as unknown as BetaMessage["content"];
+      const response = createMockBetaMessage({ content: blocks });
+
+      const { assistantMessage } = betaDecodeResponse(
+        response,
+        "anthropic/claude-sonnet-4-5",
+      );
+
+      expect(assistantMessage.content).toEqual([
+        {
+          type: "tool_call",
+          id: "tool_1",
+          name: "lookup",
+          args: '{"city":"Paris"}',
+        },
+      ]);
+      expect(assistantMessage.rawMessage).toMatchObject({
+        role: "assistant",
+        content: blocks,
+      });
+    });
     it("decodes text content", () => {
       const response = createMockBetaMessage({
         content: [{ type: "text", text: "Test response", citations: null }],

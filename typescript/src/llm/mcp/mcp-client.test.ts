@@ -113,6 +113,37 @@ describe("MCPClient", () => {
   });
 
   describe("listTools", () => {
+    it("collects every page, including one reached by an empty cursor", async () => {
+      const session = createMockSession();
+      vi.mocked(session.listTools)
+        .mockResolvedValueOnce({
+          tools: [{ name: "first", inputSchema: { type: "object" } }],
+          nextCursor: "",
+        })
+        .mockResolvedValueOnce({
+          tools: [{ name: "second", inputSchema: { type: "object" } }],
+        });
+
+      const tools = await new MCPClient(session).listTools();
+
+      expect(tools.map((tool) => tool.name)).toEqual(["first", "second"]);
+      expect(session.listTools).toHaveBeenNthCalledWith(1, undefined);
+      expect(session.listTools).toHaveBeenNthCalledWith(2, { cursor: "" });
+    });
+
+    it("rejects a repeated pagination cursor", async () => {
+      const session = createMockSession();
+      vi.mocked(session.listTools).mockResolvedValue({
+        tools: [],
+        nextCursor: "same",
+      });
+
+      await expect(new MCPClient(session).listTools()).rejects.toThrow(
+        "repeated pagination cursor",
+      );
+      expect(session.listTools).toHaveBeenCalledTimes(2);
+    });
+
     it("returns empty array when server has no tools", async () => {
       const session = createMockSession([]);
       const client = new MCPClient(session);

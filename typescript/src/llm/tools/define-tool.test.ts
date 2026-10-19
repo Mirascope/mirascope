@@ -279,6 +279,19 @@ describe("defineTool - Zod-native pattern", () => {
 });
 
 describe("defineTool - Transformer-based pattern", () => {
+  it("rejects invalid LLM arguments before calling the function", async () => {
+    const implementation = vi.fn(({ city }: { city: string }) => city);
+    const tool = defineTool<{ city: string }>({
+      name: "lookup",
+      description: "Lookup",
+      tool: implementation,
+    });
+
+    const output = await tool.execute(createToolCall("lookup", { city: 42 }));
+
+    expect(output.error).toBeInstanceOf(ToolExecutionError);
+    expect(implementation).not.toHaveBeenCalled();
+  });
   it("auto-generates schema from type parameter", () => {
     // This test verifies the transformer is working correctly
     const tool = defineTool<{ city: string; count?: number }>({
@@ -518,6 +531,24 @@ describe("defineContextTool - Zod-native pattern", () => {
 });
 
 describe("defineContextTool - Transformer-based pattern", () => {
+  it("rejects invalid LLM arguments before calling the context function", async () => {
+    const implementation = vi.fn(
+      (_ctx: Context<TestDeps>, { query }: { query: string }) => query,
+    );
+    const tool = defineContextTool<{ query: string }, TestDeps>({
+      name: "search",
+      description: "Search",
+      tool: implementation,
+    });
+
+    const output = await tool.execute(
+      createMockContext(),
+      createToolCall("search", { query: 42 }),
+    );
+
+    expect(output.error).toBeInstanceOf(ToolExecutionError);
+    expect(implementation).not.toHaveBeenCalled();
+  });
   interface TestDeps {
     db: { search: (q: string) => string[] };
   }
