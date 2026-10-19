@@ -1,13 +1,162 @@
 """Tests for llm.providers.AnthropicProvider with beta features."""
 
-from typing import NoReturn
+from enum import Enum
+from typing import Annotated, Any, Literal, NoReturn, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
 from anthropic import RateLimitError as AnthropicRateLimitError
+from pydantic import BaseModel, Field
 
 from mirascope import llm
+from mirascope.llm.providers.anthropic._utils import beta_encode
 from mirascope.llm.providers.anthropic.beta_provider import AnthropicBetaProvider
+
+
+@pytest.mark.parametrize("strict", [None, True, False])
+def test_annotated_constraints_in_strict_tools(strict: bool | None) -> None:
+    """Strict requests use Anthropic's supported schema without losing local constraints."""
+
+    class Details(BaseModel):
+        code: Annotated[str, Field(min_length=2, max_length=5)]
+
+    @llm.tool(strict=strict)
+    def constrained_tool(
+        count: Annotated[int, Field(ge=1, le=5)], details: Details
+    ) -> int:
+        return count
+
+    original = constrained_tool.parameters.model_dump(by_alias=True, exclude_none=True)
+    _, _, kwargs = beta_encode.beta_encode_request(
+        model_id="anthropic-beta/claude-sonnet-4-5",
+        messages=[llm.messages.user("Use the tool")],
+        tools=llm.tools.Toolkit([constrained_tool]),
+        format=None,
+        params={},
+    )
+    tools = kwargs.get("tools")
+    assert isinstance(tools, list)
+    encoded = cast(dict[str, Any], tools[0])
+    schema = encoded["input_schema"]
+    count = schema["properties"]["count"]
+    code = schema["$defs"]["Details"]["properties"]["code"]
+    if strict is False:
+        assert count["minimum"] == 1 and count["maximum"] == 5
+        assert code["minLength"] == 2 and code["maxLength"] == 5
+    else:
+        assert "minimum" not in count and "maximum" not in count
+        assert "minimum" in count["description"] and "maximum" in count["description"]
+        assert "minLength" not in code and "maxLength" not in code
+        assert "minLength" in code["description"] and "maxLength" in code["description"]
+    assert (
+        constrained_tool.parameters.model_dump(by_alias=True, exclude_none=True)
+        == original
+    )
+
+
+def test_strict_tool_keeps_enum_and_const() -> None:
+    class Color(str, Enum):
+        RED = "red"
+        BLUE = "blue"
+
+    @llm.tool
+    def choices(
+        mode: Literal["fast", "slow"], exact: Literal["x"], color: Color
+    ) -> str:
+        return mode
+
+    _, _, kwargs = beta_encode.beta_encode_request(
+        model_id="anthropic-beta/claude-sonnet-4-5",
+        messages=[llm.messages.user("Use the tool")],
+        tools=llm.tools.Toolkit([choices]),
+        format=None,
+        params={},
+    )
+    tools = kwargs.get("tools")
+    assert isinstance(tools, list)
+    schema = cast(dict[str, Any], tools[0])["input_schema"]
+    assert schema["properties"]["mode"]["enum"] == ["fast", "slow"]
+    assert schema["properties"]["exact"]["const"] == "x"
+    assert schema["$defs"]["Color"]["enum"] == ["red", "blue"]
+
+
+@pytest.mark.parametrize("annotated", [True, False])
+def test_strict_tool_keeps_unconstrained_parameters(annotated: bool) -> None:
+    def unconstrained(value: Any) -> str:  # noqa: ANN401 - exercise Any tool parameters
+        return str(value)
+
+    if not annotated:
+        unconstrained.__annotations__ = {}
+    tool = llm.tool(unconstrained)
+    _, _, kwargs = beta_encode.beta_encode_request(
+        model_id="anthropic-beta/claude-sonnet-4-5",
+        messages=[llm.messages.user("Use the tool")],
+        tools=llm.tools.Toolkit([tool]),
+        format=None,
+        params={},
+    )
+    tools = kwargs.get("tools")
+    assert isinstance(tools, list)
+    schema = cast(dict[str, Any], tools[0])["input_schema"]
+    assert schema["properties"]["value"] == {"title": "Value"}
+
+
+@pytest.mark.parametrize("minimum", [0, 1, 2])
+def test_strict_tool_adapts_nested_array_constraints(minimum: int) -> None:
+    @llm.tool
+    def entries(
+        values: Annotated[
+            list[Annotated[int, Field(gt=0, multiple_of=2)]],
+            Field(min_length=minimum, max_length=5),
+        ],
+    ) -> int:
+        return len(values)
+
+    _, _, kwargs = beta_encode.beta_encode_request(
+        model_id="anthropic-beta/claude-sonnet-4-5",
+        messages=[llm.messages.user("Use the tool")],
+        tools=llm.tools.Toolkit([entries]),
+        format=None,
+        params={},
+    )
+    tools = kwargs.get("tools")
+    assert isinstance(tools, list)
+    schema = cast(dict[str, Any], tools[0])["input_schema"]["properties"]["values"]
+    assert "maxItems" not in schema and "maxItems" in schema["description"]
+    if minimum <= 1:
+        assert schema["minItems"] == minimum
+    else:
+        assert "minItems" not in schema and "minItems" in schema["description"]
+    assert "exclusiveMinimum" not in schema["items"]
+    assert "multipleOf" not in schema["items"]
+    assert "exclusiveMinimum" in schema["items"]["description"]
+    assert "multipleOf" in schema["items"]["description"]
+
+
+def test_strict_tool_adapts_optional_constraints() -> None:
+    @llm.tool
+    def optional(values: list[Annotated[int, Field(gt=0)]] | None = None) -> int:
+        return len(values or [])
+
+    _, _, kwargs = beta_encode.beta_encode_request(
+        model_id="anthropic-beta/claude-sonnet-4-5",
+        messages=[llm.messages.user("Use the tool")],
+        tools=llm.tools.Toolkit([optional]),
+        format=None,
+        params={},
+    )
+    tools = kwargs.get("tools")
+    assert isinstance(tools, list)
+    schema = cast(dict[str, Any], tools[0])["input_schema"]["properties"]["values"]
+    assert schema["default"] is None
+    assert schema["anyOf"][1] == {"type": "null"}
+    items = schema["anyOf"][0]["items"]
+    assert "exclusiveMinimum" not in items
+    assert "exclusiveMinimum: 0" in items["description"]
+    output = optional.execute(
+        llm.ToolCall(id="invalid", name=optional.name, args='{"values": [0]}')
+    )
+    assert isinstance(output.error, llm.ToolExecutionError)
 
 
 def test_beta_stream_rate_limit_error() -> None:

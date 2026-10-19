@@ -155,6 +155,41 @@ def _beta_encode_messages(
     return encoded_messages
 
 
+def _adapt_strict_tool_schema(schema: dict[str, Any]) -> dict[str, Any]:
+    """Describe unsupported constraints without weakening supported strict fields."""
+    result = dict(schema)
+    unsupported = (
+        "minimum",
+        "maximum",
+        "exclusiveMinimum",
+        "exclusiveMaximum",
+        "multipleOf",
+        "minLength",
+        "maxLength",
+        "maxItems",
+    )
+    constraints = [f"{key}: {result.pop(key)}" for key in unsupported if key in result]
+    if result.get("minItems", 0) > 1:
+        constraints.append(f"minItems: {result.pop('minItems')}")
+    if constraints:
+        description = result.get("description", "")
+        note = "{" + ", ".join(constraints) + "}"
+        result["description"] = f"{description}\n\n{note}" if description else note
+    for key in ("properties", "$defs"):
+        if key in result:
+            result[key] = {
+                name: _adapt_strict_tool_schema(value)
+                for name, value in result[key].items()
+            }
+    for key in ("items", "additionalProperties"):
+        if key in result and isinstance(result[key], dict):
+            result[key] = _adapt_strict_tool_schema(result[key])
+    for key in ("anyOf", "oneOf", "allOf", "prefixItems"):
+        if key in result:
+            result[key] = [_adapt_strict_tool_schema(value) for value in result[key]]
+    return result
+
+
 def _beta_convert_tool_to_tool_param(
     tool: "AnyToolSchema | ProviderTool", model_supports_strict: bool
 ) -> BetaToolUnionParam:
@@ -179,6 +214,7 @@ def _beta_convert_tool_to_tool_param(
     strict = model_supports_strict if tool.strict is None else tool.strict
     if strict:
         _base_utils.ensure_additional_properties_false(schema_dict)
+        schema_dict = _adapt_strict_tool_schema(schema_dict)
 
     return BetaToolParam(
         name=tool.name,
