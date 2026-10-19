@@ -57,6 +57,38 @@ def create_async_stream_response_with_format(
     return response
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize("asynchronous", [False, True], ids=["sync", "async"])
+async def test_structured_stream_optional_nested_model(asynchronous: bool) -> None:
+    """Optional nested model annotations must not suppress partial stream updates."""
+
+    class Author(BaseModel):
+        name: str
+        year: int
+
+    class Book(BaseModel):
+        author: Author | None
+
+    chunks = [
+        llm.TextStartChunk(),
+        llm.TextChunk(delta='{"author": {"name": "Patrick"'),
+    ]
+    if asynchronous:
+        async_response = create_async_stream_response_with_format(
+            chunks=chunks, format=llm.format(Book, mode="json")
+        )
+        partials = [partial async for partial in async_response.structured_stream()]
+    else:
+        response = create_sync_stream_response_with_format(
+            chunks=chunks, format=llm.format(Book, mode="json")
+        )
+        partials = list(response.structured_stream())
+
+    assert partials
+    assert isinstance(partials[-1], BaseModel)
+    assert partials[-1].model_dump() == {"author": {"name": "Patrick", "year": None}}
+
+
 class TestStructuredStreamSync:
     """Test synchronous structured streaming."""
 

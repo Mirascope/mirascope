@@ -9,11 +9,23 @@ from mcp.client.stdio import StdioServerParameters, stdio_client as mcp_stdio_cl
 from mcp.client.streamable_http import (
     streamable_http_client as mcp_streamable_http_client,
 )
-from mcp.types import CallToolResult, Tool as MCPTool
+from mcp.types import CallToolResult, PaginatedRequestParams, Tool as MCPTool
 
 from ..tools import AsyncTool
 from ..tools.tool_schema import ToolParameterSchema
 from ..types import Jsonable
+
+
+def _mcp_tool_parameters(mcp_tool: MCPTool) -> ToolParameterSchema:
+    input_schema = mcp_tool.inputSchema
+    parameters = ToolParameterSchema(
+        properties=input_schema.get("properties", {}),
+        required=input_schema.get("required", []),
+        additionalProperties=input_schema.get("additionalProperties", False),
+    )
+    if "$defs" in input_schema:
+        parameters.defs = input_schema["$defs"]
+    return parameters
 
 
 class MCPClient:
@@ -54,22 +66,12 @@ class MCPClient:
                 Jsonable, [content.model_dump() for content in tool_result.content]
             )
 
-        # Convert MCP tool's inputSchema to Mirascope's ToolParameterSchema
-        input_schema = mcp_tool.inputSchema
-        parameters = ToolParameterSchema(
-            properties=input_schema.get("properties", {}),
-            required=input_schema.get("required", []),
-            additionalProperties=input_schema.get("additionalProperties", False),
-        )
-        if "$defs" in input_schema:
-            parameters.defs = input_schema["$defs"]
-
         # Create the AsyncTool instance
         return AsyncTool(
             fn=tool_fn,
             name=mcp_tool.name,
             description=mcp_tool.description or mcp_tool.name,
-            parameters=parameters,
+            parameters=_mcp_tool_parameters(mcp_tool),
             strict=False,
         )
 
@@ -78,9 +80,25 @@ class MCPClient:
 
         Returns:
             A list of dynamically created `AsyncTool`s.
+
+        Raises:
+            ValueError: If the server returns a repeated pagination cursor.
         """
-        result = await self._session.list_tools()
-        return [self._convert_mcp_tool_to_async_tool(tool) for tool in result.tools]
+        tools: list[MCPTool] = []
+        cursor: str | None = None
+        seen_cursors: set[str] = set()
+        while True:
+            params = (
+                PaginatedRequestParams(cursor=cursor) if cursor is not None else None
+            )
+            result = await self._session.list_tools(params=params)
+            tools.extend(result.tools)
+            cursor = result.nextCursor
+            if cursor is None:
+                return [self._convert_mcp_tool_to_async_tool(tool) for tool in tools]
+            if cursor in seen_cursors:
+                raise ValueError("MCP tools/list returned a repeated pagination cursor")
+            seen_cursors.add(cursor)
 
 
 @contextlib.asynccontextmanager

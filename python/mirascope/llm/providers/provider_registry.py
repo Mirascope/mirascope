@@ -8,6 +8,7 @@ from typing import overload
 
 from ..exceptions import MissingAPIKeyError, NoRegisteredProviderError
 from .anthropic import AnthropicProvider
+from .atlascloud import AtlasCloudProvider
 from .base import Provider
 from .cheaperinference import CheaperInferenceProvider
 from .google import GoogleProvider
@@ -82,6 +83,9 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, Sequence[ProviderDefault]] = {
     "openrouter/": [
         ProviderDefault("openrouter", "OPENROUTER_API_KEY"),
     ],
+    "atlascloud/": [
+        ProviderDefault("atlascloud", "ATLASCLOUD_API_KEY"),
+    ],
     "requesty/": [
         ProviderDefault("requesty", "REQUESTY_API_KEY"),
     ],
@@ -128,6 +132,8 @@ def provider_singleton(
     match provider_id:
         case "anthropic":
             return AnthropicProvider(api_key=api_key, base_url=base_url)
+        case "atlascloud":
+            return AtlasCloudProvider(api_key=api_key, base_url=base_url)
         case "cheaperinference":
             return CheaperInferenceProvider(api_key=api_key, base_url=base_url)
         case "google":

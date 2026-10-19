@@ -9,6 +9,7 @@ serves as an acknowledgment of the original author's contribution to this projec
 """
 
 import inspect
+from types import UnionType
 from typing import Any, Generic, NoReturn, Union, cast, get_args, get_origin
 
 from pydantic import BaseModel, create_model
@@ -63,7 +64,7 @@ class Partial(Generic[FormattableT]):
         """Convert model to a partial model with all fields being optionals.
 
         Recursively converts all fields in a Pydantic BaseModel to optional,
-        handling nested models and generic types like list[Book].
+        handling nested models and generic types like list[Book] or Book | None.
 
         Args:
             wrapped_class: The BaseModel class to make partial
@@ -114,7 +115,11 @@ class Partial(Generic[FormattableT]):
                 )
                 # Reconstruct generic type with new args
                 if new_args != args:
-                    field_type = origin[new_args]
+                    field_type = (
+                        Union[new_args]  # noqa: UP007 - reconstruct runtime arguments
+                        if origin in (Union, UnionType)
+                        else origin[new_args]
+                    )
 
             # Make field optional with None default
             optional_type = Union[field_type, None]  # noqa: UP007
