@@ -21,6 +21,7 @@ def load_api_keys() -> None:
     load_dotenv(override=True)
     # Set dummy keys if not present so that tests pass in CI.
     os.environ.setdefault("ANTHROPIC_API_KEY", "dummy-anthropic-key")
+    os.environ.setdefault("CHEAPER_INFERENCE_API_KEY", "dummy-cheaperinference-key")
     os.environ.setdefault("GOOGLE_API_KEY", "dummy-google-key")
     os.environ.setdefault("MIRASCOPE_API_KEY", "dummy-mirascope-key")
     os.environ.setdefault("ATLASCLOUD_API_KEY", "dummy-atlascloud-key")

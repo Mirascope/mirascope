@@ -6,6 +6,7 @@ KnownProviderId: TypeAlias = Literal[
     "anthropic",  # Anthropic provider via AnthropicProvider
     "anthropic-beta",  # Anthropic beta provider via AnthropicBetaProvider
     "atlascloud",  # Atlas Cloud provider via AtlasCloudProvider
+    "cheaperinference",  # Cheaper Inference provider via CheaperInferenceProvider
     "google",  # Google provider via GoogleProvider
     "minimax",  # MiniMax provider via MiniMaxProvider
     "mirascope",  # Mirascope Router provider via MirascopeProvider
@@ -23,6 +24,7 @@ ProviderId = KnownProviderId | str
 
 OpenAICompletionsCompatibleProviderId: TypeAlias = Literal[
     "atlascloud",  # Atlas Cloud (OpenAI-compatible)
+    "cheaperinference",  # Cheaper Inference (OpenAI-compatible)
     "minimax",  # MiniMax (OpenAI-compatible)
     "ollama",  # Ollama (OpenAI-compatible)
     "openai",  # OpenAI via OpenAIProvider (routes to completions)

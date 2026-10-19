@@ -10,6 +10,7 @@ from ..exceptions import MissingAPIKeyError, NoRegisteredProviderError
 from .anthropic import AnthropicProvider
 from .atlascloud import AtlasCloudProvider
 from .base import Provider
+from .cheaperinference import CheaperInferenceProvider
 from .google import GoogleProvider
 from .minimax import MiniMaxProvider
 from .mirascope import MirascopeProvider
@@ -88,6 +89,9 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, Sequence[ProviderDefault]] = {
     "requesty/": [
         ProviderDefault("requesty", "REQUESTY_API_KEY"),
     ],
+    "cheaperinference/": [
+        ProviderDefault("cheaperinference", "CHEAPER_INFERENCE_API_KEY"),
+    ],
     "xai/": [
         ProviderDefault("xai", "XAI_API_KEY"),
     ],
@@ -130,6 +134,8 @@ def provider_singleton(
             return AnthropicProvider(api_key=api_key, base_url=base_url)
         case "atlascloud":
             return AtlasCloudProvider(api_key=api_key, base_url=base_url)
+        case "cheaperinference":
+            return CheaperInferenceProvider(api_key=api_key, base_url=base_url)
         case "google":
             return GoogleProvider(api_key=api_key, base_url=base_url)
         case "minimax":
