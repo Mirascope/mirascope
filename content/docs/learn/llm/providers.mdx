@@ -24,6 +24,7 @@ Mirascope includes several built-in providers:
 | Provider | Class | Default Scope | Environment Variable |
 | --- | --- | --- | --- |
 | Anthropic | `llm.providers.AnthropicProvider` | `anthropic/` | `ANTHROPIC_API_KEY` |
+| Cheaper Inference | `llm.providers.CheaperInferenceProvider` | `cheaperinference/` | `CHEAPER_INFERENCE_API_KEY` |
 | Google | `llm.providers.GoogleProvider` | `google/` | `GOOGLE_API_KEY` |
 | MiniMax | `llm.providers.MiniMaxProvider` | `minimax/` | `MINIMAX_API_KEY` |
 | Mirascope | `llm.providers.MirascopeProvider` | `anthropic/`, `google/`, `openai/` | `MIRASCOPE_API_KEY` |
@@ -51,6 +52,8 @@ You can register these using the provider IDs `"openai:completions"` or `"openai
 </Note>
 
 With the appropriate environment variable set, you can use any of these providers immediately—no registration required.
+
+For Cheaper Inference, use a model ID with the `cheaperinference/` prefix, such as `cheaperinference/gpt-5.4-mini`. Mirascope sends the remaining model ID to Cheaper Inference's OpenAI-compatible API.
 
 For Requesty, use a model ID with the `requesty/` prefix, such as `requesty/openai/gpt-4o-mini`. Mirascope sends the remaining model ID to Requesty's OpenAI-compatible router. You can also register Requesty for another scope with `llm.register_provider("requesty", scope="openai/")`.
 
@@ -102,6 +105,7 @@ These provider IDs are available:
 | ID | Description |
 | --- | --- |
 | `"anthropic"` | Anthropic API |
+| `"cheaperinference"` | Cheaper Inference API |
 | `"google"` | Google Generative AI API |
 | `"minimax"` | MiniMax API |
 | `"mirascope"` | Use the Mirascope Router to access many providers seamlessly |

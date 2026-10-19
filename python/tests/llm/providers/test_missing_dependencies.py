@@ -397,6 +397,13 @@ class TestProviderStubs:
         # Should be importable without error
         assert OpenRouterProvider is not None
 
+    def test_cheaperinference_provider_is_importable(self) -> None:
+        """Test that CheaperInferenceProvider can be imported (will be real or stub)."""
+        from mirascope.llm.providers import CheaperInferenceProvider
+
+        # Should be importable without error
+        assert CheaperInferenceProvider is not None
+
     def test_requesty_provider_is_importable(self) -> None:
         """Test that RequestyProvider can be imported (will be real or stub)."""
         from mirascope.llm.providers import RequestyProvider

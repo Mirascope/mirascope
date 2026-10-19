@@ -7,6 +7,7 @@ from ..._stubs import stub_module_if_missing
 # Note: We only stub top-level provider modules, not their submodules.
 # The _StubModule will automatically handle nested attribute access.
 stub_module_if_missing("mirascope.llm.providers.anthropic", "anthropic")
+stub_module_if_missing("mirascope.llm.providers.cheaperinference", "openai")
 stub_module_if_missing("mirascope.llm.providers.google", "google")
 stub_module_if_missing("mirascope.llm.providers.mlx", "mlx")
 stub_module_if_missing("mirascope.llm.providers.minimax", "openai")
@@ -24,6 +25,7 @@ from .anthropic import (
     AnthropicProvider,
 )
 from .base import BaseProvider, Provider
+from .cheaperinference import CheaperInferenceProvider
 from .google import GoogleModelId, GoogleProvider
 from .minimax import MiniMaxModelId, MiniMaxProvider
 from .mirascope import MirascopeProvider
@@ -52,6 +54,7 @@ __all__ = [
     "AnthropicProvider",
     "BaseOpenAICompletionsProvider",
     "BaseProvider",
+    "CheaperInferenceProvider",
     "GoogleModelId",
     "GoogleProvider",
     "MLXModelId",

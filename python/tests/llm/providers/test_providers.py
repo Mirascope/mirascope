@@ -67,6 +67,16 @@ def test_register_provider_requesty() -> None:
     assert provider.client.api_key == os.getenv("REQUESTY_API_KEY")
 
 
+def test_register_provider_cheaperinference() -> None:
+    """Test that register_provider('cheaperinference') returns same instance on multiple calls."""
+    provider = llm.register_provider("cheaperinference", scope="cheaperinference/")
+    provider2 = llm.register_provider("cheaperinference", scope="cheaperinference/")
+
+    assert isinstance(provider, llm.providers.CheaperInferenceProvider)
+    assert provider is provider2
+    assert provider.client.api_key == os.getenv("CHEAPER_INFERENCE_API_KEY")
+
+
 def test_register_provider_minimax() -> None:
     """Test that register_provider('minimax') returns same instance on multiple calls."""
     provider = llm.register_provider("minimax")
