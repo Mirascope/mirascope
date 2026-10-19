@@ -5,6 +5,7 @@ from typing import Literal, TypeAlias, get_args
 KnownProviderId: TypeAlias = Literal[
     "anthropic",  # Anthropic provider via AnthropicProvider
     "anthropic-beta",  # Anthropic beta provider via AnthropicBetaProvider
+    "atlascloud",  # Atlas Cloud provider via AtlasCloudProvider
     "google",  # Google provider via GoogleProvider
     "minimax",  # MiniMax provider via MiniMaxProvider
     "mirascope",  # Mirascope Router provider via MirascopeProvider
@@ -21,6 +22,7 @@ KNOWN_PROVIDER_IDS = get_args(KnownProviderId)
 ProviderId = KnownProviderId | str
 
 OpenAICompletionsCompatibleProviderId: TypeAlias = Literal[
+    "atlascloud",  # Atlas Cloud (OpenAI-compatible)
     "minimax",  # MiniMax (OpenAI-compatible)
     "ollama",  # Ollama (OpenAI-compatible)
     "openai",  # OpenAI via OpenAIProvider (routes to completions)

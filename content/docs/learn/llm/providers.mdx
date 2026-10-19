@@ -24,6 +24,7 @@ Mirascope includes several built-in providers:
 | Provider | Class | Default Scope | Environment Variable |
 | --- | --- | --- | --- |
 | Anthropic | `llm.providers.AnthropicProvider` | `anthropic/` | `ANTHROPIC_API_KEY` |
+| Atlas Cloud | `llm.providers.AtlasCloudProvider` | `atlascloud/` | `ATLASCLOUD_API_KEY` |
 | Google | `llm.providers.GoogleProvider` | `google/` | `GOOGLE_API_KEY` |
 | MiniMax | `llm.providers.MiniMaxProvider` | `minimax/` | `MINIMAX_API_KEY` |
 | Mirascope | `llm.providers.MirascopeProvider` | `anthropic/`, `google/`, `openai/` | `MIRASCOPE_API_KEY` |
@@ -51,6 +52,8 @@ You can register these using the provider IDs `"openai:completions"` or `"openai
 </Note>
 
 With the appropriate environment variable set, you can use any of these providers immediately—no registration required.
+
+For Atlas Cloud, use a model ID with the `atlascloud/` prefix, such as `atlascloud/deepseek-ai/deepseek-v4-flash`. Mirascope sends the remaining model ID to Atlas Cloud's OpenAI-compatible API. You can also register Atlas Cloud for another scope with `llm.register_provider("atlascloud", scope="openai/")`.
 
 For Requesty, use a model ID with the `requesty/` prefix, such as `requesty/openai/gpt-4o-mini`. Mirascope sends the remaining model ID to Requesty's OpenAI-compatible router. You can also register Requesty for another scope with `llm.register_provider("requesty", scope="openai/")`.
 
@@ -102,6 +105,7 @@ These provider IDs are available:
 | ID | Description |
 | --- | --- |
 | `"anthropic"` | Anthropic API |
+| `"atlascloud"` | Atlas Cloud API |
 | `"google"` | Google Generative AI API |
 | `"minimax"` | MiniMax API |
 | `"mirascope"` | Use the Mirascope Router to access many providers seamlessly |
