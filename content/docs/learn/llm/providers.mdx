@@ -84,6 +84,19 @@ def greet():
 print(greet().text())
 ```
 
+The TypeScript alpha uses the same model ID and environment variable:
+
+```typescript
+import { llm } from "mirascope";
+
+const greet = llm.defineCall({
+  model: "api-route/claude-sonnet-4-6",
+  template: () => "Hello!",
+});
+
+console.log((await greet()).text());
+```
+
 Mirascope removes only `api-route/` and sends the remaining model ID unchanged to API Route's OpenAI-compatible Chat Completions API at `https://global.api-route.com/v1`. Check the [API Route model catalog](https://www.api-route.com/pricing) for current model IDs and the [setup guide](https://www.api-route.com/docs/quickstart) for account configuration. Feature availability depends on the selected model.
 
 To override the endpoint or key, explicitly register the `api-route/` scope:

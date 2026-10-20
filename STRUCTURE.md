@@ -75,6 +75,7 @@ python/
 ## TypeScript Implementation (`typescript/`)
 
 The TypeScript SDK is in active alpha development. Its API follows the Python `llm` interfaces, with prerelease versions published under the npm `alpha` tag.
+Its `api-route/` provider uses API Route's OpenAI-compatible Chat Completions API.
 
 ## Website (`website/`)
 
