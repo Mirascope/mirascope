@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Sequence
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Literal, TypedDict, cast
@@ -43,6 +44,20 @@ THINKING_LEVEL_TO_BUDGET_MULTIPLIER: dict[ThinkingLevel, float] = {
     "high": 0.6,
     "max": 0.8,
 }
+
+# Claude 4.7 and later reject `thinking: {"type": "enabled", "budget_tokens": N}`
+# with a 400 and only take adaptive thinking. Opus 4.6 and Sonnet 4.6 still accept
+# a budget, as do the 4.5 models and earlier.
+# https://platform.claude.com/docs/en/build-with-claude/thinking-troubleshooting#supported-models
+_ADAPTIVE_THINKING_ONLY_MODEL = re.compile(
+    r"^claude-[a-z]+-(?:4-[7-9]|[5-9]|[1-9]\d)(?:-|$)"
+)
+
+
+def uses_adaptive_thinking_only(model: str | None) -> bool:
+    """Whether the model rejects a manual thinking budget."""
+    return model is not None and _ADAPTIVE_THINKING_ONLY_MODEL.match(model) is not None
+
 
 AnthropicImageMimeType = Literal["image/jpeg", "image/png", "image/gif", "image/webp"]
 
@@ -123,7 +138,9 @@ class ProcessedParams(TypedDict, total=False):
     encode_thoughts_as_text: bool
 
 
-def process_params(params: Params, default_max_tokens: int) -> ProcessedParams:
+def process_params(
+    params: Params, default_max_tokens: int, model: str | None = None
+) -> ProcessedParams:
     """Process common Anthropic parameters from Params.
 
     Returns a dict with processed parameters that can be merged into kwargs.
@@ -154,6 +171,8 @@ def process_params(params: Params, default_max_tokens: int) -> ProcessedParams:
             budget_tokens = compute_thinking_budget(level, result["max_tokens"])
             if budget_tokens == 0:
                 result["thinking"] = {"type": "disabled"}
+            elif uses_adaptive_thinking_only(model):
+                result["thinking"] = {"type": "adaptive"}
             elif budget_tokens > 0:
                 result["thinking"] = {"type": "enabled", "budget_tokens": budget_tokens}
             else:
@@ -436,7 +455,7 @@ def encode_request(
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
     """Prepares a request for the Anthropic messages.create method."""
 
-    processed = process_params(params, DEFAULT_MAX_TOKENS)
+    processed = process_params(params, DEFAULT_MAX_TOKENS, model_name(model_id))
     encode_thoughts_as_text = processed.pop("encode_thoughts_as_text", False)
     max_tokens = processed.pop("max_tokens", DEFAULT_MAX_TOKENS)
 

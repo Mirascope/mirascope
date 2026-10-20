@@ -198,7 +198,7 @@ def beta_encode_request(
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, BetaParseKwargs]:
     """Prepares a request for the Anthropic beta.messages.parse method."""
 
-    processed = process_params(params, DEFAULT_MAX_TOKENS)
+    processed = process_params(params, DEFAULT_MAX_TOKENS, model_name(model_id))
     encode_thoughts_as_text = processed.pop("encode_thoughts_as_text", False)
     max_tokens = processed.pop("max_tokens", DEFAULT_MAX_TOKENS)
 

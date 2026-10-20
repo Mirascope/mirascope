@@ -1,5 +1,6 @@
 """Tests for Anthropic document encoding."""
 
+import pytest
 from inline_snapshot import snapshot
 
 from mirascope import llm
@@ -9,6 +10,7 @@ from mirascope.llm.content.document import (
     TextDocumentSource,
 )
 from mirascope.llm.providers.anthropic._utils import encode_request
+from mirascope.llm.providers.anthropic._utils.beta_encode import beta_encode_request
 from mirascope.llm.providers.anthropic._utils.encode import (
     encode_content,
     raw_message_has_format_tool,
@@ -364,3 +366,66 @@ def test_encode_tool_output_json_serialization() -> None:
             "cache_control": None,
         },
     ]
+
+
+@pytest.mark.parametrize(
+    "model_id",
+    [
+        "anthropic/claude-opus-4-7",
+        "anthropic/claude-opus-4-8",
+        "anthropic/claude-opus-5",
+        "anthropic/claude-opus-5-5",
+        "anthropic/claude-sonnet-5",
+        "anthropic/claude-sonnet-5-5",
+        "anthropic/claude-haiku-5-5",
+        "anthropic/claude-fable-5-1",
+    ],
+)
+def test_thinking_level_uses_adaptive_thinking_on_models_that_reject_budget_tokens(
+    model_id: str,
+) -> None:
+    """Claude 4.7 and later reject `thinking.type: enabled` with a 400."""
+    params: llm.Params = {"thinking": {"level": "medium"}}
+    messages = [llm.messages.user("Hello")]
+
+    _, _, kwargs = encode_request(
+        model_id=model_id,
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params=params,
+    )
+    assert kwargs.get("thinking") == {"type": "adaptive"}
+
+    _, _, beta_kwargs = beta_encode_request(
+        model_id=model_id,
+        messages=messages,
+        format=None,
+        tools=Toolkit(None),
+        params=params,
+    )
+    assert beta_kwargs.get("thinking") == {"type": "adaptive"}
+
+
+@pytest.mark.parametrize(
+    "model_id",
+    [
+        "anthropic/claude-haiku-4-5",
+        "anthropic/claude-sonnet-4-5",
+        "anthropic/claude-opus-4-5",
+        "anthropic/claude-sonnet-4-6",
+        "anthropic/claude-opus-4-6",
+    ],
+)
+def test_thinking_level_keeps_budget_tokens_on_models_that_accept_it(
+    model_id: str,
+) -> None:
+    """Models before Claude 4.7 still take a manual thinking budget."""
+    _, _, kwargs = encode_request(
+        model_id=model_id,
+        messages=[llm.messages.user("Hello")],
+        format=None,
+        tools=Toolkit(None),
+        params={"thinking": {"level": "medium"}},
+    )
+    assert kwargs.get("thinking") == {"type": "enabled", "budget_tokens": 6400}
