@@ -24,6 +24,7 @@ Mirascope includes several built-in providers:
 | Provider | Class | Default Scope | Environment Variable |
 | --- | --- | --- | --- |
 | Anthropic | `llm.providers.AnthropicProvider` | `anthropic/` | `ANTHROPIC_API_KEY` |
+| API Route | `llm.providers.APIRouteProvider` | `api-route/` | `API_ROUTE_API_KEY` |
 | Atlas Cloud | `llm.providers.AtlasCloudProvider` | `atlascloud/` | `ATLASCLOUD_API_KEY` |
 | Cheaper Inference | `llm.providers.CheaperInferenceProvider` | `cheaperinference/` | `CHEAPER_INFERENCE_API_KEY` |
 | Google | `llm.providers.GoogleProvider` | `google/` | `GOOGLE_API_KEY` |
@@ -59,6 +60,56 @@ For Atlas Cloud, use a model ID with the `atlascloud/` prefix, such as `atlasclo
 For Cheaper Inference, use a model ID with the `cheaperinference/` prefix, such as `cheaperinference/gpt-5.4-mini`. Mirascope sends the remaining model ID to Cheaper Inference's OpenAI-compatible API.
 
 For Requesty, use a model ID with the `requesty/` prefix, such as `requesty/openai/gpt-4o-mini`. Mirascope sends the remaining model ID to Requesty's OpenAI-compatible router. You can also register Requesty for another scope with `llm.register_provider("requesty", scope="openai/")`.
+
+### API Route
+
+Install the OpenAI extra and set your API Route key:
+
+```bash
+uv add "mirascope[openai]"
+export API_ROUTE_API_KEY="your-api-route-key"
+```
+
+Use `api-route/` followed by the exact model ID available to your account:
+
+```python
+from mirascope import llm
+
+
+@llm.call("api-route/claude-sonnet-4-6")
+def greet():
+    return "Hello!"
+
+
+print(greet().text())
+```
+
+The TypeScript alpha uses the same model ID and environment variable:
+
+```typescript
+import { llm } from "mirascope";
+
+const greet = llm.defineCall({
+  model: "api-route/claude-sonnet-4-6",
+  template: () => "Hello!",
+});
+
+console.log((await greet()).text());
+```
+
+Mirascope removes only `api-route/` and sends the remaining model ID unchanged to API Route's OpenAI-compatible Chat Completions API at `https://global.api-route.com/v1`. Check the [API Route model catalog](https://www.api-route.com/pricing) for current model IDs and the [setup guide](https://www.api-route.com/docs/quickstart) for account configuration. Feature availability depends on the selected model.
+
+To override the endpoint or key, explicitly register the `api-route/` scope:
+
+```python
+llm.register_provider(
+    "api-route",
+    scope="api-route/",
+    base_url="https://global.api-route.com/v1",  # Replace with your API Route endpoint.
+)
+```
+
+The key is read from `API_ROUTE_API_KEY` unless you pass `api_key`. API Route does not participate in other providers' automatic fallback chains.
 
 ## Registering Providers
 
@@ -108,6 +159,7 @@ These provider IDs are available:
 | ID | Description |
 | --- | --- |
 | `"anthropic"` | Anthropic API |
+| `"api-route"` | API Route Chat Completions API |
 | `"atlascloud"` | Atlas Cloud API |
 | `"cheaperinference"` | Cheaper Inference API |
 | `"google"` | Google Generative AI API |
