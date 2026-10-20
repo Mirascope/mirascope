@@ -1,9 +1,9 @@
 interactions:
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Answer this question:
-      What is 2 + 3, using the custom addition tool?"}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","description":"A
+      What is 2 + 3, using the custom addition tool?"}],"model":"claude-sonnet-4-5","output_config":{"format":{"schema":{"type":"object","description":"A
       simple response for testing.","title":"IntegerAdditionResponse","properties":{"integer_a":{"type":"integer","title":"Integer
-      A"},"integer_b":{"type":"integer","title":"Integer B"},"answer":{"type":"integer","title":"Answer"}},"additionalProperties":false,"required":["integer_a","integer_b","answer"]},"type":"json_schema"},"tools":[{"name":"customAdditionImplementation","description":"Perform
+      A"},"integer_b":{"type":"integer","title":"Integer B"},"answer":{"type":"integer","title":"Answer"}},"additionalProperties":false,"required":["integer_a","integer_b","answer"]},"type":"json_schema"}},"tools":[{"name":"customAdditionImplementation","description":"Perform
       computation on integers.","input_schema":{"properties":{"a":{"title":"A","type":"integer"},"b":{"title":"B","type":"integer"}},"required":["a","b"],"additionalProperties":false,"type":"object"},"strict":true,"cache_control":{"type":"ephemeral"}}],"stream":true}'
     headers:
       accept:
@@ -158,9 +158,9 @@ interactions:
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Answer this question:
-      What is 2 + 3, using the custom addition tool?"},{"role":"assistant","content":[{"type":"tool_use","id":"toolu_01GWMYVRPdJWuP8ywu1XZDW8","name":"customAdditionImplementation","input":{"a":2,"b":3}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01GWMYVRPdJWuP8ywu1XZDW8","content":"13","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","description":"A
+      What is 2 + 3, using the custom addition tool?"},{"role":"assistant","content":[{"type":"tool_use","id":"toolu_01GWMYVRPdJWuP8ywu1XZDW8","name":"customAdditionImplementation","input":{"a":2,"b":3}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01GWMYVRPdJWuP8ywu1XZDW8","content":"13","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-5","output_config":{"format":{"schema":{"type":"object","description":"A
       simple response for testing.","title":"IntegerAdditionResponse","properties":{"integer_a":{"type":"integer","title":"Integer
-      A"},"integer_b":{"type":"integer","title":"Integer B"},"answer":{"type":"integer","title":"Answer"}},"additionalProperties":false,"required":["integer_a","integer_b","answer"]},"type":"json_schema"},"tools":[{"name":"customAdditionImplementation","description":"Perform
+      A"},"integer_b":{"type":"integer","title":"Integer B"},"answer":{"type":"integer","title":"Answer"}},"additionalProperties":false,"required":["integer_a","integer_b","answer"]},"type":"json_schema"}},"tools":[{"name":"customAdditionImplementation","description":"Perform
       computation on integers.","input_schema":{"properties":{"a":{"title":"A","type":"integer"},"b":{"title":"B","type":"integer"}},"required":["a","b"],"additionalProperties":false,"type":"object"},"strict":true,"cache_control":{"type":"ephemeral"}}],"stream":true}'
     headers:
       accept:

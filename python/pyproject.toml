@@ -58,7 +58,7 @@ Changelog = "https://github.com/Mirascope/mirascope/releases"
 # in mirascope/_stubs.py to ensure proper import stubbing for missing dependencies.
 # The mapping translates PyPI package names to their Python import names.
 [project.optional-dependencies]
-anthropic = ["anthropic>=0.76.0,<1.0"]
+anthropic = ["anthropic>=0.78.0,<1.0"]
 google = ["google-genai>=1.58.0,<2", "pillow>=10.4.0,<11", "proto-plus>=1.24.0"]
 openai = ["openai>=2.15.0,<3"]
 mcp = ["mcp>=1.25.0,<2"]

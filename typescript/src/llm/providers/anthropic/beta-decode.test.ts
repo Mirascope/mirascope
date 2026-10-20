@@ -32,8 +32,11 @@ function createMockBetaMessage(
       cache_read_input_tokens: 0,
       cache_creation_input_tokens: 0,
       cache_creation: null,
+      inference_geo: null,
+      iterations: null,
       server_tool_use: null,
       service_tier: "standard",
+      speed: null,
     },
     container: null,
     ...overrides,
@@ -224,8 +227,11 @@ describe("betaDecodeResponse", () => {
           cache_read_input_tokens: 20,
           cache_creation_input_tokens: 10,
           cache_creation: null,
+          inference_geo: null,
+          iterations: null,
           server_tool_use: null,
           service_tier: "standard",
+          speed: null,
         },
       });
 
@@ -249,8 +255,11 @@ describe("betaDecodeResponse", () => {
           cache_read_input_tokens: null,
           cache_creation_input_tokens: null,
           cache_creation: null,
+          inference_geo: null,
+          iterations: null,
           server_tool_use: null,
           service_tier: null,
+          speed: null,
         },
       });
 
