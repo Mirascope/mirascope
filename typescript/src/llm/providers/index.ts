@@ -15,6 +15,7 @@ export type { Provider, ProviderErrorMap } from "@/llm/providers/base";
 
 export { AnthropicProvider } from "@/llm/providers/anthropic";
 export { AnthropicBetaProvider } from "@/llm/providers/anthropic/beta-provider";
+export { APIRouteProvider } from "@/llm/providers/api-route";
 export {
   AtlasCloudProvider,
   CheaperInferenceProvider,

@@ -8,6 +8,7 @@ from typing import overload
 
 from ..exceptions import MissingAPIKeyError, NoRegisteredProviderError
 from .anthropic import AnthropicProvider
+from .api_route import APIRouteProvider
 from .atlascloud import AtlasCloudProvider
 from .base import Provider
 from .cheaperinference import CheaperInferenceProvider
@@ -55,6 +56,9 @@ class ProviderDefault:
 # its API key available. This enables automatic fallback to Mirascope Router
 # when direct provider keys are not set.
 DEFAULT_AUTO_REGISTER_SCOPES: dict[str, Sequence[ProviderDefault]] = {
+    "api-route/": [
+        ProviderDefault("api-route", "API_ROUTE_API_KEY"),
+    ],
     "anthropic/": [
         ProviderDefault("anthropic", "ANTHROPIC_API_KEY"),
         ProviderDefault("mirascope", "MIRASCOPE_API_KEY"),
@@ -132,6 +136,8 @@ def provider_singleton(
     match provider_id:
         case "anthropic":
             return AnthropicProvider(api_key=api_key, base_url=base_url)
+        case "api-route":
+            return APIRouteProvider(api_key=api_key, base_url=base_url)
         case "atlascloud":
             return AtlasCloudProvider(api_key=api_key, base_url=base_url)
         case "cheaperinference":

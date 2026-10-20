@@ -7,7 +7,7 @@ The TypeScript implementation of Mirascope: a type-safe, ergonomic library for b
 > We welcome feedback and contributions!
 
 The TypeScript SDK supports Anthropic, Atlas Cloud, Cheaper Inference, Google,
-MiniMax, Mirascope, Ollama, OpenAI, OpenRouter, Requesty, Together, and xAI.
+MiniMax, Mirascope, Ollama, OpenAI, OpenRouter, API Route, Requesty, Together, and xAI.
 MLX runs local models through Python on Apple Silicon and remains specific to the
 Python SDK.
 
@@ -566,6 +566,7 @@ await ops.forceFlush()
 - **Google**: `google/gemini-2.0-flash`, `google/gemini-2.5-pro`, etc.
 - **Ollama**: `ollama/llama3.2`, etc. (local models)
 - **Together**: `together/meta-llama/...`, etc.
+- **API Route**: `api-route/claude-sonnet-4-6`, etc. Set `API_ROUTE_API_KEY`.
 - Any OpenAI-compatible provider via `registerProvider`
 
 ## Development Setup

@@ -42,6 +42,8 @@ python/
 │   │   ├── agents/           # Agent functionality (currently not publicly exported)
 │   │   ├── calls/            # Call decorator and call management
 │   │   ├── providers/         # Provider-specific implementations
+│   │   │   ├── api_route/       # API Route via OpenAI-compatible Chat Completions
+│   │   │   └── [other providers]
 │   │   ├── content/          # Content types (text, image, audio, etc.)
 │   │   ├── context/          # Context management
 │   │   ├── formatting/       # Response formatting
@@ -73,6 +75,7 @@ python/
 ## TypeScript Implementation (`typescript/`)
 
 The TypeScript SDK is in active alpha development. Its API follows the Python `llm` interfaces, with prerelease versions published under the npm `alpha` tag.
+Its `api-route/` provider uses API Route's OpenAI-compatible Chat Completions API.
 
 ## Website (`website/`)
 

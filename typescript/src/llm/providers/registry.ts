@@ -13,6 +13,7 @@ import {
 } from "@/llm/exceptions";
 import { AnthropicProvider } from "@/llm/providers/anthropic";
 import { AnthropicBetaProvider } from "@/llm/providers/anthropic/beta-provider";
+import { APIRouteProvider } from "@/llm/providers/api-route";
 import { GoogleProvider } from "@/llm/providers/google";
 import { MirascopeProvider } from "@/llm/providers/mirascope";
 import { OllamaProvider } from "@/llm/providers/ollama";
@@ -54,6 +55,9 @@ interface ProviderDefault {
  * Default auto-registration scopes with fallback chains.
  */
 const DEFAULT_AUTO_REGISTER_SCOPES: Record<string, ProviderDefault[]> = {
+  "api-route/": [
+    { providerId: "api-route", apiKeyEnvVar: "API_ROUTE_API_KEY" },
+  ],
   "anthropic-beta/": [
     { providerId: "anthropic-beta", apiKeyEnvVar: "ANTHROPIC_API_KEY" },
   ],
@@ -124,6 +128,9 @@ export function getProviderSingleton(
 
   let provider: BaseProvider;
   switch (providerId) {
+    case "api-route":
+      provider = new APIRouteProvider(options);
+      break;
     case "anthropic":
       provider = new AnthropicProvider({
         apiKey: options?.apiKey,

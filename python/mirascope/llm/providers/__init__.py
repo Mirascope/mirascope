@@ -7,6 +7,7 @@ from ..._stubs import stub_module_if_missing
 # Note: We only stub top-level provider modules, not their submodules.
 # The _StubModule will automatically handle nested attribute access.
 stub_module_if_missing("mirascope.llm.providers.anthropic", "anthropic")
+stub_module_if_missing("mirascope.llm.providers.api_route", "openai")
 stub_module_if_missing("mirascope.llm.providers.atlascloud", "openai")
 stub_module_if_missing("mirascope.llm.providers.cheaperinference", "openai")
 stub_module_if_missing("mirascope.llm.providers.google", "google")
@@ -25,6 +26,7 @@ from .anthropic import (
     AnthropicModelId,
     AnthropicProvider,
 )
+from .api_route import APIRouteProvider
 from .atlascloud import AtlasCloudProvider
 from .base import BaseProvider, Provider
 from .cheaperinference import CheaperInferenceProvider
@@ -52,6 +54,7 @@ from .xai import XAIModelId, XAIProvider
 
 __all__ = [
     "KNOWN_PROVIDER_IDS",
+    "APIRouteProvider",
     "AnthropicModelId",
     "AnthropicProvider",
     "AtlasCloudProvider",
