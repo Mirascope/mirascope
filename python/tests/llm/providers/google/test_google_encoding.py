@@ -1,9 +1,12 @@
 """Tests for Google document encoding."""
 
 import base64
+from typing import Annotated, Any
 
 import pytest
+from google.genai import types as genai_types
 from inline_snapshot import snapshot
+from pydantic import BaseModel, Field, ValidationError
 
 from mirascope import llm
 from mirascope.llm.content.document import (
@@ -17,6 +20,97 @@ from mirascope.llm.providers.google._utils.encode import (
     _raw_message_has_format_tool,  # pyright: ignore[reportPrivateUsage]
 )
 from mirascope.llm.tools import Toolkit
+
+
+def test_constrained_tool_schema_is_google_compatible() -> None:
+    """Keep supported constraints, without passing arbitrary JSON Schema to Google."""
+
+    class Details(BaseModel):
+        code: Annotated[str, Field(max_length=3, examples=["abc"])]
+        values: list[Annotated[int, Field(multiple_of=2, ge=0)]]
+
+    @llm.tool
+    def constrained_tool(
+        count: Annotated[int, Field(ge=1, le=5, multiple_of=2, examples=[2])],
+        details: Details,
+        option: Annotated[
+            str | None, Field(json_schema_extra={"x-ui": "textarea"})
+        ] = None,
+    ) -> int:
+        return count
+
+    original = constrained_tool.parameters.model_dump(by_alias=True, exclude_none=True)
+    assert original["properties"]["count"]["multipleOf"] == 2
+    _, _, kwargs = encode_request(
+        model_id="google/gemini-2.5-flash",
+        messages=[llm.messages.user("Use the tool")],
+        tools=Toolkit([constrained_tool]),
+        format=None,
+        params={},
+    )
+    config = genai_types.GenerateContentConfig.model_validate(kwargs.get("config", {}))
+    assert config.tools is not None
+    assert isinstance(config.tools[0], genai_types.Tool)
+    declarations = config.tools[0].function_declarations
+    assert declarations is not None
+    schema = declarations[0].parameters
+    assert schema is not None and schema.properties is not None
+    count = schema.properties["count"]
+    assert (count.minimum, count.maximum) == (1, 5)
+    nested = schema.properties["details"]
+    assert nested.properties is not None
+    assert nested.properties["code"].max_length == 3
+    items = nested.properties["values"].items
+    assert items is not None and items.minimum == 0
+    assert (
+        constrained_tool.parameters.model_dump(by_alias=True, exclude_none=True)
+        == original
+    )
+    output = constrained_tool.execute(
+        llm.ToolCall(
+            id="invalid",
+            name=constrained_tool.name,
+            args='{"count": 3, "details": {"code": "abc", "values": [2]}}',
+        )
+    )
+    assert isinstance(output.error, llm.ToolExecutionError)
+    assert isinstance(output.error.tool_exception, ValidationError)
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        {"examples": [2], "multipleOf": 2, "exclusiveMinimum": 0, "const": 2},
+        {"items": {"type": "integer", "multipleOf": 2}},
+        {"anyOf": [{"type": "integer", "examples": [2]}]},
+        {"additionalProperties": {"type": "integer", "multipleOf": 2}},
+        {"properties": {"examples": {"type": "integer", "examples": [2]}}},
+    ],
+)
+def test_google_filters_only_schema_keywords(extra: dict[str, Any]) -> None:
+    """Filter schema nodes, not property names or data such as defaults."""
+
+    @llm.tool
+    def constrained_tool(value: Annotated[int, Field(json_schema_extra=extra)]) -> int:
+        return value
+
+    _, _, kwargs = encode_request(
+        model_id="google/gemini-2.5-flash",
+        messages=[llm.messages.user("Use the tool")],
+        tools=Toolkit([constrained_tool]),
+        format=None,
+        params={},
+    )
+    config = genai_types.GenerateContentConfig.model_validate(kwargs.get("config", {}))
+    assert config.tools is not None
+    assert isinstance(config.tools[0], genai_types.Tool)
+    declarations = config.tools[0].function_declarations
+    assert declarations is not None and declarations[0].parameters is not None
+    properties = declarations[0].parameters.properties
+    assert properties is not None
+    if "properties" in extra:
+        assert properties["value"].properties is not None
+        assert "examples" in properties["value"].properties
 
 
 def test_encode_base64_document() -> None:
