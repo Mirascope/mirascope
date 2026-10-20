@@ -119,7 +119,15 @@ export function decodeStreamEvent(
     state.currentContentType = "tool_call";
 
     for (const toolCallDelta of delta.tool_calls) {
-      const index = toolCallDelta.index;
+      // Gemini's OpenAI-compatible stream omits index. A new id starts the next
+      // call; fragments without an id continue the current call.
+      const index =
+        toolCallDelta.index ??
+        (state.currentToolIndex === null
+          ? 0
+          : toolCallDelta.id && toolCallDelta.id !== state.currentToolId
+            ? state.currentToolIndex + 1
+            : state.currentToolIndex);
 
       // Check for out-of-order tool call data
       /* v8 ignore start - defensive check for malformed streams */
