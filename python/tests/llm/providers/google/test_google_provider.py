@@ -22,7 +22,7 @@ from mirascope.llm.providers.google._utils.decode import (
 from mirascope.llm.providers.google._utils.encode import google_thinking_config
 from mirascope.llm.providers.google._utils.errors import map_google_error
 from mirascope.llm.providers.google.provider import GoogleProvider
-from mirascope.llm.responses import Usage, UsageDeltaChunk
+from mirascope.llm.responses import FinishReasonChunk, Usage, UsageDeltaChunk
 
 
 def test_custom_base_url() -> None:
@@ -373,6 +373,51 @@ def test_decode_stream_multi_chunk_progressive_usage() -> None:
     assert accumulated_usage.output_tokens == 85  # candidates (50) + thoughts (35)
     assert accumulated_usage.reasoning_tokens == 35
     assert accumulated_usage.total_tokens == 185
+
+
+def _contentless_final_chunk() -> genai_types.GenerateContentResponse:
+    """A final chunk that carries finish_reason and usage but no content parts."""
+    return genai_types.GenerateContentResponse(
+        candidates=[
+            genai_types.Candidate(finish_reason=genai_types.FinishReason.MAX_TOKENS)
+        ],
+        usage_metadata=genai_types.GenerateContentResponseUsageMetadata(
+            prompt_token_count=100,
+            candidates_token_count=0,
+            thoughts_token_count=50,
+        ),
+    )
+
+
+def test_decode_stream_keeps_finish_reason_and_usage_without_content() -> None:
+    """A final chunk with no content parts must still report finish reason and usage."""
+    chunks = list(
+        decode_stream(iter([_contentless_final_chunk()]), include_thoughts=True)
+    )
+    finish = [c for c in chunks if isinstance(c, FinishReasonChunk)]
+    usage = [c for c in chunks if isinstance(c, UsageDeltaChunk)]
+    assert [c.finish_reason for c in finish] == [llm.FinishReason.MAX_TOKENS]
+    assert len(usage) == 1
+    assert usage[0].input_tokens == 100
+    assert usage[0].output_tokens == 50
+
+
+@pytest.mark.asyncio
+async def test_decode_async_stream_keeps_finish_reason_and_usage_without_content() -> (
+    None
+):
+    """Async variant: a final chunk with no content parts keeps finish reason and usage."""
+
+    async def async_chunks() -> AsyncIterator[genai_types.GenerateContentResponse]:
+        yield _contentless_final_chunk()
+
+    chunks = [
+        c async for c in decode_async_stream(async_chunks(), include_thoughts=True)
+    ]
+    assert [c.finish_reason for c in chunks if isinstance(c, FinishReasonChunk)] == [
+        llm.FinishReason.MAX_TOKENS
+    ]
+    assert len([c for c in chunks if isinstance(c, UsageDeltaChunk)]) == 1
 
 
 @pytest.mark.asyncio
