@@ -860,9 +860,11 @@ function decodeStopReason(
 
 export function decodeUsage(usage: AnthropicMessage["usage"]): Usage {
   return createUsage({
-    inputTokens: usage.input_tokens,
+    inputTokens:
+      usage.input_tokens +
+      (usage.cache_read_input_tokens ?? 0) +
+      (usage.cache_creation_input_tokens ?? 0),
     outputTokens: usage.output_tokens,
-    /* v8 ignore next 2 - cache tokens only present with caching enabled, will add tests later */
     cacheReadTokens: usage.cache_read_input_tokens ?? 0,
     cacheWriteTokens: usage.cache_creation_input_tokens ?? 0,
     raw: usage,

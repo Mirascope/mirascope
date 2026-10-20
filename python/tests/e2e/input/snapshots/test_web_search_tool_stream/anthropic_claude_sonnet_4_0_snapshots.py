@@ -214,7 +214,7 @@ Both cryptocurrencies showed some strength entering 2026, with Bitcoin experienc
             "format": None,
             "tools": [{"name": "web_search"}],
             "usage": {
-                "input_tokens": 17,
+                "input_tokens": 39517,
                 "output_tokens": 515,
                 "cache_read_tokens": 16242,
                 "cache_write_tokens": 23258,
@@ -223,7 +223,7 @@ Both cryptocurrencies showed some strength entering 2026, with Bitcoin experienc
                     ProviderToolUsage(name="web_search", call_count=2)
                 ],
                 "raw": "None",
-                "total_tokens": 532,
+                "total_tokens": 40032,
             },
             "n_chunks": 148,
         }

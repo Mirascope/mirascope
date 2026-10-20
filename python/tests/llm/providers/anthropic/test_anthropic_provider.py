@@ -220,7 +220,8 @@ def test_param_processing_thinking_by_level() -> None:
 
 def test_decode_stream_usage_includes_cache_tokens() -> None:
     """Streamed input_tokens include cache tokens, matching decode_response."""
-    processor = decode._AnthropicChunkProcessor(include_thoughts=False)  # pyright: ignore[reportPrivateUsage]
+    stream_manager = MagicMock()
+    stream = stream_manager.__enter__.return_value
     event = anthropic_types.RawMessageDeltaEvent(
         type="message_delta",
         delta=anthropic_types.raw_message_delta_event.Delta(stop_reason="end_turn"),
@@ -232,9 +233,10 @@ def test_decode_stream_usage_includes_cache_tokens() -> None:
         ),
     )
 
+    stream._raw_stream = iter([event])
     usage_chunks = [
         chunk
-        for chunk in processor.process_event(event)
+        for chunk in decode.decode_stream(stream_manager, include_thoughts=False)
         if isinstance(chunk, llm.UsageDeltaChunk)
     ]
 

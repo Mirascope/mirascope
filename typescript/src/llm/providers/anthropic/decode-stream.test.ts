@@ -104,7 +104,7 @@ describe.each(decoders)("$name stream usage decoding", ({ decode }) => {
     ]);
 
     expect(sumUsage(chunks)).toEqual({
-      inputTokens: 2292,
+      inputTokens: 14324,
       outputTokens: 150,
       cacheReadTokens: 0,
       cacheWriteTokens: 12032,
@@ -128,7 +128,7 @@ describe.each(decoders)("$name stream usage decoding", ({ decode }) => {
     ]);
 
     expect(sumUsage(chunks)).toEqual({
-      inputTokens: 10,
+      inputTokens: 50,
       outputTokens: 12,
       cacheReadTokens: 40,
       cacheWriteTokens: 0,
@@ -151,6 +151,36 @@ describe.each(decoders)("$name stream usage decoding", ({ decode }) => {
       outputTokens: 12,
       cacheReadTokens: 0,
       cacheWriteTokens: 0,
+    });
+  });
+
+  it("counts each cumulative usage update only once", () => {
+    const chunks = decode([
+      messageStart({
+        input_tokens: 10,
+        output_tokens: 1,
+        cache_creation_input_tokens: 5,
+        cache_read_input_tokens: 0,
+      }),
+      messageDelta({
+        input_tokens: 12,
+        output_tokens: 4,
+        cache_creation_input_tokens: 9,
+        cache_read_input_tokens: 3,
+      }),
+      messageDelta({
+        input_tokens: 13,
+        output_tokens: 8,
+        cache_creation_input_tokens: 10,
+        cache_read_input_tokens: 7,
+      }),
+    ]);
+
+    expect(sumUsage(chunks)).toEqual({
+      inputTokens: 30,
+      outputTokens: 8,
+      cacheReadTokens: 7,
+      cacheWriteTokens: 10,
     });
   });
 });

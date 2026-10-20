@@ -394,7 +394,8 @@ async def test_beta_async_call_rate_limit_error() -> None:
 
 def test_beta_decode_stream_usage_includes_cache_tokens() -> None:
     """Streamed input_tokens include cache tokens, matching beta_decode_response."""
-    processor = beta_decode._BetaChunkProcessor(include_thoughts=False)  # pyright: ignore[reportPrivateUsage]
+    stream_manager = MagicMock()
+    stream = stream_manager.__enter__.return_value
     event = BetaRawMessageDeltaEvent(
         type="message_delta",
         delta=Delta(stop_reason="end_turn"),
@@ -406,9 +407,12 @@ def test_beta_decode_stream_usage_includes_cache_tokens() -> None:
         ),
     )
 
+    stream._raw_stream = iter([event])
     usage_chunks = [
         chunk
-        for chunk in processor.process_event(event)
+        for chunk in beta_decode.beta_decode_stream(
+            stream_manager, include_thoughts=False
+        )
         if isinstance(chunk, llm.UsageDeltaChunk)
     ]
 

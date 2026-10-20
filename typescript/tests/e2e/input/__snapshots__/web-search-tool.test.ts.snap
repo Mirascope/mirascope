@@ -349,11 +349,11 @@ exports[`WebSearchTool > [anthropic] performs web search and returns results 1`]
     "usage": {
       "cacheReadTokens": 12016,
       "cacheWriteTokens": 20718,
-      "inputTokens": 10,
+      "inputTokens": 32744,
       "outputTokens": 188,
       "raw": "[object Object]",
       "reasoningTokens": 0,
-      "totalTokens": 198,
+      "totalTokens": 32932,
     },
   },
 }
@@ -474,11 +474,11 @@ exports[`WebSearchTool > [anthropic] streams with web search tool 1`] = `
     "usage": {
       "cacheReadTokens": 0,
       "cacheWriteTokens": 12032,
-      "inputTokens": 2292,
+      "inputTokens": 14324,
       "outputTokens": 150,
       "raw": "null",
       "reasoningTokens": 0,
-      "totalTokens": 2442,
+      "totalTokens": 14474,
     },
   },
 }

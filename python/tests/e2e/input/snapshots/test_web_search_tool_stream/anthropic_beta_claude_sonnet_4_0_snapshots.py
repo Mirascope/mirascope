@@ -305,7 +305,7 @@ The price movement coincided with \
             "format": None,
             "tools": [{"name": "web_search"}],
             "usage": {
-                "input_tokens": 17,
+                "input_tokens": 40573,
                 "output_tokens": 594,
                 "cache_read_tokens": 16392,
                 "cache_write_tokens": 24164,
@@ -314,7 +314,7 @@ The price movement coincided with \
                     ProviderToolUsage(name="web_search", call_count=2)
                 ],
                 "raw": "None",
-                "total_tokens": 611,
+                "total_tokens": 41167,
             },
             "n_chunks": 184,
         }

@@ -241,7 +241,7 @@ describe("betaDecodeResponse", () => {
       );
 
       expect(usage).not.toBeNull();
-      expect(usage!.inputTokens).toBe(100);
+      expect(usage!.inputTokens).toBe(130);
       expect(usage!.outputTokens).toBe(50);
       expect(usage!.cacheReadTokens).toBe(20);
       expect(usage!.cacheWriteTokens).toBe(10);

@@ -70,8 +70,8 @@ interface DecodeState {
   accumulatedToolJson: string;
   /** All accumulated blocks for raw message */
   accumulatedBlocks: AccumulatedBlock[];
-  /** Usage reported by message_start, which message_delta's usage includes */
-  startUsage: {
+  /** Most recently reported cumulative usage */
+  previousUsage: {
     inputTokens: number;
     outputTokens: number;
     cacheReadTokens: number;
@@ -90,7 +90,7 @@ export function createBetaDecodeState(includeThoughts: boolean): DecodeState {
     currentBlock: null,
     accumulatedToolJson: "",
     accumulatedBlocks: [],
-    startUsage: {
+    previousUsage: {
       inputTokens: 0,
       outputTokens: 0,
       cacheReadTokens: 0,
@@ -119,14 +119,22 @@ export function decodeBetaStreamEvent(
     case "message_start":
       // Emit initial usage if available
       if (event.message.usage) {
-        state.startUsage = {
+        state.previousUsage = {
           inputTokens: event.message.usage.input_tokens,
           outputTokens: event.message.usage.output_tokens,
           cacheReadTokens: event.message.usage.cache_read_input_tokens ?? 0,
           cacheWriteTokens:
             event.message.usage.cache_creation_input_tokens ?? 0,
         };
-        chunks.push(usageDeltaChunk(state.startUsage));
+        chunks.push(
+          usageDeltaChunk({
+            ...state.previousUsage,
+            inputTokens:
+              state.previousUsage.inputTokens +
+              state.previousUsage.cacheReadTokens +
+              state.previousUsage.cacheWriteTokens,
+          }),
+        );
       }
       break;
 
@@ -238,23 +246,31 @@ export function decodeBetaStreamEvent(
           chunks.push(finishReasonChunk(finishReason));
         }
       }
-      // message_delta usage is cumulative and includes message_start's counts.
-      // With server tools its input and cache counts grow past them, so emit
-      // only the growth. Counts the delta omits stay at message_start's values.
+      // message_delta usage is cumulative, so emit only growth since the
+      // preceding usage event and retain fields omitted from this event.
       if (event.usage) {
-        const start = state.startUsage;
+        const previous = state.previousUsage;
+        const current = {
+          inputTokens: event.usage.input_tokens ?? previous.inputTokens,
+          outputTokens: event.usage.output_tokens,
+          cacheReadTokens:
+            event.usage.cache_read_input_tokens ?? previous.cacheReadTokens,
+          cacheWriteTokens:
+            event.usage.cache_creation_input_tokens ??
+            previous.cacheWriteTokens,
+        };
+        state.previousUsage = current;
         chunks.push(
           usageDeltaChunk({
             inputTokens:
-              (event.usage.input_tokens ?? start.inputTokens) -
-              start.inputTokens,
-            outputTokens: event.usage.output_tokens - start.outputTokens,
-            cacheReadTokens:
-              (event.usage.cache_read_input_tokens ?? start.cacheReadTokens) -
-              start.cacheReadTokens,
+              current.inputTokens -
+              previous.inputTokens +
+              (current.cacheReadTokens - previous.cacheReadTokens) +
+              (current.cacheWriteTokens - previous.cacheWriteTokens),
+            outputTokens: current.outputTokens - previous.outputTokens,
+            cacheReadTokens: current.cacheReadTokens - previous.cacheReadTokens,
             cacheWriteTokens:
-              (event.usage.cache_creation_input_tokens ??
-                start.cacheWriteTokens) - start.cacheWriteTokens,
+              current.cacheWriteTokens - previous.cacheWriteTokens,
           }),
         );
       }
