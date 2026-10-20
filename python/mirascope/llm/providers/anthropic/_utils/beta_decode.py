@@ -257,11 +257,15 @@ class _BetaChunkProcessor:
 
             # Emit usage delta
             usage = event.usage
+            cache_read_tokens = usage.cache_read_input_tokens or 0
+            cache_write_tokens = usage.cache_creation_input_tokens or 0
             yield UsageDeltaChunk(
-                input_tokens=usage.input_tokens or 0,
+                input_tokens=(usage.input_tokens or 0)
+                + cache_read_tokens
+                + cache_write_tokens,
                 output_tokens=usage.output_tokens,
-                cache_read_tokens=usage.cache_read_input_tokens or 0,
-                cache_write_tokens=usage.cache_creation_input_tokens or 0,
+                cache_read_tokens=cache_read_tokens,
+                cache_write_tokens=cache_write_tokens,
                 reasoning_tokens=0,
                 provider_tool_usage=extract_tool_usage(usage),
             )

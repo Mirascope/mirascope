@@ -8,10 +8,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from anthropic import RateLimitError as AnthropicRateLimitError
+from anthropic.types.beta import BetaMessageDeltaUsage, BetaRawMessageDeltaEvent
+from anthropic.types.beta.beta_raw_message_delta_event import Delta
 from pydantic import BaseModel, Field
 
 from mirascope import llm
-from mirascope.llm.providers.anthropic._utils import beta_encode
+from mirascope.llm.providers.anthropic._utils import beta_decode, beta_encode
 from mirascope.llm.providers.anthropic.beta_provider import AnthropicBetaProvider
 
 
@@ -388,3 +390,29 @@ async def test_beta_async_call_rate_limit_error() -> None:
         assert isinstance(exc_info.value, llm.RateLimitError)
         assert "Rate limit exceeded" in str(exc_info.value)
         assert isinstance(exc_info.value.__cause__, AnthropicRateLimitError)
+
+
+def test_beta_decode_stream_usage_includes_cache_tokens() -> None:
+    """Streamed input_tokens include cache tokens, matching beta_decode_response."""
+    processor = beta_decode._BetaChunkProcessor(include_thoughts=False)  # pyright: ignore[reportPrivateUsage]
+    event = BetaRawMessageDeltaEvent(
+        type="message_delta",
+        delta=Delta(stop_reason="end_turn"),
+        usage=BetaMessageDeltaUsage(
+            input_tokens=10,
+            cache_read_input_tokens=200,
+            cache_creation_input_tokens=30,
+            output_tokens=5,
+        ),
+    )
+
+    usage_chunks = [
+        chunk
+        for chunk in processor.process_event(event)
+        if isinstance(chunk, llm.UsageDeltaChunk)
+    ]
+
+    assert len(usage_chunks) == 1
+    assert usage_chunks[0].input_tokens == 240
+    assert usage_chunks[0].cache_read_tokens == 200
+    assert usage_chunks[0].cache_write_tokens == 30

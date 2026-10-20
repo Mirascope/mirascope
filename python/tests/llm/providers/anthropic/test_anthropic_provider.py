@@ -6,11 +6,12 @@ from unittest.mock import MagicMock, patch
 import pytest
 from anthropic import (
     RateLimitError as AnthropicRateLimitError,
+    types as anthropic_types,
 )
 from inline_snapshot import snapshot
 
 from mirascope import llm
-from mirascope.llm.providers.anthropic._utils import process_params
+from mirascope.llm.providers.anthropic._utils import decode, process_params
 from mirascope.llm.providers.anthropic.provider import AnthropicProvider
 
 
@@ -215,3 +216,29 @@ def test_param_processing_thinking_by_level() -> None:
             },
         }
     )
+
+
+def test_decode_stream_usage_includes_cache_tokens() -> None:
+    """Streamed input_tokens include cache tokens, matching decode_response."""
+    processor = decode._AnthropicChunkProcessor(include_thoughts=False)  # pyright: ignore[reportPrivateUsage]
+    event = anthropic_types.RawMessageDeltaEvent(
+        type="message_delta",
+        delta=anthropic_types.raw_message_delta_event.Delta(stop_reason="end_turn"),
+        usage=anthropic_types.MessageDeltaUsage(
+            input_tokens=10,
+            cache_read_input_tokens=200,
+            cache_creation_input_tokens=30,
+            output_tokens=5,
+        ),
+    )
+
+    usage_chunks = [
+        chunk
+        for chunk in processor.process_event(event)
+        if isinstance(chunk, llm.UsageDeltaChunk)
+    ]
+
+    assert len(usage_chunks) == 1
+    assert usage_chunks[0].input_tokens == 240
+    assert usage_chunks[0].cache_read_tokens == 200
+    assert usage_chunks[0].cache_write_tokens == 30
