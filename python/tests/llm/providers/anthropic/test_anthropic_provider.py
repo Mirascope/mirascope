@@ -6,11 +6,12 @@ from unittest.mock import MagicMock, patch
 import pytest
 from anthropic import (
     RateLimitError as AnthropicRateLimitError,
+    types as anthropic_types,
 )
 from inline_snapshot import snapshot
 
 from mirascope import llm
-from mirascope.llm.providers.anthropic._utils import process_params
+from mirascope.llm.providers.anthropic._utils import decode, process_params
 from mirascope.llm.providers.anthropic.provider import AnthropicProvider
 
 
@@ -215,3 +216,75 @@ def test_param_processing_thinking_by_level() -> None:
             },
         }
     )
+
+
+def test_decode_stream_usage_includes_cache_tokens() -> None:
+    """Streamed input_tokens include cache tokens, matching decode_response."""
+    stream_manager = MagicMock()
+    stream = stream_manager.__enter__.return_value
+    event = anthropic_types.RawMessageDeltaEvent(
+        type="message_delta",
+        delta=anthropic_types.raw_message_delta_event.Delta(stop_reason="end_turn"),
+        usage=anthropic_types.MessageDeltaUsage(
+            input_tokens=10,
+            cache_read_input_tokens=200,
+            cache_creation_input_tokens=30,
+            output_tokens=5,
+        ),
+    )
+
+    stream._raw_stream = iter([event])
+    usage_chunks = [
+        chunk
+        for chunk in decode.decode_stream(stream_manager, include_thoughts=False)
+        if isinstance(chunk, llm.UsageDeltaChunk)
+    ]
+
+    assert len(usage_chunks) == 1
+    assert usage_chunks[0].input_tokens == 240
+    assert usage_chunks[0].cache_read_tokens == 200
+    assert usage_chunks[0].cache_write_tokens == 30
+
+
+def test_decode_stream_usage_keeps_omitted_start_counts() -> None:
+    """Cumulative deltas retain omitted fields and count each update once."""
+    stream_manager = MagicMock()
+    start = MagicMock()
+    start.type = "message_start"
+    start.message.usage.input_tokens = 10
+    start.message.usage.output_tokens = 1
+    start.message.usage.cache_read_input_tokens = 40
+    start.message.usage.cache_creation_input_tokens = 5
+    deltas = [
+        anthropic_types.RawMessageDeltaEvent(
+            type="message_delta",
+            delta=anthropic_types.raw_message_delta_event.Delta(stop_reason="end_turn"),
+            usage=anthropic_types.MessageDeltaUsage(
+                input_tokens=None,
+                cache_read_input_tokens=None,
+                cache_creation_input_tokens=None,
+                output_tokens=12,
+            ),
+        ),
+        anthropic_types.RawMessageDeltaEvent(
+            type="message_delta",
+            delta=anthropic_types.raw_message_delta_event.Delta(stop_reason="end_turn"),
+            usage=anthropic_types.MessageDeltaUsage(
+                input_tokens=12,
+                cache_read_input_tokens=45,
+                cache_creation_input_tokens=6,
+                output_tokens=15,
+            ),
+        ),
+    ]
+    stream_manager.__enter__.return_value._raw_stream = iter([start, *deltas])
+
+    usage_chunks = [
+        chunk
+        for chunk in decode.decode_stream(stream_manager, include_thoughts=False)
+        if isinstance(chunk, llm.UsageDeltaChunk)
+    ]
+    assert sum(chunk.input_tokens for chunk in usage_chunks) == 63
+    assert sum(chunk.output_tokens for chunk in usage_chunks) == 15
+    assert sum(chunk.cache_read_tokens for chunk in usage_chunks) == 45
+    assert sum(chunk.cache_write_tokens for chunk in usage_chunks) == 6

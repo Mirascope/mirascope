@@ -24,9 +24,24 @@ import { defineTool } from "@/llm/tools";
 import {
   buildRequestParams,
   computeThinkingBudget,
+  decodeUsage,
   decodeResponse,
   encodeMessages,
 } from "./_utils";
+
+describe("decodeUsage", () => {
+  it("includes cached tokens in total input usage", () => {
+    const usage = decodeUsage({
+      input_tokens: 10,
+      output_tokens: 5,
+      cache_read_input_tokens: 200,
+      cache_creation_input_tokens: 30,
+    } as AnthropicMessage["usage"]);
+    expect(usage.inputTokens).toBe(240);
+    expect(usage.cacheReadTokens).toBe(200);
+    expect(usage.cacheWriteTokens).toBe(30);
+  });
+});
 
 describe("computeThinkingBudget", () => {
   it("returns 0 for none level (disabled)", () => {

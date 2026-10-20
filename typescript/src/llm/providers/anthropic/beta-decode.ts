@@ -158,7 +158,10 @@ function betaDecodeStopReason(
  */
 function betaDecodeUsage(usage: BetaUsage): Usage {
   return createUsage({
-    inputTokens: usage.input_tokens,
+    inputTokens:
+      usage.input_tokens +
+      (usage.cache_read_input_tokens ?? 0) +
+      (usage.cache_creation_input_tokens ?? 0),
     outputTokens: usage.output_tokens,
     cacheReadTokens: usage.cache_read_input_tokens ?? 0,
     cacheWriteTokens: usage.cache_creation_input_tokens ?? 0,

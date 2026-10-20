@@ -160,6 +160,7 @@ class _AnthropicChunkProcessor:
         self.accumulated_tool_json: str = ""
         self.accumulated_blocks: list[ContentBlock] = []
         self.include_thoughts = include_thoughts
+        self.previous_usage = (0, 0, 0, 0)
 
     def process_event(
         self, event: anthropic_types.RawMessageStreamEvent
@@ -167,7 +168,23 @@ class _AnthropicChunkProcessor:
         """Process a single Anthropic event and yield the appropriate content chunks."""
         yield RawStreamEventChunk(raw_stream_event=event)
 
-        if event.type == "content_block_start":
+        if event.type == "message_start":
+            usage = event.message.usage
+            current = (
+                usage.input_tokens,
+                usage.output_tokens,
+                usage.cache_read_input_tokens or 0,
+                usage.cache_creation_input_tokens or 0,
+            )
+            self.previous_usage = current
+            yield UsageDeltaChunk(
+                input_tokens=current[0] + current[2] + current[3],
+                output_tokens=current[1],
+                cache_read_tokens=current[2],
+                cache_write_tokens=current[3],
+            )
+
+        elif event.type == "content_block_start":
             content_block = event.content_block
 
             if content_block.type == "text":
@@ -284,13 +301,35 @@ class _AnthropicChunkProcessor:
                 if finish_reason is not None:
                     yield FinishReasonChunk(finish_reason=finish_reason)
 
-            # Emit usage delta
+            # Anthropic reports cumulative usage. Fields omitted from the final
+            # event retain their value from the preceding usage event.
             usage = event.usage
+            previous = self.previous_usage
+            current = (
+                usage.input_tokens if usage.input_tokens is not None else previous[0],
+                usage.output_tokens,
+                (
+                    usage.cache_read_input_tokens
+                    if usage.cache_read_input_tokens is not None
+                    else previous[2]
+                ),
+                (
+                    usage.cache_creation_input_tokens
+                    if usage.cache_creation_input_tokens is not None
+                    else previous[3]
+                ),
+            )
+            self.previous_usage = current
+            cache_read_tokens = current[2] - previous[2]
+            cache_write_tokens = current[3] - previous[3]
             yield UsageDeltaChunk(
-                input_tokens=usage.input_tokens or 0,
-                output_tokens=usage.output_tokens,
-                cache_read_tokens=usage.cache_read_input_tokens or 0,
-                cache_write_tokens=usage.cache_creation_input_tokens or 0,
+                input_tokens=current[0]
+                - previous[0]
+                + cache_read_tokens
+                + cache_write_tokens,
+                output_tokens=current[1] - previous[1],
+                cache_read_tokens=cache_read_tokens,
+                cache_write_tokens=cache_write_tokens,
                 reasoning_tokens=0,
                 provider_tool_usage=extract_tool_usage(usage),
             )
