@@ -1,8 +1,8 @@
 interactions:
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Choose a lucky
-      number between 1 and 10"}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","description":"Wrapper
-      for primitive type int","title":"intOutput","properties":{"output":{"type":"integer","title":"Output"}},"additionalProperties":false,"required":["output"]},"type":"json_schema"},"stream":true}'
+      number between 1 and 10"}],"model":"claude-sonnet-4-5","output_config":{"format":{"schema":{"type":"object","description":"Wrapper
+      for primitive type int","title":"intOutput","properties":{"output":{"type":"integer","title":"Output"}},"additionalProperties":false,"required":["output"]},"type":"json_schema"}},"stream":true}'
     headers:
       Accept:
       - application/json
@@ -159,8 +159,8 @@ interactions:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Choose a lucky
       number between 1 and 10"},{"role":"assistant","content":[{"type":"text","text":"{\"output\":
       7}"}]},{"role":"user","content":[{"type":"text","text":"Ok, now choose a different
-      lucky number","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","description":"Wrapper
-      for primitive type int","title":"intOutput","properties":{"output":{"type":"integer","title":"Output"}},"additionalProperties":false,"required":["output"]},"type":"json_schema"},"stream":true}'
+      lucky number","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-5","output_config":{"format":{"schema":{"type":"object","description":"Wrapper
+      for primitive type int","title":"intOutput","properties":{"output":{"type":"integer","title":"Output"}},"additionalProperties":false,"required":["output"]},"type":"json_schema"}},"stream":true}'
     headers:
       Accept:
       - application/json

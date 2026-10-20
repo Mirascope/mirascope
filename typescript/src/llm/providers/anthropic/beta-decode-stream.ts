@@ -9,7 +9,10 @@
 
 /* v8 ignore start - beta SSE paths require live recordings; tool decoding has a focused test */
 
-import type { BetaRawMessageStreamEvent } from "@anthropic-ai/sdk/resources/beta/messages/messages";
+import type {
+  BetaRawMessageStreamEvent,
+  BetaStopReason,
+} from "@anthropic-ai/sdk/resources/beta/messages/messages";
 
 import type { StreamResponseChunk } from "@/llm/responses/chunks";
 import type { Jsonable } from "@/llm/types/jsonable";
@@ -269,15 +272,7 @@ export function decodeBetaStreamEvent(
  * Convert Anthropic Beta stop reason to Mirascope FinishReason.
  */
 function decodeBetaStopReason(
-  stopReason:
-    | "end_turn"
-    | "max_tokens"
-    | "stop_sequence"
-    | "tool_use"
-    | "refusal"
-    | "pause_turn"
-    | "model_context_window_exceeded"
-    | null,
+  stopReason: BetaStopReason | null,
 ): FinishReason | null {
   switch (stopReason) {
     case "max_tokens":

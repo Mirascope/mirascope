@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import contextlib
 import logging
+import re
 from collections.abc import Generator
 from typing import Any, TypeAlias
 
@@ -48,7 +49,15 @@ def usage_snapshot(usage: llm.Usage | None) -> dict[str, int | None] | None:
         return None
     dict_copy = usage.__dict__.copy()
     dict_copy["total_tokens"] = usage.total_tokens
-    dict_copy["raw"] = str(usage.raw)  # Useful for sanity checking snapshots
+    # Anthropic SDK updates added optional fields and changed their repr order.
+    # Normalize those details so recorded API values remain comparable.
+    raw_repr = str(usage.raw).replace("iterations=None, ", "")
+    inference_geo = re.search(r", inference_geo=([^,)]+)", raw_repr)
+    if inference_geo:
+        raw_repr = raw_repr.replace(inference_geo.group(0), "", 1)
+        if inference_geo.group(1) != "None":
+            raw_repr = f"{raw_repr[:-1]}{inference_geo.group(0)})"
+    dict_copy["raw"] = raw_repr
     return dict_copy
 
 

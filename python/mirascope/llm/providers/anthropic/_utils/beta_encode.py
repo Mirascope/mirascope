@@ -10,6 +10,7 @@ from anthropic.types.beta import (
     BetaCacheControlEphemeralParam,
     BetaContentBlockParam,
     BetaMessageParam,
+    BetaOutputConfigParam,
     BetaTextBlockParam,
     BetaThinkingConfigParam,
     BetaToolChoiceParam,
@@ -62,6 +63,7 @@ class BetaParseKwargs(TypedDict, total=False):
     top_k: int | Omit
     stop_sequences: list[str] | Omit
     thinking: BetaThinkingConfigParam | Omit
+    output_config: BetaOutputConfigParam | Omit
     betas: list[AnthropicBetaParam]
     output_format: type[BaseModel]
 
@@ -238,7 +240,7 @@ def beta_encode_request(
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, BetaParseKwargs]:
     """Prepares a request for the Anthropic beta.messages.parse method."""
 
-    processed = process_params(params, DEFAULT_MAX_TOKENS)
+    processed = process_params(params, DEFAULT_MAX_TOKENS, model_name(model_id))
     encode_thoughts_as_text = processed.pop("encode_thoughts_as_text", False)
     max_tokens = processed.pop("max_tokens", DEFAULT_MAX_TOKENS)
 

@@ -157,6 +157,21 @@ const THINKING_LEVEL_TO_BUDGET_MULTIPLIER: Record<
   max: 0.8,
 };
 
+const ADAPTIVE_THINKING_ONLY_MODEL =
+  /^claude-[a-z]+-(?:4-[7-9]|[5-9]|[1-9]\d)(?:-|$)/;
+const ALWAYS_ON_THINKING_MODEL =
+  /^claude-(?:opus-5-5|sonnet-5-5|(?:fable|mythos)-5(?:-|$))/;
+const THINKING_LEVEL_TO_EFFORT: Record<
+  Exclude<ThinkingLevel, "none" | "default">,
+  "low" | "medium" | "high" | "max"
+> = {
+  minimal: "low",
+  low: "low",
+  medium: "medium",
+  high: "high",
+  max: "max",
+};
+
 /**
  * Compute Anthropic token budget from ThinkingConfig level.
  *
@@ -679,8 +694,28 @@ export function buildRequestParams(
 
     if (thinkingConfig) {
       const budget = computeThinkingBudget(thinkingConfig.level, maxTokens);
+      const providerModelName = modelName(modelId);
       if (budget === 0) {
+        if (ALWAYS_ON_THINKING_MODEL.test(providerModelName)) {
+          throw new FeatureNotSupportedError(
+            "thinking level 'none'",
+            "anthropic",
+            modelId,
+            `${providerModelName} cannot disable thinking. Use thinking level 'low' to minimize it.`,
+          );
+        }
         requestParams.thinking = { type: "disabled" };
+      } else if (
+        budget > 0 &&
+        ADAPTIVE_THINKING_ONLY_MODEL.test(providerModelName)
+      ) {
+        requestParams.thinking = { type: "adaptive" };
+        requestParams.output_config = {
+          effort:
+            THINKING_LEVEL_TO_EFFORT[
+              thinkingConfig.level as Exclude<ThinkingLevel, "none" | "default">
+            ],
+        };
       } else if (budget > 0) {
         requestParams.thinking = { type: "enabled", budget_tokens: budget };
       }
