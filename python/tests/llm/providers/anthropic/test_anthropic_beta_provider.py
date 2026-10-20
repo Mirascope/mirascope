@@ -1,13 +1,252 @@
 """Tests for llm.providers.AnthropicProvider with beta features."""
 
-from typing import NoReturn
+import json
+import re
+from enum import Enum
+from typing import Annotated, Any, Literal, NoReturn, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
 from anthropic import RateLimitError as AnthropicRateLimitError
+from pydantic import BaseModel, Field
 
 from mirascope import llm
+from mirascope.llm.providers.anthropic._utils import beta_encode
 from mirascope.llm.providers.anthropic.beta_provider import AnthropicBetaProvider
+
+
+@pytest.mark.parametrize("strict", [None, True, False])
+def test_annotated_constraints_in_strict_tools(strict: bool | None) -> None:
+    """Strict requests use Anthropic's supported schema without losing local constraints."""
+
+    class Details(BaseModel):
+        code: Annotated[str, Field(min_length=2, max_length=5)]
+
+    @llm.tool(strict=strict)
+    def constrained_tool(
+        count: Annotated[int, Field(ge=1, le=5)], details: Details
+    ) -> int:
+        return count
+
+    original = constrained_tool.parameters.model_dump(by_alias=True, exclude_none=True)
+    _, _, kwargs = beta_encode.beta_encode_request(
+        model_id="anthropic-beta/claude-sonnet-4-5",
+        messages=[llm.messages.user("Use the tool")],
+        tools=llm.tools.Toolkit([constrained_tool]),
+        format=None,
+        params={},
+    )
+    tools = kwargs.get("tools")
+    assert isinstance(tools, list)
+    encoded = cast(dict[str, Any], tools[0])
+    schema = encoded["input_schema"]
+    count = schema["properties"]["count"]
+    code = schema["$defs"]["Details"]["properties"]["code"]
+    if strict is False:
+        assert count["minimum"] == 1 and count["maximum"] == 5
+        assert code["minLength"] == 2 and code["maxLength"] == 5
+    else:
+        assert "minimum" not in count and "maximum" not in count
+        assert "minimum" in count["description"] and "maximum" in count["description"]
+        assert "minLength" not in code and "maxLength" not in code
+        assert "minLength" in code["description"] and "maxLength" in code["description"]
+    assert (
+        constrained_tool.parameters.model_dump(by_alias=True, exclude_none=True)
+        == original
+    )
+
+
+def test_strict_tool_keeps_enum_and_const() -> None:
+    class Color(str, Enum):
+        RED = "red"
+        BLUE = "blue"
+
+    @llm.tool
+    def choices(
+        mode: Literal["fast", "slow"], exact: Literal["x"], color: Color
+    ) -> str:
+        return mode
+
+    _, _, kwargs = beta_encode.beta_encode_request(
+        model_id="anthropic-beta/claude-sonnet-4-5",
+        messages=[llm.messages.user("Use the tool")],
+        tools=llm.tools.Toolkit([choices]),
+        format=None,
+        params={},
+    )
+    tools = kwargs.get("tools")
+    assert isinstance(tools, list)
+    schema = cast(dict[str, Any], tools[0])["input_schema"]
+    assert schema["properties"]["mode"]["enum"] == ["fast", "slow"]
+    assert schema["properties"]["exact"]["const"] == "x"
+    assert schema["$defs"]["Color"]["enum"] == ["red", "blue"]
+
+
+@pytest.mark.parametrize("annotated", [True, False])
+def test_strict_tool_keeps_unconstrained_parameters(annotated: bool) -> None:
+    def unconstrained(value: Any) -> str:  # noqa: ANN401 - exercise Any tool parameters
+        return str(value)
+
+    if not annotated:
+        unconstrained.__annotations__ = {}
+    tool = llm.tool(unconstrained)
+    _, _, kwargs = beta_encode.beta_encode_request(
+        model_id="anthropic-beta/claude-sonnet-4-5",
+        messages=[llm.messages.user("Use the tool")],
+        tools=llm.tools.Toolkit([tool]),
+        format=None,
+        params={},
+    )
+    tools = kwargs.get("tools")
+    assert isinstance(tools, list)
+    schema = cast(dict[str, Any], tools[0])["input_schema"]
+    assert schema["properties"]["value"] == {"title": "Value"}
+
+
+@pytest.mark.parametrize("minimum", [0, 1, 2])
+def test_strict_tool_adapts_nested_array_constraints(minimum: int) -> None:
+    @llm.tool
+    def entries(
+        values: Annotated[
+            list[Annotated[int, Field(gt=0, multiple_of=2)]],
+            Field(min_length=minimum, max_length=5),
+        ],
+    ) -> int:
+        return len(values)
+
+    _, _, kwargs = beta_encode.beta_encode_request(
+        model_id="anthropic-beta/claude-sonnet-4-5",
+        messages=[llm.messages.user("Use the tool")],
+        tools=llm.tools.Toolkit([entries]),
+        format=None,
+        params={},
+    )
+    tools = kwargs.get("tools")
+    assert isinstance(tools, list)
+    schema = cast(dict[str, Any], tools[0])["input_schema"]["properties"]["values"]
+    assert "maxItems" not in schema and "maxItems" in schema["description"]
+    if minimum <= 1:
+        assert schema["minItems"] == minimum
+    else:
+        assert "minItems" not in schema and "minItems" in schema["description"]
+    assert "exclusiveMinimum" not in schema["items"]
+    assert "multipleOf" not in schema["items"]
+    assert "exclusiveMinimum" in schema["items"]["description"]
+    assert "multipleOf" in schema["items"]["description"]
+
+
+def test_strict_tool_adapts_optional_constraints() -> None:
+    @llm.tool
+    def optional(values: list[Annotated[int, Field(gt=0)]] | None = None) -> int:
+        return len(values or [])
+
+    _, _, kwargs = beta_encode.beta_encode_request(
+        model_id="anthropic-beta/claude-sonnet-4-5",
+        messages=[llm.messages.user("Use the tool")],
+        tools=llm.tools.Toolkit([optional]),
+        format=None,
+        params={},
+    )
+    tools = kwargs.get("tools")
+    assert isinstance(tools, list)
+    schema = cast(dict[str, Any], tools[0])["input_schema"]["properties"]["values"]
+    assert schema["default"] is None
+    assert schema["anyOf"][1] == {"type": "null"}
+    items = schema["anyOf"][0]["items"]
+    assert "exclusiveMinimum" not in items
+    assert "exclusiveMinimum: 0" in items["description"]
+    output = optional.execute(
+        llm.ToolCall(id="invalid", name=optional.name, args='{"values": [0]}')
+    )
+    assert isinstance(output.error, llm.ToolExecutionError)
+
+
+@pytest.mark.parametrize("strict", [None, True, False])
+@pytest.mark.parametrize(
+    ("pattern", "valid", "invalid"),
+    [
+        (r"\bword\b", "a word!", "sword"),
+        (r"word\B", "words", "word"),
+        (r"\\\bword", "\\word", "\\sword"),
+        (re.compile(r"word(?=!)"), "word!", "word?"),
+        (re.compile(r"word(?!s)"), "word!", "words"),
+        (re.compile(r"(?<=!)word"), "!word", "?word"),
+        (re.compile(r"(?<!!)word"), "?word", "!word"),
+        (re.compile(r"(word)\1"), "wordword", "word"),
+        (re.compile(r"(?P<term>word)(?P=term)"), "wordword", "word"),
+        (r"^[a-z]+$", "word", "123"),
+        (r"^a{1,10000}$", "a", "b"),
+        (r"\\bword\\b", "\\bword\\b", "word"),
+        (r"[\\b]+", "bbb", "word"),
+        (r"[(?=)]+", "(?=)", "word"),
+        (re.compile(r"[\b]+"), "\b", "word"),
+        (re.compile(r"[]\b]+"), "]", "word"),
+        (re.compile(r"[^]\b]+"), "word", "]"),
+        (r"\(\?=word\)", "(?=word)", "word"),
+        (r"[^^]\bword", "a word", "^word"),
+        (re.compile(r"[^^](?=x)"), "ax", "^x"),
+        (re.compile(r"[^^](a)\1"), "xaa", "^aa"),
+        (r"[^^]+", "word", "^^"),
+    ],
+)
+def test_strict_tool_describes_patterns(
+    strict: bool | None,
+    pattern: str | re.Pattern[str],
+    valid: str,
+    invalid: str,
+) -> None:
+    class Details(BaseModel):
+        value: Annotated[str, Field(pattern=pattern, description="A matching value.")]
+
+    @llm.tool(strict=strict)
+    def matching(
+        value: Annotated[str, Field(pattern=pattern, description="A matching value.")],
+        details: Details,
+    ) -> str:
+        return value
+
+    original = matching.parameters.model_dump(by_alias=True, exclude_none=True)
+    _, _, kwargs = beta_encode.beta_encode_request(
+        model_id="anthropic-beta/claude-sonnet-4-5",
+        messages=[llm.messages.user("Use the tool")],
+        tools=llm.tools.Toolkit([matching]),
+        format=None,
+        params={},
+    )
+    tools = kwargs.get("tools")
+    assert isinstance(tools, list)
+    schema = cast(dict[str, Any], tools[0])["input_schema"]
+    expected_pattern = pattern if isinstance(pattern, str) else pattern.pattern
+    for field in (
+        schema["properties"]["value"],
+        schema["$defs"]["Details"]["properties"]["value"],
+    ):
+        if strict is False:
+            assert field["pattern"] == expected_pattern
+            assert field["description"] == "A matching value."
+        else:
+            assert "pattern" not in field
+            assert field["description"] == (
+                f"A matching value.\n\n{{pattern: {expected_pattern}}}"
+            )
+    assert matching.parameters.model_dump(by_alias=True, exclude_none=True) == original
+    args = {"value": valid, "details": {"value": valid}}
+    output = matching.execute(
+        llm.ToolCall(id="valid", name=matching.name, args=json.dumps(args))
+    )
+    assert output.error is None
+    assert output.result == valid
+    for invalid_args in (
+        {"value": invalid, "details": {"value": valid}},
+        {"value": valid, "details": {"value": invalid}},
+    ):
+        output = matching.execute(
+            llm.ToolCall(
+                id="invalid", name=matching.name, args=json.dumps(invalid_args)
+            )
+        )
+        assert isinstance(output.error, llm.ToolExecutionError)
+        assert "String should match pattern" in str(output.error)
 
 
 def test_beta_stream_rate_limit_error() -> None:

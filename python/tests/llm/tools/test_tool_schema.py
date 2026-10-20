@@ -5,6 +5,7 @@ from typing import Annotated
 import pytest
 from inline_snapshot import snapshot
 from pydantic import BaseModel, Field, PydanticSchemaGenerationError
+from pydantic.fields import FieldInfo
 
 from mirascope import llm
 
@@ -259,6 +260,133 @@ def test_field_annotation_overrides_docstring() -> None:
     )
 
     assert schema.parameters.properties["param"]["description"] == "Field description"
+
+
+def test_annotated_field_constraints_are_preserved() -> None:
+    """Test that Annotated Field constraints and metadata reach the tool schema."""
+
+    def constrained_tool(
+        count: Annotated[int, Field(ge=1, le=5, description="How many")],
+        code: Annotated[str, Field(max_length=3, title="Short Code")] = "abc",
+        tag: Annotated[str, Field(pattern="^t", examples=["tx"])] = "t1",
+    ) -> str:
+        """A tool with constrained parameters.
+
+        Args:
+            count: Docstring description that should be ignored
+        """
+        raise NotImplementedError
+
+    schema = llm.tools.ToolSchema.from_function(constrained_tool)
+
+    assert schema.parameters.model_dump(by_alias=True, exclude_none=True) == snapshot(
+        {
+            "properties": {
+                "count": {
+                    "description": "How many",
+                    "maximum": 5,
+                    "minimum": 1,
+                    "title": "Count",
+                    "type": "integer",
+                },
+                "code": {
+                    "default": "abc",
+                    "maxLength": 3,
+                    "title": "Short Code",
+                    "type": "string",
+                },
+                "tag": {
+                    "default": "t1",
+                    "examples": ["tx"],
+                    "pattern": "^t",
+                    "title": "Tag",
+                    "type": "string",
+                },
+            },
+            "required": ["count"],
+            "additionalProperties": False,
+        }
+    )
+
+
+def test_annotated_field_alias_and_default_are_not_used() -> None:
+    """Test that Field alias/default do not change names or requiredness.
+
+    Tools are executed by calling the function with the LLM's keyword arguments,
+    so the schema must use the parameter name and the function's own default.
+    """
+
+    def aliased_tool(
+        value: Annotated[int, Field(alias="other", default_factory=lambda: 7)],
+        limit: Annotated[int, Field(default=3, ge=0)] = 5,
+    ) -> str:
+        """A tool with Field alias and defaults."""
+        raise NotImplementedError
+
+    schema = llm.tools.ToolSchema.from_function(aliased_tool)
+
+    assert schema.parameters.model_dump(by_alias=True, exclude_none=True) == snapshot(
+        {
+            "properties": {
+                "value": {"title": "Value", "type": "integer"},
+                "limit": {
+                    "default": 5,
+                    "minimum": 0,
+                    "title": "Limit",
+                    "type": "integer",
+                },
+            },
+            "required": ["value"],
+            "additionalProperties": False,
+        }
+    )
+
+
+def test_multiple_annotated_fields_preserve_constraints() -> None:
+    @llm.tool
+    def bounded(value: Annotated[int, Field(ge=1), Field(le=5)]) -> int:
+        return value
+
+    assert bounded.parameters.properties["value"]["minimum"] == 1
+    assert bounded.parameters.properties["value"]["maximum"] == 5
+
+
+def test_non_field_annotation_keeps_docstring_description() -> None:
+    @llm.tool
+    def described(value: Annotated[int, "metadata"]) -> int:
+        """Describe a value.
+
+        Args:
+            value: The value to return.
+        """
+        return value
+
+    assert (
+        described.parameters.properties["value"]["description"]
+        == "The value to return."
+    )
+
+
+@pytest.mark.parametrize(
+    "field",
+    [
+        Field(alias="other", ge=1),
+        Field(validation_alias="other", ge=1),
+        Field(serialization_alias="other", ge=1),
+    ],
+)
+def test_annotated_aliases_do_not_rename_callable_parameters(field: FieldInfo) -> None:
+    @llm.tool
+    def bounded(value: Annotated[int, field] = 2) -> int:
+        return value
+
+    assert set(bounded.parameters.properties) == {"value"}
+    assert bounded.parameters.required == []
+    assert bounded.parameters.properties["value"]["minimum"] == 1
+    for args, expected in [("{}", 2), ('{"value": 3}', 3)]:
+        output = bounded.execute(llm.ToolCall(id="alias", name=bounded.name, args=args))
+        assert output.error is None
+        assert output.result == expected
 
 
 def test_no_docstring_no_descriptions() -> None:

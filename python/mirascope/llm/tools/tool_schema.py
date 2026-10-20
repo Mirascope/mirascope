@@ -263,17 +263,21 @@ class ToolSchema(Generic[ToolFnT]):
 
             if get_origin(param_type) is Annotated:
                 args = get_args(param_type)
+                if any(isinstance(annotation, FieldInfo) for annotation in args[1:]):
+                    field_info = FieldInfo.from_annotation(param_type)
                 param_type = args[0]
-                for annotation in args[1:]:
-                    if isinstance(annotation, FieldInfo):
-                        field_info = annotation
-                        break
 
             if field_info is not None:
+                # Keep schema metadata, but use the callable's parameter names and
+                # defaults rather than Field aliases, defaults or default factories.
                 field_value = Field(
                     default=default,
                     description=field_info.description,
+                    title=field_info.title,
+                    examples=field_info.examples,
+                    json_schema_extra=field_info.json_schema_extra,
                 )
+                field_value.metadata = list(field_info.metadata)
             else:
                 docstring_description: str | None = None
                 for arg in param_descriptions.args:
