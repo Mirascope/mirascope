@@ -124,6 +124,26 @@ class _OpenAIChunkProcessor:
         self.current_tools: dict[int, tuple[str, str]] = {}
         self.refusal_encountered = False
 
+    def _tool_call_index(
+        self, tool_call_delta: openai_types.chat_completion_chunk.ChoiceDeltaToolCall
+    ) -> int:
+        """Returns the slot of a streamed tool call delta.
+
+        Gemini's OpenAI-compatible endpoint streams every parallel tool call whole
+        and without an index, which the client reads as `None`. Such a delta starts a
+        new call when it brings an id other than the latest call's, and otherwise
+        continues the latest call.
+        """
+        index = getattr(tool_call_delta, "index", None)
+        if index is not None:
+            return index
+        if not self.current_tools:
+            return 0
+        latest = max(self.current_tools)
+        if tool_call_delta.id and tool_call_delta.id != self.current_tools[latest][0]:
+            return latest + 1
+        return latest
+
     def process_chunk(self, chunk: openai_types.ChatCompletionChunk) -> ChunkIterator:
         """Process a single OpenAI chunk and yield the appropriate content chunks."""
         yield RawStreamEventChunk(raw_stream_event=chunk)
@@ -171,7 +191,7 @@ class _OpenAIChunkProcessor:
             self.current_content_type = "tool_call"
 
             for tool_call_delta in delta.tool_calls:
-                index = tool_call_delta.index
+                index = self._tool_call_index(tool_call_delta)
 
                 if index not in self.current_tools:
                     if not tool_call_delta.function or not (
