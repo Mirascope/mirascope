@@ -203,12 +203,10 @@ class _GoogleChunkProcessor:
         yield RawStreamEventChunk(raw_stream_event=chunk)
 
         candidate = chunk.candidates[0] if chunk.candidates else None
-        if not candidate:
-            return  # pragma: no cover
-
         # A final chunk can carry finish_reason and usage with no content parts
         # (e.g. MAX_TOKENS spent on thinking, or a SAFETY block), so keep going.
-        parts = candidate.content.parts if candidate.content else None
+        # Usage-only chunks may also have no candidate at all.
+        parts = candidate.content.parts if candidate and candidate.content else None
         for part in parts or []:
             self.accumulated_parts.append(part)
             if self.current_content_type == "thought" and not part.thought:
@@ -273,14 +271,15 @@ class _GoogleChunkProcessor:
 
         # Track web search queries from grounding metadata
         if (
-            candidate.grounding_metadata
+            candidate
+            and candidate.grounding_metadata
             and candidate.grounding_metadata.web_search_queries
         ):
             self.web_search_query_count = len(
                 candidate.grounding_metadata.web_search_queries
             )
 
-        if candidate.finish_reason:
+        if candidate and candidate.finish_reason:
             if self.current_content_type == "text":
                 yield TextEndChunk()
             elif self.current_content_type == "thought":
@@ -312,7 +311,9 @@ class _GoogleChunkProcessor:
                         name="web_search", call_count=self.web_search_query_count
                     )
                 ]
-                if candidate.finish_reason and self.web_search_query_count > 0
+                if candidate
+                and candidate.finish_reason
+                and self.web_search_query_count > 0
                 else None
             )
 

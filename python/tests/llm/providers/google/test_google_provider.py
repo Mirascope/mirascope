@@ -402,6 +402,22 @@ def test_decode_stream_keeps_finish_reason_and_usage_without_content() -> None:
     assert usage[0].output_tokens == 50
 
 
+def test_decode_stream_keeps_usage_without_candidate() -> None:
+    """A usage-only stream chunk need not include a candidate."""
+    chunk = genai_types.GenerateContentResponse(
+        candidates=[],
+        usage_metadata=genai_types.GenerateContentResponseUsageMetadata(
+            prompt_token_count=100,
+            candidates_token_count=25,
+        ),
+    )
+    chunks = list(decode_stream(iter([chunk]), include_thoughts=False))
+    usage = [c for c in chunks if isinstance(c, UsageDeltaChunk)]
+    assert len(usage) == 1
+    assert usage[0].input_tokens == 100
+    assert usage[0].output_tokens == 25
+
+
 @pytest.mark.asyncio
 async def test_decode_async_stream_keeps_finish_reason_and_usage_without_content() -> (
     None
