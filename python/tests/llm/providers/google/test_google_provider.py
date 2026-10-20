@@ -482,3 +482,16 @@ async def test_decode_async_stream_usage_with_thinking_tokens() -> None:
     assert accumulated_usage.output_tokens == 70  # candidates (40) + thoughts (30)
     assert accumulated_usage.reasoning_tokens == 30
     assert accumulated_usage.total_tokens == 170
+
+
+def test_decode_usage_without_candidates_token_count() -> None:
+    """Gemini omits candidates_token_count when thinking spent the whole budget."""
+    usage_metadata = genai_types.GenerateContentResponseUsageMetadata(
+        prompt_token_count=100,
+        thoughts_token_count=30,
+    )
+    usage = _decode_usage(usage_metadata)
+    assert usage is not None
+    assert usage.input_tokens == 100
+    assert usage.output_tokens == 30
+    assert usage.reasoning_tokens == 30
