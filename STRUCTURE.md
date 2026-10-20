@@ -42,6 +42,8 @@ python/
 │   │   ├── agents/           # Agent functionality (currently not publicly exported)
 │   │   ├── calls/            # Call decorator and call management
 │   │   ├── providers/         # Provider-specific implementations
+│   │   │   ├── api_route/       # API Route via OpenAI-compatible Chat Completions
+│   │   │   └── [other providers]
 │   │   ├── content/          # Content types (text, image, audio, etc.)
 │   │   ├── context/          # Context management
 │   │   ├── formatting/       # Response formatting
