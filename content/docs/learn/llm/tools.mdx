@@ -55,6 +55,32 @@ Mirascope extracts parameter descriptions from the docstring and includes them i
 Clear parameter descriptions help the LLM provide correct arguments. Include format requirements, valid ranges, or examples where helpful.
 </Note>
 
+### Parameter Constraints
+
+Use `Annotated` with Pydantic's `Field` to describe parameter constraints:
+
+```python
+from typing import Annotated
+
+from pydantic import Field
+
+from mirascope import llm
+
+
+@llm.tool
+def repeat_text(text: str, count: Annotated[int, Field(ge=1, le=5)] = 1) -> str:
+    """Repeat text up to five times."""
+    return text * count
+```
+
+The tool schema preserves these constraints and other schema metadata. Parameter
+names and defaults still come from the function signature, not `Field` aliases or
+defaults. Google receives only the schema fields supported by its SDK; unsupported
+keywords such as `multipleOf` and `examples` are omitted from that provider's
+request, while tool execution still validates the annotated constraints.
+Anthropic strict tools move unsupported constraints into descriptions while keeping
+supported enum constraints and local validation during execution.
+
 ### Strict Mode
 
 The `@llm.tool` decorator accepts a `strict` parameter that controls whether the provider enforces the tool's JSON schema:

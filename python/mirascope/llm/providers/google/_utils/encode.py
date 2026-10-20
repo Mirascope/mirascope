@@ -299,6 +299,25 @@ def _encode_messages(
     return [_encode_message(message, model_id, encode_thoughts) for message in messages]
 
 
+def _filter_schema(schema: dict[str, Any]) -> genai_types.SchemaDict:
+    """Copy a JSON Schema node, keeping only fields the Google SDK accepts."""
+    allowed = {
+        field.alias or name for name, field in genai_types.Schema.model_fields.items()
+    }
+    result = {key: value for key, value in schema.items() if key in allowed}
+    for key in ("properties", "defs"):
+        if key in result:
+            result[key] = {
+                name: _filter_schema(value) for name, value in result[key].items()
+            }
+    for key in ("items", "additionalProperties"):
+        if key in result and isinstance(result[key], dict):
+            result[key] = _filter_schema(result[key])
+    if "anyOf" in result:
+        result["anyOf"] = [_filter_schema(value) for value in result["anyOf"]]
+    return cast(genai_types.SchemaDict, result)
+
+
 @lru_cache(maxsize=128)
 def _convert_tool_to_function_declaration(
     tool: AnyToolSchema | ProviderTool,
@@ -315,6 +334,7 @@ def _convert_tool_to_function_declaration(
     properties = schema_dict.get("properties", {})
     if defs:
         properties = _resolve_refs(properties, defs)
+    properties = {name: _filter_schema(value) for name, value in properties.items()}
 
     return genai_types.FunctionDeclarationDict(
         name=tool.name,
