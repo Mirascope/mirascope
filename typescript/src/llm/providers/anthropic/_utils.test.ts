@@ -101,6 +101,7 @@ describe("buildRequestParams", () => {
       );
 
       expect(params.thinking).toEqual({ type: "disabled" });
+      expect(params.output_config).toBeUndefined();
     });
 
     it("sets thinking enabled with budget when level is specified", () => {
@@ -122,6 +123,7 @@ describe("buildRequestParams", () => {
         type: "enabled",
         budget_tokens: 4000,
       });
+      expect(params.output_config).toBeUndefined();
     });
 
     it("does not set thinking when level is default", () => {
@@ -139,6 +141,67 @@ describe("buildRequestParams", () => {
 
       // Default means don't set thinking parameter
       expect(params.thinking).toBeUndefined();
+    });
+
+    it.each([
+      ["minimal", "low"],
+      ["low", "low"],
+      ["medium", "medium"],
+      ["high", "high"],
+      ["max", "max"],
+    ] as const)(
+      "maps adaptive thinking level %s to %s effort",
+      (level, effort) => {
+        const params = buildRequestParams(
+          "anthropic/claude-opus-4-7",
+          [user("Hello")],
+          undefined,
+          undefined,
+          { thinking: { level } },
+        );
+
+        expect(params.thinking).toEqual({ type: "adaptive" });
+        expect(params.output_config).toEqual({ effort });
+      },
+    );
+
+    it.each([
+      "anthropic/claude-opus-5-5",
+      "anthropic/claude-sonnet-5-5",
+      "anthropic/claude-fable-5-1",
+      "anthropic/claude-mythos-5-1",
+    ] as const)("rejects none on always-on model %s", (modelId) => {
+      expect(() =>
+        buildRequestParams(modelId, [user("Hello")], undefined, undefined, {
+          thinking: { level: "none" },
+        }),
+      ).toThrow(FeatureNotSupportedError);
+    });
+
+    it("disables thinking where a newer model supports it", () => {
+      const params = buildRequestParams(
+        "anthropic/claude-opus-4-7",
+        [user("Hello")],
+        undefined,
+        undefined,
+        { thinking: { level: "none" } },
+      );
+
+      expect(params.thinking).toEqual({ type: "disabled" });
+      expect(params.output_config).toBeUndefined();
+    });
+
+    it("uses model defaults for default thinking on newer models", () => {
+      const params = buildRequestParams(
+        "anthropic/claude-opus-5-5",
+        [user("Hello")],
+        undefined,
+        undefined,
+        { thinking: { level: "default" } },
+      );
+
+      expect(params.thinking).toBeUndefined();
+      expect(params.output_config).toBeUndefined();
     });
   });
 

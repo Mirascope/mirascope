@@ -52,6 +52,18 @@ THINKING_LEVEL_TO_BUDGET_MULTIPLIER: dict[ThinkingLevel, float] = {
 _ADAPTIVE_THINKING_ONLY_MODEL = re.compile(
     r"^claude-[a-z]+-(?:4-[7-9]|[5-9]|[1-9]\d)(?:-|$)"
 )
+_ALWAYS_ON_THINKING_MODEL = re.compile(
+    r"^claude-(?:opus-5-5|sonnet-5-5|(?:fable|mythos)-5(?:-|$))"
+)
+THINKING_LEVEL_TO_EFFORT: dict[
+    ThinkingLevel, Literal["low", "medium", "high", "max"]
+] = {
+    "minimal": "low",
+    "low": "low",
+    "medium": "medium",
+    "high": "high",
+    "max": "max",
+}
 
 
 def uses_adaptive_thinking_only(model: str | None) -> bool:
@@ -135,6 +147,7 @@ class ProcessedParams(TypedDict, total=False):
     top_k: int
     stop_sequences: list[str]
     thinking: dict[str, Any]
+    output_config: anthropic_types.OutputConfigParam
     encode_thoughts_as_text: bool
 
 
@@ -170,9 +183,22 @@ def process_params(
             # Compute token budget from level
             budget_tokens = compute_thinking_budget(level, result["max_tokens"])
             if budget_tokens == 0:
+                if model is not None and _ALWAYS_ON_THINKING_MODEL.match(model):
+                    raise FeatureNotSupportedError(
+                        "thinking level 'none'",
+                        "anthropic",
+                        f"anthropic/{model}",
+                        message=(
+                            f"{model} cannot disable thinking. Use thinking level 'low' "
+                            "to minimize it."
+                        ),
+                    )
                 result["thinking"] = {"type": "disabled"}
             elif uses_adaptive_thinking_only(model):
                 result["thinking"] = {"type": "adaptive"}
+                result["output_config"] = {
+                    "effort": THINKING_LEVEL_TO_EFFORT.get(level, "medium")
+                }
             elif budget_tokens > 0:
                 result["thinking"] = {"type": "enabled", "budget_tokens": budget_tokens}
             else:
@@ -200,6 +226,7 @@ class MessageCreateKwargs(TypedDict, total=False):
     top_k: int | Omit
     stop_sequences: list[str] | Omit
     thinking: anthropic_types.ThinkingConfigParam | Omit
+    output_config: anthropic_types.OutputConfigParam | Omit
 
 
 def encode_content(

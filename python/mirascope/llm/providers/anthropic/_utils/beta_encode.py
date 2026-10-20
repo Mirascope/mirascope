@@ -10,6 +10,7 @@ from anthropic.types.beta import (
     BetaCacheControlEphemeralParam,
     BetaContentBlockParam,
     BetaMessageParam,
+    BetaOutputConfigParam,
     BetaTextBlockParam,
     BetaThinkingConfigParam,
     BetaToolChoiceParam,
@@ -62,6 +63,7 @@ class BetaParseKwargs(TypedDict, total=False):
     top_k: int | Omit
     stop_sequences: list[str] | Omit
     thinking: BetaThinkingConfigParam | Omit
+    output_config: BetaOutputConfigParam | Omit
     betas: list[AnthropicBetaParam]
     output_format: type[BaseModel]
 

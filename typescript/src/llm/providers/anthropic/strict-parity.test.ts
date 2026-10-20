@@ -139,9 +139,9 @@ describe("Anthropic strict parity", () => {
     expect(result.parse()).toEqual({ answer: 42 });
     const [, init] = fetchMock.mock.calls[0] as [URL, RequestInit];
     const body = JSON.parse(String(init.body)) as {
-      output_format: { type: string; schema: object };
+      output_config: { format: { type: string; schema: object } };
     };
-    expect(body.output_format).toEqual({
+    expect(body.output_config.format).toEqual({
       type: "json_schema",
       schema: format.schema,
     });

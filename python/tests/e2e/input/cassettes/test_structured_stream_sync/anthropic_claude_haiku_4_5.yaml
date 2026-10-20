@@ -1,7 +1,7 @@
 interactions:
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
-      a book to me!"}],"model":"claude-haiku-4-5","output_format":{"schema":{"type":"object","title":"BookReview","properties":{"title":{"type":"string","title":"Title"},"author":{"type":"string","title":"Author"},"themes":{"type":"array","title":"Themes","items":{"type":"string"}},"rating":{"type":"integer","title":"Rating"}},"additionalProperties":false,"required":["title","author","themes","rating"]},"type":"json_schema"},"stream":true}'
+      a book to me!"}],"model":"claude-haiku-4-5","output_config":{"format":{"schema":{"type":"object","title":"BookReview","properties":{"title":{"type":"string","title":"Title"},"author":{"type":"string","title":"Author"},"themes":{"type":"array","title":"Themes","items":{"type":"string"}},"rating":{"type":"integer","title":"Rating"}},"additionalProperties":false,"required":["title","author","themes","rating"]},"type":"json_schema"}},"stream":true}'
     headers:
       Accept:
       - application/json

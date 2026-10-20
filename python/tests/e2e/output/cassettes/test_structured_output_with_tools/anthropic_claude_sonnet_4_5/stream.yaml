@@ -2,8 +2,8 @@ interactions:
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
       the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
-      score"}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","title":"BookSummary","properties":{"title":{"type":"string","title":"Title"},"author":{"type":"string","title":"Author"},"pages":{"type":"integer","title":"Pages"},"publication_year":{"type":"integer","title":"Publication
-      Year"}},"additionalProperties":false,"required":["title","author","pages","publication_year"]},"type":"json_schema"},"tools":[{"name":"get_book_info","description":"Look
+      score"}],"model":"claude-sonnet-4-5","output_config":{"format":{"schema":{"type":"object","title":"BookSummary","properties":{"title":{"type":"string","title":"Title"},"author":{"type":"string","title":"Author"},"pages":{"type":"integer","title":"Pages"},"publication_year":{"type":"integer","title":"Publication
+      Year"}},"additionalProperties":false,"required":["title","author","pages","publication_year"]},"type":"json_schema"}},"tools":[{"name":"get_book_info","description":"Look
       up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":true,"cache_control":{"type":"ephemeral"}}],"stream":true}'
     headers:
       Accept:
@@ -168,8 +168,8 @@ interactions:
       the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
       score"},{"role":"assistant","content":[{"type":"tool_use","id":"toolu_01NbSecuFz1NKmNbeA6QfTAk","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01NbSecuFz1NKmNbeA6QfTAk","content":"Title:
       Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
-      2006-07-25","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","title":"BookSummary","properties":{"title":{"type":"string","title":"Title"},"author":{"type":"string","title":"Author"},"pages":{"type":"integer","title":"Pages"},"publication_year":{"type":"integer","title":"Publication
-      Year"}},"additionalProperties":false,"required":["title","author","pages","publication_year"]},"type":"json_schema"},"tools":[{"name":"get_book_info","description":"Look
+      2006-07-25","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-5","output_config":{"format":{"schema":{"type":"object","title":"BookSummary","properties":{"title":{"type":"string","title":"Title"},"author":{"type":"string","title":"Author"},"pages":{"type":"integer","title":"Pages"},"publication_year":{"type":"integer","title":"Publication
+      Year"}},"additionalProperties":false,"required":["title","author","pages","publication_year"]},"type":"json_schema"}},"tools":[{"name":"get_book_info","description":"Look
       up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":true,"cache_control":{"type":"ephemeral"}}],"stream":true}'
     headers:
       Accept:
