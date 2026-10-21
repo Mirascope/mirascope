@@ -43,6 +43,9 @@ GOOGLE_FINISH_REASON_MAP = {
     "BLOCKLIST": FinishReason.REFUSAL,
     "PROHIBITED_CONTENT": FinishReason.REFUSAL,
     "SPII": FinishReason.REFUSAL,
+    "IMAGE_SAFETY": FinishReason.REFUSAL,
+    "IMAGE_PROHIBITED_CONTENT": FinishReason.REFUSAL,
+    "IMAGE_RECITATION": FinishReason.REFUSAL,
 }
 
 
