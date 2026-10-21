@@ -1,6 +1,8 @@
 """Tests for OpenAICompletionsProvider"""
 
 import base64
+import copy
+from typing import Any, cast
 
 import pytest
 from inline_snapshot import snapshot
@@ -436,3 +438,34 @@ def test_encode_tool_output_json_serialization() -> None:
             "tool_call_id": "call_int",
         },
     ]
+
+
+def test_strict_format_requires_every_property() -> None:
+    """OpenAI strict mode rejects schemas whose `required` omits a property."""
+
+    class Book(BaseModel):
+        title: str
+        rating: int = 5
+        note: str | None = None
+
+    format = llm.format(Book, mode="strict")
+    assert format is not None
+    schema_before = copy.deepcopy(format.schema)
+
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-4o",
+        messages=[llm.messages.user("Recommend a book")],
+        format=format,
+        tools=Toolkit(None),
+        params={},
+        feature_info=feature_info_for_openai_model("gpt-4o"),
+        provider_id="openai:completions",
+    )
+
+    json_schema = cast(dict[str, Any], kwargs.get("response_format"))["json_schema"]
+    assert json_schema["strict"] is True
+    assert json_schema["schema"]["required"] == ["title", "rating", "note"]
+    # The sent schema still has additionalProperties: false; only the caller's `format.schema` is left untouched.
+    assert json_schema["schema"]["additionalProperties"] is False
+    assert "additionalProperties" not in format.schema
+    assert format.schema == schema_before
