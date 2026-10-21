@@ -13,6 +13,23 @@ import {
 import { FinishReason } from "@/llm/responses/finish-reason";
 
 describe("Google stream metadata without content", () => {
+  it.each([
+    GoogleFinishReason.IMAGE_SAFETY,
+    GoogleFinishReason.IMAGE_PROHIBITED_CONTENT,
+    GoogleFinishReason.IMAGE_RECITATION,
+  ])("maps image refusal %s", (finishReason) => {
+    const chunks = decodeStreamEvent(
+      Object.assign(new GenerateContentResponse(), {
+        candidates: [{ finishReason }],
+      }),
+      createDecodeState(false),
+    );
+    expect(chunks).toContainEqual({
+      type: "finish_reason_chunk",
+      finishReason: FinishReason.REFUSAL,
+    });
+  });
+
   it("keeps finish reason and usage from a contentless candidate", () => {
     const chunks = decodeStreamEvent(
       Object.assign(new GenerateContentResponse(), {
