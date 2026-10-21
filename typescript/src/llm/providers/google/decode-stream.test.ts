@@ -4,11 +4,12 @@ import {
 } from "@google/genai";
 import { describe, expect, it } from "vitest";
 
+import type { UsageDeltaChunk } from "@/llm/responses/chunks";
+
 import {
   createDecodeState,
   decodeStreamEvent,
 } from "@/llm/providers/google/decode-stream";
-import type { UsageDeltaChunk } from "@/llm/responses/chunks";
 import { FinishReason } from "@/llm/responses/finish-reason";
 
 describe("Google stream metadata without content", () => {
