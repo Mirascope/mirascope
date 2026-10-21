@@ -23,6 +23,7 @@ import {
   FeatureNotSupportedError,
 } from "@/llm/exceptions";
 import { user } from "@/llm/messages";
+import { FinishReason } from "@/llm/responses/finish-reason";
 
 import {
   mapGoogleErrorByStatus,
@@ -435,5 +436,29 @@ describe("raw message round-tripping", () => {
     // rawMessage IS reused
     expect(contents).toHaveLength(2);
     expect(contents[1]).toEqual({ text: "Hello!" });
+  });
+});
+
+describe("decodeResponse finish reasons", () => {
+  const responseWithFinishReason = (finishReason: string) =>
+    ({
+      candidates: [{ content: { role: "model", parts: [] }, finishReason }],
+      usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 0 },
+    }) as unknown as GenerateContentResponse;
+
+  it.each([
+    ["MAX_TOKENS", FinishReason.MAX_TOKENS],
+    ["SAFETY", FinishReason.REFUSAL],
+    ["IMAGE_SAFETY", FinishReason.REFUSAL],
+    ["IMAGE_PROHIBITED_CONTENT", FinishReason.REFUSAL],
+    ["IMAGE_RECITATION", FinishReason.REFUSAL],
+    ["STOP", null],
+  ])("maps %s", (googleReason, expected) => {
+    const { finishReason } = decodeResponse(
+      responseWithFinishReason(googleReason),
+      "google/gemini-2.5-flash",
+    );
+
+    expect(finishReason).toBe(expected);
   });
 });

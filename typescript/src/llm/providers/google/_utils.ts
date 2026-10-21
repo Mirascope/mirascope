@@ -705,7 +705,7 @@ function decodeContent(
  *
  * Maps Google's finish reasons to the unified Mirascope format:
  * - MAX_TOKENS → FinishReason.MAX_TOKENS
- * - SAFETY, RECITATION, BLOCKLIST, etc. → FinishReason.REFUSAL
+ * - SAFETY, RECITATION, BLOCKLIST, IMAGE_SAFETY, etc. → FinishReason.REFUSAL
  * - STOP or undefined → null (normal completion)
  *
  * @param finishReason - Google finish reason from the response candidate
@@ -717,12 +717,15 @@ function decodeFinishReason(
   switch (finishReason) {
     case GoogleFinishReason.MAX_TOKENS:
       return FinishReason.MAX_TOKENS;
-    /* v8 ignore next 6 - refusal reasons can't be reliably triggered in e2e tests */
+    /* v8 ignore next 9 - refusal reasons can't be reliably triggered in e2e tests */
     case GoogleFinishReason.SAFETY:
     case GoogleFinishReason.RECITATION:
     case GoogleFinishReason.BLOCKLIST:
     case GoogleFinishReason.PROHIBITED_CONTENT:
     case GoogleFinishReason.SPII:
+    case GoogleFinishReason.IMAGE_SAFETY:
+    case GoogleFinishReason.IMAGE_PROHIBITED_CONTENT:
+    case GoogleFinishReason.IMAGE_RECITATION:
       return FinishReason.REFUSAL;
     case GoogleFinishReason.STOP:
     case undefined:

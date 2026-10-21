@@ -57,3 +57,23 @@ describe("Google stream metadata without content", () => {
     });
   });
 });
+
+describe("Google stream image refusal finish reasons", () => {
+  it.each([
+    GoogleFinishReason.IMAGE_SAFETY,
+    GoogleFinishReason.IMAGE_PROHIBITED_CONTENT,
+    GoogleFinishReason.IMAGE_RECITATION,
+  ])("maps %s to REFUSAL", (finishReason) => {
+    const chunks = decodeStreamEvent(
+      Object.assign(new GenerateContentResponse(), {
+        candidates: [{ finishReason }],
+      }),
+      createDecodeState(true),
+    );
+
+    expect(chunks).toContainEqual({
+      type: "finish_reason_chunk",
+      finishReason: FinishReason.REFUSAL,
+    });
+  });
+});
