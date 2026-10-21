@@ -747,7 +747,7 @@ exports[`stream output > [openai:completions] accumulates content as stream prog
       },
     ],
     "modelId": "openai/gpt-5-mini:completions",
-    "nChunks": 4,
+    "nChunks": 3,
     "providerId": "openai",
     "providerModelName": "gpt-5-mini:completions",
     "tools": [],
@@ -820,7 +820,7 @@ exports[`stream output > [openai:completions] builds assistant message after str
       },
     ],
     "modelId": "openai/gpt-5-mini:completions",
-    "nChunks": 4,
+    "nChunks": 3,
     "providerId": "openai",
     "providerModelName": "gpt-5-mini:completions",
     "tools": [],
@@ -893,7 +893,7 @@ exports[`stream output > [openai:completions] provides finish reason after strea
       },
     ],
     "modelId": "openai/gpt-5-mini:completions",
-    "nChunks": 12,
+    "nChunks": 11,
     "providerId": "openai",
     "providerModelName": "gpt-5-mini:completions",
     "tools": [],
@@ -966,7 +966,7 @@ exports[`stream output > [openai:completions] provides usage after streaming 1`]
       },
     ],
     "modelId": "openai/gpt-5-mini:completions",
-    "nChunks": 12,
+    "nChunks": 11,
     "providerId": "openai",
     "providerModelName": "gpt-5-mini:completions",
     "tools": [],
@@ -1000,12 +1000,7 @@ exports[`stream output > [openai:completions] returns max_tokens finish reason 1
         "role": "user",
       },
       {
-        "content": [
-          {
-            "text": "",
-            "type": "text",
-          },
-        ],
+        "content": [],
         "modelId": "openai/gpt-5-mini:completions",
         "name": null,
         "providerId": "openai",
@@ -1039,7 +1034,7 @@ exports[`stream output > [openai:completions] returns max_tokens finish reason 1
       },
     ],
     "modelId": "openai/gpt-5-mini:completions",
-    "nChunks": 3,
+    "nChunks": 0,
     "providerId": "openai",
     "providerModelName": "gpt-5-mini:completions",
     "tools": [],
@@ -1058,7 +1053,7 @@ exports[`stream output > [openai:completions] returns max_tokens finish reason 1
 
 exports[`stream output > [openai:completions] streams text response 1`] = `
 {
-  "nChunks": 3,
+  "nChunks": 2,
   "response": {
     "finishReason": null,
     "format": null,
@@ -1113,7 +1108,7 @@ exports[`stream output > [openai:completions] streams text response 1`] = `
       },
     ],
     "modelId": "openai/gpt-5-mini:completions",
-    "nChunks": 5,
+    "nChunks": 4,
     "providerId": "openai",
     "providerModelName": "gpt-5-mini:completions",
     "tools": [],

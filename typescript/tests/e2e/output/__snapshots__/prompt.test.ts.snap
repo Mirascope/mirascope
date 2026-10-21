@@ -349,7 +349,7 @@ exports[`prompt output > [openai:completions] streams model with string model id
       },
     ],
     "modelId": "openai/gpt-5-mini:completions",
-    "nChunks": 5,
+    "nChunks": 4,
     "providerId": "openai",
     "providerModelName": "gpt-5-mini:completions",
     "tools": [],
