@@ -94,14 +94,15 @@ export function decodeStreamEvent(
 
   const delta = choice.delta;
 
-  // Handle text content (including refusal as text)
-  const content = delta?.content ?? delta?.refusal;
+  // Handle text content (including refusal as text). Some servers open the
+  // stream with an empty content string, which must not start a text block.
+  const content = delta?.content || delta?.refusal;
   /* v8 ignore start - refusal is a rare edge case */
   if (delta?.refusal) {
     state.refusalEncountered = true;
   }
   /* v8 ignore stop */
-  if (content !== undefined && content !== null) {
+  if (content) {
     if (state.currentContentType === null) {
       chunks.push(textStart());
       state.currentContentType = "text";

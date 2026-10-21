@@ -45,6 +45,7 @@ import {
   PermissionError,
   RateLimitError,
   ServerError,
+  TimeoutError,
 } from "@/llm/exceptions";
 import { modelName } from "@/llm/providers/anthropic/model-id";
 import { ParamHandler, type ProviderErrorMap } from "@/llm/providers/base";
@@ -204,9 +205,12 @@ export const ANTHROPIC_ERROR_MAP: ProviderErrorMap = [
   [Anthropic.AuthenticationError, AuthenticationError],
   [Anthropic.PermissionDeniedError, PermissionError],
   [Anthropic.BadRequestError, BadRequestError],
+  [Anthropic.UnprocessableEntityError, BadRequestError],
   [Anthropic.NotFoundError, NotFoundError],
+  [Anthropic.ConflictError, BadRequestError],
   [Anthropic.RateLimitError, RateLimitError],
   [Anthropic.InternalServerError, ServerError],
+  [Anthropic.APIConnectionTimeoutError, TimeoutError],
   [Anthropic.APIConnectionError, ConnectionError],
   [Anthropic.APIError, APIError],
 ];
@@ -843,14 +847,19 @@ function decodeContent(
 }
 
 function decodeStopReason(
-  stopReason: AnthropicMessage["stop_reason"],
+  stopReason: AnthropicMessage["stop_reason"] | "model_context_window_exceeded",
 ): FinishReason | null {
   switch (stopReason) {
     case "max_tokens":
       return FinishReason.MAX_TOKENS;
+    case "model_context_window_exceeded":
+      return FinishReason.CONTEXT_LENGTH_EXCEEDED;
+    case "refusal":
+      return FinishReason.REFUSAL;
     case "end_turn":
     case "stop_sequence":
     case "tool_use":
+    case "pause_turn":
       return null; // Normal completion
     /* v8 ignore next 2 - defensive default case */
     default:

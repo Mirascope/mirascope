@@ -13,16 +13,17 @@ class MiniMaxProvider(BaseOpenAICompletionsProvider):
     - Uses MiniMax's API endpoint (https://api.minimax.io/v1)
     - Requires MINIMAX_API_KEY
 
-    Available models:
-    - MiniMax-M3 (default, flagship): 512K context window
-    - MiniMax-M2.7: 192K context window
-    - MiniMax-M2.7-highspeed: high-throughput variant
+    Suggested models:
+    - MiniMax-M3.1-Flash
+    - MiniMax-M3
+
+    Explicit legacy and custom model IDs are also accepted.
 
     Usage:
         ```python
         from mirascope import llm
 
-        @llm.call("minimax/MiniMax-M3")
+        @llm.call("minimax/MiniMax-M3.1-Flash")
         def my_prompt():
             return [llm.messages.user("Hello!")]
         ```

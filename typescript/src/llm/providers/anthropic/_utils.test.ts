@@ -7,18 +7,31 @@
 
 import type { Message as AnthropicMessage } from "@anthropic-ai/sdk/resources/messages";
 
+import Anthropic from "@anthropic-ai/sdk";
 import { describe, it, expect } from "vitest";
 
 import type { AssistantMessage } from "@/llm/messages";
 
 import { Audio, Document, Image } from "@/llm/content";
-import { FeatureNotSupportedError } from "@/llm/exceptions";
+import {
+  APIError,
+  AuthenticationError,
+  BadRequestError,
+  ConnectionError,
+  FeatureNotSupportedError,
+  NotFoundError,
+  PermissionError,
+  RateLimitError,
+  ServerError,
+  TimeoutError,
+} from "@/llm/exceptions";
 import {
   defineFormat,
   FORMAT_TOOL_NAME,
   TOOL_MODE_INSTRUCTIONS,
 } from "@/llm/formatting";
 import { user } from "@/llm/messages";
+import { FinishReason } from "@/llm/responses/finish-reason";
 import { defineTool } from "@/llm/tools";
 
 import {
@@ -27,6 +40,7 @@ import {
   decodeUsage,
   decodeResponse,
   encodeMessages,
+  ANTHROPIC_ERROR_MAP,
 } from "./_utils";
 
 describe("decodeUsage", () => {
@@ -1090,5 +1104,74 @@ describe("automatic cache control", () => {
       expect(encoded).toHaveLength(1);
       expect(encoded[0]).toEqual({ role: "user", content: "Hi" });
     });
+  });
+});
+
+describe("ANTHROPIC_ERROR_MAP", () => {
+  const mapped = (error: Error) => {
+    for (const [SdkError, MirascopeError] of ANTHROPIC_ERROR_MAP) {
+      if (error instanceof SdkError) return MirascopeError;
+    }
+    return undefined;
+  };
+  const fromStatus = (status: number) =>
+    Anthropic.APIError.generate(
+      status,
+      { error: { message: "failure" } },
+      "failure",
+      new Headers(),
+    );
+
+  it.each([
+    [400, BadRequestError],
+    [401, AuthenticationError],
+    [403, PermissionError],
+    [404, NotFoundError],
+    [409, BadRequestError],
+    [422, BadRequestError],
+    [429, RateLimitError],
+    [500, ServerError],
+    [418, APIError],
+  ])("maps HTTP %i like the Python provider", (status, expected) => {
+    expect(mapped(fromStatus(status))).toBe(expected);
+  });
+
+  it("maps a connection timeout to TimeoutError, not ConnectionError", () => {
+    expect(mapped(new Anthropic.APIConnectionTimeoutError())).toBe(
+      TimeoutError,
+    );
+  });
+
+  it("maps a plain connection error to ConnectionError", () => {
+    expect(mapped(new Anthropic.APIConnectionError({}))).toBe(ConnectionError);
+  });
+});
+
+describe("decodeResponse finish reasons", () => {
+  const responseWithStopReason = (stopReason: string | null) =>
+    ({
+      id: "msg_123",
+      type: "message",
+      role: "assistant",
+      model: "claude-haiku-4-5",
+      content: [{ type: "text", text: "Hello!", citations: null }],
+      stop_reason: stopReason,
+      stop_sequence: null,
+      usage: { input_tokens: 10, output_tokens: 5 },
+    }) as unknown as AnthropicMessage;
+
+  it.each([
+    ["max_tokens", FinishReason.MAX_TOKENS],
+    ["refusal", FinishReason.REFUSAL],
+    ["model_context_window_exceeded", FinishReason.CONTEXT_LENGTH_EXCEEDED],
+    ["end_turn", null],
+    ["pause_turn", null],
+  ])("maps stop_reason %s", (stopReason, expected) => {
+    const { finishReason } = decodeResponse(
+      responseWithStopReason(stopReason),
+      "anthropic/claude-haiku-4-5",
+    );
+
+    expect(finishReason).toBe(expected);
   });
 });

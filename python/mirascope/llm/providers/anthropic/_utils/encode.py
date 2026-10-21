@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import json
 import re
 from collections.abc import Sequence
@@ -527,10 +528,13 @@ def encode_request(
 
     if anthropic_tools:
         # Add cache control to the last tool for prompt caching
-        last_tool = anthropic_tools[-1]
+        # (copied: `convert_tool_to_tool_param` is cached, and marking the shared
+        # param would leak the cache breakpoint into later requests)
+        last_tool = copy.copy(anthropic_tools[-1])
         last_tool["cache_control"] = anthropic_types.CacheControlEphemeralParam(
             type="ephemeral"
         )
+        anthropic_tools[-1] = last_tool
         kwargs["tools"] = anthropic_tools
 
     system_message_content, remaining_messages = _base_utils.extract_system_message(

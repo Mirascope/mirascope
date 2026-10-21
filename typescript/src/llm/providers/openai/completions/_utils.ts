@@ -623,7 +623,10 @@ export function decodeResponse(
       serializedRawMessage as unknown as AssistantMessage["rawMessage"],
   };
 
-  const finishReason = decodeFinishReason(choice.finish_reason);
+  // A refusal is reported as REFUSAL even when finish_reason is "stop".
+  const finishReason = choice.message.refusal
+    ? FinishReason.REFUSAL
+    : decodeFinishReason(choice.finish_reason);
 
   /* v8 ignore next - usage is always present in API responses */
   const usage = response.usage ? decodeUsage(response.usage) : null;

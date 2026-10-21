@@ -224,11 +224,11 @@ exports[`mirascope provider > [mirascope:google] streams from underlying provide
     "usage": {
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
-      "inputTokens": 56,
+      "inputTokens": 18,
       "outputTokens": 5,
       "raw": "null",
       "reasoningTokens": 0,
-      "totalTokens": 61,
+      "totalTokens": 23,
     },
   },
 }
