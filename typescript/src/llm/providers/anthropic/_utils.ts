@@ -45,6 +45,7 @@ import {
   PermissionError,
   RateLimitError,
   ServerError,
+  TimeoutError,
 } from "@/llm/exceptions";
 import { modelName } from "@/llm/providers/anthropic/model-id";
 import { ParamHandler, type ProviderErrorMap } from "@/llm/providers/base";
@@ -204,9 +205,12 @@ export const ANTHROPIC_ERROR_MAP: ProviderErrorMap = [
   [Anthropic.AuthenticationError, AuthenticationError],
   [Anthropic.PermissionDeniedError, PermissionError],
   [Anthropic.BadRequestError, BadRequestError],
+  [Anthropic.UnprocessableEntityError, BadRequestError],
   [Anthropic.NotFoundError, NotFoundError],
+  [Anthropic.ConflictError, BadRequestError],
   [Anthropic.RateLimitError, RateLimitError],
   [Anthropic.InternalServerError, ServerError],
+  [Anthropic.APIConnectionTimeoutError, TimeoutError],
   [Anthropic.APIConnectionError, ConnectionError],
   [Anthropic.APIError, APIError],
 ];
