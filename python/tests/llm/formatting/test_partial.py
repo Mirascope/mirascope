@@ -1,5 +1,6 @@
 """Unit tests for Partial model generation."""
 
+import threading
 from typing import Annotated, Any, Literal, Union, cast
 
 import pytest
@@ -443,3 +444,62 @@ def test_partial_failed_build_leaves_no_state(monkeypatch: pytest.MonkeyPatch) -
     assert partial_module._partial_models_created == {}  # pyright: ignore[reportPrivateUsage]
     assert Inner not in partial_module._partial_model_cache  # pyright: ignore[reportPrivateUsage]
     assert Outer not in partial_module._partial_model_cache  # pyright: ignore[reportPrivateUsage]
+
+
+def test_partial_failed_rebuild_leaves_no_state(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """If resolving the forward references fails, the unfinished models aren't cached."""
+    from mirascope.llm.formatting import partial as partial_module
+
+    class Leaf(BaseModel):
+        value: int
+
+    class Branch(BaseModel):
+        leaf: Leaf
+
+    def failing_rebuild(cls: type[BaseModel], **kwargs: Any) -> None:  # noqa: ANN401
+        raise RuntimeError("rebuild boom")
+
+    monkeypatch.setattr(BaseModel, "model_rebuild", classmethod(failing_rebuild))
+
+    with pytest.raises(RuntimeError, match="rebuild boom"):
+        Partial[Branch]
+
+    assert partial_module._partial_models_created == {}  # pyright: ignore[reportPrivateUsage]
+    assert Leaf not in partial_module._partial_model_cache  # pyright: ignore[reportPrivateUsage]
+    assert Branch not in partial_module._partial_model_cache  # pyright: ignore[reportPrivateUsage]
+
+
+class _Shared(BaseModel):
+    name: str
+    children: list["_Shared"] = []
+    siblings: list[list["_Shared"]] = []
+
+
+_Shared.model_rebuild()
+
+
+def test_partial_is_safe_to_build_from_several_threads() -> None:
+    """Concurrent first uses of a recursive model all get the same, complete model."""
+    results: list[Any] = []
+    errors: list[BaseException] = []
+    barrier = threading.Barrier(8)
+
+    def build() -> None:
+        try:
+            barrier.wait()
+            results.append(Partial[_Shared])
+        except BaseException as error:  # noqa: BLE001
+            errors.append(error)
+
+    threads = [threading.Thread(target=build) for _ in range(8)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    assert errors == []
+    assert len({id(result) for result in results}) == 1
+    shared: Any = results[0].model_validate({"name": "a", "children": [{"name": "b"}]})
+    assert type(shared.children[0]) is results[0]
