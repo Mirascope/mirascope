@@ -33,10 +33,10 @@ import { FinishReason } from "@/llm/responses/finish-reason";
 interface DecodeState {
   /** Current content type being streamed */
   currentContentType: "text" | "tool_call" | null;
-  /** Index of the current tool call being streamed */
-  currentToolIndex: number | null;
-  /** ID of the current tool call being streamed */
-  currentToolId: string | null;
+  /** Open tool calls by slot (id of each call that has started) */
+  currentTools: Map<number, string>;
+  /** Maps the provider's tool call index to its slot in `currentTools` */
+  indexSlots: Map<number, number>;
   /** Whether a refusal was encountered */
   refusalEncountered: boolean;
 }
@@ -47,8 +47,8 @@ interface DecodeState {
 export function createDecodeState(): DecodeState {
   return {
     currentContentType: null,
-    currentToolIndex: null,
-    currentToolId: null,
+    currentTools: new Map(),
+    indexSlots: new Map(),
     refusalEncountered: false,
   };
 }
@@ -120,63 +120,67 @@ export function decodeStreamEvent(
     state.currentContentType = "tool_call";
 
     for (const toolCallDelta of delta.tool_calls) {
-      // Gemini's OpenAI-compatible stream omits index. A new id starts the next
-      // call; fragments without an id continue the current call.
-      const index =
-        toolCallDelta.index ??
-        (state.currentToolIndex === null
-          ? 0
-          : toolCallDelta.id && toolCallDelta.id !== state.currentToolId
-            ? state.currentToolIndex + 1
-            : state.currentToolIndex);
-
-      // Check for out-of-order tool call data
-      /* v8 ignore start - defensive check for malformed streams */
-      if (state.currentToolIndex !== null && state.currentToolIndex > index) {
-        throw new Error(
-          `Received tool data for already-finished tool at index ${index}`,
-        );
-      }
-      /* v8 ignore stop */
-
-      // If we're moving to a new tool (higher index), close the previous one
-      if (state.currentToolIndex !== null && state.currentToolIndex < index) {
-        /* v8 ignore start - defensive check */
-        if (state.currentToolId === null) {
-          throw new Error("No current_tool_id for ToolCallEndChunk");
+      const latest = Math.max(-1, ...state.currentTools.keys());
+      const knownId = (slot: number) => state.currentTools.get(slot);
+      let slot: number;
+      if (toolCallDelta.index !== undefined) {
+        // Some servers reuse one index for several calls; a different id on a
+        // known index starts a new call. Calls may also interleave by index.
+        const mapped = state.indexSlots.get(toolCallDelta.index);
+        if (mapped === undefined) {
+          slot = state.currentTools.has(toolCallDelta.index)
+            ? latest + 1
+            : toolCallDelta.index;
+        } else if (
+          toolCallDelta.id &&
+          knownId(mapped) !== undefined &&
+          toolCallDelta.id !== knownId(mapped)
+        ) {
+          slot = latest + 1;
+        } else {
+          slot = mapped;
         }
-        /* v8 ignore stop */
-        chunks.push(toolCallEnd(state.currentToolId));
-        state.currentToolIndex = null;
+        state.indexSlots.set(toolCallDelta.index, slot);
+      } else if (latest < 0) {
+        // Gemini's OpenAI-compatible stream omits index. A new id starts the
+        // next call; fragments without an id continue the latest call.
+        slot = 0;
+      } else if (toolCallDelta.id && toolCallDelta.id !== knownId(latest)) {
+        slot = latest + 1;
+      } else {
+        slot = latest;
       }
 
-      // Start a new tool call if we don't have one at this index
-      if (state.currentToolIndex === null) {
+      if (!state.currentTools.has(slot)) {
         const name = toolCallDelta.function?.name;
         const toolId = toolCallDelta.id;
         /* v8 ignore start - defensive check for malformed streams */
         if (!name) {
-          throw new Error(`Missing name for tool call at index ${index}`);
+          throw new Error(`Missing name for tool call at index ${slot}`);
         }
         if (!toolId) {
-          throw new Error(`Missing id for tool call at index ${index}`);
+          throw new Error(`Missing id for tool call at index ${slot}`);
         }
         /* v8 ignore stop */
 
-        state.currentToolIndex = index;
-        state.currentToolId = toolId;
+        // Without an index nothing can interleave, so the previous call is done
+        if (toolCallDelta.index === undefined) {
+          for (const openId of state.currentTools.values()) {
+            chunks.push(toolCallEnd(openId));
+          }
+          state.currentTools.clear();
+        }
+        state.currentTools.set(slot, toolId);
         chunks.push(toolCallStart(toolId, name));
       }
 
       // Emit tool call argument chunk if present
       if (toolCallDelta.function?.arguments) {
-        /* v8 ignore start - defensive check */
-        if (state.currentToolId === null) {
-          throw new Error("No current_tool_id for ToolCallChunk");
-        }
-        /* v8 ignore stop */
         chunks.push(
-          toolCallChunk(state.currentToolId, toolCallDelta.function.arguments),
+          toolCallChunk(
+            state.currentTools.get(slot)!,
+            toolCallDelta.function.arguments,
+          ),
         );
       }
     }
@@ -187,12 +191,11 @@ export function decodeStreamEvent(
     if (state.currentContentType === "text") {
       chunks.push(textEnd());
     } else if (state.currentContentType === "tool_call") {
-      /* v8 ignore start - defensive check */
-      if (state.currentToolId === null) {
-        throw new Error("No current_tool_id for ToolCallEndChunk");
+      for (const openId of state.currentTools.values()) {
+        chunks.push(toolCallEnd(openId));
       }
-      /* v8 ignore stop */
-      chunks.push(toolCallEnd(state.currentToolId));
+      state.currentTools.clear();
+      state.indexSlots.clear();
       /* v8 ignore start - defensive check for unknown content types */
     } else if (state.currentContentType !== null) {
       throw new Error("Unexpected content type");
