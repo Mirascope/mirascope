@@ -217,11 +217,11 @@ exports[`context prompt output > [google] streams model with context 1`] = `
     "usage": {
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
-      "inputTokens": 22,
-      "outputTokens": 41,
+      "inputTokens": 11,
+      "outputTokens": 25,
       "raw": "null",
-      "reasoningTokens": 28,
-      "totalTokens": 63,
+      "reasoningTokens": 14,
+      "totalTokens": 36,
     },
   },
 }

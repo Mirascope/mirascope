@@ -668,11 +668,11 @@ exports[`WebSearchTool > [google] streams with web search tool 1`] = `
     "usage": {
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
-      "inputTokens": 207,
-      "outputTokens": 2062,
+      "inputTokens": 69,
+      "outputTokens": 708,
       "raw": "null",
-      "reasoningTokens": 1737,
-      "totalTokens": 2269,
+      "reasoningTokens": 579,
+      "totalTokens": 777,
     },
   },
 }
