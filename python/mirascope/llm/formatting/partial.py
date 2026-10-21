@@ -238,7 +238,9 @@ def _build_partial_model(wrapped_class: type[Any]) -> Any:  # noqa: ANN401
         created = dict(_partial_models_created)
         try:
             for model in created.values():
-                model.model_rebuild(force=True, _types_namespace=created)
+                model.model_rebuild(
+                    force=True, raise_errors=False, _types_namespace=created
+                )
         except BaseException:
             _discard_created_partial_models()
             raise

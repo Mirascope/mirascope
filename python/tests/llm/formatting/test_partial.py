@@ -1,7 +1,7 @@
 """Unit tests for Partial model generation."""
 
 import threading
-from typing import Annotated, Any, Literal, Union, cast
+from typing import Annotated, Any, ForwardRef, Literal, Union, cast
 
 import pytest
 from pydantic import BaseModel, Discriminator, Field, Tag
@@ -503,3 +503,41 @@ def test_partial_is_safe_to_build_from_several_threads() -> None:
     assert len({id(result) for result in results}) == 1
     shared: Any = results[0].model_validate({"name": "a", "children": [{"name": "b"}]})
     assert type(shared.children[0]) is results[0]
+
+
+def test_partial_keeps_annotated_constraints_without_models() -> None:
+    """`Annotated` types that hold no model are left as they are."""
+
+    class Tagged(BaseModel):
+        tags: list[Annotated[str, Field(min_length=2)]]
+
+    PartialTagged = cast(type[Tagged], Partial[Tagged])
+    assert PartialTagged.model_validate({"tags": ["ab"]}).tags == ["ab"]
+    with pytest.raises(ValueError, match="at least 2 characters"):
+        PartialTagged.model_validate({"tags": ["a"]})
+
+
+def test_partial_leaves_unresolvable_forward_references_alone() -> None:
+    """A forward reference that can't be resolved stays as it is, as for the model itself."""
+
+    class Dangling(BaseModel):
+        name: str
+        items: list["_NotDefinedAnywhere"]  # noqa: F821  # pyright: ignore[reportUndefinedVariable]
+
+    partial_model = cast(type[BaseModel], Partial[Dangling])
+
+    assert "name" in partial_model.model_fields
+    assert not partial_model.__pydantic_complete__
+
+
+def test_partial_resolves_string_and_forward_reference_annotations() -> None:
+    """Annotations left as strings (before Python 3.11, inside builtin generics) are resolved."""
+    from mirascope.llm.formatting.partial import (
+        _make_partial_type,  # pyright: ignore[reportPrivateUsage]
+    )
+
+    namespace = {"_Circle": _Circle}
+    assert _make_partial_type("_Circle", namespace) is Partial[_Circle]
+    assert _make_partial_type(ForwardRef("_Circle"), namespace) is Partial[_Circle]
+    assert _make_partial_type("list[_Circle]", namespace) == list[Partial[_Circle]]
+    assert _make_partial_type("Unknown", namespace) == "Unknown"
