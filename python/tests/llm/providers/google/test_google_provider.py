@@ -508,3 +508,16 @@ def test_decode_response_tool_call_without_args() -> None:
     assert message.content == [
         llm.ToolCall(id="google_unknown_tool_id", name="get_time", args="{}")
     ]
+
+
+def test_decode_usage_without_candidates_token_count() -> None:
+    """Gemini omits candidates_token_count when thinking spent the whole budget."""
+    usage_metadata = genai_types.GenerateContentResponseUsageMetadata(
+        prompt_token_count=100,
+        thoughts_token_count=30,
+    )
+    usage = _decode_usage(usage_metadata)
+    assert usage is not None
+    assert usage.input_tokens == 100
+    assert usage.output_tokens == 30
+    assert usage.reasoning_tokens == 30

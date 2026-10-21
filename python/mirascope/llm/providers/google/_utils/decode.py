@@ -74,18 +74,16 @@ def _decode_usage(
     candidate: genai_types.Candidate | None = None,
 ) -> Usage | None:
     """Convert Google UsageMetadata to Mirascope Usage."""
-    if (
-        usage is None
-        or usage.prompt_token_count is None
-        or usage.candidates_token_count is None
-    ):  # pragma: no cover
+    if usage is None:  # pragma: no cover
         return None
 
+    # Gemini omits `candidates_token_count` when it is zero, e.g. when thinking
+    # used up the whole `max_tokens` budget, so absent counts are read as zero.
     reasoning_tokens = usage.thoughts_token_count or 0
-    output_tokens = usage.candidates_token_count + reasoning_tokens
+    output_tokens = (usage.candidates_token_count or 0) + reasoning_tokens
 
     return Usage(
-        input_tokens=usage.prompt_token_count,
+        input_tokens=usage.prompt_token_count or 0,
         output_tokens=output_tokens,
         cache_read_tokens=usage.cached_content_token_count or 0,
         cache_write_tokens=0,
