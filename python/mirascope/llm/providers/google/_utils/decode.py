@@ -116,11 +116,14 @@ def _decode_content_part(part: genai_types.Part) -> AssistantContentPart | None:
         id = function_call.id
         name = function_call.name
         args = function_call.args
-        if not name or args is None:
+        if not name:
             raise ValueError(
                 "Google function_call does not match spec"
             )  # pragma: no cover
-        return ToolCall(id=id or UNKNOWN_TOOL_ID, name=name, args=json.dumps(args))
+        # Gemini omits `args` for a tool that takes no arguments
+        return ToolCall(
+            id=id or UNKNOWN_TOOL_ID, name=name, args=json.dumps(args or {})
+        )
     elif part.function_response:  # pragma: no cover
         raise NotImplementedError(
             "function_response part does not decode to AssistantContent."
