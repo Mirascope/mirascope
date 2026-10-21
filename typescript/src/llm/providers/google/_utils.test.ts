@@ -453,3 +453,42 @@ describe("raw message round-tripping", () => {
     expect(contents[1]).toEqual({ text: "Hello!" });
   });
 });
+
+describe("decodeResponse usage", () => {
+  const response = (usageMetadata: Record<string, number>) =>
+    ({
+      candidates: [
+        {
+          content: { role: "model", parts: [{ text: "answer" }] },
+          finishReason: "STOP",
+        },
+      ],
+      usageMetadata,
+    }) as unknown as GenerateContentResponse;
+
+  it("counts tool-use prompt tokens as input tokens", () => {
+    const { usage } = decodeResponse(
+      response({
+        promptTokenCount: 100,
+        toolUsePromptTokenCount: 40,
+        candidatesTokenCount: 5,
+        totalTokenCount: 145,
+      }),
+      "google/gemini-2.5-flash",
+      false,
+    );
+
+    expect(usage?.inputTokens).toBe(140);
+    expect(usage?.outputTokens).toBe(5);
+  });
+
+  it("leaves the input tokens alone without tool-use prompt tokens", () => {
+    const { usage } = decodeResponse(
+      response({ promptTokenCount: 100, candidatesTokenCount: 5 }),
+      "google/gemini-2.5-flash",
+      false,
+    );
+
+    expect(usage?.inputTokens).toBe(100);
+  });
+});

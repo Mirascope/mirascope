@@ -129,6 +129,26 @@ describe("Google stream cumulative usage", () => {
     ]);
   });
 
+  it("counts tool-use prompt tokens as input and emits only their growth", () => {
+    const state = createDecodeState(false);
+    const totals = [
+      {
+        promptTokenCount: 100,
+        toolUsePromptTokenCount: 20,
+        candidatesTokenCount: 2,
+      },
+      {
+        promptTokenCount: 100,
+        toolUsePromptTokenCount: 40,
+        candidatesTokenCount: 5,
+      },
+    ];
+    const deltas = totals.flatMap((metadata) => usageChunks(metadata, state));
+
+    expect(deltas.map((chunk) => chunk.inputTokens)).toEqual([120, 20]);
+    expect(deltas.map((chunk) => chunk.outputTokens)).toEqual([2, 3]);
+  });
+
   it("sums to the final totals over a whole stream", () => {
     const state = createDecodeState(false);
     const totals = [

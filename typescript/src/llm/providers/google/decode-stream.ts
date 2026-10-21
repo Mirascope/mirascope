@@ -199,7 +199,10 @@ export function decodeStreamEvent(
     const reasoningTokens =
       usage.thoughtsTokenCount ?? /* v8 ignore next 1 */ 0;
     const current = {
-      inputTokens: usage.promptTokenCount ?? /* v8 ignore next 1 */ 0,
+      // Tool results given back to the model are input too, reported apart
+      inputTokens:
+        (usage.promptTokenCount ?? /* v8 ignore next 1 */ 0) +
+        (usage.toolUsePromptTokenCount ?? /* v8 ignore next 1 */ 0),
       outputTokens:
         (usage.candidatesTokenCount ?? /* v8 ignore next 1 */ 0) +
         reasoningTokens,
