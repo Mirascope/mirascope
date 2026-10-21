@@ -39,6 +39,20 @@ describe("OpenAI Responses decodeStream", () => {
     await expect(stream).rejects.toThrow(/server_error.*The model crashed/);
   });
 
+  it("raises with defaults when response.failed carries no error", async () => {
+    const stream = collect([
+      { type: "response.created", response: { id: "resp_1", output: [] } },
+      {
+        type: "response.failed",
+        response: { id: "resp_1", status: "failed", output: [] },
+      },
+    ]);
+
+    await expect(stream).rejects.toThrow(
+      "OpenAI response failed: unknown_error: no error message",
+    );
+  });
+
   it("still completes a stream that ends with response.completed", async () => {
     const chunks = await collect([
       { type: "response.created", response: { id: "resp_1", output: [] } },
