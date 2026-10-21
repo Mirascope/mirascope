@@ -7,12 +7,24 @@
 
 import type { Message as AnthropicMessage } from "@anthropic-ai/sdk/resources/messages";
 
+import Anthropic from "@anthropic-ai/sdk";
 import { describe, it, expect } from "vitest";
 
 import type { AssistantMessage } from "@/llm/messages";
 
 import { Audio, Document, Image } from "@/llm/content";
-import { FeatureNotSupportedError } from "@/llm/exceptions";
+import {
+  APIError,
+  AuthenticationError,
+  BadRequestError,
+  ConnectionError,
+  FeatureNotSupportedError,
+  NotFoundError,
+  PermissionError,
+  RateLimitError,
+  ServerError,
+  TimeoutError,
+} from "@/llm/exceptions";
 import {
   defineFormat,
   FORMAT_TOOL_NAME,
@@ -28,6 +40,7 @@ import {
   decodeUsage,
   decodeResponse,
   encodeMessages,
+  ANTHROPIC_ERROR_MAP,
 } from "./_utils";
 
 describe("decodeUsage", () => {
@@ -1091,6 +1104,46 @@ describe("automatic cache control", () => {
       expect(encoded).toHaveLength(1);
       expect(encoded[0]).toEqual({ role: "user", content: "Hi" });
     });
+  });
+});
+
+describe("ANTHROPIC_ERROR_MAP", () => {
+  const mapped = (error: Error) => {
+    for (const [SdkError, MirascopeError] of ANTHROPIC_ERROR_MAP) {
+      if (error instanceof SdkError) return MirascopeError;
+    }
+    return undefined;
+  };
+  const fromStatus = (status: number) =>
+    Anthropic.APIError.generate(
+      status,
+      { error: { message: "failure" } },
+      "failure",
+      new Headers(),
+    );
+
+  it.each([
+    [400, BadRequestError],
+    [401, AuthenticationError],
+    [403, PermissionError],
+    [404, NotFoundError],
+    [409, BadRequestError],
+    [422, BadRequestError],
+    [429, RateLimitError],
+    [500, ServerError],
+    [418, APIError],
+  ])("maps HTTP %i like the Python provider", (status, expected) => {
+    expect(mapped(fromStatus(status))).toBe(expected);
+  });
+
+  it("maps a connection timeout to TimeoutError, not ConnectionError", () => {
+    expect(mapped(new Anthropic.APIConnectionTimeoutError())).toBe(
+      TimeoutError,
+    );
+  });
+
+  it("maps a plain connection error to ConnectionError", () => {
+    expect(mapped(new Anthropic.APIConnectionError({}))).toBe(ConnectionError);
   });
 });
 
