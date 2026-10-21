@@ -465,4 +465,7 @@ def test_strict_format_requires_every_property() -> None:
     json_schema = cast(dict[str, Any], kwargs.get("response_format"))["json_schema"]
     assert json_schema["strict"] is True
     assert json_schema["schema"]["required"] == ["title", "rating", "note"]
+    # The sent schema still has additionalProperties: false; only the caller's `format.schema` is left untouched.
+    assert json_schema["schema"]["additionalProperties"] is False
+    assert "additionalProperties" not in format.schema
     assert format.schema == schema_before

@@ -298,9 +298,10 @@ def _create_strict_response_format(
     Returns:
         ResponseFormatTextJSONSchemaConfigParam for strict structured outputs
     """
+    # Align the schema with OpenAI's strict mode requirements:
+    # https://developers.openai.com/api/docs/guides/structured-outputs#supported-schemas
     schema = copy.deepcopy(format.schema)
     _base_utils.ensure_additional_properties_false(schema)
-    # Strict mode only accepts schemas where every property is required.
     _base_utils.ensure_all_properties_required(schema)
 
     response_format: ResponseFormatTextJSONSchemaConfigParam = {

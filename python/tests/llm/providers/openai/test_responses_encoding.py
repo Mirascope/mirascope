@@ -305,4 +305,7 @@ def test_strict_format_requires_every_property() -> None:
     text = cast(dict[str, Any], kwargs.get("text"))
     assert text["format"]["strict"] is True
     assert text["format"]["schema"]["required"] == ["title", "rating", "note"]
+    # The sent schema still has additionalProperties: false; only the caller's `format.schema` is left untouched.
+    assert text["format"]["schema"]["additionalProperties"] is False
+    assert "additionalProperties" not in format.schema
     assert format.schema == schema_before
