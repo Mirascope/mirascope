@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, TypedDict, cast
 
@@ -297,8 +298,10 @@ def _create_strict_response_format(
     Returns:
         ResponseFormatTextJSONSchemaConfigParam for strict structured outputs
     """
-    schema = format.schema.copy()
+    schema = copy.deepcopy(format.schema)
     _base_utils.ensure_additional_properties_false(schema)
+    # Strict mode only accepts schemas where every property is required.
+    _base_utils.ensure_all_properties_required(schema)
 
     response_format: ResponseFormatTextJSONSchemaConfigParam = {
         "type": "json_schema",

@@ -1,8 +1,11 @@
 """Tests for OpenAIResponsesProvider"""
 
 import base64
+import copy
+from typing import Any, cast
 
 from inline_snapshot import snapshot
+from pydantic import BaseModel
 
 from mirascope import llm
 from mirascope.llm.content.document import (
@@ -277,3 +280,29 @@ def test_encode_tool_output_json_serialization() -> None:
             "type": "function_call_output",
         },
     ]
+
+
+def test_strict_format_requires_every_property() -> None:
+    """OpenAI strict mode rejects schemas whose `required` omits a property."""
+
+    class Book(BaseModel):
+        title: str
+        rating: int = 5
+        note: str | None = None
+
+    format = llm.format(Book, mode="strict")
+    assert format is not None
+    schema_before = copy.deepcopy(format.schema)
+
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-4o",
+        messages=[llm.messages.user("Recommend a book")],
+        format=format,
+        tools=Toolkit(None),
+        params={},
+    )
+
+    text = cast(dict[str, Any], kwargs.get("text"))
+    assert text["format"]["strict"] is True
+    assert text["format"]["schema"]["required"] == ["title", "rating", "note"]
+    assert format.schema == schema_before
