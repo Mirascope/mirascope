@@ -5,8 +5,10 @@
  * These tests focus on error mapping and thinking config encoding.
  */
 
-import type { GenerateContentResponse } from "@google/genai";
-
+import {
+  FinishReason as GoogleFinishReason,
+  GenerateContentResponse,
+} from "@google/genai";
 import { describe, it, expect } from "vitest";
 
 import type { AssistantMessage } from "@/llm/messages";
@@ -23,6 +25,7 @@ import {
   FeatureNotSupportedError,
 } from "@/llm/exceptions";
 import { user } from "@/llm/messages";
+import { FinishReason } from "@/llm/responses/finish-reason";
 
 import {
   mapGoogleErrorByStatus,
@@ -31,6 +34,19 @@ import {
   decodeResponse,
   encodeMessages,
 } from "./_utils";
+
+it.each([
+  GoogleFinishReason.IMAGE_SAFETY,
+  GoogleFinishReason.IMAGE_PROHIBITED_CONTENT,
+  GoogleFinishReason.IMAGE_RECITATION,
+])("maps Google image refusal %s", (finishReason) => {
+  const response = Object.assign(new GenerateContentResponse(), {
+    candidates: [{ content: { role: "model", parts: [] }, finishReason }],
+  });
+  expect(
+    decodeResponse(response, "google/gemini-3.8-flash", false).finishReason,
+  ).toBe(FinishReason.REFUSAL);
+});
 
 describe("mapGoogleErrorByStatus", () => {
   it("maps 401 to AuthenticationError", () => {

@@ -237,6 +237,9 @@ function decodeFinishReason(
     case GoogleFinishReason.BLOCKLIST:
     case GoogleFinishReason.PROHIBITED_CONTENT:
     case GoogleFinishReason.SPII:
+    case GoogleFinishReason.IMAGE_SAFETY:
+    case GoogleFinishReason.IMAGE_PROHIBITED_CONTENT:
+    case GoogleFinishReason.IMAGE_RECITATION:
       return FinishReason.REFUSAL;
     /* v8 ignore end */
     case GoogleFinishReason.STOP:

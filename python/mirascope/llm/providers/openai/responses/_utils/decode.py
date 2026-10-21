@@ -21,6 +21,7 @@ from .....content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
+from .....exceptions import APIError
 from .....messages import AssistantMessage
 from .....responses import (
     AsyncChunkIterator,
@@ -233,6 +234,13 @@ class _OpenAIResponsesChunkProcessor:
                 yield from self._finalize(event.response)
             elif event.type == "response.completed":
                 yield from self._finalize(event.response)
+            elif event.type == "response.failed":
+                error = event.response.error
+                code = error.code if error else "unknown_error"
+                message = error.message if error else "no error message"
+                raise APIError(
+                    f"OpenAI response failed: {code}: {message}", provider="openai"
+                )
 
     def _finalize(self, response: openai_types.Response) -> ChunkIterator:
         """Emit the raw message, refusal finish reason and usage of a final response."""
