@@ -1,5 +1,7 @@
 """Tests for Anthropic document encoding."""
 
+from typing import Any, cast
+
 import pytest
 from inline_snapshot import snapshot
 
@@ -488,3 +490,30 @@ def test_thinking_level_keeps_budget_tokens_on_models_that_accept_it(
     )
     assert kwargs.get("thinking") == {"type": "enabled", "budget_tokens": 6400}
     assert "output_config" not in kwargs
+
+
+def test_cache_control_only_marks_the_last_tool_of_each_request() -> None:
+    """A tool that was last in an earlier request must not keep its cache breakpoint."""
+
+    @llm.tool
+    def first_tool(x: int) -> int:
+        """First tool for the cache control test."""
+        return x
+
+    @llm.tool
+    def second_tool(x: int) -> int:
+        """Second tool for the cache control test."""
+        return x
+
+    messages = [llm.messages.user("Hello")]
+    for tools in ([first_tool], [first_tool, second_tool]):
+        _, _, kwargs = encode_request(
+            model_id="anthropic/claude-sonnet-4-6",
+            messages=messages,
+            format=None,
+            tools=Toolkit(tools),
+            params={},
+        )
+        encoded_tools = cast(list[dict[str, Any]], kwargs.get("tools"))
+        marked = [tool["name"] for tool in encoded_tools if "cache_control" in tool]
+        assert marked == [tools[-1].name]
