@@ -19,6 +19,7 @@ import {
   TOOL_MODE_INSTRUCTIONS,
 } from "@/llm/formatting";
 import { user } from "@/llm/messages";
+import { FinishReason } from "@/llm/responses/finish-reason";
 import { defineTool } from "@/llm/tools";
 
 import {
@@ -1090,5 +1091,34 @@ describe("automatic cache control", () => {
       expect(encoded).toHaveLength(1);
       expect(encoded[0]).toEqual({ role: "user", content: "Hi" });
     });
+  });
+});
+
+describe("decodeResponse finish reasons", () => {
+  const responseWithStopReason = (stopReason: string | null) =>
+    ({
+      id: "msg_123",
+      type: "message",
+      role: "assistant",
+      model: "claude-haiku-4-5",
+      content: [{ type: "text", text: "Hello!", citations: null }],
+      stop_reason: stopReason,
+      stop_sequence: null,
+      usage: { input_tokens: 10, output_tokens: 5 },
+    }) as unknown as AnthropicMessage;
+
+  it.each([
+    ["max_tokens", FinishReason.MAX_TOKENS],
+    ["refusal", FinishReason.REFUSAL],
+    ["model_context_window_exceeded", FinishReason.CONTEXT_LENGTH_EXCEEDED],
+    ["end_turn", null],
+    ["pause_turn", null],
+  ])("maps stop_reason %s", (stopReason, expected) => {
+    const { finishReason } = decodeResponse(
+      responseWithStopReason(stopReason),
+      "anthropic/claude-haiku-4-5",
+    );
+
+    expect(finishReason).toBe(expected);
   });
 });
