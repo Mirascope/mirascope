@@ -208,6 +208,27 @@ describe("OpenAI-compatible streamed tool calls sharing an index", () => {
     ).toEqual(['call_a:{"a":', 'call_b:{"b":', "call_b:2}"]);
   });
 
+  it("does not reuse a slot taken by a call that shared an earlier index", () => {
+    expect(
+      summary([
+        chunk([call("call_a", '{"a":1}', "f", 0)]),
+        chunk([call("call_b", '{"b":2}', "f", 0)]),
+        chunk([call("call_c", '{"c":3}', "f", 1)]),
+        chunk([], "tool_calls"),
+      ]),
+    ).toEqual([
+      "start:call_a",
+      'call_a:{"a":1}',
+      "start:call_b",
+      'call_b:{"b":2}',
+      "start:call_c",
+      'call_c:{"c":3}',
+      "end:call_a",
+      "end:call_b",
+      "end:call_c",
+    ]);
+  });
+
   it("supports calls interleaved by index", () => {
     expect(
       summary([
