@@ -52,6 +52,13 @@ interface DecodeState {
   includeThoughts: boolean;
   /** Accumulated parts for raw message */
   accumulatedParts: unknown[];
+  /** Usage totals already emitted (Google reports running totals per chunk) */
+  prevUsage: {
+    inputTokens: number;
+    outputTokens: number;
+    cacheReadTokens: number;
+    reasoningTokens: number;
+  };
 }
 
 /**
@@ -63,6 +70,12 @@ export function createDecodeState(includeThoughts: boolean): DecodeState {
     inThoughtBlock: false,
     includeThoughts,
     accumulatedParts: [],
+    prevUsage: {
+      inputTokens: 0,
+      outputTokens: 0,
+      cacheReadTokens: 0,
+      reasoningTokens: 0,
+    },
   };
 }
 
@@ -181,17 +194,29 @@ export function decodeStreamEvent(
 
   const usage = response.usageMetadata;
   if (usage) {
+    // Gemini reports running totals in every chunk, while usage delta chunks
+    // are summed, so emit only the growth since the previous chunk.
+    const reasoningTokens =
+      usage.thoughtsTokenCount ?? /* v8 ignore next 1 */ 0;
+    const current = {
+      inputTokens: usage.promptTokenCount ?? /* v8 ignore next 1 */ 0,
+      outputTokens:
+        (usage.candidatesTokenCount ?? /* v8 ignore next 1 */ 0) +
+        reasoningTokens,
+      cacheReadTokens:
+        usage.cachedContentTokenCount ?? /* v8 ignore next 1 */ 0,
+      reasoningTokens,
+    };
+    const prev = state.prevUsage;
     chunks.push(
       usageDeltaChunk({
-        inputTokens: usage.promptTokenCount ?? /* v8 ignore next 1 */ 0,
-        outputTokens:
-          (usage.candidatesTokenCount ?? /* v8 ignore next 1 */ 0) +
-          (usage.thoughtsTokenCount ?? /* v8 ignore next 1 */ 0),
-        cacheReadTokens:
-          usage.cachedContentTokenCount ?? /* v8 ignore next 1 */ 0,
-        reasoningTokens: usage.thoughtsTokenCount ?? /* v8 ignore next 1 */ 0,
+        inputTokens: current.inputTokens - prev.inputTokens,
+        outputTokens: current.outputTokens - prev.outputTokens,
+        cacheReadTokens: current.cacheReadTokens - prev.cacheReadTokens,
+        reasoningTokens: current.reasoningTokens - prev.reasoningTokens,
       }),
     );
+    state.prevUsage = current;
   }
 
   return chunks;
@@ -212,6 +237,9 @@ function decodeFinishReason(
     case GoogleFinishReason.BLOCKLIST:
     case GoogleFinishReason.PROHIBITED_CONTENT:
     case GoogleFinishReason.SPII:
+    case GoogleFinishReason.IMAGE_SAFETY:
+    case GoogleFinishReason.IMAGE_PROHIBITED_CONTENT:
+    case GoogleFinishReason.IMAGE_RECITATION:
       return FinishReason.REFUSAL;
     /* v8 ignore end */
     case GoogleFinishReason.STOP:

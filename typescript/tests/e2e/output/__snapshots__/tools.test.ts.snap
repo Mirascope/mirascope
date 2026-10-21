@@ -875,7 +875,7 @@ exports[`tool usage with streaming > [openai:completions] streams tool calls and
       },
     ],
     "modelId": "openai/gpt-4o-mini:completions",
-    "nChunks": 44,
+    "nChunks": 43,
     "providerId": "openai",
     "providerModelName": "gpt-4o-mini:completions",
     "tools": [

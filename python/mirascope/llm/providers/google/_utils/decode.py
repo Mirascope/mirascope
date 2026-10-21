@@ -43,6 +43,9 @@ GOOGLE_FINISH_REASON_MAP = {
     "BLOCKLIST": FinishReason.REFUSAL,
     "PROHIBITED_CONTENT": FinishReason.REFUSAL,
     "SPII": FinishReason.REFUSAL,
+    "IMAGE_SAFETY": FinishReason.REFUSAL,
+    "IMAGE_PROHIBITED_CONTENT": FinishReason.REFUSAL,
+    "IMAGE_RECITATION": FinishReason.REFUSAL,
 }
 
 
@@ -74,18 +77,16 @@ def _decode_usage(
     candidate: genai_types.Candidate | None = None,
 ) -> Usage | None:
     """Convert Google UsageMetadata to Mirascope Usage."""
-    if (
-        usage is None
-        or usage.prompt_token_count is None
-        or usage.candidates_token_count is None
-    ):  # pragma: no cover
+    if usage is None:  # pragma: no cover
         return None
 
+    # Gemini omits `candidates_token_count` when it is zero, e.g. when thinking
+    # used up the whole `max_tokens` budget, so absent counts are read as zero.
     reasoning_tokens = usage.thoughts_token_count or 0
-    output_tokens = usage.candidates_token_count + reasoning_tokens
+    output_tokens = (usage.candidates_token_count or 0) + reasoning_tokens
 
     return Usage(
-        input_tokens=usage.prompt_token_count,
+        input_tokens=usage.prompt_token_count or 0,
         output_tokens=output_tokens,
         cache_read_tokens=usage.cached_content_token_count or 0,
         cache_write_tokens=0,
@@ -115,11 +116,14 @@ def _decode_content_part(part: genai_types.Part) -> AssistantContentPart | None:
         id = function_call.id
         name = function_call.name
         args = function_call.args
-        if not name or args is None:
+        if not name:
             raise ValueError(
                 "Google function_call does not match spec"
             )  # pragma: no cover
-        return ToolCall(id=id or UNKNOWN_TOOL_ID, name=name, args=json.dumps(args))
+        # Gemini omits `args` for a tool that takes no arguments
+        return ToolCall(
+            id=id or UNKNOWN_TOOL_ID, name=name, args=json.dumps(args or {})
+        )
     elif part.function_response:  # pragma: no cover
         raise NotImplementedError(
             "function_response part does not decode to AssistantContent."
