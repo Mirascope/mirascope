@@ -150,3 +150,39 @@ describe("OpenAI-compatible streamed tool calls", () => {
     ]);
   });
 });
+
+describe("OpenAI-compatible streamed empty content", () => {
+  function contentChunk(delta: Record<string, unknown>) {
+    return {
+      id: "chatcmpl-test",
+      created: 1,
+      model: "gpt-test",
+      object: "chat.completion.chunk",
+      choices: [{ index: 0, delta, finish_reason: null }],
+    } as unknown as ChatCompletionChunk;
+  }
+
+  it("does not open a text block for an empty content string", () => {
+    const state = createDecodeState();
+    const chunks = [
+      contentChunk({ role: "assistant", content: "" }),
+      contentChunk({ tool_calls: [call("call_1", "{}", "get_weather", 0)] }),
+    ].flatMap((event) => decodeStreamEvent(event, state));
+
+    expect(chunks.filter((part) => part.type.startsWith("text_"))).toEqual([]);
+    expect(chunks.map((part) => part.type)).toContain("tool_call_start_chunk");
+  });
+
+  it("still streams text that follows an empty content string", () => {
+    const state = createDecodeState();
+    const chunks = [
+      contentChunk({ content: "" }),
+      contentChunk({ content: "Hi" }),
+    ].flatMap((event) => decodeStreamEvent(event, state));
+
+    expect(chunks.filter((part) => part.type.startsWith("text_"))).toEqual([
+      { type: "text_start_chunk", contentType: "text" },
+      { type: "text_chunk", contentType: "text", delta: "Hi" },
+    ]);
+  });
+});
