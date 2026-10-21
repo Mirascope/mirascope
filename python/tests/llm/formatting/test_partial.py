@@ -231,3 +231,34 @@ def test_partial_nested_model_unions() -> None:
         "attribution": None,
         "legacy_author": None,
     }
+
+
+def test_partial_nested_generics() -> None:
+    """Partial models reach `BaseModel`s nested in unions of containers and in containers of containers."""
+
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    class Shelf(BaseModel):
+        optional_books: list[Book] | None
+        rows: list[list[Book]]
+        by_genre: dict[str, list[Book]]
+
+    PartialShelf = cast(type[Shelf], Partial[Shelf])
+
+    shelf = PartialShelf.model_validate(
+        {
+            "optional_books": [{"title": "A"}],
+            "rows": [[{"title": "B"}]],
+            "by_genre": {"fantasy": [{"title": "C"}]},
+        }
+    )
+
+    assert shelf.optional_books is not None
+    assert shelf.optional_books[0].title == "A"
+    assert shelf.optional_books[0].author is None
+    assert shelf.rows[0][0].title == "B"
+    assert shelf.rows[0][0].author is None
+    assert shelf.by_genre["fantasy"][0].title == "C"
+    assert shelf.by_genre["fantasy"][0].author is None

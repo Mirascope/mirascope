@@ -20,6 +20,29 @@ from .format import FormattableT
 _partial_model_cache: dict[type[Any], type[Any]] = {}
 
 
+def _make_partial_type(type_: Any) -> Any:  # noqa: ANN401
+    """Recursively replace `BaseModel` classes inside a type with their partial models.
+
+    Walks unions and generic containers at any depth, so that e.g.
+    `list[Book] | None`, `list[list[Book]]` and `dict[str, list[Book]]` all accept
+    incomplete `Book`s.
+    """
+    if inspect.isclass(type_) and issubclass(type_, BaseModel):
+        return Partial[type_]
+
+    origin = get_origin(type_)
+    if origin is None:
+        return type_
+
+    args = get_args(type_)
+    new_args = tuple(_make_partial_type(arg) for arg in args)
+    if new_args == args:
+        return type_
+    if origin in (Union, UnionType):
+        return Union[new_args]  # noqa: UP007 - reconstruct runtime arguments
+    return origin[new_args]
+
+
 class Partial(Generic[FormattableT]):
     """Generate a new class with all attributes optionals.
 
@@ -96,30 +119,7 @@ class Partial(Generic[FormattableT]):
         # Recursively make all fields optional
         partial_fields: dict[str, Any] = {}
         for field_name, field_info in wrapped_class.model_fields.items():
-            field_type = field_info.annotation
-
-            # Recursively handle nested BaseModel fields
-            if inspect.isclass(field_type) and issubclass(field_type, BaseModel):
-                field_type = Partial[field_type]
-
-            # Handle generic types with BaseModel args (e.g., list[Book], dict[str, Book])
-            origin = get_origin(field_type)
-            if origin is not None:
-                args = get_args(field_type)
-                # Recursively convert BaseModel args to partial
-                new_args = tuple(
-                    Partial[arg]
-                    if inspect.isclass(arg) and issubclass(arg, BaseModel)
-                    else arg
-                    for arg in args
-                )
-                # Reconstruct generic type with new args
-                if new_args != args:
-                    field_type = (
-                        Union[new_args]  # noqa: UP007 - reconstruct runtime arguments
-                        if origin in (Union, UnionType)
-                        else origin[new_args]
-                    )
+            field_type = _make_partial_type(field_info.annotation)
 
             # Make field optional with None default
             optional_type = Union[field_type, None]  # noqa: UP007
