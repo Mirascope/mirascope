@@ -8,16 +8,48 @@ serves as an acknowledgment of the original author's contribution to this projec
 --------------------------------------------------------------------------------
 """
 
+import copy
 import inspect
 from types import UnionType
-from typing import Any, Generic, NoReturn, Union, cast, get_args, get_origin
+from typing import (
+    Annotated,
+    Any,
+    ForwardRef,
+    Generic,
+    NoReturn,
+    Union,
+    cast,
+    get_args,
+    get_origin,
+)
 
-from pydantic import BaseModel, create_model
+from pydantic import BaseModel, Discriminator, Tag, create_model
+from pydantic.fields import FieldInfo
 
 from .format import FormattableT
 
 # Cache for generated partial models to avoid recreation
 _partial_model_cache: dict[type[Any], type[Any]] = {}
+
+# Models whose partial version is being built, mapped to the forward reference that
+# stands for it. A model that refers to itself (directly or through other models)
+# gets this reference instead of recursing forever.
+_partial_models_in_progress: dict[type[Any], str] = {}
+
+# Partial models created since the outermost `Partial[...]` call started, with the
+# forward reference name each one is known by. They are rebuilt together once all of
+# them exist, so that forward references between them can be resolved.
+_partial_models_created: dict[str, type[Any]] = {}
+
+
+def _without_discriminator(metadata: Any) -> Any:  # noqa: ANN401
+    """Return `metadata` without a union discriminator, or `None` if nothing is left."""
+    if isinstance(metadata, Discriminator | Tag):
+        return None
+    if isinstance(metadata, FieldInfo) and metadata.discriminator is not None:
+        metadata = copy.copy(metadata)
+        metadata.discriminator = None
+    return metadata
 
 
 def _make_partial_type(type_: Any) -> Any:  # noqa: ANN401
@@ -35,6 +67,21 @@ def _make_partial_type(type_: Any) -> Any:  # noqa: ANN401
         return type_
 
     args = get_args(type_)
+    if origin is Annotated:
+        inner, *metadata = args
+        new_inner = _make_partial_type(inner)
+        if new_inner == inner:
+            return type_
+        # The partial models make their fields optional, including the field a
+        # discriminated union tells its members apart by, so the union is left to
+        # pydantic's smart mode instead.
+        kept = [
+            item
+            for item in (_without_discriminator(entry) for entry in metadata)
+            if item is not None
+        ]
+        return Annotated[(new_inner, *kept)] if kept else new_inner
+
     new_args = tuple(_make_partial_type(arg) for arg in args)
     if new_args == args:
         return type_
@@ -116,21 +163,52 @@ class Partial(Generic[FormattableT]):
         if wrapped_class in _partial_model_cache:
             return cast(type[FormattableT], _partial_model_cache[wrapped_class])
 
-        # Recursively make all fields optional
-        partial_fields: dict[str, Any] = {}
-        for field_name, field_info in wrapped_class.model_fields.items():
-            field_type = _make_partial_type(field_info.annotation)
+        # A model that contains itself: refer to the partial model being built
+        if wrapped_class in _partial_models_in_progress:
+            return cast(
+                type[FormattableT],
+                ForwardRef(_partial_models_in_progress[wrapped_class]),
+            )
 
-            # Make field optional with None default
-            optional_type = Union[field_type, None]  # noqa: UP007
-            partial_fields[field_name] = (optional_type, None)
+        is_outermost = not _partial_models_in_progress
+        reference = f"_partial_model_{id(wrapped_class)}"
+        _partial_models_in_progress[wrapped_class] = reference
+        try:
+            # Recursively make all fields optional
+            partial_fields: dict[str, Any] = {}
+            for field_name, field_info in wrapped_class.model_fields.items():
+                field_type = _make_partial_type(field_info.annotation)
 
-        # Create new model with "Partial" prefix
-        partial_model = create_model(
-            f"Partial{wrapped_class.__name__}", __base__=BaseModel, **partial_fields
-        )
+                # Make field optional with None default
+                optional_type = Union[field_type, None]  # noqa: UP007
+                partial_fields[field_name] = (optional_type, None)
 
-        # Cache the generated model
-        _partial_model_cache[wrapped_class] = partial_model
+            # Create new model with "Partial" prefix
+            partial_model = create_model(
+                f"Partial{wrapped_class.__name__}",
+                __base__=BaseModel,
+                **partial_fields,
+            )
+
+            # Cache the generated model
+            _partial_model_cache[wrapped_class] = partial_model
+            _partial_models_created[reference] = partial_model
+        except BaseException:
+            # Don't leave models behind whose forward references were never resolved
+            for key, model in list(_partial_model_cache.items()):
+                if model in _partial_models_created.values():
+                    del _partial_model_cache[key]
+            _partial_models_created.clear()
+            raise
+        finally:
+            del _partial_models_in_progress[wrapped_class]
+
+        if is_outermost:
+            # Every partial model exists now, so forward references between them
+            # (a model that contains itself) can be resolved.
+            created = dict(_partial_models_created)
+            _partial_models_created.clear()
+            for model in created.values():
+                model.model_rebuild(force=True, _types_namespace=created)
 
         return cast(type[FormattableT], partial_model)

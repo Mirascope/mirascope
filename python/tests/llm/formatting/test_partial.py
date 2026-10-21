@@ -1,8 +1,9 @@
 """Unit tests for Partial model generation."""
 
-from typing import Union, cast
+from typing import Annotated, Any, Literal, Union, cast
 
-from pydantic import BaseModel
+import pytest
+from pydantic import BaseModel, Discriminator, Field, Tag
 
 from mirascope import llm
 from mirascope.llm.formatting import Partial
@@ -262,3 +263,183 @@ def test_partial_nested_generics() -> None:
     assert shelf.rows[0][0].author is None
     assert shelf.by_genre["fantasy"][0].title == "C"
     assert shelf.by_genre["fantasy"][0].author is None
+
+
+class _Node(BaseModel):
+    name: str
+    children: list[list["_Node"]] = []
+
+
+class _Tree(BaseModel):
+    label: str
+    branches: list["_Tree"] = []
+    parent: "_Tree | None" = None
+
+
+class _Folder(BaseModel):
+    name: str
+    files: list["_File"] = []
+
+
+class _File(BaseModel):
+    name: str
+    folder: "_Folder | None" = None
+
+
+_Node.model_rebuild()
+_Tree.model_rebuild()
+_Folder.model_rebuild()
+_File.model_rebuild()
+
+
+def test_partial_recursive_model_in_nested_containers() -> None:
+    """A model that contains itself inside `list[list[...]]` doesn't recurse forever."""
+    PartialNode = cast(type[_Node], Partial[_Node])
+
+    node = PartialNode.model_validate(
+        {"name": "root", "children": [[{"name": "leaf"}]]}
+    )
+    assert node.name == "root"
+    leaf = node.children[0][0]
+    assert type(leaf) is PartialNode
+    assert leaf.name == "leaf"
+    assert leaf.children is None
+
+
+def test_partial_self_referencing_model() -> None:
+    """Direct self references (`list[Self]`, `Optional[Self]`) become the partial model."""
+    PartialTree = cast(type[_Tree], Partial[_Tree])
+    assert Partial[_Tree] is PartialTree
+
+    tree: Any = PartialTree.model_validate(
+        {"label": "a", "branches": [{"label": "b"}], "parent": {}}
+    )
+    assert type(tree.branches[0]) is PartialTree
+    assert tree.branches[0].branches is None
+    assert type(tree.parent) is PartialTree
+    assert tree.parent.label is None
+
+
+def test_partial_mutually_recursive_models() -> None:
+    """Two models that contain each other resolve to each other's partial model."""
+    PartialFolder = cast(type[_Folder], Partial[_Folder])
+    PartialFile = cast(type[_File], Partial[_File])
+
+    folder: Any = PartialFolder.model_validate(
+        {"name": "docs", "files": [{"name": "a.md", "folder": {"name": "docs"}}]}
+    )
+    assert type(folder.files[0]) is PartialFile
+    assert type(folder.files[0].folder) is PartialFolder
+    assert folder.files[0].folder.files is None
+
+
+class _Circle(BaseModel):
+    kind: Literal["circle"]
+    radius: float
+
+
+class _Square(BaseModel):
+    kind: Literal["square"]
+    side: float
+
+
+class _Canvas(BaseModel):
+    shapes: list[Annotated[_Circle | _Square, Field(discriminator="kind")]]
+    optional_shape: Annotated[_Circle | _Square, Field(discriminator="kind")] | None = (
+        None
+    )
+    main: Annotated[_Circle | _Square, Field(discriminator="kind")]
+
+
+def test_partial_discriminated_unions_in_containers() -> None:
+    """A discriminated union nested in a container still builds, with partial members."""
+    PartialCanvas = cast(type[_Canvas], Partial[_Canvas])
+
+    canvas: Any = PartialCanvas.model_validate(
+        {
+            "shapes": [{"kind": "circle"}, {"kind": "square", "side": 2}],
+            "optional_shape": {"kind": "circle", "radius": 1},
+            "main": {"kind": "square"},
+        }
+    )
+    assert [type(shape) for shape in canvas.shapes] == [
+        Partial[_Circle],
+        Partial[_Square],
+    ]
+    assert canvas.shapes[1].side == 2
+    assert canvas.optional_shape.radius == 1
+    assert canvas.main.side is None
+
+
+def test_partial_recursive_model_still_builds() -> None:
+    """Regression: `Partial[Model]` for a model with `list[list[Model]]` must not recurse."""
+    PartialNode = cast(type[_Node], Partial[_Node])
+    node = PartialNode.model_validate(
+        {"name": "root", "children": [[{"name": "leaf"}]]}
+    )
+    assert node.children[0][0].name == "leaf"
+
+
+def test_partial_discriminated_union_in_container_still_builds() -> None:
+    """Regression: a discriminated union in a container must not raise PydanticUserError."""
+    PartialCanvas = cast(type[_Canvas], Partial[_Canvas])
+    canvas: Any = PartialCanvas.model_validate(
+        {
+            "shapes": [{"kind": "circle", "radius": 1}],
+            "main": {"kind": "square", "side": 2},
+        }
+    )
+    assert canvas.shapes[0].radius == 1
+    assert canvas.main.side == 2
+
+
+def _shape_kind(value: Any) -> str:  # noqa: ANN401
+    return value["kind"] if isinstance(value, dict) else value.kind
+
+
+class _TaggedCanvas(BaseModel):
+    shapes: list[
+        Annotated[
+            Annotated[_Circle, Tag("circle")] | Annotated[_Square, Tag("square")],
+            Discriminator(_shape_kind),
+        ]
+    ]
+
+
+def test_partial_callable_discriminated_unions_in_containers() -> None:
+    """Callable discriminators and tags are dropped along with field discriminators."""
+    PartialTaggedCanvas = cast(type[_TaggedCanvas], Partial[_TaggedCanvas])
+    canvas: Any = PartialTaggedCanvas.model_validate(
+        {"shapes": [{"kind": "circle"}, {"kind": "square", "side": 2}]}
+    )
+    assert [type(shape) for shape in canvas.shapes] == [
+        Partial[_Circle],
+        Partial[_Square],
+    ]
+
+
+def test_partial_failed_build_leaves_no_state(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A failing build doesn't leave half-built models in the cache or the in-progress map."""
+    from mirascope.llm.formatting import partial as partial_module
+
+    class Inner(BaseModel):
+        value: int
+
+    class Outer(BaseModel):
+        inner: Inner
+
+    def failing_create_model(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+        if kwargs.get("__base__") is BaseModel and "value" not in kwargs:
+            raise RuntimeError("boom")
+        return original_create_model(*args, **kwargs)
+
+    original_create_model = partial_module.create_model
+    monkeypatch.setattr(partial_module, "create_model", failing_create_model)
+
+    with pytest.raises(RuntimeError, match="boom"):
+        Partial[Outer]
+
+    assert partial_module._partial_models_in_progress == {}  # pyright: ignore[reportPrivateUsage]
+    assert partial_module._partial_models_created == {}  # pyright: ignore[reportPrivateUsage]
+    assert Inner not in partial_module._partial_model_cache  # pyright: ignore[reportPrivateUsage]
+    assert Outer not in partial_module._partial_model_cache  # pyright: ignore[reportPrivateUsage]
