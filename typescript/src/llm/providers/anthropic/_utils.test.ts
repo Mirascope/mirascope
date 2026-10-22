@@ -21,6 +21,7 @@ import {
   FeatureNotSupportedError,
   NotFoundError,
   PermissionError,
+  ProviderError,
   RateLimitError,
   ServerError,
   TimeoutError,
@@ -1173,5 +1174,24 @@ describe("decodeResponse finish reasons", () => {
     );
 
     expect(finishReason).toBe(expected);
+  });
+});
+
+describe("ANTHROPIC_ERROR_MAP catch-all", () => {
+  const mapped = (error: Error) => {
+    for (const [SdkError, MirascopeError] of ANTHROPIC_ERROR_MAP) {
+      if (error instanceof SdkError) return MirascopeError;
+    }
+    return undefined;
+  };
+
+  it("maps a non-HTTP AnthropicError to ProviderError like the Python provider", () => {
+    expect(mapped(new Anthropic.AnthropicError("bad request options"))).toBe(
+      ProviderError,
+    );
+  });
+
+  it("leaves errors from outside the SDK unmapped", () => {
+    expect(mapped(new Error("unrelated"))).toBeUndefined();
   });
 });
