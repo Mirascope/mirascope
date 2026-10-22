@@ -25,11 +25,13 @@ vi.mock("@google/genai", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@google/genai")>();
   return {
     ...actual,
-    GoogleGenAI: vi.fn().mockImplementation(() => ({
-      models: {
-        generateContent: vi.fn(),
-      },
-    })),
+    GoogleGenAI: vi.fn().mockImplementation(function () {
+      return {
+        models: {
+          generateContent: vi.fn(),
+        },
+      };
+    }),
   };
 });
 

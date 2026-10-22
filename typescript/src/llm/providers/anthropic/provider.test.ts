@@ -27,11 +27,13 @@ vi.mock("@anthropic-ai/sdk", async (importOriginal) => {
   const mockCreate = vi.fn();
 
   // Create a mock class that mimics Anthropic client
-  const MockAnthropic = vi.fn().mockImplementation(() => ({
-    messages: {
-      create: mockCreate,
-    },
-  }));
+  const MockAnthropic = vi.fn().mockImplementation(function () {
+    return {
+      messages: {
+        create: mockCreate,
+      },
+    };
+  });
 
   // Attach the error classes to the mock
   Object.assign(MockAnthropic, {
