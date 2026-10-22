@@ -757,7 +757,12 @@ function decodeUsage(response: GenerateContentResponse): Usage | null {
 
   /* v8 ignore start - token counts always present in practice, fallbacks are defensive */
   return createUsage({
-    inputTokens: metadata.promptTokenCount ?? 0,
+    // Tokens of tool results (URL context, search, code execution) given back to the
+    // model are reported apart from `promptTokenCount` but are input too:
+    // `totalTokenCount` sums both.
+    inputTokens:
+      (metadata.promptTokenCount ?? 0) +
+      (metadata.toolUsePromptTokenCount ?? 0),
     outputTokens:
       (metadata.candidatesTokenCount ?? 0) + (metadata.thoughtsTokenCount ?? 0),
     cacheReadTokens: metadata.cachedContentTokenCount ?? 0,

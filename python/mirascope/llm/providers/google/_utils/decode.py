@@ -85,8 +85,12 @@ def _decode_usage(
     reasoning_tokens = usage.thoughts_token_count or 0
     output_tokens = (usage.candidates_token_count or 0) + reasoning_tokens
 
+    # Tokens of tool results (URL context, search, code execution) given back to the
+    # model are reported apart from `prompt_token_count` but are input too:
+    # `total_token_count` sums both.
     return Usage(
-        input_tokens=usage.prompt_token_count or 0,
+        input_tokens=(usage.prompt_token_count or 0)
+        + (usage.tool_use_prompt_token_count or 0),
         output_tokens=output_tokens,
         cache_read_tokens=usage.cached_content_token_count or 0,
         cache_write_tokens=0,
@@ -301,7 +305,9 @@ class _GoogleChunkProcessor:
         # Emit usage delta if usage metadata is present
         if chunk.usage_metadata:
             usage_metadata = chunk.usage_metadata
-            current_input = usage_metadata.prompt_token_count or 0
+            current_input = (usage_metadata.prompt_token_count or 0) + (
+                usage_metadata.tool_use_prompt_token_count or 0
+            )
             current_reasoning = usage_metadata.thoughts_token_count or 0
             current_output = (
                 usage_metadata.candidates_token_count or 0
