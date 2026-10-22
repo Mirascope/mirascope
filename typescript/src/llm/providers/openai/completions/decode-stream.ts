@@ -151,7 +151,8 @@ export function decodeStreamEvent(
         slot = latest;
       }
 
-      if (!state.currentTools.has(slot)) {
+      let currentToolId = state.currentTools.get(slot);
+      if (currentToolId === undefined) {
         const name = toolCallDelta.function?.name;
         const toolId = toolCallDelta.id;
         /* v8 ignore start - defensive check for malformed streams */
@@ -169,18 +170,17 @@ export function decodeStreamEvent(
             chunks.push(toolCallEnd(openId));
           }
           state.currentTools.clear();
+          state.indexSlots.clear();
         }
         state.currentTools.set(slot, toolId);
+        currentToolId = toolId;
         chunks.push(toolCallStart(toolId, name));
       }
 
       // Emit tool call argument chunk if present
       if (toolCallDelta.function?.arguments) {
         chunks.push(
-          toolCallChunk(
-            state.currentTools.get(slot)!,
-            toolCallDelta.function.arguments,
-          ),
+          toolCallChunk(currentToolId, toolCallDelta.function.arguments),
         );
       }
     }
