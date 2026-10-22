@@ -50,6 +50,7 @@ vi.mock("@anthropic-ai/sdk", async (importOriginal) => {
     InternalServerError: actual.default.InternalServerError,
     APIError: actual.default.APIError,
     APIConnectionTimeoutError: actual.default.APIConnectionTimeoutError,
+    AnthropicError: actual.default.AnthropicError,
     APIConnectionError: actual.default.APIConnectionError,
   });
 
