@@ -122,6 +122,7 @@ class _OpenAIChunkProcessor:
     def __init__(self) -> None:
         self.current_content_type: Literal["text", "tool_call"] | None = None
         self.current_tools: dict[int, tuple[str, str]] = {}
+        self.index_slots: dict[int, int] = {}
         self.refusal_encountered = False
 
     def _tool_call_index(
@@ -129,17 +130,29 @@ class _OpenAIChunkProcessor:
     ) -> int:
         """Returns the slot of a streamed tool call delta.
 
-        Gemini's OpenAI-compatible endpoint streams every parallel tool call whole
-        and without an index, which the client reads as `None`. Such a delta starts a
-        new call when it brings an id other than the latest call's, and otherwise
-        continues the latest call.
+        A provider may reuse one index for several calls, so map its index to a
+        separate slot when a new id arrives. Gemini's OpenAI-compatible endpoint
+        also omits indexes; those fragments continue the latest call unless a new
+        id starts another one.
         """
         index = getattr(tool_call_delta, "index", None)
+        latest = max(self.current_tools, default=-1)
         if index is not None:
-            return index
-        if not self.current_tools:
+            mapped = self.index_slots.get(index)
+            if mapped is None:
+                slot = latest + 1 if index in self.current_tools else index
+            elif (
+                tool_call_delta.id
+                and mapped in self.current_tools
+                and tool_call_delta.id != self.current_tools[mapped][0]
+            ):
+                slot = latest + 1
+            else:
+                slot = mapped
+            self.index_slots[index] = slot
+            return slot
+        if latest < 0:
             return 0
-        latest = max(self.current_tools)
         if tool_call_delta.id and tool_call_delta.id != self.current_tools[latest][0]:
             return latest + 1
         return latest
@@ -224,6 +237,7 @@ class _OpenAIChunkProcessor:
                 for tool_id, _tool_name in self.current_tools.values():
                     yield ToolCallEndChunk(id=tool_id)
                 self.current_tools.clear()
+                self.index_slots.clear()
             elif self.current_content_type is not None:  # pragma: no cover
                 raise NotImplementedError()
 
