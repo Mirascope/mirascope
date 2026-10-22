@@ -568,11 +568,11 @@ It's worth noting that some analyses from December 2025 suggested a plausible pr
     "usage": {
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
-      "inputTokens": 69,
+      "inputTokens": 206,
       "outputTokens": 358,
       "raw": "[object Object]",
       "reasoningTokens": 33,
-      "totalTokens": 427,
+      "totalTokens": 564,
     },
   },
 }
@@ -668,11 +668,11 @@ exports[`WebSearchTool > [google] streams with web search tool 1`] = `
     "usage": {
       "cacheReadTokens": 0,
       "cacheWriteTokens": 0,
-      "inputTokens": 69,
+      "inputTokens": 232,
       "outputTokens": 708,
       "raw": "null",
       "reasoningTokens": 579,
-      "totalTokens": 777,
+      "totalTokens": 940,
     },
   },
 }
