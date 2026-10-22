@@ -249,6 +249,32 @@ a nested Pydantic model as input.\
 
 
 @pytest.mark.asyncio
+async def test_preserves_external_tool_schema_defs() -> None:
+    """A server may still return schema references even though FastMCP inlines them."""
+    schema = {
+        "type": "object",
+        "properties": {"payload": {"$ref": "#/$defs/Payload"}},
+        "required": ["payload"],
+        "$defs": {
+            "Payload": {
+                "type": "object",
+                "properties": {"value": {"type": "string"}},
+                "required": ["value"],
+            }
+        },
+    }
+    page = ListToolsResult(tools=[MCPTool(name="nested", inputSchema=schema)])
+    server = _paginated_server([page], [])
+
+    async with create_connected_server_and_client_session(server) as session:
+        tools = await llm.mcp.MCPClient(session).list_tools()
+
+    assert len(tools) == 1
+    assert tools[0].parameters.properties == schema["properties"]
+    assert tools[0].parameters.defs == schema["$defs"]
+
+
+@pytest.mark.asyncio
 class TestMCPToolPagination:
     @pytest.mark.parametrize(
         ("pages", "expected_names", "expected_cursors"),
