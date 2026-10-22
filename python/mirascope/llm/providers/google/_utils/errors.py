@@ -1,5 +1,6 @@
 """Google error handling utilities."""
 
+import httpx
 from google.genai.errors import (
     ClientError as GoogleClientError,
     ServerError as GoogleServerError,
@@ -9,11 +10,13 @@ from ....exceptions import (
     APIError,
     AuthenticationError,
     BadRequestError,
+    ConnectionError,
     NotFoundError,
     PermissionError,
     ProviderError,
     RateLimitError,
     ServerError,
+    TimeoutError,
 )
 from ...base import ProviderErrorMap
 
@@ -47,4 +50,7 @@ def map_google_error(e: Exception) -> type[ProviderError]:
 GOOGLE_ERROR_MAP: ProviderErrorMap = {
     GoogleClientError: map_google_error,
     GoogleServerError: map_google_error,
+    # The google-genai client lets httpx transport errors through unwrapped.
+    httpx.TimeoutException: TimeoutError,
+    httpx.TransportError: ConnectionError,
 }
