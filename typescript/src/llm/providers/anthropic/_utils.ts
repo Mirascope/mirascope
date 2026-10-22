@@ -43,6 +43,7 @@ import {
   FeatureNotSupportedError,
   NotFoundError,
   PermissionError,
+  ProviderError,
   RateLimitError,
   ServerError,
   TimeoutError,
@@ -213,6 +214,8 @@ export const ANTHROPIC_ERROR_MAP: ProviderErrorMap = [
   [Anthropic.APIConnectionTimeoutError, TimeoutError],
   [Anthropic.APIConnectionError, ConnectionError],
   [Anthropic.APIError, APIError],
+  // Catch-all for the SDK's non-HTTP errors, as in the Python provider's map.
+  [Anthropic.AnthropicError, ProviderError],
 ];
 
 // ============================================================================
