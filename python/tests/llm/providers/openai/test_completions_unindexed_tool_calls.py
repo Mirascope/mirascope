@@ -35,8 +35,11 @@ def make_chunk(
     )
 
 
-def tool_delta(id: str | None, name: str | None, arguments: str) -> dict[str, Any]:
+def tool_delta(
+    id: str | None, name: str | None, arguments: str, index: int | None = None
+) -> dict[str, Any]:
     return {
+        **({"index": index} if index is not None else {}),
         "id": id,
         "type": "function" if id else None,
         "function": {"name": name, "arguments": arguments},
@@ -82,4 +85,26 @@ def test_stream_tool_call_fragments_without_index_continue_the_last_call() -> No
     ) == [
         ("call_paris", '{"city": "Paris"}'),
         ("call_london", '{"city": "London"}'),
+    ]
+
+
+def test_stream_tool_calls_with_one_reused_index_remain_separate() -> None:
+    assert stream_tool_calls(
+        [
+            make_chunk(
+                [
+                    tool_delta("call_paris", "get_weather", '{"city": "Paris"}', 0),
+                    tool_delta("call_london", "get_weather", '{"city": ', 0),
+                ]
+            ),
+            make_chunk([tool_delta(None, None, '"London"}', 0)]),
+            make_chunk(
+                [tool_delta("call_berlin", "get_weather", '{"city": "Berlin"}', 1)]
+            ),
+            make_chunk([], finish_reason="tool_calls"),
+        ]
+    ) == [
+        ("call_paris", '{"city": "Paris"}'),
+        ("call_london", '{"city": "London"}'),
+        ("call_berlin", '{"city": "Berlin"}'),
     ]
