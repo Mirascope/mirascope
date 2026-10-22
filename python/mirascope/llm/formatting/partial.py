@@ -8,6 +8,8 @@ serves as an acknowledgment of the original author's contribution to this projec
 --------------------------------------------------------------------------------
 """
 
+import ast
+import builtins
 import copy
 import inspect
 import sys
@@ -58,18 +60,74 @@ def _without_discriminator(metadata: Any) -> Any:  # noqa: ANN401
     return metadata
 
 
+_UNRESOLVED = object()
+
+
+def _resolve_annotation(node: ast.expr, namespace: dict[str, Any]) -> Any:  # noqa: ANN401
+    """Resolve the parsed form of an annotation, or return `_UNRESOLVED`.
+
+    Only names, dotted names, subscripts of classes or typing generics, `|` unions, `None` and
+    nested string references are understood. Calls and every other expression are never
+    evaluated.
+    """
+    if isinstance(node, ast.Constant):
+        if node.value is None:
+            return None
+        if isinstance(node.value, str):
+            return _resolve_annotation_string(node.value, namespace)
+        return _UNRESOLVED
+    if isinstance(node, ast.Name):
+        if node.id in namespace:
+            return namespace[node.id]
+        builtin = getattr(builtins, node.id, None)
+        return builtin if inspect.isclass(builtin) else _UNRESOLVED
+    if isinstance(node, ast.Attribute):
+        value = _resolve_annotation(node.value, namespace)
+        if not (inspect.ismodule(value) or inspect.isclass(value)):
+            return _UNRESOLVED
+        return getattr(value, node.attr, _UNRESOLVED)
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.BitOr):
+        left = _resolve_annotation(node.left, namespace)
+        right = _resolve_annotation(node.right, namespace)
+        if left is _UNRESOLVED or right is _UNRESOLVED:
+            return _UNRESOLVED
+        return Union[left, right]  # noqa: UP007 - reconstruct runtime arguments
+    if isinstance(node, ast.Subscript):
+        base = _resolve_annotation(node.value, namespace)
+        if not (inspect.isclass(base) or getattr(base, "__module__", None) == "typing"):
+            return _UNRESOLVED
+        index = node.slice
+        elements = index.elts if isinstance(index, ast.Tuple) else [index]
+        args = tuple(_resolve_annotation(element, namespace) for element in elements)
+        if any(arg is _UNRESOLVED for arg in args):
+            return _UNRESOLVED
+        try:
+            return base[args if len(args) > 1 else args[0]]
+        except TypeError:
+            return _UNRESOLVED
+    return _UNRESOLVED
+
+
+def _resolve_annotation_string(expression: str, namespace: dict[str, Any]) -> Any:  # noqa: ANN401
+    """Resolve an annotation written as a string, or return `_UNRESOLVED`."""
+    try:
+        tree = ast.parse(expression.strip(), mode="eval")
+    except SyntaxError:
+        return _UNRESOLVED
+    return _resolve_annotation(tree.body, namespace)
+
+
 def _resolve_forward_reference(type_: Any, namespace: dict[str, Any]) -> Any:  # noqa: ANN401
-    """Evaluate a string or `ForwardRef` annotation, or return it unchanged if it can't be.
+    """Resolve a string or `ForwardRef` annotation, or return it unchanged if it can't be.
 
     Before Python 3.11, a reference nested in a builtin generic (`list[list["Node"]]`)
     stays a string in the field's annotation, so it has to be resolved here for the
-    models inside it to become partial.
+    models inside it to become partial. The string is parsed and only the supported
+    forms are resolved; it is never evaluated.
     """
     expression = type_ if isinstance(type_, str) else type_.__forward_arg__
-    try:
-        return eval(expression, namespace)  # noqa: S307 - the model's own annotation
-    except Exception:  # noqa: BLE001
-        return type_
+    resolved = _resolve_annotation_string(expression, namespace)
+    return type_ if resolved is _UNRESOLVED else resolved
 
 
 def _make_partial_type(type_: Any, namespace: dict[str, Any]) -> Any:  # noqa: ANN401

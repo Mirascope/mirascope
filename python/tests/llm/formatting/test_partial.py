@@ -541,3 +541,71 @@ def test_partial_resolves_string_and_forward_reference_annotations() -> None:
     assert _make_partial_type(ForwardRef("_Circle"), namespace) is Partial[_Circle]
     assert _make_partial_type("list[_Circle]", namespace) == list[Partial[_Circle]]
     assert _make_partial_type("Unknown", namespace) == "Unknown"
+
+
+def test_partial_does_not_evaluate_forward_reference_strings() -> None:
+    """Annotation strings are parsed, never evaluated: calls in them are not run."""
+    from mirascope.llm.formatting.partial import (
+        _make_partial_type,  # pyright: ignore[reportPrivateUsage]
+    )
+
+    calls: list[str] = []
+
+    def boom() -> type[_Circle]:
+        calls.append("called")
+        return _Circle
+
+    namespace = {"_Circle": _Circle, "boom": boom}
+    assert _make_partial_type("boom()", namespace) == "boom()"
+    assert _make_partial_type("list[boom()]", namespace) == "list[boom()]"
+    assert _make_partial_type("__import__('os').getcwd()", namespace) == (
+        "__import__('os').getcwd()"
+    )
+    assert calls == []
+
+
+def test_partial_resolves_supported_forward_reference_forms() -> None:
+    """Names, unions, subscripts, dotted names and nested strings are resolved."""
+    from mirascope.llm.formatting.partial import (
+        _make_partial_type,  # pyright: ignore[reportPrivateUsage]
+    )
+
+    namespace = {"_Circle": _Circle, "typing": __import__("typing")}
+    assert _make_partial_type("_Circle | None", namespace) == (Partial[_Circle] | None)
+    assert (
+        _make_partial_type("dict[str, _Circle]", namespace)
+        == dict[str, Partial[_Circle]]
+    )
+    assert _make_partial_type("list['_Circle']", namespace) == list[Partial[_Circle]]
+    assert _make_partial_type("typing.Optional[_Circle]", namespace) == (
+        Partial[_Circle] | None
+    )
+    assert _make_partial_type("list[", namespace) == "list["
+
+
+@pytest.mark.parametrize(
+    "annotation",
+    [
+        "1",  # a constant that is neither None nor a string
+        "-1",  # an expression form that is not supported
+        "len",  # a builtin that is not a class
+        "Unknown",  # a name that is not defined
+        "unknown.attribute",  # an attribute of something that is not defined
+        "boom.attribute",  # an attribute of something that is not a module or a class
+        "_Circle | Unknown",  # a union with a side that can't be resolved
+        "boom[int]",  # a subscript of something that is not a class or a typing generic
+        "list[Unknown]",  # a subscript with an argument that can't be resolved
+        "int[str]",  # a subscript the class doesn't support
+        "list['((']",  # a nested string that is not valid Python
+    ],
+)
+def test_partial_leaves_unsupported_forward_references_alone(annotation: str) -> None:
+    """Annotation strings that can't be resolved safely are returned unchanged."""
+    from mirascope.llm.formatting.partial import (
+        _make_partial_type,  # pyright: ignore[reportPrivateUsage]
+    )
+
+    def boom() -> None: ...
+
+    namespace = {"_Circle": _Circle, "boom": boom}
+    assert _make_partial_type(annotation, namespace) == annotation
