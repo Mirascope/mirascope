@@ -16,7 +16,7 @@ test_snapshot = snapshot(
             "params": {},
             "finish_reason": None,
             "usage": {
-                "input_tokens": 89,
+                "input_tokens": 254,
                 "output_tokens": 584,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
@@ -33,7 +33,7 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
   token_count=165
 )] total_token_count=838 traffic_type=None\
 """,
-                "total_tokens": 673,
+                "total_tokens": 838,
             },
             "messages": [
                 UserMessage(
