@@ -98,11 +98,14 @@ def _resolve_annotation(node: ast.expr, namespace: dict[str, Any]) -> Any:  # no
             return _UNRESOLVED
         index = node.slice
         elements = index.elts if isinstance(index, ast.Tuple) else [index]
-        args = tuple(_resolve_annotation(element, namespace) for element in elements)
+        args: tuple[Any, ...] = tuple(
+            _resolve_annotation(element, namespace) for element in elements
+        )
         if any(arg is _UNRESOLVED for arg in args):
             return _UNRESOLVED
+        generic: Any = base
         try:
-            return base[args if len(args) > 1 else args[0]]
+            return generic[args[0] if len(args) == 1 else args]
         except TypeError:
             return _UNRESOLVED
     return _UNRESOLVED
