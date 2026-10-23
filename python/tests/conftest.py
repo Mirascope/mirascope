@@ -29,6 +29,7 @@ def load_api_keys() -> None:
     os.environ.setdefault("MINIMAX_API_KEY", "dummy-minimax-key")
     os.environ.setdefault("OPENAI_API_KEY", "dummy-openai-key")
     os.environ.setdefault("OPENROUTER_API_KEY", "dummy-openrouter-key")
+    os.environ.setdefault("OPPER_API_KEY", "dummy-opper-key")
     os.environ.setdefault("REQUESTY_API_KEY", "dummy-requesty-key")
     os.environ.setdefault("TOGETHER_API_KEY", "dummy-together-key")
     os.environ.setdefault("XAI_API_KEY", "dummy-xai-key")

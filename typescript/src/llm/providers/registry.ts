@@ -21,6 +21,7 @@ import {
   AtlasCloudProvider,
   CheaperInferenceProvider,
   MiniMaxProvider,
+  OpperProvider,
   RequestyProvider,
 } from "@/llm/providers/openai-compatible";
 import { OpenAIProvider } from "@/llm/providers/openai/provider";
@@ -90,6 +91,7 @@ const DEFAULT_AUTO_REGISTER_SCOPES: Record<string, ProviderDefault[]> = {
   "openrouter/": [
     { providerId: "openrouter", apiKeyEnvVar: "OPENROUTER_API_KEY" },
   ],
+  "opper/": [{ providerId: "opper", apiKeyEnvVar: "OPPER_API_KEY" }],
   "requesty/": [{ providerId: "requesty", apiKeyEnvVar: "REQUESTY_API_KEY" }],
   "together/": [{ providerId: "together", apiKeyEnvVar: "TOGETHER_API_KEY" }],
   "xai/": [{ providerId: "xai", apiKeyEnvVar: "XAI_API_KEY" }],
@@ -178,6 +180,9 @@ export function getProviderSingleton(
         apiKey: options?.apiKey,
         baseURL: options?.baseURL,
       });
+      break;
+    case "opper":
+      provider = new OpperProvider(options);
       break;
     case "requesty":
       provider = new RequestyProvider(options);
