@@ -12,6 +12,7 @@ import {
   BadRequestError,
   NotFoundError,
   PermissionError,
+  ProviderError,
   RateLimitError,
   ServerError,
   APIError,
@@ -47,6 +48,7 @@ vi.mock("openai", async (importOriginal) => {
     APIError: actual.default.APIError,
     APIConnectionError: actual.default.APIConnectionError,
     APIConnectionTimeoutError: actual.default.APIConnectionTimeoutError,
+    OpenAIError: actual.default.OpenAIError,
     UnprocessableEntityError: actual.default.UnprocessableEntityError,
     ConflictError: actual.default.ConflictError,
   });
@@ -243,6 +245,22 @@ describe("OpenAICompletionsProvider", () => {
       await expect(callPromise).rejects.toBeInstanceOf(TimeoutError);
       await expect(callPromise).rejects.toMatchObject({
         provider: "openai",
+      });
+    });
+
+    it("wraps a non-HTTP OpenAIError as ProviderError", async () => {
+      const sdkError = new OpenAI.OpenAIError("bad request options");
+      mockCreate.mockRejectedValueOnce(sdkError);
+
+      const callPromise = provider.call({
+        modelId: "openai/gpt-4o",
+        messages: [user("Hello")],
+      });
+
+      await expect(callPromise).rejects.toBeInstanceOf(ProviderError);
+      await expect(callPromise).rejects.toMatchObject({
+        provider: "openai",
+        originalException: sdkError,
       });
     });
 
