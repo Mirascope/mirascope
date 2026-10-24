@@ -2,6 +2,7 @@
 
 from openai.types import CompletionUsage
 from openai.types.responses import ResponseUsage
+from openai.types.responses.response_usage import InputTokensDetails
 
 from mirascope.llm.providers.openai.completions._utils import decode as completions
 from mirascope.llm.providers.openai.responses._utils import decode as responses
@@ -56,13 +57,17 @@ def test_responses_usage_has_cache_write_tokens() -> None:
 
 
 def test_responses_usage_without_cache_write_tokens() -> None:
+    # `cache_write_tokens` is a required field from openai 2.54.0 and absent before it, so
+    # the details are constructed without validation to model a payload that omits it.
     usage = responses._decode_usage(  # pyright: ignore[reportPrivateUsage]
         ResponseUsage.model_validate(
             {
                 "input_tokens": 10,
                 "output_tokens": 5,
                 "total_tokens": 15,
-                "input_tokens_details": {"cached_tokens": 2},
+                "input_tokens_details": InputTokensDetails.model_construct(
+                    cached_tokens=2
+                ),
                 "output_tokens_details": {"reasoning_tokens": 0},
             }
         )
