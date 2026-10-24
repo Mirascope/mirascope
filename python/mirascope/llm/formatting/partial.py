@@ -8,16 +8,175 @@ serves as an acknowledgment of the original author's contribution to this projec
 --------------------------------------------------------------------------------
 """
 
+import ast
+import builtins
+import copy
 import inspect
+import sys
+import threading
 from types import UnionType
-from typing import Any, Generic, NoReturn, Union, cast, get_args, get_origin
+from typing import (
+    Annotated,
+    Any,
+    ForwardRef,
+    Generic,
+    Literal,
+    NoReturn,
+    Union,
+    get_args,
+    get_origin,
+)
 
-from pydantic import BaseModel, create_model
+from pydantic import BaseModel, Discriminator, Tag, create_model
+from pydantic.fields import FieldInfo
 
 from .format import FormattableT
 
 # Cache for generated partial models to avoid recreation
 _partial_model_cache: dict[type[Any], type[Any]] = {}
+
+# Building is not thread safe on its own (it shares the in-progress state below), so the
+# whole construction runs under this lock. It is reentrant because a model that contains
+# other models builds their partial versions from inside its own construction.
+_partial_lock = threading.RLock()
+
+# Models whose partial version is being built, mapped to the forward reference that
+# stands for it. A model that refers to itself (directly or through other models)
+# gets this reference instead of recursing forever.
+_partial_models_in_progress: dict[type[Any], str] = {}
+
+# Partial models created since the outermost `Partial[...]` call started, with the
+# forward reference name each one is known by. They are rebuilt together once all of
+# them exist, so that forward references between them can be resolved.
+_partial_models_created: dict[str, type[Any]] = {}
+
+
+def _without_discriminator(metadata: Any) -> Any:  # noqa: ANN401
+    """Return `metadata` without a union discriminator, or `None` if nothing is left."""
+    if isinstance(metadata, Discriminator | Tag):
+        return None
+    if isinstance(metadata, FieldInfo) and metadata.discriminator is not None:
+        metadata = copy.copy(metadata)
+        metadata.discriminator = None
+    return metadata
+
+
+_UNRESOLVED = object()
+
+
+def _resolve_annotation(node: ast.expr, namespace: dict[str, Any]) -> Any:  # noqa: ANN401
+    """Resolve the parsed form of an annotation, or return `_UNRESOLVED`.
+
+    Only names, dotted names, subscripts of classes or typing generics, `|` unions, `None` and
+    nested string references are understood. Calls and every other expression are never
+    evaluated.
+    """
+    if isinstance(node, ast.Constant):
+        if node.value is None:
+            return None
+        if isinstance(node.value, str):
+            return _resolve_annotation_string(node.value, namespace)
+        return _UNRESOLVED
+    if isinstance(node, ast.Name):
+        if node.id in namespace:
+            return namespace[node.id]
+        builtin = getattr(builtins, node.id, None)
+        return builtin if inspect.isclass(builtin) else _UNRESOLVED
+    if isinstance(node, ast.Attribute):
+        value = _resolve_annotation(node.value, namespace)
+        if not (inspect.ismodule(value) or inspect.isclass(value)):
+            return _UNRESOLVED
+        return getattr(value, node.attr, _UNRESOLVED)
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.BitOr):
+        left = _resolve_annotation(node.left, namespace)
+        right = _resolve_annotation(node.right, namespace)
+        if left is _UNRESOLVED or right is _UNRESOLVED:
+            return _UNRESOLVED
+        return Union[left, right]  # noqa: UP007 - reconstruct runtime arguments
+    if isinstance(node, ast.Subscript):
+        base = _resolve_annotation(node.value, namespace)
+        if not (inspect.isclass(base) or getattr(base, "__module__", None) == "typing"):
+            return _UNRESOLVED
+        index = node.slice
+        elements = index.elts if isinstance(index, ast.Tuple) else [index]
+        args: tuple[Any, ...] = tuple(
+            _resolve_annotation(element, namespace) for element in elements
+        )
+        if any(arg is _UNRESOLVED for arg in args):
+            return _UNRESOLVED
+        generic: Any = base
+        try:
+            return generic[args[0] if len(args) == 1 else args]
+        except TypeError:
+            return _UNRESOLVED
+    return _UNRESOLVED
+
+
+def _resolve_annotation_string(expression: str, namespace: dict[str, Any]) -> Any:  # noqa: ANN401
+    """Resolve an annotation written as a string, or return `_UNRESOLVED`."""
+    try:
+        tree = ast.parse(expression.strip(), mode="eval")
+    except SyntaxError:
+        return _UNRESOLVED
+    return _resolve_annotation(tree.body, namespace)
+
+
+def _resolve_forward_reference(type_: Any, namespace: dict[str, Any]) -> Any:  # noqa: ANN401
+    """Resolve a string or `ForwardRef` annotation, or return it unchanged if it can't be.
+
+    Before Python 3.11, a reference nested in a builtin generic (`list[list["Node"]]`)
+    stays a string in the field's annotation, so it has to be resolved here for the
+    models inside it to become partial. The string is parsed and only the supported
+    forms are resolved; it is never evaluated.
+    """
+    expression = type_ if isinstance(type_, str) else type_.__forward_arg__
+    resolved = _resolve_annotation_string(expression, namespace)
+    return type_ if resolved is _UNRESOLVED else resolved
+
+
+def _make_partial_type(type_: Any, namespace: dict[str, Any]) -> Any:  # noqa: ANN401
+    """Recursively replace `BaseModel` classes inside a type with their partial models.
+
+    Walks unions and generic containers at any depth, so that e.g.
+    `list[Book] | None`, `list[list[Book]]` and `dict[str, list[Book]]` all accept
+    incomplete `Book`s. Forward references are looked up in `namespace`.
+    """
+    if isinstance(type_, str | ForwardRef):
+        resolved = _resolve_forward_reference(type_, namespace)
+        if resolved is type_:
+            return type_
+        type_ = resolved
+
+    if inspect.isclass(type_) and issubclass(type_, BaseModel):
+        return Partial[type_]
+
+    origin = get_origin(type_)
+    # The members of a `Literal` are values, not annotations: a string like "int" must stay one.
+    if origin is None or origin is Literal:
+        return type_
+
+    args = get_args(type_)
+    if origin is Annotated:
+        inner, *metadata = args
+        new_inner = _make_partial_type(inner, namespace)
+        if new_inner == inner:
+            return type_
+        # The partial models make their fields optional, including the field a
+        # discriminated union tells its members apart by, so the union is left to
+        # pydantic's smart mode instead.
+        kept = [
+            item
+            for item in (_without_discriminator(entry) for entry in metadata)
+            if item is not None
+        ]
+        return Annotated[(new_inner, *kept)] if kept else new_inner
+
+    new_args = tuple(_make_partial_type(arg, namespace) for arg in args)
+    if new_args == args:
+        return type_
+    if origin in (Union, UnionType):
+        return Union[new_args]  # noqa: UP007 - reconstruct runtime arguments
+    return origin[new_args]
 
 
 class Partial(Generic[FormattableT]):
@@ -89,37 +248,34 @@ class Partial(Generic[FormattableT]):
         ):
             return wrapped_class
 
-        # Check cache to avoid regenerating
-        if wrapped_class in _partial_model_cache:
-            return cast(type[FormattableT], _partial_model_cache[wrapped_class])
+        with _partial_lock:
+            return _build_partial_model(wrapped_class)
 
+
+def _build_partial_model(wrapped_class: type[Any]) -> Any:  # noqa: ANN401
+    """Build (or look up) the partial version of `wrapped_class`. Needs `_partial_lock`."""
+    # Check cache to avoid regenerating
+    if wrapped_class in _partial_model_cache:
+        return _partial_model_cache[wrapped_class]
+
+    # A model that contains itself: refer to the partial model being built
+    if wrapped_class in _partial_models_in_progress:
+        return ForwardRef(_partial_models_in_progress[wrapped_class])
+
+    is_outermost = not _partial_models_in_progress
+    reference = f"_partial_model_{id(wrapped_class)}"
+    _partial_models_in_progress[wrapped_class] = reference
+
+    # Forward references in the fields resolve like they do for the model itself
+    module = sys.modules.get(wrapped_class.__module__)
+    namespace: dict[str, Any] = dict(vars(module)) if module else {}
+    namespace[wrapped_class.__name__] = wrapped_class
+
+    try:
         # Recursively make all fields optional
         partial_fields: dict[str, Any] = {}
         for field_name, field_info in wrapped_class.model_fields.items():
-            field_type = field_info.annotation
-
-            # Recursively handle nested BaseModel fields
-            if inspect.isclass(field_type) and issubclass(field_type, BaseModel):
-                field_type = Partial[field_type]
-
-            # Handle generic types with BaseModel args (e.g., list[Book], dict[str, Book])
-            origin = get_origin(field_type)
-            if origin is not None:
-                args = get_args(field_type)
-                # Recursively convert BaseModel args to partial
-                new_args = tuple(
-                    Partial[arg]
-                    if inspect.isclass(arg) and issubclass(arg, BaseModel)
-                    else arg
-                    for arg in args
-                )
-                # Reconstruct generic type with new args
-                if new_args != args:
-                    field_type = (
-                        Union[new_args]  # noqa: UP007 - reconstruct runtime arguments
-                        if origin in (Union, UnionType)
-                        else origin[new_args]
-                    )
+            field_type = _make_partial_type(field_info.annotation, namespace)
 
             # Make field optional with None default
             optional_type = Union[field_type, None]  # noqa: UP007
@@ -132,5 +288,34 @@ class Partial(Generic[FormattableT]):
 
         # Cache the generated model
         _partial_model_cache[wrapped_class] = partial_model
+        _partial_models_created[reference] = partial_model
+    except BaseException:
+        _discard_created_partial_models()
+        raise
+    finally:
+        del _partial_models_in_progress[wrapped_class]
 
-        return cast(type[FormattableT], partial_model)
+    if is_outermost:
+        # Every partial model exists now, so forward references between them
+        # (a model that contains itself) can be resolved.
+        created = dict(_partial_models_created)
+        try:
+            for model in created.values():
+                model.model_rebuild(
+                    force=True, raise_errors=False, _types_namespace=created
+                )
+        except BaseException:
+            _discard_created_partial_models()
+            raise
+        _partial_models_created.clear()
+
+    return partial_model
+
+
+def _discard_created_partial_models() -> None:
+    """Forget the partial models of the current build, whose forward references never resolved."""
+    created = list(_partial_models_created.values())
+    for key, model in list(_partial_model_cache.items()):
+        if model in created:
+            del _partial_model_cache[key]
+    _partial_models_created.clear()

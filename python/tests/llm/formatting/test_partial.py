@@ -1,8 +1,10 @@
 """Unit tests for Partial model generation."""
 
-from typing import Union, cast
+import threading
+from typing import Annotated, Any, ForwardRef, Literal, Union, cast
 
-from pydantic import BaseModel
+import pytest
+from pydantic import BaseModel, Discriminator, Field, Tag
 
 from mirascope import llm
 from mirascope.llm.formatting import Partial
@@ -231,3 +233,393 @@ def test_partial_nested_model_unions() -> None:
         "attribution": None,
         "legacy_author": None,
     }
+
+
+def test_partial_nested_generics() -> None:
+    """Partial models reach `BaseModel`s nested in unions of containers and in containers of containers."""
+
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    class Shelf(BaseModel):
+        optional_books: list[Book] | None
+        rows: list[list[Book]]
+        by_genre: dict[str, list[Book]]
+
+    PartialShelf = cast(type[Shelf], Partial[Shelf])
+
+    shelf = PartialShelf.model_validate(
+        {
+            "optional_books": [{"title": "A"}],
+            "rows": [[{"title": "B"}]],
+            "by_genre": {"fantasy": [{"title": "C"}]},
+        }
+    )
+
+    assert shelf.optional_books is not None
+    assert shelf.optional_books[0].title == "A"
+    assert shelf.optional_books[0].author is None
+    assert shelf.rows[0][0].title == "B"
+    assert shelf.rows[0][0].author is None
+    assert shelf.by_genre["fantasy"][0].title == "C"
+    assert shelf.by_genre["fantasy"][0].author is None
+
+
+class _Node(BaseModel):
+    name: str
+    children: list[list["_Node"]] = []
+
+
+class _Tree(BaseModel):
+    label: str
+    branches: list["_Tree"] = []
+    parent: "_Tree | None" = None
+
+
+class _Folder(BaseModel):
+    name: str
+    files: list["_File"] = []
+
+
+class _File(BaseModel):
+    name: str
+    folder: "_Folder | None" = None
+
+
+_Node.model_rebuild()
+_Tree.model_rebuild()
+_Folder.model_rebuild()
+_File.model_rebuild()
+
+
+def test_partial_recursive_model_in_nested_containers() -> None:
+    """A model that contains itself inside `list[list[...]]` doesn't recurse forever."""
+    PartialNode = cast(type[_Node], Partial[_Node])
+
+    node = PartialNode.model_validate(
+        {"name": "root", "children": [[{"name": "leaf"}]]}
+    )
+    assert node.name == "root"
+    leaf = node.children[0][0]
+    assert type(leaf) is PartialNode
+    assert leaf.name == "leaf"
+    assert leaf.children is None
+
+
+def test_partial_self_referencing_model() -> None:
+    """Direct self references (`list[Self]`, `Optional[Self]`) become the partial model."""
+    PartialTree = cast(type[_Tree], Partial[_Tree])
+    assert Partial[_Tree] is PartialTree
+
+    tree: Any = PartialTree.model_validate(
+        {"label": "a", "branches": [{"label": "b"}], "parent": {}}
+    )
+    assert type(tree.branches[0]) is PartialTree
+    assert tree.branches[0].branches is None
+    assert type(tree.parent) is PartialTree
+    assert tree.parent.label is None
+
+
+def test_partial_mutually_recursive_models() -> None:
+    """Two models that contain each other resolve to each other's partial model."""
+    PartialFolder = cast(type[_Folder], Partial[_Folder])
+    PartialFile = cast(type[_File], Partial[_File])
+
+    folder: Any = PartialFolder.model_validate(
+        {"name": "docs", "files": [{"name": "a.md", "folder": {"name": "docs"}}]}
+    )
+    assert type(folder.files[0]) is PartialFile
+    assert type(folder.files[0].folder) is PartialFolder
+    assert folder.files[0].folder.files is None
+
+
+class _Circle(BaseModel):
+    kind: Literal["circle"]
+    radius: float
+
+
+class _Square(BaseModel):
+    kind: Literal["square"]
+    side: float
+
+
+class _Canvas(BaseModel):
+    shapes: list[Annotated[_Circle | _Square, Field(discriminator="kind")]]
+    optional_shape: Annotated[_Circle | _Square, Field(discriminator="kind")] | None = (
+        None
+    )
+    main: Annotated[_Circle | _Square, Field(discriminator="kind")]
+
+
+def test_partial_discriminated_unions_in_containers() -> None:
+    """A discriminated union nested in a container still builds, with partial members."""
+    PartialCanvas = cast(type[_Canvas], Partial[_Canvas])
+
+    canvas: Any = PartialCanvas.model_validate(
+        {
+            "shapes": [{"kind": "circle"}, {"kind": "square", "side": 2}],
+            "optional_shape": {"kind": "circle", "radius": 1},
+            "main": {"kind": "square"},
+        }
+    )
+    assert [type(shape) for shape in canvas.shapes] == [
+        Partial[_Circle],
+        Partial[_Square],
+    ]
+    assert canvas.shapes[1].side == 2
+    assert canvas.optional_shape.radius == 1
+    assert canvas.main.side is None
+
+
+def test_partial_recursive_model_still_builds() -> None:
+    """Regression: `Partial[Model]` for a model with `list[list[Model]]` must not recurse."""
+    PartialNode = cast(type[_Node], Partial[_Node])
+    node = PartialNode.model_validate(
+        {"name": "root", "children": [[{"name": "leaf"}]]}
+    )
+    assert node.children[0][0].name == "leaf"
+
+
+def test_partial_discriminated_union_in_container_still_builds() -> None:
+    """Regression: a discriminated union in a container must not raise PydanticUserError."""
+    PartialCanvas = cast(type[_Canvas], Partial[_Canvas])
+    canvas: Any = PartialCanvas.model_validate(
+        {
+            "shapes": [{"kind": "circle", "radius": 1}],
+            "main": {"kind": "square", "side": 2},
+        }
+    )
+    assert canvas.shapes[0].radius == 1
+    assert canvas.main.side == 2
+
+
+def _shape_kind(value: Any) -> str:  # noqa: ANN401
+    return value["kind"] if isinstance(value, dict) else value.kind
+
+
+class _TaggedCanvas(BaseModel):
+    shapes: list[
+        Annotated[
+            Annotated[_Circle, Tag("circle")] | Annotated[_Square, Tag("square")],
+            Discriminator(_shape_kind),
+        ]
+    ]
+
+
+def test_partial_callable_discriminated_unions_in_containers() -> None:
+    """Callable discriminators and tags are dropped along with field discriminators."""
+    PartialTaggedCanvas = cast(type[_TaggedCanvas], Partial[_TaggedCanvas])
+    canvas: Any = PartialTaggedCanvas.model_validate(
+        {"shapes": [{"kind": "circle"}, {"kind": "square", "side": 2}]}
+    )
+    assert [type(shape) for shape in canvas.shapes] == [
+        Partial[_Circle],
+        Partial[_Square],
+    ]
+
+
+def test_partial_failed_build_leaves_no_state(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A failing build doesn't leave half-built models in the cache or the in-progress map."""
+    from mirascope.llm.formatting import partial as partial_module
+
+    class Inner(BaseModel):
+        value: int
+
+    class Outer(BaseModel):
+        inner: Inner
+
+    def failing_create_model(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+        if kwargs.get("__base__") is BaseModel and "value" not in kwargs:
+            raise RuntimeError("boom")
+        return original_create_model(*args, **kwargs)
+
+    original_create_model = partial_module.create_model
+    monkeypatch.setattr(partial_module, "create_model", failing_create_model)
+
+    with pytest.raises(RuntimeError, match="boom"):
+        Partial[Outer]
+
+    assert partial_module._partial_models_in_progress == {}  # pyright: ignore[reportPrivateUsage]
+    assert partial_module._partial_models_created == {}  # pyright: ignore[reportPrivateUsage]
+    assert Inner not in partial_module._partial_model_cache  # pyright: ignore[reportPrivateUsage]
+    assert Outer not in partial_module._partial_model_cache  # pyright: ignore[reportPrivateUsage]
+
+
+def test_partial_failed_rebuild_leaves_no_state(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """If resolving the forward references fails, the unfinished models aren't cached."""
+    from mirascope.llm.formatting import partial as partial_module
+
+    class Leaf(BaseModel):
+        value: int
+
+    class Branch(BaseModel):
+        leaf: Leaf
+
+    def failing_rebuild(cls: type[BaseModel], **kwargs: Any) -> None:  # noqa: ANN401
+        raise RuntimeError("rebuild boom")
+
+    monkeypatch.setattr(BaseModel, "model_rebuild", classmethod(failing_rebuild))
+
+    with pytest.raises(RuntimeError, match="rebuild boom"):
+        Partial[Branch]
+
+    assert partial_module._partial_models_created == {}  # pyright: ignore[reportPrivateUsage]
+    assert Leaf not in partial_module._partial_model_cache  # pyright: ignore[reportPrivateUsage]
+    assert Branch not in partial_module._partial_model_cache  # pyright: ignore[reportPrivateUsage]
+
+
+class _Shared(BaseModel):
+    name: str
+    children: list["_Shared"] = []
+    siblings: list[list["_Shared"]] = []
+
+
+_Shared.model_rebuild()
+
+
+def test_partial_is_safe_to_build_from_several_threads() -> None:
+    """Concurrent first uses of a recursive model all get the same, complete model."""
+    results: list[Any] = []
+    errors: list[BaseException] = []
+    barrier = threading.Barrier(8)
+
+    def build() -> None:
+        try:
+            barrier.wait()
+            results.append(Partial[_Shared])
+        except BaseException as error:  # noqa: BLE001
+            errors.append(error)
+
+    threads = [threading.Thread(target=build) for _ in range(8)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    assert errors == []
+    assert len({id(result) for result in results}) == 1
+    shared: Any = results[0].model_validate({"name": "a", "children": [{"name": "b"}]})
+    assert type(shared.children[0]) is results[0]
+
+
+def test_partial_keeps_annotated_constraints_without_models() -> None:
+    """`Annotated` types that hold no model are left as they are."""
+
+    class Tagged(BaseModel):
+        tags: list[Annotated[str, Field(min_length=2)]]
+
+    PartialTagged = cast(type[Tagged], Partial[Tagged])
+    assert PartialTagged.model_validate({"tags": ["ab"]}).tags == ["ab"]
+    with pytest.raises(ValueError, match="at least 2 characters"):
+        PartialTagged.model_validate({"tags": ["a"]})
+
+
+def test_partial_leaves_unresolvable_forward_references_alone() -> None:
+    """A forward reference that can't be resolved stays as it is, as for the model itself."""
+
+    class Dangling(BaseModel):
+        name: str
+        items: list["_NotDefinedAnywhere"]  # noqa: F821  # pyright: ignore[reportUndefinedVariable]
+
+    partial_model = cast(type[BaseModel], Partial[Dangling])
+
+    assert "name" in partial_model.model_fields
+    assert not partial_model.__pydantic_complete__
+
+
+def test_partial_resolves_string_and_forward_reference_annotations() -> None:
+    """Annotations left as strings (before Python 3.11, inside builtin generics) are resolved."""
+    from mirascope.llm.formatting.partial import (
+        _make_partial_type,  # pyright: ignore[reportPrivateUsage]
+    )
+
+    namespace = {"_Circle": _Circle}
+    assert _make_partial_type("_Circle", namespace) is Partial[_Circle]
+    assert _make_partial_type(ForwardRef("_Circle"), namespace) is Partial[_Circle]
+    assert _make_partial_type("list[_Circle]", namespace) == list[Partial[_Circle]]
+    assert _make_partial_type("Unknown", namespace) == "Unknown"
+
+
+def test_partial_does_not_evaluate_forward_reference_strings() -> None:
+    """Annotation strings are parsed, never evaluated: calls in them are not run."""
+    from mirascope.llm.formatting.partial import (
+        _make_partial_type,  # pyright: ignore[reportPrivateUsage]
+    )
+
+    calls: list[str] = []
+
+    def boom() -> type[_Circle]:
+        calls.append("called")
+        return _Circle
+
+    namespace = {"_Circle": _Circle, "boom": boom}
+    assert _make_partial_type("boom()", namespace) == "boom()"
+    assert _make_partial_type("list[boom()]", namespace) == "list[boom()]"
+    assert _make_partial_type("__import__('os').getcwd()", namespace) == (
+        "__import__('os').getcwd()"
+    )
+    assert calls == []
+
+
+def test_partial_resolves_supported_forward_reference_forms() -> None:
+    """Names, unions, subscripts, dotted names and nested strings are resolved."""
+    from mirascope.llm.formatting.partial import (
+        _make_partial_type,  # pyright: ignore[reportPrivateUsage]
+    )
+
+    namespace = {"_Circle": _Circle, "typing": __import__("typing")}
+    assert _make_partial_type("_Circle | None", namespace) == (Partial[_Circle] | None)
+    assert (
+        _make_partial_type("dict[str, _Circle]", namespace)
+        == dict[str, Partial[_Circle]]
+    )
+    assert _make_partial_type("list['_Circle']", namespace) == list[Partial[_Circle]]
+    assert _make_partial_type("typing.Optional[_Circle]", namespace) == (
+        Partial[_Circle] | None
+    )
+    assert _make_partial_type("list[", namespace) == "list["
+
+
+@pytest.mark.parametrize(
+    "annotation",
+    [
+        "1",  # a constant that is neither None nor a string
+        "-1",  # an expression form that is not supported
+        "len",  # a builtin that is not a class
+        "Unknown",  # a name that is not defined
+        "unknown.attribute",  # an attribute of something that is not defined
+        "boom.attribute",  # an attribute of something that is not a module or a class
+        "_Circle | Unknown",  # a union with a side that can't be resolved
+        "boom[int]",  # a subscript of something that is not a class or a typing generic
+        "list[Unknown]",  # a subscript with an argument that can't be resolved
+        "int[str]",  # a subscript the class doesn't support
+        "list['((']",  # a nested string that is not valid Python
+    ],
+)
+def test_partial_leaves_unsupported_forward_references_alone(annotation: str) -> None:
+    """Annotation strings that can't be resolved safely are returned unchanged."""
+    from mirascope.llm.formatting.partial import (
+        _make_partial_type,  # pyright: ignore[reportPrivateUsage]
+    )
+
+    def boom() -> None: ...
+
+    namespace = {"_Circle": _Circle, "boom": boom}
+    assert _make_partial_type(annotation, namespace) == annotation
+
+
+def test_partial_keeps_literal_members_that_look_like_names() -> None:
+    """The members of a `Literal` are values, not forward references to resolve."""
+
+    class Column(BaseModel):
+        dtype: Literal["int", "str", "None", "_Circle"]
+
+    partial = Partial[Column]
+    assert partial.model_fields["dtype"].annotation == (
+        Literal["int", "str", "None", "_Circle"] | None
+    )
+    for dtype in ("int", "str", "None", "_Circle"):
+        assert partial.model_validate({"dtype": dtype}).dtype == dtype
