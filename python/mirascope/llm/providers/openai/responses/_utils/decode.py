@@ -71,7 +71,12 @@ def _decode_usage(
             else None
         )
         or 0,
-        cache_write_tokens=0,
+        cache_write_tokens=(
+            usage.input_tokens_details.cache_write_tokens
+            if usage.input_tokens_details
+            else None
+        )
+        or 0,
         reasoning_tokens=(
             usage.output_tokens_details.reasoning_tokens
             if usage.output_tokens_details
@@ -266,7 +271,12 @@ class _OpenAIResponsesChunkProcessor:
                     else None
                 )
                 or 0,
-                cache_write_tokens=0,
+                cache_write_tokens=(
+                    usage.input_tokens_details.cache_write_tokens
+                    if usage.input_tokens_details
+                    else None
+                )
+                or 0,
                 reasoning_tokens=(
                     usage.output_tokens_details.reasoning_tokens
                     if usage.output_tokens_details

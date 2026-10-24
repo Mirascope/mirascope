@@ -51,7 +51,12 @@ def _decode_usage(
             else None
         )
         or 0,
-        cache_write_tokens=0,
+        cache_write_tokens=(
+            usage.prompt_tokens_details.cache_write_tokens
+            if usage.prompt_tokens_details
+            else None
+        )
+        or 0,
         reasoning_tokens=(
             usage.completion_tokens_details.reasoning_tokens
             if usage.completion_tokens_details
@@ -172,7 +177,12 @@ class _OpenAIChunkProcessor:
                     else None
                 )
                 or 0,
-                cache_write_tokens=0,
+                cache_write_tokens=(
+                    usage.prompt_tokens_details.cache_write_tokens
+                    if usage.prompt_tokens_details
+                    else None
+                )
+                or 0,
                 reasoning_tokens=(
                     usage.completion_tokens_details.reasoning_tokens
                     if usage.completion_tokens_details
