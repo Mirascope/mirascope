@@ -609,3 +609,17 @@ def test_partial_leaves_unsupported_forward_references_alone(annotation: str) ->
 
     namespace = {"_Circle": _Circle, "boom": boom}
     assert _make_partial_type(annotation, namespace) == annotation
+
+
+def test_partial_keeps_literal_members_that_look_like_names() -> None:
+    """The members of a `Literal` are values, not forward references to resolve."""
+
+    class Column(BaseModel):
+        dtype: Literal["int", "str", "None", "_Circle"]
+
+    partial = Partial[Column]
+    assert partial.model_fields["dtype"].annotation == (
+        Literal["int", "str", "None", "_Circle"] | None
+    )
+    for dtype in ("int", "str", "None", "_Circle"):
+        assert partial.model_validate({"dtype": dtype}).dtype == dtype

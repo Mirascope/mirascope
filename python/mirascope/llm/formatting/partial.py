@@ -20,6 +20,7 @@ from typing import (
     Any,
     ForwardRef,
     Generic,
+    Literal,
     NoReturn,
     Union,
     get_args,
@@ -150,7 +151,8 @@ def _make_partial_type(type_: Any, namespace: dict[str, Any]) -> Any:  # noqa: A
         return Partial[type_]
 
     origin = get_origin(type_)
-    if origin is None:
+    # The members of a `Literal` are values, not annotations: a string like "int" must stay one.
+    if origin is None or origin is Literal:
         return type_
 
     args = get_args(type_)
