@@ -57,6 +57,16 @@ def test_register_provider_openrouter() -> None:
     assert provider.client.api_key == os.getenv("OPENROUTER_API_KEY")
 
 
+def test_register_provider_opper() -> None:
+    """Test that register_provider('opper') returns same instance on multiple calls."""
+    provider = llm.register_provider("opper", scope=["openai/"])
+    provider2 = llm.register_provider("opper", scope=["openai/"])
+
+    assert isinstance(provider, llm.providers.OpperProvider)
+    assert provider is provider2
+    assert provider.client.api_key == os.getenv("OPPER_API_KEY")
+
+
 def test_register_provider_atlascloud() -> None:
     """Test that register_provider('atlascloud') returns same instance on multiple calls."""
     provider = llm.register_provider("atlascloud", scope=["openai/"])

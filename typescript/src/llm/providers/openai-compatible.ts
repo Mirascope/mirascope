@@ -92,6 +92,24 @@ export class MiniMaxProvider extends CompatibleProvider {
   }
 }
 
+/** Opper's OpenAI-compatible gateway. */
+export class OpperProvider extends CompatibleProvider {
+  readonly id = "opper" as const;
+
+  constructor(init: ProviderInit = {}) {
+    super("opper", "OPPER_API_KEY", "https://api.opper.ai/v3/compat", init);
+  }
+
+  protected override modelFeatureInfo(
+    modelId: string,
+  ): CompletionsModelFeatureInfo {
+    const name = this.modelName(modelId);
+    return /^(gpt-|o1|o3|o4)/.test(name)
+      ? featureInfoForOpenAIModel(name)
+      : super.modelFeatureInfo(modelId);
+  }
+}
+
 /** Requesty's OpenAI-compatible router. */
 export class RequestyProvider extends CompatibleProvider {
   readonly id = "requesty" as const;

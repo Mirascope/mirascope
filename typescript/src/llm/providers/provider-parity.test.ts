@@ -35,6 +35,18 @@ describe("Python-compatible HTTP providers", () => {
     ],
     ["minimax", "MINIMAX_API_KEY", "https://api.minimax.io/v1", "MiniMax-M3"],
     [
+      "opper",
+      "OPPER_API_KEY",
+      "https://api.opper.ai/v3/compat",
+      "claude-sonnet-4-6",
+    ],
+    [
+      "opper",
+      "OPPER_API_KEY",
+      "https://api.opper.ai/v3/compat",
+      "anthropic/claude-sonnet-4-6",
+    ],
+    [
       "requesty",
       "REQUESTY_API_KEY",
       "https://router.requesty.ai/v1",
