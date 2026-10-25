@@ -617,7 +617,7 @@ def test_partial_keeps_literal_members_that_look_like_names() -> None:
     class Column(BaseModel):
         dtype: Literal["int", "str", "None", "_Circle"]
 
-    partial = Partial[Column]
+    partial = cast(type[Column], Partial[Column])
     assert partial.model_fields["dtype"].annotation == (
         Literal["int", "str", "None", "_Circle"] | None
     )
