@@ -16,6 +16,7 @@ KnownProviderId: TypeAlias = Literal[
     "openai",  # OpenAI provider via OpenAIProvider (prefers Responses routing when available)
     "openrouter",  # OpenRouter provider via OpenRouterProvider
     "requesty",  # Requesty provider via RequestyProvider
+    "runcrate",  # Runcrate provider via RuncrateProvider
     "together",  # Together AI provider via TogetherProvider
     "xai",  # xAI provider for Grok models via XAIProvider (Responses API)
 ]
@@ -33,5 +34,6 @@ OpenAICompletionsCompatibleProviderId: TypeAlias = Literal[
     "openai:completions",  # OpenAI Completions API directly
     "openrouter",  # OpenRouter (OpenAI-compatible)
     "requesty",  # Requesty (OpenAI-compatible)
+    "runcrate",  # Runcrate (OpenAI-compatible)
     "together",  # Together AI (OpenAI-compatible)
 ]

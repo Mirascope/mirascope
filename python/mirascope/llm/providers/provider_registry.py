@@ -23,6 +23,7 @@ from .openai.responses.provider import OpenAIResponsesProvider
 from .openrouter import OpenRouterProvider
 from .provider_id import ProviderId
 from .requesty import RequestyProvider
+from .runcrate import RuncrateProvider
 from .together import TogetherProvider
 from .xai import XAIProvider
 
@@ -93,6 +94,9 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, Sequence[ProviderDefault]] = {
     "requesty/": [
         ProviderDefault("requesty", "REQUESTY_API_KEY"),
     ],
+    "runcrate/": [
+        ProviderDefault("runcrate", "RUNCRATE_API_KEY"),
+    ],
     "cheaperinference/": [
         ProviderDefault("cheaperinference", "CHEAPER_INFERENCE_API_KEY"),
     ],
@@ -162,6 +166,8 @@ def provider_singleton(
             return OpenRouterProvider(api_key=api_key, base_url=base_url)
         case "requesty":
             return RequestyProvider(api_key=api_key, base_url=base_url)
+        case "runcrate":
+            return RuncrateProvider(api_key=api_key, base_url=base_url)
         case "together":
             return TogetherProvider(api_key=api_key, base_url=base_url)
         case "xai":
