@@ -273,6 +273,7 @@ def test_propagator_injects_context_into_carrier(
 
         assert set(carrier.keys()) == snapshot({"traceparent"})
         assert TRACEPARENT_PATTERN.match(carrier["traceparent"])
+        assert int(carrier["traceparent"][-2:], 16) & 1
 
 
 @pytest.mark.parametrize(

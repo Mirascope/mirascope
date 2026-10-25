@@ -69,21 +69,18 @@ class TestMCPClient:
             # Verify greet tool schema with snapshot
             greet_tool = next(t for t in tools if t.name == "greet")
             assert greet_tool.description == snapshot(
-                """\
-Greet a user with very special welcome.
-
-Args:
-    name: The name of the person to greet
-
-Returns:
-    A personalized welcome message\
-"""
+                "Greet a user with very special welcome."
             )
             assert greet_tool.parameters.model_dump(
                 by_alias=True, exclude_none=True
             ) == snapshot(
                 {
-                    "properties": {"name": {"type": "string"}},
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The name of the person to greet",
+                        }
+                    },
                     "required": ["name"],
                     "additionalProperties": False,
                 }
@@ -105,55 +102,28 @@ Returns:
                 {"properties": {}, "required": [], "additionalProperties": False}
             )
 
-            # Verify process_answer tool schema with $defs
+            # Verify process_answer keeps the nested model schema.
             process_tool = next(t for t in tools if t.name == "process_answer")
             assert process_tool.description == snapshot(
                 """\
 Process and format an ultimate answer.
 
-This tool demonstrates complex schema with $defs by accepting
-a nested Pydantic model as input.
-
-Args:
-    answer_data: The answer data to process
-
-Returns:
-    A formatted string describing the answer\
+This tool demonstrates a nested schema by accepting
+a nested Pydantic model as input.\
 """
             )
             schema = process_tool.parameters.model_dump(
                 by_alias=True, exclude_none=True
             )
-            # Verify $defs is present and contains the nested model definitions
-            assert "$defs" in schema
-            assert "ComputerInfo" in schema["$defs"]
-            assert "UltimateAnswer" in schema["$defs"]
+            answer_data = schema["properties"]["answer_data"]
+            assert answer_data["type"] == "object"
+            assert answer_data["properties"]["computed_by"]["type"] == "object"
             # Full schema snapshot
             assert schema == snapshot(
                 {
                     "properties": {
-                        "answer_data": {"$ref": "#/$defs/UltimateAnswer"},
-                    },
-                    "required": ["answer_data"],
-                    "additionalProperties": False,
-                    "$defs": {
-                        "ComputerInfo": {
-                            "properties": {
-                                "name": {
-                                    "description": "The name of the computer",
-                                    "type": "string",
-                                },
-                                "years_computed": {
-                                    "description": "How many years it took to compute",
-                                    "type": "integer",
-                                },
-                            },
-                            "required": ["name", "years_computed"],
-                            "description": "Information about Deep Thought computer.",
-                            "type": "object",
-                        },
-                        "UltimateAnswer": {
-                            "description": "The answer to life, the universe, and everything.",
+                        "answer_data": {
+                            "description": "The answer data to process",
                             "properties": {
                                 "answer": {
                                     "description": "The numerical answer",
@@ -164,14 +134,27 @@ Returns:
                                     "type": "string",
                                 },
                                 "computed_by": {
-                                    "$ref": "#/$defs/ComputerInfo",
                                     "description": "Information about the computer",
+                                    "properties": {
+                                        "name": {
+                                            "description": "The name of the computer",
+                                            "type": "string",
+                                        },
+                                        "years_computed": {
+                                            "description": "How many years it took to compute",
+                                            "type": "integer",
+                                        },
+                                    },
+                                    "required": ["name", "years_computed"],
+                                    "type": "object",
                                 },
                             },
                             "required": ["answer", "question", "computed_by"],
                             "type": "object",
                         },
                     },
+                    "required": ["answer_data"],
+                    "additionalProperties": False,
                 }
             )
 
@@ -263,6 +246,32 @@ Returns:
         assert output.error is not None
         assert isinstance(output.error, llm.ToolExecutionError)
         assert isinstance(output.error.tool_exception, anyio.ClosedResourceError)
+
+
+@pytest.mark.asyncio
+async def test_preserves_external_tool_schema_defs() -> None:
+    """A server may still return schema references even though FastMCP inlines them."""
+    schema = {
+        "type": "object",
+        "properties": {"payload": {"$ref": "#/$defs/Payload"}},
+        "required": ["payload"],
+        "$defs": {
+            "Payload": {
+                "type": "object",
+                "properties": {"value": {"type": "string"}},
+                "required": ["value"],
+            }
+        },
+    }
+    page = ListToolsResult(tools=[MCPTool(name="nested", inputSchema=schema)])
+    server = _paginated_server([page], [])
+
+    async with create_connected_server_and_client_session(server) as session:
+        tools = await llm.mcp.MCPClient(session).list_tools()
+
+    assert len(tools) == 1
+    assert tools[0].parameters.properties == schema["properties"]
+    assert tools[0].parameters.defs == schema["$defs"]
 
 
 @pytest.mark.asyncio
