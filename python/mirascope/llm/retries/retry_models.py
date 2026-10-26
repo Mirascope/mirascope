@@ -833,11 +833,14 @@ class RetryModel(Model):
             )
 
         variants_iter = self.variants_async()
-        initial_variant = await anext(variants_iter)
-        initial_stream = await stream_fn(initial_variant.get_active_model())
-        return AsyncRetryStreamResponse(
+        initial_stream, failures, initial_variant = await with_retry_async(
+            stream_fn, self, variants_iter=variants_iter
+        )
+        response = AsyncRetryStreamResponse(
             stream_fn, initial_stream, initial_variant, variants_iter
         )
+        response.retry_failures = failures
+        return response
 
     # Resume stream methods
 
@@ -935,11 +938,14 @@ class RetryModel(Model):
             )
 
         variants_iter = self.variants_async()
-        initial_variant = await anext(variants_iter)
-        initial_stream = await stream_fn(initial_variant.get_active_model())
-        return AsyncRetryStreamResponse(
+        initial_stream, failures, initial_variant = await with_retry_async(
+            stream_fn, self, variants_iter=variants_iter
+        )
+        response = AsyncRetryStreamResponse(
             stream_fn, initial_stream, initial_variant, variants_iter
         )
+        response.retry_failures = failures
+        return response
 
     # Context stream methods
 
@@ -1087,11 +1093,14 @@ class RetryModel(Model):
             )
 
         variants_iter = self.variants_async()
-        initial_variant = await anext(variants_iter)
-        initial_stream = await stream_fn(initial_variant.get_active_model())
-        return AsyncContextRetryStreamResponse(
+        initial_stream, failures, initial_variant = await with_retry_async(
+            stream_fn, self, variants_iter=variants_iter
+        )
+        response = AsyncContextRetryStreamResponse(
             stream_fn, initial_stream, initial_variant, variants_iter
         )
+        response.retry_failures = failures
+        return response
 
     # Context resume stream methods
 
@@ -1227,11 +1236,14 @@ class RetryModel(Model):
             )
 
         variants_iter = self.variants_async()
-        initial_variant = await anext(variants_iter)
-        initial_stream = await stream_fn(initial_variant.get_active_model())
-        return AsyncContextRetryStreamResponse(
+        initial_stream, failures, initial_variant = await with_retry_async(
+            stream_fn, self, variants_iter=variants_iter
+        )
+        response = AsyncContextRetryStreamResponse(
             stream_fn, initial_stream, initial_variant, variants_iter
         )
+        response.retry_failures = failures
+        return response
 
 
 def retry_model(

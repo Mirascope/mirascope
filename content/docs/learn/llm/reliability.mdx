@@ -82,6 +82,8 @@ See [Errors](/docs/learn/llm/errors) for the full exception hierarchy.
 
 ## Streaming with Retries
 
+Failures while opening the initial streaming request are retried before the response is returned. These attempts share the same retry budget as subsequent stream iteration and are recorded in `retry_failures`.
+
 When streaming, retries work differently. If an error occurs mid-stream, the response raises `StreamRestarted` to signal that the stream has been reset. Catch this exception and re-iterate to continue:
 
 <CodeExample file="python/examples/reliability/stream_restart.py" />
