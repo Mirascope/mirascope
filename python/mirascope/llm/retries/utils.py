@@ -1,7 +1,7 @@
 """Utility functions for retry logic."""
 
 import random
-from collections.abc import Awaitable, Callable
+from collections.abc import AsyncIterator, Awaitable, Callable, Iterator
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, TypeVar
 
@@ -84,6 +84,8 @@ def calculate_delay(config: RetryConfig, attempt_for_model: int) -> float:
 def with_retry(
     fn: Callable[["Model"], _ResultT],
     retry_model: "RetryModel",
+    *,
+    variants_iter: Iterator["RetryModel"] | None = None,
 ) -> tuple[_ResultT, list[RetryFailure], "RetryModel"]:
     """Execute a function with retry logic across the RetryModel's models.
 
@@ -94,6 +96,7 @@ def with_retry(
     Args:
         fn: Function that takes a Model and returns a result.
         retry_model: The RetryModel containing models and retry config.
+        variants_iter: An existing iterator to share a retry budget with streaming.
 
     Returns:
         A tuple of (result, failures, updated_retry_model).
@@ -106,7 +109,9 @@ def with_retry(
     config = retry_model.retry_config
     failures: list[RetryFailure] = []
 
-    for variant in retry_model.variants():
+    for variant in (
+        variants_iter if variants_iter is not None else retry_model.variants()
+    ):
         model = variant.get_active_model()
         try:
             result = fn(model)
@@ -123,6 +128,8 @@ def with_retry(
 async def with_retry_async(
     fn: Callable[["Model"], Awaitable[_ResultT]],
     retry_model: "RetryModel",
+    *,
+    variants_iter: AsyncIterator["RetryModel"] | None = None,
 ) -> tuple[_ResultT, list[RetryFailure], "RetryModel"]:
     """Execute an async function with retry logic across the RetryModel's models.
 
@@ -133,6 +140,7 @@ async def with_retry_async(
     Args:
         fn: Async function that takes a Model and returns a result.
         retry_model: The RetryModel containing models and retry config.
+        variants_iter: An existing iterator to share a retry budget with streaming.
 
     Returns:
         A tuple of (result, failures, updated_retry_model).
@@ -145,7 +153,9 @@ async def with_retry_async(
     config = retry_model.retry_config
     failures: list[RetryFailure] = []
 
-    async for variant in retry_model.variants_async():
+    async for variant in (
+        variants_iter if variants_iter is not None else retry_model.variants_async()
+    ):
         model = variant.get_active_model()
         try:
             result = await fn(model)
