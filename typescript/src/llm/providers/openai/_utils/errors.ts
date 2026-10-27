@@ -13,6 +13,7 @@ import {
   ConnectionError,
   NotFoundError,
   PermissionError,
+  ProviderError,
   RateLimitError,
   ServerError,
   TimeoutError,
@@ -35,4 +36,6 @@ export const OPENAI_ERROR_MAP: ProviderErrorMap = [
   [OpenAI.APIConnectionTimeoutError, TimeoutError],
   [OpenAI.APIConnectionError, ConnectionError],
   [OpenAI.APIError, APIError],
+  // Catch-all for the SDK's non-HTTP errors, as in the Python provider's map.
+  [OpenAI.OpenAIError, ProviderError],
 ];
