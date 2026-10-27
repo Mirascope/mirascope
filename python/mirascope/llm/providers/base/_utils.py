@@ -231,7 +231,7 @@ def ensure_all_params_accessed(
 
     Args:
         params: The parameters to wrap
-        provider: The provider that is accessing these params (required for logging)
+        provider_id: The provider that is accessing these params (required for logging)
         unsupported_params: A list of params keys it does not support, for auto-warning
             of unsupported params as boilerplate reduction. Or None, to disable this
             optional feature.
