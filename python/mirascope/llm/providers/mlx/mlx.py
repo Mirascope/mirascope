@@ -33,7 +33,7 @@ def _consume_sync_stream_into_queue(
     """Consume a synchronous stream and put chunks into an async queue.
 
     Args:
-        sync_stream: The synchronous chunk iterator to consume.
+        generation_stream: The synchronous chunk iterator to consume.
         loop: The event loop for scheduling queue operations.
         queue: The async queue to put chunks into.
     """
