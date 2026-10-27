@@ -7,7 +7,8 @@ The TypeScript implementation of Mirascope: a type-safe, ergonomic library for b
 > We welcome feedback and contributions!
 
 The TypeScript SDK supports Anthropic, Atlas Cloud, Cheaper Inference, Google,
-MiniMax, Mirascope, Ollama, OpenAI, OpenRouter, API Route, Requesty, Together, and xAI.
+MiniMax, Mirascope, Ollama, OpenAI, OpenRouter, Opper, API Route, Requesty, Together,
+and xAI.
 MLX runs local models through Python on Apple Silicon and remains specific to the
 Python SDK.
 
