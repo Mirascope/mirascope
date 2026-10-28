@@ -244,9 +244,10 @@ class ToolSchema(Generic[ToolFnT]):
 
         field_definitions: dict[str, tuple[Any, Any]] = {}
         hints = get_type_hints(fn, include_extras=True)
+        signature = inspect.signature(fn)
 
         context_param_skipped = False
-        for param in inspect.signature(fn).parameters.values():
+        for param in signature.parameters.values():
             # Skip args that are provided by Python or Mirascope, not LLM-generated.
             # TODO: Handling of FromCallArgs
             if param.name in ("self", "cls"):
@@ -259,6 +260,17 @@ class ToolSchema(Generic[ToolFnT]):
 
             param_type = hints.get(param.name, Any)
             default = ... if param.default is inspect.Parameter.empty else param.default
+            field_name = param.name
+            if field_name.startswith("_"):
+                # Pydantic treats underscore names as private, but they are valid
+                # callable parameters. Keep the wire name as a field alias.
+                field_name = f"param{param.name}"
+                while (
+                    field_name in signature.parameters
+                    or field_name in field_definitions
+                ):
+                    field_name = f"param_{field_name}"
+            field_alias = param.name if field_name != param.name else None
             field_info = None
 
             if get_origin(param_type) is Annotated:
@@ -272,6 +284,7 @@ class ToolSchema(Generic[ToolFnT]):
                 # defaults rather than Field aliases, defaults or default factories.
                 field_value = Field(
                     default=default,
+                    alias=field_alias,
                     description=field_info.description,
                     title=field_info.title,
                     examples=field_info.examples,
@@ -284,14 +297,16 @@ class ToolSchema(Generic[ToolFnT]):
                     if arg.name == param.name:
                         docstring_description = arg.description
                         break
-                if docstring_description:
+                if docstring_description or field_alias:
                     field_value = Field(
-                        default=default, description=docstring_description
+                        default=default,
+                        alias=field_alias,
+                        description=docstring_description,
                     )
                 else:
                     field_value = default
 
-            field_definitions[param.name] = (param_type, field_value)
+            field_definitions[field_name] = (param_type, field_value)
 
         TempModel = create_model("TempModel", **cast(dict[str, Any], field_definitions))
 
