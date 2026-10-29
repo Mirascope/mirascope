@@ -13,6 +13,7 @@ from .atlascloud import AtlasCloudProvider
 from .base import Provider
 from .cheaperinference import CheaperInferenceProvider
 from .google import GoogleProvider
+from .llmbuzz import LLMBuzzProvider
 from .minimax import MiniMaxProvider
 from .mirascope import MirascopeProvider
 from .mlx import MLXProvider
@@ -96,6 +97,9 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, Sequence[ProviderDefault]] = {
     "cheaperinference/": [
         ProviderDefault("cheaperinference", "CHEAPER_INFERENCE_API_KEY"),
     ],
+    "llmbuzz/": [
+        ProviderDefault("llmbuzz", "LLM_BUZZ_API_KEY"),
+    ],
     "xai/": [
         ProviderDefault("xai", "XAI_API_KEY"),
     ],
@@ -144,6 +148,8 @@ def provider_singleton(
             return CheaperInferenceProvider(api_key=api_key, base_url=base_url)
         case "google":
             return GoogleProvider(api_key=api_key, base_url=base_url)
+        case "llmbuzz":
+            return LLMBuzzProvider(api_key=api_key, base_url=base_url)
         case "minimax":
             return MiniMaxProvider(api_key=api_key, base_url=base_url)
         case "mirascope":
