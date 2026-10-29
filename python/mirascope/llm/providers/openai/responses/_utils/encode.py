@@ -393,7 +393,7 @@ def encode_request(
 
     openai_tools = [_convert_tool_to_tool_param(tool) for tool in tools.tools]
 
-    model_supports_strict = model_id not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
+    model_supports_strict = base_model_name not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
     default_mode = "strict" if model_supports_strict else "tool"
 
     format = resolve_format(format, default_mode=default_mode)
@@ -423,7 +423,8 @@ def encode_request(
                     name=FORMAT_TOOL_NAME,
                 )
         elif (
-            format.mode == "json" and model_id not in MODELS_WITHOUT_JSON_OBJECT_SUPPORT
+            format.mode == "json"
+            and base_model_name not in MODELS_WITHOUT_JSON_OBJECT_SUPPORT
         ):
             kwargs["text"] = {"format": ResponseFormatJSONObject(type="json_object")}
 

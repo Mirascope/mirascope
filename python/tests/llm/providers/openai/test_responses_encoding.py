@@ -4,6 +4,7 @@ import base64
 import copy
 from typing import Any, cast
 
+import pytest
 from inline_snapshot import snapshot
 from pydantic import BaseModel
 
@@ -309,3 +310,50 @@ def test_strict_format_requires_every_property() -> None:
     assert text["format"]["schema"]["additionalProperties"] is False
     assert "additionalProperties" not in format.schema
     assert format.schema == schema_before
+
+
+@pytest.mark.parametrize(
+    "model_id",
+    [
+        "openai/gpt-4-turbo:responses",
+        "openai/gpt-4:responses",
+        "openai/gpt-3.5-turbo:responses",
+        "openai/chatgpt-4o-latest:responses",
+    ],
+)
+def test_default_format_mode_is_tool_for_models_without_json_schema(
+    model_id: str,
+) -> None:
+    """The `:responses` suffix must not hide a model from the capability sets."""
+
+    class Book(BaseModel):
+        title: str
+
+    _, _, kwargs = encode_request(
+        model_id=cast(Any, model_id),
+        messages=[llm.messages.user("Recommend a book")],
+        format=Book,
+        tools=Toolkit(None),
+        params={},
+    )
+
+    assert "text" not in kwargs
+    assert kwargs["tool_choice"]["type"] == "function"
+
+
+def test_json_format_omits_json_object_for_models_without_it() -> None:
+    class Book(BaseModel):
+        title: str
+
+    format = llm.format(Book, mode="json")
+    assert format is not None
+
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-4:responses",
+        messages=[llm.messages.user("Recommend a book")],
+        format=format,
+        tools=Toolkit(None),
+        params={},
+    )
+
+    assert "text" not in kwargs
