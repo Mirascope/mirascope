@@ -20,6 +20,98 @@ from mirascope.llm.providers.anthropic._utils.encode import (
 from mirascope.llm.tools import FORMAT_TOOL_NAME, Toolkit
 
 
+@pytest.mark.parametrize(
+    "model_id",
+    [
+        "anthropic/claude-opus-4-7",
+        "anthropic/claude-opus-5-5",
+        "anthropic/claude-sonnet-5-5",
+        "anthropic/claude-haiku-5-5",
+    ],
+)
+@pytest.mark.parametrize(
+    "sampling",
+    [
+        {"temperature": 0.2},
+        {"top_p": 0.9},
+        {"top_k": 10},
+        {"temperature": 0, "top_p": 0, "top_k": 0, "seed": 0},
+    ],
+)
+def test_adaptive_only_models_warn_and_omit_sampling(
+    model_id: str, sampling: llm.Params, caplog: pytest.LogCaptureFixture
+) -> None:
+    """Unsupported sampling must not reach either Anthropic request API."""
+    for encode in (encode_request, beta_encode_request):
+        caplog.clear()
+        _, _, kwargs = encode(
+            model_id=model_id,
+            messages=[llm.messages.user("Hello")],
+            tools=Toolkit(None),
+            format=None,
+            params={
+                **sampling,
+                "max_tokens": 4096,
+                "stop_sequences": ["END"],
+                "thinking": {"level": "medium"},
+            },
+        )
+        for name in ("temperature", "top_p", "top_k", "seed"):
+            assert name not in kwargs
+        assert len(caplog.records) == len(sampling)
+        for name in sampling:
+            assert f"Skipping unsupported parameter: {name}=" in caplog.text
+        assert kwargs["max_tokens"] == 4096
+        assert kwargs.get("stop_sequences") == ["END"]
+        assert kwargs.get("thinking") == {"type": "adaptive"}
+        assert kwargs.get("output_config") == {"effort": "medium"}
+
+
+@pytest.mark.parametrize(
+    "model_id",
+    [
+        "anthropic/claude-opus-4-6",
+        "anthropic/claude-sonnet-4-6",
+        "anthropic/claude-haiku-4-5",
+    ],
+)
+@pytest.mark.parametrize(
+    "sampling",
+    [
+        {"temperature": 0.2},
+        {"top_p": 0.9},
+        {"top_k": 10},
+        {"temperature": 0, "top_p": 0, "top_k": 0},
+    ],
+)
+def test_older_models_keep_sampling(
+    model_id: str, sampling: llm.Params, caplog: pytest.LogCaptureFixture
+) -> None:
+    """Older model sampling, including zero, remains supported."""
+    _, _, kwargs = encode_request(
+        model_id=model_id,
+        messages=[llm.messages.user("Hello")],
+        tools=Toolkit(None),
+        format=None,
+        params=sampling,
+    )
+    for name, value in sampling.items():
+        assert kwargs[name] == value
+    assert not caplog.records
+
+
+def test_omitted_sampling_does_not_warn(caplog: pytest.LogCaptureFixture) -> None:
+    _, _, kwargs = encode_request(
+        model_id="anthropic/claude-opus-4-7",
+        messages=[llm.messages.user("Hello")],
+        tools=Toolkit(None),
+        format=None,
+        params={},
+    )
+    assert not {"temperature", "top_p", "top_k"} & kwargs.keys()
+    assert not caplog.records
+
+
 def test_encode_base64_document() -> None:
     """Test encoding a base64 document source for Anthropic."""
     doc = Document(
