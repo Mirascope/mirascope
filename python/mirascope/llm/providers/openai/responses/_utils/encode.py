@@ -362,17 +362,23 @@ def encode_request(
         }
     )
     encode_thoughts = False
+    is_reasoning_model = base_model_name not in NON_REASONING_MODELS
 
     with _base_utils.ensure_all_params_accessed(
         params=params,
         provider_id="openai",
-        unsupported_params=["top_k", "seed", "stop_sequences"],
+        unsupported_params=[
+            "top_k",
+            "seed",
+            "stop_sequences",
+            *(["temperature", "top_p"] if is_reasoning_model else []),
+        ],
     ) as param_accessor:
-        if param_accessor.temperature is not None:
+        if not is_reasoning_model and param_accessor.temperature is not None:
             kwargs["temperature"] = param_accessor.temperature
         if param_accessor.max_tokens is not None:
             kwargs["max_output_tokens"] = param_accessor.max_tokens
-        if param_accessor.top_p is not None:
+        if not is_reasoning_model and param_accessor.top_p is not None:
             kwargs["top_p"] = param_accessor.top_p
         if param_accessor.thinking is not None:
             thinking_config = param_accessor.thinking
