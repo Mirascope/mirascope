@@ -19,6 +19,7 @@ import { MirascopeProvider } from "@/llm/providers/mirascope";
 import { OllamaProvider } from "@/llm/providers/ollama";
 import {
   AtlasCloudProvider,
+  AtmoRouterProvider,
   CheaperInferenceProvider,
   MiniMaxProvider,
   RequestyProvider,
@@ -67,6 +68,9 @@ const DEFAULT_AUTO_REGISTER_SCOPES: Record<string, ProviderDefault[]> = {
   ],
   "atlascloud/": [
     { providerId: "atlascloud", apiKeyEnvVar: "ATLASCLOUD_API_KEY" },
+  ],
+  "atmorouter/": [
+    { providerId: "atmorouter", apiKeyEnvVar: "ATMOROUTER_API_KEY" },
   ],
   "cheaperinference/": [
     {
@@ -142,6 +146,9 @@ export function getProviderSingleton(
       break;
     case "atlascloud":
       provider = new AtlasCloudProvider(options);
+      break;
+    case "atmorouter":
+      provider = new AtmoRouterProvider(options);
       break;
     case "cheaperinference":
       provider = new CheaperInferenceProvider(options);

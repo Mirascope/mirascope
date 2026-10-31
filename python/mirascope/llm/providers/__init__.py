@@ -9,6 +9,7 @@ from ..._stubs import stub_module_if_missing
 stub_module_if_missing("mirascope.llm.providers.anthropic", "anthropic")
 stub_module_if_missing("mirascope.llm.providers.api_route", "openai")
 stub_module_if_missing("mirascope.llm.providers.atlascloud", "openai")
+stub_module_if_missing("mirascope.llm.providers.atmorouter", "openai")
 stub_module_if_missing("mirascope.llm.providers.cheaperinference", "openai")
 stub_module_if_missing("mirascope.llm.providers.google", "google")
 stub_module_if_missing("mirascope.llm.providers.mlx", "mlx")
@@ -28,6 +29,7 @@ from .anthropic import (
 )
 from .api_route import APIRouteProvider
 from .atlascloud import AtlasCloudProvider
+from .atmorouter import AtmoRouterProvider
 from .base import BaseProvider, Provider
 from .cheaperinference import CheaperInferenceProvider
 from .google import GoogleModelId, GoogleProvider
@@ -58,6 +60,7 @@ __all__ = [
     "AnthropicModelId",
     "AnthropicProvider",
     "AtlasCloudProvider",
+    "AtmoRouterProvider",
     "BaseOpenAICompletionsProvider",
     "BaseProvider",
     "CheaperInferenceProvider",

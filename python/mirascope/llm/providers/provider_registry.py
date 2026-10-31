@@ -10,6 +10,7 @@ from ..exceptions import MissingAPIKeyError, NoRegisteredProviderError
 from .anthropic import AnthropicProvider
 from .api_route import APIRouteProvider
 from .atlascloud import AtlasCloudProvider
+from .atmorouter import AtmoRouterProvider
 from .base import Provider
 from .cheaperinference import CheaperInferenceProvider
 from .google import GoogleProvider
@@ -96,6 +97,9 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, Sequence[ProviderDefault]] = {
     "cheaperinference/": [
         ProviderDefault("cheaperinference", "CHEAPER_INFERENCE_API_KEY"),
     ],
+    "atmorouter/": [
+        ProviderDefault("atmorouter", "ATMOROUTER_API_KEY"),
+    ],
     "xai/": [
         ProviderDefault("xai", "XAI_API_KEY"),
     ],
@@ -140,6 +144,8 @@ def provider_singleton(
             return APIRouteProvider(api_key=api_key, base_url=base_url)
         case "atlascloud":
             return AtlasCloudProvider(api_key=api_key, base_url=base_url)
+        case "atmorouter":
+            return AtmoRouterProvider(api_key=api_key, base_url=base_url)
         case "cheaperinference":
             return CheaperInferenceProvider(api_key=api_key, base_url=base_url)
         case "google":
