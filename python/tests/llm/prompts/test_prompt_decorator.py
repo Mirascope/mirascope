@@ -27,6 +27,19 @@ class TestPromptDecoratorSmokeTests:
 
         assert isinstance(my_prompt, llm.Prompt)
 
+    def test_sync_prompt_returning_tuple_of_messages(self) -> None:
+        """Test that a `Sequence[Message]` result such as a tuple is kept intact."""
+
+        @llm.prompt
+        def my_prompt() -> tuple[llm.Message, ...]:
+            return (llm.messages.system("Be terse."), llm.messages.user("Hi"))
+
+        messages = my_prompt.messages()
+
+        assert isinstance(messages[0], llm.SystemMessage)
+        assert isinstance(messages[1], llm.UserMessage)
+        assert len(messages) == 2
+
     @pytest.mark.asyncio
     async def test_async_prompt_creation(self) -> None:
         """Test that an async function creates an AsyncPrompt."""
