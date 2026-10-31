@@ -22,6 +22,26 @@ MIME_TYPES = get_args(AudioMimeType)
 MAX_AUDIO_SIZE = 25 * 1024 * 1024
 
 
+def _is_mpeg_layer3_frame(audio_data: bytes) -> bool:
+    """Whether the data starts with an MPEG Layer III frame header.
+
+    The header starts with an 11-bit frame sync, followed by 2 version bits and
+    2 layer bits (ISO/IEC 11172-3, 13818-3). Every MPEG-1, MPEG-2 and MPEG-2.5
+    Layer III header matches, i.e. ``0xFFFB``/``0xFFFA``, ``0xFFF3``/``0xFFF2``
+    and ``0xFFE3``/``0xFFE2``, instead of only the one with a CRC.
+
+    Layer bits of ``0b00`` are reserved in MPEG audio and are what ADTS AAC
+    uses, so they are excluded here and left to the AAC branch.
+    """
+    if len(audio_data) < 2 or audio_data[0] != 0xFF:
+        return False
+    if audio_data[1] & 0xE0 != 0xE0:
+        return False
+    version = (audio_data[1] >> 3) & 0b11
+    layer = (audio_data[1] >> 1) & 0b11
+    return version != 0b01 and layer == 0b01
+
+
 def infer_audio_type(audio_data: bytes) -> AudioMimeType:
     """Get the MIME type of an audio file from its raw bytes.
 
@@ -33,7 +53,7 @@ def infer_audio_type(audio_data: bytes) -> AudioMimeType:
 
     if audio_data.startswith(b"RIFF") and audio_data[8:12] == b"WAVE":
         return "audio/wav"
-    elif audio_data.startswith(b"ID3") or audio_data.startswith(b"\xff\xfb"):
+    elif audio_data.startswith(b"ID3") or _is_mpeg_layer3_frame(audio_data):
         return "audio/mp3"
     elif audio_data.startswith(b"FORM") and audio_data[8:12] == b"AIFF":
         return "audio/aiff"

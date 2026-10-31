@@ -271,3 +271,46 @@ class TestAudioFromBytes:
         """Test that from_bytes respects custom max_size parameter."""
         with pytest.raises(ValueError, match="exceeds maximum allowed size"):
             Audio.from_bytes(audio_data["wav"], max_size=10)
+
+
+MPEG_LAYER3_HEADERS = [
+    pytest.param(b"\xff\xfb", id="mpeg1-layer3-with-crc"),
+    pytest.param(b"\xff\xfa", id="mpeg1-layer3-without-crc"),
+    pytest.param(b"\xff\xf3", id="mpeg2-layer3-with-crc"),
+    pytest.param(b"\xff\xf2", id="mpeg2-layer3-without-crc"),
+    pytest.param(b"\xff\xe3", id="mpeg2.5-layer3-with-crc"),
+    pytest.param(b"\xff\xe2", id="mpeg2.5-layer3-without-crc"),
+]
+
+
+class TestInferAudioTypeMpegLayer3:
+    """Tests for detecting MP3 frame headers other than the MPEG-1/CRC one."""
+
+    @pytest.mark.parametrize("header", MPEG_LAYER3_HEADERS)
+    def test_detects_every_mpeg_layer3_frame_header(self, header: bytes) -> None:
+        """MPEG-1, MPEG-2 and MPEG-2.5 Layer III frames are all MP3."""
+        audio = Audio.from_bytes(header + b"\x90\x00" + b"\x00" * 8)
+
+        assert isinstance(audio.source, Base64AudioSource)
+        assert audio.source.mime_type == "audio/mp3"
+
+    @pytest.mark.parametrize("header", [b"\xff\xf1", b"\xff\xf9"])
+    def test_adts_aac_is_not_mistaken_for_mp3(self, header: bytes) -> None:
+        """ADTS AAC uses the reserved layer bits, so it stays AAC."""
+        audio = Audio.from_bytes(header + b"\x50\x80" + b"\x00" * 8)
+
+        assert isinstance(audio.source, Base64AudioSource)
+        assert audio.source.mime_type == "audio/aac"
+
+    @pytest.mark.parametrize("header", [b"\xff\xfd", b"\xff\xfc"])
+    def test_mpeg_layer1_and_layer2_are_not_mistaken_for_mp3(
+        self, header: bytes
+    ) -> None:
+        """Only Layer III frames are MP3; Layer I/II stay unsupported."""
+        with pytest.raises(ValueError, match="Unsupported audio type"):
+            Audio.from_bytes(header + b"\x90\x00" + b"\x00" * 8)
+
+    def test_data_without_a_frame_sync_is_not_mp3(self) -> None:
+        """A lone 0xFF byte is not enough to identify MP3."""
+        with pytest.raises(ValueError, match="Unsupported audio type"):
+            Audio.from_bytes(b"\xff\x00" + b"\x00" * 10)
