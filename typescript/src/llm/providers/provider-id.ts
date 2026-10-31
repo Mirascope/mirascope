@@ -10,6 +10,7 @@ export const KNOWN_PROVIDER_IDS = [
   "anthropic-beta",
   "api-route",
   "atlascloud",
+  "atmorouter",
   "cheaperinference",
   "google",
   "minimax",

@@ -18,6 +18,7 @@ export { AnthropicBetaProvider } from "@/llm/providers/anthropic/beta-provider";
 export { APIRouteProvider } from "@/llm/providers/api-route";
 export {
   AtlasCloudProvider,
+  AtmoRouterProvider,
   CheaperInferenceProvider,
   MiniMaxProvider,
   RequestyProvider,

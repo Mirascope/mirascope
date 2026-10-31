@@ -22,6 +22,12 @@ describe("Python-compatible HTTP providers", () => {
       "deepseek-ai/test",
     ],
     [
+      "atmorouter",
+      "ATMOROUTER_API_KEY",
+      "https://atmorouter.dev/v1",
+      "cc/claude-sonnet-4-6",
+    ],
+    [
       "cheaperinference",
       "CHEAPER_INFERENCE_API_KEY",
       "https://api.cheaperinference.com/v1",

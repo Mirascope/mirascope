@@ -60,6 +60,20 @@ export class AtlasCloudProvider extends CompatibleProvider {
   }
 }
 
+/** AtmoRouter's OpenAI-compatible API. */
+export class AtmoRouterProvider extends CompatibleProvider {
+  readonly id = "atmorouter" as const;
+
+  constructor(init: ProviderInit = {}) {
+    super(
+      "atmorouter",
+      "ATMOROUTER_API_KEY",
+      "https://atmorouter.dev/v1",
+      init,
+    );
+  }
+}
+
 /** Cheaper Inference's OpenAI-compatible API. */
 export class CheaperInferenceProvider extends CompatibleProvider {
   readonly id = "cheaperinference" as const;
