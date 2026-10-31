@@ -338,7 +338,7 @@ def test_default_format_mode_is_tool_for_models_without_json_schema(
     )
 
     assert "text" not in kwargs
-    assert cast(dict[str, Any], kwargs["tool_choice"])["type"] == "function"
+    assert cast(dict[str, Any], kwargs)["tool_choice"]["type"] == "function"
 
 
 def test_json_format_omits_json_object_for_models_without_it() -> None:
