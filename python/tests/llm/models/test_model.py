@@ -118,3 +118,29 @@ def test_provider_resolution_is_dynamic() -> None:
     other_model = llm.Model("openai/gpt-3.5-turbo")
     assert other_model.provider is custom_provider
     assert other_model.provider.id == "anthropic"
+
+
+def test_model_rejects_unknown_params() -> None:
+    """Test that Model rejects unknown params instead of silently storing them."""
+    with pytest.raises(TypeError, match="nonsense_kwarg"):
+        llm.Model("openai/gpt-4o", nonsense_kwarg=123)  # type: ignore[call-arg]
+
+    with pytest.raises(TypeError, match="temperatur"):
+        llm.model("openai/gpt-4o", temperatur=0.7)  # type: ignore[call-arg]
+
+
+def test_model_accepts_all_valid_params() -> None:
+    """Test that Model accepts every parameter defined in `llm.Params`."""
+    model = llm.Model(
+        "openai/gpt-4o",
+        temperature=0.7,
+        max_tokens=100,
+        top_p=0.9,
+        top_k=40,
+        seed=42,
+        stop_sequences=["stop"],
+        thinking={"level": "none"},
+    )
+
+    assert model.params.get("temperature") == 0.7
+    assert model.params.get("max_tokens") == 100

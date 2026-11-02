@@ -51,3 +51,58 @@ class TestCallDecoratorSmokeTests:
             return f"Context: {ctx.deps}. Question: {question}"
 
         assert isinstance(my_async_context_call, llm.AsyncContextCall)
+
+
+class TestCallDecoratorUnknownKwargs:
+    """Tests that unknown kwargs to `llm.call` are rejected at decoration time.
+
+    Regression tests for https://github.com/Mirascope/mirascope/issues/2879:
+    unknown keyword arguments (typos, removed parameters) used to be silently
+    accepted and stored on the model, where providers ignored them.
+    """
+
+    def test_unknown_kwarg_raises_type_error(self) -> None:
+        """Test that an unknown kwarg raises a TypeError naming the argument."""
+        with pytest.raises(TypeError, match="nonsense_kwarg"):
+
+            @llm.call("openai/gpt-4o-mini", nonsense_kwarg=123)  # type: ignore[call-arg]
+            def my_call(question: str) -> str:
+                return question
+
+    def test_removed_provider_kwarg_has_model_id_hint(self) -> None:
+        """Test that the removed `provider=` kwarg gets a model id hint."""
+        with pytest.raises(TypeError) as exc_info:
+
+            @llm.call("openai/gpt-4o-mini", provider="openai")  # type: ignore[call-arg]
+            def my_call(question: str) -> str:
+                return question
+
+        assert "'provider'" in str(exc_info.value)
+        assert "part of the model id" in str(exc_info.value)
+        assert "openai/gpt-4o-mini" in str(exc_info.value)
+
+    def test_misspelled_kwarg_raises_type_error(self) -> None:
+        """Test that a misspelled parameter (e.g. `temperatur`) is rejected."""
+        with pytest.raises(TypeError, match="temperatur"):
+
+            @llm.call("openai/gpt-4o-mini", temperatur=0.7)  # type: ignore[call-arg]
+            def my_call(question: str) -> str:
+                return question
+
+    def test_all_valid_params_accepted(self) -> None:
+        """Test that every parameter in `llm.Params` is accepted."""
+
+        @llm.call(
+            "openai/gpt-4o-mini",
+            temperature=0.7,
+            max_tokens=100,
+            top_p=0.9,
+            top_k=40,
+            seed=42,
+            stop_sequences=["stop"],
+            thinking={"level": "none"},
+        )
+        def my_call(question: str) -> str:
+            return question
+
+        assert isinstance(my_call, llm.Call)
