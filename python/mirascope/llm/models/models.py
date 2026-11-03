@@ -47,6 +47,35 @@ def model_from_context() -> Model | None:
     return MODEL_CONTEXT.get()
 
 
+_PARAM_KEYS = frozenset(Params.__annotations__.keys())
+"""The keyword arguments accepted as model parameters (see `Params`)."""
+
+
+def _validate_params(params: Params) -> None:
+    """Validate that every key in `params` is a known model parameter.
+
+    Raises:
+        TypeError: If `params` contains keys that are not part of `Params`.
+    """
+    unknown = sorted(set(params) - _PARAM_KEYS)
+    if not unknown:
+        return
+
+    message = (
+        "Got unexpected parameter(s): "
+        + ", ".join(f"'{key}'" for key in unknown)
+        + ". Model parameters must be passed as one of: "
+        + ", ".join(f"'{key}'" for key in sorted(_PARAM_KEYS))
+        + "."
+    )
+    if "provider" in unknown:
+        message += (
+            " Note: 'provider' is not a parameter; the provider is part of"
+            " the model id (e.g. 'openai/gpt-4o-mini')."
+        )
+    raise TypeError(message)
+
+
 class Model:
     """The unified LLM interface that delegates to provider-specific clients.
 
@@ -100,7 +129,13 @@ class Model:
         model_id: ModelId,
         **params: Unpack[Params],
     ) -> None:
-        """Initialize the Model with model_id and optional params."""
+        """Initialize the Model with model_id and optional params.
+
+        Raises:
+            TypeError: If an unknown parameter is provided.
+            ValueError: If the model_id is not in 'provider/model-name' format.
+        """
+        _validate_params(params)
         if "/" not in model_id:
             raise ValueError(
                 "Invalid model_id format. Expected format: 'provider/model-name' "
