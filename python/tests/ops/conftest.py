@@ -84,7 +84,7 @@ VALID_TRACEPARENT = "00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01"
 VALID_TRACE_ID = int("0af7651916cd43dd8448eb211c80319c", 16)
 VALID_SPAN_ID = int("b7ad6b7169203331", 16)
 
-TRACEPARENT_PATTERN = re.compile(r"^00-[0-9a-f]{32}-[0-9a-f]{16}-01$")
+TRACEPARENT_PATTERN = re.compile(r"^00-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2}$")
 
 TRACEPARENT_REGEX = re.compile(
     r"^(?P<version>[0-9a-f]{2})-"
