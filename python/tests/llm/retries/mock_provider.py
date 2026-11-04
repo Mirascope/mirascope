@@ -51,6 +51,7 @@ class MockProvider(BaseProvider[None]):
         self.client = None
         self._exceptions: list[BaseException] = []
         self._stream_exceptions: list[BaseException] = []
+        self._stream_creation_exceptions: list[BaseException] = []
         self._call_count = 0
         self._stream_count = 0
         self._stream_text: str | None = None  # Custom text for streaming (single)
@@ -87,6 +88,12 @@ class MockProvider(BaseProvider[None]):
                 will complete successfully.
         """
         self._stream_exceptions = list(exceptions)
+
+    def set_stream_creation_exceptions(
+        self, exceptions: Sequence[BaseException]
+    ) -> None:
+        """Set exceptions raised before a streaming response is returned."""
+        self._stream_creation_exceptions = list(exceptions)
 
     def set_stream_text(self, text: str) -> None:
         """Set custom text to stream instead of default 'mock response'.
@@ -394,6 +401,8 @@ class MockProvider(BaseProvider[None]):
     ) -> StreamResponse[Any]:
         """Return a StreamResponse with configurable mid-stream exceptions."""
         self._stream_count += 1
+        if self._stream_creation_exceptions:
+            raise self._stream_creation_exceptions.pop(0)
         # Convert format to Format if it's a type
         resolved_format: Format[Any] | None = None
         if format is not None:
@@ -428,6 +437,8 @@ class MockProvider(BaseProvider[None]):
     ) -> AsyncStreamResponse[Any]:
         """Return an AsyncStreamResponse with configurable mid-stream exceptions."""
         self._stream_count += 1
+        if self._stream_creation_exceptions:
+            raise self._stream_creation_exceptions.pop(0)
         # Convert format to Format if it's a type
         resolved_format: Format[Any] | None = None
         if format is not None:
@@ -465,6 +476,8 @@ class MockProvider(BaseProvider[None]):
     ):
         """Return a ContextStreamResponse with configurable mid-stream exceptions."""
         self._stream_count += 1
+        if self._stream_creation_exceptions:
+            raise self._stream_creation_exceptions.pop(0)
         # Convert format to Format if it's a type
         resolved_format: Format[Any] | None = None
         if format is not None:
@@ -503,6 +516,8 @@ class MockProvider(BaseProvider[None]):
     ):
         """Return an AsyncContextStreamResponse with configurable mid-stream exceptions."""
         self._stream_count += 1
+        if self._stream_creation_exceptions:
+            raise self._stream_creation_exceptions.pop(0)
         # Convert format to Format if it's a type
         resolved_format: Format[Any] | None = None
         if format is not None:
