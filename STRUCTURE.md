@@ -12,6 +12,7 @@ mirascope/         # Version 2
 ├── typescript/      # TypeScript SDK implementation
 ├── website/         # Marketing website (docs, blog, landing page)
 ├── docs/            # Unified cross-language documentation and website
+├── .github/          # CI, release workflows, and grouped Dependabot updates
 └── [config files]   # Monorepo-level configuration
 ```
 
@@ -30,6 +31,8 @@ Mirascope uses a monorepo structure to manage multiple packages and applications
 4. **Consistent Tooling**: Shared linting, formatting, and CI/CD configuration across all packages.
 
 5. **Language-Specific Tooling**: Python uses `uv` for package management, TypeScript/Website/Docs use `bun`, each optimized for their respective ecosystems.
+
+Dependency updates are configured in `.github/dependabot.yml` for both Python lockfiles, all three Bun packages, and GitHub Actions. Security and routine updates are grouped separately for each package directory.
 
 ## Python SDK Implementation (`python/`)
 
