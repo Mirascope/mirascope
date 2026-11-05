@@ -7,7 +7,7 @@
 
 import type { Response as OpenAIResponse } from "openai/resources/responses/responses";
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 import type { AssistantMessage } from "@/llm/messages";
 
@@ -150,6 +150,43 @@ describe("audio encoding", () => {
         {},
       ),
     ).toThrow(FeatureNotSupportedError);
+  });
+});
+
+describe("buildRequestParams sampling params", () => {
+  it("omits temperature and topP for reasoning models and warns", () => {
+    const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const params = buildRequestParams(
+      "openai/o4-mini:responses",
+      [user("Hello")],
+      undefined,
+      undefined,
+      { temperature: 0.7, topP: 0.9, maxTokens: 100 },
+    );
+
+    expect(params.temperature).toBeUndefined();
+    expect(params.top_p).toBeUndefined();
+    expect(params.max_output_tokens).toBe(100);
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("temperature"),
+    );
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("topP"));
+
+    consoleSpy.mockRestore();
+  });
+
+  it("keeps temperature and topP for non-reasoning models", () => {
+    const params = buildRequestParams(
+      "openai/gpt-4o:responses",
+      [user("Hello")],
+      undefined,
+      undefined,
+      { temperature: 0.7, topP: 0.9 },
+    );
+
+    expect(params.temperature).toBe(0.7);
+    expect(params.top_p).toBe(0.9);
   });
 });
 
