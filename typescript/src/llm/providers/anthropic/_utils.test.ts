@@ -8,9 +8,10 @@
 import type { Message as AnthropicMessage } from "@anthropic-ai/sdk/resources/messages";
 
 import Anthropic from "@anthropic-ai/sdk";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 import type { AssistantMessage } from "@/llm/messages";
+import type { Params } from "@/llm/models";
 
 import { Audio, Document, Image } from "@/llm/content";
 import {
@@ -99,6 +100,100 @@ describe("computeThinkingBudget", () => {
 });
 
 describe("buildRequestParams", () => {
+  describe("sampling parameters", () => {
+    const samplingCases: Params[] = [
+      { temperature: 0.2 },
+      { topP: 0.9 },
+      { topK: 10 },
+      { temperature: 0, topP: 0, topK: 0, seed: 0 },
+    ];
+
+    describe.each([
+      "anthropic/claude-opus-4-7",
+      "anthropic/claude-opus-5-5",
+      "anthropic/claude-sonnet-5-5",
+      "anthropic/claude-haiku-5-5",
+    ])("%s", (modelId) => {
+      it.each(samplingCases)(
+        "warns and omits unsupported sampling %j",
+        (sampling) => {
+          const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+          try {
+            const params = buildRequestParams(
+              modelId,
+              [user("Hello")],
+              undefined,
+              undefined,
+              {
+                ...sampling,
+                maxTokens: 4096,
+                stopSequences: ["END"],
+                thinking: { level: "medium" },
+              },
+            );
+            expect(params).not.toHaveProperty("temperature");
+            expect(params).not.toHaveProperty("top_p");
+            expect(params).not.toHaveProperty("top_k");
+            expect(params).not.toHaveProperty("seed");
+            expect(warn).toHaveBeenCalledTimes(Object.keys(sampling).length);
+            for (const key of Object.keys(sampling)) {
+              expect(warn).toHaveBeenCalledWith(
+                expect.stringContaining(`'${key}' parameter will be ignored`),
+              );
+            }
+            expect(params.max_tokens).toBe(4096);
+            expect(params.stop_sequences).toEqual(["END"]);
+            expect(params.thinking).toEqual({ type: "adaptive" });
+            expect(params.output_config).toEqual({ effort: "medium" });
+          } finally {
+            warn.mockRestore();
+          }
+        },
+      );
+    });
+
+    it.each([
+      "anthropic/claude-opus-4-6",
+      "anthropic/claude-sonnet-4-6",
+      "anthropic/claude-haiku-4-5",
+    ])("preserves supported sampling for %s", (modelId) => {
+      for (const value of [0, 0.2]) {
+        expect(
+          buildRequestParams(modelId, [user("Hello")], undefined, undefined, {
+            temperature: value,
+          }).temperature,
+        ).toBe(value);
+        expect(
+          buildRequestParams(modelId, [user("Hello")], undefined, undefined, {
+            topP: value,
+          }).top_p,
+        ).toBe(value);
+      }
+      for (const value of [0, 10]) {
+        expect(
+          buildRequestParams(modelId, [user("Hello")], undefined, undefined, {
+            topK: value,
+          }).top_k,
+        ).toBe(value);
+      }
+    });
+
+    it("does not warn for omitted sampling", () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      try {
+        const params = buildRequestParams("anthropic/claude-opus-4-7", [
+          user("Hello"),
+        ]);
+        expect(params).not.toHaveProperty("temperature");
+        expect(params).not.toHaveProperty("top_p");
+        expect(params).not.toHaveProperty("top_k");
+        expect(warn).not.toHaveBeenCalled();
+      } finally {
+        warn.mockRestore();
+      }
+    });
+  });
+
   it("throws FeatureNotSupportedError when both temperature and topP specified", () => {
     const messages = [user("Hello")];
 

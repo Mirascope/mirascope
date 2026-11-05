@@ -665,30 +665,36 @@ export function buildRequestParams(
     }
     /* v8 ignore stop */
 
-    const temperature = p.get("temperature");
-    const topP = p.get("topP");
+    if (ADAPTIVE_THINKING_ONLY_MODEL.test(modelName(modelId))) {
+      p.warnUnsupported("temperature");
+      p.warnUnsupported("topP");
+      p.warnUnsupported("topK");
+    } else {
+      const temperature = p.get("temperature");
+      const topP = p.get("topP");
 
-    // Anthropic doesn't allow both temperature and topP together
-    if (temperature !== undefined && topP !== undefined) {
-      throw new FeatureNotSupportedError(
-        "temperature + topP",
-        "anthropic",
-        modelId,
-        "Anthropic does not allow both temperature and top_p to be specified together",
-      );
-    }
+      // Anthropic doesn't allow both temperature and topP together
+      if (temperature !== undefined && topP !== undefined) {
+        throw new FeatureNotSupportedError(
+          "temperature + topP",
+          "anthropic",
+          modelId,
+          "Anthropic does not allow both temperature and top_p to be specified together",
+        );
+      }
 
-    if (temperature !== undefined) {
-      requestParams.temperature = temperature;
-    }
+      if (temperature !== undefined) {
+        requestParams.temperature = temperature;
+      }
 
-    if (topP !== undefined) {
-      requestParams.top_p = topP;
-    }
+      if (topP !== undefined) {
+        requestParams.top_p = topP;
+      }
 
-    const topK = p.get("topK");
-    if (topK !== undefined) {
-      requestParams.top_k = topK;
+      const topK = p.get("topK");
+      if (topK !== undefined) {
+        requestParams.top_k = topK;
+      }
     }
 
     const stopSequences = p.get("stopSequences");

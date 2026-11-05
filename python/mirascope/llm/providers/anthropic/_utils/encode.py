@@ -164,17 +164,23 @@ def process_params(
         "encode_thoughts_as_text": False,
     }
 
+    unsupported_params = ["seed"]
+    adaptive_only = uses_adaptive_thinking_only(model)
+    if adaptive_only:
+        unsupported_params.extend(["temperature", "top_p", "top_k"])
+
     with _base_utils.ensure_all_params_accessed(
-        params=params, provider_id="anthropic", unsupported_params=["seed"]
+        params=params, provider_id="anthropic", unsupported_params=unsupported_params
     ) as param_accessor:
-        if param_accessor.temperature is not None:
-            result["temperature"] = param_accessor.temperature
+        if not adaptive_only:
+            if param_accessor.temperature is not None:
+                result["temperature"] = param_accessor.temperature
+            if param_accessor.top_p is not None:
+                result["top_p"] = param_accessor.top_p
+            if param_accessor.top_k is not None:
+                result["top_k"] = param_accessor.top_k
         if param_accessor.max_tokens is not None:
             result["max_tokens"] = param_accessor.max_tokens
-        if param_accessor.top_p is not None:
-            result["top_p"] = param_accessor.top_p
-        if param_accessor.top_k is not None:
-            result["top_k"] = param_accessor.top_k
         if param_accessor.stop_sequences is not None:
             result["stop_sequences"] = param_accessor.stop_sequences
         if param_accessor.thinking is not None:
