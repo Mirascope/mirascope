@@ -309,3 +309,31 @@ def test_strict_format_requires_every_property() -> None:
     assert text["format"]["schema"]["additionalProperties"] is False
     assert "additionalProperties" not in format.schema
     assert format.schema == schema_before
+
+
+def test_reasoning_model_drops_temperature_and_top_p() -> None:
+    """Reasoning models reject sampling params, so they are skipped (as in completions)."""
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-5",
+        messages=[llm.messages.user("Hi")],
+        format=None,
+        tools=Toolkit(None),
+        params={"temperature": 0.5, "top_p": 0.9, "max_tokens": 100},
+    )
+
+    assert "temperature" not in kwargs
+    assert "top_p" not in kwargs
+    assert kwargs.get("max_output_tokens") == 100
+
+
+def test_non_reasoning_model_keeps_temperature_and_top_p() -> None:
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-4o",
+        messages=[llm.messages.user("Hi")],
+        format=None,
+        tools=Toolkit(None),
+        params={"temperature": 0.5, "top_p": 0.9},
+    )
+
+    assert kwargs.get("temperature") == 0.5
+    assert kwargs.get("top_p") == 0.9
