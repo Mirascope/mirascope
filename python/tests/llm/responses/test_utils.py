@@ -1,5 +1,6 @@
 import inspect
 import json
+from typing import cast
 
 import pytest
 from pydantic import BaseModel
@@ -232,3 +233,21 @@ def test_parse_partial_json_with_primitive_type_invalid() -> None:
     invalid_json = "not a list"
     result = parse_partial_json(invalid_json, list[str])
     assert result is None
+
+
+def test_parse_partial_json_with_optional_list_of_models() -> None:
+    """An incomplete model inside an optional list still parses into a partial."""
+
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    class Shelf(BaseModel):
+        books: list[Book] | None
+
+    result = parse_partial_json('{"books": [{"title": "The Name"', Shelf)
+
+    assert result is not None
+    shelf = cast(Shelf, result)
+    assert shelf.books is not None
+    assert shelf.books[0].title == "The Name"
