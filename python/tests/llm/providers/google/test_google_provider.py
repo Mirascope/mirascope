@@ -4,6 +4,7 @@ from collections.abc import AsyncIterator, Iterator
 from typing import get_args
 from unittest.mock import MagicMock, patch
 
+import httpx
 import pytest
 from google.genai import types as genai_types
 from google.genai.errors import (
@@ -146,6 +147,58 @@ async def test_async_call_rate_limit_error() -> None:
         # Verify it's wrapped as mirascope RateLimitError and has proper chaining
         assert isinstance(exc_info.value, llm.RateLimitError)
         assert isinstance(exc_info.value.__cause__, GoogleServerError)
+
+
+@pytest.mark.parametrize(
+    ("httpx_error", "expected"),
+    [
+        (httpx.ConnectError("connection refused"), llm.ConnectionError),
+        (httpx.ConnectTimeout("connect timed out"), llm.TimeoutError),
+        (httpx.ReadTimeout("read timed out"), llm.TimeoutError),
+    ],
+)
+def test_call_httpx_transport_error(
+    httpx_error: Exception, expected: type[llm.ProviderError]
+) -> None:
+    """Test that httpx transport errors re-raised by google-genai are wrapped."""
+    model = llm.Model("google/gemini-2.0-flash")
+    provider = model.provider
+    assert isinstance(provider, GoogleProvider)
+
+    with (
+        patch.object(
+            provider.client.models, "generate_content", side_effect=httpx_error
+        ),
+        pytest.raises(expected) as exc_info,
+    ):
+        model.call("test")
+
+    assert exc_info.value.__cause__ is httpx_error
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("httpx_error", "expected"),
+    [
+        (httpx.ConnectError("connection refused"), llm.ConnectionError),
+        (httpx.ReadTimeout("read timed out"), llm.TimeoutError),
+    ],
+)
+async def test_async_call_httpx_transport_error(
+    httpx_error: Exception, expected: type[llm.ProviderError]
+) -> None:
+    """Test that httpx transport errors are wrapped during async calls."""
+    model = llm.Model("google/gemini-2.0-flash")
+    provider = model.provider
+    assert isinstance(provider, GoogleProvider)
+
+    with (
+        patch.object(
+            provider.client.aio.models, "generate_content", side_effect=httpx_error
+        ),
+        pytest.raises(expected),
+    ):
+        await model.call_async("test")
 
 
 def test_map_google_error_not_google_error() -> None:
