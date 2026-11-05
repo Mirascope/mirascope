@@ -184,7 +184,7 @@ class BaseStreamResponse(
         """Initialize the BaseStreamResponse.
 
         Args:
-            provider: The provider name (e.g. "anthropic", "openai").
+            provider_id: The provider name (e.g. "anthropic", "openai").
             model_id: The model identifier that generated the response.
             provider_model_name: Optional provider-specific model name. May include
                 provider-specific additional info (like api mode in "gpt-5:responses").
