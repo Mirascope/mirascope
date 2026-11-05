@@ -195,7 +195,7 @@ def process_params(
                         ),
                     )
                 result["thinking"] = {"type": "disabled"}
-            elif uses_adaptive_thinking_only(model):
+            elif budget_tokens != -1 and uses_adaptive_thinking_only(model):
                 result["thinking"] = {"type": "adaptive"}
                 result["output_config"] = {
                     "effort": THINKING_LEVEL_TO_EFFORT.get(level, "medium")
