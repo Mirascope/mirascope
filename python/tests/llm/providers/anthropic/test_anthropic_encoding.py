@@ -492,6 +492,73 @@ def test_thinking_level_keeps_budget_tokens_on_models_that_accept_it(
     assert "output_config" not in kwargs
 
 
+@pytest.mark.parametrize(
+    ("max_tokens", "level"),
+    [
+        (500, "low"),
+        (1024, "low"),
+        (500, "minimal"),
+        (1024, "max"),
+    ],
+)
+def test_thinking_budget_at_or_above_max_tokens_raises(
+    max_tokens: int, level: llm.ThinkingLevel
+) -> None:
+    """A thinking budget must be less than max_tokens, and 1024 is the minimum.
+
+    The budget is clamped up to 1024 tokens, so with max_tokens <= 1024 the
+    request would carry a budget the API rejects. Fail fast instead.
+    """
+    with pytest.raises(
+        llm.FeatureNotSupportedError, match="must be less than max_tokens"
+    ):
+        encode_request(
+            model_id="anthropic/claude-sonnet-4-5",
+            messages=[llm.messages.user("Hello")],
+            format=None,
+            tools=Toolkit(None),
+            params={"thinking": {"level": level}, "max_tokens": max_tokens},
+        )
+
+
+def test_thinking_budget_just_below_max_tokens_is_kept() -> None:
+    """A budget of 1024 with max_tokens of 1025 is valid and still sent."""
+    _, _, kwargs = encode_request(
+        model_id="anthropic/claude-sonnet-4-5",
+        messages=[llm.messages.user("Hello")],
+        format=None,
+        tools=Toolkit(None),
+        params={"thinking": {"level": "low"}, "max_tokens": 1025},
+    )
+    assert kwargs.get("thinking") == {"type": "enabled", "budget_tokens": 1024}
+
+
+def test_thinking_budget_check_does_not_apply_to_adaptive_models() -> None:
+    """Adaptive models never send a budget, so small max_tokens stays valid."""
+    _, _, kwargs = encode_request(
+        model_id="anthropic/claude-opus-4-7",
+        messages=[llm.messages.user("Hello")],
+        format=None,
+        tools=Toolkit(None),
+        params={"thinking": {"level": "medium"}, "max_tokens": 500},
+    )
+    assert kwargs.get("thinking") == {"type": "adaptive"}
+
+
+def test_thinking_budget_check_applies_to_beta_encoding() -> None:
+    """The beta path shares process_params, so it raises the same error."""
+    with pytest.raises(
+        llm.FeatureNotSupportedError, match="must be less than max_tokens"
+    ):
+        beta_encode_request(
+            model_id="anthropic/claude-sonnet-4-5",
+            messages=[llm.messages.user("Hello")],
+            format=None,
+            tools=Toolkit(None),
+            params={"thinking": {"level": "low"}, "max_tokens": 500},
+        )
+
+
 def test_cache_control_only_marks_the_last_tool_of_each_request() -> None:
     """A tool that was last in an earlier request must not keep its cache breakpoint."""
 

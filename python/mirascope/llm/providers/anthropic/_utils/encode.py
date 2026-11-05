@@ -201,6 +201,21 @@ def process_params(
                     "effort": THINKING_LEVEL_TO_EFFORT.get(level, "medium")
                 }
             elif budget_tokens > 0:
+                if budget_tokens >= result["max_tokens"]:
+                    # Anthropic rejects a thinking budget that is not less than
+                    # max_tokens, and the minimum budget is 1024 tokens, so a
+                    # request with max_tokens <= 1024 can never carry a budget.
+                    # Fail fast instead of sending a request the API rejects.
+                    raise FeatureNotSupportedError(
+                        "thinking budget",
+                        "anthropic",
+                        f"anthropic/{model}" if model is not None else None,
+                        message=(
+                            f"Anthropic thinking budget of {budget_tokens} tokens "
+                            "must be less than max_tokens of "
+                            f"{result['max_tokens']} tokens."
+                        ),
+                    )
                 result["thinking"] = {"type": "enabled", "budget_tokens": budget_tokens}
             else:
                 # budget is -1, do not set thinking at all.
