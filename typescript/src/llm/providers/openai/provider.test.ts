@@ -41,6 +41,7 @@ vi.mock("openai", async (importOriginal) => {
     APIError: actual.default.APIError,
     APIConnectionError: actual.default.APIConnectionError,
     APIConnectionTimeoutError: actual.default.APIConnectionTimeoutError,
+    OpenAIError: actual.default.OpenAIError,
     UnprocessableEntityError: actual.default.UnprocessableEntityError,
     ConflictError: actual.default.ConflictError,
   });
