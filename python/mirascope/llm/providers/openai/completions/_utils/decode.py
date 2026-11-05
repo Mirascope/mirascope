@@ -191,6 +191,14 @@ class _OpenAIChunkProcessor:
         if delta.refusal:
             self.refusal_encountered = True
         if content is not None:
+            if self.current_content_type == "tool_call":
+                # OpenAI-compatible servers (e.g. vLLM, SGLang) can stream text after
+                # a tool call. Finish the open calls so the text starts its own part.
+                for tool_id, _tool_name in self.current_tools.values():
+                    yield ToolCallEndChunk(id=tool_id)
+                self.current_tools.clear()
+                self.index_slots.clear()
+                self.current_content_type = None
             if self.current_content_type is None:
                 yield TextStartChunk()
                 self.current_content_type = "text"
