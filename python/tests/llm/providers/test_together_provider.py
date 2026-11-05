@@ -47,3 +47,16 @@ def test_together_provider_custom_base_url() -> None:
         api_key="test-key", base_url="https://custom.together.xyz/v1"
     )
     assert provider.id == "together"
+
+
+def test_together_provider_model_name() -> None:
+    """Test TogetherProvider strips 'together/' prefix from model_id."""
+    provider = TogetherProvider(api_key="test-key")
+    assert (
+        provider._model_name("together/meta-llama/Llama-3.3-70B-Instruct-Turbo")  # pyright: ignore[reportPrivateUsage]
+        == "meta-llama/Llama-3.3-70B-Instruct-Turbo"
+    )
+    assert (
+        provider._model_name("meta-llama/Llama-3.3-70B-Instruct-Turbo")  # pyright: ignore[reportPrivateUsage]
+        == "meta-llama/Llama-3.3-70B-Instruct-Turbo"
+    )
