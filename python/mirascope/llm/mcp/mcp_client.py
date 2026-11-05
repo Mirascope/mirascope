@@ -9,7 +9,12 @@ from mcp.client.stdio import StdioServerParameters, stdio_client as mcp_stdio_cl
 from mcp.client.streamable_http import (
     streamable_http_client as mcp_streamable_http_client,
 )
-from mcp.types import CallToolResult, PaginatedRequestParams, Tool as MCPTool
+from mcp.types import (
+    CallToolResult,
+    PaginatedRequestParams,
+    TextContent,
+    Tool as MCPTool,
+)
 
 from ..tools import AsyncTool
 from ..tools.tool_schema import ToolParameterSchema
@@ -60,6 +65,17 @@ class MCPClient:
             tool_result: CallToolResult = await self._session.call_tool(
                 mcp_tool.name, kwargs
             )
+            if tool_result.isError:
+                # Surface the server-reported failure as a tool error, so the model is
+                # told the call failed instead of reading the message as a result.
+                raise ValueError(
+                    "\n".join(
+                        content.text
+                        for content in tool_result.content
+                        if isinstance(content, TextContent)
+                    )
+                    or f"MCP tool '{mcp_tool.name}' returned an error"
+                )
             # Convert ContentBlock objects to JSON-serializable dicts
             # Cast to Jsonable since model_dump() returns dict[str, Any]
             return cast(

@@ -396,6 +396,23 @@ class TestMCPToolPagination:
             assert calls == ["second"]
             assert cursors == [None, "next"]
 
+    async def test_tool_error_result_is_reported_as_error(self) -> None:
+        server = _paginated_server([_tool_page(["failing"])], [])
+
+        async def call_tool(name: str, arguments: dict[str, object]) -> CallToolResult:
+            return CallToolResult(
+                content=[TextContent(type="text", text="disk is full")], isError=True
+            )
+
+        server.call_tool(validate_input=False)(call_tool)
+        async with create_connected_server_and_client_session(server) as session:
+            tools = await llm.mcp.MCPClient(session).list_tools()
+            result = await tools[0].execute(
+                llm.ToolCall(id="failing-call", name="failing", args="{}")
+            )
+            assert isinstance(result.error, llm.ToolExecutionError)
+            assert "disk is full" in str(result.result)
+
 
 @pytest.mark.asyncio
 @pytest.mark.skip("Flaky — run manually if changing transport code")
