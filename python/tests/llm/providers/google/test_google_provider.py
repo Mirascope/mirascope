@@ -4,6 +4,7 @@ from collections.abc import AsyncIterator, Iterator
 from typing import get_args
 from unittest.mock import MagicMock, patch
 
+import httpx
 import pytest
 from google.genai import types as genai_types
 from google.genai.errors import (
@@ -99,6 +100,44 @@ async def test_async_stream_rate_limit_error() -> None:
         # Verify it's wrapped as mirascope RateLimitError and has proper chaining
         assert isinstance(exc_info.value, llm.RateLimitError)
         assert isinstance(exc_info.value.__cause__, GoogleServerError)
+
+
+def test_call_connect_error() -> None:
+    """Test that an httpx connection failure is wrapped as ConnectionError."""
+    model = llm.Model("google/gemini-2.0-flash")
+    provider = model.provider
+    assert isinstance(provider, GoogleProvider)
+
+    with (
+        patch.object(
+            provider.client.models,
+            "generate_content",
+            side_effect=httpx.ConnectError("connection refused"),
+        ),
+        pytest.raises(llm.ConnectionError) as exc_info,
+    ):
+        model.call("test")
+
+    assert isinstance(exc_info.value.__cause__, httpx.ConnectError)
+
+
+def test_call_timeout_error() -> None:
+    """Test that an httpx timeout is wrapped as TimeoutError."""
+    model = llm.Model("google/gemini-2.0-flash")
+    provider = model.provider
+    assert isinstance(provider, GoogleProvider)
+
+    with (
+        patch.object(
+            provider.client.models,
+            "generate_content",
+            side_effect=httpx.ReadTimeout("timed out"),
+        ),
+        pytest.raises(llm.TimeoutError) as exc_info,
+    ):
+        model.call("test")
+
+    assert isinstance(exc_info.value.__cause__, httpx.ReadTimeout)
 
 
 def test_call_rate_limit_error() -> None:
