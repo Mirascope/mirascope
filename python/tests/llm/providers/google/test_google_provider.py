@@ -4,6 +4,7 @@ from collections.abc import AsyncIterator, Iterator
 from typing import get_args
 from unittest.mock import MagicMock, patch
 
+import httpx
 import pytest
 from google.genai import types as genai_types
 from google.genai.errors import (
@@ -521,3 +522,29 @@ def test_decode_usage_without_candidates_token_count() -> None:
     assert usage.input_tokens == 100
     assert usage.output_tokens == 30
     assert usage.reasoning_tokens == 30
+
+
+@pytest.mark.parametrize(
+    ("error", "expected"),
+    [
+        (httpx.ConnectError("connection refused"), llm.ConnectionError),
+        (httpx.ReadError("connection reset"), llm.ConnectionError),
+        (httpx.ReadTimeout("timed out"), llm.TimeoutError),
+        (httpx.ConnectTimeout("timed out"), llm.TimeoutError),
+    ],
+)
+def test_call_network_errors(
+    error: Exception, expected: type[llm.ProviderError]
+) -> None:
+    """Test that httpx network errors are re-wrapped as Mirascope errors."""
+    model = llm.Model("google/gemini-2.0-flash")
+    provider = model.provider
+    assert isinstance(provider, GoogleProvider)
+
+    with (
+        patch.object(provider.client.models, "generate_content", side_effect=error),
+        pytest.raises(expected) as exc_info,
+    ):
+        model.call("test")
+
+    assert exc_info.value.__cause__ is error
