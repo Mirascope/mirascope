@@ -173,7 +173,7 @@ def _encode_document(doc: Document) -> genai_types.PartDict:
     elif source.type == "text_document_source":
         return genai_types.PartDict(
             inline_data=genai_types.BlobDict(
-                data=base64.b64encode(source.data.encode("utf-8")),
+                data=source.data.encode("utf-8"),
                 mime_type=source.media_type,
             )
         )
