@@ -1,9 +1,12 @@
 """Tests for Google document encoding."""
 
 import base64
-from typing import Annotated, Any
+import json
+from typing import Annotated, Any, Literal
 
+import httpx
 import pytest
+from google import genai
 from google.genai import types as genai_types
 from inline_snapshot import snapshot
 from pydantic import BaseModel, Field, ValidationError
@@ -153,7 +156,7 @@ def test_encode_base64_document() -> None:
 
 
 def test_encode_text_document() -> None:
-    """Test encoding a text document source as base64 inline_data for Google."""
+    """Test encoding a text document source as raw inline_data for Google."""
     doc = Document(
         source=TextDocumentSource(
             type="text_document_source",
@@ -179,7 +182,7 @@ def test_encode_text_document() -> None:
                         {"text": "Read this"},
                         {
                             "inline_data": {
-                                "data": base64.b64encode(b"Hello, world!"),
+                                "data": b"Hello, world!",
                                 "mime_type": "text/plain",
                             }
                         },
@@ -189,6 +192,51 @@ def test_encode_text_document() -> None:
             "config": {},
         }
     )
+
+
+@pytest.mark.parametrize(
+    ("text", "mime_type"),
+    [
+        ("Hello, 世界!\n", "text/plain"),
+        ('{"answer": "你好"}', "application/json"),
+    ],
+)
+def test_encode_text_document_preserves_wire_bytes(
+    text: str, mime_type: Literal["text/plain", "application/json"]
+) -> None:
+    original_bytes = text.encode("utf-8")
+    doc = llm.Document.from_bytes(original_bytes, mime_type=mime_type)
+    _, _, kwargs = encode_request(
+        model_id="google/gemini-2.5-flash",
+        messages=[llm.messages.user(["Read this", doc])],
+        format=None,
+        tools=Toolkit(None),
+        params={},
+    )
+    received: list[bytes] = []
+
+    class RequestCaptured(Exception):
+        pass
+
+    def capture_request(request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content)
+        inline_data = body["contents"][0]["parts"][1]["inlineData"]
+        assert inline_data["mimeType"] == mime_type
+        received.append(base64.b64decode(inline_data["data"]))
+        raise RequestCaptured
+
+    with (
+        httpx.Client(transport=httpx.MockTransport(capture_request)) as http_client,
+        genai.Client(
+            vertexai=False,
+            api_key="test-key",
+            http_options=genai_types.HttpOptions(httpx_client=http_client),
+        ) as client,
+        pytest.raises(RequestCaptured),
+    ):
+        client.models.generate_content(**kwargs)
+
+    assert received == [original_bytes]
 
 
 def test_encode_url_document_throws() -> None:
