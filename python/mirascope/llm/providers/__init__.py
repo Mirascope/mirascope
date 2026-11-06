@@ -15,6 +15,7 @@ stub_module_if_missing("mirascope.llm.providers.mlx", "mlx")
 stub_module_if_missing("mirascope.llm.providers.minimax", "openai")
 stub_module_if_missing("mirascope.llm.providers.openai", "openai")
 stub_module_if_missing("mirascope.llm.providers.openrouter", "openai")
+stub_module_if_missing("mirascope.llm.providers.opper", "openai")
 stub_module_if_missing("mirascope.llm.providers.requesty", "openai")
 stub_module_if_missing("mirascope.llm.providers.together", "openai")
 stub_module_if_missing("mirascope.llm.providers.ollama", "openai")
@@ -42,6 +43,7 @@ from .openai import (
 )
 from .openai.completions import BaseOpenAICompletionsProvider
 from .openrouter import OpenRouterProvider
+from .opper import OpperProvider
 from .provider_id import KNOWN_PROVIDER_IDS, ProviderId
 from .provider_registry import (
     get_provider_for_model,
@@ -73,6 +75,7 @@ __all__ = [
     "OpenAIModelId",
     "OpenAIProvider",
     "OpenRouterProvider",
+    "OpperProvider",
     "Provider",
     "ProviderId",
     "RequestyProvider",
