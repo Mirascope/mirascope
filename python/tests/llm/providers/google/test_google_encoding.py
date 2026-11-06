@@ -210,7 +210,7 @@ def test_encode_text_document_preserves_wire_bytes(
         model_id="google/gemini-2.5-flash",
         messages=[llm.messages.user(["Read this", doc])],
         format=None,
-        tools=Toolkit(None),
+        tools=llm.Toolkit(None),
         params={},
     )
     received: list[bytes] = []
