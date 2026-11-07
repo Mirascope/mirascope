@@ -12,6 +12,7 @@ from .api_route import APIRouteProvider
 from .atlascloud import AtlasCloudProvider
 from .base import Provider
 from .cheaperinference import CheaperInferenceProvider
+from .cloudgpu import CloudGPUProvider
 from .google import GoogleProvider
 from .minimax import MiniMaxProvider
 from .mirascope import MirascopeProvider
@@ -96,6 +97,9 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, Sequence[ProviderDefault]] = {
     "cheaperinference/": [
         ProviderDefault("cheaperinference", "CHEAPER_INFERENCE_API_KEY"),
     ],
+    "cloudgpu/": [
+        ProviderDefault("cloudgpu", "CLOUDGPU_API_KEY"),
+    ],
     "xai/": [
         ProviderDefault("xai", "XAI_API_KEY"),
     ],
@@ -142,6 +146,8 @@ def provider_singleton(
             return AtlasCloudProvider(api_key=api_key, base_url=base_url)
         case "cheaperinference":
             return CheaperInferenceProvider(api_key=api_key, base_url=base_url)
+        case "cloudgpu":
+            return CloudGPUProvider(api_key=api_key, base_url=base_url)
         case "google":
             return GoogleProvider(api_key=api_key, base_url=base_url)
         case "minimax":
