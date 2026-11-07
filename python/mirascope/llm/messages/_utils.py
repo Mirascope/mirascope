@@ -16,7 +16,8 @@ from .message import (
 def is_messages(
     content: UserContent | Sequence[Message],
 ) -> TypeIs[Sequence[Message]]:
-    if isinstance(content, list):
+    """Check whether content is a sequence of `Message`s rather than message content."""
+    if isinstance(content, Sequence) and not isinstance(content, str):
         if not content:
             raise ValueError("Empty array may not be used as message content")
         return isinstance(content[0], SystemMessage | UserMessage | AssistantMessage)
@@ -26,7 +27,7 @@ def is_messages(
 def promote_to_messages(content: UserContent | Sequence[Message]) -> Sequence[Message]:
     """Promote a prompt result to a list of messages.
 
-    If the result is already a list of Messages, returns it as-is.
+    If the result is already a sequence of Messages, returns it as-is.
     If the result is str/UserContentPart/Sequence of content parts, wraps it in a user message.
     """
     if is_messages(content):
