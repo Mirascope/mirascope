@@ -411,6 +411,13 @@ class TestProviderStubs:
         # Should be importable without error
         assert CheaperInferenceProvider is not None
 
+    def test_cloudgpu_provider_is_importable(self) -> None:
+        """Test that CloudGPUProvider can be imported (will be real or stub)."""
+        from mirascope.llm.providers import CloudGPUProvider
+
+        # Should be importable without error
+        assert CloudGPUProvider is not None
+
     def test_requesty_provider_is_importable(self) -> None:
         """Test that RequestyProvider can be imported (will be real or stub)."""
         from mirascope.llm.providers import RequestyProvider

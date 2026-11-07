@@ -8,6 +8,7 @@ KnownProviderId: TypeAlias = Literal[
     "api-route",  # API Route provider via APIRouteProvider
     "atlascloud",  # Atlas Cloud provider via AtlasCloudProvider
     "cheaperinference",  # Cheaper Inference provider via CheaperInferenceProvider
+    "cloudgpu",  # CloudGPU provider via CloudGPUProvider
     "google",  # Google provider via GoogleProvider
     "minimax",  # MiniMax provider via MiniMaxProvider
     "mirascope",  # Mirascope Router provider via MirascopeProvider
@@ -27,6 +28,7 @@ OpenAICompletionsCompatibleProviderId: TypeAlias = Literal[
     "api-route",  # API Route (OpenAI-compatible)
     "atlascloud",  # Atlas Cloud (OpenAI-compatible)
     "cheaperinference",  # Cheaper Inference (OpenAI-compatible)
+    "cloudgpu",  # CloudGPU (OpenAI-compatible)
     "minimax",  # MiniMax (OpenAI-compatible)
     "ollama",  # Ollama (OpenAI-compatible)
     "openai",  # OpenAI via OpenAIProvider (routes to completions)
