@@ -23,6 +23,7 @@ from .openai.responses.provider import OpenAIResponsesProvider
 from .openrouter import OpenRouterProvider
 from .provider_id import ProviderId
 from .requesty import RequestyProvider
+from .standardcompute import StandardComputeProvider
 from .together import TogetherProvider
 from .xai import XAIProvider
 
@@ -96,6 +97,9 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, Sequence[ProviderDefault]] = {
     "cheaperinference/": [
         ProviderDefault("cheaperinference", "CHEAPER_INFERENCE_API_KEY"),
     ],
+    "standardcompute/": [
+        ProviderDefault("standardcompute", "STANDARDCOMPUTE_API_KEY"),
+    ],
     "xai/": [
         ProviderDefault("xai", "XAI_API_KEY"),
     ],
@@ -162,6 +166,8 @@ def provider_singleton(
             return OpenRouterProvider(api_key=api_key, base_url=base_url)
         case "requesty":
             return RequestyProvider(api_key=api_key, base_url=base_url)
+        case "standardcompute":
+            return StandardComputeProvider(api_key=api_key, base_url=base_url)
         case "together":
             return TogetherProvider(api_key=api_key, base_url=base_url)
         case "xai":
