@@ -33,7 +33,16 @@ def infer_audio_type(audio_data: bytes) -> AudioMimeType:
 
     if audio_data.startswith(b"RIFF") and audio_data[8:12] == b"WAVE":
         return "audio/wav"
-    elif audio_data.startswith(b"ID3") or audio_data.startswith(b"\xff\xfb"):
+    elif audio_data.startswith(b"ID3") or (
+        # MPEG-1/2/2.5 Layer III frames may have either CRC protection bit.
+        # Check the header fields rather than one version's two-byte prefix.
+        audio_data[0] == 0xFF
+        and (audio_data[1] & 0xE0) == 0xE0  # Frame sync.
+        and (audio_data[1] & 0x18) != 0x08  # Not the reserved MPEG version.
+        and (audio_data[1] & 0x06) == 0x02  # Layer III, not Layer I/II or AAC.
+        and (audio_data[2] & 0xF0) != 0xF0  # Not the reserved bitrate index.
+        and (audio_data[2] & 0x0C) != 0x0C  # Not the reserved sample rate.
+    ):
         return "audio/mp3"
     elif audio_data.startswith(b"FORM") and audio_data[8:12] == b"AIFF":
         return "audio/aiff"
