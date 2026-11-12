@@ -12,7 +12,7 @@ import inspect
 from types import UnionType
 from typing import Any, Generic, NoReturn, Union, cast, get_args, get_origin
 
-from pydantic import BaseModel, create_model
+from pydantic import BaseModel, Field, create_model
 
 from .format import FormattableT
 
@@ -123,7 +123,14 @@ class Partial(Generic[FormattableT]):
 
             # Make field optional with None default
             optional_type = Union[field_type, None]  # noqa: UP007
-            partial_fields[field_name] = (optional_type, None)
+            partial_fields[field_name] = (
+                optional_type,
+                Field(
+                    default=None,
+                    alias=field_info.alias,
+                    validation_alias=field_info.validation_alias,
+                ),
+            )
 
         # Create new model with "Partial" prefix
         partial_model = create_model(
