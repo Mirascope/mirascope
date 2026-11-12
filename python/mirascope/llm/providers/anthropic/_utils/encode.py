@@ -316,14 +316,15 @@ def encode_content(
                 doc_block["cache_control"] = {"type": "ephemeral"}
             blocks.append(doc_block)
         elif part.type == "tool_output":
-            blocks.append(
-                anthropic_types.ToolResultBlockParam(
-                    type="tool_result",
-                    tool_use_id=part.id,
-                    content=_base_utils.encode_tool_output_content(part.result),
-                    cache_control={"type": "ephemeral"} if should_add_cache else None,
-                )
+            tool_result = anthropic_types.ToolResultBlockParam(
+                type="tool_result",
+                tool_use_id=part.id,
+                content=_base_utils.encode_tool_output_content(part.result),
+                cache_control={"type": "ephemeral"} if should_add_cache else None,
             )
+            if part.error is not None:
+                tool_result["is_error"] = True
+            blocks.append(tool_result)
         elif part.type == "tool_call":
             # Re-encode the internal FORMAT_TOOL call as text when reusing history.
             # Anthropic's structured-output tool (FORMAT_TOOL_NAME) is a Mirascope

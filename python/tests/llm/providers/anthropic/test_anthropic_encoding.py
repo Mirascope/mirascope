@@ -517,3 +517,56 @@ def test_cache_control_only_marks_the_last_tool_of_each_request() -> None:
         encoded_tools = cast(list[dict[str, Any]], kwargs.get("tools"))
         marked = [tool["name"] for tool in encoded_tools if "cache_control" in tool]
         assert marked == [tools[-1].name]
+
+
+@pytest.mark.parametrize("beta", [False, True])
+@pytest.mark.parametrize("add_cache_control", [False, True])
+@pytest.mark.parametrize("failure", ["execution", "missing", "success"])
+def test_encode_tool_result_error_status(
+    beta: bool, add_cache_control: bool, failure: str
+) -> None:
+    @llm.tool
+    def lookup() -> str:
+        if failure == "execution":
+            raise ValueError("not found")
+        return "not found"
+
+    name = "missing" if failure == "missing" else "lookup"
+    tool_call = llm.ToolCall(id="call_1", name=name, args="{}")
+    toolkit = llm.Toolkit([lookup])
+    output = toolkit.execute(tool_call)
+    content: list[llm.Message] = [llm.messages.user([output])]
+    if add_cache_control:
+        content.insert(
+            0,
+            llm.messages.assistant(
+                "Calling a tool",
+                model_id="anthropic/claude-haiku-4-5",
+                provider_id="anthropic",
+            ),
+        )
+    encoder = beta_encode_request if beta else encode_request
+    _, _, kwargs = encoder(
+        model_id="anthropic/claude-haiku-4-5",
+        messages=content,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+    )
+    messages = kwargs.get("messages")
+    assert isinstance(messages, list)
+    blocks = messages[-1]["content"]
+    assert isinstance(blocks, list)
+    block = cast(dict[str, Any], blocks[0])
+    assert block["type"] == "tool_result"
+    assert block["tool_use_id"] == "call_1"
+    assert block["content"] == output.result
+    assert block["cache_control"] == (
+        {"type": "ephemeral"} if add_cache_control else None
+    )
+    if failure == "success":
+        assert output.error is None
+        assert "is_error" not in block
+    else:
+        assert output.error is not None
+        assert block["is_error"] is True
