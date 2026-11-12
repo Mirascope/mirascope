@@ -13,6 +13,7 @@ from .atlascloud import AtlasCloudProvider
 from .base import Provider
 from .cheaperinference import CheaperInferenceProvider
 from .google import GoogleProvider
+from .groq import GroqProvider
 from .minimax import MiniMaxProvider
 from .mirascope import MirascopeProvider
 from .mlx import MLXProvider
@@ -70,6 +71,9 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, Sequence[ProviderDefault]] = {
     "openai/": [
         ProviderDefault("openai", "OPENAI_API_KEY"),
         ProviderDefault("mirascope", "MIRASCOPE_API_KEY"),
+    ],
+    "groq/": [
+        ProviderDefault("groq", "GROQ_API_KEY"),
     ],
     "together/": [
         ProviderDefault("together", "TOGETHER_API_KEY"),
@@ -144,6 +148,8 @@ def provider_singleton(
             return CheaperInferenceProvider(api_key=api_key, base_url=base_url)
         case "google":
             return GoogleProvider(api_key=api_key, base_url=base_url)
+        case "groq":
+            return GroqProvider(api_key=api_key, base_url=base_url)
         case "minimax":
             return MiniMaxProvider(api_key=api_key, base_url=base_url)
         case "mirascope":
