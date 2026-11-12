@@ -34,6 +34,7 @@ Mirascope includes several built-in providers:
 | Ollama | `llm.providers.OllamaProvider` | `ollama/` | `OLLAMA_BASE_URL` |
 | OpenAI | `llm.providers.OpenAIProvider` | `openai/` | `OPENAI_API_KEY` |
 | Requesty | `llm.providers.RequestyProvider` | `requesty/` | `REQUESTY_API_KEY` |
+| Runcrate | `llm.providers.RuncrateProvider` | `runcrate/` | `RUNCRATE_API_KEY` |
 | Together | `llm.providers.TogetherProvider` | `together/` | `TOGETHER_API_KEY` |
 
 <Note title="Mirascope Provider">
@@ -60,6 +61,8 @@ For Atlas Cloud, use a model ID with the `atlascloud/` prefix, such as `atlasclo
 For Cheaper Inference, use a model ID with the `cheaperinference/` prefix, such as `cheaperinference/gpt-5.4-mini`. Mirascope sends the remaining model ID to Cheaper Inference's OpenAI-compatible API.
 
 For Requesty, use a model ID with the `requesty/` prefix, such as `requesty/openai/gpt-4o-mini`. Mirascope sends the remaining model ID to Requesty's OpenAI-compatible router. You can also register Requesty for another scope with `llm.register_provider("requesty", scope="openai/")`.
+
+For [Runcrate](https://www.runcrate.ai/?utm_source=mirascope&utm_medium=directory&utm_campaign=gpu_pricing), use a model ID with the `runcrate/` prefix, such as `runcrate/deepseek-ai/DeepSeek-V4.1-Flash`. Mirascope sends the remaining model ID to Runcrate's OpenAI-compatible API. Runcrate serves open models, and they are free with your GitHub account.
 
 ### API Route
 
@@ -171,6 +174,7 @@ These provider IDs are available:
 | `"openai:responses"` | Force OpenAI Responses API |
 | `"openai"` | OpenAI API (auto-selects Responses or Completions API based on features used) |
 | `"requesty"` | Requesty router API |
+| `"runcrate"` | Runcrate API |
 | `"together"` | Together AI API |
 
 ## Resetting the Registry
