@@ -125,8 +125,8 @@ class ToolParameterSchema(BaseModel):
     required: list[str] = Field(default_factory=list)
     """List of required parameter names."""
 
-    additionalProperties: bool = False
-    """Whether additional properties beyond those defined are allowed."""
+    additionalProperties: bool | dict[str, Any] = False
+    """Whether additional properties beyond those defined are allowed, or a schema for them."""
 
     defs: dict[str, dict[str, Any]] | None = Field(default=None, alias="$defs")
     """JSON Schema definitions for complex types referenced via $ref."""
