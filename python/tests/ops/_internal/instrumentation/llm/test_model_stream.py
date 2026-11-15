@@ -94,6 +94,7 @@ def test_model_stream_with_tools(span_exporter: InMemorySpanExporter) -> None:
                 "mirascope.response.messages": '[{"role":"system","content":{"type":"text","text":"Use parallel tool calling."}},{"role":"user","content":[{"type":"text","text":"Please retrieve the secrets associated with each of these passwords: mellon,radiance"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"tool_call","id":"call_nQBHB7aQgltW1QH94YRQYyer","name":"secret_retrieval_tool","args":"{\\"password\\":\\"mellon\\"}"},{"type":"tool_call","id":"call_rI7qIauOBe4l1rEe4enUzA2a","name":"secret_retrieval_tool","args":"{\\"password\\":\\"radiance\\"}"}]',
                 "mirascope.response.usage": '{"input_tokens":36,"output_tokens":54,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":90}',
+                "mirascope.response.cost": '{"input_cost":0.9,"output_cost":5.4,"cache_read_cost":0.0,"cache_write_cost":0.0,"total_cost":6.3}',
             },
         }
     )
@@ -155,6 +156,7 @@ def test_model_stream_with_json_format(
                 "mirascope.response.messages": '[{"role":"system","content":{"type":"text","text":"Always respond to the user\'s query using the __mirascope_formatted_output_tool__ tool for structured output."}},{"role":"user","content":[{"type":"text","text":"Please recommend the most popular book by Patrick Rothfuss"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"{\\"title\\":\\"THE NAME OF THE WIND\\",\\"author\\":{\\"first_name\\":\\"Patrick\\",\\"last_name\\":\\"Rothfuss\\"},\\"rating\\":7}"}]',
                 "mirascope.response.usage": '{"input_tokens":170,"output_tokens":30,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":200}',
+                "mirascope.response.cost": '{"input_cost":4.25,"output_cost":2.9999999999999996,"cache_read_cost":0.0,"cache_write_cost":0.0,"total_cost":7.249999999999999}',
             },
         }
     )
@@ -280,6 +282,7 @@ def test_model_stream_with_none_parameters(
                 "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What is 4200 + 42?"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"4200 + 42 = 4242"}]',
                 "mirascope.response.usage": '{"input_tokens":16,"output_tokens":10,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":26}',
+                "mirascope.response.cost": '{"input_cost":0.4,"output_cost":1.0,"cache_read_cost":0.0,"cache_write_cost":0.0,"total_cost":1.4}',
             },
         }
     )
@@ -320,6 +323,7 @@ def test_model_stream_records_response_id(
                 "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What is 4200 + 42?"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"4200 + 42 equals 4242."}]',
                 "mirascope.response.usage": '{"input_tokens":16,"output_tokens":11,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":27}',
+                "mirascope.response.cost": '{"input_cost":0.4,"output_cost":1.1,"cache_read_cost":0.0,"cache_write_cost":0.0,"total_cost":1.4999999999999998}',
             },
         }
     )

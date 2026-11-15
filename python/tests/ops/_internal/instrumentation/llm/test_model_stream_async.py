@@ -64,6 +64,7 @@ async def test_model_stream_async_exports_genai_span(
                 "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What is 4200 + 42?"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"4200 + 42 equals 4242."}]',
                 "mirascope.response.usage": '{"input_tokens":16,"output_tokens":11,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":27}',
+                "mirascope.response.cost": '{"input_cost":0.024,"output_cost":0.06599999999999999,"cache_read_cost":0.0,"cache_write_cost":0.0,"total_cost":0.09}',
             },
         }
     )
