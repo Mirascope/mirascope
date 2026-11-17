@@ -73,7 +73,6 @@ sync_snapshot = snapshot(
                             "required": ["first_name", "last_name"],
                             "title": "Author",
                             "type": "object",
-                            "additionalProperties": False,
                         }
                     },
                     "description": "A book with a rating. The title should be in all caps!",
@@ -164,7 +163,6 @@ async_snapshot = snapshot(
                             "required": ["first_name", "last_name"],
                             "title": "Author",
                             "type": "object",
-                            "additionalProperties": False,
                         }
                     },
                     "description": "A book with a rating. The title should be in all caps!",
@@ -244,7 +242,6 @@ stream_snapshot = snapshot(
                             "required": ["first_name", "last_name"],
                             "title": "Author",
                             "type": "object",
-                            "additionalProperties": False,
                         }
                     },
                     "description": "A book with a rating. The title should be in all caps!",
@@ -335,7 +332,6 @@ async_stream_snapshot = snapshot(
                             "required": ["first_name", "last_name"],
                             "title": "Author",
                             "type": "object",
-                            "additionalProperties": False,
                         }
                     },
                     "description": "A book with a rating. The title should be in all caps!",

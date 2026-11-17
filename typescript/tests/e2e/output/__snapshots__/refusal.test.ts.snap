@@ -289,12 +289,7 @@ exports[`refusal handling > [openai:completions] handles refusal for stream 1`] 
         "role": "user",
       },
       {
-        "content": [
-          {
-            "text": "",
-            "type": "text",
-          },
-        ],
+        "content": [],
         "modelId": "openai/gpt-5-mini:completions",
         "name": null,
         "providerId": "openai",
@@ -328,7 +323,7 @@ exports[`refusal handling > [openai:completions] handles refusal for stream 1`] 
       },
     ],
     "modelId": "openai/gpt-5-mini:completions",
-    "nChunks": 3,
+    "nChunks": 0,
     "providerId": "openai",
     "providerModelName": "gpt-5-mini:completions",
     "tools": [],

@@ -17,6 +17,7 @@ from mirascope import llm
 from mirascope.llm.providers.google._utils.decode import (
     _decode_usage,  # pyright: ignore[reportPrivateUsage]
     decode_async_stream,
+    decode_response,
     decode_stream,
 )
 from mirascope.llm.providers.google._utils.encode import google_thinking_config
@@ -482,3 +483,41 @@ async def test_decode_async_stream_usage_with_thinking_tokens() -> None:
     assert accumulated_usage.output_tokens == 70  # candidates (40) + thoughts (30)
     assert accumulated_usage.reasoning_tokens == 30
     assert accumulated_usage.total_tokens == 170
+
+
+def test_decode_response_tool_call_without_args() -> None:
+    """A tool call without `args`, as Gemini sends for a no-argument tool, decodes."""
+    response = genai_types.GenerateContentResponse(
+        candidates=[
+            genai_types.Candidate(
+                content=genai_types.Content(
+                    role="model",
+                    parts=[
+                        genai_types.Part(
+                            function_call=genai_types.FunctionCall(name="get_time")
+                        )
+                    ],
+                ),
+                finish_reason=genai_types.FinishReason.STOP,
+            )
+        ]
+    )
+    message, _, _ = decode_response(
+        response, "google/gemini-3.8-flash", include_thoughts=False
+    )
+    assert message.content == [
+        llm.ToolCall(id="google_unknown_tool_id", name="get_time", args="{}")
+    ]
+
+
+def test_decode_usage_without_candidates_token_count() -> None:
+    """Gemini omits candidates_token_count when thinking spent the whole budget."""
+    usage_metadata = genai_types.GenerateContentResponseUsageMetadata(
+        prompt_token_count=100,
+        thoughts_token_count=30,
+    )
+    usage = _decode_usage(usage_metadata)
+    assert usage is not None
+    assert usage.input_tokens == 100
+    assert usage.output_tokens == 30
+    assert usage.reasoning_tokens == 30

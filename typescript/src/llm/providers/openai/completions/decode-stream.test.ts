@@ -150,3 +150,139 @@ describe("OpenAI-compatible streamed tool calls", () => {
     ]);
   });
 });
+
+describe("OpenAI-compatible streamed tool calls sharing an index", () => {
+  const summary = (events: ChatCompletionChunk[]) =>
+    toolChunks(events).map((part) =>
+      part.type === "tool_call_start_chunk"
+        ? `start:${part.id}`
+        : part.type === "tool_call_chunk"
+          ? `${part.id}:${part.delta}`
+          : `end:${(part as { id: string }).id}`,
+    );
+
+  it("starts a new call when a known index brings a different id", () => {
+    expect(
+      summary([
+        chunk([call("call_a", '{"a":1}', "f", 0)]),
+        chunk([call("call_b", '{"b":2}', "f", 0)]),
+        chunk([], "tool_calls"),
+      ]),
+    ).toEqual([
+      "start:call_a",
+      'call_a:{"a":1}',
+      "start:call_b",
+      'call_b:{"b":2}',
+      "end:call_a",
+      "end:call_b",
+    ]);
+  });
+
+  it("keeps two calls from one chunk apart", () => {
+    expect(
+      summary([
+        chunk([
+          call("call_a", '{"a":1}', "f", 0),
+          call("call_b", '{"b":2}', "f", 0),
+        ]),
+        chunk([], "tool_calls"),
+      ]),
+    ).toEqual([
+      "start:call_a",
+      'call_a:{"a":1}',
+      "start:call_b",
+      'call_b:{"b":2}',
+      "end:call_a",
+      "end:call_b",
+    ]);
+  });
+
+  it("continues id-less fragments with the latest call", () => {
+    expect(
+      summary([
+        chunk([call("call_a", '{"a":', "f", 0)]),
+        chunk([call("call_b", '{"b":', "f", 0)]),
+        chunk([call(undefined, "2}", undefined, 0)]),
+        chunk([], "tool_calls"),
+      ]).filter((part) => !/^(start|end):/.test(part)),
+    ).toEqual(['call_a:{"a":', 'call_b:{"b":', "call_b:2}"]);
+  });
+
+  it("does not reuse a slot taken by a call that shared an earlier index", () => {
+    expect(
+      summary([
+        chunk([call("call_a", '{"a":1}', "f", 0)]),
+        chunk([call("call_b", '{"b":2}', "f", 0)]),
+        chunk([call("call_c", '{"c":3}', "f", 1)]),
+        chunk([], "tool_calls"),
+      ]),
+    ).toEqual([
+      "start:call_a",
+      'call_a:{"a":1}',
+      "start:call_b",
+      'call_b:{"b":2}',
+      "start:call_c",
+      'call_c:{"c":3}',
+      "end:call_a",
+      "end:call_b",
+      "end:call_c",
+    ]);
+  });
+
+  it("supports calls interleaved by index", () => {
+    expect(
+      summary([
+        chunk([call("call_a", '{"a":', "f", 0)]),
+        chunk([call("call_b", '{"b":', "f", 1)]),
+        chunk([call(undefined, "1}", undefined, 0)]),
+        chunk([call(undefined, "2}", undefined, 1)]),
+        chunk([], "tool_calls"),
+      ]),
+    ).toEqual([
+      "start:call_a",
+      'call_a:{"a":',
+      "start:call_b",
+      'call_b:{"b":',
+      "call_a:1}",
+      "call_b:2}",
+      "end:call_a",
+      "end:call_b",
+    ]);
+  });
+});
+
+describe("OpenAI-compatible streamed empty content", () => {
+  function contentChunk(delta: Record<string, unknown>) {
+    return {
+      id: "chatcmpl-test",
+      created: 1,
+      model: "gpt-test",
+      object: "chat.completion.chunk",
+      choices: [{ index: 0, delta, finish_reason: null }],
+    } as unknown as ChatCompletionChunk;
+  }
+
+  it("does not open a text block for an empty content string", () => {
+    const state = createDecodeState();
+    const chunks = [
+      contentChunk({ role: "assistant", content: "" }),
+      contentChunk({ tool_calls: [call("call_1", "{}", "get_weather", 0)] }),
+    ].flatMap((event) => decodeStreamEvent(event, state));
+
+    expect(chunks.filter((part) => part.type.startsWith("text_"))).toEqual([]);
+    expect(chunks.map((part) => part.type)).toContain("tool_call_start_chunk");
+  });
+
+  it("still streams text that follows an empty content string", () => {
+    const state = createDecodeState();
+    const chunks = [
+      contentChunk({ content: "" }),
+      contentChunk({ content: "Hi" }),
+    ].flatMap((event) => decodeStreamEvent(event, state));
+
+    expect(chunks.filter((part) => part.type.startsWith("text_"))).toEqual([
+      { type: "text_start_chunk", contentType: "text" },
+      { type: "text_chunk", contentType: "text", delta: "Hi" },
+    ]);
+  });
+});

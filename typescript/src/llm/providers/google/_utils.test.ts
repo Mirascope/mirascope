@@ -5,8 +5,10 @@
  * These tests focus on error mapping and thinking config encoding.
  */
 
-import type { GenerateContentResponse } from "@google/genai";
-
+import {
+  FinishReason as GoogleFinishReason,
+  GenerateContentResponse,
+} from "@google/genai";
 import { describe, it, expect } from "vitest";
 
 import type { AssistantMessage } from "@/llm/messages";
@@ -23,6 +25,7 @@ import {
   FeatureNotSupportedError,
 } from "@/llm/exceptions";
 import { user } from "@/llm/messages";
+import { FinishReason } from "@/llm/responses/finish-reason";
 
 import {
   mapGoogleErrorByStatus,
@@ -31,6 +34,19 @@ import {
   decodeResponse,
   encodeMessages,
 } from "./_utils";
+
+it.each([
+  GoogleFinishReason.IMAGE_SAFETY,
+  GoogleFinishReason.IMAGE_PROHIBITED_CONTENT,
+  GoogleFinishReason.IMAGE_RECITATION,
+])("maps Google image refusal %s", (finishReason) => {
+  const response = Object.assign(new GenerateContentResponse(), {
+    candidates: [{ content: { role: "model", parts: [] }, finishReason }],
+  });
+  expect(
+    decodeResponse(response, "google/gemini-3.8-flash", false).finishReason,
+  ).toBe(FinishReason.REFUSAL);
+});
 
 describe("mapGoogleErrorByStatus", () => {
   it("maps 401 to AuthenticationError", () => {
@@ -435,5 +451,44 @@ describe("raw message round-tripping", () => {
     // rawMessage IS reused
     expect(contents).toHaveLength(2);
     expect(contents[1]).toEqual({ text: "Hello!" });
+  });
+});
+
+describe("decodeResponse usage", () => {
+  const response = (usageMetadata: Record<string, number>) =>
+    ({
+      candidates: [
+        {
+          content: { role: "model", parts: [{ text: "answer" }] },
+          finishReason: "STOP",
+        },
+      ],
+      usageMetadata,
+    }) as unknown as GenerateContentResponse;
+
+  it("counts tool-use prompt tokens as input tokens", () => {
+    const { usage } = decodeResponse(
+      response({
+        promptTokenCount: 100,
+        toolUsePromptTokenCount: 40,
+        candidatesTokenCount: 5,
+        totalTokenCount: 145,
+      }),
+      "google/gemini-2.5-flash",
+      false,
+    );
+
+    expect(usage?.inputTokens).toBe(140);
+    expect(usage?.outputTokens).toBe(5);
+  });
+
+  it("leaves the input tokens alone without tool-use prompt tokens", () => {
+    const { usage } = decodeResponse(
+      response({ promptTokenCount: 100, candidatesTokenCount: 5 }),
+      "google/gemini-2.5-flash",
+      false,
+    );
+
+    expect(usage?.inputTokens).toBe(100);
   });
 });

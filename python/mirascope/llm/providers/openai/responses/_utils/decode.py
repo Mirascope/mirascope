@@ -21,6 +21,7 @@ from .....content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
+from .....exceptions import APIError
 from .....messages import AssistantMessage
 from .....responses import (
     AsyncChunkIterator,
@@ -230,45 +231,50 @@ class _OpenAIResponsesChunkProcessor:
                 finish_reason = INCOMPLETE_DETAILS_TO_FINISH_REASON.get(reason)
                 if finish_reason:
                     yield FinishReasonChunk(finish_reason=finish_reason)
+                yield from self._finalize(event.response)
             elif event.type == "response.completed":
-                yield RawMessageChunk(
-                    raw_message=[
-                        _serialize_output_item(item) for item in event.response.output
-                    ]
+                yield from self._finalize(event.response)
+            elif event.type == "response.failed":
+                error = event.response.error
+                code = error.code if error else "unknown_error"
+                message = error.message if error else "no error message"
+                raise APIError(
+                    f"OpenAI response failed: {code}: {message}", provider="openai"
                 )
-                if self.refusal_encountered:
-                    yield FinishReasonChunk(finish_reason=FinishReason.REFUSAL)
 
-                # Emit usage delta if present
-                if event.response.usage:
-                    usage = event.response.usage
-                    provider_tool_usage = (
-                        [
-                            ProviderToolUsage(
-                                name="web_search", call_count=self.web_search_count
-                            )
-                        ]
-                        if self.web_search_count > 0
-                        else None
-                    )
-                    yield UsageDeltaChunk(
-                        input_tokens=usage.input_tokens,
-                        output_tokens=usage.output_tokens,
-                        cache_read_tokens=(
-                            usage.input_tokens_details.cached_tokens
-                            if usage.input_tokens_details
-                            else None
-                        )
-                        or 0,
-                        cache_write_tokens=0,
-                        reasoning_tokens=(
-                            usage.output_tokens_details.reasoning_tokens
-                            if usage.output_tokens_details
-                            else None
-                        )
-                        or 0,
-                        provider_tool_usage=provider_tool_usage,
-                    )
+    def _finalize(self, response: openai_types.Response) -> ChunkIterator:
+        """Emit the raw message, refusal finish reason and usage of a final response."""
+        yield RawMessageChunk(
+            raw_message=[_serialize_output_item(item) for item in response.output]
+        )
+        if self.refusal_encountered:
+            yield FinishReasonChunk(finish_reason=FinishReason.REFUSAL)
+
+        if response.usage:
+            usage = response.usage
+            provider_tool_usage = (
+                [ProviderToolUsage(name="web_search", call_count=self.web_search_count)]
+                if self.web_search_count > 0
+                else None
+            )
+            yield UsageDeltaChunk(
+                input_tokens=usage.input_tokens,
+                output_tokens=usage.output_tokens,
+                cache_read_tokens=(
+                    usage.input_tokens_details.cached_tokens
+                    if usage.input_tokens_details
+                    else None
+                )
+                or 0,
+                cache_write_tokens=0,
+                reasoning_tokens=(
+                    usage.output_tokens_details.reasoning_tokens
+                    if usage.output_tokens_details
+                    else None
+                )
+                or 0,
+                provider_tool_usage=provider_tool_usage,
+            )
 
 
 def decode_stream(

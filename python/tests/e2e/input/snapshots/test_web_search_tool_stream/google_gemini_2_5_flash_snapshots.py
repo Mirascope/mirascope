@@ -175,7 +175,7 @@ According to a Finbold article from December 15, 2025, the Ethereum Rainbow Char
             "format": None,
             "tools": [{"name": "web_search"}],
             "usage": {
-                "input_tokens": 73,
+                "input_tokens": 202,
                 "output_tokens": 270,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
@@ -184,7 +184,7 @@ According to a Finbold article from December 15, 2025, the Ethereum Rainbow Char
                     ProviderToolUsage(name="web_search", call_count=1)
                 ],
                 "raw": "None",
-                "total_tokens": 343,
+                "total_tokens": 472,
             },
             "n_chunks": 9,
         }

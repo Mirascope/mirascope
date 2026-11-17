@@ -149,7 +149,7 @@ def map_finish_reason(
     """Map a finish reason to a GenAI finish reason."""
     if reason is None:
         return "stop"
-    elif reason == FinishReason.MAX_TOKENS:
+    elif reason in (FinishReason.MAX_TOKENS, FinishReason.CONTEXT_LENGTH_EXCEEDED):
         return "length"
     elif reason == FinishReason.REFUSAL:  # pragma: no cover
         return "content_filter"

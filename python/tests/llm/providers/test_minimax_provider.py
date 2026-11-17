@@ -1,14 +1,18 @@
 """Tests for MiniMaxProvider."""
 
+import json
 import os
+from typing import get_args
 from unittest.mock import patch
 
+import httpx
 import pytest
 
 from mirascope import llm
 from mirascope.llm.providers.minimax import MiniMaxModelId, MiniMaxProvider
 from mirascope.llm.providers.minimax.model_id import (
     MINIMAX_KNOWN_MODELS,
+    MiniMaxKnownModels,
     model_name,
 )
 
@@ -94,11 +98,13 @@ def test_minimax_provider_name() -> None:
     assert MiniMaxProvider.provider_name == "MiniMax"
 
 
-def test_minimax_known_models_includes_flagship() -> None:
-    """Test that MINIMAX_KNOWN_MODELS exposes the registered model strings."""
-    assert "minimax/MiniMax-M3" in MINIMAX_KNOWN_MODELS
-    assert "minimax/MiniMax-M2.7" in MINIMAX_KNOWN_MODELS
-    assert "minimax/MiniMax-M2.7-highspeed" in MINIMAX_KNOWN_MODELS
+def test_minimax_known_models_suggests_current_models() -> None:
+    """Suggest Flash first without advertising legacy models."""
+    assert get_args(MiniMaxKnownModels) == (
+        "minimax/MiniMax-M3.1-Flash",
+        "minimax/MiniMax-M3",
+    )
+    assert set(get_args(MiniMaxKnownModels)) == MINIMAX_KNOWN_MODELS
 
 
 def test_minimax_model_name_helper_strips_prefix() -> None:
@@ -116,3 +122,57 @@ def test_minimax_model_id_accepts_arbitrary_string() -> None:
     """Test that MiniMaxModelId accepts arbitrary strings (as `str` fallback)."""
     custom: MiniMaxModelId = "minimax/custom-future-model"
     assert custom == "minimax/custom-future-model"
+
+
+@pytest.mark.parametrize(
+    "model_id",
+    [
+        "minimax/MiniMax-M3.1-Flash",
+        "minimax/MiniMax-M3",
+        "minimax/MiniMax-M2.7",
+        "minimax/MiniMax-M2.7-highspeed",
+        "minimax/custom-future-model",
+    ],
+)
+@pytest.mark.parametrize("base_url", [None, "https://custom.example/v1"])
+def test_minimax_model_serializes_request(model_id: str, base_url: str | None) -> None:
+    """Exercise registry dispatch and SDK serialization without network access."""
+    requests: list[httpx.Request] = []
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(
+            200,
+            json={
+                "id": "test-completion",
+                "object": "chat.completion",
+                "created": 0,
+                "model": model_name(model_id),
+                "choices": [
+                    {
+                        "index": 0,
+                        "message": {"role": "assistant", "content": "Hello"},
+                        "finish_reason": "stop",
+                    }
+                ],
+            },
+        )
+
+    provider = MiniMaxProvider(api_key="test-key", base_url=base_url)
+    llm.register_provider(provider)
+    with (
+        httpx.Client(transport=httpx.MockTransport(respond)) as client,
+        patch.object(provider.client, "_client", client),
+    ):
+        response = llm.Model(model_id).call("Hello")
+    assert response.model_id == model_id
+    assert len(requests) == 1
+    request = requests[0]
+    assert str(request.url) == (
+        f"{base_url or 'https://api.minimax.io/v1'}/chat/completions"
+    )
+    payload = json.loads(request.content)
+    assert payload == {
+        "model": model_name(model_id),
+        "messages": [{"role": "user", "content": "Hello"}],
+    }

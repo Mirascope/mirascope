@@ -191,12 +191,48 @@ Sure! Here is a list of all 50 U.S. states:
                     provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
-                    raw_message=None,
+                    raw_message=[
+                        {
+                            "id": "msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551",
+                            "content": [
+                                {
+                                    "annotations": [],
+                                    "text": """\
+Sure! Here is a list of all 50 U.S. states:
+
+1. Alabama
+2. Alaska
+3. Arizona
+4. Arkansas
+5. California
+6. Colorado
+7. Connecticut
+8. Delaware
+9. Florida\
+""",
+                                    "type": "output_text",
+                                    "logprobs": [],
+                                }
+                            ],
+                            "role": "assistant",
+                            "status": "incomplete",
+                            "type": "message",
+                        }
+                    ],
                 ),
             ],
             "format": None,
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 14,
+                "output_tokens": 50,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+                "provider_tool_usage": None,
+                "raw": "None",
+                "total_tokens": 64,
+            },
             "n_chunks": 52,
         }
     }
@@ -232,12 +268,49 @@ Here is a list of all U.S. states:
                     provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
-                    raw_message=None,
+                    raw_message=[
+                        {
+                            "id": "msg_08e1aa358b9a82e50068f966c722948197a193065389346e89",
+                            "content": [
+                                {
+                                    "annotations": [],
+                                    "text": """\
+Here is a list of all U.S. states:
+
+1. Alabama
+2. Alaska
+3. Arizona
+4. Arkansas
+5. California
+6. Colorado
+7. Connecticut
+8. Delaware
+9. Florida
+10. Georgia\
+""",
+                                    "type": "output_text",
+                                    "logprobs": [],
+                                }
+                            ],
+                            "role": "assistant",
+                            "status": "incomplete",
+                            "type": "message",
+                        }
+                    ],
                 ),
             ],
             "format": None,
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 14,
+                "output_tokens": 50,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+                "provider_tool_usage": None,
+                "raw": "None",
+                "total_tokens": 64,
+            },
             "n_chunks": 52,
         }
     }

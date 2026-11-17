@@ -12,6 +12,8 @@ import { describe, it, expect } from "vitest";
 
 import type { StreamResponseChunk } from "@/llm/responses/chunks";
 
+import { FinishReason } from "@/llm/responses/finish-reason";
+
 import {
   createBetaDecodeState,
   decodeBetaStreamEvent,
@@ -182,5 +184,28 @@ describe.each(decoders)("$name stream usage decoding", ({ decode }) => {
       cacheReadTokens: 7,
       cacheWriteTokens: 10,
     });
+  });
+});
+
+describe.each(decoders)("$name stream stop reason decoding", ({ decode }) => {
+  const finishReasons = (stopReason: string) =>
+    decode([
+      messageStart({ input_tokens: 10, output_tokens: 1 }),
+      {
+        type: "message_delta",
+        delta: { stop_reason: stopReason, stop_sequence: null },
+        usage: { output_tokens: 5 },
+      },
+    ])
+      .filter((chunk) => chunk.type === "finish_reason_chunk")
+      .map((chunk) => chunk.finishReason);
+
+  it.each([
+    ["max_tokens", [FinishReason.MAX_TOKENS]],
+    ["refusal", [FinishReason.REFUSAL]],
+    ["model_context_window_exceeded", [FinishReason.CONTEXT_LENGTH_EXCEEDED]],
+    ["end_turn", []],
+  ])("maps stop_reason %s", (stopReason, expected) => {
+    expect(finishReasons(stopReason)).toEqual(expected);
   });
 });

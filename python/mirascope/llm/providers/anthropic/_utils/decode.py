@@ -39,6 +39,7 @@ from ..model_id import AnthropicModelId, model_name
 ANTHROPIC_FINISH_REASON_MAP = {
     "max_tokens": FinishReason.MAX_TOKENS,
     "refusal": FinishReason.REFUSAL,
+    "model_context_window_exceeded": FinishReason.CONTEXT_LENGTH_EXCEEDED,
 }
 
 

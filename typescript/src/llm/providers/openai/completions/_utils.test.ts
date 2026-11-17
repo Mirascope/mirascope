@@ -316,6 +316,7 @@ describe("decodeResponse", () => {
     expect(decoded.assistantMessage.content).toEqual([
       { type: "text", text: "I can't help with that request." },
     ]);
+    expect(decoded.finishReason).toBe(FinishReason.REFUSAL);
   });
 
   it("maps content_filter finish reason to REFUSAL", () => {

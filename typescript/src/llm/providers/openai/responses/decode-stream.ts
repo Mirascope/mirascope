@@ -26,6 +26,7 @@ import {
   toolCallChunk,
   toolCallEnd,
 } from "@/llm/content";
+import { APIError } from "@/llm/exceptions";
 import { serializeOutputItem } from "@/llm/providers/openai/responses/_utils";
 import {
   finishReasonChunk,
@@ -145,6 +146,16 @@ export function decodeStreamEvent(
 
       handleCompleted(event, chunks);
       break;
+
+    case "response.failed": {
+      const error = event.response.error;
+      throw new APIError(
+        `OpenAI response failed: ${error?.code ?? "unknown_error"}: ${
+          error?.message ?? "no error message"
+        }`,
+        { provider: "openai" },
+      );
+    }
 
     // Handle other events we might want to process
     /* v8 ignore start - refusal events are rare edge cases */

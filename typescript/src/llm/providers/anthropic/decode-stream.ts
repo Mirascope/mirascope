@@ -320,12 +320,14 @@ function decodeStopReason(
     | "tool_use"
     | "refusal"
     | "pause_turn"
+    | "model_context_window_exceeded"
     | null,
 ): FinishReason | null {
   switch (stopReason) {
     case "max_tokens":
       return FinishReason.MAX_TOKENS;
-    /* v8 ignore next 2 - refusal is rare and hard to trigger reliably */
+    case "model_context_window_exceeded":
+      return FinishReason.CONTEXT_LENGTH_EXCEEDED;
     case "refusal":
       return FinishReason.REFUSAL;
     case "end_turn":
