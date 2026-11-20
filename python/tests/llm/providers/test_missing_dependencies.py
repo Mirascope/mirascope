@@ -418,6 +418,13 @@ class TestProviderStubs:
         # Should be importable without error
         assert RequestyProvider is not None
 
+    def test_standardcompute_provider_is_importable(self) -> None:
+        """Test that StandardComputeProvider can be imported (will be real or stub)."""
+        from mirascope.llm.providers import StandardComputeProvider
+
+        # Should be importable without error
+        assert StandardComputeProvider is not None
+
     def test_ollama_provider_is_importable(self) -> None:
         """Test that OllamaProvider can be imported (will be real or stub)."""
         from mirascope.llm.providers import OllamaProvider
