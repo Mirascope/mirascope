@@ -28,7 +28,7 @@
     "fix": "bun run format && bun run lint:oxlint:fix"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.2.2",
+    "@hookform/resolvers": "^7.0.7",
     "@mdx-js/mdx": "^3.1.1",
     "@mdx-js/react": "^3.1.1",
     "@radix-ui/react-alert-dialog": "^1.1.15",
