@@ -17,7 +17,6 @@ EXTRA_IMPORTS: dict[str, list[str]] = {
     "anthropic": ["anthropic"],
     "google": [
         "google.genai",
-        "PIL",
         "proto",
     ],
     "openai": ["openai"],
