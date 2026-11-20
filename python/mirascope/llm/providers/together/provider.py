@@ -36,5 +36,5 @@ class TogetherProvider(BaseOpenAICompletionsProvider):
     provider_name: ClassVar[str | None] = "Together"
 
     def _model_name(self, model_id: str) -> str:
-        """Return the model ID as-is for Together API."""
-        return model_id
+        """Strip 'together/' prefix from model ID for Together API."""
+        return model_id.removeprefix("together/")
