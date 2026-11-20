@@ -1354,6 +1354,15 @@ wheels = [
 ]
 
 [[package]]
+name = "llm-prices"
+version = "1.3.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/12/f8/5f599c3e749267914057907a048c0a0490633e280f9b84d86a99b4af221d/llm_prices-1.3.0.tar.gz", hash = "sha256:0905445a039853e71320d6e86df190e8f7e3050663875ff67fb13dce94c12c91", size = 28028, upload-time = "2026-11-15T18:28:59.443Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fd/f6/ae72e6cc98f37c7658fcbbf916cb87915b9d9ddfc32d94516d8ab69a426a/llm_prices-1.3.0-py3-none-any.whl", hash = "sha256:b7d5172b66d8ad9c58ed346c53e8df624ffd27e154a324f13e55a310f2eaed66", size = 20410, upload-time = "2026-11-15T18:28:58.279Z" },
+]
+
+[[package]]
 name = "lupa"
 version = "2.6"
 source = { registry = "https://pypi.org/simple" }
@@ -1575,6 +1584,7 @@ all = [
     { name = "anthropic" },
     { name = "google-genai" },
     { name = "libcst" },
+    { name = "llm-prices" },
     { name = "mcp" },
     { name = "mlx-lm" },
     { name = "openai" },
@@ -1611,6 +1621,7 @@ openai = [
 ]
 ops = [
     { name = "libcst" },
+    { name = "llm-prices" },
     { name = "opentelemetry-api" },
     { name = "opentelemetry-exporter-otlp" },
     { name = "opentelemetry-instrumentation" },
@@ -1650,6 +1661,7 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.27.0" },
     { name = "jiter", specifier = ">=0.7.0" },
     { name = "libcst", marker = "extra == 'ops'", specifier = ">=1.8.6" },
+    { name = "llm-prices", marker = "extra == 'ops'", specifier = ">=1.3.0,<2" },
     { name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.25.0,<2" },
     { name = "mirascope", extras = ["anthropic", "google", "openai", "mcp", "ops", "mlx"], marker = "extra == 'all'" },
     { name = "mlx-lm", marker = "extra == 'mlx'", specifier = ">=0.28.4,<1" },

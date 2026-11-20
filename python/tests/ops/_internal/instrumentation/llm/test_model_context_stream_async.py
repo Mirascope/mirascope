@@ -66,6 +66,7 @@ async def test_model_context_stream_async_exports_genai_span(
                 "mirascope.response.messages": '[{"role":"system","content":{"type":"text","text":"You are a concise assistant."}},{"role":"user","content":[{"type":"text","text":"Say hello to the user named Kai."}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"Hello, Kai!"}]',
                 "mirascope.response.usage": '{"input_tokens":25,"output_tokens":5,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":30}',
+                "mirascope.response.cost": '{"input_cost":0.0375,"output_cost":0.030000000000000002,"cache_read_cost":0.0,"cache_write_cost":0.0,"total_cost":0.06749999999999999}',
             },
         }
     )

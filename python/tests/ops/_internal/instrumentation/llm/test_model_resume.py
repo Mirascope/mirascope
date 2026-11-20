@@ -75,6 +75,7 @@ def test_model_resume_exports_genai_span(
                 "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Tokyo?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_CeSmJnilYrx5gzGCtEYJkUwC","name":"get_weather","args":"{\\"location\\":\\"Tokyo\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_CeSmJnilYrx5gzGCtEYJkUwC","name":"get_weather","result":"Weather in Tokyo: 72°F, sunny"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"The current weather in Tokyo is 72°F and sunny."}]',
                 "mirascope.response.usage": '{"input_tokens":80,"output_tokens":14,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":94}',
+                "mirascope.response.cost": '{"input_cost":0.12000000000000001,"output_cost":0.084,"cache_read_cost":0.0,"cache_write_cost":0.0,"total_cost":0.204}',
             },
         }
     )
@@ -131,6 +132,7 @@ async def test_model_resume_async_exports_genai_span(
                 "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Paris?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_ck0mvg6B86ddvfXFnWultLpX","name":"get_weather","args":"{\\"location\\":\\"Paris\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_ck0mvg6B86ddvfXFnWultLpX","name":"get_weather","result":"Weather in Paris: 72°F, sunny"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"The weather in Paris is sunny with a temperature of 72°F."}]',
                 "mirascope.response.usage": '{"input_tokens":80,"output_tokens":16,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":96}',
+                "mirascope.response.cost": '{"input_cost":0.12000000000000001,"output_cost":0.096,"cache_read_cost":0.0,"cache_write_cost":0.0,"total_cost":0.216}',
             },
         }
     )
@@ -188,6 +190,7 @@ def test_model_resume_stream_exports_genai_span(
                 "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in London?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_n6ENKpuZMXStFHYooHMIdkI1","name":"get_weather","args":"{\\"location\\":\\"London\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_n6ENKpuZMXStFHYooHMIdkI1","name":"get_weather","result":"Weather in London: 72°F, sunny"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"The weather in London is sunny, with a temperature of 72°F."}]',
                 "mirascope.response.usage": '{"input_tokens":80,"output_tokens":17,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":97}',
+                "mirascope.response.cost": '{"input_cost":0.12000000000000001,"output_cost":0.102,"cache_read_cost":0.0,"cache_write_cost":0.0,"total_cost":0.222}',
             },
         }
     )
@@ -246,6 +249,7 @@ async def test_model_resume_stream_async_exports_genai_span(
                 "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Berlin?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_kP2gia5asZ8fLNuJfLOEZqvD","name":"get_weather","args":"{\\"location\\":\\"Berlin\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_kP2gia5asZ8fLNuJfLOEZqvD","name":"get_weather","result":"Weather in Berlin: 72°F, sunny"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"The weather in Berlin is currently 72°F and sunny."}]',
                 "mirascope.response.usage": '{"input_tokens":80,"output_tokens":14,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":94}',
+                "mirascope.response.cost": '{"input_cost":0.12000000000000001,"output_cost":0.084,"cache_read_cost":0.0,"cache_write_cost":0.0,"total_cost":0.204}',
             },
         }
     )
@@ -302,6 +306,7 @@ def test_model_context_resume_exports_genai_span(
                 "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Sydney?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_WaUuUqAuyaPXEDenDhDiTT86","name":"get_weather","args":"{\\"location\\":\\"Sydney\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_WaUuUqAuyaPXEDenDhDiTT86","name":"get_weather","result":"Weather in Sydney: 72°F, sunny"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"The weather in Sydney is currently 72°F and sunny."}]',
                 "mirascope.response.usage": '{"input_tokens":80,"output_tokens":14,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":94}',
+                "mirascope.response.cost": '{"input_cost":0.12000000000000001,"output_cost":0.084,"cache_read_cost":0.0,"cache_write_cost":0.0,"total_cost":0.204}',
             },
         }
     )
@@ -359,6 +364,7 @@ async def test_model_context_resume_async_exports_genai_span(
                 "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Toronto?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_kOQZ6ugCR9mv9T22cullWbcx","name":"get_weather","args":"{\\"location\\":\\"Toronto\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_kOQZ6ugCR9mv9T22cullWbcx","name":"get_weather","result":"Weather in Toronto: 72°F, sunny"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"The weather in Toronto is 72°F and sunny."}]',
                 "mirascope.response.usage": '{"input_tokens":80,"output_tokens":13,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":93}',
+                "mirascope.response.cost": '{"input_cost":0.12000000000000001,"output_cost":0.078,"cache_read_cost":0.0,"cache_write_cost":0.0,"total_cost":0.198}',
             },
         }
     )
@@ -417,6 +423,7 @@ def test_model_context_resume_stream_exports_genai_span(
                 "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Mumbai?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_D3VTNzxwSAaUHBRiNLeJudFA","name":"get_weather","args":"{\\"location\\":\\"Mumbai\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_D3VTNzxwSAaUHBRiNLeJudFA","name":"get_weather","result":"Weather in Mumbai: 72°F, sunny"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"The weather in Mumbai is currently 72°F and sunny."}]',
                 "mirascope.response.usage": '{"input_tokens":80,"output_tokens":14,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":94}',
+                "mirascope.response.cost": '{"input_cost":0.12000000000000001,"output_cost":0.084,"cache_read_cost":0.0,"cache_write_cost":0.0,"total_cost":0.204}',
             },
         }
     )
@@ -476,6 +483,7 @@ async def test_model_context_resume_stream_async_exports_genai_span(
                 "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Cairo?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_eg35cztygTdIOnJ7l1Ux1wHT","name":"get_weather","args":"{\\"location\\":\\"Cairo\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_eg35cztygTdIOnJ7l1Ux1wHT","name":"get_weather","result":"Weather in Cairo: 72°F, sunny"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"The weather in Cairo is currently 72°F and sunny."}]',
                 "mirascope.response.usage": '{"input_tokens":81,"output_tokens":14,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":95}',
+                "mirascope.response.cost": '{"input_cost":0.12150000000000001,"output_cost":0.084,"cache_read_cost":0.0,"cache_write_cost":0.0,"total_cost":0.20550000000000002}',
             },
         }
     )

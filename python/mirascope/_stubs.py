@@ -35,6 +35,7 @@ EXTRA_IMPORTS: dict[str, list[str]] = {
         "opentelemetry.instrumentation.openai_v2",
         "opentelemetry.instrumentation.anthropic",
         "opentelemetry.instrumentation.google_genai",
+        "llm_prices",
     ],
     "mlx": ["mlx_lm"],
 }
