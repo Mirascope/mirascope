@@ -304,6 +304,23 @@ describe("raw message round-tripping", () => {
     },
   } as unknown as OpenAIResponse;
 
+  it("reports cache-write tokens when the SDK provides them", () => {
+    const response = {
+      ...mockOpenAIResponse,
+      usage: {
+        input_tokens: 100,
+        output_tokens: 5,
+        total_tokens: 105,
+        input_tokens_details: { cached_tokens: 20, cache_write_tokens: 30 },
+        output_tokens_details: { reasoning_tokens: 0 },
+      },
+    } as OpenAIResponse;
+    expect(
+      decodeResponse(response, "openai/gpt-4o:responses").usage
+        ?.cacheWriteTokens,
+    ).toBe(30);
+  });
+
   it("decodeResponse stores serialized output items in rawMessage", () => {
     const { assistantMessage } = decodeResponse(
       mockOpenAIResponse,

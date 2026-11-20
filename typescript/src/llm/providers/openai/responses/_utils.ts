@@ -34,6 +34,7 @@ import type { ToolSchema, Tools } from "@/llm/tools";
 
 import { FeatureNotSupportedError } from "@/llm/exceptions";
 import { ParamHandler } from "@/llm/providers/base";
+import { cacheWriteTokens } from "@/llm/providers/openai/_utils/cache-write";
 import { modelName } from "@/llm/providers/openai/model-id";
 import { NON_REASONING_MODELS } from "@/llm/providers/openai/model-info";
 import { FinishReason } from "@/llm/responses/finish-reason";
@@ -673,6 +674,7 @@ function decodeUsage(usage: NonNullable<OpenAIResponse["usage"]>): Usage {
     inputTokens: usage.input_tokens,
     outputTokens: usage.output_tokens,
     cacheReadTokens: usage.input_tokens_details?.cached_tokens ?? 0,
+    cacheWriteTokens: cacheWriteTokens(usage.input_tokens_details),
     reasoningTokens: usage.output_tokens_details?.reasoning_tokens ?? 0,
     raw: usage,
   });

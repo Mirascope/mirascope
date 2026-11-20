@@ -295,6 +295,21 @@ describe("decodeResponse", () => {
     ...overrides,
   });
 
+  it("reports cache-write tokens when the SDK provides them", () => {
+    const details = { cached_tokens: 20, cache_write_tokens: 30 };
+    const response = createMockResponse({
+      usage: {
+        prompt_tokens: 100,
+        completion_tokens: 5,
+        total_tokens: 105,
+        prompt_tokens_details: details,
+      },
+    });
+    expect(
+      decodeResponse(response, "openai/gpt-4o").usage?.cacheWriteTokens,
+    ).toBe(30);
+  });
+
   it("decodes refusal message as text content", () => {
     const response = createMockResponse({
       choices: [

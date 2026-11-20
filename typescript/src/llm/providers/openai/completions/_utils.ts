@@ -33,6 +33,7 @@ import type { ToolSchema, Tools } from "@/llm/tools";
 
 import { FeatureNotSupportedError } from "@/llm/exceptions";
 import { ParamHandler } from "@/llm/providers/base";
+import { cacheWriteTokens } from "@/llm/providers/openai/_utils/cache-write";
 import { modelName } from "@/llm/providers/openai/model-id";
 import { FinishReason } from "@/llm/responses/finish-reason";
 import { createUsage } from "@/llm/responses/usage";
@@ -699,6 +700,7 @@ function decodeUsage(usage: NonNullable<ChatCompletion["usage"]>): Usage {
     inputTokens: usage.prompt_tokens,
     outputTokens: usage.completion_tokens,
     cacheReadTokens: usage.prompt_tokens_details?.cached_tokens ?? 0,
+    cacheWriteTokens: cacheWriteTokens(usage.prompt_tokens_details),
     reasoningTokens: usage.completion_tokens_details?.reasoning_tokens ?? 0,
     raw: usage,
   });

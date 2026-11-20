@@ -45,6 +45,41 @@ function toolChunks(events: ChatCompletionChunk[]) {
 }
 
 describe("OpenAI-compatible streamed tool calls", () => {
+  it("opens a text part after closing a streamed tool call", () => {
+    const state = createDecodeState();
+    const tool = chunk([
+      call("call_paris", '{"city":"Paris"}', "get_weather", 0),
+    ]);
+    const text = {
+      ...chunk([]),
+      choices: [
+        {
+          index: 0,
+          delta: { content: "Checking weather" },
+          finish_reason: null,
+        },
+      ],
+    } as unknown as ChatCompletionChunk;
+    const result = [tool, text, chunk([], "tool_calls")].flatMap((event) =>
+      decodeStreamEvent(event, state),
+    );
+    expect(
+      result.filter((part) =>
+        ["tool_call_end_chunk", "text_start_chunk", "text_chunk"].includes(
+          part.type,
+        ),
+      ),
+    ).toEqual([
+      {
+        type: "tool_call_end_chunk",
+        contentType: "tool_call",
+        id: "call_paris",
+      },
+      { type: "text_start_chunk", contentType: "text" },
+      { type: "text_chunk", contentType: "text", delta: "Checking weather" },
+    ]);
+  });
+
   it("keeps whole unindexed calls separate", () => {
     expect(
       toolChunks([
