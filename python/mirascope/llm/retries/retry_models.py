@@ -134,9 +134,6 @@ class RetryModel(Model):
         self._active_index = 0
         self.retry_config = retry_config
 
-        # Initialize _token_stack for context manager support
-        object.__setattr__(self, "_token_stack", [])
-
     @classmethod
     def _create_with_active(
         cls,
@@ -149,7 +146,6 @@ class RetryModel(Model):
         instance._models = models
         instance._active_index = active_index
         instance.retry_config = retry_config
-        object.__setattr__(instance, "_token_stack", [])
         return instance
 
     def get_active_model(self) -> Model:
