@@ -23,7 +23,7 @@ jobs:
       website: ${{ steps.changes.outputs.website }}
     steps:
       - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v2
+      - uses: dorny/paths-filter@v4
         id: changes
         with:
           filters: |
