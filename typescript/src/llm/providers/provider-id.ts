@@ -12,6 +12,7 @@ export const KNOWN_PROVIDER_IDS = [
   "atlascloud",
   "cheaperinference",
   "google",
+  "groq",
   "minimax",
   "mirascope",
   "ollama",

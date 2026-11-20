@@ -66,10 +66,17 @@ describe("TogetherProvider", () => {
   });
 
   it("uses model_id as-is for Together API", () => {
-    const provider = new TogetherProvider({ apiKey: "test-key" });
+    class InspectableTogetherProvider extends TogetherProvider {
+      public apiModelName(modelId: string): string {
+        return this.modelName(modelId);
+      }
+    }
+    const provider = new InspectableTogetherProvider({ apiKey: "test-key" });
     expect(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      (provider as any).modelName("meta-llama/Llama-3.3-70B-Instruct-Turbo"),
+      provider.apiModelName("meta-llama/Llama-3.3-70B-Instruct-Turbo"),
+    ).toBe("meta-llama/Llama-3.3-70B-Instruct-Turbo");
+    expect(
+      provider.apiModelName("together/meta-llama/Llama-3.3-70B-Instruct-Turbo"),
     ).toBe("meta-llama/Llama-3.3-70B-Instruct-Turbo");
   });
 });
