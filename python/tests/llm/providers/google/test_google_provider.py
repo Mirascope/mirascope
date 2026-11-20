@@ -153,6 +153,7 @@ async def test_async_call_rate_limit_error() -> None:
     ("httpx_error", "expected"),
     [
         (httpx.ConnectError("connection refused"), llm.ConnectionError),
+        (httpx.ReadError("connection reset"), llm.ConnectionError),
         (httpx.ConnectTimeout("connect timed out"), llm.TimeoutError),
         (httpx.ReadTimeout("read timed out"), llm.TimeoutError),
     ],
@@ -181,6 +182,7 @@ def test_call_httpx_transport_error(
     ("httpx_error", "expected"),
     [
         (httpx.ConnectError("connection refused"), llm.ConnectionError),
+        (httpx.ReadError("connection reset"), llm.ConnectionError),
         (httpx.ReadTimeout("read timed out"), llm.TimeoutError),
     ],
 )

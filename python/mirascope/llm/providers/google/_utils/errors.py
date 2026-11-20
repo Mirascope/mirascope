@@ -52,5 +52,5 @@ GOOGLE_ERROR_MAP: ProviderErrorMap = {
     GoogleServerError: map_google_error,
     # google-genai re-raises httpx transport errors once its own retries are spent
     httpx.TimeoutException: TimeoutError,
-    httpx.ConnectError: ConnectionError,
+    httpx.NetworkError: ConnectionError,
 }
