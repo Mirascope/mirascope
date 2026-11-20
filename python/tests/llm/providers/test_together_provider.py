@@ -1,9 +1,11 @@
 """Tests for TogetherProvider."""
 
 import os
+from unittest.mock import patch
 
 import pytest
 
+from mirascope import llm
 from mirascope.llm.providers.together.provider import TogetherProvider
 
 
@@ -49,14 +51,29 @@ def test_together_provider_custom_base_url() -> None:
     assert provider.id == "together"
 
 
-def test_together_provider_model_name() -> None:
-    """Test TogetherProvider strips 'together/' prefix from model_id."""
+@pytest.mark.parametrize(
+    "model_id",
+    [
+        "together/meta-llama/Llama-3.3-70B-Instruct-Turbo",
+        "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+    ],
+)
+def test_together_provider_model_name(model_id: str) -> None:
+    """The public call sends the model name without Mirascope's prefix."""
     provider = TogetherProvider(api_key="test-key")
-    assert (
-        provider._model_name("together/meta-llama/Llama-3.3-70B-Instruct-Turbo")  # pyright: ignore[reportPrivateUsage]
-        == "meta-llama/Llama-3.3-70B-Instruct-Turbo"
-    )
-    assert (
-        provider._model_name("meta-llama/Llama-3.3-70B-Instruct-Turbo")  # pyright: ignore[reportPrivateUsage]
-        == "meta-llama/Llama-3.3-70B-Instruct-Turbo"
+    with (
+        patch.object(
+            provider.client.chat.completions,
+            "create",
+            side_effect=RuntimeError("request captured"),
+        ) as create,
+        pytest.raises(RuntimeError, match="request captured"),
+    ):
+        provider.call(
+            model_id=model_id,
+            messages=[llm.messages.user("Hello")],
+            toolkit=llm.Toolkit([]),
+        )
+    assert create.call_args.kwargs["model"] == (
+        "meta-llama/Llama-3.3-70B-Instruct-Turbo"
     )
