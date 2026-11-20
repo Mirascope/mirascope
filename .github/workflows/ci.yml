@@ -22,7 +22,7 @@ jobs:
       typescript: ${{ steps.changes.outputs.typescript }}
       website: ${{ steps.changes.outputs.website }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v2
         id: changes
         with:
@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: codespell-project/actions-codespell@v2
 
   python-lint:
@@ -55,7 +55,7 @@ jobs:
       run:
         working-directory: python
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup uv
         uses: astral-sh/setup-uv@v7
@@ -111,7 +111,7 @@ jobs:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup `uv`
         uses: astral-sh/setup-uv@v7
@@ -143,7 +143,7 @@ jobs:
       run:
         working-directory: typescript
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup `bun`
         uses: oven-sh/setup-bun@v2
@@ -164,7 +164,7 @@ jobs:
       run:
         working-directory: typescript
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup `bun`
         uses: oven-sh/setup-bun@v2
@@ -185,7 +185,7 @@ jobs:
       run:
         working-directory: typescript
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup `bun`
         uses: oven-sh/setup-bun@v2
@@ -225,7 +225,7 @@ jobs:
       run:
         working-directory: website
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup `bun`
         uses: oven-sh/setup-bun@v2
@@ -246,7 +246,7 @@ jobs:
       run:
         working-directory: website
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup `bun`
         uses: oven-sh/setup-bun@v2
