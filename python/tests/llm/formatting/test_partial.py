@@ -2,7 +2,8 @@
 
 from typing import Union, cast
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
+from pydantic.alias_generators import to_camel
 
 from mirascope import llm
 from mirascope.llm.formatting import Partial
@@ -231,3 +232,23 @@ def test_partial_nested_model_unions() -> None:
         "attribution": None,
         "legacy_author": None,
     }
+
+
+def test_partial_keeps_field_aliases() -> None:
+    class Author(BaseModel):
+        model_config = ConfigDict(alias_generator=to_camel)
+
+        first_name: str
+        birth_year: int
+
+    class Book(BaseModel):
+        title: str = Field(alias="bookTitle")
+        author: Author
+
+    PartialBook = cast(type[Book], llm.Partial[Book])
+    partial = PartialBook.model_validate(
+        {"bookTitle": "The Name of the Wind", "author": {"firstName": "Patrick"}}
+    )
+    assert partial.title == "The Name of the Wind"
+    assert partial.author.first_name == "Patrick"
+    assert partial.author.birth_year is None
