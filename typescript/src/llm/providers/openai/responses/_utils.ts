@@ -35,6 +35,7 @@ import type { ToolSchema, Tools } from "@/llm/tools";
 import { FeatureNotSupportedError } from "@/llm/exceptions";
 import { ParamHandler } from "@/llm/providers/base";
 import { modelName } from "@/llm/providers/openai/model-id";
+import { NON_REASONING_MODELS } from "@/llm/providers/openai/model-info";
 import { FinishReason } from "@/llm/responses/finish-reason";
 import { createUsage } from "@/llm/responses/usage";
 import { ProviderTool, isProviderTool, isWebSearchTool } from "@/llm/tools";
@@ -470,14 +471,33 @@ export function buildRequestParams(
       requestParams.max_output_tokens = maxTokens;
     }
 
+    // Reasoning models reject temperature/top_p on the Responses API
+    const isReasoningModel = !NON_REASONING_MODELS.has(
+      modelName(modelId, null),
+    );
+
     const temperature = p.get("temperature");
     if (temperature !== undefined) {
-      requestParams.temperature = temperature;
+      if (isReasoningModel) {
+        p.warnUnsupported(
+          "temperature",
+          "Reasoning models do not support the temperature parameter",
+        );
+      } else {
+        requestParams.temperature = temperature;
+      }
     }
 
     const topP = p.get("topP");
     if (topP !== undefined) {
-      requestParams.top_p = topP;
+      if (isReasoningModel) {
+        p.warnUnsupported(
+          "topP",
+          "Reasoning models do not support the top_p parameter",
+        );
+      } else {
+        requestParams.top_p = topP;
+      }
     }
 
     // OpenAI Responses API doesn't support these params
