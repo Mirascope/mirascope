@@ -54,6 +54,12 @@ def _extract_tool_usage(
     return [ProviderToolUsage(name="web_search", call_count=web_search_count)]
 
 
+def _cache_write_tokens(details: object | None) -> int:
+    """Read `cache_write_tokens` from the usage details, 0 if the SDK doesn't report it."""
+    value = getattr(details, "cache_write_tokens", None)
+    return value if isinstance(value, int) else 0
+
+
 def _decode_usage(
     usage: openai_types.ResponseUsage | None,
     output: list[openai_types.ResponseOutputItem] | None = None,
@@ -71,7 +77,7 @@ def _decode_usage(
             else None
         )
         or 0,
-        cache_write_tokens=0,
+        cache_write_tokens=_cache_write_tokens(usage.input_tokens_details),
         reasoning_tokens=(
             usage.output_tokens_details.reasoning_tokens
             if usage.output_tokens_details
@@ -266,7 +272,7 @@ class _OpenAIResponsesChunkProcessor:
                     else None
                 )
                 or 0,
-                cache_write_tokens=0,
+                cache_write_tokens=_cache_write_tokens(usage.input_tokens_details),
                 reasoning_tokens=(
                     usage.output_tokens_details.reasoning_tokens
                     if usage.output_tokens_details

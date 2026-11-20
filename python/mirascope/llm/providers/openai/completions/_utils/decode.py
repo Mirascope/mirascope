@@ -35,6 +35,12 @@ OPENAI_FINISH_REASON_MAP = {
 }
 
 
+def _cache_write_tokens(details: object | None) -> int:
+    """Read `cache_write_tokens` from the usage details, 0 if the SDK doesn't report it."""
+    value = getattr(details, "cache_write_tokens", None)
+    return value if isinstance(value, int) else 0
+
+
 def _decode_usage(
     usage: CompletionUsage | None,
 ) -> Usage | None:
@@ -51,7 +57,7 @@ def _decode_usage(
             else None
         )
         or 0,
-        cache_write_tokens=0,
+        cache_write_tokens=_cache_write_tokens(usage.prompt_tokens_details),
         reasoning_tokens=(
             usage.completion_tokens_details.reasoning_tokens
             if usage.completion_tokens_details
@@ -172,7 +178,7 @@ class _OpenAIChunkProcessor:
                     else None
                 )
                 or 0,
-                cache_write_tokens=0,
+                cache_write_tokens=_cache_write_tokens(usage.prompt_tokens_details),
                 reasoning_tokens=(
                     usage.completion_tokens_details.reasoning_tokens
                     if usage.completion_tokens_details
