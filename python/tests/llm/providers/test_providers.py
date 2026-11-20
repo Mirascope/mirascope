@@ -67,6 +67,16 @@ def test_register_provider_atlascloud() -> None:
     assert provider.client.api_key == os.getenv("ATLASCLOUD_API_KEY")
 
 
+def test_register_provider_llmbuzz() -> None:
+    """Test that register_provider('llmbuzz') returns same instance on multiple calls."""
+    provider = llm.register_provider("llmbuzz", scope=["openai/"])
+    provider2 = llm.register_provider("llmbuzz", scope=["openai/"])
+
+    assert isinstance(provider, llm.providers.LLMBuzzProvider)
+    assert provider is provider2
+    assert provider.client.api_key == os.getenv("LLM_BUZZ_API_KEY")
+
+
 def test_register_provider_requesty() -> None:
     """Test that register_provider('requesty') returns same instance on multiple calls."""
     provider = llm.register_provider("requesty", scope=["openai/"])

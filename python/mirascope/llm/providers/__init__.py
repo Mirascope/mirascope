@@ -11,6 +11,7 @@ stub_module_if_missing("mirascope.llm.providers.api_route", "openai")
 stub_module_if_missing("mirascope.llm.providers.atlascloud", "openai")
 stub_module_if_missing("mirascope.llm.providers.cheaperinference", "openai")
 stub_module_if_missing("mirascope.llm.providers.google", "google")
+stub_module_if_missing("mirascope.llm.providers.llmbuzz", "openai")
 stub_module_if_missing("mirascope.llm.providers.mlx", "mlx")
 stub_module_if_missing("mirascope.llm.providers.minimax", "openai")
 stub_module_if_missing("mirascope.llm.providers.openai", "openai")
@@ -31,6 +32,7 @@ from .atlascloud import AtlasCloudProvider
 from .base import BaseProvider, Provider
 from .cheaperinference import CheaperInferenceProvider
 from .google import GoogleModelId, GoogleProvider
+from .llmbuzz import LLMBuzzProvider
 from .minimax import MiniMaxModelId, MiniMaxProvider
 from .mirascope import MirascopeProvider
 from .mlx import MLXModelId, MLXProvider
@@ -63,6 +65,7 @@ __all__ = [
     "CheaperInferenceProvider",
     "GoogleModelId",
     "GoogleProvider",
+    "LLMBuzzProvider",
     "MLXModelId",
     "MLXProvider",
     "MiniMaxModelId",

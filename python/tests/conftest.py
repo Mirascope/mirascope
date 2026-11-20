@@ -24,6 +24,7 @@ def load_api_keys() -> None:
     os.environ.setdefault("API_ROUTE_API_KEY", "dummy-api-route-key")
     os.environ.setdefault("CHEAPER_INFERENCE_API_KEY", "dummy-cheaperinference-key")
     os.environ.setdefault("GOOGLE_API_KEY", "dummy-google-key")
+    os.environ.setdefault("LLM_BUZZ_API_KEY", "dummy-llmbuzz-key")
     os.environ.setdefault("MIRASCOPE_API_KEY", "dummy-mirascope-key")
     os.environ.setdefault("ATLASCLOUD_API_KEY", "dummy-atlascloud-key")
     os.environ.setdefault("MINIMAX_API_KEY", "dummy-minimax-key")

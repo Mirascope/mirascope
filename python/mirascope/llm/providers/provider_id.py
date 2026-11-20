@@ -9,6 +9,7 @@ KnownProviderId: TypeAlias = Literal[
     "atlascloud",  # Atlas Cloud provider via AtlasCloudProvider
     "cheaperinference",  # Cheaper Inference provider via CheaperInferenceProvider
     "google",  # Google provider via GoogleProvider
+    "llmbuzz",  # llm.buzz provider via LLMBuzzProvider
     "minimax",  # MiniMax provider via MiniMaxProvider
     "mirascope",  # Mirascope Router provider via MirascopeProvider
     "mlx",  # Local inference powered by `mlx-lm`, via MLXProvider
@@ -27,6 +28,7 @@ OpenAICompletionsCompatibleProviderId: TypeAlias = Literal[
     "api-route",  # API Route (OpenAI-compatible)
     "atlascloud",  # Atlas Cloud (OpenAI-compatible)
     "cheaperinference",  # Cheaper Inference (OpenAI-compatible)
+    "llmbuzz",  # llm.buzz (OpenAI-compatible)
     "minimax",  # MiniMax (OpenAI-compatible)
     "ollama",  # Ollama (OpenAI-compatible)
     "openai",  # OpenAI via OpenAIProvider (routes to completions)
