@@ -74,7 +74,7 @@
     "pagefind": "^1.4.0",
     "piscina": "^5.1.4",
     "react": "^19.2.3",
-    "react-day-picker": "^9.13.0",
+    "react-day-picker": "^10.0.2",
     "react-dom": "^19.2.3",
     "react-hook-form": "^7.69.0",
     "react-resizable-panels": "^3.0.6",
