@@ -396,6 +396,30 @@ class TestMCPToolPagination:
             assert calls == ["second"]
             assert cursors == [None, "next"]
 
+    async def test_list_tools_with_schema_valued_additional_properties(self) -> None:
+        """Test that a schema-valued additionalProperties is preserved."""
+        server = Server[dict[str, object]]("schema-valued-additional-properties")
+
+        async def list_tools(request: ListToolsRequest) -> ListToolsResult:
+            return ListToolsResult(
+                tools=[
+                    MCPTool(
+                        name="string_map",
+                        inputSchema={
+                            "type": "object",
+                            "additionalProperties": {"type": "string"},
+                        },
+                    )
+                ]
+            )
+
+        server.list_tools()(list_tools)
+        async with create_connected_server_and_client_session(server) as session:
+            tools = await llm.mcp.MCPClient(session).list_tools()
+
+        assert len(tools) == 1
+        assert tools[0].parameters.additionalProperties == {"type": "string"}
+
 
 @pytest.mark.asyncio
 @pytest.mark.skip("Flaky — run manually if changing transport code")
