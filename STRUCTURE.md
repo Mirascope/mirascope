@@ -37,6 +37,7 @@ Mirascope uses a monorepo structure to manage multiple packages and applications
 python/
 ├── mirascope/            # Main Python package
 │   ├── __init__.py         # Package exports
+│   ├── py.typed            # PEP 561 marker for installed-package type checking
 │   ├── llm/                # "LLM abstractions that aren't obstructions"
 │   │   ├── __init__.py       # LLM module exports
 │   │   ├── agents/           # Agent functionality (currently not publicly exported)
