@@ -418,6 +418,13 @@ class TestProviderStubs:
         # Should be importable without error
         assert RequestyProvider is not None
 
+    def test_runcrate_provider_is_importable(self) -> None:
+        """Test that RuncrateProvider can be imported (will be real or stub)."""
+        from mirascope.llm.providers import RuncrateProvider
+
+        # Should be importable without error
+        assert RuncrateProvider is not None
+
     def test_ollama_provider_is_importable(self) -> None:
         """Test that OllamaProvider can be imported (will be real or stub)."""
         from mirascope.llm.providers import OllamaProvider
