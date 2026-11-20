@@ -144,7 +144,13 @@ def _resolve_refs(
             if ref_path.startswith("#/$defs/"):
                 ref_name = ref_path.split("/")[-1]
                 if defs and ref_name in defs:
-                    return _resolve_refs(defs[ref_name], defs)
+                    # Keep keywords next to `$ref` (e.g. a field's description);
+                    # they take precedence over those of the referenced schema.
+                    siblings = {k: v for k, v in schema.items() if k != "$ref"}
+                    return {
+                        **_resolve_refs(defs[ref_name], defs),
+                        **_resolve_refs(siblings, defs),
+                    }
             return schema  # pragma: no cover
         else:
             return {k: _resolve_refs(v, defs) for k, v in schema.items()}

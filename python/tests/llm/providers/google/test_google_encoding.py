@@ -116,6 +116,77 @@ def test_google_filters_only_schema_keywords(extra: dict[str, Any]) -> None:
         assert "examples" in properties["value"].properties
 
 
+def test_google_keeps_description_of_model_typed_tool_parameter() -> None:
+    """A description next to a `$ref` survives resolving the reference."""
+
+    class Address(BaseModel):
+        """A postal address."""
+
+        street: str
+        city: str
+
+    @llm.tool
+    def ship_order(order_id: str, address: Address) -> str:
+        """Ship an order.
+
+        Args:
+            order_id: The order to ship.
+            address: The customer's delivery address.
+        """
+        return order_id
+
+    _, _, kwargs = encode_request(
+        model_id="google/gemini-2.5-flash",
+        messages=[llm.messages.user("Use the tool")],
+        tools=Toolkit([ship_order]),
+        format=None,
+        params={},
+    )
+    config = genai_types.GenerateContentConfig.model_validate(kwargs.get("config", {}))
+    assert config.tools is not None
+    assert isinstance(config.tools[0], genai_types.Tool)
+    declarations = config.tools[0].function_declarations
+    assert declarations is not None and declarations[0].parameters is not None
+    properties = declarations[0].parameters.properties
+    assert properties is not None
+    assert properties["order_id"].description == "The order to ship."
+    address = properties["address"]
+    assert address.description == "The customer's delivery address."
+    assert address.properties is not None
+    assert set(address.properties) == {"street", "city"}
+
+
+def test_google_keeps_description_of_nested_format_field() -> None:
+    """Tool-mode structured output retains the field description beside a `$ref`."""
+
+    class Address(BaseModel):
+        """A postal address."""
+
+        street: str
+
+    class Delivery(BaseModel):
+        address: Address = Field(description="The delivery destination.")
+
+    _, _, kwargs = encode_request(
+        model_id="google/gemini-2.5-flash",
+        messages=[llm.messages.user("Provide a delivery")],
+        tools=Toolkit(None),
+        format=llm.format(Delivery, mode="tool"),
+        params={},
+    )
+    config = genai_types.GenerateContentConfig.model_validate(kwargs.get("config", {}))
+    assert config.tools is not None
+    assert isinstance(config.tools[0], genai_types.Tool)
+    declarations = config.tools[0].function_declarations
+    assert declarations is not None and declarations[0].parameters is not None
+    properties = declarations[0].parameters.properties
+    assert properties is not None
+    address = properties["address"]
+    assert address.description == "The delivery destination."
+    assert address.properties is not None
+    assert "street" in address.properties
+
+
 def test_encode_base64_document() -> None:
     """Test encoding a base64 document source as inline_data for Google."""
     doc = Document(
