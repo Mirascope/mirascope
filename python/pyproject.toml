@@ -60,7 +60,7 @@ Changelog = "https://github.com/Mirascope/mirascope/releases"
 [project.optional-dependencies]
 anthropic = ["anthropic>=0.78.0,<1.0"]
 google = ["google-genai>=1.58.0,<2", "pillow>=10.4.0,<11", "proto-plus>=1.24.0"]
-openai = ["openai>=2.15.0,<3"]
+openai = ["openai>=2.15.0,<4"]
 mcp = ["mcp>=1.25.0,<2"]
 ops = [
     "opentelemetry-sdk>=1.38.0,<2",
