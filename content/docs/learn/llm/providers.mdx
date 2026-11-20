@@ -27,6 +27,7 @@ Mirascope includes several built-in providers:
 | API Route | `llm.providers.APIRouteProvider` | `api-route/` | `API_ROUTE_API_KEY` |
 | Atlas Cloud | `llm.providers.AtlasCloudProvider` | `atlascloud/` | `ATLASCLOUD_API_KEY` |
 | Cheaper Inference | `llm.providers.CheaperInferenceProvider` | `cheaperinference/` | `CHEAPER_INFERENCE_API_KEY` |
+| CloudGPU | `llm.providers.CloudGPUProvider` | `cloudgpu/` | `CLOUDGPU_API_KEY` |
 | Google | `llm.providers.GoogleProvider` | `google/` | `GOOGLE_API_KEY` |
 | MiniMax | `llm.providers.MiniMaxProvider` | `minimax/` | `MINIMAX_API_KEY` |
 | Mirascope | `llm.providers.MirascopeProvider` | `anthropic/`, `google/`, `openai/` | `MIRASCOPE_API_KEY` |
@@ -58,6 +59,8 @@ With the appropriate environment variable set, you can use any of these provider
 For Atlas Cloud, use a model ID with the `atlascloud/` prefix, such as `atlascloud/deepseek-ai/deepseek-v4-flash`. Mirascope sends the remaining model ID to Atlas Cloud's OpenAI-compatible API. You can also register Atlas Cloud for another scope with `llm.register_provider("atlascloud", scope="openai/")`.
 
 For Cheaper Inference, use a model ID with the `cheaperinference/` prefix, such as `cheaperinference/gpt-5.4-mini`. Mirascope sends the remaining model ID to Cheaper Inference's OpenAI-compatible API.
+
+For [CloudGPU](https://cloudgpu.app), use a model ID with the `cloudgpu/` prefix, such as `cloudgpu/deepseek-v4-flash`. Mirascope sends the remaining model ID to CloudGPU's OpenAI-compatible API, which serves DeepSeek, Kimi, GLM, MiniMax, Qwen and more. `GET https://cloudgpu.app/v1/models` lists the available model IDs.
 
 For Requesty, use a model ID with the `requesty/` prefix, such as `requesty/openai/gpt-4o-mini`. Mirascope sends the remaining model ID to Requesty's OpenAI-compatible router. You can also register Requesty for another scope with `llm.register_provider("requesty", scope="openai/")`.
 
@@ -162,6 +165,7 @@ These provider IDs are available:
 | `"api-route"` | API Route Chat Completions API |
 | `"atlascloud"` | Atlas Cloud API |
 | `"cheaperinference"` | Cheaper Inference API |
+| `"cloudgpu"` | CloudGPU API |
 | `"google"` | Google Generative AI API |
 | `"minimax"` | MiniMax API |
 | `"mirascope"` | Use the Mirascope Router to access many providers seamlessly |
