@@ -20,6 +20,7 @@ export {
   AtlasCloudProvider,
   CheaperInferenceProvider,
   MiniMaxProvider,
+  OpperProvider,
   RequestyProvider,
 } from "@/llm/providers/openai-compatible";
 

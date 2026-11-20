@@ -15,6 +15,7 @@ KnownProviderId: TypeAlias = Literal[
     "ollama",  # Ollama provider via OllamaProvider
     "openai",  # OpenAI provider via OpenAIProvider (prefers Responses routing when available)
     "openrouter",  # OpenRouter provider via OpenRouterProvider
+    "opper",  # Opper provider via OpperProvider
     "requesty",  # Requesty provider via RequestyProvider
     "together",  # Together AI provider via TogetherProvider
     "xai",  # xAI provider for Grok models via XAIProvider (Responses API)
@@ -32,6 +33,7 @@ OpenAICompletionsCompatibleProviderId: TypeAlias = Literal[
     "openai",  # OpenAI via OpenAIProvider (routes to completions)
     "openai:completions",  # OpenAI Completions API directly
     "openrouter",  # OpenRouter (OpenAI-compatible)
+    "opper",  # Opper (OpenAI-compatible)
     "requesty",  # Requesty (OpenAI-compatible)
     "together",  # Together AI (OpenAI-compatible)
 ]

@@ -397,6 +397,13 @@ class TestProviderStubs:
         # Should be importable without error
         assert OpenRouterProvider is not None
 
+    def test_opper_provider_is_importable(self) -> None:
+        """Test that OpperProvider can be imported (will be real or stub)."""
+        from mirascope.llm.providers import OpperProvider
+
+        # Should be importable without error
+        assert OpperProvider is not None
+
     def test_atlascloud_provider_is_importable(self) -> None:
         """Test that AtlasCloudProvider can be imported (will be real or stub)."""
         from mirascope.llm.providers import AtlasCloudProvider

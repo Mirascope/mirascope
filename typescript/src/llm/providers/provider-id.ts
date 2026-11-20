@@ -17,6 +17,7 @@ export const KNOWN_PROVIDER_IDS = [
   "ollama",
   "openai",
   "openrouter",
+  "opper",
   "requesty",
   "together",
   "xai",

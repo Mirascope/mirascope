@@ -33,6 +33,7 @@ Mirascope includes several built-in providers:
 | MLX | `llm.providers.MLXProvider` | `mlx-community/` | — |
 | Ollama | `llm.providers.OllamaProvider` | `ollama/` | `OLLAMA_BASE_URL` |
 | OpenAI | `llm.providers.OpenAIProvider` | `openai/` | `OPENAI_API_KEY` |
+| Opper | `llm.providers.OpperProvider` | `opper/` | `OPPER_API_KEY` |
 | Requesty | `llm.providers.RequestyProvider` | `requesty/` | `REQUESTY_API_KEY` |
 | Together | `llm.providers.TogetherProvider` | `together/` | `TOGETHER_API_KEY` |
 
@@ -58,6 +59,8 @@ With the appropriate environment variable set, you can use any of these provider
 For Atlas Cloud, use a model ID with the `atlascloud/` prefix, such as `atlascloud/deepseek-ai/deepseek-v4-flash`. Mirascope sends the remaining model ID to Atlas Cloud's OpenAI-compatible API. You can also register Atlas Cloud for another scope with `llm.register_provider("atlascloud", scope="openai/")`.
 
 For Cheaper Inference, use a model ID with the `cheaperinference/` prefix, such as `cheaperinference/gpt-5.4-mini`. Mirascope sends the remaining model ID to Cheaper Inference's OpenAI-compatible API.
+
+For Opper, use a model ID with the `opper/` prefix, such as `opper/claude-sonnet-4-6`. Mirascope sends the remaining model ID to Opper's OpenAI-compatible gateway. A bare pool name like `claude-sonnet-4-6` lets Opper pick the route, and a `provider/model` ID like `opper/anthropic/claude-sonnet-4-6` pins one. You can also register Opper for another scope with `llm.register_provider("opper", scope="openai/")`.
 
 For Requesty, use a model ID with the `requesty/` prefix, such as `requesty/openai/gpt-4o-mini`. Mirascope sends the remaining model ID to Requesty's OpenAI-compatible router. You can also register Requesty for another scope with `llm.register_provider("requesty", scope="openai/")`.
 
@@ -170,6 +173,7 @@ These provider IDs are available:
 | `"openai:completions"` | Force OpenAI Completions API |
 | `"openai:responses"` | Force OpenAI Responses API |
 | `"openai"` | OpenAI API (auto-selects Responses or Completions API based on features used) |
+| `"opper"` | Opper gateway API |
 | `"requesty"` | Requesty router API |
 | `"together"` | Together AI API |
 
