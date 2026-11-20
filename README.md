@@ -32,7 +32,7 @@ uv add "mirascope[all]"
 from mirascope import llm
 
 
-@llm.call("anthropic/claude-sonnet-4-5")
+@llm.call("anthropic/claude-sonnet-5-5")
 def recommend_book(genre: str):
     return f"Recommend a {genre} book."
 
@@ -53,7 +53,7 @@ class Book(BaseModel):
     author: str
 
 
-@llm.call("anthropic/claude-sonnet-4-5", format=Book)
+@llm.call("anthropic/claude-sonnet-5-5", format=Book)
 def recommend_book(genre: str):
     return f"Recommend a {genre} book."
 
@@ -80,7 +80,7 @@ def get_available_books(genre: str) -> list[Book]:
     return [Book(title="The Name of the Wind", author="Patrick Rothfuss")]
 
 
-@llm.call("anthropic/claude-sonnet-4-5", tools=[get_available_books], format=Book)
+@llm.call("anthropic/claude-sonnet-5-5", tools=[get_available_books], format=Book)
 def librarian(request: str):
     return f"You are a librarian. Help the user: {request}"
 
