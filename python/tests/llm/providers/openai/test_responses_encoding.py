@@ -357,3 +357,36 @@ def test_json_format_omits_json_object_for_models_without_it() -> None:
     )
 
     assert "text" not in kwargs
+
+
+def test_reasoning_model_skips_sampling_params(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Reasoning models reject temperature/top_p on the Responses API."""
+    with caplog.at_level("WARNING"):
+        _, _, kwargs = encode_request(
+            model_id="openai/o4-mini",
+            messages=[llm.messages.user("Hello")],
+            format=None,
+            tools=Toolkit(None),
+            params={"temperature": 0.7, "top_p": 0.9, "max_tokens": 100},
+        )
+
+    assert "temperature" not in kwargs
+    assert "top_p" not in kwargs
+    assert kwargs.get("max_output_tokens") == 100
+    assert "Skipping unsupported parameter: temperature=0.7" in caplog.text
+    assert "Skipping unsupported parameter: top_p=0.9" in caplog.text
+
+
+def test_non_reasoning_model_keeps_sampling_params() -> None:
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-4o",
+        messages=[llm.messages.user("Hello")],
+        format=None,
+        tools=Toolkit(None),
+        params={"temperature": 0.7, "top_p": 0.9},
+    )
+
+    assert kwargs.get("temperature") == 0.7
+    assert kwargs.get("top_p") == 0.9
