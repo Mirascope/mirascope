@@ -435,6 +435,31 @@ def test_adaptive_thinking_level_controls_effort(
     assert kwargs.get("output_config") == {"effort": effort}
 
 
+def test_default_thinking_level_leaves_thinking_unset_on_adaptive_model() -> None:
+    """`default` means do not touch thinking, even on adaptive-only models."""
+    params: llm.Params = {"thinking": {"level": "default"}}
+
+    _, _, kwargs = encode_request(
+        model_id="anthropic/claude-opus-4-7",
+        messages=[llm.messages.user("Hello")],
+        format=None,
+        tools=Toolkit(None),
+        params=params,
+    )
+    assert "thinking" not in kwargs
+    assert "output_config" not in kwargs
+
+    _, _, beta_kwargs = beta_encode_request(
+        model_id="anthropic/claude-opus-4-7",
+        messages=[llm.messages.user("Hello")],
+        format=None,
+        tools=Toolkit(None),
+        params=params,
+    )
+    assert "thinking" not in beta_kwargs
+    assert "output_config" not in beta_kwargs
+
+
 @pytest.mark.parametrize(
     "model_id",
     [
