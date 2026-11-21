@@ -391,6 +391,33 @@ class TestChunkStream:
         )
         assert stream_response.consumed is True
 
+    def test_sync_interleaved_chunk_streams(self) -> None:
+        """Test that multiple open sync chunk streams advance without skipping chunks."""
+        chunks = [llm.TextStartChunk(), llm.TextChunk(delta="one"), llm.TextEndChunk()]
+        stream_response = create_sync_stream_response(chunks)
+
+        first = stream_response.chunk_stream()
+        second = stream_response.chunk_stream()
+
+        assert next(first) == next(second) == chunks[0]
+        assert next(second) == chunks[1]
+        assert list(first) == chunks[1:]
+        assert list(second) == chunks[2:]
+
+    @pytest.mark.asyncio
+    async def test_async_interleaved_chunk_streams(self) -> None:
+        """Test that multiple open async chunk streams advance without skipping chunks."""
+        chunks = [llm.TextStartChunk(), llm.TextChunk(delta="one"), llm.TextEndChunk()]
+        stream_response = create_async_stream_response(chunks)
+
+        first = stream_response.chunk_stream()
+        second = stream_response.chunk_stream()
+
+        assert await anext(first) == await anext(second) == chunks[0]
+        assert await anext(second) == chunks[1]
+        assert [chunk async for chunk in first] == chunks[1:]
+        assert [chunk async for chunk in second] == chunks[2:]
+
 
 @dataclass
 class ChunkProcessingTestCase:
