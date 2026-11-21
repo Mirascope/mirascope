@@ -60,11 +60,15 @@ class MCPClient:
             tool_result: CallToolResult = await self._session.call_tool(
                 mcp_tool.name, kwargs
             )
-            # Convert ContentBlock objects to JSON-serializable dicts
-            # Cast to Jsonable since model_dump() returns dict[str, Any]
-            return cast(
-                Jsonable, [content.model_dump() for content in tool_result.content]
-            )
+            if tool_result.content:
+                # Convert ContentBlock objects to JSON-serializable dicts
+                # Cast to Jsonable since model_dump() returns dict[str, Any]
+                return cast(
+                    Jsonable, [content.model_dump() for content in tool_result.content]
+                )
+            if tool_result.structuredContent is not None:
+                return cast(Jsonable, tool_result.structuredContent)
+            return []
 
         # Create the AsyncTool instance
         return AsyncTool(
