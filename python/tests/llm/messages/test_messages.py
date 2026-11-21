@@ -3,6 +3,42 @@
 from mirascope import llm
 
 
+class TestPromoteToMessages:
+    """Test promoting prompt results to a sequence of messages."""
+
+    def test_is_messages_accepts_list(self) -> None:
+        assert llm.messages.is_messages([llm.messages.user("Hi")])
+
+    def test_is_messages_accepts_tuple(self) -> None:
+        """`Sequence[Message]` includes immutable sequences such as tuples."""
+        assert llm.messages.is_messages((llm.messages.user("Hi"),))
+
+    def test_is_messages_rejects_content_sequence(self) -> None:
+        assert not llm.messages.is_messages(["Hello", llm.Text(text="World")])
+
+    def test_promote_list_of_messages(self) -> None:
+        messages = [llm.messages.system("Be terse."), llm.messages.user("Hi")]
+
+        assert llm.messages.promote_to_messages(messages) == messages
+
+    def test_promote_tuple_of_messages(self) -> None:
+        """A tuple of messages is passed through instead of being re-wrapped."""
+        messages = (llm.messages.system("Be terse."), llm.messages.user("Hi"))
+
+        assert list(llm.messages.promote_to_messages(messages)) == list(messages)
+
+    def test_promote_tuple_of_content_parts(self) -> None:
+        """A tuple of content parts is still wrapped in a single user message."""
+        messages = llm.messages.promote_to_messages(("Hello", "World"))
+
+        assert len(messages) == 1
+        assert isinstance(messages[0], llm.UserMessage)
+        texts = [
+            part.text for part in messages[0].content if isinstance(part, llm.Text)
+        ]
+        assert texts == ["Hello", "World"]
+
+
 class TestSystemMessage:
     """Test system message creation."""
 
