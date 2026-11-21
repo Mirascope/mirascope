@@ -264,6 +264,75 @@ Returns:
         assert isinstance(output.error, llm.ToolExecutionError)
         assert isinstance(output.error.tool_exception, anyio.ClosedResourceError)
 
+    @pytest.mark.parametrize(
+        ("call_tool_result", "output_schema", "expected_result"),
+        [
+            (
+                CallToolResult(content=[], structuredContent={"quantity": 0}),
+                {"type": "object"},
+                {"quantity": 0},
+            ),
+            (
+                CallToolResult(content=[], structuredContent={}),
+                {"type": "object"},
+                {},
+            ),
+            (
+                CallToolResult(
+                    content=[TextContent(type="text", text="in-memory text")],
+                    structuredContent={"quantity": 0},
+                ),
+                {"type": "object"},
+                [TextContent(type="text", text="in-memory text").model_dump()],
+            ),
+            (
+                CallToolResult(content=[], structuredContent=None),
+                None,
+                [],
+            ),
+        ],
+        ids=[
+            "structured-only",
+            "empty-structured",
+            "dual-results",
+            "empty-content-no-structured",
+        ],
+    )
+    async def test_tool_execution_structured_content(
+        self,
+        call_tool_result: CallToolResult,
+        output_schema: dict[str, object] | None,
+        expected_result: object,
+    ) -> None:
+        """Test that structuredContent is preserved when executing MCP tools."""
+        server = Server[dict[str, object]]("structured-content-server")
+
+        async def list_tools(request: ListToolsRequest) -> ListToolsResult:
+            return ListToolsResult(
+                tools=[
+                    MCPTool(
+                        name="stock",
+                        inputSchema={"type": "object"},
+                        outputSchema=output_schema,
+                    )
+                ]
+            )
+
+        async def call_tool(name: str, arguments: dict[str, object]) -> CallToolResult:
+            return call_tool_result
+
+        server.list_tools()(list_tools)
+        server.call_tool()(call_tool)
+
+        async with create_connected_server_and_client_session(server) as session:
+            tools = await llm.mcp.MCPClient(session).list_tools()
+            assert len(tools) == 1
+            output = await tools[0].execute(
+                llm.ToolCall(id="call_1", name="stock", args="{}")
+            )
+            assert output.error is None
+            assert output.result == expected_result
+
 
 @pytest.mark.asyncio
 class TestMCPToolPagination:
