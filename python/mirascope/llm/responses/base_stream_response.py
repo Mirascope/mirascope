@@ -483,13 +483,21 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
         the LLM), it will proceed to consume it once it has iterated through all the
         cached chunks.
         """
-        for chunk in self.chunks:
-            yield chunk
+        cursor = 0
+        while True:
+            while cursor < len(self._chunks):
+                yield self._chunks[cursor]
+                cursor += 1
 
-        if self.consumed:
-            return
+            if self.consumed:
+                return
 
-        for chunk in self._chunk_iterator:
+            try:
+                chunk = next(self._chunk_iterator)
+            except StopIteration:
+                self.consumed = True
+                return
+
             if chunk.type == "raw_stream_event_chunk":
                 self._raw_stream_events.append(chunk.raw_stream_event)
             elif chunk.type == "raw_message_chunk":
@@ -508,8 +516,7 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
                     self.usage.provider_tool_usage = chunk.provider_tool_usage
             else:
                 yield self._handle_chunk(chunk)
-
-        self.consumed = True
+                cursor += 1
 
     def finish(self) -> None:
         """Finish streaming all of this response's content."""
@@ -706,13 +713,21 @@ class BaseAsyncStreamResponse(
         cached chunks.
         """
 
-        for chunk in self.chunks:
-            yield chunk
+        cursor = 0
+        while True:
+            while cursor < len(self._chunks):
+                yield self._chunks[cursor]
+                cursor += 1
 
-        if self.consumed:
-            return
+            if self.consumed:
+                return
 
-        async for chunk in self._chunk_iterator:
+            try:
+                chunk = await anext(self._chunk_iterator)
+            except StopAsyncIteration:
+                self.consumed = True
+                return
+
             if chunk.type == "raw_stream_event_chunk":
                 self._raw_stream_events.append(chunk.raw_stream_event)
             elif chunk.type == "raw_message_chunk":
@@ -731,8 +746,7 @@ class BaseAsyncStreamResponse(
                     self.usage.provider_tool_usage = chunk.provider_tool_usage
             else:
                 yield self._handle_chunk(chunk)
-
-        self.consumed = True
+                cursor += 1
 
     async def finish(self) -> None:
         """Finish streaming all of this response's content."""
