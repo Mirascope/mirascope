@@ -125,13 +125,23 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
             )
             self.retry_failures.append(failure)
 
-            # Try to get next variant (handles backoff and fallback)
-            try:
-                self._current_variant = next(self._variants_iter)
-            except StopIteration:
-                raise RetriesExhausted(self.retry_failures) from None
+            while True:
+                # Try to get next variant (handles backoff and fallback)
+                try:
+                    self._current_variant = next(self._variants_iter)
+                except StopIteration:
+                    raise RetriesExhausted(self.retry_failures) from None
 
-            self._reset_stream(self._current_variant)
+                config = self._current_variant.retry_config
+                try:
+                    self._reset_stream(self._current_variant)
+                    break
+                except config.retry_on as reset_err:
+                    reset_failure = RetryFailure(
+                        model=self._current_variant.get_active_model(),
+                        exception=reset_err,
+                    )
+                    self.retry_failures.append(reset_failure)
 
             raise StreamRestarted(
                 failure=failure,
@@ -259,13 +269,23 @@ class AsyncRetryStreamResponse(AsyncStreamResponse[FormattableT]):
             )
             self.retry_failures.append(failure)
 
-            # Try to get next variant (handles backoff and fallback)
-            try:
-                self._current_variant = await anext(self._variants_iter)
-            except StopAsyncIteration:
-                raise RetriesExhausted(self.retry_failures) from None
+            while True:
+                # Try to get next variant (handles backoff and fallback)
+                try:
+                    self._current_variant = await anext(self._variants_iter)
+                except StopAsyncIteration:
+                    raise RetriesExhausted(self.retry_failures) from None
 
-            await self._reset_stream(self._current_variant)
+                config = self._current_variant.retry_config
+                try:
+                    await self._reset_stream(self._current_variant)
+                    break
+                except config.retry_on as reset_err:
+                    reset_failure = RetryFailure(
+                        model=self._current_variant.get_active_model(),
+                        exception=reset_err,
+                    )
+                    self.retry_failures.append(reset_failure)
 
             raise StreamRestarted(
                 failure=failure,
@@ -391,13 +411,23 @@ class ContextRetryStreamResponse(
             )
             self.retry_failures.append(failure)
 
-            # Try to get next variant (handles backoff and fallback)
-            try:
-                self._current_variant = next(self._variants_iter)
-            except StopIteration:
-                raise RetriesExhausted(self.retry_failures) from None
+            while True:
+                # Try to get next variant (handles backoff and fallback)
+                try:
+                    self._current_variant = next(self._variants_iter)
+                except StopIteration:
+                    raise RetriesExhausted(self.retry_failures) from None
 
-            self._reset_stream(self._current_variant)
+                config = self._current_variant.retry_config
+                try:
+                    self._reset_stream(self._current_variant)
+                    break
+                except config.retry_on as reset_err:
+                    reset_failure = RetryFailure(
+                        model=self._current_variant.get_active_model(),
+                        exception=reset_err,
+                    )
+                    self.retry_failures.append(reset_failure)
 
             raise StreamRestarted(
                 failure=failure,
@@ -536,13 +566,23 @@ class AsyncContextRetryStreamResponse(
             )
             self.retry_failures.append(failure)
 
-            # Try to get next variant (handles backoff and fallback)
-            try:
-                self._current_variant = await anext(self._variants_iter)
-            except StopAsyncIteration:
-                raise RetriesExhausted(self.retry_failures) from None
+            while True:
+                # Try to get next variant (handles backoff and fallback)
+                try:
+                    self._current_variant = await anext(self._variants_iter)
+                except StopAsyncIteration:
+                    raise RetriesExhausted(self.retry_failures) from None
 
-            await self._reset_stream(self._current_variant)
+                config = self._current_variant.retry_config
+                try:
+                    await self._reset_stream(self._current_variant)
+                    break
+                except config.retry_on as reset_err:
+                    reset_failure = RetryFailure(
+                        model=self._current_variant.get_active_model(),
+                        exception=reset_err,
+                    )
+                    self.retry_failures.append(reset_failure)
 
             raise StreamRestarted(
                 failure=failure,

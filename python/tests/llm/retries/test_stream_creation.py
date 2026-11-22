@@ -210,3 +210,118 @@ async def test_async_creation_does_not_retry_other_errors(
         await start_stream_async(
             llm.retry_model("mock/test-model"), entry, mock_provider, [error]
         )
+
+
+@pytest.mark.parametrize("entry", ENTRIES)
+def test_replacement_stream_creation_retry(
+    mock_provider: MockProvider, entry: Entry
+) -> None:
+    """A retryable error when opening a replacement stream consumes remaining budget."""
+    model = llm.retry_model("mock/test-model", max_retries=2)
+    response = start_stream(model, entry, mock_provider, [])
+    mock_provider.set_stream_exceptions([CONNECTION_ERROR])
+    mock_provider.set_stream_creation_exceptions([RATE_LIMIT_ERROR])
+
+    with pytest.raises(llm.StreamRestarted) as exc:
+        list(response.text_stream())
+
+    assert exc.value.failure.exception is CONNECTION_ERROR
+    assert [failure.exception for failure in response.retry_failures] == [
+        CONNECTION_ERROR,
+        RATE_LIMIT_ERROR,
+    ]
+    assert "".join(response.text_stream()) == "mock response\n"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("entry", ENTRIES)
+async def test_async_replacement_stream_creation_retry(
+    mock_provider: MockProvider, entry: Entry
+) -> None:
+    """Async replacement stream retry consumes remaining budget and records failures."""
+    model = llm.retry_model("mock/test-model", max_retries=2)
+    response = await start_stream_async(model, entry, mock_provider, [])
+    mock_provider.set_stream_exceptions([CONNECTION_ERROR])
+    mock_provider.set_stream_creation_exceptions([RATE_LIMIT_ERROR])
+
+    with pytest.raises(llm.StreamRestarted) as exc:
+        _ = [chunk async for chunk in response.text_stream()]
+
+    assert exc.value.failure.exception is CONNECTION_ERROR
+    assert [failure.exception for failure in response.retry_failures] == [
+        CONNECTION_ERROR,
+        RATE_LIMIT_ERROR,
+    ]
+    assert (
+        "".join([chunk async for chunk in response.text_stream()]) == "mock response\n"
+    )
+
+
+@pytest.mark.parametrize("entry", ENTRIES)
+def test_replacement_stream_creation_exhausts_budget(
+    mock_provider: MockProvider, entry: Entry
+) -> None:
+    """Replacement creation errors raise RetriesExhausted when attempts run out."""
+    model = llm.retry_model("mock/test-model", max_retries=1)
+    response = start_stream(model, entry, mock_provider, [])
+    mock_provider.set_stream_exceptions([CONNECTION_ERROR])
+    mock_provider.set_stream_creation_exceptions([RATE_LIMIT_ERROR])
+
+    with pytest.raises(llm.RetriesExhausted) as exc:
+        list(response.text_stream())
+
+    assert [failure.exception for failure in exc.value.failures] == [
+        CONNECTION_ERROR,
+        RATE_LIMIT_ERROR,
+    ]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("entry", ENTRIES)
+async def test_async_replacement_stream_creation_exhausts_budget(
+    mock_provider: MockProvider, entry: Entry
+) -> None:
+    """Async replacement errors raise RetriesExhausted with all failures recorded."""
+    model = llm.retry_model("mock/test-model", max_retries=1)
+    response = await start_stream_async(model, entry, mock_provider, [])
+    mock_provider.set_stream_exceptions([CONNECTION_ERROR])
+    mock_provider.set_stream_creation_exceptions([RATE_LIMIT_ERROR])
+
+    with pytest.raises(llm.RetriesExhausted) as exc:
+        _ = [chunk async for chunk in response.text_stream()]
+
+    assert [failure.exception for failure in exc.value.failures] == [
+        CONNECTION_ERROR,
+        RATE_LIMIT_ERROR,
+    ]
+
+
+@pytest.mark.parametrize("entry", ENTRIES)
+def test_replacement_stream_creation_does_not_retry_other_errors(
+    mock_provider: MockProvider, entry: Entry
+) -> None:
+    """Non-retryable errors when opening replacement stream propagate immediately."""
+    model = llm.retry_model("mock/test-model", max_retries=2)
+    response = start_stream(model, entry, mock_provider, [])
+    mock_provider.set_stream_exceptions([CONNECTION_ERROR])
+    error = ValueError("not retryable replacement")
+    mock_provider.set_stream_creation_exceptions([error])
+
+    with pytest.raises(ValueError, match="not retryable replacement"):
+        list(response.text_stream())
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("entry", ENTRIES)
+async def test_async_replacement_stream_creation_does_not_retry_other_errors(
+    mock_provider: MockProvider, entry: Entry
+) -> None:
+    """Async non-retryable errors when opening replacement stream propagate immediately."""
+    model = llm.retry_model("mock/test-model", max_retries=2)
+    response = await start_stream_async(model, entry, mock_provider, [])
+    mock_provider.set_stream_exceptions([CONNECTION_ERROR])
+    error = ValueError("not retryable replacement")
+    mock_provider.set_stream_creation_exceptions([error])
+
+    with pytest.raises(ValueError, match="not retryable replacement"):
+        _ = [chunk async for chunk in response.text_stream()]
