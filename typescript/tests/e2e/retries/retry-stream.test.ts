@@ -8,6 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createContext } from "@/llm/context";
 import { RetriesExhausted, StreamRestarted } from "@/llm/exceptions";
+import { Model } from "@/llm/models";
 import { RetryModel, retryModel } from "@/llm/retries/retry-model";
 import {
   RetryStreamResponse,
@@ -44,6 +45,32 @@ describe("RetryModel stream", () => {
   });
 
   describe("successful streams", () => {
+    it("retries a failure while opening the initial stream", async () => {
+      vi.spyOn(Model.prototype, "stream").mockRejectedValueOnce(
+        CONNECTION_ERROR,
+      );
+      const model = retryModel("mock/test-model", { maxRetries: 1 });
+
+      const response = await model.stream("Hello");
+
+      expect(response.retryFailures).toHaveLength(1);
+      expect(response.retryFailures[0]?.exception).toBe(CONNECTION_ERROR);
+      const chunks: string[] = [];
+      for await (const text of response.textStream()) {
+        chunks.push(text);
+      }
+      expect(chunks.join("")).toBe("mock response");
+    });
+
+    it("exhausts the retry budget while opening streams", async () => {
+      vi.spyOn(Model.prototype, "stream")
+        .mockRejectedValueOnce(CONNECTION_ERROR)
+        .mockRejectedValueOnce(SERVER_ERROR);
+      const model = retryModel("mock/test-model", { maxRetries: 1 });
+
+      await expect(model.stream("Hello")).rejects.toThrow(RetriesExhausted);
+    });
+
     it("returns RetryStreamResponse", async () => {
       const model = retryModel("mock/test-model", { maxRetries: 3 });
 

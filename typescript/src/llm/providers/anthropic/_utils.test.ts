@@ -117,6 +117,18 @@ describe("buildRequestParams", () => {
   });
 
   describe("thinking config encoding", () => {
+    it("rejects a manual thinking budget at or above maxTokens", () => {
+      expect(() =>
+        buildRequestParams(
+          "anthropic/claude-haiku-4-5",
+          [user("Hello")],
+          undefined,
+          undefined,
+          { thinking: { level: "low" }, maxTokens: 1024 },
+        ),
+      ).toThrow(/must be less than max_tokens/);
+    });
+
     it("sets thinking disabled when level is none", () => {
       const messages = [user("Hello")];
 

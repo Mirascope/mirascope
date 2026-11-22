@@ -40,6 +40,9 @@ from ..tools import (
 from .params import Params
 
 MODEL_CONTEXT: ContextVar[Model | None] = ContextVar("MODEL_CONTEXT", default=None)
+_MODEL_CONTEXT_TOKENS: ContextVar[tuple[Token[Model | None], ...]] = ContextVar(
+    "_MODEL_CONTEXT_TOKENS", default=()
+)
 
 
 def model_from_context() -> Model | None:
@@ -108,7 +111,6 @@ class Model:
             )
         self.model_id = model_id
         self.params = params
-        self._token_stack: list[Token[Model | None]] = []
 
     @property
     def provider(self) -> Provider:
@@ -137,7 +139,7 @@ class Model:
     def __enter__(self) -> Model:
         """Enter the context manager, setting this model in context."""
         token = MODEL_CONTEXT.set(self)
-        self._token_stack.append(token)
+        _MODEL_CONTEXT_TOKENS.set((*_MODEL_CONTEXT_TOKENS.get(), token))
         return self
 
     def __exit__(
@@ -147,9 +149,10 @@ class Model:
         exc_tb: TracebackType | None,
     ) -> None:
         """Exit the context manager, resetting the model context."""
-        if self._token_stack:
-            token = self._token_stack.pop()
-            MODEL_CONTEXT.reset(token)
+        tokens = _MODEL_CONTEXT_TOKENS.get()
+        if tokens:
+            MODEL_CONTEXT.reset(tokens[-1])
+            _MODEL_CONTEXT_TOKENS.set(tokens[:-1])
 
     @overload
     def call(
