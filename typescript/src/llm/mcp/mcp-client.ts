@@ -142,10 +142,21 @@ export class MCPClient {
         const args = JSON.parse(toolCall.args) as Record<string, unknown>;
         const toolResult = await session.callTool(toolName, args);
 
-        // Convert ContentBlock objects to JSON-serializable format
-        // Matches Python's [content.model_dump() for content in tool_result.content]
+        // Preserve the content-block result shape when a server supplies only
+        // structured content, as the Python client does.
+        const content =
+          toolResult.content.length === 0 &&
+          !toolResult.isError &&
+          toolResult.structuredContent != null
+            ? [
+                {
+                  type: "text",
+                  text: JSON.stringify(toolResult.structuredContent),
+                },
+              ]
+            : toolResult.content;
         const serializedContent = serializeMCPContent(
-          toolResult.content,
+          content,
         ) as unknown as Jsonable;
 
         return ToolOutput.success(toolCall.id, toolName, serializedContent);

@@ -20,6 +20,7 @@ import { OllamaProvider } from "@/llm/providers/ollama";
 import {
   AtlasCloudProvider,
   CheaperInferenceProvider,
+  GroqProvider,
   MiniMaxProvider,
   RequestyProvider,
 } from "@/llm/providers/openai-compatible";
@@ -78,6 +79,7 @@ const DEFAULT_AUTO_REGISTER_SCOPES: Record<string, ProviderDefault[]> = {
     { providerId: "google", apiKeyEnvVar: "GOOGLE_API_KEY" },
     { providerId: "mirascope", apiKeyEnvVar: "MIRASCOPE_API_KEY" },
   ],
+  "groq/": [{ providerId: "groq", apiKeyEnvVar: "GROQ_API_KEY" }],
   "mirascope/": [
     { providerId: "mirascope", apiKeyEnvVar: "MIRASCOPE_API_KEY" },
   ],
@@ -151,6 +153,9 @@ export function getProviderSingleton(
         apiKey: options?.apiKey,
         baseURL: options?.baseURL,
       });
+      break;
+    case "groq":
+      provider = new GroqProvider(options);
       break;
     case "mirascope":
       provider = new MirascopeProvider({

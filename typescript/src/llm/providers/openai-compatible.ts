@@ -83,6 +83,21 @@ export class CheaperInferenceProvider extends CompatibleProvider {
   }
 }
 
+/** Groq's OpenAI-compatible API. */
+export class GroqProvider extends CompatibleProvider {
+  readonly id = "groq" as const;
+
+  constructor(init: ProviderInit = {}) {
+    super("groq", "GROQ_API_KEY", "https://api.groq.com/openai/v1", init);
+  }
+
+  protected override modelFeatureInfo(
+    _modelId: string,
+  ): CompletionsModelFeatureInfo {
+    return EMPTY_FEATURE_INFO;
+  }
+}
+
 /** MiniMax's OpenAI-compatible API. */
 export class MiniMaxProvider extends CompatibleProvider {
   readonly id = "minimax" as const;

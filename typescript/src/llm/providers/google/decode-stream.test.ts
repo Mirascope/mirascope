@@ -13,6 +13,19 @@ import {
 import { FinishReason } from "@/llm/responses/finish-reason";
 
 describe("Google stream metadata without content", () => {
+  it("marks blocked prompts without candidates as refusals", () => {
+    const chunks = decodeStreamEvent(
+      Object.assign(new GenerateContentResponse(), {
+        promptFeedback: { blockReason: "PROHIBITED_CONTENT" },
+      }),
+      createDecodeState(false),
+    );
+    expect(chunks).toContainEqual({
+      type: "finish_reason_chunk",
+      finishReason: FinishReason.REFUSAL,
+    });
+  });
+
   it.each([
     GoogleFinishReason.IMAGE_SAFETY,
     GoogleFinishReason.IMAGE_PROHIBITED_CONTENT,

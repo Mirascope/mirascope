@@ -3,7 +3,7 @@ import json
 from typing import cast
 
 import pytest
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from mirascope.llm.responses._utils import extract_serialized_json, parse_partial_json
 
@@ -251,3 +251,12 @@ def test_parse_partial_json_with_optional_list_of_models() -> None:
     shelf = cast(Shelf, result)
     assert shelf.books is not None
     assert shelf.books[0].title == "The Name"
+
+
+def test_parse_partial_json_with_aliased_field() -> None:
+    class Book(BaseModel):
+        title: str
+        author_name: str = Field(alias="authorName")
+
+    result = parse_partial_json('{"title": "Dune", "authorName": "Frank', Book)
+    assert cast(Book, result).model_dump() == {"title": "Dune", "author_name": "Frank"}

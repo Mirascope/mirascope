@@ -1,4 +1,5 @@
 import contextlib
+import json
 from collections.abc import AsyncIterator
 from datetime import timedelta
 from typing import cast
@@ -9,7 +10,12 @@ from mcp.client.stdio import StdioServerParameters, stdio_client as mcp_stdio_cl
 from mcp.client.streamable_http import (
     streamable_http_client as mcp_streamable_http_client,
 )
-from mcp.types import CallToolResult, PaginatedRequestParams, Tool as MCPTool
+from mcp.types import (
+    CallToolResult,
+    PaginatedRequestParams,
+    TextContent,
+    Tool as MCPTool,
+)
 
 from ..tools import AsyncTool
 from ..tools.tool_schema import ToolParameterSchema
@@ -60,11 +66,19 @@ class MCPClient:
             tool_result: CallToolResult = await self._session.call_tool(
                 mcp_tool.name, kwargs
             )
-            # Convert ContentBlock objects to JSON-serializable dicts
+            content = tool_result.content
+            if (
+                not content
+                and not tool_result.isError
+                and tool_result.structuredContent is not None
+            ):
+                content = [
+                    TextContent(
+                        type="text", text=json.dumps(tool_result.structuredContent)
+                    )
+                ]
             # Cast to Jsonable since model_dump() returns dict[str, Any]
-            return cast(
-                Jsonable, [content.model_dump() for content in tool_result.content]
-            )
+            return cast(Jsonable, [block.model_dump() for block in content])
 
         # Create the AsyncTool instance
         return AsyncTool(

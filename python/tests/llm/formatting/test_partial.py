@@ -4,7 +4,8 @@ import threading
 from typing import Annotated, Any, ForwardRef, Literal, Union, cast
 
 import pytest
-from pydantic import BaseModel, Discriminator, Field, Tag
+from pydantic import BaseModel, ConfigDict, Discriminator, Field, Tag
+from pydantic.alias_generators import to_camel
 
 from mirascope import llm
 from mirascope.llm.formatting import Partial
@@ -623,3 +624,26 @@ def test_partial_keeps_literal_members_that_look_like_names() -> None:
     )
     for dtype in ("int", "str", "None", "_Circle"):
         assert partial.model_validate({"dtype": dtype}).dtype == dtype
+
+
+def test_partial_keeps_field_aliases() -> None:
+    class Author(BaseModel):
+        model_config = ConfigDict(alias_generator=to_camel)
+
+        first_name: str
+        birth_year: int
+
+    class Book(BaseModel):
+        title: str = Field(alias="bookTitle", serialization_alias="serializedTitle")
+        author: Author
+
+    PartialBook = cast(type[Book], llm.Partial[Book])
+    partial = PartialBook.model_validate(
+        {"bookTitle": "The Name of the Wind", "author": {"firstName": "Patrick"}}
+    )
+    assert partial.title == "The Name of the Wind"
+    assert partial.author.first_name == "Patrick"
+    assert partial.author.birth_year is None
+    assert (
+        partial.model_dump(by_alias=True)["serializedTitle"] == "The Name of the Wind"
+    )

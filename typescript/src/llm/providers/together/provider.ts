@@ -38,6 +38,10 @@ export interface TogetherProviderInit {
 export class TogetherProvider extends BaseOpenAICompletionsProvider {
   readonly id = "together" as const;
 
+  protected override modelName(modelId: string): string {
+    return modelId.startsWith("together/") ? modelId.slice(9) : modelId;
+  }
+
   /**
    * Create a new Together AI provider instance.
    *

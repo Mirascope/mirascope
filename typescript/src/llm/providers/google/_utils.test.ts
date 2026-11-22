@@ -48,6 +48,22 @@ it.each([
   ).toBe(FinishReason.REFUSAL);
 });
 
+it("marks a blocked prompt without candidates as a refusal", () => {
+  const response = Object.assign(new GenerateContentResponse(), {
+    promptFeedback: { blockReason: "PROHIBITED_CONTENT" },
+  });
+  expect(
+    decodeResponse(response, "google/gemini-3.8-flash", false).finishReason,
+  ).toBe(FinishReason.REFUSAL);
+});
+
+it("leaves the finish reason unset when there is no candidate or block", () => {
+  const response = new GenerateContentResponse();
+  expect(
+    decodeResponse(response, "google/gemini-3.8-flash", false).finishReason,
+  ).toBeNull();
+});
+
 describe("mapGoogleErrorByStatus", () => {
   it("maps 401 to AuthenticationError", () => {
     expect(mapGoogleErrorByStatus(401)).toBe(AuthenticationError);

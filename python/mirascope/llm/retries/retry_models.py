@@ -134,9 +134,6 @@ class RetryModel(Model):
         self._active_index = 0
         self.retry_config = retry_config
 
-        # Initialize _token_stack for context manager support
-        object.__setattr__(self, "_token_stack", [])
-
     @classmethod
     def _create_with_active(
         cls,
@@ -149,7 +146,6 @@ class RetryModel(Model):
         instance._models = models
         instance._active_index = active_index
         instance.retry_config = retry_config
-        object.__setattr__(instance, "_token_stack", [])
         return instance
 
     def get_active_model(self) -> Model:
@@ -833,11 +829,14 @@ class RetryModel(Model):
             )
 
         variants_iter = self.variants_async()
-        initial_variant = await anext(variants_iter)
-        initial_stream = await stream_fn(initial_variant.get_active_model())
-        return AsyncRetryStreamResponse(
+        initial_stream, failures, initial_variant = await with_retry_async(
+            stream_fn, self, variants_iter=variants_iter
+        )
+        response = AsyncRetryStreamResponse(
             stream_fn, initial_stream, initial_variant, variants_iter
         )
+        response.retry_failures = failures
+        return response
 
     # Resume stream methods
 
@@ -935,11 +934,14 @@ class RetryModel(Model):
             )
 
         variants_iter = self.variants_async()
-        initial_variant = await anext(variants_iter)
-        initial_stream = await stream_fn(initial_variant.get_active_model())
-        return AsyncRetryStreamResponse(
+        initial_stream, failures, initial_variant = await with_retry_async(
+            stream_fn, self, variants_iter=variants_iter
+        )
+        response = AsyncRetryStreamResponse(
             stream_fn, initial_stream, initial_variant, variants_iter
         )
+        response.retry_failures = failures
+        return response
 
     # Context stream methods
 
@@ -1087,11 +1089,14 @@ class RetryModel(Model):
             )
 
         variants_iter = self.variants_async()
-        initial_variant = await anext(variants_iter)
-        initial_stream = await stream_fn(initial_variant.get_active_model())
-        return AsyncContextRetryStreamResponse(
+        initial_stream, failures, initial_variant = await with_retry_async(
+            stream_fn, self, variants_iter=variants_iter
+        )
+        response = AsyncContextRetryStreamResponse(
             stream_fn, initial_stream, initial_variant, variants_iter
         )
+        response.retry_failures = failures
+        return response
 
     # Context resume stream methods
 
@@ -1227,11 +1232,14 @@ class RetryModel(Model):
             )
 
         variants_iter = self.variants_async()
-        initial_variant = await anext(variants_iter)
-        initial_stream = await stream_fn(initial_variant.get_active_model())
-        return AsyncContextRetryStreamResponse(
+        initial_stream, failures, initial_variant = await with_retry_async(
+            stream_fn, self, variants_iter=variants_iter
+        )
+        response = AsyncContextRetryStreamResponse(
             stream_fn, initial_stream, initial_variant, variants_iter
         )
+        response.retry_failures = failures
+        return response
 
 
 def retry_model(

@@ -27,7 +27,7 @@ from typing import (
     get_origin,
 )
 
-from pydantic import BaseModel, Discriminator, Tag, create_model
+from pydantic import BaseModel, Discriminator, Field, Tag, create_model
 from pydantic.fields import FieldInfo
 
 from .format import FormattableT
@@ -279,7 +279,15 @@ def _build_partial_model(wrapped_class: type[Any]) -> Any:  # noqa: ANN401
 
             # Make field optional with None default
             optional_type = Union[field_type, None]  # noqa: UP007
-            partial_fields[field_name] = (optional_type, None)
+            partial_fields[field_name] = (
+                optional_type,
+                Field(
+                    default=None,
+                    alias=field_info.alias,
+                    validation_alias=field_info.validation_alias,
+                    serialization_alias=field_info.serialization_alias,
+                ),
+            )
 
         # Create new model with "Partial" prefix
         partial_model = create_model(
