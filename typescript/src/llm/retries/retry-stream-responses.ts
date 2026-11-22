@@ -165,14 +165,26 @@ export class RetryStreamResponse<F = unknown> extends StreamResponse<F> {
       };
       this.retryFailures.push(failure);
 
-      // Try to get next variant (handles backoff and fallback)
-      const next = await this._variantsIter.next();
-      if (next.done) {
-        throw new RetriesExhausted(this.retryFailures);
+      while (true) {
+        // Opening a replacement stream can fail before it yields any chunks.
+        // Each such failure consumes another variant and its retry budget.
+        const next = await this._variantsIter.next();
+        if (next.done) {
+          throw new RetriesExhausted(this.retryFailures);
+        }
+        this._currentVariant = next.value;
+        try {
+          await this._resetStream(this._currentVariant);
+          break;
+        } catch (resetError) {
+          if (!(resetError instanceof Error)) throw resetError;
+          if (!isRetryableError(resetError, this.retryConfig)) throw resetError;
+          this.retryFailures.push({
+            model: this._currentVariant.getActiveModel(),
+            exception: resetError,
+          });
+        }
       }
-
-      this._currentVariant = next.value;
-      await this._resetStream(this._currentVariant);
 
       throw new StreamRestarted(failure);
     }
@@ -316,14 +328,24 @@ export class ContextRetryStreamResponse<
       };
       this.retryFailures.push(failure);
 
-      // Try to get next variant (handles backoff and fallback)
-      const next = await this._variantsIter.next();
-      if (next.done) {
-        throw new RetriesExhausted(this.retryFailures);
+      while (true) {
+        const next = await this._variantsIter.next();
+        if (next.done) {
+          throw new RetriesExhausted(this.retryFailures);
+        }
+        this._currentVariant = next.value;
+        try {
+          await this._resetStream(this._currentVariant);
+          break;
+        } catch (resetError) {
+          if (!(resetError instanceof Error)) throw resetError;
+          if (!isRetryableError(resetError, this.retryConfig)) throw resetError;
+          this.retryFailures.push({
+            model: this._currentVariant.getActiveModel(),
+            exception: resetError,
+          });
+        }
       }
-
-      this._currentVariant = next.value;
-      await this._resetStream(this._currentVariant);
 
       throw new StreamRestarted(failure);
     }
