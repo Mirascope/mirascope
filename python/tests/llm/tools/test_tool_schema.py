@@ -351,6 +351,62 @@ def test_multiple_annotated_fields_preserve_constraints() -> None:
     assert bounded.parameters.properties["value"]["maximum"] == 5
 
 
+def test_underscore_parameters_preserve_names_and_constraints() -> None:
+    @llm.tool
+    def lookup(
+        _id: Annotated[int, Field(ge=1, description="Record ID")],
+        param_id: str,
+        _limit: int = 5,
+        _param_id: int = 2,
+    ) -> dict[str, int | str]:
+        return {"id": _id, "label": param_id, "limit": _limit, "other": _param_id}
+
+    assert set(lookup.parameters.properties) == {
+        "_id",
+        "param_id",
+        "_limit",
+        "_param_id",
+    }
+    assert lookup.parameters.required == ["_id", "param_id"]
+    assert lookup.parameters.properties["_id"]["minimum"] == 1
+    assert lookup.parameters.properties["_id"]["description"] == "Record ID"
+    assert lookup.parameters.properties["_limit"]["default"] == 5
+
+    for args, expected_limit in [
+        ('{"_id": "12", "param_id": "record"}', 5),
+        ('{"_id": "12", "param_id": "record", "_limit": "7"}', 7),
+    ]:
+        output = lookup.execute(llm.ToolCall(id="lookup", name=lookup.name, args=args))
+        assert output.error is None
+        assert output.result == {
+            "id": 12,
+            "label": "record",
+            "limit": expected_limit,
+            "other": 2,
+        }
+
+    output = lookup.execute(
+        llm.ToolCall(
+            id="lookup", name=lookup.name, args='{"_id": 0, "param_id": "record"}'
+        )
+    )
+    assert isinstance(output.error, llm.ToolExecutionError)
+
+
+def test_plain_required_underscore_parameter_is_in_schema() -> None:
+    @llm.tool
+    def lookup(_id: int) -> int:
+        return _id
+
+    assert lookup.parameters.properties["_id"]["type"] == "integer"
+    assert lookup.parameters.required == ["_id"]
+    output = lookup.execute(
+        llm.ToolCall(id="lookup", name=lookup.name, args='{"_id": "12"}')
+    )
+    assert output.error is None
+    assert output.result == 12
+
+
 def test_non_field_annotation_keeps_docstring_description() -> None:
     @llm.tool
     def described(value: Annotated[int, "metadata"]) -> int:

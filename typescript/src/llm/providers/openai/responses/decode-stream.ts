@@ -27,6 +27,7 @@ import {
   toolCallEnd,
 } from "@/llm/content";
 import { APIError } from "@/llm/exceptions";
+import { cacheWriteTokens } from "@/llm/providers/openai/_utils/cache-write";
 import { serializeOutputItem } from "@/llm/providers/openai/responses/_utils";
 import {
   finishReasonChunk,
@@ -286,6 +287,7 @@ function handleCompleted(
         cacheReadTokens:
           /* v8 ignore next 1 */
           response.usage.input_tokens_details?.cached_tokens ?? 0,
+        cacheWriteTokens: cacheWriteTokens(response.usage.input_tokens_details),
         reasoningTokens:
           /* v8 ignore next 1 */
           response.usage.output_tokens_details?.reasoning_tokens ?? 0,

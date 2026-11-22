@@ -640,7 +640,11 @@ export function decodeResponse(
       serializedRawMessage as unknown as AssistantMessage["rawMessage"],
   };
 
-  const finishReason = decodeFinishReason(candidate?.finishReason);
+  const finishReason = candidate?.finishReason
+    ? decodeFinishReason(candidate.finishReason)
+    : response.promptFeedback?.blockReason
+      ? FinishReason.REFUSAL
+      : null;
   const usage = decodeUsage(response);
 
   return { assistantMessage, finishReason, usage };

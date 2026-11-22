@@ -404,6 +404,13 @@ class TestProviderStubs:
         # Should be importable without error
         assert AtlasCloudProvider is not None
 
+    def test_groq_provider_is_importable(self) -> None:
+        """Test that GroqProvider can be imported (will be real or stub)."""
+        from mirascope.llm.providers import GroqProvider
+
+        # Should be importable without error
+        assert GroqProvider is not None
+
     def test_cheaperinference_provider_is_importable(self) -> None:
         """Test that CheaperInferenceProvider can be imported (will be real or stub)."""
         from mirascope.llm.providers import CheaperInferenceProvider

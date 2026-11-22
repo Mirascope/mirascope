@@ -21,6 +21,30 @@ async function collect(list: unknown[]) {
 }
 
 describe("OpenAI Responses decodeStream", () => {
+  it("reports cache-write tokens from completed stream usage", async () => {
+    const chunks = await collect([
+      {
+        type: "response.completed",
+        response: {
+          id: "resp_cache",
+          status: "completed",
+          output: [],
+          usage: {
+            input_tokens: 100,
+            output_tokens: 5,
+            input_tokens_details: { cached_tokens: 20, cache_write_tokens: 30 },
+          },
+        },
+      },
+    ]);
+    expect(chunks).toContainEqual(
+      expect.objectContaining({
+        type: "usage_delta_chunk",
+        cacheWriteTokens: 30,
+      }),
+    );
+  });
+
   it("raises when the stream reports response.failed", async () => {
     const stream = collect([
       { type: "response.created", response: { id: "resp_1", output: [] } },

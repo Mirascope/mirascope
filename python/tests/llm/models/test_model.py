@@ -1,5 +1,7 @@
 """Tests for the Model class."""
 
+import asyncio
+
 import pytest
 
 from mirascope import llm
@@ -87,6 +89,42 @@ def test_nested_context_manager_with_same_instance() -> None:
         )
 
     assert llm.model_from_context() is None
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("use_retry_model", [False, True])
+async def test_model_context_supports_child_task_entering_same_instance(
+    use_retry_model: bool,
+) -> None:
+    """A child task may enter the same model while the parent still holds it."""
+    parent = llm.Model("openai/gpt-4o-mini")
+    shared: llm.Model = llm.Model("openai/gpt-4o")
+    if use_retry_model:
+        shared = llm.RetryModel(shared, retry_config=llm.RetryConfig())
+
+    entered = asyncio.Event()
+    release = asyncio.Event()
+
+    async def child_scope() -> None:
+        with shared:
+            entered.set()
+            await release.wait()
+        # The child inherited `shared` from the parent when the task started.
+        assert llm.model_from_context() is shared
+
+    child: asyncio.Task[None] | None = None
+    try:
+        with parent:
+            with shared:
+                child = asyncio.create_task(child_scope())
+                await asyncio.wait_for(entered.wait(), timeout=5)
+            assert llm.model_from_context() is parent
+
+        assert llm.model_from_context() is None
+    finally:
+        release.set()
+        if child is not None:
+            await child
 
 
 def test_provider_resolution_is_dynamic() -> None:
