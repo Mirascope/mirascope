@@ -93,6 +93,46 @@ describe("RetryModel stream", () => {
   });
 
   describe("stream retry on error", () => {
+    it("retries a failure opening a replacement stream", async () => {
+      mockProvider.setStreamExceptions([CONNECTION_ERROR]);
+      const response = await retryModel("mock/test-model", {
+        maxRetries: 2,
+      }).stream("Hello");
+      vi.spyOn(Model.prototype, "stream").mockRejectedValueOnce(SERVER_ERROR);
+
+      await expect(response.consume()).rejects.toThrow(StreamRestarted);
+      expect(
+        response.retryFailures.map((failure) => failure.exception),
+      ).toEqual([CONNECTION_ERROR, SERVER_ERROR]);
+      const text: string[] = [];
+      for await (const chunk of response.textStream()) text.push(chunk);
+      expect(text.join("")).toBe("mock response");
+    });
+
+    it("counts replacement stream creation failures toward exhaustion", async () => {
+      mockProvider.setStreamExceptions([CONNECTION_ERROR]);
+      const response = await retryModel("mock/test-model", {
+        maxRetries: 1,
+      }).stream("Hello");
+      vi.spyOn(Model.prototype, "stream").mockRejectedValueOnce(SERVER_ERROR);
+
+      await expect(response.consume()).rejects.toThrow(RetriesExhausted);
+      expect(
+        response.retryFailures.map((failure) => failure.exception),
+      ).toEqual([CONNECTION_ERROR, SERVER_ERROR]);
+    });
+
+    it("propagates non-retryable replacement stream errors", async () => {
+      mockProvider.setStreamExceptions([CONNECTION_ERROR]);
+      const response = await retryModel("mock/test-model", {
+        maxRetries: 2,
+      }).stream("Hello");
+      const error = new Error("replacement failed");
+      vi.spyOn(Model.prototype, "stream").mockRejectedValueOnce(error);
+
+      await expect(response.consume()).rejects.toBe(error);
+    });
+
     it("raises StreamRestarted on retryable error", async () => {
       mockProvider.setStreamExceptions([CONNECTION_ERROR]);
       const model = retryModel("mock/test-model", { maxRetries: 3 });
@@ -276,6 +316,25 @@ describe("RetryModel contextStream", () => {
         // Should throw
       }
     }).rejects.toThrow(StreamRestarted);
+  });
+
+  it("retries a failure opening a replacement context stream", async () => {
+    mockProvider.setStreamExceptions([SERVER_ERROR]);
+    const response = await retryModel("mock/test-model", {
+      maxRetries: 2,
+    }).contextStream(createContext({}), "Hello");
+    vi.spyOn(Model.prototype, "contextStream").mockRejectedValueOnce(
+      CONNECTION_ERROR,
+    );
+
+    await expect(response.consume()).rejects.toThrow(StreamRestarted);
+    expect(response.retryFailures.map((failure) => failure.exception)).toEqual([
+      SERVER_ERROR,
+      CONNECTION_ERROR,
+    ]);
+    const text: string[] = [];
+    for await (const chunk of response.textStream()) text.push(chunk);
+    expect(text.join("")).toBe("mock response");
   });
 
   it("can continue after catching StreamRestarted", async () => {
