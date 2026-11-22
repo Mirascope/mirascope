@@ -162,6 +162,24 @@ describe("StreamResponse", () => {
   });
 
   describe("chunkStream replay", () => {
+    it("catches up to chunks produced by an interleaved iterator", async () => {
+      const response = createTestStreamResponse([
+        { type: "text_start_chunk", contentType: "text" },
+        { type: "text_chunk", contentType: "text", delta: "first" },
+        { type: "text_chunk", contentType: "text", delta: "second" },
+        { type: "text_end_chunk", contentType: "text" },
+      ]);
+      const first = response.textStream();
+      const second = response.textStream();
+
+      expect((await first.next()).value).toBe("first");
+      expect((await second.next()).value).toBe("first");
+      expect((await second.next()).value).toBe("second");
+      expect((await first.next()).value).toBe("second");
+      expect((await first.next()).done).toBe(true);
+      expect((await second.next()).done).toBe(true);
+    });
+
     it("replays cached chunks on second iteration", async () => {
       const chunks: StreamResponseChunk[] = [
         { type: "text_start_chunk", contentType: "text" },
