@@ -230,29 +230,23 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
    * All chunks are cached so subsequent calls can replay from the beginning.
    */
   async *chunkStream(): AsyncGenerator<AssistantContentChunk> {
-    // First, yield all cached chunks (replay mechanism)
-    for (const chunk of this._chunks) {
-      yield chunk;
-    }
-
-    // If stream is already fully consumed, stop
-    if (this._consumed) {
-      return;
-    }
-
-    // Consume fresh chunks from the iterator
-    let result = await this._chunkIterator.next();
-    while (!result.done) {
-      const chunk = result.value;
-      const contentChunk = this._processChunk(chunk);
-      if (contentChunk) {
-        yield contentChunk;
+    let cursor = 0;
+    while (true) {
+      // Another iterator may have advanced the underlying stream while this
+      // one was suspended at a yield. Replay those chunks before reading more.
+      if (cursor < this._chunks.length) {
+        yield this._chunks[cursor++]!;
+        continue;
       }
-      result = await this._chunkIterator.next();
-    }
+      if (this._consumed) return;
 
-    // Mark stream as fully consumed
-    this._consumed = true;
+      const result = await this._chunkIterator.next();
+      if (result.done) {
+        this._consumed = true;
+        return;
+      }
+      this._processChunk(result.value);
+    }
   }
 
   /**
