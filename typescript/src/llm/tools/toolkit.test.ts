@@ -48,6 +48,15 @@ describe("Toolkit", () => {
     expect(toolkit.toolMap.has("search_web")).toBe(true);
   });
 
+  it("snapshots the supplied tools before building its lookup map", () => {
+    const tools: Array<typeof getWeather | typeof searchWeb> = [getWeather];
+    const toolkit = new Toolkit(tools);
+    tools.push(searchWeb);
+
+    expect(toolkit.tools).toEqual([getWeather]);
+    expect(toolkit.toolMap.has("search_web")).toBe(false);
+  });
+
   it("returns tools array", () => {
     const toolkit = new Toolkit([getWeather, searchWeb]);
 
@@ -133,6 +142,15 @@ describe("ContextToolkit", () => {
     expect(toolkit.tools).toHaveLength(2);
     expect(toolkit.toolMap.has("search_db")).toBe(true);
     expect(toolkit.toolMap.has("fetch_url")).toBe(true);
+  });
+
+  it("snapshots the supplied context tools before building its lookup map", () => {
+    const tools: Array<typeof searchDb | typeof fetchUrl> = [searchDb];
+    const toolkit = new ContextToolkit<TestDeps>(tools);
+    tools.push(fetchUrl);
+
+    expect(toolkit.tools).toEqual([searchDb]);
+    expect(toolkit.toolMap.has("fetch_url")).toBe(false);
   });
 
   it("returns schemas array", () => {

@@ -111,7 +111,7 @@ export class Toolkit implements BaseToolkit<BaseTool> {
   constructor(tools: readonly (BaseTool | ProviderTool)[] | null | undefined) {
     this.toolMap = new Map();
     this.providerToolMap = new Map();
-    this._tools = tools ?? [];
+    this._tools = tools ? [...tools] : [];
 
     for (const tool of this._tools) {
       if (isProviderTool(tool)) {
@@ -229,7 +229,7 @@ export class ContextToolkit<DepsT = unknown> implements BaseToolkit<
   ) {
     this.toolMap = new Map();
     this.providerToolMap = new Map();
-    this._tools = tools ?? [];
+    this._tools = tools ? [...tools] : [];
 
     for (const tool of this._tools) {
       if (isProviderTool(tool)) {
