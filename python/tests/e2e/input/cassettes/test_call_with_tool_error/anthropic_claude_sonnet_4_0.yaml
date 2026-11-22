@@ -112,7 +112,7 @@ interactions:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Use the test
       tool to retrieve the secret phrase. The passphrase is ''portal"},{"role":"assistant","content":[{"citations":null,"text":"I''ll
       use the test tool with the passphrase you provided.","type":"text"},{"id":"toolu_01BKo1nKttK3Fg41xBQ1qBiX","input":{"passphrase":"portal"},"name":"passphrase_test_tool","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01BKo1nKttK3Fg41xBQ1qBiX","content":"Incorrect
-      passhrase: The correct passphrase is ''cake''. Try again.","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","tools":[{"name":"passphrase_test_tool","description":"A
+      passhrase: The correct passphrase is ''cake''. Try again.","cache_control":{"type":"ephemeral"},"is_error":true}]}],"model":"claude-sonnet-4-0","tools":[{"name":"passphrase_test_tool","description":"A
       tool that must be called with a passphrase.","input_schema":{"properties":{"passphrase":{"title":"Passphrase","type":"string"}},"required":["passphrase"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
@@ -223,7 +223,7 @@ interactions:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Use the test
       tool to retrieve the secret phrase. The passphrase is ''portal"},{"role":"assistant","content":[{"citations":null,"text":"I''ll
       use the test tool with the passphrase you provided.","type":"text"},{"id":"toolu_01BKo1nKttK3Fg41xBQ1qBiX","input":{"passphrase":"portal"},"name":"passphrase_test_tool","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01BKo1nKttK3Fg41xBQ1qBiX","content":"Incorrect
-      passhrase: The correct passphrase is ''cake''. Try again.","cache_control":null}]},{"role":"assistant","content":[{"citations":null,"text":"The
+      passhrase: The correct passphrase is ''cake''. Try again.","cache_control":null,"is_error":true}]},{"role":"assistant","content":[{"citations":null,"text":"The
       passphrase ''portal'' was incorrect. The tool indicates that the correct passphrase
       is ''cake''. Let me try again with the correct passphrase:","type":"text"},{"id":"toolu_0135hLPfnXk1XhtLSdxAuHnF","input":{"passphrase":"cake"},"name":"passphrase_test_tool","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_0135hLPfnXk1XhtLSdxAuHnF","content":"The
       cake is a lie.","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","tools":[{"name":"passphrase_test_tool","description":"A

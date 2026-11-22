@@ -7,7 +7,7 @@
 
 import type { Response as OpenAIResponse } from "openai/resources/responses/responses";
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 import type { AssistantMessage } from "@/llm/messages";
 
@@ -153,6 +153,43 @@ describe("audio encoding", () => {
   });
 });
 
+describe("buildRequestParams sampling params", () => {
+  it("omits temperature and topP for reasoning models and warns", () => {
+    const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const params = buildRequestParams(
+      "openai/o4-mini:responses",
+      [user("Hello")],
+      undefined,
+      undefined,
+      { temperature: 0.7, topP: 0.9, maxTokens: 100 },
+    );
+
+    expect(params.temperature).toBeUndefined();
+    expect(params.top_p).toBeUndefined();
+    expect(params.max_output_tokens).toBe(100);
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("temperature"),
+    );
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("topP"));
+
+    consoleSpy.mockRestore();
+  });
+
+  it("keeps temperature and topP for non-reasoning models", () => {
+    const params = buildRequestParams(
+      "openai/gpt-4o:responses",
+      [user("Hello")],
+      undefined,
+      undefined,
+      { temperature: 0.7, topP: 0.9 },
+    );
+
+    expect(params.temperature).toBe(0.7);
+    expect(params.top_p).toBe(0.9);
+  });
+});
+
 describe("document encoding", () => {
   it("encodes base64 document source as input_file", () => {
     const doc: Document = {
@@ -266,6 +303,23 @@ describe("raw message round-tripping", () => {
       total_tokens: 15,
     },
   } as unknown as OpenAIResponse;
+
+  it("reports cache-write tokens when the SDK provides them", () => {
+    const response = {
+      ...mockOpenAIResponse,
+      usage: {
+        input_tokens: 100,
+        output_tokens: 5,
+        total_tokens: 105,
+        input_tokens_details: { cached_tokens: 20, cache_write_tokens: 30 },
+        output_tokens_details: { reasoning_tokens: 0 },
+      },
+    } as OpenAIResponse;
+    expect(
+      decodeResponse(response, "openai/gpt-4o:responses").usage
+        ?.cacheWriteTokens,
+    ).toBe(30);
+  });
 
   it("decodeResponse stores serialized output items in rawMessage", () => {
     const { assistantMessage } = decodeResponse(

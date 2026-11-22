@@ -35,6 +35,12 @@ OPENAI_FINISH_REASON_MAP = {
 }
 
 
+def _cache_write_tokens(details: object | None) -> int:
+    """Read `cache_write_tokens` from the usage details, 0 if the SDK doesn't report it."""
+    value = getattr(details, "cache_write_tokens", None)
+    return value if isinstance(value, int) else 0
+
+
 def _decode_usage(
     usage: CompletionUsage | None,
 ) -> Usage | None:
@@ -51,7 +57,7 @@ def _decode_usage(
             else None
         )
         or 0,
-        cache_write_tokens=0,
+        cache_write_tokens=_cache_write_tokens(usage.prompt_tokens_details),
         reasoning_tokens=(
             usage.completion_tokens_details.reasoning_tokens
             if usage.completion_tokens_details
@@ -172,7 +178,7 @@ class _OpenAIChunkProcessor:
                     else None
                 )
                 or 0,
-                cache_write_tokens=0,
+                cache_write_tokens=_cache_write_tokens(usage.prompt_tokens_details),
                 reasoning_tokens=(
                     usage.completion_tokens_details.reasoning_tokens
                     if usage.completion_tokens_details
@@ -191,6 +197,14 @@ class _OpenAIChunkProcessor:
         if delta.refusal:
             self.refusal_encountered = True
         if content is not None:
+            if self.current_content_type == "tool_call":
+                # OpenAI-compatible servers (e.g. vLLM, SGLang) can stream text after
+                # a tool call. Finish the open calls so the text starts its own part.
+                for tool_id, _tool_name in self.current_tools.values():
+                    yield ToolCallEndChunk(id=tool_id)
+                self.current_tools.clear()
+                self.index_slots.clear()
+                self.current_content_type = None
             if self.current_content_type is None:
                 yield TextStartChunk()
                 self.current_content_type = "text"

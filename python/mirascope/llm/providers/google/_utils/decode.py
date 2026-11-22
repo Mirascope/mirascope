@@ -144,6 +144,11 @@ def _decode_content_part(part: genai_types.Part) -> AssistantContentPart | None:
         return None
 
 
+def _is_prompt_blocked(response: genai_types.GenerateContentResponse) -> bool:
+    """Whether Gemini rejected the prompt itself (no candidate is generated)."""
+    return bool(response.prompt_feedback and response.prompt_feedback.block_reason)
+
+
 def _decode_candidate_content(
     candidate: genai_types.Candidate,
 ) -> Sequence[AssistantContentPart]:
@@ -175,6 +180,8 @@ def decode_response(
         candidate_content = candidate.content
         if candidate.finish_reason:
             finish_reason = GOOGLE_FINISH_REASON_MAP.get(candidate.finish_reason)
+    elif _is_prompt_blocked(response):
+        finish_reason = FinishReason.REFUSAL
 
     candidate_content = candidate_content or genai_types.Content()
 
@@ -301,6 +308,9 @@ class _GoogleChunkProcessor:
             finish_reason = GOOGLE_FINISH_REASON_MAP.get(candidate.finish_reason)
             if finish_reason is not None:
                 yield FinishReasonChunk(finish_reason=finish_reason)
+
+        elif not candidate and _is_prompt_blocked(chunk):
+            yield FinishReasonChunk(finish_reason=FinishReason.REFUSAL)
 
         # Emit usage delta if usage metadata is present
         if chunk.usage_metadata:
