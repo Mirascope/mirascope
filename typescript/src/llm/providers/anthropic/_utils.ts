@@ -730,6 +730,14 @@ export function buildRequestParams(
             ],
         };
       } else if (budget > 0) {
+        if (budget >= maxTokens) {
+          throw new FeatureNotSupportedError(
+            "thinking budget",
+            "anthropic",
+            modelId,
+            `Anthropic thinking budget of ${budget} tokens must be less than max_tokens of ${maxTokens} tokens.`,
+          );
+        }
         requestParams.thinking = { type: "enabled", budget_tokens: budget };
       }
       // If budget === -1, don't set thinking (use provider default)

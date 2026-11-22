@@ -144,7 +144,13 @@ def _resolve_refs(
             if ref_path.startswith("#/$defs/"):
                 ref_name = ref_path.split("/")[-1]
                 if defs and ref_name in defs:
-                    return _resolve_refs(defs[ref_name], defs)
+                    # Keep keywords next to `$ref` (e.g. a field's description);
+                    # they take precedence over those of the referenced schema.
+                    siblings = {k: v for k, v in schema.items() if k != "$ref"}
+                    return {
+                        **_resolve_refs(defs[ref_name], defs),
+                        **_resolve_refs(siblings, defs),
+                    }
             return schema  # pragma: no cover
         else:
             return {k: _resolve_refs(v, defs) for k, v in schema.items()}
@@ -173,7 +179,7 @@ def _encode_document(doc: Document) -> genai_types.PartDict:
     elif source.type == "text_document_source":
         return genai_types.PartDict(
             inline_data=genai_types.BlobDict(
-                data=base64.b64encode(source.data.encode("utf-8")),
+                data=source.data.encode("utf-8"),
                 mime_type=source.media_type,
             )
         )

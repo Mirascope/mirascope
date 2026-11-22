@@ -17,7 +17,7 @@ from ..responses import (
     ContextStreamResponse,
     StreamResponse,
 )
-from .utils import RetryFailure, get_retry_model_from_context
+from .utils import RetryFailure, get_retry_model_from_context, with_retry
 
 if TYPE_CHECKING:
     from .retry_config import RetryConfig
@@ -75,12 +75,12 @@ class RetryStreamResponse(StreamResponse[FormattableT]):
             stream_fn: Function that creates a stream from a Model.
         """
         self._variants_iter = retry_model.variants()
-        self._current_variant = next(self._variants_iter)
         self._stream_fn = stream_fn
-        self.retry_failures = []
 
-        # Create the initial stream and copy all attributes
-        initial_stream = stream_fn(self._current_variant.get_active_model())
+        # Creation and iteration consume the same retry budget.
+        initial_stream, self.retry_failures, self._current_variant = with_retry(
+            stream_fn, retry_model, variants_iter=self._variants_iter
+        )
         for key, value in initial_stream.__dict__.items():
             object.__setattr__(self, key, value)
 
@@ -341,12 +341,12 @@ class ContextRetryStreamResponse(
             stream_fn: Function that creates a stream from a Model.
         """
         self._variants_iter = retry_model.variants()
-        self._current_variant = next(self._variants_iter)
         self._stream_fn = stream_fn
-        self.retry_failures = []
 
-        # Create the initial stream and copy all attributes
-        initial_stream = stream_fn(self._current_variant.get_active_model())
+        # Creation and iteration consume the same retry budget.
+        initial_stream, self.retry_failures, self._current_variant = with_retry(
+            stream_fn, retry_model, variants_iter=self._variants_iter
+        )
         for key, value in initial_stream.__dict__.items():
             object.__setattr__(self, key, value)
 

@@ -527,6 +527,31 @@ def test_adaptive_thinking_level_controls_effort(
     assert kwargs.get("output_config") == {"effort": effort}
 
 
+def test_default_thinking_level_leaves_thinking_unset_on_adaptive_model() -> None:
+    """`default` means do not touch thinking, even on adaptive-only models."""
+    params: llm.Params = {"thinking": {"level": "default"}}
+
+    _, _, kwargs = encode_request(
+        model_id="anthropic/claude-opus-4-7",
+        messages=[llm.messages.user("Hello")],
+        format=None,
+        tools=Toolkit(None),
+        params=params,
+    )
+    assert "thinking" not in kwargs
+    assert "output_config" not in kwargs
+
+    _, _, beta_kwargs = beta_encode_request(
+        model_id="anthropic/claude-opus-4-7",
+        messages=[llm.messages.user("Hello")],
+        format=None,
+        tools=Toolkit(None),
+        params=params,
+    )
+    assert "thinking" not in beta_kwargs
+    assert "output_config" not in beta_kwargs
+
+
 @pytest.mark.parametrize(
     "model_id",
     [
@@ -584,6 +609,73 @@ def test_thinking_level_keeps_budget_tokens_on_models_that_accept_it(
     assert "output_config" not in kwargs
 
 
+@pytest.mark.parametrize(
+    ("max_tokens", "level"),
+    [
+        (500, "low"),
+        (1024, "low"),
+        (500, "minimal"),
+        (1024, "max"),
+    ],
+)
+def test_thinking_budget_at_or_above_max_tokens_raises(
+    max_tokens: int, level: llm.ThinkingLevel
+) -> None:
+    """A thinking budget must be less than max_tokens, and 1024 is the minimum.
+
+    The budget is clamped up to 1024 tokens, so with max_tokens <= 1024 the
+    request would carry a budget the API rejects. Fail fast instead.
+    """
+    with pytest.raises(
+        llm.FeatureNotSupportedError, match="must be less than max_tokens"
+    ):
+        encode_request(
+            model_id="anthropic/claude-sonnet-4-5",
+            messages=[llm.messages.user("Hello")],
+            format=None,
+            tools=Toolkit(None),
+            params={"thinking": {"level": level}, "max_tokens": max_tokens},
+        )
+
+
+def test_thinking_budget_just_below_max_tokens_is_kept() -> None:
+    """A budget of 1024 with max_tokens of 1025 is valid and still sent."""
+    _, _, kwargs = encode_request(
+        model_id="anthropic/claude-sonnet-4-5",
+        messages=[llm.messages.user("Hello")],
+        format=None,
+        tools=Toolkit(None),
+        params={"thinking": {"level": "low"}, "max_tokens": 1025},
+    )
+    assert kwargs.get("thinking") == {"type": "enabled", "budget_tokens": 1024}
+
+
+def test_thinking_budget_check_does_not_apply_to_adaptive_models() -> None:
+    """Adaptive models never send a budget, so small max_tokens stays valid."""
+    _, _, kwargs = encode_request(
+        model_id="anthropic/claude-opus-4-7",
+        messages=[llm.messages.user("Hello")],
+        format=None,
+        tools=Toolkit(None),
+        params={"thinking": {"level": "medium"}, "max_tokens": 500},
+    )
+    assert kwargs.get("thinking") == {"type": "adaptive"}
+
+
+def test_thinking_budget_check_applies_to_beta_encoding() -> None:
+    """The beta path shares process_params, so it raises the same error."""
+    with pytest.raises(
+        llm.FeatureNotSupportedError, match="must be less than max_tokens"
+    ):
+        beta_encode_request(
+            model_id="anthropic/claude-sonnet-4-5",
+            messages=[llm.messages.user("Hello")],
+            format=None,
+            tools=Toolkit(None),
+            params={"thinking": {"level": "low"}, "max_tokens": 500},
+        )
+
+
 def test_cache_control_only_marks_the_last_tool_of_each_request() -> None:
     """A tool that was last in an earlier request must not keep its cache breakpoint."""
 
@@ -609,3 +701,56 @@ def test_cache_control_only_marks_the_last_tool_of_each_request() -> None:
         encoded_tools = cast(list[dict[str, Any]], kwargs.get("tools"))
         marked = [tool["name"] for tool in encoded_tools if "cache_control" in tool]
         assert marked == [tools[-1].name]
+
+
+@pytest.mark.parametrize("beta", [False, True])
+@pytest.mark.parametrize("add_cache_control", [False, True])
+@pytest.mark.parametrize("failure", ["execution", "missing", "success"])
+def test_encode_tool_result_error_status(
+    beta: bool, add_cache_control: bool, failure: str
+) -> None:
+    @llm.tool
+    def lookup() -> str:
+        if failure == "execution":
+            raise ValueError("not found")
+        return "not found"
+
+    name = "missing" if failure == "missing" else "lookup"
+    tool_call = llm.ToolCall(id="call_1", name=name, args="{}")
+    toolkit = llm.Toolkit([lookup])
+    output = toolkit.execute(tool_call)
+    content: list[llm.Message] = [llm.messages.user([output])]
+    if add_cache_control:
+        content.insert(
+            0,
+            llm.messages.assistant(
+                "Calling a tool",
+                model_id="anthropic/claude-haiku-4-5",
+                provider_id="anthropic",
+            ),
+        )
+    encoder = beta_encode_request if beta else encode_request
+    _, _, kwargs = encoder(
+        model_id="anthropic/claude-haiku-4-5",
+        messages=content,
+        format=None,
+        tools=Toolkit(None),
+        params={},
+    )
+    messages = kwargs.get("messages")
+    assert isinstance(messages, list)
+    blocks = messages[-1]["content"]
+    assert isinstance(blocks, list)
+    block = cast(dict[str, Any], blocks[0])
+    assert block["type"] == "tool_result"
+    assert block["tool_use_id"] == "call_1"
+    assert block["content"] == output.result
+    assert block["cache_control"] == (
+        {"type": "ephemeral"} if add_cache_control else None
+    )
+    if failure == "success":
+        assert output.error is None
+        assert "is_error" not in block
+    else:
+        assert output.error is not None
+        assert block["is_error"] is True

@@ -33,6 +33,12 @@ describe("Python-compatible HTTP providers", () => {
       "https://api.cheaperinference.com/v1",
       "deepseek-v4",
     ],
+    [
+      "groq",
+      "GROQ_API_KEY",
+      "https://api.groq.com/openai/v1",
+      "openai/gpt-oss-120b",
+    ],
     ["minimax", "MINIMAX_API_KEY", "https://api.minimax.io/v1", "MiniMax-M3"],
     [
       "requesty",
