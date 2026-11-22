@@ -298,6 +298,53 @@ describe("MCPClient", () => {
   });
 
   describe("tool execution", () => {
+    it.each([
+      [{ quantity: 0 }, '{"quantity":0}'],
+      [{}, "{}"],
+    ] as const)(
+      "serializes structured-only results as a text content block",
+      async (structuredContent, text) => {
+        const session = createMockSession(
+          [{ name: "lookup", inputSchema: {} }],
+          { content: [], structuredContent },
+        );
+        const [tool] = await new MCPClient(session).listTools();
+
+        const output = await tool!.execute(createToolCall("lookup", {}));
+
+        expect(output.error).toBeNull();
+        expect(output.result).toEqual(
+          serializeMCPContent([{ type: "text", text }]),
+        );
+      },
+    );
+
+    it("keeps supplied content blocks when structured content also exists", async () => {
+      const content = [{ type: "text", text: "already present" }];
+      const session = createMockSession([{ name: "lookup", inputSchema: {} }], {
+        content,
+        structuredContent: { quantity: 0 },
+      });
+      const [tool] = await new MCPClient(session).listTools();
+
+      const output = await tool!.execute(createToolCall("lookup", {}));
+
+      expect(output.result).toEqual(serializeMCPContent(content));
+    });
+
+    it("does not turn an empty error result into a success text block", async () => {
+      const session = createMockSession([{ name: "lookup", inputSchema: {} }], {
+        content: [],
+        structuredContent: { detail: "failed" },
+        isError: true,
+      });
+      const [tool] = await new MCPClient(session).listTools();
+
+      const output = await tool!.execute(createToolCall("lookup", {}));
+
+      expect(output.result).toEqual([]);
+    });
+
     it("executes tool and returns successful ToolOutput", async () => {
       const mcpTools: MCPTool[] = [
         {
