@@ -62,14 +62,16 @@ export function inferAudioType(data: Uint8Array): AudioMimeType {
     return "audio/wav";
   }
 
-  // MP3: starts with ID3 or 0xFF 0xFB (frame sync)
+  // MP3: ID3 tag or an MPEG-1, MPEG-2, or MPEG-2.5 Layer III frame
   if (
     (data[0] === 0x49 && data[1] === 0x44 && data[2] === 0x33) ||
     (data[0] === 0xff &&
       (data[1] === 0xfb ||
         data[1] === 0xfa ||
         data[1] === 0xf3 ||
-        data[1] === 0xf2))
+        data[1] === 0xf2 ||
+        data[1] === 0xe3 ||
+        data[1] === 0xe2))
   ) {
     return "audio/mp3";
   }
