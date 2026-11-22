@@ -178,6 +178,12 @@ describe("inferAudioType", () => {
     expect(inferAudioType(data)).toBe("audio/mp3");
   });
 
+  it.each([0xe3, 0xe2])("detects MPEG-2.5 Layer III frame (%i)", (header) => {
+    const data = new Uint8Array(12);
+    data.set([0xff, header, 0x90]);
+    expect(inferAudioType(data)).toBe("audio/mp3");
+  });
+
   it("detects AIFF", () => {
     const data = new Uint8Array([
       0x46, 0x4f, 0x52, 0x4d, 0x00, 0x00, 0x00, 0x00, 0x41, 0x49, 0x46, 0x46,
