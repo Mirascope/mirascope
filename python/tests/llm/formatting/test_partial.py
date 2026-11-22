@@ -242,7 +242,7 @@ def test_partial_keeps_field_aliases() -> None:
         birth_year: int
 
     class Book(BaseModel):
-        title: str = Field(alias="bookTitle")
+        title: str = Field(alias="bookTitle", serialization_alias="serializedTitle")
         author: Author
 
     PartialBook = cast(type[Book], llm.Partial[Book])
@@ -252,3 +252,6 @@ def test_partial_keeps_field_aliases() -> None:
     assert partial.title == "The Name of the Wind"
     assert partial.author.first_name == "Patrick"
     assert partial.author.birth_year is None
+    assert (
+        partial.model_dump(by_alias=True)["serializedTitle"] == "The Name of the Wind"
+    )

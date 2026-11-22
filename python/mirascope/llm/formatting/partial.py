@@ -129,6 +129,7 @@ class Partial(Generic[FormattableT]):
                     default=None,
                     alias=field_info.alias,
                     validation_alias=field_info.validation_alias,
+                    serialization_alias=field_info.serialization_alias,
                 ),
             )
 
