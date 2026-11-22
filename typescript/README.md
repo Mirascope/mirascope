@@ -561,7 +561,7 @@ await ops.forceFlush()
 
 ## Supported Providers
 
-- **Anthropic**: `anthropic/claude-sonnet-4-5`, `anthropic/claude-haiku-4-5`, etc.
+- **Anthropic**: `anthropic/claude-sonnet-5-5`, `anthropic/claude-haiku-4-5`, etc.
 - **OpenAI**: `openai/gpt-4o`, `openai/gpt-4o-mini`, etc.
 - **Google**: `google/gemini-2.0-flash`, `google/gemini-2.5-pro`, etc.
 - **Groq**: `groq/openai/gpt-oss-120b`, etc. Set `GROQ_API_KEY`.
