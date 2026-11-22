@@ -562,7 +562,8 @@ class TestToolCallSupport:
         assert tool_call.name == "complex_function"
         assert tool_call.args == '{"nested": {"key": "value"}, "array": [1, 2, 3]}'
 
-    def test_sync_interleaved_tool_calls(self) -> None:
+    @pytest.mark.parametrize("consumer", ["chunks", "streams"])
+    def test_sync_interleaved_tool_calls(self, consumer: str) -> None:
         """Test that interleaved tool call chunks are correctly handled."""
         chunks = [
             # Start tool call 1
@@ -589,7 +590,19 @@ class TestToolCallSupport:
 
         stream_response = create_sync_stream_response(chunks)
 
-        list(stream_response.chunk_stream())
+        if consumer == "streams":
+            # The outer iterator auto-collects, then replays its cached chunks.
+            for _ in range(2):
+                streams = list(stream_response.streams())
+                assert len(streams) == 2
+                for stream, tool_call in zip(
+                    streams, stream_response.tool_calls, strict=True
+                ):
+                    assert isinstance(stream, llm.ToolCallStream)
+                    assert stream.collect() == tool_call
+            assert stream_response.consumed
+        else:
+            list(stream_response.chunk_stream())
 
         assert len(stream_response.tool_calls) == 2
         # Tool calls should appear in the order they were completed
@@ -601,7 +614,8 @@ class TestToolCallSupport:
         assert stream_response.tool_calls[1].args == '{"y": "hello"}'
 
     @pytest.mark.asyncio
-    async def test_async_interleaved_tool_calls(self) -> None:
+    @pytest.mark.parametrize("consumer", ["chunks", "streams"])
+    async def test_async_interleaved_tool_calls(self, consumer: str) -> None:
         """Test that interleaved tool call chunks are correctly handled in async."""
         chunks = [
             # Start tool call 1
@@ -628,7 +642,19 @@ class TestToolCallSupport:
 
         stream_response = create_async_stream_response(chunks)
 
-        [chunk async for chunk in stream_response.chunk_stream()]
+        if consumer == "streams":
+            # The outer iterator auto-collects, then replays its cached chunks.
+            for _ in range(2):
+                streams = [stream async for stream in stream_response.streams()]
+                assert len(streams) == 2
+                for stream, tool_call in zip(
+                    streams, stream_response.tool_calls, strict=True
+                ):
+                    assert isinstance(stream, llm.AsyncToolCallStream)
+                    assert await stream.collect() == tool_call
+            assert stream_response.consumed
+        else:
+            [chunk async for chunk in stream_response.chunk_stream()]
 
         assert len(stream_response.tool_calls) == 2
         # Tool calls should appear in the order they were completed
@@ -638,6 +664,83 @@ class TestToolCallSupport:
         assert stream_response.tool_calls[1].id == "tool_2"
         assert stream_response.tool_calls[1].name == "function_two"
         assert stream_response.tool_calls[1].args == '{"y": "hello"}'
+
+
+@pytest.mark.parametrize("is_async", [False, True], ids=["sync", "async"])
+@pytest.mark.asyncio
+async def test_interleaved_streams_remain_incremental(is_async: bool) -> None:
+    chunks: list[llm.StreamResponseChunk] = [
+        llm.ToolCallStartChunk(id="tool_1", name="function_one"),
+        llm.ToolCallChunk(id="tool_1", delta='{"x": '),
+        llm.ToolCallStartChunk(id="tool_2", name="function_two"),
+        llm.ToolCallChunk(id="tool_2", delta='{"y": "hello"}'),
+        llm.ToolCallEndChunk(id="tool_2"),
+        llm.ToolCallChunk(id="tool_1", delta="10}"),
+        llm.ToolCallEndChunk(id="tool_1"),
+    ]
+    pulled: list[llm.StreamResponseChunk] = []
+
+    def sync_chunks() -> llm.ChunkIterator:
+        for chunk in chunks:
+            pulled.append(chunk)
+            yield chunk
+
+    async def async_chunks() -> llm.AsyncChunkIterator:
+        for chunk in chunks:
+            pulled.append(chunk)
+            yield chunk
+
+    if is_async:
+        response = llm.AsyncStreamResponse(
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            input_messages=[llm.messages.user("Test")],
+            chunk_iterator=async_chunks(),
+        )
+        streams = response.streams()
+        first = await anext(streams)
+        assert isinstance(first, llm.AsyncToolCallStream)
+        assert pulled == chunks[:1]
+        assert await anext(first.__aiter__()) == '{"x": '
+        assert pulled == chunks[:2]
+        remaining = [stream async for stream in streams]
+        assert len(remaining) == 1
+        second = remaining[0]
+        assert isinstance(second, llm.AsyncToolCallStream)
+        collected = [await first.collect(), await second.collect()]
+        replayed = [await stream.collect() async for stream in response.streams()]
+    else:
+        response = llm.StreamResponse(
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            input_messages=[llm.messages.user("Test")],
+            chunk_iterator=sync_chunks(),
+        )
+        streams = response.streams()
+        first = next(streams)
+        assert isinstance(first, llm.ToolCallStream)
+        assert pulled == chunks[:1]
+        assert next(iter(first)) == '{"x": '
+        assert pulled == chunks[:2]
+        remaining = list(streams)
+        assert len(remaining) == 1
+        second = remaining[0]
+        assert isinstance(second, llm.ToolCallStream)
+        collected = [first.collect(), second.collect()]
+        replayed = [stream.collect() for stream in response.streams()]
+
+    assert collected == [
+        llm.ToolCall(id="tool_1", name="function_one", args='{"x": 10}'),
+        llm.ToolCall(id="tool_2", name="function_two", args='{"y": "hello"}'),
+    ]
+    assert replayed == collected
+    assert [tool_call.id for tool_call in response.tool_calls] == ["tool_2", "tool_1"]
+    assert pulled == chunks
+    assert response.consumed
 
 
 class ChunkProcessingFixtureRequest(pytest.FixtureRequest):
