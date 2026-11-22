@@ -49,6 +49,39 @@ def test_toolkit_init_success(tools: list[llm.Tool]) -> None:
     assert toolkit.tools == tools
 
 
+def test_toolkit_snapshots_tools(tools: list[llm.Tool]) -> None:
+    """Test that mutating the list after creating a Toolkit doesn't desync it."""
+    initial = tools[:1]
+    toolkit = llm.Toolkit(tools=initial)
+    initial.append(tools[1])
+
+    assert toolkit.tools == tools[:1]
+    assert list(toolkit.tools_dict) == ["test_tool"]
+
+
+def test_call_tools_appended_after_decoration_are_not_advertised() -> None:
+    """Test that a tool appended after `@llm.call` is neither sent nor executable."""
+
+    @llm.tool
+    def alpha() -> str:
+        return "alpha"
+
+    @llm.tool
+    def beta() -> str:
+        return "beta"
+
+    tools = [alpha]
+
+    @llm.call("openai/gpt-4o-mini", tools=tools)
+    def call() -> str:
+        return "hi"
+
+    tools.append(beta)
+
+    assert call.prompt.toolkit.tools == [alpha]
+    assert list(call.prompt.toolkit.tools_dict) == ["alpha"]
+
+
 def test_toolkit_init_duplicate_names() -> None:
     """Test that Toolkit raises ValueError for duplicate tool names."""
 
