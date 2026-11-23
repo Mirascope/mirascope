@@ -294,7 +294,9 @@ class TestInferAudioTypeMpegLayer3:
         assert isinstance(audio.source, Base64AudioSource)
         assert audio.source.mime_type == "audio/mp3"
 
-    @pytest.mark.parametrize("header", [b"\xff\xf1", b"\xff\xf9"])
+    @pytest.mark.parametrize(
+        "header", [b"\xff\xf0", b"\xff\xf1", b"\xff\xf8", b"\xff\xf9"]
+    )
     def test_adts_aac_is_not_mistaken_for_mp3(self, header: bytes) -> None:
         """ADTS AAC uses the reserved layer bits, so it stays AAC."""
         audio = Audio.from_bytes(header + b"\x50\x80" + b"\x00" * 8)
