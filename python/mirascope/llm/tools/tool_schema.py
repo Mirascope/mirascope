@@ -277,7 +277,7 @@ class ToolSchema(Generic[ToolFnT]):
                 args = get_args(param_type)
                 if any(isinstance(annotation, FieldInfo) for annotation in args[1:]):
                     field_info = FieldInfo.from_annotation(param_type)
-                param_type = args[0]
+                    param_type = args[0]
 
             if field_info is not None:
                 # Keep schema metadata, but use the callable's parameter names and
