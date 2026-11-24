@@ -51,6 +51,11 @@ class PrimitiveWrapperModel(Protocol):
     def model_validate_json(cls, json_data: str) -> "PrimitiveWrapperModel": ...
 
 
+# Keyed on repr too: `int | str == str | int`, but their schemas differ in order.
+# Unbounded, since `Partial` caches by wrapper class and would pin evicted wrappers.
+_wrapper_model_cache: dict[tuple[Any, str], type[PrimitiveWrapperModel]] = {}
+
+
 def is_primitive_type(
     type_: Any,  # noqa: ANN401
 ) -> TypeIs[type[PrimitiveType]]:
@@ -179,6 +184,10 @@ def create_wrapper_model(
         >>> len(instance.output)
         1
     """
+    cache_key = (primitive_type, repr(primitive_type))
+    if cache_key in _wrapper_model_cache:
+        return _wrapper_model_cache[cache_key]
+
     # Get a clean name for the wrapper class
     type_name = _get_type_name(primitive_type)
 
@@ -189,4 +198,5 @@ def create_wrapper_model(
         output=(primitive_type, ...),  # ... means required
     )
 
-    return cast(type[PrimitiveWrapperModel], wrapper)
+    _wrapper_model_cache[cache_key] = cast(type[PrimitiveWrapperModel], wrapper)
+    return _wrapper_model_cache[cache_key]
