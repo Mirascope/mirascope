@@ -28,13 +28,15 @@ vi.mock("openai", async (importOriginal) => {
   const mockCreate = vi.fn();
 
   // Create a mock class that mimics OpenAI client
-  const MockOpenAI = vi.fn().mockImplementation(() => ({
-    chat: {
-      completions: {
-        create: mockCreate,
+  const MockOpenAI = vi.fn().mockImplementation(function () {
+    return {
+      chat: {
+        completions: {
+          create: mockCreate,
+        },
       },
-    },
-  }));
+    };
+  });
 
   // Attach the error classes to the mock
   Object.assign(MockOpenAI, {
