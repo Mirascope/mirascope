@@ -310,3 +310,10 @@ def test_create_wrapper_model_keeps_union_order() -> None:
         {"type": "string"},
         {"type": "integer"},
     ]
+
+
+def test_create_wrapper_model_unhashable_annotated_metadata() -> None:
+    """Test that a type with unhashable metadata still gets a wrapper."""
+    wrapper = create_wrapper_model(Annotated[str, {"local_metadata": "example"}])
+
+    assert wrapper(output="hello").output == "hello"

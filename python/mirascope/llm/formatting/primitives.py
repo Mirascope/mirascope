@@ -184,9 +184,12 @@ def create_wrapper_model(
         >>> len(instance.output)
         1
     """
-    cache_key = (primitive_type, repr(primitive_type))
-    if cache_key in _wrapper_model_cache:
-        return _wrapper_model_cache[cache_key]
+    cache_key: tuple[Any, str] | None = (primitive_type, repr(primitive_type))
+    try:
+        if cache_key in _wrapper_model_cache:
+            return _wrapper_model_cache[cache_key]
+    except TypeError:  # Unhashable metadata, e.g. Annotated[str, {"k": "v"}]
+        cache_key = None
 
     # Get a clean name for the wrapper class
     type_name = _get_type_name(primitive_type)
@@ -198,5 +201,7 @@ def create_wrapper_model(
         output=(primitive_type, ...),  # ... means required
     )
 
-    _wrapper_model_cache[cache_key] = cast(type[PrimitiveWrapperModel], wrapper)
-    return _wrapper_model_cache[cache_key]
+    wrapper = cast(type[PrimitiveWrapperModel], wrapper)
+    if cache_key is not None:
+        _wrapper_model_cache[cache_key] = wrapper
+    return wrapper
