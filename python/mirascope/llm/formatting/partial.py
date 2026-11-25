@@ -10,11 +10,14 @@ serves as an acknowledgment of the original author's contribution to this projec
 
 import ast
 import builtins
+import collections
+import collections.abc
 import copy
 import inspect
 import sys
 import threading
-from types import UnionType
+import typing
+from types import GenericAlias, ModuleType, UnionType
 from typing import (
     Annotated,
     Any,
@@ -22,7 +25,10 @@ from typing import (
     Generic,
     Literal,
     NoReturn,
+    Optional,
+    TypeVar,
     Union,
+    cast,
     get_args,
     get_origin,
 )
@@ -63,13 +69,88 @@ def _without_discriminator(metadata: Any) -> Any:  # noqa: ANN401
 
 _UNRESOLVED = object()
 
+# The only generics a string annotation may subscript: subscripting anything else could
+# run a custom `__class_getitem__` or `__getitem__`.
+_SUBSCRIPTABLE_NAMES = (
+    "Sequence",
+    "MutableSequence",
+    "Mapping",
+    "MutableMapping",
+    "MutableSet",
+    "Iterable",
+    "Iterator",
+    "Collection",
+)
+_SUBSCRIPTABLE: tuple[Any, ...] = (
+    list,
+    dict,
+    set,
+    frozenset,
+    tuple,
+    type,
+    collections.deque,
+    collections.defaultdict,
+    collections.OrderedDict,
+    collections.abc.Set,
+    *(getattr(collections.abc, name) for name in _SUBSCRIPTABLE_NAMES),
+    *(
+        getattr(typing, name)
+        for name in (
+            *_SUBSCRIPTABLE_NAMES,
+            "AbstractSet",
+            "Annotated",
+            "DefaultDict",
+            "Deque",
+            "Dict",
+            "FrozenSet",
+            "List",
+            "Literal",
+            "Optional",
+            "OrderedDict",
+            "Set",
+            "Tuple",
+            "Type",
+            "Union",
+        )
+    ),
+)
+
+# The types of the objects, other than classes and modules, that an annotation may name:
+# generic aliases, unions, type variables and typing's special forms.
+_ANNOTATION_OBJECT_TYPES: tuple[Any, ...] = (
+    GenericAlias,
+    UnionType,
+    TypeVar,
+    type(Any),
+    type(typing.List),  # noqa: UP006
+    type(typing.List[int]),  # noqa: UP006
+    type(Optional),
+    type(Optional[int]),  # noqa: UP045
+    type(Literal),
+    type(Literal[1]),
+    type(Annotated[int, 1]),
+)
+
+
+def _is_annotation_object(value: Any) -> bool:  # noqa: ANN401
+    """Whether `value` can be used while resolving an annotation.
+
+    Only `type(value)` is inspected, so no custom hook of `value` runs.
+    """
+    value_type = type(cast(object, value))
+    return (
+        issubclass(value_type, type)
+        or value_type is ModuleType
+        or any(value_type is allowed for allowed in _ANNOTATION_OBJECT_TYPES)
+    )
+
 
 def _resolve_annotation(node: ast.expr, namespace: dict[str, Any]) -> Any:  # noqa: ANN401
     """Resolve the parsed form of an annotation, or return `_UNRESOLVED`.
 
-    Only names, dotted names, subscripts of classes or typing generics, `|` unions, `None` and
-    nested string references are understood. Calls and every other expression are never
-    evaluated.
+    Only names, dotted names on modules and classes, subscripts of known generics, `|`
+    unions, `None` and nested string references are understood. Calls and every other
+    expression are never evaluated, and custom attribute or subscription hooks are not run.
     """
     if isinstance(node, ast.Constant):
         if node.value is None:
@@ -79,14 +160,20 @@ def _resolve_annotation(node: ast.expr, namespace: dict[str, Any]) -> Any:  # no
         return _UNRESOLVED
     if isinstance(node, ast.Name):
         if node.id in namespace:
-            return namespace[node.id]
-        builtin = getattr(builtins, node.id, None)
-        return builtin if inspect.isclass(builtin) else _UNRESOLVED
+            value = namespace[node.id]
+        else:
+            value = vars(builtins).get(node.id, _UNRESOLVED)
+            if not isinstance(value, type):
+                return _UNRESOLVED
+        return value if _is_annotation_object(value) else _UNRESOLVED
     if isinstance(node, ast.Attribute):
         value = _resolve_annotation(node.value, namespace)
-        if not (inspect.ismodule(value) or inspect.isclass(value)):
+        value_type = type(cast(object, value))
+        if not (value_type is ModuleType or issubclass(value_type, type)):
             return _UNRESOLVED
-        return getattr(value, node.attr, _UNRESOLVED)
+        # A static lookup runs no descriptor, `__getattr__` or `__getattribute__`
+        attribute = inspect.getattr_static(value, node.attr, _UNRESOLVED)
+        return attribute if _is_annotation_object(attribute) else _UNRESOLVED
     if isinstance(node, ast.BinOp) and isinstance(node.op, ast.BitOr):
         left = _resolve_annotation(node.left, namespace)
         right = _resolve_annotation(node.right, namespace)
@@ -95,7 +182,7 @@ def _resolve_annotation(node: ast.expr, namespace: dict[str, Any]) -> Any:  # no
         return Union[left, right]  # noqa: UP007 - reconstruct runtime arguments
     if isinstance(node, ast.Subscript):
         base = _resolve_annotation(node.value, namespace)
-        if not (inspect.isclass(base) or getattr(base, "__module__", None) == "typing"):
+        if not any(base is allowed for allowed in _SUBSCRIPTABLE):
             return _UNRESOLVED
         index = node.slice
         elements = index.elts if isinstance(index, ast.Tuple) else [index]

@@ -1,7 +1,7 @@
 """Unit tests for Partial model generation."""
 
 import threading
-from typing import Annotated, Any, ForwardRef, Literal, Union, cast
+from typing import Annotated, Any, ForwardRef, Literal, Optional, Union, cast
 
 import pytest
 from pydantic import BaseModel, ConfigDict, Discriminator, Field, Tag
@@ -594,9 +594,10 @@ def test_partial_resolves_supported_forward_reference_forms() -> None:
         "unknown.attribute",  # an attribute of something that is not defined
         "boom.attribute",  # an attribute of something that is not a module or a class
         "_Circle | Unknown",  # a union with a side that can't be resolved
-        "boom[int]",  # a subscript of something that is not a class or a typing generic
+        "boom[int]",  # a subscript of something that is not a known generic
         "list[Unknown]",  # a subscript with an argument that can't be resolved
-        "int[str]",  # a subscript the class doesn't support
+        "int[str]",  # a subscript of a class that is not a known generic
+        "Optional[int, str]",  # a subscript the generic doesn't support
         "list['((']",  # a nested string that is not valid Python
     ],
 )
@@ -608,8 +609,73 @@ def test_partial_leaves_unsupported_forward_references_alone(annotation: str) ->
 
     def boom() -> None: ...
 
-    namespace = {"_Circle": _Circle, "boom": boom}
+    namespace = {"_Circle": _Circle, "boom": boom, "Optional": Optional}
     assert _make_partial_type(annotation, namespace) == annotation
+
+
+@pytest.mark.parametrize(
+    "annotation",
+    [
+        "hooked.attribute",
+        "Hooked.attribute",
+        "Outer.hooked",
+        "hooked[int]",
+        "Hooked[int]",
+    ],
+)
+def test_partial_does_not_run_custom_hooks(annotation: str) -> None:
+    """Custom attribute access and subscription hooks are never run."""
+    from mirascope.llm.formatting.partial import (
+        _make_partial_type,  # pyright: ignore[reportPrivateUsage]
+    )
+
+    calls: list[str] = []
+
+    class HookedMeta(type):
+        def __getattr__(cls, name: str) -> type:
+            calls.append(name)
+            return int
+
+    class Hooked(metaclass=HookedMeta):
+        def __class_getitem__(cls, item: object) -> type:
+            calls.append("class_getitem")
+            return int
+
+    class HookedInstance:
+        def __getattribute__(self, name: str) -> object:
+            calls.append(name)
+            return int
+
+        def __getitem__(self, item: object) -> type:
+            calls.append("getitem")
+            return int
+
+    class Descriptor:
+        def __get__(self, instance: object, owner: type) -> type:
+            calls.append("descriptor")
+            return int
+
+    class Outer:
+        hooked = Descriptor()
+
+    namespace = {"hooked": HookedInstance(), "Hooked": Hooked, "Outer": Outer}
+    assert _make_partial_type(annotation, namespace) == annotation
+    assert calls == []
+
+
+def test_partial_resolves_nested_classes_and_module_aliases() -> None:
+    """Qualified names of nested classes and module level aliases still resolve."""
+    from mirascope.llm.formatting.partial import (
+        _make_partial_type,  # pyright: ignore[reportPrivateUsage]
+    )
+
+    class Outer:
+        Inner = _Circle
+
+    namespace = {"Outer": Outer, "Alias": list[_Circle]}
+    assert _make_partial_type("Outer.Inner", namespace) is Partial[_Circle]
+    assert _make_partial_type("Alias", namespace) == list[Partial[_Circle]]
+    assert _make_partial_type("Outer.Missing", namespace) == "Outer.Missing"
 
 
 def test_partial_keeps_literal_members_that_look_like_names() -> None:
