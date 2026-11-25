@@ -363,11 +363,13 @@ export function encodeToolSchema(tool: ToolSchema): {
     name: tool.name,
     description: tool.description,
     // Use parametersJsonSchema for raw JSON schema compatibility
-    parametersJsonSchema: {
-      type: "object",
-      properties: tool.parameters.properties,
-      required: tool.parameters.required,
-    },
+    parametersJsonSchema: tool.parameters.$defs
+      ? tool.parameters
+      : {
+          type: "object",
+          properties: tool.parameters.properties,
+          required: tool.parameters.required,
+        },
   };
 }
 
