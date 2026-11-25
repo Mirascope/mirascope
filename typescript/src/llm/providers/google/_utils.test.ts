@@ -12,6 +12,7 @@ import {
 import { describe, it, expect } from "vitest";
 
 import type { AssistantMessage } from "@/llm/messages";
+import type { ToolSchema } from "@/llm/tools/tool-schema";
 
 import { Document, Image } from "@/llm/content";
 import {
@@ -33,7 +34,70 @@ import {
   buildRequestParams,
   decodeResponse,
   encodeMessages,
+  encodeToolSchema,
 } from "./_utils";
+
+it("preserves recursive tool definitions in Google's JSON Schema", () => {
+  const tool: ToolSchema = {
+    name: "count_nodes",
+    description: "Count tree nodes",
+    parameters: {
+      type: "object",
+      properties: { root: { $ref: "#/$defs/Node" } },
+      required: ["root"],
+      additionalProperties: false,
+      $defs: {
+        Node: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            children: { type: "array", items: { $ref: "#/$defs/Node" } },
+          },
+          required: ["name"],
+        },
+      },
+    },
+  };
+
+  expect(encodeToolSchema(tool).parametersJsonSchema).toEqual(tool.parameters);
+});
+
+it("keeps the existing Google schema for tools without definitions", () => {
+  const tool: ToolSchema = {
+    name: "lookup",
+    description: "Look up a record",
+    parameters: {
+      type: "object",
+      properties: { id: { type: "string" } },
+      required: ["id"],
+      additionalProperties: false,
+    },
+  };
+
+  expect(encodeToolSchema(tool).parametersJsonSchema).toEqual({
+    type: "object",
+    properties: tool.parameters.properties,
+    required: tool.parameters.required,
+  });
+});
+
+it("preserves nonrecursive definitions as well", () => {
+  const tool: ToolSchema = {
+    name: "lookup",
+    description: "Look up a record",
+    parameters: {
+      type: "object",
+      properties: { record: { $ref: "#/$defs/Record" } },
+      required: ["record"],
+      additionalProperties: false,
+      $defs: {
+        Record: { type: "object", properties: { id: { type: "string" } } },
+      },
+    },
+  };
+
+  expect(encodeToolSchema(tool).parametersJsonSchema).toEqual(tool.parameters);
+});
 
 it.each([
   GoogleFinishReason.IMAGE_SAFETY,
