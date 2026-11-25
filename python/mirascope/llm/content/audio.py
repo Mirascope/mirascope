@@ -57,7 +57,7 @@ def infer_audio_type(audio_data: bytes) -> AudioMimeType:
         return "audio/mp3"
     elif audio_data.startswith(b"FORM") and audio_data[8:12] == b"AIFF":
         return "audio/aiff"
-    elif audio_data.startswith(b"\xff\xf1") or audio_data.startswith(b"\xff\xf9"):
+    elif audio_data.startswith((b"\xff\xf0", b"\xff\xf1", b"\xff\xf8", b"\xff\xf9")):
         return "audio/aac"
     elif audio_data.startswith(b"OggS"):
         return "audio/ogg"
