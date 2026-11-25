@@ -163,7 +163,7 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
   /** Whether the iterator has been fully consumed */
   private _consumed = false;
   /** Whether we're currently processing a FORMAT_TOOL call (transforming to text) */
-  private _processingFormatTool = false;
+  private _formatToolId: string | null = null;
 
   /** Finish reason once stream is complete */
   private _finishReason: FinishReason | null = null;
@@ -494,18 +494,26 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
       chunk.type === "tool_call_start_chunk" &&
       chunk.name.startsWith(FORMAT_TOOL_NAME)
     ) {
-      this._processingFormatTool = true;
+      this._formatToolId = chunk.id;
       return { type: "text_start_chunk", contentType: "text" };
     }
 
     // Handle tool_call_chunk: Transform FORMAT_TOOL chunk to text_chunk
-    if (this._processingFormatTool && chunk.type === "tool_call_chunk") {
+    if (
+      this._formatToolId !== null &&
+      chunk.type === "tool_call_chunk" &&
+      chunk.id === this._formatToolId
+    ) {
       return { type: "text_chunk", contentType: "text", delta: chunk.delta };
     }
 
     // Handle tool_call_end_chunk: Transform FORMAT_TOOL end to text_end
-    if (this._processingFormatTool && chunk.type === "tool_call_end_chunk") {
-      this._processingFormatTool = false;
+    if (
+      this._formatToolId !== null &&
+      chunk.type === "tool_call_end_chunk" &&
+      chunk.id === this._formatToolId
+    ) {
+      this._formatToolId = null;
       return { type: "text_end_chunk", contentType: "text" };
     }
 

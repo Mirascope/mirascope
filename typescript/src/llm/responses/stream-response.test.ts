@@ -976,6 +976,58 @@ describe("StreamResponse", () => {
   });
 
   describe("FORMAT_TOOL transformation", () => {
+    it.each(["format-first", "tool-first"])(
+      "preserves an interleaved regular tool call (%s)",
+      async (order) => {
+        const formatStart: StreamResponseChunk = {
+          type: "tool_call_start_chunk",
+          contentType: "tool_call",
+          id: "format",
+          name: FORMAT_TOOL_NAME,
+        };
+        const regularStart: StreamResponseChunk = {
+          type: "tool_call_start_chunk",
+          contentType: "tool_call",
+          id: "regular",
+          name: "lookup",
+        };
+        const response = createTestStreamResponse([
+          ...(order === "format-first"
+            ? [formatStart, regularStart]
+            : [regularStart, formatStart]),
+          {
+            type: "tool_call_chunk",
+            contentType: "tool_call",
+            id: "regular",
+            delta: '{"id":1}',
+          },
+          {
+            type: "tool_call_chunk",
+            contentType: "tool_call",
+            id: "format",
+            delta: '{"value":42}',
+          },
+          {
+            type: "tool_call_end_chunk",
+            contentType: "tool_call",
+            id: "regular",
+          },
+          {
+            type: "tool_call_end_chunk",
+            contentType: "tool_call",
+            id: "format",
+          },
+        ]);
+
+        await response.consume();
+
+        expect(response.text()).toBe('{"value":42}');
+        expect(response.toolCalls).toMatchObject([
+          { id: "regular", name: "lookup", args: '{"id":1}' },
+        ]);
+      },
+    );
+
     it("transforms FORMAT_TOOL tool_call chunks to text chunks", async () => {
       const chunks: StreamResponseChunk[] = [
         {
