@@ -255,20 +255,13 @@ All three tools work together nicely to greet the user, retrieve the ultimate an
             "tools": [
                 {
                     "name": "greet",
-                    "description": """\
-Greet a user with very special welcome.
-
-Args:
-    name: The name of the person to greet
-
-Returns:
-    A personalized welcome message\
-""",
+                    "description": "Greet a user with very special welcome.",
                     "parameters": """\
 {
   "properties": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "description": "The name of the person to greet"
     }
   },
   "required": [
@@ -303,47 +296,14 @@ Returns:
                     "description": """\
 Process and format an ultimate answer.
 
-This tool demonstrates complex schema with $defs by accepting
-a nested Pydantic model as input.
-
-Args:
-    answer_data: The answer data to process
-
-Returns:
-    A formatted string describing the answer\
+This tool demonstrates a nested schema by accepting
+a nested Pydantic model as input.\
 """,
                     "parameters": """\
 {
   "properties": {
     "answer_data": {
-      "$ref": "#/$defs/UltimateAnswer"
-    }
-  },
-  "required": [
-    "answer_data"
-  ],
-  "additionalProperties": false,
-  "defs": {
-    "ComputerInfo": {
-      "description": "Information about Deep Thought computer.",
-      "properties": {
-        "name": {
-          "description": "The name of the computer",
-          "type": "string"
-        },
-        "years_computed": {
-          "description": "How many years it took to compute",
-          "type": "integer"
-        }
-      },
-      "required": [
-        "name",
-        "years_computed"
-      ],
-      "type": "object"
-    },
-    "UltimateAnswer": {
-      "description": "The answer to life, the universe, and everything.",
+      "description": "The answer data to process",
       "properties": {
         "answer": {
           "description": "The numerical answer",
@@ -354,8 +314,22 @@ Returns:
           "type": "string"
         },
         "computed_by": {
-          "$ref": "#/$defs/ComputerInfo",
-          "description": "Information about the computer"
+          "description": "Information about the computer",
+          "properties": {
+            "name": {
+              "description": "The name of the computer",
+              "type": "string"
+            },
+            "years_computed": {
+              "description": "How many years it took to compute",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "name",
+            "years_computed"
+          ],
+          "type": "object"
         }
       },
       "required": [
@@ -365,7 +339,12 @@ Returns:
       ],
       "type": "object"
     }
-  }
+  },
+  "required": [
+    "answer_data"
+  ],
+  "additionalProperties": false,
+  "defs": null
 }\
 """,
                     "strict": False,

@@ -146,7 +146,7 @@ def answer_ultimate_question() -> UltimateAnswer:
 def process_answer(answer_data: UltimateAnswer) -> str:
     """Process and format an ultimate answer.
 
-    This tool demonstrates complex schema with $defs by accepting
+    This tool demonstrates a nested schema by accepting
     a nested Pydantic model as input.
 
     Args:
