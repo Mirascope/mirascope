@@ -187,6 +187,64 @@ def test_google_keeps_description_of_nested_format_field() -> None:
     assert "street" in address.properties
 
 
+class TreeNode(BaseModel):
+    """A node in a tree."""
+
+    name: str
+    children: list["TreeNode"] = []
+
+
+def test_google_sends_self_referential_tool_parameter_as_json_schema() -> None:
+    """A self-referential model can't be inlined, so its `$defs` are kept."""
+
+    @llm.tool
+    def count_nodes(root: TreeNode) -> int:
+        """Count the nodes in a tree."""
+        return 1
+
+    _, _, kwargs = encode_request(
+        model_id="google/gemini-2.5-flash",
+        messages=[llm.messages.user("Use the tool")],
+        tools=Toolkit([count_nodes]),
+        format=None,
+        params={},
+    )
+    config = genai_types.GenerateContentConfig.model_validate(kwargs.get("config", {}))
+    assert config.tools is not None
+    assert isinstance(config.tools[0], genai_types.Tool)
+    declarations = config.tools[0].function_declarations
+    assert declarations is not None
+    declaration = declarations[0]
+    assert declaration.name == "count_nodes"
+    assert declaration.description == "Count the nodes in a tree."
+    assert declaration.parameters is None
+    assert declaration.parameters_json_schema == snapshot(
+        {
+            "$defs": {
+                "TreeNode": {
+                    "description": "A node in a tree.",
+                    "properties": {
+                        "name": {"title": "Name", "type": "string"},
+                        "children": {
+                            "default": [],
+                            "items": {"$ref": "#/$defs/TreeNode"},
+                            "title": "Children",
+                            "type": "array",
+                        },
+                    },
+                    "required": ["name"],
+                    "title": "TreeNode",
+                    "type": "object",
+                }
+            },
+            "additionalProperties": False,
+            "properties": {"root": {"$ref": "#/$defs/TreeNode"}},
+            "required": ["root"],
+            "type": "object",
+        }
+    )
+
+
 def test_encode_base64_document() -> None:
     """Test encoding a base64 document source as inline_data for Google."""
     doc = Document(
