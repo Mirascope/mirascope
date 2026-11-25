@@ -3,8 +3,14 @@
 from typing import Annotated
 
 import pytest
+from annotated_types import Ge, Le
 from inline_snapshot import snapshot
-from pydantic import BaseModel, Field, PydanticSchemaGenerationError
+from pydantic import (
+    BaseModel,
+    Field,
+    PydanticSchemaGenerationError,
+    StringConstraints,
+)
 from pydantic.fields import FieldInfo
 
 from mirascope import llm
@@ -304,6 +310,45 @@ def test_annotated_field_constraints_are_preserved() -> None:
                 },
             },
             "required": ["count"],
+            "additionalProperties": False,
+        }
+    )
+
+
+def test_annotated_constraints_without_field_are_preserved() -> None:
+    """Test that `annotated_types` and `StringConstraints` metadata reach the schema."""
+
+    def constrained_tool(
+        party_size: Annotated[int, Ge(1), Le(8)],
+        code: Annotated[str, StringConstraints(max_length=3)] = "abc",
+    ) -> str:
+        """A tool with constrained parameters.
+
+        Args:
+            party_size: How many people to seat.
+        """
+        raise NotImplementedError
+
+    schema = llm.tools.ToolSchema.from_function(constrained_tool)
+
+    assert schema.parameters.model_dump(by_alias=True, exclude_none=True) == snapshot(
+        {
+            "properties": {
+                "party_size": {
+                    "description": "How many people to seat.",
+                    "maximum": 8,
+                    "minimum": 1,
+                    "title": "Party Size",
+                    "type": "integer",
+                },
+                "code": {
+                    "default": "abc",
+                    "maxLength": 3,
+                    "title": "Code",
+                    "type": "string",
+                },
+            },
+            "required": ["party_size"],
             "additionalProperties": False,
         }
     )
