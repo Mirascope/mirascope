@@ -27,6 +27,7 @@ def load_api_keys() -> None:
     os.environ.setdefault("GROQ_API_KEY", "dummy-groq-key")
     os.environ.setdefault("MIRASCOPE_API_KEY", "dummy-mirascope-key")
     os.environ.setdefault("ATLASCLOUD_API_KEY", "dummy-atlascloud-key")
+    os.environ.setdefault("RUNCRATE_API_KEY", "dummy-runcrate-key")
     os.environ.setdefault("MINIMAX_API_KEY", "dummy-minimax-key")
     os.environ.setdefault("OPENAI_API_KEY", "dummy-openai-key")
     os.environ.setdefault("OPENROUTER_API_KEY", "dummy-openrouter-key")

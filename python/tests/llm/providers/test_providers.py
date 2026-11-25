@@ -77,6 +77,16 @@ def test_register_provider_requesty() -> None:
     assert provider.client.api_key == os.getenv("REQUESTY_API_KEY")
 
 
+def test_register_provider_runcrate() -> None:
+    """Test that register_provider('runcrate') returns same instance on multiple calls."""
+    provider = llm.register_provider("runcrate", scope=["openai/"])
+    provider2 = llm.register_provider("runcrate", scope=["openai/"])
+
+    assert isinstance(provider, llm.providers.RuncrateProvider)
+    assert provider is provider2
+    assert provider.client.api_key == os.getenv("RUNCRATE_API_KEY")
+
+
 def test_register_provider_cheaperinference() -> None:
     """Test that register_provider('cheaperinference') returns same instance on multiple calls."""
     provider = llm.register_provider("cheaperinference", scope="cheaperinference/")
