@@ -2,7 +2,7 @@
 
 import base64
 import copy
-from typing import Any, cast
+from typing import Any, Generic, TypeVar, cast
 
 import pytest
 from inline_snapshot import snapshot
@@ -469,3 +469,33 @@ def test_strict_format_requires_every_property() -> None:
     assert json_schema["schema"]["additionalProperties"] is False
     assert "additionalProperties" not in format.schema
     assert format.schema == schema_before
+
+
+T = TypeVar("T")
+
+
+class Page(BaseModel, Generic[T]):
+    items: list[T]
+
+
+@pytest.mark.parametrize(
+    ("formattable", "expected"),
+    [(int | None, "int_None"), (Page[int], "Page_int")],
+)
+def test_strict_format_name_matches_openai_pattern(
+    formattable: Any,  # noqa: ANN401
+    expected: str,
+) -> None:
+    """OpenAI rejects schema names outside `^[a-zA-Z0-9_-]+$`."""
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-4o",
+        messages=[llm.messages.user("Hi")],
+        format=llm.format(formattable, mode="strict"),
+        tools=Toolkit(None),
+        params={},
+        feature_info=feature_info_for_openai_model("gpt-4o"),
+        provider_id="openai:completions",
+    )
+
+    json_schema = cast(dict[str, Any], kwargs.get("response_format"))["json_schema"]
+    assert json_schema["name"] == expected

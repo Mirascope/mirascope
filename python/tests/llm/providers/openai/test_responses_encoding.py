@@ -2,7 +2,7 @@
 
 import base64
 import copy
-from typing import Any, cast
+from typing import Any, Generic, TypeVar, cast
 
 import pytest
 from inline_snapshot import snapshot
@@ -390,3 +390,31 @@ def test_non_reasoning_model_keeps_sampling_params() -> None:
 
     assert kwargs.get("temperature") == 0.7
     assert kwargs.get("top_p") == 0.9
+
+
+T = TypeVar("T")
+
+
+class Page(BaseModel, Generic[T]):
+    items: list[T]
+
+
+@pytest.mark.parametrize(
+    ("formattable", "expected"),
+    [(int | None, "int_None"), (Page[int], "Page_int")],
+)
+def test_strict_format_name_matches_openai_pattern(
+    formattable: Any,  # noqa: ANN401
+    expected: str,
+) -> None:
+    """OpenAI rejects schema names outside `^[a-zA-Z0-9_-]+$`."""
+    _, _, kwargs = encode_request(
+        model_id="openai/gpt-4o",
+        messages=[llm.messages.user("Hi")],
+        format=llm.format(formattable, mode="strict"),
+        tools=Toolkit(None),
+        params={},
+    )
+
+    text = cast(dict[str, Any], kwargs.get("text"))
+    assert text["format"]["name"] == expected

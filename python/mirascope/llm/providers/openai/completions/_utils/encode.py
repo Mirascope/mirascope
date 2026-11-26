@@ -334,7 +334,7 @@ def _create_strict_response_format(
     _base_utils.ensure_all_properties_required(schema)
 
     json_schema = JSONSchema(
-        name=format.name,
+        name=_base_utils.sanitize_schema_name(format.name),
         schema=schema,
         strict=True,
     )

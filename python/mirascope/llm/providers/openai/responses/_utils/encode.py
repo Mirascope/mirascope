@@ -306,7 +306,7 @@ def _create_strict_response_format(
 
     response_format: ResponseFormatTextJSONSchemaConfigParam = {
         "type": "json_schema",
-        "name": format.name,
+        "name": _base_utils.sanitize_schema_name(format.name),
         "schema": schema,
     }
     if format.description:
