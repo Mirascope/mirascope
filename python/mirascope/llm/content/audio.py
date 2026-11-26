@@ -33,13 +33,20 @@ def _is_mpeg_layer3_frame(audio_data: bytes) -> bool:
     Layer bits of ``0b00`` are reserved in MPEG audio and are what ADTS AAC
     uses, so they are excluded here and left to the AAC branch.
     """
-    if len(audio_data) < 2 or audio_data[0] != 0xFF:
+    if len(audio_data) < 3 or audio_data[0] != 0xFF:
         return False
     if audio_data[1] & 0xE0 != 0xE0:
         return False
     version = (audio_data[1] >> 3) & 0b11
     layer = (audio_data[1] >> 1) & 0b11
-    return version != 0b01 and layer == 0b01
+    bitrate_index = audio_data[2] >> 4
+    sample_rate_index = (audio_data[2] >> 2) & 0b11
+    return (
+        version != 0b01
+        and layer == 0b01
+        and bitrate_index != 0b1111
+        and sample_rate_index != 0b11
+    )
 
 
 def infer_audio_type(audio_data: bytes) -> AudioMimeType:

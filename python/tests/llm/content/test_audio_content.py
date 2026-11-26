@@ -7,6 +7,7 @@ import httpx
 import pytest
 from pytest_httpserver import HTTPServer
 
+from mirascope import llm
 from mirascope.llm.content.audio import MAX_AUDIO_SIZE, Audio, Base64AudioSource
 
 
@@ -316,3 +317,17 @@ class TestInferAudioTypeMpegLayer3:
         """A lone 0xFF byte is not enough to identify MP3."""
         with pytest.raises(ValueError, match="Unsupported audio type"):
             Audio.from_bytes(b"\xff\x00" + b"\x00" * 10)
+
+    @pytest.mark.parametrize(
+        "header_byte",
+        [pytest.param(0xF0, id="bitrate"), pytest.param(0x9C, id="sample-rate")],
+    )
+    def test_rejects_reserved_mpeg_header_fields(self, header_byte: int) -> None:
+        """Reject reserved bitrate and sample-rate indices."""
+        with pytest.raises(ValueError, match="Unsupported audio type"):
+            llm.Audio.from_bytes(b"\xff\xf3" + bytes([header_byte]) + b"\x00" * 9)
+
+    def test_accepts_free_bitrate_index(self) -> None:
+        """Index zero is free bitrate, not a reserved index."""
+        audio = llm.Audio.from_bytes(b"\xff\xf3\x00" + b"\x00" * 9)
+        assert audio.source.mime_type == "audio/mp3"
