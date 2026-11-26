@@ -163,7 +163,7 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
   /** Whether the iterator has been fully consumed */
   private _consumed = false;
   /** Whether we're currently processing a FORMAT_TOOL call (transforming to text) */
-  private _processingFormatTool = false;
+  private _formatToolId: string | null = null;
 
   /** Finish reason once stream is complete */
   private _finishReason: FinishReason | null = null;
@@ -230,29 +230,23 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
    * All chunks are cached so subsequent calls can replay from the beginning.
    */
   async *chunkStream(): AsyncGenerator<AssistantContentChunk> {
-    // First, yield all cached chunks (replay mechanism)
-    for (const chunk of this._chunks) {
-      yield chunk;
-    }
-
-    // If stream is already fully consumed, stop
-    if (this._consumed) {
-      return;
-    }
-
-    // Consume fresh chunks from the iterator
-    let result = await this._chunkIterator.next();
-    while (!result.done) {
-      const chunk = result.value;
-      const contentChunk = this._processChunk(chunk);
-      if (contentChunk) {
-        yield contentChunk;
+    let cursor = 0;
+    while (true) {
+      // Another iterator may have advanced the underlying stream while this
+      // one was suspended at a yield. Replay those chunks before reading more.
+      if (cursor < this._chunks.length) {
+        yield this._chunks[cursor++]!;
+        continue;
       }
-      result = await this._chunkIterator.next();
-    }
+      if (this._consumed) return;
 
-    // Mark stream as fully consumed
-    this._consumed = true;
+      const result = await this._chunkIterator.next();
+      if (result.done) {
+        this._consumed = true;
+        return;
+      }
+      this._processChunk(result.value);
+    }
   }
 
   /**
@@ -353,11 +347,21 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
    */
   async *streams(): AsyncGenerator<Stream> {
     const chunkIter = this.chunkStream();
+    let pendingChunks: AssistantContentChunk[] = [];
+
+    const nextChunk = async (): Promise<
+      IteratorResult<AssistantContentChunk>
+    > => {
+      const pending = pendingChunks.shift();
+      return pending === undefined
+        ? chunkIter.next()
+        : { done: false, value: pending };
+    };
 
     // Use manual iteration to avoid closing the iterator on early return.
     // Using for-await-of would call iter.return() when the inner generator
     // returns, which would close chunkIter and prevent _consumed from being set.
-    let result = await chunkIter.next();
+    let result = await nextChunk();
     while (!result.done) {
       const startChunk = result.value;
 
@@ -369,43 +373,41 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
 
       switch (startChunk.type) {
         case "text_start_chunk": {
-          const textStreamIterator = async function* (
-            iter: AsyncGenerator<AssistantContentChunk>,
-          ): AsyncGenerator<TextChunk> {
-            // Use manual iteration to avoid closing the outer iterator
-            let innerResult = await iter.next();
-            while (!innerResult.done) {
-              const chunk = innerResult.value;
-              if (chunk.type === "text_chunk") {
-                yield chunk;
-                innerResult = await iter.next();
-              } else {
-                return; // Stream finished
+          const textStreamIterator =
+            async function* (): AsyncGenerator<TextChunk> {
+              // Use manual iteration to avoid closing the outer iterator
+              let innerResult = await nextChunk();
+              while (!innerResult.done) {
+                const chunk = innerResult.value;
+                if (chunk.type === "text_chunk") {
+                  yield chunk;
+                  innerResult = await nextChunk();
+                } else {
+                  return; // Stream finished
+                }
               }
-            }
-          };
-          stream = new TextStream(textStreamIterator(chunkIter));
+            };
+          stream = new TextStream(textStreamIterator());
           yield stream;
           break;
         }
 
         case "thought_start_chunk": {
-          const thoughtStreamIterator = async function* (
-            iter: AsyncGenerator<AssistantContentChunk>,
-          ): AsyncGenerator<ThoughtChunk> {
-            // Use manual iteration to avoid closing the outer iterator
-            let innerResult = await iter.next();
-            while (!innerResult.done) {
-              const chunk = innerResult.value;
-              if (chunk.type === "thought_chunk") {
-                yield chunk;
-                innerResult = await iter.next();
-              } else {
-                return; // Stream finished
+          const thoughtStreamIterator =
+            async function* (): AsyncGenerator<ThoughtChunk> {
+              // Use manual iteration to avoid closing the outer iterator
+              let innerResult = await nextChunk();
+              while (!innerResult.done) {
+                const chunk = innerResult.value;
+                if (chunk.type === "thought_chunk") {
+                  yield chunk;
+                  innerResult = await nextChunk();
+                } else {
+                  return; // Stream finished
+                }
               }
-            }
-          };
-          stream = new ThoughtStream(thoughtStreamIterator(chunkIter));
+            };
+          stream = new ThoughtStream(thoughtStreamIterator());
           yield stream;
           break;
         }
@@ -414,25 +416,34 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
           const toolId = startChunk.id;
           const toolName = startChunk.name;
 
-          const toolCallStreamIterator = async function* (
-            iter: AsyncGenerator<AssistantContentChunk>,
-          ): AsyncGenerator<ToolCallChunk> {
-            // Use manual iteration to avoid closing the outer iterator
-            let innerResult = await iter.next();
-            while (!innerResult.done) {
-              const chunk = innerResult.value;
-              if (chunk.type === "tool_call_chunk") {
-                yield chunk;
-                innerResult = await iter.next();
-              } else {
-                return; // Stream finished
+          const toolCallStreamIterator =
+            async function* (): AsyncGenerator<ToolCallChunk> {
+              const deferred: AssistantContentChunk[] = [];
+              try {
+                // Keep other tools' chunks until this tool's end marker arrives.
+                let innerResult = await nextChunk();
+                while (!innerResult.done) {
+                  const chunk = innerResult.value;
+                  if (chunk.type === "tool_call_chunk" && chunk.id === toolId) {
+                    yield chunk;
+                  } else if (
+                    chunk.type === "tool_call_end_chunk" &&
+                    chunk.id === toolId
+                  ) {
+                    return;
+                  } else {
+                    deferred.push(chunk);
+                  }
+                  innerResult = await nextChunk();
+                }
+              } finally {
+                pendingChunks = deferred.concat(pendingChunks);
               }
-            }
-          };
+            };
           stream = new ToolCallStream(
             toolId,
             toolName,
-            toolCallStreamIterator(chunkIter),
+            toolCallStreamIterator(),
           );
           yield stream;
           break;
@@ -446,7 +457,7 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
       // (If the user did not do so when we yielded it)
       await stream.collect();
 
-      result = await chunkIter.next();
+      result = await nextChunk();
     }
   }
 
@@ -483,18 +494,26 @@ export class BaseStreamResponse<F = unknown> extends RootResponse<F> {
       chunk.type === "tool_call_start_chunk" &&
       chunk.name.startsWith(FORMAT_TOOL_NAME)
     ) {
-      this._processingFormatTool = true;
+      this._formatToolId = chunk.id;
       return { type: "text_start_chunk", contentType: "text" };
     }
 
     // Handle tool_call_chunk: Transform FORMAT_TOOL chunk to text_chunk
-    if (this._processingFormatTool && chunk.type === "tool_call_chunk") {
+    if (
+      this._formatToolId !== null &&
+      chunk.type === "tool_call_chunk" &&
+      chunk.id === this._formatToolId
+    ) {
       return { type: "text_chunk", contentType: "text", delta: chunk.delta };
     }
 
     // Handle tool_call_end_chunk: Transform FORMAT_TOOL end to text_end
-    if (this._processingFormatTool && chunk.type === "tool_call_end_chunk") {
-      this._processingFormatTool = false;
+    if (
+      this._formatToolId !== null &&
+      chunk.type === "tool_call_end_chunk" &&
+      chunk.id === this._formatToolId
+    ) {
+      this._formatToolId = null;
       return { type: "text_end_chunk", contentType: "text" };
     }
 

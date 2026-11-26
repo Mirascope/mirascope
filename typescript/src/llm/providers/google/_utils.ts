@@ -363,11 +363,13 @@ export function encodeToolSchema(tool: ToolSchema): {
     name: tool.name,
     description: tool.description,
     // Use parametersJsonSchema for raw JSON schema compatibility
-    parametersJsonSchema: {
-      type: "object",
-      properties: tool.parameters.properties,
-      required: tool.parameters.required,
-    },
+    parametersJsonSchema: tool.parameters.$defs
+      ? tool.parameters
+      : {
+          type: "object",
+          properties: tool.parameters.properties,
+          required: tool.parameters.required,
+        },
   };
 }
 
@@ -640,7 +642,11 @@ export function decodeResponse(
       serializedRawMessage as unknown as AssistantMessage["rawMessage"],
   };
 
-  const finishReason = decodeFinishReason(candidate?.finishReason);
+  const finishReason = candidate?.finishReason
+    ? decodeFinishReason(candidate.finishReason)
+    : response.promptFeedback?.blockReason
+      ? FinishReason.REFUSAL
+      : null;
   const usage = decodeUsage(response);
 
   return { assistantMessage, finishReason, usage };

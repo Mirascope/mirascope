@@ -216,7 +216,7 @@ def test_call_with_tools_stream(model_id: llm.ModelId, snapshot: Snapshot) -> No
 
     with snapshot_test(snapshot) as snap:
         response = call.stream(["mellon", "radiance"])
-        response.finish()
+        list(response.streams())
 
         assert len(response.tool_calls) == 2, (
             f"Expected response to have two tool calls: {response.pretty()}"
@@ -311,7 +311,7 @@ async def test_call_with_tools_async_stream(
 
     with snapshot_test(snapshot) as snap:
         response = await call.stream(["mellon", "radiance"])
-        await response.finish()
+        [stream async for stream in response.streams()]
 
         assert len(response.tool_calls) == 2, (
             f"Expected response to have two tool calls: {response.pretty()}"

@@ -251,10 +251,18 @@ export class RetryModel extends Model {
    */
   private async withRetry<T>(
     fn: (model: Model) => Promise<T>,
+    variantsIter: AsyncGenerator<RetryModel> = this.variantsAsync(),
   ): Promise<[T, RetryFailure[], RetryModel]> {
     const failures: RetryFailure[] = [];
 
-    for await (const variant of this.variantsAsync()) {
+    // Use next() directly: returning from a for-await loop closes the generator,
+    // but streaming needs the remaining variants after the initial request opens.
+    while (true) {
+      const next = await variantsIter.next();
+      if (next.done) {
+        break;
+      }
+      const variant = next.value;
       const model = variant.getActiveModel();
       try {
         const result = await fn(model);
@@ -308,14 +316,18 @@ export class RetryModel extends Model {
   ): Promise<RetryStreamResponse> {
     const streamFn = (m: Model) => m.stream(content, options);
     const variantsIter = this.variantsAsync();
-    const initialVariant = (await variantsIter.next()).value as RetryModel;
-    const initialStream = await streamFn(initialVariant.getActiveModel());
-    return new RetryStreamResponse(
+    const [initialStream, failures, initialVariant] = await this.withRetry(
+      streamFn,
+      variantsIter,
+    );
+    const response = new RetryStreamResponse(
       streamFn,
       initialStream,
       initialVariant,
       variantsIter,
     );
+    response.retryFailures.push(...failures);
+    return response;
   }
 
   // ===== Context Call Methods =====
@@ -355,14 +367,18 @@ export class RetryModel extends Model {
   ): Promise<ContextRetryStreamResponse<DepsT>> {
     const streamFn = (m: Model) => m.contextStream(ctx, content, options);
     const variantsIter = this.variantsAsync();
-    const initialVariant = (await variantsIter.next()).value as RetryModel;
-    const initialStream = await streamFn(initialVariant.getActiveModel());
-    return new ContextRetryStreamResponse(
+    const [initialStream, failures, initialVariant] = await this.withRetry(
+      streamFn,
+      variantsIter,
+    );
+    const response = new ContextRetryStreamResponse(
       streamFn,
       initialStream,
       initialVariant,
       variantsIter,
     );
+    response.retryFailures.push(...failures);
+    return response;
   }
 
   // ===== Resume Methods =====
@@ -398,14 +414,18 @@ export class RetryModel extends Model {
   ): Promise<RetryStreamResponse> {
     const streamFn = (m: Model) => m.resumeStream(response, content);
     const variantsIter = this.variantsAsync();
-    const initialVariant = (await variantsIter.next()).value as RetryModel;
-    const initialStream = await streamFn(initialVariant.getActiveModel());
-    return new RetryStreamResponse(
+    const [initialStream, failures, initialVariant] = await this.withRetry(
+      streamFn,
+      variantsIter,
+    );
+    const retryResponse = new RetryStreamResponse(
       streamFn,
       initialStream,
       initialVariant,
       variantsIter,
     );
+    retryResponse.retryFailures.push(...failures);
+    return retryResponse;
   }
 
   // ===== Context Resume Methods =====
@@ -446,14 +466,18 @@ export class RetryModel extends Model {
     const streamFn = (m: Model) =>
       m.contextResumeStream(ctx, response, content);
     const variantsIter = this.variantsAsync();
-    const initialVariant = (await variantsIter.next()).value as RetryModel;
-    const initialStream = await streamFn(initialVariant.getActiveModel());
-    return new ContextRetryStreamResponse(
+    const [initialStream, failures, initialVariant] = await this.withRetry(
+      streamFn,
+      variantsIter,
+    );
+    const retryResponse = new ContextRetryStreamResponse(
       streamFn,
       initialStream,
       initialVariant,
       variantsIter,
     );
+    retryResponse.retryFailures.push(...failures);
+    return retryResponse;
   }
 }
 

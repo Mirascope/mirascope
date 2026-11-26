@@ -12,6 +12,7 @@ import {
 import { describe, it, expect } from "vitest";
 
 import type { AssistantMessage } from "@/llm/messages";
+import type { ToolSchema } from "@/llm/tools/tool-schema";
 
 import { Document, Image } from "@/llm/content";
 import {
@@ -33,7 +34,70 @@ import {
   buildRequestParams,
   decodeResponse,
   encodeMessages,
+  encodeToolSchema,
 } from "./_utils";
+
+it("preserves recursive tool definitions in Google's JSON Schema", () => {
+  const tool: ToolSchema = {
+    name: "count_nodes",
+    description: "Count tree nodes",
+    parameters: {
+      type: "object",
+      properties: { root: { $ref: "#/$defs/Node" } },
+      required: ["root"],
+      additionalProperties: false,
+      $defs: {
+        Node: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            children: { type: "array", items: { $ref: "#/$defs/Node" } },
+          },
+          required: ["name"],
+        },
+      },
+    },
+  };
+
+  expect(encodeToolSchema(tool).parametersJsonSchema).toEqual(tool.parameters);
+});
+
+it("keeps the existing Google schema for tools without definitions", () => {
+  const tool: ToolSchema = {
+    name: "lookup",
+    description: "Look up a record",
+    parameters: {
+      type: "object",
+      properties: { id: { type: "string" } },
+      required: ["id"],
+      additionalProperties: false,
+    },
+  };
+
+  expect(encodeToolSchema(tool).parametersJsonSchema).toEqual({
+    type: "object",
+    properties: tool.parameters.properties,
+    required: tool.parameters.required,
+  });
+});
+
+it("preserves nonrecursive definitions as well", () => {
+  const tool: ToolSchema = {
+    name: "lookup",
+    description: "Look up a record",
+    parameters: {
+      type: "object",
+      properties: { record: { $ref: "#/$defs/Record" } },
+      required: ["record"],
+      additionalProperties: false,
+      $defs: {
+        Record: { type: "object", properties: { id: { type: "string" } } },
+      },
+    },
+  };
+
+  expect(encodeToolSchema(tool).parametersJsonSchema).toEqual(tool.parameters);
+});
 
 it.each([
   GoogleFinishReason.IMAGE_SAFETY,
@@ -46,6 +110,22 @@ it.each([
   expect(
     decodeResponse(response, "google/gemini-3.8-flash", false).finishReason,
   ).toBe(FinishReason.REFUSAL);
+});
+
+it("marks a blocked prompt without candidates as a refusal", () => {
+  const response = Object.assign(new GenerateContentResponse(), {
+    promptFeedback: { blockReason: "PROHIBITED_CONTENT" },
+  });
+  expect(
+    decodeResponse(response, "google/gemini-3.8-flash", false).finishReason,
+  ).toBe(FinishReason.REFUSAL);
+});
+
+it("leaves the finish reason unset when there is no candidate or block", () => {
+  const response = new GenerateContentResponse();
+  expect(
+    decodeResponse(response, "google/gemini-3.8-flash", false).finishReason,
+  ).toBeNull();
 });
 
 describe("mapGoogleErrorByStatus", () => {

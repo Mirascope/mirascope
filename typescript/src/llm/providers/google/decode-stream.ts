@@ -173,7 +173,7 @@ export function decodeStreamEvent(
     }
   }
 
-  if (candidate?.finishReason) {
+  if (candidate?.finishReason || response.promptFeedback?.blockReason) {
     // Close any open blocks
     if (state.inTextBlock) {
       chunks.push(textEnd());
@@ -186,7 +186,9 @@ export function decodeStreamEvent(
     }
     /* v8 ignore stop */
 
-    const finishReason = decodeFinishReason(candidate.finishReason);
+    const finishReason = candidate?.finishReason
+      ? decodeFinishReason(candidate.finishReason)
+      : FinishReason.REFUSAL;
     if (finishReason) {
       chunks.push(finishReasonChunk(finishReason));
     }

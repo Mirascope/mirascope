@@ -134,22 +134,40 @@ class GoogleKwargs(TypedDict, total=False):
     config: genai_types.GenerateContentConfigDict
 
 
+class _RecursiveRefError(Exception):
+    """Raised when a `$ref` points back at a definition that is being resolved."""
+
+
 def _resolve_refs(
-    schema: dict[str, Any], defs: dict[str, Any] | None = None
+    schema: dict[str, Any],
+    defs: dict[str, Any] | None = None,
+    resolving: frozenset[str] = frozenset(),
 ) -> dict[str, Any]:
-    """Recursively resolve $ref references in a JSON Schema object."""
+    """Recursively resolve $ref references in a JSON Schema object.
+
+    Raises:
+        _RecursiveRefError: If a definition refers to itself, directly or indirectly.
+    """
     if isinstance(schema, dict):
         if "$ref" in schema:
             ref_path = schema["$ref"]
             if ref_path.startswith("#/$defs/"):
                 ref_name = ref_path.split("/")[-1]
+                if ref_name in resolving:
+                    raise _RecursiveRefError(ref_name)
                 if defs and ref_name in defs:
-                    return _resolve_refs(defs[ref_name], defs)
+                    # Keep keywords next to `$ref` (e.g. a field's description);
+                    # they take precedence over those of the referenced schema.
+                    siblings = {k: v for k, v in schema.items() if k != "$ref"}
+                    return {
+                        **_resolve_refs(defs[ref_name], defs, resolving | {ref_name}),
+                        **_resolve_refs(siblings, defs, resolving),
+                    }
             return schema  # pragma: no cover
         else:
-            return {k: _resolve_refs(v, defs) for k, v in schema.items()}
+            return {k: _resolve_refs(v, defs, resolving) for k, v in schema.items()}
     elif isinstance(schema, list):
-        return [_resolve_refs(item, defs) for item in schema]
+        return [_resolve_refs(item, defs, resolving) for item in schema]
     else:
         return schema
 
@@ -173,7 +191,7 @@ def _encode_document(doc: Document) -> genai_types.PartDict:
     elif source.type == "text_document_source":
         return genai_types.PartDict(
             inline_data=genai_types.BlobDict(
-                data=base64.b64encode(source.data.encode("utf-8")),
+                data=source.data.encode("utf-8"),
                 mime_type=source.media_type,
             )
         )
@@ -333,7 +351,16 @@ def _convert_tool_to_function_declaration(
     defs = schema_dict.get("$defs")
     properties = schema_dict.get("properties", {})
     if defs:
-        properties = _resolve_refs(properties, defs)
+        try:
+            properties = _resolve_refs(properties, defs)
+        except _RecursiveRefError:
+            # A self-referential model can't be inlined, so send the JSON Schema
+            # with its `$defs`, which Google accepts as `parameters_json_schema`.
+            return genai_types.FunctionDeclarationDict(
+                name=tool.name,
+                description=tool.description,
+                parameters_json_schema=schema_dict,
+            )
     properties = {name: _filter_schema(value) for name, value in properties.items()}
 
     return genai_types.FunctionDeclarationDict(

@@ -162,6 +162,24 @@ describe("StreamResponse", () => {
   });
 
   describe("chunkStream replay", () => {
+    it("catches up to chunks produced by an interleaved iterator", async () => {
+      const response = createTestStreamResponse([
+        { type: "text_start_chunk", contentType: "text" },
+        { type: "text_chunk", contentType: "text", delta: "first" },
+        { type: "text_chunk", contentType: "text", delta: "second" },
+        { type: "text_end_chunk", contentType: "text" },
+      ]);
+      const first = response.textStream();
+      const second = response.textStream();
+
+      expect((await first.next()).value).toBe("first");
+      expect((await second.next()).value).toBe("first");
+      expect((await second.next()).value).toBe("second");
+      expect((await first.next()).value).toBe("second");
+      expect((await first.next()).done).toBe(true);
+      expect((await second.next()).done).toBe(true);
+    });
+
     it("replays cached chunks on second iteration", async () => {
       const chunks: StreamResponseChunk[] = [
         { type: "text_start_chunk", contentType: "text" },
@@ -958,6 +976,58 @@ describe("StreamResponse", () => {
   });
 
   describe("FORMAT_TOOL transformation", () => {
+    it.each(["format-first", "tool-first"])(
+      "preserves an interleaved regular tool call (%s)",
+      async (order) => {
+        const formatStart: StreamResponseChunk = {
+          type: "tool_call_start_chunk",
+          contentType: "tool_call",
+          id: "format",
+          name: FORMAT_TOOL_NAME,
+        };
+        const regularStart: StreamResponseChunk = {
+          type: "tool_call_start_chunk",
+          contentType: "tool_call",
+          id: "regular",
+          name: "lookup",
+        };
+        const response = createTestStreamResponse([
+          ...(order === "format-first"
+            ? [formatStart, regularStart]
+            : [regularStart, formatStart]),
+          {
+            type: "tool_call_chunk",
+            contentType: "tool_call",
+            id: "regular",
+            delta: '{"id":1}',
+          },
+          {
+            type: "tool_call_chunk",
+            contentType: "tool_call",
+            id: "format",
+            delta: '{"value":42}',
+          },
+          {
+            type: "tool_call_end_chunk",
+            contentType: "tool_call",
+            id: "regular",
+          },
+          {
+            type: "tool_call_end_chunk",
+            contentType: "tool_call",
+            id: "format",
+          },
+        ]);
+
+        await response.consume();
+
+        expect(response.text()).toBe('{"value":42}');
+        expect(response.toolCalls).toMatchObject([
+          { id: "regular", name: "lookup", args: '{"id":1}' },
+        ]);
+      },
+    );
+
     it("transforms FORMAT_TOOL tool_call chunks to text chunks", async () => {
       const chunks: StreamResponseChunk[] = [
         {

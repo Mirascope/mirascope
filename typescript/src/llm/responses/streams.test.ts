@@ -306,6 +306,67 @@ describe("StreamResponse.streams()", () => {
     expect(streams).toHaveLength(1);
   });
 
+  it("groups interleaved tool chunks by id and replays them", async () => {
+    const chunks: StreamResponseChunk[] = [
+      {
+        type: "tool_call_start_chunk",
+        contentType: "tool_call",
+        id: "one",
+        name: "first",
+      },
+      {
+        type: "tool_call_chunk",
+        contentType: "tool_call",
+        id: "one",
+        delta: '{"x":',
+      },
+      {
+        type: "tool_call_start_chunk",
+        contentType: "tool_call",
+        id: "two",
+        name: "second",
+      },
+      {
+        type: "tool_call_chunk",
+        contentType: "tool_call",
+        id: "two",
+        delta: '{"y":2}',
+      },
+      { type: "tool_call_end_chunk", contentType: "tool_call", id: "two" },
+      {
+        type: "tool_call_chunk",
+        contentType: "tool_call",
+        id: "one",
+        delta: "1}",
+      },
+      { type: "tool_call_end_chunk", contentType: "tool_call", id: "one" },
+    ];
+    const response = createTestStreamResponse(chunks);
+
+    const grouped = response.streams();
+    const first = (await grouped.next()).value;
+    expect(first).toBeInstanceOf(ToolCallStream);
+    expect(response.consumed).toBe(false);
+    const firstCall = await first.collect();
+    const second = (await grouped.next()).value;
+    expect(second).toBeInstanceOf(ToolCallStream);
+    const secondCall = await second.collect();
+    expect((await grouped.next()).done).toBe(true);
+
+    expect([firstCall, secondCall]).toEqual([
+      { type: "tool_call", id: "one", name: "first", args: '{"x":1}' },
+      { type: "tool_call", id: "two", name: "second", args: '{"y":2}' },
+    ]);
+    expect(response.toolCalls.map((call) => call.id)).toEqual(["two", "one"]);
+    expect(response.consumed).toBe(true);
+
+    const replayed = [];
+    for await (const stream of response.streams()) {
+      replayed.push(await stream.collect());
+    }
+    expect(replayed).toEqual([firstCall, secondCall]);
+  });
+
   it("handles mixed content (thought -> text -> tool call)", async () => {
     const chunks: StreamResponseChunk[] = [
       // Thought

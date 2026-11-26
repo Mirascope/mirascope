@@ -1,11 +1,12 @@
 """Tests for primitive type utilities."""
 
 from enum import Enum
-from typing import Annotated, Literal, Optional
+from typing import Annotated, Literal, Optional, cast
 
 import pytest
 from pydantic import BaseModel, Field, ValidationError
 
+from mirascope.llm.formatting import Partial
 from mirascope.llm.formatting.primitives import create_wrapper_model, is_primitive_type
 
 
@@ -285,3 +286,34 @@ def test_create_wrapper_model_json_validation() -> None:
     invalid_json = '[{"title": "Book", "author": "Author"}]'
     with pytest.raises(ValidationError):
         wrapper.model_validate_json(invalid_json)
+
+
+def test_create_wrapper_model_reuses_wrapper_for_same_type() -> None:
+    """Test that repeated calls reuse one wrapper, so Partial does not leak models."""
+    first = cast(BaseModel, create_wrapper_model(list[str]))
+    second = cast(BaseModel, create_wrapper_model(list[str]))
+
+    assert first is second
+    assert Partial[first] is Partial[second]
+
+
+def test_create_wrapper_model_keeps_union_order() -> None:
+    """Test that equal unions in a different order keep their own schema order."""
+    int_first = create_wrapper_model(int | str).model_json_schema()
+    str_first = create_wrapper_model(str | int).model_json_schema()
+
+    assert int_first["properties"]["output"]["anyOf"] == [
+        {"type": "integer"},
+        {"type": "string"},
+    ]
+    assert str_first["properties"]["output"]["anyOf"] == [
+        {"type": "string"},
+        {"type": "integer"},
+    ]
+
+
+def test_create_wrapper_model_unhashable_annotated_metadata() -> None:
+    """Test that a type with unhashable metadata still gets a wrapper."""
+    wrapper = create_wrapper_model(Annotated[str, {"local_metadata": "example"}])
+
+    assert wrapper(output="hello").output == "hello"

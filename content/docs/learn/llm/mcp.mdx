@@ -33,6 +33,8 @@ The call definition and invocation must happen inside the `async with` block. Th
 
 The `llm.mcp` module provides `MCPClient`, a wrapper around the MCP `ClientSession`. You create a client using one of three async context managers, depending on how your MCP server is hosted. Each returns an `MCPClient` with a `list_tools()` method that retrieves the server's tools as Mirascope `AsyncTool`s.
 
+MCP tool results are exposed as a list of content blocks. For a successful result with structured content and no blocks, Mirascope serializes the JSON object into a text block, including when the object is empty.
+
 ### Streamable HTTP
 
 For MCP servers exposed via HTTP endpoints:

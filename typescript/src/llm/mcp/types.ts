@@ -31,6 +31,7 @@ export interface MCPInputSchema {
 export interface MCPCallToolResult {
   readonly content: readonly MCPContentBlock[];
   readonly isError?: boolean;
+  readonly structuredContent?: Record<string, unknown>;
 }
 
 /**

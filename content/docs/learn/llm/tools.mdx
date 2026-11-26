@@ -190,6 +190,8 @@ def divide(a: float, b: float) -> float:
 
 If the LLM calls `divide(10, 0)`, the error message is returned as the tool result. The model sees `"Cannot divide by zero"` and can respond appropriately—perhaps explaining the issue to the user or trying a different calculation.
 
+For Anthropic models, failed tool results are also marked as errors so the model can distinguish them from successful tool output with the same text.
+
 Each `ToolOutput` has an `error` property you can check:
 
 ```python

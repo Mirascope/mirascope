@@ -22,6 +22,33 @@ MIME_TYPES = get_args(AudioMimeType)
 MAX_AUDIO_SIZE = 25 * 1024 * 1024
 
 
+def _is_mpeg_layer3_frame(audio_data: bytes) -> bool:
+    """Whether the data starts with an MPEG Layer III frame header.
+
+    The header starts with an 11-bit frame sync, followed by 2 version bits and
+    2 layer bits (ISO/IEC 11172-3, 13818-3). Every MPEG-1, MPEG-2 and MPEG-2.5
+    Layer III header matches, i.e. ``0xFFFB``/``0xFFFA``, ``0xFFF3``/``0xFFF2``
+    and ``0xFFE3``/``0xFFE2``, instead of only the one with a CRC.
+
+    Layer bits of ``0b00`` are reserved in MPEG audio and are what ADTS AAC
+    uses, so they are excluded here and left to the AAC branch.
+    """
+    if len(audio_data) < 3 or audio_data[0] != 0xFF:
+        return False
+    if audio_data[1] & 0xE0 != 0xE0:
+        return False
+    version = (audio_data[1] >> 3) & 0b11
+    layer = (audio_data[1] >> 1) & 0b11
+    bitrate_index = audio_data[2] >> 4
+    sample_rate_index = (audio_data[2] >> 2) & 0b11
+    return (
+        version != 0b01
+        and layer == 0b01
+        and bitrate_index != 0b1111
+        and sample_rate_index != 0b11
+    )
+
+
 def infer_audio_type(audio_data: bytes) -> AudioMimeType:
     """Get the MIME type of an audio file from its raw bytes.
 
@@ -33,20 +60,11 @@ def infer_audio_type(audio_data: bytes) -> AudioMimeType:
 
     if audio_data.startswith(b"RIFF") and audio_data[8:12] == b"WAVE":
         return "audio/wav"
-    elif audio_data.startswith(b"ID3") or (
-        # MPEG-1/2/2.5 Layer III frames may have either CRC protection bit.
-        # Check the header fields rather than one version's two-byte prefix.
-        audio_data[0] == 0xFF
-        and (audio_data[1] & 0xE0) == 0xE0  # Frame sync.
-        and (audio_data[1] & 0x18) != 0x08  # Not the reserved MPEG version.
-        and (audio_data[1] & 0x06) == 0x02  # Layer III, not Layer I/II or AAC.
-        and (audio_data[2] & 0xF0) != 0xF0  # Not the reserved bitrate index.
-        and (audio_data[2] & 0x0C) != 0x0C  # Not the reserved sample rate.
-    ):
+    elif audio_data.startswith(b"ID3") or _is_mpeg_layer3_frame(audio_data):
         return "audio/mp3"
     elif audio_data.startswith(b"FORM") and audio_data[8:12] == b"AIFF":
         return "audio/aiff"
-    elif audio_data.startswith(b"\xff\xf1") or audio_data.startswith(b"\xff\xf9"):
+    elif audio_data.startswith((b"\xff\xf0", b"\xff\xf1", b"\xff\xf8", b"\xff\xf9")):
         return "audio/aac"
     elif audio_data.startswith(b"OggS"):
         return "audio/ogg"

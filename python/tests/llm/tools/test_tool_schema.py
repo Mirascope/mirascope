@@ -3,8 +3,14 @@
 from typing import Annotated
 
 import pytest
+from annotated_types import Ge, Le
 from inline_snapshot import snapshot
-from pydantic import BaseModel, Field, PydanticSchemaGenerationError
+from pydantic import (
+    BaseModel,
+    Field,
+    PydanticSchemaGenerationError,
+    StringConstraints,
+)
 from pydantic.fields import FieldInfo
 
 from mirascope import llm
@@ -309,6 +315,45 @@ def test_annotated_field_constraints_are_preserved() -> None:
     )
 
 
+def test_annotated_constraints_without_field_are_preserved() -> None:
+    """Test that `annotated_types` and `StringConstraints` metadata reach the schema."""
+
+    def constrained_tool(
+        party_size: Annotated[int, Ge(1), Le(8)],
+        code: Annotated[str, StringConstraints(max_length=3)] = "abc",
+    ) -> str:
+        """A tool with constrained parameters.
+
+        Args:
+            party_size: How many people to seat.
+        """
+        raise NotImplementedError
+
+    schema = llm.tools.ToolSchema.from_function(constrained_tool)
+
+    assert schema.parameters.model_dump(by_alias=True, exclude_none=True) == snapshot(
+        {
+            "properties": {
+                "party_size": {
+                    "description": "How many people to seat.",
+                    "maximum": 8,
+                    "minimum": 1,
+                    "title": "Party Size",
+                    "type": "integer",
+                },
+                "code": {
+                    "default": "abc",
+                    "maxLength": 3,
+                    "title": "Code",
+                    "type": "string",
+                },
+            },
+            "required": ["party_size"],
+            "additionalProperties": False,
+        }
+    )
+
+
 def test_annotated_field_alias_and_default_are_not_used() -> None:
     """Test that Field alias/default do not change names or requiredness.
 
@@ -349,6 +394,62 @@ def test_multiple_annotated_fields_preserve_constraints() -> None:
 
     assert bounded.parameters.properties["value"]["minimum"] == 1
     assert bounded.parameters.properties["value"]["maximum"] == 5
+
+
+def test_underscore_parameters_preserve_names_and_constraints() -> None:
+    @llm.tool
+    def lookup(
+        _id: Annotated[int, Field(ge=1, description="Record ID")],
+        param_id: str,
+        _limit: int = 5,
+        _param_id: int = 2,
+    ) -> dict[str, int | str]:
+        return {"id": _id, "label": param_id, "limit": _limit, "other": _param_id}
+
+    assert set(lookup.parameters.properties) == {
+        "_id",
+        "param_id",
+        "_limit",
+        "_param_id",
+    }
+    assert lookup.parameters.required == ["_id", "param_id"]
+    assert lookup.parameters.properties["_id"]["minimum"] == 1
+    assert lookup.parameters.properties["_id"]["description"] == "Record ID"
+    assert lookup.parameters.properties["_limit"]["default"] == 5
+
+    for args, expected_limit in [
+        ('{"_id": "12", "param_id": "record"}', 5),
+        ('{"_id": "12", "param_id": "record", "_limit": "7"}', 7),
+    ]:
+        output = lookup.execute(llm.ToolCall(id="lookup", name=lookup.name, args=args))
+        assert output.error is None
+        assert output.result == {
+            "id": 12,
+            "label": "record",
+            "limit": expected_limit,
+            "other": 2,
+        }
+
+    output = lookup.execute(
+        llm.ToolCall(
+            id="lookup", name=lookup.name, args='{"_id": 0, "param_id": "record"}'
+        )
+    )
+    assert isinstance(output.error, llm.ToolExecutionError)
+
+
+def test_plain_required_underscore_parameter_is_in_schema() -> None:
+    @llm.tool
+    def lookup(_id: int) -> int:
+        return _id
+
+    assert lookup.parameters.properties["_id"]["type"] == "integer"
+    assert lookup.parameters.required == ["_id"]
+    output = lookup.execute(
+        llm.ToolCall(id="lookup", name=lookup.name, args='{"_id": "12"}')
+    )
+    assert output.error is None
+    assert output.result == 12
 
 
 def test_non_field_annotation_keeps_docstring_description() -> None:

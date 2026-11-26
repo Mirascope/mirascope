@@ -89,6 +89,44 @@ async def test_structured_stream_optional_nested_model(asynchronous: bool) -> No
     assert partials[-1].model_dump() == {"author": {"name": "Patrick", "year": None}}
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize("asynchronous", [False, True], ids=["sync", "async"])
+async def test_structured_stream_tool_mode_with_interleaved_regular_tool(
+    asynchronous: bool,
+) -> None:
+    """A regular tool call interleaved with the format tool is preserved and parsed."""
+
+    class Book(BaseModel):
+        title: str
+
+    chunks = [
+        llm.ToolCallStartChunk(id="fmt", name="__mirascope_formatted_output_tool__"),
+        llm.ToolCallStartChunk(id="other", name="get_book_info"),
+        llm.ToolCallChunk(id="fmt", delta='{"title":'),
+        llm.ToolCallChunk(id="other", delta='{"isbn":"x"}'),
+        llm.ToolCallChunk(id="fmt", delta='"The Hobbit"}'),
+        llm.ToolCallEndChunk(id="other"),
+        llm.ToolCallEndChunk(id="fmt"),
+    ]
+
+    if asynchronous:
+        response = create_async_stream_response_with_format(
+            chunks=chunks, format=llm.format(Book, mode="tool")
+        )
+        await response.finish()
+    else:
+        response = create_sync_stream_response_with_format(
+            chunks=chunks, format=llm.format(Book, mode="tool")
+        )
+        response.finish()
+
+    assert len(response.tool_calls) == 1
+    assert response.tool_calls[0].id == "other"
+    assert response.tool_calls[0].name == "get_book_info"
+    assert response.tool_calls[0].args == '{"isbn":"x"}'
+    assert response.parse() == Book(title="The Hobbit")
+
+
 class TestStructuredStreamSync:
     """Test synchronous structured streaming."""
 

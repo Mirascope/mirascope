@@ -18,6 +18,7 @@ import {
   toolCallChunk,
   toolCallEnd,
 } from "@/llm/content";
+import { cacheWriteTokens } from "@/llm/providers/openai/_utils/cache-write";
 import {
   finishReasonChunk,
   usageDeltaChunk,
@@ -80,6 +81,7 @@ export function decodeStreamEvent(
         outputTokens: chunk.usage.completion_tokens,
         /* v8 ignore start - optional details may not be present */
         cacheReadTokens: chunk.usage.prompt_tokens_details?.cached_tokens ?? 0,
+        cacheWriteTokens: cacheWriteTokens(chunk.usage.prompt_tokens_details),
         reasoningTokens:
           chunk.usage.completion_tokens_details?.reasoning_tokens ?? 0,
         /* v8 ignore stop */
@@ -103,6 +105,14 @@ export function decodeStreamEvent(
   }
   /* v8 ignore stop */
   if (content) {
+    if (state.currentContentType === "tool_call") {
+      for (const openId of state.currentTools.values()) {
+        chunks.push(toolCallEnd(openId));
+      }
+      state.currentTools.clear();
+      state.indexSlots.clear();
+      state.currentContentType = null;
+    }
     if (state.currentContentType === null) {
       chunks.push(textStart());
       state.currentContentType = "text";

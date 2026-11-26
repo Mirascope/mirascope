@@ -19,6 +19,7 @@ export { APIRouteProvider } from "@/llm/providers/api-route";
 export {
   AtlasCloudProvider,
   CheaperInferenceProvider,
+  GroqProvider,
   MiniMaxProvider,
   RequestyProvider,
 } from "@/llm/providers/openai-compatible";

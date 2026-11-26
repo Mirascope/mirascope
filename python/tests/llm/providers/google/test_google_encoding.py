@@ -1,9 +1,12 @@
 """Tests for Google document encoding."""
 
 import base64
-from typing import Annotated, Any
+import json
+from typing import Annotated, Any, Literal
 
+import httpx
 import pytest
+from google import genai
 from google.genai import types as genai_types
 from inline_snapshot import snapshot
 from pydantic import BaseModel, Field, ValidationError
@@ -113,6 +116,135 @@ def test_google_filters_only_schema_keywords(extra: dict[str, Any]) -> None:
         assert "examples" in properties["value"].properties
 
 
+def test_google_keeps_description_of_model_typed_tool_parameter() -> None:
+    """A description next to a `$ref` survives resolving the reference."""
+
+    class Address(BaseModel):
+        """A postal address."""
+
+        street: str
+        city: str
+
+    @llm.tool
+    def ship_order(order_id: str, address: Address) -> str:
+        """Ship an order.
+
+        Args:
+            order_id: The order to ship.
+            address: The customer's delivery address.
+        """
+        return order_id
+
+    _, _, kwargs = encode_request(
+        model_id="google/gemini-2.5-flash",
+        messages=[llm.messages.user("Use the tool")],
+        tools=Toolkit([ship_order]),
+        format=None,
+        params={},
+    )
+    config = genai_types.GenerateContentConfig.model_validate(kwargs.get("config", {}))
+    assert config.tools is not None
+    assert isinstance(config.tools[0], genai_types.Tool)
+    declarations = config.tools[0].function_declarations
+    assert declarations is not None and declarations[0].parameters is not None
+    properties = declarations[0].parameters.properties
+    assert properties is not None
+    assert properties["order_id"].description == "The order to ship."
+    address = properties["address"]
+    assert address.description == "The customer's delivery address."
+    assert address.properties is not None
+    assert set(address.properties) == {"street", "city"}
+
+
+def test_google_keeps_description_of_nested_format_field() -> None:
+    """Tool-mode structured output retains the field description beside a `$ref`."""
+
+    class Address(BaseModel):
+        """A postal address."""
+
+        street: str
+
+    class Delivery(BaseModel):
+        address: Address = Field(description="The delivery destination.")
+
+    _, _, kwargs = encode_request(
+        model_id="google/gemini-2.5-flash",
+        messages=[llm.messages.user("Provide a delivery")],
+        tools=Toolkit(None),
+        format=llm.format(Delivery, mode="tool"),
+        params={},
+    )
+    config = genai_types.GenerateContentConfig.model_validate(kwargs.get("config", {}))
+    assert config.tools is not None
+    assert isinstance(config.tools[0], genai_types.Tool)
+    declarations = config.tools[0].function_declarations
+    assert declarations is not None and declarations[0].parameters is not None
+    properties = declarations[0].parameters.properties
+    assert properties is not None
+    address = properties["address"]
+    assert address.description == "The delivery destination."
+    assert address.properties is not None
+    assert "street" in address.properties
+
+
+class TreeNode(BaseModel):
+    """A node in a tree."""
+
+    name: str
+    children: list["TreeNode"] = []
+
+
+def test_google_sends_self_referential_tool_parameter_as_json_schema() -> None:
+    """A self-referential model can't be inlined, so its `$defs` are kept."""
+
+    @llm.tool
+    def count_nodes(root: TreeNode) -> int:
+        """Count the nodes in a tree."""
+        return 1
+
+    _, _, kwargs = encode_request(
+        model_id="google/gemini-2.5-flash",
+        messages=[llm.messages.user("Use the tool")],
+        tools=Toolkit([count_nodes]),
+        format=None,
+        params={},
+    )
+    config = genai_types.GenerateContentConfig.model_validate(kwargs.get("config", {}))
+    assert config.tools is not None
+    assert isinstance(config.tools[0], genai_types.Tool)
+    declarations = config.tools[0].function_declarations
+    assert declarations is not None
+    declaration = declarations[0]
+    assert declaration.name == "count_nodes"
+    assert declaration.description == "Count the nodes in a tree."
+    assert declaration.parameters is None
+    assert declaration.parameters_json_schema == snapshot(
+        {
+            "$defs": {
+                "TreeNode": {
+                    "description": "A node in a tree.",
+                    "properties": {
+                        "name": {"title": "Name", "type": "string"},
+                        "children": {
+                            "default": [],
+                            "items": {"$ref": "#/$defs/TreeNode"},
+                            "title": "Children",
+                            "type": "array",
+                        },
+                    },
+                    "required": ["name"],
+                    "title": "TreeNode",
+                    "type": "object",
+                }
+            },
+            "additionalProperties": False,
+            "properties": {"root": {"$ref": "#/$defs/TreeNode"}},
+            "required": ["root"],
+            "type": "object",
+        }
+    )
+
+
 def test_encode_base64_document() -> None:
     """Test encoding a base64 document source as inline_data for Google."""
     doc = Document(
@@ -153,7 +285,7 @@ def test_encode_base64_document() -> None:
 
 
 def test_encode_text_document() -> None:
-    """Test encoding a text document source as base64 inline_data for Google."""
+    """Test encoding a text document source as raw inline_data for Google."""
     doc = Document(
         source=TextDocumentSource(
             type="text_document_source",
@@ -179,7 +311,7 @@ def test_encode_text_document() -> None:
                         {"text": "Read this"},
                         {
                             "inline_data": {
-                                "data": base64.b64encode(b"Hello, world!"),
+                                "data": b"Hello, world!",
                                 "mime_type": "text/plain",
                             }
                         },
@@ -189,6 +321,51 @@ def test_encode_text_document() -> None:
             "config": {},
         }
     )
+
+
+@pytest.mark.parametrize(
+    ("text", "mime_type"),
+    [
+        ("Hello, 世界!\n", "text/plain"),
+        ('{"answer": "你好"}', "application/json"),
+    ],
+)
+def test_encode_text_document_preserves_wire_bytes(
+    text: str, mime_type: Literal["text/plain", "application/json"]
+) -> None:
+    original_bytes = text.encode("utf-8")
+    doc = llm.Document.from_bytes(original_bytes, mime_type=mime_type)
+    _, _, kwargs = encode_request(
+        model_id="google/gemini-2.5-flash",
+        messages=[llm.messages.user(["Read this", doc])],
+        format=None,
+        tools=llm.Toolkit(None),
+        params={},
+    )
+    received: list[bytes] = []
+
+    class RequestCaptured(Exception):
+        pass
+
+    def capture_request(request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content)
+        inline_data = body["contents"][0]["parts"][1]["inlineData"]
+        assert inline_data["mimeType"] == mime_type
+        received.append(base64.b64decode(inline_data["data"]))
+        raise RequestCaptured
+
+    with (
+        httpx.Client(transport=httpx.MockTransport(capture_request)) as http_client,
+        genai.Client(
+            vertexai=False,
+            api_key="test-key",
+            http_options=genai_types.HttpOptions(httpx_client=http_client),
+        ) as client,
+        pytest.raises(RequestCaptured),
+    ):
+        client.models.generate_content(**kwargs)
+
+    assert received == [original_bytes]
 
 
 def test_encode_url_document_throws() -> None:

@@ -164,17 +164,23 @@ def process_params(
         "encode_thoughts_as_text": False,
     }
 
+    unsupported_params = ["seed"]
+    adaptive_only = uses_adaptive_thinking_only(model)
+    if adaptive_only:
+        unsupported_params.extend(["temperature", "top_p", "top_k"])
+
     with _base_utils.ensure_all_params_accessed(
-        params=params, provider_id="anthropic", unsupported_params=["seed"]
+        params=params, provider_id="anthropic", unsupported_params=unsupported_params
     ) as param_accessor:
-        if param_accessor.temperature is not None:
-            result["temperature"] = param_accessor.temperature
+        if not adaptive_only:
+            if param_accessor.temperature is not None:
+                result["temperature"] = param_accessor.temperature
+            if param_accessor.top_p is not None:
+                result["top_p"] = param_accessor.top_p
+            if param_accessor.top_k is not None:
+                result["top_k"] = param_accessor.top_k
         if param_accessor.max_tokens is not None:
             result["max_tokens"] = param_accessor.max_tokens
-        if param_accessor.top_p is not None:
-            result["top_p"] = param_accessor.top_p
-        if param_accessor.top_k is not None:
-            result["top_k"] = param_accessor.top_k
         if param_accessor.stop_sequences is not None:
             result["stop_sequences"] = param_accessor.stop_sequences
         if param_accessor.thinking is not None:
@@ -195,12 +201,27 @@ def process_params(
                         ),
                     )
                 result["thinking"] = {"type": "disabled"}
-            elif uses_adaptive_thinking_only(model):
+            elif budget_tokens != -1 and uses_adaptive_thinking_only(model):
                 result["thinking"] = {"type": "adaptive"}
                 result["output_config"] = {
                     "effort": THINKING_LEVEL_TO_EFFORT.get(level, "medium")
                 }
             elif budget_tokens > 0:
+                if budget_tokens >= result["max_tokens"]:
+                    # Anthropic rejects a thinking budget that is not less than
+                    # max_tokens, and the minimum budget is 1024 tokens, so a
+                    # request with max_tokens <= 1024 can never carry a budget.
+                    # Fail fast instead of sending a request the API rejects.
+                    raise FeatureNotSupportedError(
+                        "thinking budget",
+                        "anthropic",
+                        f"anthropic/{model}" if model is not None else None,
+                        message=(
+                            f"Anthropic thinking budget of {budget_tokens} tokens "
+                            "must be less than max_tokens of "
+                            f"{result['max_tokens']} tokens."
+                        ),
+                    )
                 result["thinking"] = {"type": "enabled", "budget_tokens": budget_tokens}
             else:
                 # budget is -1, do not set thinking at all.
@@ -316,14 +337,15 @@ def encode_content(
                 doc_block["cache_control"] = {"type": "ephemeral"}
             blocks.append(doc_block)
         elif part.type == "tool_output":
-            blocks.append(
-                anthropic_types.ToolResultBlockParam(
-                    type="tool_result",
-                    tool_use_id=part.id,
-                    content=_base_utils.encode_tool_output_content(part.result),
-                    cache_control={"type": "ephemeral"} if should_add_cache else None,
-                )
+            tool_result = anthropic_types.ToolResultBlockParam(
+                type="tool_result",
+                tool_use_id=part.id,
+                content=_base_utils.encode_tool_output_content(part.result),
+                cache_control={"type": "ephemeral"} if should_add_cache else None,
             )
+            if part.error is not None:
+                tool_result["is_error"] = True
+            blocks.append(tool_result)
         elif part.type == "tool_call":
             # Re-encode the internal FORMAT_TOOL call as text when reusing history.
             # Anthropic's structured-output tool (FORMAT_TOOL_NAME) is a Mirascope

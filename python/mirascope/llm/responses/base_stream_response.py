@@ -1,5 +1,6 @@
 """Base class for StreamResponse and AsyncStreamResponse."""
 
+from collections import deque
 from collections.abc import AsyncIterator, Iterator, Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Generic, Literal, TypeAlias, TypeVar
@@ -184,7 +185,7 @@ class BaseStreamResponse(
         """Initialize the BaseStreamResponse.
 
         Args:
-            provider: The provider name (e.g. "anthropic", "openai").
+            provider_id: The provider name (e.g. "anthropic", "openai").
             model_id: The model identifier that generated the response.
             provider_model_name: Optional provider-specific model name. May include
                 provider-specific additional info (like api mode in "gpt-5:responses").
@@ -239,7 +240,7 @@ class BaseStreamResponse(
         self._current_content: Text | Thought | None = None
         self._current_tool_calls: dict[str, ToolCall] = {}
 
-        self._processing_format_tool: bool = False
+        self._format_tool_id: str | None = None
 
     def _transform_format_tool_chunks(
         self, chunk: AssistantContentChunk
@@ -247,12 +248,20 @@ class BaseStreamResponse(
         if chunk.type == "tool_call_start_chunk" and chunk.name.startswith(
             FORMAT_TOOL_NAME
         ):
-            self._processing_format_tool = True
+            self._format_tool_id = chunk.id
             return TextStartChunk()
-        if self._processing_format_tool and chunk.type == "tool_call_chunk":
+        if (
+            self._format_tool_id is not None
+            and chunk.type == "tool_call_chunk"
+            and chunk.id == self._format_tool_id
+        ):
             return TextChunk(delta=chunk.delta)
-        if self._processing_format_tool and chunk.type == "tool_call_end_chunk":
-            self._processing_format_tool = False
+        if (
+            self._format_tool_id is not None
+            and chunk.type == "tool_call_end_chunk"
+            and chunk.id == self._format_tool_id
+        ):
+            self._format_tool_id = None
             return TextEndChunk()
         return chunk
 
@@ -279,7 +288,11 @@ class BaseStreamResponse(
         self, chunk: TextStartChunk | TextChunk | TextEndChunk
     ) -> None:
         if chunk.type == "text_start_chunk":
-            if self._current_content or self._current_tool_calls:
+            # The format tool is streamed as text and may interleave with ordinary tool
+            # calls, so tool calls in flight are allowed only while it is active.
+            if self._current_content or (
+                self._current_tool_calls and self._format_tool_id is None
+            ):
                 raise RuntimeError(
                     "Received text_start_chunk while processing another chunk"
                 )
@@ -329,7 +342,8 @@ class BaseStreamResponse(
         self, chunk: ToolCallStartChunk | ToolCallChunk | ToolCallEndChunk
     ) -> None:
         if chunk.type == "tool_call_start_chunk":
-            if self._current_content:
+            # A regular tool may start while the format tool's text is in flight.
+            if self._current_content and self._format_tool_id is None:
                 raise RuntimeError(
                     "Received tool_call_start_chunk while processing another chunk"
                 )
@@ -406,8 +420,20 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
         cached chunks.
         """
         chunk_iter = self.chunk_stream()
+        pending_chunks: deque[AssistantContentChunk] = deque()
 
-        for start_chunk in chunk_iter:
+        def iter_chunks() -> Iterator[AssistantContentChunk]:
+            while True:
+                if pending_chunks:
+                    yield pending_chunks.popleft()
+                else:
+                    try:
+                        chunk = next(chunk_iter)
+                    except StopIteration:
+                        return
+                    yield chunk
+
+        for start_chunk in iter_chunks():
             # At the start of this loop, we always expect to find a start chunk. Then,
             # before proceeding, we will collect from the stream we create (in case the
             # user did not exhaust it), which ensures we will be expecting a start chunk
@@ -416,7 +442,7 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
                 case "text_start_chunk":
 
                     def text_stream_iterator() -> Iterator[TextChunk]:
-                        for chunk in chunk_iter:
+                        for chunk in iter_chunks():
                             if chunk.type == "text_chunk":
                                 yield chunk
                             else:
@@ -428,7 +454,7 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
                 case "thought_start_chunk":
 
                     def thought_stream_iterator() -> Iterator[ThoughtChunk]:
-                        for chunk in chunk_iter:
+                        for chunk in iter_chunks():
                             if chunk.type == "thought_chunk":
                                 yield chunk
                             else:
@@ -441,12 +467,26 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
                     tool_id = start_chunk.id
                     tool_name = start_chunk.name
 
-                    def tool_call_stream_iterator() -> Iterator[ToolCallChunk]:
-                        for chunk in chunk_iter:
-                            if chunk.type == "tool_call_chunk":
-                                yield chunk
-                            else:
-                                return  # Stream finished
+                    def tool_call_stream_iterator(
+                        tool_id: str = tool_id,
+                    ) -> Iterator[ToolCallChunk]:
+                        deferred: list[AssistantContentChunk] = []
+                        try:
+                            for chunk in iter_chunks():
+                                if (
+                                    chunk.type == "tool_call_chunk"
+                                    and chunk.id == tool_id
+                                ):
+                                    yield chunk
+                                elif (
+                                    chunk.type == "tool_call_end_chunk"
+                                    and chunk.id == tool_id
+                                ):
+                                    return
+                                else:
+                                    deferred.append(chunk)
+                        finally:
+                            pending_chunks.extendleft(reversed(deferred))
 
                     stream = ToolCallStream(
                         tool_id=tool_id,
@@ -483,13 +523,21 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
         the LLM), it will proceed to consume it once it has iterated through all the
         cached chunks.
         """
-        for chunk in self.chunks:
-            yield chunk
+        cursor = 0
+        while True:
+            while cursor < len(self._chunks):
+                yield self._chunks[cursor]
+                cursor += 1
 
-        if self.consumed:
-            return
+            if self.consumed:
+                return
 
-        for chunk in self._chunk_iterator:
+            try:
+                chunk = next(self._chunk_iterator)
+            except StopIteration:
+                self.consumed = True
+                return
+
             if chunk.type == "raw_stream_event_chunk":
                 self._raw_stream_events.append(chunk.raw_stream_event)
             elif chunk.type == "raw_message_chunk":
@@ -508,8 +556,7 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
                     self.usage.provider_tool_usage = chunk.provider_tool_usage
             else:
                 yield self._handle_chunk(chunk)
-
-        self.consumed = True
+                cursor += 1
 
     def finish(self) -> None:
         """Finish streaming all of this response's content."""
@@ -624,8 +671,20 @@ class BaseAsyncStreamResponse(
         cached chunks.
         """
         chunk_iter = self.chunk_stream()
+        pending_chunks: deque[AssistantContentChunk] = deque()
 
-        async for start_chunk in chunk_iter:
+        async def iter_chunks() -> AsyncIterator[AssistantContentChunk]:
+            while True:
+                if pending_chunks:
+                    yield pending_chunks.popleft()
+                else:
+                    try:
+                        chunk = await anext(chunk_iter)
+                    except StopAsyncIteration:
+                        return
+                    yield chunk
+
+        async for start_chunk in iter_chunks():
             # At the start of this loop, we always expect to find a start chunk. Then,
             # before proceeding, we will collect from the stream we create (in case the
             # user did not exhaust it), which ensures we will be expecting a start chunk
@@ -634,7 +693,7 @@ class BaseAsyncStreamResponse(
                 case "text_start_chunk":
 
                     async def text_stream_iterator() -> AsyncIterator[TextChunk]:
-                        async for chunk in chunk_iter:
+                        async for chunk in iter_chunks():
                             if chunk.type == "text_chunk":
                                 yield chunk
                             else:
@@ -646,7 +705,7 @@ class BaseAsyncStreamResponse(
                 case "thought_start_chunk":
 
                     async def thought_stream_iterator() -> AsyncIterator[ThoughtChunk]:
-                        async for chunk in chunk_iter:
+                        async for chunk in iter_chunks():
                             if chunk.type == "thought_chunk":
                                 yield chunk
                             else:
@@ -661,14 +720,26 @@ class BaseAsyncStreamResponse(
                     tool_id = start_chunk.id
                     tool_name = start_chunk.name
 
-                    async def tool_call_stream_iterator() -> AsyncIterator[
-                        ToolCallChunk
-                    ]:
-                        async for chunk in chunk_iter:
-                            if chunk.type == "tool_call_chunk":
-                                yield chunk
-                            else:
-                                return  # Stream finished
+                    async def tool_call_stream_iterator(
+                        tool_id: str = tool_id,
+                    ) -> AsyncIterator[ToolCallChunk]:
+                        deferred: list[AssistantContentChunk] = []
+                        try:
+                            async for chunk in iter_chunks():
+                                if (
+                                    chunk.type == "tool_call_chunk"
+                                    and chunk.id == tool_id
+                                ):
+                                    yield chunk
+                                elif (
+                                    chunk.type == "tool_call_end_chunk"
+                                    and chunk.id == tool_id
+                                ):
+                                    return
+                                else:
+                                    deferred.append(chunk)
+                        finally:
+                            pending_chunks.extendleft(reversed(deferred))
 
                     stream = AsyncToolCallStream(
                         tool_id=tool_id,
@@ -706,13 +777,21 @@ class BaseAsyncStreamResponse(
         cached chunks.
         """
 
-        for chunk in self.chunks:
-            yield chunk
+        cursor = 0
+        while True:
+            while cursor < len(self._chunks):
+                yield self._chunks[cursor]
+                cursor += 1
 
-        if self.consumed:
-            return
+            if self.consumed:
+                return
 
-        async for chunk in self._chunk_iterator:
+            try:
+                chunk = await anext(self._chunk_iterator)
+            except StopAsyncIteration:
+                self.consumed = True
+                return
+
             if chunk.type == "raw_stream_event_chunk":
                 self._raw_stream_events.append(chunk.raw_stream_event)
             elif chunk.type == "raw_message_chunk":
@@ -731,8 +810,7 @@ class BaseAsyncStreamResponse(
                     self.usage.provider_tool_usage = chunk.provider_tool_usage
             else:
                 yield self._handle_chunk(chunk)
-
-        self.consumed = True
+                cursor += 1
 
     async def finish(self) -> None:
         """Finish streaming all of this response's content."""

@@ -51,7 +51,10 @@ class BaseToolkit(Generic[ToolSchemaT]):
         Raises:
             ValueError: If multiple tools have the same name.
         """
-        self.tools = tools or []
+        # Copy the tools so that mutating the caller's list later (e.g. appending to
+        # the list passed to `@llm.call`) can't make the tools sent to the provider
+        # drift from the tools we can look up and execute.
+        self.tools = list(tools) if tools else []
         self.tools_dict = {}
         self.provider_tools_dict = {}
         for tool in self.tools:
