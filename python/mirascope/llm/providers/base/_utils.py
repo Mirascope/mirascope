@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from collections.abc import Generator, Mapping, Sequence
 from contextlib import contextmanager
 from typing import (
@@ -81,6 +82,15 @@ def ensure_all_properties_required(obj: object) -> None:
         obj = cast(list[object], obj)
         for item in obj:
             ensure_all_properties_required(item)
+
+
+def sanitize_schema_name(name: str) -> str:
+    """Make a format name safe for OpenAI's `json_schema.name`.
+
+    OpenAI only accepts names matching `^[a-zA-Z0-9_-]+$` (max 64 chars), but format
+    names can be things like `int | None` or `Page[Book]` for generic models.
+    """
+    return re.sub(r"[^a-zA-Z0-9_-]+", "_", name).strip("_")[:64]
 
 
 def add_system_instructions(
