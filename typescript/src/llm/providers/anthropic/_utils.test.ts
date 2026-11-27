@@ -33,6 +33,7 @@ import {
   TOOL_MODE_INSTRUCTIONS,
 } from "@/llm/formatting";
 import { user } from "@/llm/messages";
+import { encodeToolSchema } from "@/llm/providers/anthropic/_utils";
 import { FinishReason } from "@/llm/responses/finish-reason";
 import { defineTool } from "@/llm/tools";
 
@@ -1300,5 +1301,32 @@ describe("ANTHROPIC_ERROR_MAP catch-all", () => {
 
   it("leaves errors from outside the SDK unmapped", () => {
     expect(mapped(new Error("unrelated"))).toBeUndefined();
+  });
+});
+
+describe("encodeToolSchema definitions", () => {
+  const properties = { node: { $ref: "#/$defs/Node" } };
+  const $defs = {
+    Node: { type: "object", properties: { child: { $ref: "#/$defs/Node" } } },
+  };
+  const tool = {
+    name: "walk",
+    description: "Walk a tree.",
+    parameters: {
+      type: "object" as const,
+      properties,
+      required: ["node"],
+      additionalProperties: false as const,
+      $defs,
+    },
+  };
+
+  it("keeps the $defs referenced by nested parameters", () => {
+    expect(encodeToolSchema(tool)).toHaveProperty("input_schema", {
+      type: "object",
+      properties,
+      required: ["node"],
+      $defs,
+    });
   });
 });

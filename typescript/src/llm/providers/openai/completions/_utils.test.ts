@@ -20,6 +20,7 @@ import {
   encodeMessages,
   decodeResponse,
   buildRequestParams,
+  encodeToolSchema,
 } from "@/llm/providers/openai/completions/_utils";
 import { featureInfoForOpenAIModel } from "@/llm/providers/openai/completions/_utils/feature-info";
 import { FinishReason } from "@/llm/responses/finish-reason";
@@ -679,5 +680,32 @@ describe("document encoding", () => {
     expect(() =>
       buildRequestParams("openai/gpt-4o:completions", messages),
     ).toThrow(FeatureNotSupportedError);
+  });
+});
+
+describe("encodeToolSchema definitions", () => {
+  const properties = { node: { $ref: "#/$defs/Node" } };
+  const $defs = {
+    Node: { type: "object", properties: { child: { $ref: "#/$defs/Node" } } },
+  };
+  const tool = {
+    name: "walk",
+    description: "Walk a tree.",
+    parameters: {
+      type: "object" as const,
+      properties,
+      required: ["node"],
+      additionalProperties: false as const,
+      $defs,
+    },
+  };
+
+  it("keeps the $defs referenced by nested parameters", () => {
+    expect(encodeToolSchema(tool)).toHaveProperty("function.parameters", {
+      type: "object",
+      properties,
+      required: ["node"],
+      $defs,
+    });
   });
 });

@@ -496,6 +496,7 @@ export function encodeToolSchema(tool: ToolSchema): Anthropic.Messages.Tool {
         Anthropic.Messages.Tool.InputSchema
       >,
       required: tool.parameters.required as string[],
+      ...(tool.parameters.$defs && { $defs: tool.parameters.$defs }),
     },
   };
 }
