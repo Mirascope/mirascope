@@ -142,6 +142,7 @@ export function encodeToolSchema(tool: ToolSchema): FunctionTool {
       type: "object",
       properties: tool.parameters.properties as Record<string, unknown>,
       required: tool.parameters.required as string[] | undefined,
+      ...(tool.parameters.$defs && { $defs: tool.parameters.$defs }),
     },
     strict: tool.strict ?? null,
   };

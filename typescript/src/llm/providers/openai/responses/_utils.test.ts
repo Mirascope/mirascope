@@ -19,6 +19,7 @@ import {
   buildRequestParams,
   decodeResponse,
   encodeMessages,
+  encodeToolSchema,
 } from "@/llm/providers/openai/responses/_utils";
 
 describe("computeReasoning", () => {
@@ -461,5 +462,32 @@ describe("raw message round-tripping", () => {
     // Should encode from content, not raw message
     expect(encoded).toHaveLength(2);
     expect(encoded[1]).toEqual({ role: "assistant", content: "Hello!" });
+  });
+});
+
+describe("encodeToolSchema definitions", () => {
+  const properties = { node: { $ref: "#/$defs/Node" } };
+  const $defs = {
+    Node: { type: "object", properties: { child: { $ref: "#/$defs/Node" } } },
+  };
+  const tool = {
+    name: "walk",
+    description: "Walk a tree.",
+    parameters: {
+      type: "object" as const,
+      properties,
+      required: ["node"],
+      additionalProperties: false as const,
+      $defs,
+    },
+  };
+
+  it("keeps the $defs referenced by nested parameters", () => {
+    expect(encodeToolSchema(tool)).toHaveProperty("parameters", {
+      type: "object",
+      properties,
+      required: ["node"],
+      $defs,
+    });
   });
 });

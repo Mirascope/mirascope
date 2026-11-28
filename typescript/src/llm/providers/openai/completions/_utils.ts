@@ -180,6 +180,7 @@ export function encodeToolSchema(
         type: "object",
         properties: tool.parameters.properties,
         required: tool.parameters.required,
+        ...(tool.parameters.$defs && { $defs: tool.parameters.$defs }),
       },
       strict: tool.strict,
     },
