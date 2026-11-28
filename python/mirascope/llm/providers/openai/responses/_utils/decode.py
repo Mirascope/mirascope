@@ -1,6 +1,6 @@
 """OpenAI Responses response decoding."""
 
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from openai import AsyncStream, Stream
 from openai.types import responses as openai_types
@@ -174,6 +174,7 @@ class _OpenAIResponsesChunkProcessor:
         self.refusal_encountered = False
         self.include_thoughts = include_thoughts
         self.web_search_count = 0
+        self.item_call_ids: dict[str, str] = {}
 
     def process_chunk(self, event: ResponseStreamEvent) -> ChunkIterator:
         """Process a single OpenAI Responses stream event and yield the appropriate content chunks."""
@@ -202,6 +203,7 @@ class _OpenAIResponsesChunkProcessor:
                 if item.type == "function_call":
                     self.current_tool_call_id = item.call_id
                     self.current_tool_call_name = item.name
+                    self.item_call_ids[cast(str, item.id)] = item.call_id
                     yield ToolCallStartChunk(
                         id=item.call_id,
                         name=item.name,
@@ -210,9 +212,15 @@ class _OpenAIResponsesChunkProcessor:
                 elif item.type == "web_search_call":
                     self.web_search_count += 1
             elif event.type == "response.function_call_arguments.delta":
-                yield ToolCallChunk(id=self.current_tool_call_id, delta=event.delta)
+                call_id = self.item_call_ids.get(
+                    event.item_id, self.current_tool_call_id
+                )
+                yield ToolCallChunk(id=call_id, delta=event.delta)
             elif event.type == "response.function_call_arguments.done":
-                yield ToolCallEndChunk(id=self.current_tool_call_id)
+                call_id = self.item_call_ids.pop(
+                    event.item_id, self.current_tool_call_id
+                )
+                yield ToolCallEndChunk(id=call_id)
                 self.current_content_type = None
             elif (
                 event.type == "response.reasoning_text.delta"
